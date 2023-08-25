@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
@@ -81,6 +82,13 @@ class DownloadsListTracker
   void SetChunkSizeForTesting(size_t chunk_size);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_UrlFormatting_OmitUserPass);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_UrlFormatting_Idn);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_UrlFormatting_VeryLong);
+
   struct StartTimeComparator {
     bool operator()(const download::DownloadItem* a,
                     const download::DownloadItem* b) const;

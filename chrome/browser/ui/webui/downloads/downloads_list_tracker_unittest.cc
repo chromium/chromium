@@ -33,6 +33,7 @@ using download::MockDownloadItem;
 using DownloadVector = std::vector<DownloadItem*>;
 using testing::_;
 using testing::Return;
+using testing::ReturnRefOfCopy;
 
 namespace {
 
@@ -90,6 +91,9 @@ class DownloadsListTrackerTest : public testing::Test {
     ON_CALL(*new_item, GetId()).WillByDefault(Return(id));
     ON_CALL(*new_item, GetStartTime()).WillByDefault(Return(started));
     ON_CALL(*new_item, IsTransient()).WillByDefault(Return(false));
+    ON_CALL(*new_item, GetTargetFilePath())
+        .WillByDefault(
+            ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo.txt"))));
 
     return new_item;
   }
@@ -313,4 +317,49 @@ TEST_F(DownloadsListTrackerTest, IgnoreTransientDownloads) {
 
   std::vector<uint64_t> expected;
   EXPECT_CALL(page_, InsertItems(0, MatchIds(expected)));
+}
+
+TEST_F(DownloadsListTrackerTest,
+       CreateDownloadData_UrlFormatting_OmitUserPass) {
+  MockDownloadItem* item = CreateNextItem();
+  ON_CALL(*item, GetURL())
+      .WillByDefault(ReturnRefOfCopy(GURL("https://user:pass@example.test")));
+
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+  EXPECT_TRUE(data->url);
+  EXPECT_EQ(*data->url, "https://user:pass@example.test/");
+  EXPECT_EQ(data->display_url, u"https://example.test");
+}
+
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_Idn) {
+  MockDownloadItem* item = CreateNextItem();
+  ON_CALL(*item, GetURL())
+      .WillByDefault(ReturnRefOfCopy(GURL("https://xn--6qqa088eba.test")));
+
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+  EXPECT_TRUE(data->url);
+  EXPECT_EQ(*data->url, "https://xn--6qqa088eba.test/");
+  EXPECT_EQ(data->display_url, u"https://\u4f60\u597d\u4f60\u597d.test");
+}
+
+TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
+  std::string url = "https://" + std::string(2 * 1024 * 1024, 'a') + ".test";
+  std::u16string expected =
+      u"https://" + std::u16string(2 * 1024 * 1024 - 8, 'a');
+
+  MockDownloadItem* item = CreateNextItem();
+  ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(url)));
+
+  auto tracker = std::make_unique<DownloadsListTracker>(
+      manager(), page_.BindAndGetRemote());
+
+  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+  EXPECT_FALSE(data->url);
+  EXPECT_EQ(data->display_url, expected);
 }
