@@ -1887,6 +1887,22 @@ ScopedCSSName* StyleBuilderConverter::ConvertAnchorDefault(
                                              custom_ident.GetTreeScope());
 }
 
+ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorName(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+  DCHECK(value.IsBaseValueList());
+  HeapVector<Member<const ScopedCSSName>> names;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    names.push_back(ConvertCustomIdent(state, *item));
+  }
+  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+}
+
 StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(
     StyleResolverState&,
     const CSSValue& value) {

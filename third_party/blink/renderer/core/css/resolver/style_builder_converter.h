@@ -221,6 +221,8 @@ class StyleBuilderConverter {
                                            const CSSValue&);
   static ScopedCSSName* ConvertAnchorDefault(StyleResolverState&,
                                              const CSSValue&);
+  static ScopedCSSNameList* ConvertAnchorName(StyleResolverState&,
+                                              const CSSValue&);
   static StyleInitialLetter ConvertInitialLetter(StyleResolverState&,
                                                  const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(StyleResolverState&,

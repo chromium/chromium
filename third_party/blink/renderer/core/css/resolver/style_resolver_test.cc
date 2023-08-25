@@ -3149,16 +3149,16 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
                                                  &GetDocument()),
-            *outer_anchor->ComputedStyleRef().AnchorName());
+            *outer_anchor->ComputedStyleRef().AnchorName()->GetNames()[0]);
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
-      *host->ComputedStyleRef().AnchorName());
+      *host->ComputedStyleRef().AnchorName()->GetNames()[0]);
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
                                                  &GetDocument()),
-            *part->ComputedStyleRef().AnchorName());
+            *part->ComputedStyleRef().AnchorName()->GetNames()[0]);
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
-      *inner_anchor->ComputedStyleRef().AnchorName());
+      *inner_anchor->ComputedStyleRef().AnchorName()->GetNames()[0]);
 }
 
 TEST_F(StyleResolverTest, ScopedAnchorDefault) {

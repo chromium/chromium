@@ -324,10 +324,13 @@ struct NGStitchedAnchorQueries {
       NGStitchedAnchorQuery& query =
           EnsureStitchedAnchorQuery(*containing_block);
       if (fragment.Style().AnchorName()) {
-        query.AddAnchorReference(
-            fragment.Style().AnchorName(), *fragment.GetLayoutObject(),
-            {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
-            NGStitchedAnchorQuery::Conflict::kOverwriteIfAfter);
+        for (const ScopedCSSName* name :
+             fragment.Style().AnchorName()->GetNames()) {
+          query.AddAnchorReference(
+              name, *fragment.GetLayoutObject(),
+              {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
+              NGStitchedAnchorQuery::Conflict::kOverwriteIfAfter);
+        }
       }
       if (fragment.IsImplicitAnchor()) {
         query.AddAnchorReference(

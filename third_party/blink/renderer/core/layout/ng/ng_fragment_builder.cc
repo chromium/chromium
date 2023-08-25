@@ -160,8 +160,9 @@ void NGFragmentBuilder::PropagateChildAnchors(
     options = AnchorQuerySetOptions(
         child, node_, IsBlockFragmentationContextRoot() || HasItems());
     if (child.Style().AnchorName()) {
-      EnsureAnchorQuery().Set(child.Style().AnchorName(),
-                              *child.GetLayoutObject(), rect, *options);
+      for (const ScopedCSSName* name : child.Style().AnchorName()->GetNames()) {
+        EnsureAnchorQuery().Set(name, *child.GetLayoutObject(), rect, *options);
+      }
     }
     if (child.IsImplicitAnchor()) {
       EnsureAnchorQuery().Set(child.GetLayoutObject(), *child.GetLayoutObject(),
