@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+PASS <a href="non-special://test:9001/">.origin getter
+PASS <area href="non-special://test:9001/">.origin getter
+PASS <a href="non-special://test:9001/">.protocol getter
+PASS <a href="non-special://test:9001/">.protocol setter
+PASS <area href="non-special://test:9001/">.protocol getter
+PASS <area href="non-special://test:9001/">.protocol setter
+PASS <a href="non-special://test:9001/">.username getter
+FAIL <a href="non-special://test:9001/">.username setter assert_equals: expected "string" but got ""
+PASS <area href="non-special://test:9001/">.username getter
+FAIL <area href="non-special://test:9001/">.username setter assert_equals: expected "string" but got ""
+PASS <a href="non-special://test:9001/">.password getter
+FAIL <a href="non-special://test:9001/">.password setter assert_equals: expected "string" but got ""
+PASS <area href="non-special://test:9001/">.password getter
+FAIL <area href="non-special://test:9001/">.password setter assert_equals: expected "string" but got ""
+FAIL <a href="non-special://test:9001/">.host getter assert_equals: expected "test:9001" but got ""
+FAIL <a href="non-special://test:9001/">.host setter assert_equals: expected "string:9001" but got ""
+FAIL <area href="non-special://test:9001/">.host getter assert_equals: expected "test:9001" but got ""
+FAIL <area href="non-special://test:9001/">.host setter assert_equals: expected "string:9001" but got ""
+FAIL <a href="non-special://test:9001/">.hostname getter assert_equals: expected "test" but got ""
+FAIL <a href="non-special://test:9001/">.hostname setter assert_equals: expected "string" but got ""
+FAIL <area href="non-special://test:9001/">.hostname getter assert_equals: expected "test" but got ""
+FAIL <area href="non-special://test:9001/">.hostname setter assert_equals: expected "string" but got ""
+FAIL <a href="non-special://test:9001/">.port getter assert_equals: expected "9001" but got ""
+FAIL <a href="non-special://test:9001/">.port setter assert_equals: expected "8000" but got ""
+FAIL <area href="non-special://test:9001/">.port getter assert_equals: expected "9001" but got ""
+FAIL <area href="non-special://test:9001/">.port setter assert_equals: expected "8000" but got ""
+FAIL <a href="non-special://test:9001/">.pathname getter assert_equals: expected "/" but got "//test:9001/"
+FAIL <a href="non-special://test:9001/">.pathname setter assert_equals: expected "/string" but got "//test:9001/"
+FAIL <area href="non-special://test:9001/">.pathname getter assert_equals: expected "/" but got "//test:9001/"
+FAIL <area href="non-special://test:9001/">.pathname setter assert_equals: expected "/string" but got "//test:9001/"
+PASS <a href="non-special://test:9001/">.search getter
+PASS <a href="non-special://test:9001/">.search setter
+PASS <area href="non-special://test:9001/">.search getter
+PASS <area href="non-special://test:9001/">.search setter
+PASS <a href="non-special://test:9001/">.hash getter
+PASS <a href="non-special://test:9001/">.hash setter
+PASS <area href="non-special://test:9001/">.hash getter
+PASS <area href="non-special://test:9001/">.hash setter
+Harness: the test ran to completion.
+
