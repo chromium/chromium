@@ -16,6 +16,21 @@ constexpr int kControlViewButtonCornerRadius = 20;
 constexpr int kControlViewButtonWidth = 280;
 constexpr int kControlViewButtonHeight = 36;
 
+// Spacing between the BoxLayout children.
+constexpr int kLayoutBetweenChildSpacing = 8;
+
+// Control AutoPiP description view width and height.
+constexpr int kDescriptionViewWidth = 280;
+constexpr int kDescriptionViewHeight = 32;
+
+// Short AutoPiP Description. To be displayed below the Bubble title.
+// TODO(crbug.com/1465529): Localize this.
+constexpr char16_t kAutopipDescription[] =
+    u"Automatically enter Picture-in-Picture";
+
+// Bubble fixed width.
+constexpr int kBubbleFixedWidth = 320;
+
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     base::OnceCallback<void()> hide_view_cb,
@@ -31,6 +46,7 @@ AutoPipSettingView::AutoPipSettingView(
   CHECK(result_cb_);
   set_parent_window(parent);
   SetAnchorView(anchor_view);
+  set_fixed_width(kBubbleFixedWidth);
   InitBubble();
 }
 
@@ -39,7 +55,45 @@ AutoPipSettingView::~AutoPipSettingView() {
   allow_once_button_ = allow_on_every_visit_button_ = block_button_ = nullptr;
 }
 
-void AutoPipSettingView::InitBubble() {}
+void AutoPipSettingView::InitBubble() {
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_manager->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  layout_manager->set_between_child_spacing(kLayoutBetweenChildSpacing);
+
+  auto* description_view = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(kLayoutBetweenChildSpacing)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+          .Build());
+
+  description_view->AddChildView(
+      views::Builder<views::Label>()
+          .CopyAddressTo(&autopip_description_)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetElideBehavior(gfx::NO_ELIDE)
+          .SetMultiLine(true)
+          .SetText(std::u16string(kAutopipDescription))
+          .Build());
+  autopip_description_->SetSize(
+      gfx::Size(kDescriptionViewWidth, kDescriptionViewHeight));
+
+  auto* controls_view = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(kLayoutBetweenChildSpacing)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+          .Build());
+
+  // TODO(crbug.com/1465529): Localize button text labels.
+  allow_once_button_ = InitControlViewButton(
+      controls_view, UiResult::kAllowOnce, u"Allow this time");
+  allow_on_every_visit_button_ = InitControlViewButton(
+      controls_view, UiResult::kAllowOnEveryVisit, u"Allow on every visit");
+  block_button_ =
+      InitControlViewButton(controls_view, UiResult::kBlock, u"Don't allow");
+}
 
 raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
     views::BoxLayoutView* controls_view,
@@ -74,7 +128,8 @@ void AutoPipSettingView::OnButtonPressed(UiResult result) {
 
   std::move(result_cb_).Run(result);
 
-  // Close the widget.
+  // Hide the View and close the widget.
+  SetVisible(false);
   GetWidget()->Close();
 }
 

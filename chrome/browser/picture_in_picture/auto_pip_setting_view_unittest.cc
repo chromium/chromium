@@ -16,8 +16,16 @@
 #include "ui/views/widget/widget_utils.h"
 
 using ::testing::NotNull;
+using UiResult = AutoPipSettingView::UiResult;
 
-class AutoPipSettingViewTest : public views::ViewsTestBase {
+struct TestParams {
+  UiResult ui_result;
+  bool expected_widget_closed = true;
+  bool expected_view_is_visible = false;
+};
+
+class AutoPipSettingViewTest : public views::ViewsTestBase,
+                               public testing::WithParamInterface<TestParams> {
  public:
   AutoPipSettingViewTest() = default;
 
@@ -83,8 +91,6 @@ class AutoPipSettingViewTest : public views::ViewsTestBase {
   const AutoPipSettingView* setting_view() const { return setting_view_; }
   AutoPipSettingView* setting_view() { return setting_view_; }
 
-  using UiResult = AutoPipSettingView::UiResult;
-
   base::MockOnceCallback<void(UiResult)>& result_cb() { return result_cb_; }
   base::MockOnceCallback<void()>& hide_view_cb() { return hide_view_cb_; }
 
@@ -98,17 +104,10 @@ class AutoPipSettingViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(AutoPipSettingViewTest, TestInitControlViewButton) {
-  std::unique_ptr<views::Widget> controls_view_widget = CreateTestWidget();
-  controls_view_widget->Show();
-  auto* controls_view = controls_view_widget->SetContentsView(
-      std::make_unique<views::BoxLayoutView>());
-
-  raw_ptr<views::MdTextButton> test_button =
-      setting_view()->InitControlViewButton(
-          controls_view, UiResult::kAllowOnEveryVisit, u"Test button");
-
-  EXPECT_EQ(gfx::ALIGN_CENTER, test_button->GetHorizontalAlignment());
-  EXPECT_EQ(ui::ButtonStyle::kTonal, test_button->GetStyle());
+  EXPECT_TRUE(setting_view()->GetVisible());
+  ASSERT_THAT(allow_once_button(), NotNull());
+  EXPECT_EQ(gfx::ALIGN_CENTER, allow_once_button()->GetHorizontalAlignment());
+  EXPECT_EQ(ui::ButtonStyle::kTonal, allow_once_button()->GetStyle());
 }
 
 TEST_F(AutoPipSettingViewTest, TestSetTitle) {
@@ -133,4 +132,89 @@ TEST_F(AutoPipSettingViewTest, TestSetTitle) {
 TEST_F(AutoPipSettingViewTest, TestShow) {
   ASSERT_THAT(setting_view()->GetWidget(), NotNull());
   EXPECT_TRUE(setting_view()->GetVisible());
+}
+
+const struct TestParams kTestParams[] = {{UiResult::kAllowOnce},
+                                         {UiResult::kAllowOnEveryVisit},
+                                         {UiResult::kBlock}};
+
+INSTANTIATE_TEST_SUITE_P(AllButtonCallbacks,
+                         AutoPipSettingViewTest,
+                         testing::ValuesIn(kTestParams));
+
+// TEST_F(AutoPipSettingHelperTest, AllowDoesNotCallCloseCb) {
+//   set_content_setting(CONTENT_SETTING_DEFAULT);
+//   AttachOverlayView();
+//   EXPECT_TRUE(setting_overlay());
+
+//   // Click allow.  Nothing should happen.
+//   EXPECT_CALL(close_cb(), Run()).Times(0);
+//   click_allow();
+//   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
+// }
+
+// Test UiResult callbacks.
+TEST_P(AutoPipSettingViewTest, ButtonCallbackTest) {
+  EXPECT_TRUE(setting_view()->GetVisible());
+
+  const views::MdTextButton* button_to_test;
+  switch (GetParam().ui_result) {
+    case UiResult::kAllowOnce:
+      button_to_test = allow_once_button();
+      break;
+    case UiResult::kAllowOnEveryVisit:
+      button_to_test = allow_on_every_visit_button();
+      break;
+    case UiResult::kBlock:
+      button_to_test = block_button();
+      break;
+    case UiResult::kDismissed:
+      return;
+  }
+
+  EXPECT_CALL(result_cb(), Run(GetParam().ui_result));
+
+  // Move mouse to the center of the button.
+  event_generator()->MoveMouseTo(
+      button_to_test->GetBoundsInScreen().CenterPoint());
+  event_generator()->ClickLeftButton();
+
+  // Verify that the view is hidden and Widget closed.
+  EXPECT_EQ(setting_view()->GetWidget()->IsClosed(),
+            GetParam().expected_widget_closed);
+  EXPECT_EQ(setting_view()->GetVisible(), GetParam().expected_view_is_visible);
+}
+
+INSTANTIATE_TEST_SUITE_P(AllMultipleClicks,
+                         AutoPipSettingViewTest,
+                         testing::ValuesIn(kTestParams));
+
+// Verify that multiple clicks on UI button does not crash.
+TEST_P(AutoPipSettingViewTest, MultipleClicksDontCrash) {
+  EXPECT_TRUE(setting_view()->GetVisible());
+
+  const views::MdTextButton* button_to_test;
+  switch (GetParam().ui_result) {
+    case UiResult::kAllowOnce:
+      button_to_test = allow_once_button();
+      break;
+    case UiResult::kAllowOnEveryVisit:
+      button_to_test = allow_on_every_visit_button();
+      break;
+    case UiResult::kBlock:
+      button_to_test = block_button();
+      break;
+    case UiResult::kDismissed:
+      return;
+  }
+
+  EXPECT_CALL(result_cb(), Run(GetParam().ui_result));
+
+  // Move mouse to the center of the button.
+  event_generator()->MoveMouseTo(
+      button_to_test->GetBoundsInScreen().CenterPoint());
+
+  // Perform multiple clicks to verify there are no crashes.
+  event_generator()->ClickLeftButton();
+  event_generator()->ClickLeftButton();
 }

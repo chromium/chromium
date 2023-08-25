@@ -124,6 +124,7 @@ TEST_F(AutoPipSettingHelperTest,
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }
 
+// TODO(crbug.com/1472386): Add "allow once" and "allow on every visit" tests.
 TEST_F(AutoPipSettingHelperTest, AllowDoesNotCallCloseCb) {
   set_content_setting(CONTENT_SETTING_DEFAULT);
   AttachOverlayView();
