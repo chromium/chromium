@@ -26,3 +26,26 @@ namespace {{full_namespace}} {
 }  // {{full_namespace}}
 {%- endif %}
 {%- endmacro -%}
+
+{# Creates a string path matching the module and variant, includes the
+ module name, and can be suffixed with '.h', '-forward.h' etc. #}
+{%- macro variant_path(path, variant) -%}
+{%- if variant -%}
+{%-   set variant_path = "%s-%s"|format(path, variant) -%}
+{%- else -%}
+{%-   set variant_path = path -%}
+{%- endif -%}
+{{variant_path}}
+{%- endmacro -%}
+
+{# Creates a string matching the file's path for include guards #}
+{%- macro include_guard(type, path, variant) -%}
+{%- set upper_path = variant_path(path, variant)
+ |upper|replace("/","_")|replace(".","_")|replace("-", "_") -%}
+{%- if type -%}
+{%- set header_guard = "%s_%s_H_"|format(upper_path, type) -%}
+{%- else -%}
+{%- set header_guard = "%s_H_"|format(upper_path) -%}
+{%- endif -%}
+{{header_guard}}
+{%- endmacro -%}

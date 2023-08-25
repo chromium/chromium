@@ -2,27 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%- if variant -%}
-{%-   set variant_path = "%s-%s"|format(module.path, variant) -%}
-{%- else -%}
-{%-   set variant_path = module.path -%}
-{%- endif -%}
+{%- from 'cpp_macros.tmpl' import include_guard, variant_path %}
 
-{%- set header_guard = "%s_IMPORT_HEADERS_H_"|format(
-        variant_path|upper|replace("/","_")|replace(".","_")|
-            replace("-", "_")) %}
+{%- set header_guard = include_guard('IMPORT_HEADERS', module.path, variant) %}
 
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
 {%- for import in imports %}
-{%-   if variant %}
-#include "{{"%s-%s.h"|format(import.path, variant)}}"
-#include "{{"%s-%s-import-headers.h"|format(import.path, variant)}}"
-{%-   else %}
-#include "{{import.path}}.h"
-#include "{{import.path}}-import-headers.h"
-{%-   endif %}
+#include "{{variant_path(import.path, variant)}}.h"
+#include "{{variant_path(import.path, variant)}}-import-headers.h"
 {%- endfor %}
 
 #endif  // {{header_guard}}

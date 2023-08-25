@@ -8,6 +8,7 @@ import("//third_party/jinja2/jinja2.gni")
 action("precompile_templates") {
   sources = mojom_generator_sources
   sources += [
+    "$mojom_generator_root/generators/cpp_templates/cpp_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/enum_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/enum_serialization_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_declaration.tmpl",
@@ -27,7 +28,6 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/module-test-utils.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.h.tmpl",
-    "$mojom_generator_root/generators/cpp_templates/namespace_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_data_view_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_data_view_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_declaration.tmpl",

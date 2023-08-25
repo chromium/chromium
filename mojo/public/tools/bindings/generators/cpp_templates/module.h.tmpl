@@ -2,17 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
+{%- from 'cpp_macros.tmpl' import
+ namespace_begin, namespace_end, include_guard, variant_path %}
 
-{%- if variant -%}
-{%-   set variant_path = "%s-%s"|format(module.path, variant) -%}
-{%- else -%}
-{%-   set variant_path = module.path -%}
-{%- endif -%}
-
-{%- set header_guard = "%s_H_"|format(
-        variant_path|upper|replace("/","_")|replace(".","_")|
-            replace("-", "_")) %}
+{%- set header_guard = include_guard('', module.path, variant) %}
 
 {%- macro kythe_annotation(name) %}
 {%- if enable_kythe_annotations %}
@@ -45,21 +38,13 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #include "{{module.path}}-shared.h"
-#include "{{variant_path}}-forward.h"
+#include "{{variant_path(module.path, variant)}}-forward.h"
 
 {%- for import in imports %}
 {%-   if import|is_full_header_required_for_import %}
-{%-     if variant %}
-#include "{{"%s-%s.h"|format(import.path, variant)}}"
-{%-     else %}
-#include "{{import.path}}.h"
-{%-     endif %}
+#include "{{variant_path(import.path, variant)}}.h"
 {%-   else %}
-{%-     if variant %}
-#include "{{"%s-%s-forward.h"|format(import.path, variant)}}"
-{%-     else %}
-#include "{{import.path}}-forward.h"
-{%-     endif %}
+#include "{{variant_path(import.path, variant)}}-forward.h"
 {%-   endif %}
 {%- endfor %}
 

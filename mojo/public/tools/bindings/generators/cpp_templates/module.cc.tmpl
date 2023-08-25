@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
-
-{%- if variant -%}
-{%-   set variant_path = "%s-%s"|format(module.path, variant) -%}
-{%- else -%}
-{%-   set variant_path = module.path -%}
-{%- endif %}
+{%- from 'cpp_macros.tmpl' import
+    namespace_begin, namespace_end, variant_path %}
 
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-private-field"
 #endif
 
-#include "{{variant_path}}.h"
+#include "{{variant_path(module.path, variant)}}.h"
 
 #include <math.h>
 #include <stdint.h>
@@ -44,8 +39,8 @@
 #include "{{module.path}}-params-data.h"
 #include "{{module.path}}-shared-message-ids.h"
 
-#include "{{variant_path}}-import-headers.h"
-#include "{{variant_path}}-test-utils.h"
+#include "{{variant_path(module.path, variant)}}-import-headers.h"
+#include "{{variant_path(module.path, variant)}}-test-utils.h"
 
 {%- if for_blink %}
 #include "mojo/public/cpp/bindings/lib/wtf_serialization.h"

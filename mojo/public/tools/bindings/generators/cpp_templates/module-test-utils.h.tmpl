@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
+{%- from 'cpp_macros.tmpl' import
+    namespace_begin, namespace_end, include_guard, variant_path %}
 
-{%- if variant -%}
-{%-   set variant_path = "%s-%s"|format(module.path, variant) -%}
-{%- else -%}
-{%-   set variant_path = module.path -%}
-{%- endif -%}
-
-{%- set header_guard = "%s_TEST_UTILS_H_"|format(
-        variant_path|upper|replace("/","_")|replace(".","_")|
-            replace("-", "_")) %}
+{%- set header_guard = include_guard("TEST_UTILS", module.path, variant) %}
 
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include "{{variant_path}}.h"
+#include "{{variant_path(module.path, variant)}}.h"
 
 {%- if export_header %}
 #include "{{export_header}}"

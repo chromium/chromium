@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
+{%- from 'cpp_macros.tmpl' import
+  namespace_begin, namespace_end, include_guard %}
 
-{%- set header_guard = "%s_SHARED_H_"|format(
-        module.path|upper|replace("/","_")|replace(".","_")|
-            replace("-", "_")) %}
+{%- set header_guard = include_guard("SHARED", module.path) %}
 
 {%- macro mojom_type_traits(kind) %}
 template <>
