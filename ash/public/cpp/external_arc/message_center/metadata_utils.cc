@@ -49,8 +49,10 @@ CreateNotificationFromArcNotificationData(
 
   auto notification = std::make_unique<message_center::Notification>(
       notification_type, notification_id, base::UTF8ToUTF16(data->title),
-      base::UTF8ToUTF16(data->message), ui::ImageModel(), u"arc", GURL(),
-      notifier_id, rich_data, delegate);
+      base::UTF8ToUTF16(data->message), ui::ImageModel(),
+      /*display_source=*/
+      base::UTF8ToUTF16(data->app_display_name.value_or(std::string())),
+      /*origin_url=*/GURL(), notifier_id, rich_data, delegate);
 
   return notification;
 }

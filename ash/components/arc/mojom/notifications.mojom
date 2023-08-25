@@ -119,8 +119,9 @@ struct ArcNotificationData {
   string message;
   // Title of notification
   string title;
-  // DEPRECATED: Mimetype of |icon_data|
-  string? deprecated_icon_mimetype;
+  // The app name of the notification. Displayed when the notification is
+  // rendered in ChromeOS and is expanded.
+  string? app_display_name;
   // DEPRECATED: Binary data of the icon
   array<uint8>? deprecated_icon_data;
   // Priority of notification
