@@ -61,6 +61,15 @@ class DestinationDragHandler: ObservableObject {
     return DestinationListDropDelegate(handler: self)
   }
 
+  /// Returns a new item provider for the drag interaction.
+  func newItemProvider(forDestination destination: OverflowMenuDestination) -> NSItemProvider {
+    let itemProvider = DidEndItemProvider(object: destination.name as NSString)
+    itemProvider.didEnd = { [weak self] in
+      self?.endDrag()
+    }
+    return itemProvider
+  }
+
   /// Performs a drop into a list. Should be passed to `List`'s `.onInsert`
   /// method.
   func performListDrop(index: Int, providers: [NSItemProvider]) {
@@ -143,5 +152,14 @@ class DestinationDragHandler: ObservableObject {
       // Set up the correct state for if a drag re-enters the destinations list.
       handler.dragOnDestinations = true
     }
+  }
+}
+
+/// A custom item provider class that calls the provided `didEnd` callback when
+/// the drag ends.
+class DidEndItemProvider: NSItemProvider {
+  var didEnd: (() -> Void)?
+  deinit {
+    didEnd?()
   }
 }

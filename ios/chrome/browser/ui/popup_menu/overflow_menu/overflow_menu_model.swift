@@ -23,6 +23,11 @@ import Combine
   /// the provided data.
   @Published var customization: CustomizationModel?
 
+  /// Whether or not customization is currently in progress.
+  public var isCustomizationActive: Bool {
+    return customization != nil
+  }
+
   public init(
     destinations: [OverflowMenuDestination],
     actionGroups: [OverflowMenuActionGroup]

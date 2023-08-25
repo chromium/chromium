@@ -9,9 +9,9 @@
 // process.
 @protocol OverflowMenuCustomizationCommands
 
-- (void)showActionCustomization;
+- (void)showMenuCustomization;
 
-- (void)hideActionCustomization;
+- (void)hideMenuCustomization;
 
 @end
 

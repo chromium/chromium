@@ -134,41 +134,42 @@ struct OverflowMenuDestinationList: View {
             // spacing before the first item.
             Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
             ForEach(destinations) { destination in
-              OverflowMenuDestinationView(
+              let destinationView = OverflowMenuDestinationView(
                 destination: destination, layoutParameters: layoutParameters,
                 highlighted: uiConfiguration.highlightDestination == destination.destination,
                 metricsHandler: metricsHandler
               )
-              .id(destination.destination)
-              .ifLet(dragHandler) { view, dragHandler in
-                view
-                  .onDrag {
-                    dragHandler.startDrag(from: destination)
-                    return NSItemProvider(object: destination.name as NSString)
-                  } preview: {
-                    OverflowMenuDestinationView(
-                      destination: destination, layoutParameters: layoutParameters,
-                      highlighted: uiConfiguration.highlightDestination == destination.destination,
-                      metricsHandler: nil)
-                  }
-                  .onDrop(
-                    of: [.text],
-                    delegate: dragHandler.newDropDelegate(
-                      forDestination: destination))
-              }
-              .overlay(alignment: .editButton) {
-                if editMode?.wrappedValue.isEditing == true && destination.canBeHidden {
-                  DestinationEditButton(destination: destination)
-                    .alignmentGuide(HorizontalAlignment.editButton) {
-                      $0[HorizontalAlignment.center]
+              let destinationBeingDragged =
+                dragHandler?.dragOnDestinations ?? false
+                && dragHandler?.currentDrag?.item == destination
+              destinationView
+                .id(destination.destination)
+                .ifLet(dragHandler) { view, dragHandler in
+                  view
+                    .opacity(destinationBeingDragged ? 0.01 : 1)
+                    .onDrag {
+                      dragHandler.startDrag(from: destination)
+                      return dragHandler.newItemProvider(forDestination: destination)
                     }
-                    .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
+                    .onDrop(
+                      of: [.text],
+                      delegate: dragHandler.newDropDelegate(
+                        forDestination: destination))
                 }
-              }
-              .matchedGeometryEffect(
-                id: MenuCustomizationAnimationID.from(destination), in: namespace
-              )
-
+                .overlay(alignment: .editButton) {
+                  if !destinationBeingDragged && editMode?.wrappedValue.isEditing == true
+                    && destination.canBeHidden
+                  {
+                    DestinationEditButton(destination: destination)
+                      .alignmentGuide(HorizontalAlignment.editButton) {
+                        $0[HorizontalAlignment.center]
+                      }
+                      .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
+                  }
+                }
+                .matchedGeometryEffect(
+                  id: MenuCustomizationAnimationID.from(destination), in: namespace
+                )
             }
           }.alignmentGuide(.bottom) { $0[.bottom] + Constants.bottomMargin }
 

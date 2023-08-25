@@ -516,7 +516,7 @@ enum class IOSOverflowMenuActionType {
 
 #pragma mark - OverflowMenuCustomizationCommands
 
-- (void)showActionCustomization {
+- (void)showMenuCustomization {
   [_overflowMenuModel
       startCustomizationWithActions:_overflowMenuOrderer
                                         .actionCustomizationModel
@@ -527,7 +527,7 @@ enum class IOSOverflowMenuActionType {
       isCustomizationScreen:YES];
 }
 
-- (void)hideActionCustomization {
+- (void)hideMenuCustomization {
   [self setupSheetForMenu:self.baseViewController.presentedViewController
       isCustomizationScreen:NO];
 
@@ -540,14 +540,14 @@ enum class IOSOverflowMenuActionType {
   [_overflowMenuOrderer commitActionsUpdate];
   [_overflowMenuOrderer commitDestinationsUpdate];
 
-  [self hideActionCustomization];
+  [self hideMenuCustomization];
 }
 
 - (void)cancelWasTapped {
   [_overflowMenuOrderer cancelActionsUpdate];
   [_overflowMenuOrderer cancelDestinationsUpdate];
 
-  [self hideActionCustomization];
+  [self hideMenuCustomization];
 }
 
 #pragma mark - ContainedPresenterDelegate
@@ -577,6 +577,11 @@ enum class IOSOverflowMenuActionType {
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissPopupMenuAnimated:NO];
+}
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return _overflowMenuModel.isCustomizationActive ? NO : YES;
 }
 
 #pragma mark - UISheetPresentationControllerDelegate

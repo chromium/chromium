@@ -50,25 +50,26 @@ struct OverflowMenuActionRow: View {
   }
 
   var body: some View {
-    Button(
-      action: {
-        guard !isEditing else {
-          return
+    button
+      .accessibilityIdentifier(action.accessibilityIdentifier)
+      .disabled(!action.enabled || action.enterpriseDisabled)
+      .if(!isEditing) { view in
+        view.contextMenu {
+          ForEach(action.longPressItems) { item in
+            Section {
+              Button {
+                item.handler()
+              } label: {
+                Label(item.title, systemImage: item.symbolName)
+              }
+            }
+          }
         }
-        metricsHandler?.popupMenuTookAction()
-        action.handler()
-      },
-      label: {
-        rowContent
-          .contentShape(Rectangle())
       }
-    )
-    .accessibilityIdentifier(action.accessibilityIdentifier)
-    .disabled(!action.enabled || action.enterpriseDisabled)
-    .if(!action.useSystemRowColoring) { view in
-      view.accentColor(.textPrimary)
-    }
-    .listRowSeparatorTint(.overflowMenuSeparator)
+      .if(!action.useSystemRowColoring) { view in
+        view.accentColor(.textPrimary)
+      }
+      .listRowSeparatorTint(.overflowMenuSeparator)
   }
 
   @ViewBuilder
@@ -100,6 +101,26 @@ struct OverflowMenuActionRow: View {
         }
       }
       .padding([.trailing], Self.rowEndPadding)
+    }
+  }
+
+  // The button view, which is replaced by just a plain view when this is in
+  // edit mode.
+  @ViewBuilder
+  var button: some View {
+    if isEditing {
+      rowContent
+    } else {
+      Button(
+        action: {
+          metricsHandler?.popupMenuTookAction()
+          action.handler()
+        },
+        label: {
+          rowContent
+            .contentShape(Rectangle())
+        }
+      )
     }
   }
 

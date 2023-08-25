@@ -20,6 +20,22 @@ struct IsPressedStyle: ButtonStyle {
   }
 }
 
+/// `PreferenceKey` holding the frame of the icon in the destination view.
+struct IconFramePreferenceKey: PreferenceKey {
+  static var defaultValue: CGRect = .null
+  static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+    value = CGRectUnion(value, nextValue())
+  }
+}
+
+/// `PreferenceKey` holding the frame of the text in the destination view.
+struct TextFramePreferenceKey: PreferenceKey {
+  static var defaultValue: CGRect = .null
+  static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+    value = CGRectUnion(value, nextValue())
+  }
+}
+
 /// A view displaying a single destination.
 @available(iOS 15, *)
 struct OverflowMenuDestinationView: View {
@@ -32,6 +48,18 @@ struct OverflowMenuDestinationView: View {
     /// The destination has an icon on the left and text on the right. Here
     /// the view will have a fixed overall `itemWidth`.
     case horizontal(itemWidth: CGFloat)
+  }
+
+  /// Shape consisting of a path around the icon and text.
+  struct IconShape: Shape {
+    let iconFrame: CGRect
+    let textFrame: CGRect
+
+    func path(in rect: CGRect) -> Path {
+      var path = Path(roundedRect: iconFrame, cornerRadius: Dimensions.cornerRadius)
+      path.addRect(textFrame)
+      return path
+    }
   }
 
   enum AccessibilityIdentifier {
@@ -83,6 +111,8 @@ struct OverflowMenuDestinationView: View {
     static let newLabelBadgeWidth: CGFloat = 20
   }
 
+  static let viewNamespace = "destinationView"
+
   /// The destination for this view.
   var destination: OverflowMenuDestination
 
@@ -95,16 +125,43 @@ struct OverflowMenuDestinationView: View {
 
   @State private var isPressed = false
 
+  @State private var iconFrame: CGRect = .zero
+  @State private var textFrame: CGRect = .zero
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   var body: some View {
     button
+      .coordinateSpace(name: Self.viewNamespace)
+      .contentShape(
+        [.contextMenuPreview, .dragPreview],
+        IconShape(iconFrame: iconFrame, textFrame: textFrame)
+      )
+      .if(editMode?.wrappedValue.isEditing != true) { view in
+        view.contextMenu {
+          ForEach(destination.longPressItems) { item in
+            Section {
+              Button {
+                item.handler()
+              } label: {
+                Label(item.title, systemImage: item.symbolName)
+              }
+            }
+          }
+        }
+      }
       .accessibilityIdentifier(accessibilityIdentifier)
       .accessibilityLabel(Text(accessibilityLabel))
       .if(highlighted) { view in
         view.anchorPreference(
           key: OverflowMenuDestinationList.HighlightedDestinationBounds.self, value: .bounds
         ) { $0 }
+      }
+      .onPreferenceChange(IconFramePreferenceKey.self) { newFrame in
+        iconFrame = newFrame
+      }
+      .onPreferenceChange(TextFramePreferenceKey.self) { newFrame in
+        textFrame = newFrame
       }
   }
 
@@ -186,6 +243,12 @@ struct OverflowMenuDestinationView: View {
     let image = (destination.systemSymbol ? Image(systemName: symbolName) : Image(symbolName))
       .renderingMode(.template)
     return iconBuilder(interiorPadding: interiorPadding, image: image)
+      .overlay {
+        GeometryReader { geometry in
+          Color.clear.preference(
+            key: IconFramePreferenceKey.self, value: geometry.frame(in: .named(Self.viewNamespace)))
+        }
+      }
   }
 
   var circleBadge: some View {
@@ -263,6 +326,12 @@ struct OverflowMenuDestinationView: View {
       .padding([.leading, .trailing], textSpacing)
       .multilineTextAlignment(.center)
       .lineLimit(maximumLines)
+      .overlay {
+        GeometryReader { geometry in
+          Color.clear.preference(
+            key: TextFramePreferenceKey.self, value: geometry.frame(in: .named(Self.viewNamespace)))
+        }
+      }
   }
 
   var accessibilityLabel: String {
@@ -295,5 +364,4 @@ struct OverflowMenuDestinationView: View {
       return itemWidth
     }
   }
-
 }
