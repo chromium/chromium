@@ -32,6 +32,8 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokens(
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!is_shutting_down_);
+
   if (try_get_auth_tokens_callback_) {
     mojo::ReportBadMessage(
         "Concurrent calls to TryGetAuthTokens are not allowed");
@@ -49,8 +51,7 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokens(
 }
 
 void IpProtectionAuthTokenProvider::RequestOAuthToken() {
-  if (!identity_manager_ ||
-      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     TryGetAuthTokensComplete(
         absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
     return;
@@ -82,6 +83,14 @@ void IpProtectionAuthTokenProvider::RequestOAuthToken() {
 void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // If this method is called we can safely assume that `is_shutting_down_` is
+  // false because the object owned by `access_token_fetcher_` will be destroyed
+  // by a `Shutdown()` call (assuming `access_token_fetcher_` points to an
+  // object when `Shutdown()` is called), and that object is the only thing
+  // that calls this method.
+  CHECK(!is_shutting_down_);
+
   access_token_fetcher_.reset();
 
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
@@ -113,6 +122,10 @@ void IpProtectionAuthTokenProvider::FetchBlindSignedToken(
 
 void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
     absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_) {
+    return;
+  }
   if (!tokens.ok()) {
     // Apply the canonical mapping from abseil status to HTTP status.
     IpProtectionTryGetAuthTokensResult result;
@@ -226,10 +239,22 @@ absl::optional<base::TimeDelta> IpProtectionAuthTokenProvider::CalculateBackoff(
   return backoff;
 }
 
+void IpProtectionAuthTokenProvider::ResetReceiverAndAssociatedState() {
+  receiver_.reset();
+  // Reset any pending callbacks as well since this class only expects to have
+  // one pending call to `TryGetAuthTokens()` at any given time, and that call
+  // is associated with the receiver that the message came in on.
+  access_token_fetcher_.reset();
+  try_get_auth_tokens_callback_.Reset();
+}
+
 void IpProtectionAuthTokenProvider::Shutdown() {
   is_shutting_down_ = true;
+  // If we are shutting down, we can't process messages anymore because we rely
+  // on having `identity_manager_` to get the OAuth token. Thus, just reset the
+  // receiver and all of its associated state.
+  ResetReceiverAndAssociatedState();
   identity_manager_ = nullptr;
-  receiver_.reset();
 }
 
 /*static*/
@@ -241,19 +266,15 @@ IpProtectionAuthTokenProvider* IpProtectionAuthTokenProvider::Get(
 void IpProtectionAuthTokenProvider::SetReceiver(
     mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
         pending_receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;
   }
-  // TODO(https://crbug.com/1473734): I'm not sure if this case is possible
-  // since a receiver should only be added when a NetworkContext is created, but
-  // maybe this can occur if the network service crashes and is restarted? If
-  // this can't happen, just replace this if statement with a CHECK.
-  DUMP_WILL_BE_CHECK(!receiver_.is_bound());
   if (receiver_.is_bound()) {
-    receiver_.reset();
-    // Reset any pending callbacks as well since this class only expects to have
-    // only one pending call to `TryGetAuthTokens()` at any given time.
-    try_get_auth_tokens_callback_.Reset();
+    // TODO(https://crbug.com/1473734): We experimentally determined that this
+    // case is possible, so we should have a test that ensures this handling
+    // is correct.
+    ResetReceiverAndAssociatedState();
   }
   receiver_.Bind(std::move(pending_receiver));
 }

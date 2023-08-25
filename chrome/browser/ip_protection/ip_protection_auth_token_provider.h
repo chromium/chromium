@@ -116,8 +116,12 @@ class IpProtectionAuthTokenProvider
   void OnFetchBlindSignedTokenCompleted(
       absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
 
+  // Reset `receiver_` and any other member variables that are associated with
+  // handling messages received via the bound message pipe.
+  void ResetReceiverAndAssociatedState();
+
   // The object used to get an OAuth token. `identity_manager_` will be set to
-  // nullptr after `Shutdown()` is called.
+  // nullptr after `Shutdown()` is called, but will otherwise be non-null.
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
