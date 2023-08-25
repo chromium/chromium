@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/callback_registry.h"
@@ -20,6 +21,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
+
+class VideoDecoderMixin;
 
 // This is used to send buffers to the CdmContext's Decryptor prior to sending
 // them into the decoder for VideoDecoderPipeline. This is used in AMD
@@ -34,6 +37,7 @@ class DecoderBufferTranscryptor {
   // The |transcrypt_callback| is invoked upon transcryption of a buffer. It
   // will be called with a nullptr in the event of failure.
   DecoderBufferTranscryptor(CdmContext* cdm_context,
+                            VideoDecoderMixin& decoder,
                             OnBufferTranscryptedCB transcrypt_callback,
                             WaitingCB waiting_callback);
   DecoderBufferTranscryptor(const DecoderBufferTranscryptor&) = delete;
@@ -49,6 +53,11 @@ class DecoderBufferTranscryptor {
   // Removes all pending tasks and invokes all pending VideoDecoder::DecodeCB
   // callbacks with the passed in |status|.
   void Reset(DecoderStatus status);
+
+  // Invoked when more secure buffers might be available. When we have pending
+  // tasks that are stalled due to secure buffer exhaustion, this is the
+  // mechanism by which we will retry them.
+  void SecureBuffersMayBeAvailable();
 
  private:
   // Transcrypt task holding single transcrypt request.
@@ -75,6 +84,11 @@ class DecoderBufferTranscryptor {
   void OnBufferTranscrypted(Decryptor::Status status,
                             scoped_refptr<DecoderBuffer> transcrypted_buffer);
 
+  void OnSecureBufferRelease(uint64_t secure_handle,
+                             VideoDecoder::DecodeCB decode_cb,
+                             DecoderStatus status);
+
+  const raw_ref<VideoDecoderMixin> decoder_;  // Not owned.
   OnBufferTranscryptedCB transcrypt_callback_;
   WaitingCB waiting_callback_;
 

@@ -115,9 +115,18 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
   virtual void ApplyResolutionChange() = 0;
 
   // For protected content implementations that require transcryption of the
-  // content before being sent into the HW decoders. (Currently only used by
-  // AMD). Default implementation returns false.
+  // content before being sent into the HW decoders. (Currently used by AMD and
+  // ARM). Default implementation returns false.
   virtual bool NeedsTranscryption();
+
+  // For protected content implementations that decrypt to a secure memory
+  // buffer (i.e. TrustZone on ARM), this is used to attach the appropriate
+  // handle for the secure buffer to the DecoderBuffer.
+  virtual CroStatus AttachSecureBuffer(scoped_refptr<DecoderBuffer>& buffer);
+  // Counterpart to AttachSecureBuffer, this should be invoked when the
+  // DecoderBuffer is no longer in use and the attached secure buffer can be
+  // released.
+  virtual void ReleaseSecureBuffer(uint64_t secure_handle);
 
   // Set the DMA coherency of the video decoder buffers. Only relevant for
   // V4L2.

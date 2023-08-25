@@ -180,6 +180,13 @@ bool VideoDecoderMixin::NeedsTranscryption() {
   return false;
 }
 
+CroStatus VideoDecoderMixin::AttachSecureBuffer(
+    scoped_refptr<DecoderBuffer>& buffer) {
+  return CroStatus::Codes::kOk;
+}
+
+void VideoDecoderMixin::ReleaseSecureBuffer(uint64_t secure_handle) {}
+
 size_t VideoDecoderMixin::GetMaxOutputFramePoolSize() const {
   return std::numeric_limits<size_t>::max();
 }
@@ -414,10 +421,12 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
   // instead.
   frame_converter_.reset();
   main_frame_pool_.reset();
-  decoder_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
+  // We must release |buffer_transcryptor_| before the decoder because it holds
+  // a raw pointer to |decoder_|.
   buffer_transcryptor_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  decoder_.reset();
 }
 
 // static
@@ -650,7 +659,12 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     if (frame_converter_) {
       frame_converter_->set_unwrap_frame_cb(base::NullCallback());
     }
-    decoder_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+    // We always need to destroy |buffer_transcryptor_| if it exists before
+    // |decoder_|.
+    buffer_transcryptor_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    decoder_.reset();
   }
   MEDIA_LOG(INFO, media_log_)
       << "VideoDecoderPipeline |decoder_| Initialize() successful";
@@ -662,12 +676,15 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
       if (frame_converter_) {
         frame_converter_->set_unwrap_frame_cb(base::NullCallback());
       }
-      decoder_ = nullptr;
+      // We always need to destroy |buffer_transcryptor_| if it exists before
+      // |decoder_|.
+      buffer_transcryptor_.reset();
+      decoder_.reset();
       status = DecoderStatus::Codes::kUnsupportedEncryptionMode;
     } else {
       // We need to enable transcryption for protected content.
       buffer_transcryptor_ = std::make_unique<DecoderBufferTranscryptor>(
-          cdm_context,
+          cdm_context, *decoder_,
           base::BindRepeating(&VideoDecoderPipeline::OnBufferTranscrypted,
                               decoder_weak_this_),
           base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,
@@ -801,6 +818,13 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameDecoded", "timestamp",
                (frame ? frame->timestamp().InMicroseconds() : 0));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (buffer_transcryptor_) {
+    buffer_transcryptor_->SecureBuffersMayBeAvailable();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   if (uses_oop_video_decoder_) {
     oop_decoder_can_read_without_stalling_.store(
         decoder_->CanReadWithoutStalling(), std::memory_order_seq_cst);

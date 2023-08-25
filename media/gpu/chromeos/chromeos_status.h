@@ -21,6 +21,8 @@ enum class ChromeosStatusCode : StatusCodeType {
   kInvalidLayoutSize = 8,
   kFailedToChangeResolution = 9,
   kInsufficientFramePoolSize = 10,
+  kUnableToAllocateSecureBuffer = 11,
+  kSecureBufferPoolEmpty = 12,
 };
 
 struct CroStatusTraits {

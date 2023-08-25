@@ -6,7 +6,9 @@
 
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 
 namespace media {
 DecoderBufferTranscryptor::TranscryptTask::TranscryptTask(
@@ -21,9 +23,11 @@ DecoderBufferTranscryptor::TranscryptTask::TranscryptTask(TranscryptTask&&) =
 
 DecoderBufferTranscryptor::DecoderBufferTranscryptor(
     CdmContext* cdm_context,
+    VideoDecoderMixin& decoder,
     OnBufferTranscryptedCB transcrypt_callback,
     WaitingCB waiting_callback)
-    : transcrypt_callback_(std::move(transcrypt_callback)),
+    : decoder_(decoder),
+      transcrypt_callback_(std::move(transcrypt_callback)),
       waiting_callback_(std::move(waiting_callback)) {
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
@@ -37,6 +41,15 @@ DecoderBufferTranscryptor::DecoderBufferTranscryptor(
 DecoderBufferTranscryptor::~DecoderBufferTranscryptor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Reset(DecoderStatus::Codes::kAborted);
+}
+
+void DecoderBufferTranscryptor::SecureBuffersMayBeAvailable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Re-post this so we don't need to worry about re-entrancy issues.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DecoderBufferTranscryptor::DecryptPendingBuffer,
+                     weak_this_));
 }
 
 void DecoderBufferTranscryptor::EnqueueBuffer(
@@ -86,6 +99,32 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
   if (current_transcrypt_task_->buffer->end_of_stream()) {
     OnBufferTranscrypted(Decryptor::kSuccess, current_transcrypt_task_->buffer);
     return;
+  }
+
+  // If we've already attached a secure buffer, don't do it again.
+  if (!current_transcrypt_task_->buffer->has_side_data() ||
+      !current_transcrypt_task_->buffer->side_data()->secure_handle) {
+    auto status =
+        decoder_->AttachSecureBuffer(current_transcrypt_task_->buffer);
+    if (status == CroStatus::Codes::kSecureBufferPoolEmpty) {
+      // We are currently out of secure buffers, so wait until this gets invoked
+      // again.
+      return;
+    } else if (!status.is_ok()) {
+      LOG(ERROR) << "Failure in attaching secure buffer";
+      OnBufferTranscrypted(Decryptor::kError, nullptr);
+      return;
+    }
+
+    if (current_transcrypt_task_->buffer->has_side_data() &&
+        current_transcrypt_task_->buffer->side_data()->secure_handle) {
+      // Wrap the callback so we can release the secure buffer when decoding is
+      // done.
+      current_transcrypt_task_->decode_done_cb = base::BindOnce(
+          &DecoderBufferTranscryptor::OnSecureBufferRelease, weak_this_,
+          current_transcrypt_task_->buffer->side_data()->secure_handle,
+          std::move(current_transcrypt_task_->decode_done_cb));
+    }
   }
   transcrypt_pending_ = true;
   cdm_context_ref_->GetCdmContext()->GetDecryptor()->Decrypt(
@@ -148,6 +187,15 @@ void DecoderBufferTranscryptor::OnBufferTranscrypted(
   // have no decrypt task in flight.
   if (!eos_buffer)
     DecryptPendingBuffer();
+}
+
+void DecoderBufferTranscryptor::OnSecureBufferRelease(
+    uint64_t secure_handle,
+    VideoDecoder::DecodeCB decode_cb,
+    DecoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  decoder_->ReleaseSecureBuffer(secure_handle);
+  std::move(decode_cb).Run(status);
 }
 
 }  // namespace media

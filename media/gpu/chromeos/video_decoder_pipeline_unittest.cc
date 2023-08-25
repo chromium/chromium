@@ -93,12 +93,15 @@ class MockDecoder : public VideoDecoderMixin {
   MOCK_METHOD1(Reset, void(base::OnceClosure));
   MOCK_METHOD0(ApplyResolutionChange, void());
   MOCK_METHOD0(NeedsTranscryption, bool());
+  MOCK_METHOD1(AttachSecureBuffer, CroStatus(scoped_refptr<DecoderBuffer>&));
+  MOCK_METHOD1(ReleaseSecureBuffer, void(uint64_t));
   MOCK_CONST_METHOD0(GetDecoderType, VideoDecoderType());
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr uint8_t kEncryptedData[] = {1, 8, 9};
 constexpr uint8_t kTranscryptedData[] = {9, 2, 4};
+constexpr uint64_t kFakeSecureHandle = 75;
 class MockChromeOsCdmContext : public chromeos::ChromeOsCdmContext {
  public:
   MockChromeOsCdmContext() : chromeos::ChromeOsCdmContext() {}
@@ -133,7 +136,7 @@ class FakeCdmContextRef : public CdmContextRef {
   CdmContext* GetCdmContext() override { return cdm_context_; }
 
  private:
-  CdmContext* cdm_context_;
+  raw_ptr<CdmContext> cdm_context_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -473,6 +476,9 @@ TEST_F(VideoDecoderPipelineTest, TranscryptThenEos) {
   // First send in a DecoderBuffer.
   {
     InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
     EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
         .WillOnce([this](Decryptor::StreamType stream_type,
                          scoped_refptr<DecoderBuffer> encrypted,
@@ -523,8 +529,14 @@ TEST_F(VideoDecoderPipelineTest, TranscryptReset) {
       &kEncryptedData[1], std::size(kEncryptedData) - 1);
   // Send in a buffer, but don't invoke the Decrypt callback so it stays as
   // pending. Then send in 2 more buffers so they are in the queue.
-  EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
-      .Times(1);
+  {
+    InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
+    EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
+        .Times(1);
+  }
   decoder_->Decode(encrypted_buffer_,
                    base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
                                   base::Unretained(this)));
@@ -535,6 +547,8 @@ TEST_F(VideoDecoderPipelineTest, TranscryptReset) {
                    base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
                                   base::Unretained(this)));
   task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(
+      reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()));
   testing::Mock::VerifyAndClearExpectations(&decryptor_);
 
   // Now when we reset, we should see 3 decode callbacks occur as well as the
@@ -561,17 +575,25 @@ TEST_F(VideoDecoderPipelineTest, TranscryptKeyAddedDuringTranscrypt) {
   // First send in a buffer, which will go to the decryptor and hold on to that
   // callback.
   Decryptor::DecryptCB saved_decrypt_cb;
-  EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
-      .WillOnce([&saved_decrypt_cb](Decryptor::StreamType stream_type,
-                                    scoped_refptr<DecoderBuffer> encrypted,
-                                    Decryptor::DecryptCB decrypt_cb) {
-        saved_decrypt_cb =
-            base::BindPostTaskToCurrentDefault(std::move(decrypt_cb));
-      });
+  {
+    InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
+    EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
+        .WillOnce([&saved_decrypt_cb](Decryptor::StreamType stream_type,
+                                      scoped_refptr<DecoderBuffer> encrypted,
+                                      Decryptor::DecryptCB decrypt_cb) {
+          saved_decrypt_cb =
+              base::BindPostTaskToCurrentDefault(std::move(decrypt_cb));
+        });
+  }
   decoder_->Decode(encrypted_buffer_,
                    base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
                                   base::Unretained(this)));
   task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(
+      reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()));
   testing::Mock::VerifyAndClearExpectations(&decryptor_);
 
   // Now we invoke the CDM callback to indicate there is a new key available.
@@ -583,6 +605,9 @@ TEST_F(VideoDecoderPipelineTest, TranscryptKeyAddedDuringTranscrypt) {
   // that should go through decoding. This should not invoke the waiting CB.
   {
     InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
     EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
         .WillOnce([this](Decryptor::StreamType stream_type,
                          scoped_refptr<DecoderBuffer> encrypted,
@@ -603,6 +628,75 @@ TEST_F(VideoDecoderPipelineTest, TranscryptKeyAddedDuringTranscrypt) {
   task_environment_.RunUntilIdle();
 }
 
+// Verifies that if we have a condition where we need to retry a pending
+// transcrypt task that it doesn't try to reacquire a secure buffer if it
+// already has one.
+TEST_F(VideoDecoderPipelineTest, RetryDoesntReattachSecureBuffer) {
+  InitializeForTranscrypt();
+  // First send in a buffer, which will go to the decryptor and hold on to that
+  // callback.
+  Decryptor::DecryptCB saved_decrypt_cb;
+  {
+    InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce([](scoped_refptr<DecoderBuffer>& buffer) {
+          buffer->WritableSideData().secure_handle = kFakeSecureHandle;
+          return CroStatus::Codes::kOk;
+        });
+    EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
+        .WillOnce([&saved_decrypt_cb](Decryptor::StreamType stream_type,
+                                      scoped_refptr<DecoderBuffer> encrypted,
+                                      Decryptor::DecryptCB decrypt_cb) {
+          saved_decrypt_cb =
+              base::BindPostTaskToCurrentDefault(std::move(decrypt_cb));
+        });
+  }
+  decoder_->Decode(encrypted_buffer_,
+                   base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
+                                  base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(
+      reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()));
+  testing::Mock::VerifyAndClearExpectations(&decryptor_);
+
+  // Now we invoke the CDM callback to indicate there is a new key available.
+  event_callbacks_.Notify(CdmContext::Event::kHasAdditionalUsableKey);
+  task_environment_.RunUntilIdle();
+
+  // Now we have the decryptor callback return with kNoKey which should then
+  // cause another call into the decryptor which we will have succeed and then
+  // that should go through decoding. This should not invoke the call to attach
+  // a secure buffer, but after it's done decoding it should invoke the call to
+  // release the secure buffer.
+  {
+    InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(_))
+        .Times(0);
+    EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
+        .WillOnce([this](Decryptor::StreamType stream_type,
+                         scoped_refptr<DecoderBuffer> encrypted,
+                         Decryptor::DecryptCB decrypt_cb) {
+          std::move(decrypt_cb).Run(Decryptor::kSuccess, transcrypted_buffer_);
+        });
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                Decode(transcrypted_buffer_, _))
+        .WillOnce([](scoped_refptr<DecoderBuffer> transcrypted,
+                     VideoDecoderMixin::DecodeCB decode_cb) {
+          std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+        });
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                ReleaseSecureBuffer(kFakeSecureHandle))
+        .Times(1);
+    EXPECT_CALL(*this,
+                OnDecodeDone(MatchesStatusCode(DecoderStatus::Codes::kOk)));
+  }
+  EXPECT_CALL(*this, OnWaiting(_)).Times(0);
+  std::move(saved_decrypt_cb).Run(Decryptor::kNoKey, nullptr);
+  task_environment_.RunUntilIdle();
+}
+
 // Verifies that if we don't have the key during transcrypt, the WaitingCB is
 // invoked and then it retries again when we notify it of the new key.
 TEST_F(VideoDecoderPipelineTest, TranscryptNoKeyWaitRetry) {
@@ -611,6 +705,9 @@ TEST_F(VideoDecoderPipelineTest, TranscryptNoKeyWaitRetry) {
   // is no key. This should also invoke the WaitingCB.
   {
     InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
     EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
         .WillOnce([](Decryptor::StreamType stream_type,
                      scoped_refptr<DecoderBuffer> encrypted,
@@ -623,6 +720,8 @@ TEST_F(VideoDecoderPipelineTest, TranscryptNoKeyWaitRetry) {
                    base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
                                   base::Unretained(this)));
   task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(
+      reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()));
   testing::Mock::VerifyAndClearExpectations(&decryptor_);
   testing::Mock::VerifyAndClearExpectations(this);
 
@@ -631,6 +730,9 @@ TEST_F(VideoDecoderPipelineTest, TranscryptNoKeyWaitRetry) {
   // complete the decode operation.
   {
     InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
     EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
         .WillOnce([this](Decryptor::StreamType stream_type,
                          scoped_refptr<DecoderBuffer> encrypted,
@@ -654,12 +756,31 @@ TEST_F(VideoDecoderPipelineTest, TranscryptError) {
   InitializeForTranscrypt();
   {
     InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kOk));
     EXPECT_CALL(decryptor_, Decrypt(Decryptor::kVideo, encrypted_buffer_, _))
         .WillOnce([](Decryptor::StreamType stream_type,
                      scoped_refptr<DecoderBuffer> encrypted,
                      Decryptor::DecryptCB decrypt_cb) {
           std::move(decrypt_cb).Run(Decryptor::kError, nullptr);
         });
+    EXPECT_CALL(*this,
+                OnDecodeDone(MatchesStatusCode(DecoderStatus::Codes::kFailed)));
+  }
+  decoder_->Decode(encrypted_buffer_,
+                   base::BindOnce(&VideoDecoderPipelineTest::OnDecodeDone,
+                                  base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VideoDecoderPipelineTest, SecureBufferFailure) {
+  InitializeForTranscrypt();
+  {
+    InSequence sequence;
+    EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()),
+                AttachSecureBuffer(encrypted_buffer_))
+        .WillOnce(Return(CroStatus::Codes::kUnableToAllocateSecureBuffer));
     EXPECT_CALL(*this,
                 OnDecodeDone(MatchesStatusCode(DecoderStatus::Codes::kFailed)));
   }
