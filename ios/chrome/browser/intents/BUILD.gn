@@ -1,0 +1,16 @@
+source_set("intents_donation_helper") {
+  sources = [
+    "intents_donation_helper.h",
+    "intents_donation_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/common/intents",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Intents.framework",
+    "Foundation.framework",
+  ]
+}

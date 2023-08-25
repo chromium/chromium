@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
-#import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -209,25 +209,7 @@ void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!browser_state_->IsOffTheRecord() &&
       (log->input_type == metrics::OmniboxInputType::QUERY ||
        log->input_type == metrics::OmniboxInputType::UNKNOWN)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(^{
-          SearchInChromeIntent* searchInChromeIntent =
-              [[SearchInChromeIntent alloc] init];
-
-          // SiriKit requires the intent parameter to be set to a non-empty
-          // string in order to accept the intent donation. Set it to a single
-          // space, to be later trimmed by the intent handler, which will result
-          // in the shortcut being treated as if no search phrase was supplied.
-          searchInChromeIntent.searchPhrase = @" ";
-          searchInChromeIntent.suggestedInvocationPhrase =
-              l10n_util::GetNSString(
-                  IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
-          INInteraction* interaction =
-              [[INInteraction alloc] initWithIntent:searchInChromeIntent
-                                           response:nil];
-          [interaction donateInteractionWithCompletion:nil];
-        }));
+    [IntentDonationHelper donateIntent:INTENT_SEARCH_IN_CHROME];
   }
 
   engagement_tracker_->NotifyEvent(
