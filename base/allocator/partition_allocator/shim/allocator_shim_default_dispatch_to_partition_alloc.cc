@@ -237,35 +237,10 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
 
 namespace allocator_shim::internal {
 
-namespace {
-#if BUILDFLAG(IS_APPLE)
-unsigned int g_alloc_flags = 0;
-#else
-constexpr unsigned int g_alloc_flags = 0;
-#endif
-}  // namespace
-
-void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
-#if BUILDFLAG(IS_APPLE)
-  // We generally prefer to always crash rather than returning nullptr for
-  // OOM. However, on some macOS releases, we have to locally allow it due to
-  // weirdness in OS code. See https://crbug.com/654695 for details.
-  //
-  // Apple only since it's not needed elsewhere, and there is a performance
-  // penalty.
-
-  if (value) {
-    g_alloc_flags = 0;
-  } else {
-    g_alloc_flags = partition_alloc::AllocFlags::kReturnNull;
-  }
-#endif
-}
-
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
-      g_alloc_flags, size, partition_alloc::PartitionPageSize());
+      0, size, partition_alloc::PartitionPageSize());
 }
 
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
@@ -273,7 +248,7 @@ void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
-      partition_alloc::AllocFlags::kReturnNull | g_alloc_flags, size,
+      partition_alloc::AllocFlags::kReturnNull, size,
       partition_alloc::PartitionPageSize());
 }
 
@@ -285,7 +260,7 @@ void* PartitionCalloc(const AllocatorDispatch*,
   const size_t total =
       partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
   return Allocator()->AllocWithFlagsNoHooks(
-      partition_alloc::AllocFlags::kZeroFill | g_alloc_flags, total,
+      partition_alloc::AllocFlags::kZeroFill, total,
       partition_alloc::PartitionPageSize());
 }
 
@@ -359,8 +334,8 @@ void* PartitionRealloc(const AllocatorDispatch*,
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-  return Allocator()->ReallocWithFlags(
-      partition_alloc::AllocFlags::kNoHooks | g_alloc_flags, address, size, "");
+  return Allocator()->ReallocWithFlags(partition_alloc::AllocFlags::kNoHooks,
+                                       address, size, "");
 }
 
 #if BUILDFLAG(PA_IS_CAST_ANDROID)

@@ -81,11 +81,6 @@ namespace allocator_shim {
 
 void SetCallNewHandlerOnMallocFailure(bool value) {
   g_call_new_handler_on_malloc_failure = value;
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  allocator_shim::internal::PartitionAllocSetCallNewHandlerOnMallocFailure(
-      value);
-#endif
 }
 
 void* UncheckedAlloc(size_t size) {

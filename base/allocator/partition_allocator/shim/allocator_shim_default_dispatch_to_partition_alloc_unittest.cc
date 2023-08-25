@@ -185,22 +185,6 @@ TEST(PartitionAllocAsMalloc, Alignment) {
                     alignof(partition_alloc::PartitionRoot));
 }
 
-// crbug.com/1297945
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
-TEST(PartitionAllocAsMalloc, DisableCrashOnOom) {
-  PartitionAllocSetCallNewHandlerOnMallocFailure(false);
-  // Smaller than the max size to avoid overflow checks with padding.
-  void* ptr =
-      PartitionMalloc(nullptr,
-                      std::numeric_limits<size_t>::max() -
-                          10 * partition_alloc::internal::base::GetPageSize(),
-                      nullptr);
-  // Should not crash.
-  EXPECT_FALSE(ptr);
-  PartitionAllocSetCallNewHandlerOnMallocFailure(true);
-}
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
-
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // BUILDFLAG(USE_PARTITION_ALLOC)

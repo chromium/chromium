@@ -11,8 +11,6 @@
 
 namespace allocator_shim::internal {
 
-void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value);
-
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocMalloc {
  public:
   // Returns true if ConfigurePartitions() has completed, meaning that the
