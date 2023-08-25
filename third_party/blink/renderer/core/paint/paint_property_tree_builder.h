@@ -186,6 +186,10 @@ struct PaintPropertyTreeBuilderContext final {
       default;
   ~PaintPropertyTreeBuilderContext();
 
+  // TODO(paint-dev): With the removal of legacy block fragmentation support,
+  // there'll only ever be one entry in this vector.
+  // PaintPropertyTreeBuilderFragmentContext should be folded into
+  // PaintPropertyTreeBuilderContext.
   HeapVector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
 
   const LayoutObject* container_for_absolute_position = nullptr;

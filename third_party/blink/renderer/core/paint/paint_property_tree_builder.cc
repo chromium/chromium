@@ -2828,14 +2828,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   if (!pre_paint_info_) {
     if (object_.IsFloating() && !object_.IsInLayoutNGInlineFormattingContext())
       context_.current.paint_offset = context_.paint_offset_for_float;
-
-    // Multicolumn spanners are painted starting at the multicolumn container
-    // (but still inherit properties in layout-tree order) so reset the paint
-    // offset.
-    if (object_.IsColumnSpanAll()) {
-      context_.current.paint_offset =
-          object_.Container()->FirstFragment().PaintOffset();
-    }
   }
 
   if (object_.IsBoxModelObject()) {
@@ -3415,16 +3407,14 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
     builder.UpdateForSelf();
     properties_changed_.Merge(builder.PropertiesChanged());
   } else {
+    DCHECK_EQ(context_.fragments.size(), 1u);
     auto* fragment_data = &object_.GetMutableForPainting().FirstFragment();
-    for (auto& fragment_context : context_.fragments) {
-      FragmentPaintPropertyTreeBuilder builder(
-          object_, /* pre_paint_info */ nullptr, context_, fragment_context,
-          *fragment_data);
-      builder.UpdateForSelf();
-      properties_changed_.Merge(builder.PropertiesChanged());
-      fragment_data = fragment_data->NextFragment();
-    }
-    DCHECK(!fragment_data);
+    auto& fragment_context = context_.fragments[0];
+    FragmentPaintPropertyTreeBuilder builder(
+        object_, /* pre_paint_info */ nullptr, context_, fragment_context,
+        *fragment_data);
+    builder.UpdateForSelf();
+    properties_changed_.Merge(builder.PropertiesChanged());
   }
 
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
@@ -3484,26 +3474,20 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   // For now, only consider single fragment elements as possible isolation
   // boundaries.
   // TODO(crbug.com/890932): See if this is needed.
-  bool is_isolated = context_.fragments.size() == 1u;
-  for (auto& fragment_context : context_.fragments) {
-    FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
-                                             fragment_context, *fragment_data);
-    // The element establishes an isolation boundary if it has isolation nodes
-    // before and after updating the children. In other words, if it didn't have
-    // isolation nodes previously then we still want to do a subtree walk. If it
-    // now doesn't have isolation nodes, then of course it is also not isolated.
-    is_isolated &= builder.HasIsolationNodes();
-    builder.UpdateForChildren();
-    is_isolated &= builder.HasIsolationNodes();
+  bool is_isolated = true;
+  DCHECK_EQ(context_.fragments.size(), 1u);
+  auto& fragment_context = context_.fragments[0];
+  FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
+                                           fragment_context, *fragment_data);
+  // The element establishes an isolation boundary if it has isolation nodes
+  // before and after updating the children. In other words, if it didn't have
+  // isolation nodes previously then we still want to do a subtree walk. If it
+  // now doesn't have isolation nodes, then of course it is also not isolated.
+  is_isolated &= builder.HasIsolationNodes();
+  builder.UpdateForChildren();
+  is_isolated &= builder.HasIsolationNodes();
 
-    properties_changed_.Merge(builder.PropertiesChanged());
-    fragment_data = fragment_data->NextFragment();
-  }
-
-  // With NG fragment traversal we were supplied with the right FragmentData by
-  // the caller, and we only ran one lap in the loop above. Whether or not there
-  // are more FragmentData objects following is irrelevant then.
-  DCHECK(pre_paint_info_ || !fragment_data);
+  properties_changed_.Merge(builder.PropertiesChanged());
 
   if (object_.CanContainAbsolutePositionObjects())
     context_.container_for_absolute_position = &object_;

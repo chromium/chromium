@@ -269,28 +269,21 @@ bool PaintInvalidator::InvalidatePaint(
 
     object.InvalidatePaint(context);
   } else {
-    unsigned tree_builder_index = 0;
+    DCHECK(!object.IsFragmented());
 
-    for (auto* fragment_data = &object.GetMutableForPainting().FirstFragment();
-         fragment_data;
-         fragment_data = fragment_data->NextFragment(), tree_builder_index++) {
-      context.fragment_data = fragment_data;
+    auto* fragment_data = &object.GetMutableForPainting().FirstFragment();
+    context.fragment_data = fragment_data;
 
-      DCHECK(!tree_builder_context ||
-             tree_builder_index < tree_builder_context->fragments.size());
-
-      if (tree_builder_context) {
-        const auto& fragment_tree_builder_context =
-            tree_builder_context->fragments[tree_builder_index];
-        UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
-        UpdateLayoutShiftTracking(object, fragment_tree_builder_context,
-                                  context);
-      } else {
-        context.old_paint_offset = fragment_data->PaintOffset();
-      }
-
-      object.InvalidatePaint(context);
+    if (tree_builder_context) {
+      const auto& fragment_tree_builder_context =
+          tree_builder_context->fragments[0];
+      UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
+      UpdateLayoutShiftTracking(object, fragment_tree_builder_context, context);
+    } else {
+      context.old_paint_offset = fragment_data->PaintOffset();
     }
+
+    object.InvalidatePaint(context);
   }
 
   auto reason = static_cast<const DisplayItemClient&>(object)
