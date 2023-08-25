@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/display/projecting_observer.h"
 #include "ash/login_status.h"
 #include "ash/root_window_controller.h"
@@ -18,6 +19,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/lock_state_observer.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/scoped_multi_source_observation.h"
@@ -256,6 +258,19 @@ PowerEventObserver::PowerEventObserver()
 
   if (Shell::Get()->session_controller()->CanLockScreen())
     lock_on_suspend_usage_ = std::make_unique<LockOnSuspendUsage>();
+
+  const std::string flag_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kDeferExternalDisplayTimeout);
+  if (!flag_value.empty()) {
+    int seconds = -1;
+    if (base::StringToInt(flag_value, &seconds) && seconds > 0) {
+      defer_external_display_timeout_s_ = seconds;
+    } else {
+      LOG(WARNING) << "Ignoring bad value \"" << flag_value << "\" in --"
+                   << switches::kDeferExternalDisplayTimeout;
+    }
+  }
 }
 
 PowerEventObserver::~PowerEventObserver() {
@@ -369,6 +384,11 @@ void PowerEventObserver::LidEventReceived(
 }
 
 void PowerEventObserver::SetIsProjecting(bool is_projecting) {
+  // If we know we're projecting successfully, we no longer
+  // need to wait for external displays.
+  if (is_projecting) {
+    wait_for_external_display_timer_.Stop();
+  }
   MaybeLockOnLidClose(is_projecting);
 }
 
@@ -382,14 +402,15 @@ void PowerEventObserver::MaybeLockOnLidClose(bool is_projecting) {
   if (lid_state_ == chromeos::PowerManagerClient::LidState::CLOSED &&
       lock_state_ == LockState::kUnlocked && !is_projecting &&
       controller->ShouldLockScreenAutomatically() &&
-      controller->CanLockScreen()) {
+      controller->CanLockScreen() &&
+      !wait_for_external_display_timer_.IsRunning()) {
     VLOG(1) << "Screen locked due to lid close";
     lock_state_ = LockState::kLocking;
     Shell::Get()->lock_state_controller()->LockWithoutAnimation();
   }
 }
 
-void PowerEventObserver::OnLoginStatusChanged(LoginStatus) {
+void PowerEventObserver::OnLoginStatusChanged(LoginStatus login_status) {
   VLOG(1) << "PowerEventObserver::OnLoginStatusChanged";
   // Bail if usage tracker is already created.
   if (lock_on_suspend_usage_)
@@ -398,6 +419,11 @@ void PowerEventObserver::OnLoginStatusChanged(LoginStatus) {
   if (!ash::Shell::Get()->session_controller()->CanLockScreen())
     return;
   lock_on_suspend_usage_ = std::make_unique<LockOnSuspendUsage>();
+
+  if (login_status != LoginStatus::NOT_LOGGED_IN &&
+      login_status != LoginStatus::LOCKED) {
+    StartExternalDisplayTimer();
+  }
 }
 
 void PowerEventObserver::OnLockStateChanged(bool locked) {
@@ -432,6 +458,8 @@ void PowerEventObserver::OnLockStateChanged(bool locked) {
       } else if (block_suspend_token_) {
         StopCompositingAndSuspendDisplays();
       }
+    } else {
+      StartExternalDisplayTimer();
     }
   }
   VLOG(1) << "PowerEventObserver::OnLockStateChanged finished, new lock_state="
@@ -482,6 +510,18 @@ void PowerEventObserver::OnCompositorsReadyForSuspend() {
 
   if (block_suspend_token_)
     StopCompositingAndSuspendDisplays();
+}
+
+void PowerEventObserver::StartExternalDisplayTimer() {
+  // If the Lid is closed during a unlock/login, give a bit more time for
+  // displays to re-enumerate (as a result of a DisplayPort -> Thunderbolt mode
+  // switch).
+  if (lid_state_ == chromeos::PowerManagerClient::LidState::CLOSED &&
+      defer_external_display_timeout_s_ > 0) {
+    wait_for_external_display_timer_.Start(
+        FROM_HERE, base::Seconds(defer_external_display_timeout_s_),
+        base::DoNothing());
+  }
 }
 
 }  // namespace ash

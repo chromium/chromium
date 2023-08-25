@@ -337,6 +337,10 @@ const char kDefaultWallpaperLarge[] = "default-wallpaper-large";
 // file).
 const char kDefaultWallpaperSmall[] = "default-wallpaper-small";
 
+// Interval in seconds to wait for a display to reconnect while unlocking or
+// logging in with a closed lid.
+const char kDeferExternalDisplayTimeout[] = "defer-external-display-timeout";
+
 // Test Organization Unit (OU) user to use for demo mode. Only pass the part
 // before "@cros-demo-mode.com".
 const char kDemoModeEnrollingUsername[] = "demo-mode-enrolling-username";
