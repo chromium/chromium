@@ -74,7 +74,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/screen_ai/screen_ai_downloader.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/site_isolation/prefs_observer.h"
 #include "chrome/browser/ssl/secure_origin_prefs_observer.h"
@@ -227,9 +226,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/chromeos_telemetry_extensions_browser_api_provider.h"
 #include "chrome/browser/hid/hid_pinned_notification.h"
+#include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 #include "chrome/browser/usb/usb_pinned_notification.h"
 #elif !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_status_icon.h"
+#include "chrome/browser/screen_ai/screen_ai_downloader_non_chromeos.h"
 #include "chrome/browser/usb/usb_status_icon.h"
 #endif
 
@@ -1240,7 +1241,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  screen_ai_download_ = std::make_unique<screen_ai::ScreenAIDownloader>();
+  screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
 #endif
 
   base::FilePath user_data_dir;

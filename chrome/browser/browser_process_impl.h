@@ -86,7 +86,7 @@ class SodaInstallerImplChromeOS;
 }  // namespace speech
 
 namespace screen_ai {
-class ScreenAIDownloader;
+class ScreenAIInstallState;
 }  // namespace screen_ai
 
 // Real implementation of BrowserProcess that creates and returns the services.
@@ -415,7 +415,7 @@ class BrowserProcessImpl : public BrowserProcess,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Used to download Screen AI on demand and keep track of the library
   // availability.
-  std::unique_ptr<screen_ai::ScreenAIDownloader> screen_ai_download_;
+  std::unique_ptr<screen_ai::ScreenAIInstallState> screen_ai_download_;
 #endif
 
   std::unique_ptr<BrowserProcessPlatformPart> platform_part_;

@@ -6,12 +6,12 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/screen_ai/screen_ai_downloader.h"
+#include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crosapi {
 
-class FakeScreenAIDownloader : public screen_ai::ScreenAIDownloader {
+class FakeScreenAIDownloader : public screen_ai::ScreenAIDownloaderChromeOS {
  public:
   void SetLastUsageTime() override{};
   void DownloadComponentInternal() override {

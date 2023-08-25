@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_
 #define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -46,6 +47,10 @@ class ScreenAIInstallState {
   virtual ~ScreenAIInstallState();
 
   static ScreenAIInstallState* GetInstance();
+
+  // This function is implemented in `ScreenAIDownloaderChromeOS` and
+  // `ScreenAIDownloaderNonChromeOS`.
+  static std::unique_ptr<ScreenAIInstallState> Create();
 
   // Verifies that the library version is compatible with current Chromium
   // version. Will be used to avoid accepting the library if a newer version is
