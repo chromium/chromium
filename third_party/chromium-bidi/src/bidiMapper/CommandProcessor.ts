@@ -28,7 +28,7 @@ import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
-import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+import {OutgoingMessage} from './OutgoingMessage.js';
 import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/BrowsingContextProcessor.js';
@@ -48,7 +48,7 @@ export const enum CommandProcessorEvents {
 
 type CommandProcessorEventsMap = {
   [CommandProcessorEvents.Response]: {
-    message: Promise<Result<OutgoingBidiMessage>>;
+    message: Promise<Result<OutgoingMessage>>;
     event: string;
   };
 };
@@ -291,15 +291,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       } satisfies ChromiumBidi.CommandResponse;
 
       this.emit(CommandProcessorEvents.Response, {
-        message: OutgoingBidiMessage.createResolved(response, command.channel),
+        message: OutgoingMessage.createResolved(response, command.channel),
         event: command.method,
       });
     } catch (e) {
       if (e instanceof Exception) {
-        const errorResponse = e;
         this.emit(CommandProcessorEvents.Response, {
-          message: OutgoingBidiMessage.createResolved(
-            errorResponse.toErrorResponse(command.id),
+          message: OutgoingMessage.createResolved(
+            e.toErrorResponse(command.id),
             command.channel
           ),
           event: command.method,
@@ -308,7 +307,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         const error = e as Error;
         this.#logger?.(LogType.bidi, error);
         this.emit(CommandProcessorEvents.Response, {
-          message: OutgoingBidiMessage.createResolved(
+          message: OutgoingMessage.createResolved(
             new UnknownErrorException(
               error.message,
               error.stack

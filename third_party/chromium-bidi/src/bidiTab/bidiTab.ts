@@ -19,7 +19,7 @@
 
 import {
   BidiServer,
-  OutgoingBidiMessage,
+  OutgoingMessage,
   type BidiTransport,
 } from '../bidiMapper/bidiMapper.js';
 import {CdpConnection} from '../cdp/cdpConnection.js';
@@ -71,7 +71,7 @@ void (async () => {
   log(LogType.debug, 'Launched');
 
   bidiServer.emitOutgoingMessage(
-    OutgoingBidiMessage.createResolved({
+    OutgoingMessage.createResolved({
       launched: true,
     }),
     'launched'

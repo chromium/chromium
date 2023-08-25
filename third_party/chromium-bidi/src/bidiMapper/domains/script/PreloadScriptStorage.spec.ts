@@ -38,15 +38,15 @@ describe('PreloadScriptStorage', () => {
   });
 
   it('initial state', () => {
-    expect(preloadScriptStorage.findPreloadScripts()).to.be.empty;
-    expect(preloadScriptStorage.findPreloadScripts({})).to.be.empty;
+    expect(preloadScriptStorage.find()).to.be.empty;
+    expect(preloadScriptStorage.find({})).to.be.empty;
     expect(
-      preloadScriptStorage.findPreloadScripts({
+      preloadScriptStorage.find({
         id: '',
       })
     ).to.be.empty;
     expect(
-      preloadScriptStorage.findPreloadScripts({
+      preloadScriptStorage.find({
         targetId: '',
       })
     ).to.be.empty;
@@ -56,10 +56,10 @@ describe('PreloadScriptStorage', () => {
     const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
     const preloadScript2 = createPreloadScript(MOCKED_UUID_2);
 
-    preloadScriptStorage.addPreloadScript(preloadScript1);
-    preloadScriptStorage.addPreloadScript(preloadScript2);
+    preloadScriptStorage.add(preloadScript1);
+    preloadScriptStorage.add(preloadScript2);
 
-    expect(preloadScriptStorage.findPreloadScripts()).to.deep.equal([
+    expect(preloadScriptStorage.find()).to.deep.equal([
       preloadScript1,
       preloadScript2,
     ]);
@@ -68,18 +68,16 @@ describe('PreloadScriptStorage', () => {
   it(`remove non-existing BiDi id`, () => {
     const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
     const preloadScript2 = createPreloadScript(MOCKED_UUID_2);
-    preloadScriptStorage.addPreloadScript(preloadScript1);
-    preloadScriptStorage.addPreloadScript(preloadScript2);
+    preloadScriptStorage.add(preloadScript1);
+    preloadScriptStorage.add(preloadScript2);
 
-    const preloadScripts = preloadScriptStorage.findPreloadScripts();
+    const preloadScripts = preloadScriptStorage.find();
 
-    preloadScriptStorage.removeBiDiPreloadScripts({
+    preloadScriptStorage.remove({
       id: `${MOCKED_UUID_1}_NON_EXISTING`,
     });
 
-    expect(preloadScriptStorage.findPreloadScripts()).to.be.deep.equal(
-      preloadScripts
-    );
+    expect(preloadScriptStorage.find()).to.be.deep.equal(preloadScripts);
   });
 
   [
@@ -94,19 +92,17 @@ describe('PreloadScriptStorage', () => {
   ].forEach(({filterDescription, filter}) => {
     it(`find preload scripts by ${filterDescription}`, () => {
       const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
-      preloadScriptStorage.addPreloadScript(preloadScript1);
+      preloadScriptStorage.add(preloadScript1);
 
-      expect(preloadScriptStorage.findPreloadScripts(filter)).to.deep.equal([
-        preloadScript1,
-      ]);
+      expect(preloadScriptStorage.find(filter)).to.deep.equal([preloadScript1]);
     });
 
     it(`remove preload scripts by ${filterDescription}`, () => {
       const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
-      preloadScriptStorage.addPreloadScript(preloadScript1);
-      preloadScriptStorage.removeBiDiPreloadScripts(filter);
+      preloadScriptStorage.add(preloadScript1);
+      preloadScriptStorage.remove(filter);
 
-      expect(preloadScriptStorage.findPreloadScripts(filter)).to.be.empty;
+      expect(preloadScriptStorage.find(filter)).to.be.empty;
     });
   });
 

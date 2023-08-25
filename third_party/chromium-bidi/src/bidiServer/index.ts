@@ -31,8 +31,8 @@ import {
 import type {ITransport} from '../utils/transport.js';
 
 import {BidiServerRunner, debugInfo} from './bidiServerRunner.js';
-import {MapperServer} from './mapperServer.js';
-import mapperReader from './mapperReader.js';
+import {MapperServer} from './MapperServer.js';
+import {readMapperTabFile} from './reader.js';
 
 function parseArguments(): {
   channel: ChromeReleaseChannel;
@@ -160,8 +160,8 @@ async function onNewBidiConnectionOpen(
     CDP_WEBSOCKET_ENDPOINT_REGEX
   );
 
-  // 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
-  const bidiMapperScript = await mapperReader();
+  // 2. Get `BiDi-CDP` mapper JS binaries using `readMapperTabFile`.
+  const bidiMapperScript = await readMapperTabFile();
 
   // 3. Run `BiDi-CDP` mapper in launched browser.
   const mapperServer = await MapperServer.create(

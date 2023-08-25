@@ -200,13 +200,13 @@ export class CdpTarget {
    */
   getChannels(): ChannelProxy[] {
     return this.#preloadScriptStorage
-      .findPreloadScripts()
+      .find()
       .flatMap((script) => script.channels);
   }
 
   /** Loads all top-level preload scripts. */
   async #initAndEvaluatePreloadScripts() {
-    for (const script of this.#preloadScriptStorage.findPreloadScripts()) {
+    for (const script of this.#preloadScriptStorage.find()) {
       await script.initInTarget(this, true);
     }
   }

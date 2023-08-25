@@ -28,5 +28,5 @@ export type {
 export type {ICdpClient, ICdpClient as CdpClient} from '../cdp/cdpClient.js';
 export {EventEmitter} from '../utils/EventEmitter.js';
 export type {IBidiTransport as BidiTransport} from './BidiTransport.js';
-export {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+export {OutgoingMessage} from './OutgoingMessage.js';
 export type {IBidiParser as BidiParser} from './BidiParser.js';

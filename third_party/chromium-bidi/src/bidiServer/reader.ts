@@ -18,6 +18,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-export default async function read(): Promise<string> {
+export async function readMapperTabFile(): Promise<string> {
   return fs.readFile(path.join(__dirname, '../../iife/mapperTab.js'), 'utf8');
 }

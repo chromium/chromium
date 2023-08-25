@@ -25,7 +25,7 @@ import {Buffer} from '../../../utils/buffer.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
 import type {Result} from '../../../utils/result.js';
 import type {BidiServer} from '../../BidiServer.js';
-import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
+import {OutgoingMessage} from '../../OutgoingMessage.js';
 
 import {SubscriptionManager} from './SubscriptionManager.js';
 
@@ -134,7 +134,7 @@ export class EventManager {
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
       this.#bidiServer.emitOutgoingMessage(
-        OutgoingBidiMessage.createFromPromise(event, channel),
+        OutgoingMessage.createFromPromise(event, channel),
         eventName
       );
       this.#markEventSent(eventWrapper, channel, eventName);
@@ -168,7 +168,7 @@ export class EventManager {
         )) {
           // The order of the events is important.
           this.#bidiServer.emitOutgoingMessage(
-            OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel),
+            OutgoingMessage.createFromPromise(eventWrapper.event, channel),
             eventName
           );
           this.#markEventSent(eventWrapper, channel, eventName);

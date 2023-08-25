@@ -25,7 +25,7 @@ import type {Result} from '../utils/result.js';
 import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
-import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+import type {OutgoingMessage} from './OutgoingMessage.js';
 import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
 import {RealmStorage} from './domains/script/RealmStorage.js';
@@ -35,7 +35,7 @@ type BidiServerEvent = {
 };
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
-  #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
+  #messageQueue: ProcessingQueue<OutgoingMessage>;
   #transport: IBidiTransport;
   #commandProcessor: CommandProcessor;
   #browsingContextStorage = new BrowsingContextStorage();
@@ -47,7 +47,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     });
   };
 
-  #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
+  #processOutgoingMessage = async (messageEntry: OutgoingMessage) => {
     const message = messageEntry.message;
 
     if (messageEntry.channel !== null) {
@@ -66,7 +66,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   ) {
     super();
     this.#logger = logger;
-    this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
+    this.#messageQueue = new ProcessingQueue<OutgoingMessage>(
       this.#processOutgoingMessage,
       this.#logger
     );
@@ -123,7 +123,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
    * Sends BiDi message.
    */
   emitOutgoingMessage(
-    messageEntry: Promise<Result<OutgoingBidiMessage>>,
+    messageEntry: Promise<Result<OutgoingMessage>>,
     event: string
   ): void {
     this.#messageQueue.add(messageEntry, event);

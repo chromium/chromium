@@ -51,7 +51,7 @@ export class ScriptProcessor {
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
     const preloadScript = new PreloadScript(params, this.#logger);
-    this.#preloadScriptStorage.addPreloadScript(preloadScript);
+    this.#preloadScriptStorage.add(preloadScript);
 
     const cdpTargets = new Set<CdpTarget>(
       this.#browsingContextStorage
@@ -71,7 +71,7 @@ export class ScriptProcessor {
   ): Promise<EmptyResult> {
     const bidiId = params.script;
 
-    const scripts = this.#preloadScriptStorage.findPreloadScripts({
+    const scripts = this.#preloadScriptStorage.find({
       id: bidiId,
     });
 
@@ -83,7 +83,7 @@ export class ScriptProcessor {
 
     await Promise.all(scripts.map((script) => script.remove()));
 
-    this.#preloadScriptStorage.removeBiDiPreloadScripts({
+    this.#preloadScriptStorage.remove({
       id: bidiId,
     });
 

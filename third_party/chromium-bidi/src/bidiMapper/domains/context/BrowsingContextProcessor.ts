@@ -371,7 +371,7 @@ export class BrowsingContextProcessor {
     this.#browsingContextStorage.findContext(contextId)?.dispose();
 
     this.#preloadScriptStorage
-      .findPreloadScripts({targetId: contextId})
+      .find({targetId: contextId})
       .map((preloadScript) => preloadScript.dispose(contextId));
   }
 

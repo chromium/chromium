@@ -18,7 +18,7 @@
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import type {Result} from '../utils/result.js';
 
-export class OutgoingBidiMessage {
+export class OutgoingMessage {
   readonly #message: ChromiumBidi.Message;
   readonly #channel: string | null;
 
@@ -33,12 +33,12 @@ export class OutgoingBidiMessage {
   static createFromPromise(
     messagePromise: Promise<Result<ChromiumBidi.Message>>,
     channel: string | null
-  ): Promise<Result<OutgoingBidiMessage>> {
+  ): Promise<Result<OutgoingMessage>> {
     return messagePromise.then((message) => {
       if (message.kind === 'success') {
         return {
           kind: 'success',
-          value: new OutgoingBidiMessage(message.value, channel),
+          value: new OutgoingMessage(message.value, channel),
         };
       }
       return message;
@@ -48,10 +48,10 @@ export class OutgoingBidiMessage {
   static createResolved(
     message: ChromiumBidi.Message,
     channel?: string | null
-  ): Promise<Result<OutgoingBidiMessage>> {
+  ): Promise<Result<OutgoingMessage>> {
     return Promise.resolve({
       kind: 'success',
-      value: new OutgoingBidiMessage(message, channel),
+      value: new OutgoingMessage(message, channel),
     });
   }
 
