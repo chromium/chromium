@@ -193,6 +193,7 @@ if (enable_nocompile_tests) {
     test(target_name) {
       deps = invoker.deps + [ ":$nocompile_target" ]
       sources = get_target_outputs(":$nocompile_target")
+      forward_variables_from(invoker, [ "bundle_deps" ])
     }
   }
 }

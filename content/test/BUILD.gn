@@ -3347,6 +3347,10 @@ if (enable_nocompile_tests) {
       "//content/public/browser",
       "//testing/gtest",
     ]
+
+    if (is_ios) {
+      bundle_deps = [ ":content_shell_pak_bundle_data" ]
+    }
   }
 }
 

@@ -4104,6 +4104,7 @@
           'shards': 8,
         },
       },
+      'content_nocompile_tests': {},
       'content_unittests': {},
       'crashpad_tests': {},
       'crypto_unittests': {},
