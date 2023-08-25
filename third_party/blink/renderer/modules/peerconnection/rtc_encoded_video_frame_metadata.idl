@@ -27,18 +27,6 @@ dictionary RTCEncodedVideoFrameMetadata {
     unsigned short height;
     long spatialIndex;
     long temporalIndex;
-    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    sequence<RTCDecodeTargetIndication> decodeTargetIndications;
-    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    boolean isLastFrameInPicture;
-    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    unsigned short simulcastIdx;
-    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    RTCVideoCodecType codec;
-    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    RTCCodecSpecifics codecSpecifics;
-    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    RTCEncodedVideoFrameType frameType;
 
     // RTP related metadata
     unsigned long synchronizationSource;

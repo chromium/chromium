@@ -54,17 +54,12 @@ promise_test(async t => {
   clone.setMetadata(metadata);
  }, "setMetadata() does allow changes to frameId and dependencies without a flag");
 
-
-// TODO(crbug.com/1464855) : Add test for decodeTargetIndications and codecSpecifics.
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
   const result = await senderReader.read();
   const field_values = {
-    'frameType':'delta',
     'height':600,
-    'isLastFrameInPicture':false,
     'payloadType':17,
-    'simulcastIdx':3,
     'spatialIndex':4,
     'synchronizationSource':17,
     'temporalIndex':5,
@@ -77,22 +72,6 @@ promise_test(async t => {
     metadata[field] = field_values[field];
     assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"" + field + "\",");
   }
-  const codec_specific_field_values_vp8 = {
-    'beginningOfPartition':true,
-    'keyIdx':-2,
-    'layerSync':true,
-    'nonReference':true,
-    'partitionId':1,
-    'pictureId':17,
-    'temporalIdx':127,
-    'tl0PicIdx':-3
-  }
-  for (const field in codec_specific_field_values_vp8) {
-    const metadata = result.value.getMetadata();
-    const clone = result.value.clone();
-    metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
-    assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"codecSpecifics." + field + "\",");
-  }
 }, "setMetadata() does not allow changes to fields without a flag");
 
 promise_test(async t => {
@@ -100,36 +79,18 @@ promise_test(async t => {
   const result = await senderReader.read();
   const field_values = {
     'contributingSources':[13],
-    'decodeTargetIndications':['required'],
     'dependencies':[1],
     'frameId':2,
-    'frameType':'delta',
     'height':600,
-    'isLastFrameInPicture':false,
-    'simulcastIdx':3,
     'spatialIndex':4,
     'synchronizationSource':1234567,
     'temporalIndex':5,
     'width':800
-    // TODO(https://crbug.com/webrtc/14709): Support setting payloadType
-  }
-  const codec_specific_field_values_vp8 = {
-    'beginningOfPartition':true,
-    'keyIdx':-2,
-    'layerSync':true,
-    'nonReference':true,
-    'partitionId':1,
-    'pictureId':17,
-    'temporalIdx':127,
-    'tl0PicIdx':-3
   }
   const metadata = result.value.getMetadata();
   const clone = result.value.clone();
   for (const field in field_values) {
     metadata[field] = field_values[field];
-  }
-  for (const field in codec_specific_field_values_vp8) {
-    metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
   }
   clone.setMetadata(metadata);
   const cloneMetadata = clone.getMetadata();
@@ -139,9 +100,6 @@ promise_test(async t => {
     } else {
       assert_equals(cloneMetadata[field], field_values[field], field);
     }
-  }
-  for (const field in codec_specific_field_values_vp8) {
-    assert_equals(cloneMetadata.codecSpecifics[field], codec_specific_field_values_vp8[field], field);
   }
 }, "setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled");
 

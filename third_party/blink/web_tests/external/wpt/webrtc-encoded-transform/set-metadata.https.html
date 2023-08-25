@@ -35,38 +35,6 @@ promise_test(async t => {
                 'spatialIndex');
   assert_equals(cloneMetadata.temporalIndex, metadata.temporalIndex,
                 'temporalIndex');
-  assert_equals(cloneMetadata.frameType, metadata.frameType,
-                'frameType');
-  // RTCEncodedVideoFrameAdditionalMetadata-only fields.
-  assert_array_equals(cloneMetadata.decodeTargetIndications,
-                      metadata.decodeTargetIndications,
-                      'decodeTargetIndications');
-  assert_equals(cloneMetadata.isLastFrameInPicture,
-                metadata.isLastFrameInPicture, 'isLastFrameInPicture');
-  assert_equals(cloneMetadata.simulcastIdx, metadata.simulcastIdx,
-                'simulcastIdx');
-  assert_equals(cloneMetadata.codec, metadata.codec, 'codec');
-  // VP8-specifics.
-  assert_equals(cloneMetadata.codecSpecifics.nonReference,
-                metadata.codecSpecifics.nonReference,
-                'codecSpecifics.nonReference');
-  assert_equals(cloneMetadata.codecSpecifics.pictureId,
-                metadata.codecSpecifics.pictureId, 'codecSpecifics.pictureId');
-  assert_equals(cloneMetadata.codecSpecifics.tl0PicIdx,
-                metadata.codecSpecifics.tl0PicIdx, 'codecSpecifics.tl0PicIdx');
-  assert_equals(cloneMetadata.codecSpecifics.temporalIdx,
-                metadata.codecSpecifics.temporalIdx,
-                'codecSpecifics.temporalIdx');
-  assert_equals(cloneMetadata.codecSpecifics.layerSync,
-                metadata.codecSpecifics.layerSync, 'codecSpecifics.layerSync');
-  assert_equals(cloneMetadata.codecSpecifics.keyIdx,
-                metadata.codecSpecifics.keyIdx, 'codecSpecifics.keyIdx.');
-  assert_equals(cloneMetadata.codecSpecifics.partitionId,
-                metadata.codecSpecifics.partitionId,
-                'codecSpecifics.partitionId');
-  assert_equals(cloneMetadata.codecSpecifics.beginningOfPartition,
-                metadata.codecSpecifics.beginningOfPartition,
-                'codecSpecifics.beginningOfPartition');
   // RTP related metadata.
   // TODO(https://crbug.com/webrtc/14709): This information also needs to be
   // settable but isn't - the assertions only pass because clone() copies them
