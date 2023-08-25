@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerFolderShortcuts) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerCurrentDirectory) {
-  RunTestURL("state/reducers/current_directory_unittest.js");
+  RunTestURL("state/ducks/current_directory_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerNavigation) {

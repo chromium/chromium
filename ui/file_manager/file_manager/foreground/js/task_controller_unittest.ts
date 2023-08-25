@@ -19,7 +19,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {PropStatus, State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {changeDirectory} from '../../state/actions/current_directory.js';
+import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
 import {getEmptyState, getStore, waitForState} from '../../state/store.js';
 

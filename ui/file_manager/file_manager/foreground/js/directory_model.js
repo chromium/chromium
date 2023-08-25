@@ -18,7 +18,7 @@ import {PropStatus, SearchLocation, SearchOptions, State} from '../../externs/ts
 import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {changeDirectory} from '../../state/actions/current_directory.js';
+import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {updateSearch} from '../../state/ducks/search.js';
 import {getStore} from '../../state/store.js';
 

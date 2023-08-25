@@ -15,10 +15,9 @@ import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {Action, ActionType} from '../actions.js';
 import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from '../actions/all_entries.js';
+import {hasDlpDisabledFiles} from '../ducks/current_directory.js';
 import {driveRootEntryListKey, getVolumeTypesNestedInMyFiles, makeRemovableParentKey, myFilesEntryListKey, recentRootKey, removableGroupKey} from '../ducks/volumes.js';
 import {getEntry, getFileData, getStore} from '../store.js';
-
-import {hasDlpDisabledFiles} from './current_directory.js';
 
 /**
  * Schedules the routine to remove stale entries from `allEntries`.
@@ -308,7 +307,7 @@ export function cacheEntries(currentState: State, action: Action): State {
     }
   }
   if (action.type === ActionType.CHANGE_DIRECTORY) {
-    const entry = action.payload.newDirectory;
+    const entry = action.payload.to;
     if (!entry) {
       // Nothing to cache, just continue.
       return currentState;

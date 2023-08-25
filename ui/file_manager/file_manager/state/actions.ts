@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from './actions/all_entries.js';
-import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from './actions/current_directory.js';
 import {AddAndroidAppsAction} from './ducks/android_apps.js';
 import {UpdateBulkPinProgressAction} from './ducks/bulk_pinning.js';
+import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from './ducks/current_directory.js';
 import {UpdateDeviceConnectionStateAction} from './ducks/device.js';
 import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './ducks/folder_shortcuts.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './ducks/navigation.js';

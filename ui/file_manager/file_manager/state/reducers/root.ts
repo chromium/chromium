@@ -6,6 +6,7 @@ import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 import {androidAppsReducersMap} from '../ducks/android_apps.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
+import {currentDirectoryReducersMap} from '../ducks/current_directory.js';
 import {deviceReducersMap} from '../ducks/device.js';
 import {folderShortcutsReducersMap} from '../ducks/folder_shortcuts.js';
 import {navigationReducersMap} from '../ducks/navigation.js';
@@ -15,7 +16,6 @@ import {uiEntriesReducersMap} from '../ducks/ui_entries.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
-import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
 
 // Reducers map created from merging together each slice's exported reducersMap.
 const rootReducersMap = new Map([
@@ -28,6 +28,7 @@ const rootReducersMap = new Map([
   ...navigationReducersMap,
   ...preferencesReducersMap,
   ...deviceReducersMap,
+  ...currentDirectoryReducersMap,
 ]);
 
 /**
@@ -50,16 +51,8 @@ export function rootReducer(currentState: State, action: Action): State {
   }
 
   switch (action.type) {
-    case ActionType.CHANGE_DIRECTORY:
-      return changeDirectory(state, action);
-    case ActionType.CHANGE_SELECTION:
-      return updateSelection(state, action);
-    case ActionType.CHANGE_FILE_TASKS:
-      return updateFileTasks(state, action);
     case ActionType.CLEAR_STALE_CACHED_ENTRIES:
       return clearCachedEntries(state, action);
-    case ActionType.UPDATE_DIRECTORY_CONTENT:
-      return updateDirectoryContent(state, action);
     case ActionType.UPDATE_METADATA:
       return updateMetadata(state, action);
     case ActionType.ADD_CHILD_ENTRIES:

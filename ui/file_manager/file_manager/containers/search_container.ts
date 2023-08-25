@@ -12,7 +12,7 @@ import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions,
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
-import {changeDirectory} from '../state/actions/current_directory.js';
+import {changeDirectory} from '../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
 import {FileKey} from '../state/file_key.js';
 import {getStore, Store} from '../state/store.js';

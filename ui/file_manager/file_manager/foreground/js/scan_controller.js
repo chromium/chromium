@@ -6,7 +6,7 @@ import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Store} from '../../externs/ts/store.js';
-import {updateDirectoryContent} from '../../state/actions/current_directory.js';
+import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';

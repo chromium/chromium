@@ -12,7 +12,7 @@ import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {updateSelection} from '../../state/actions/current_directory.js';
+import {updateSelection} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';

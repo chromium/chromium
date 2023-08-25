@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,12 @@ import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {ActionType} from '../actions.js';
 import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
-import {changeDirectory, updateSelection} from '../actions/current_directory.js';
-import {fetchFileTasks} from '../actions_producers/current_directory.js';
+import {fetchFileTasks} from '../ducks/current_directory.js';
 import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, setUpFileManagerOnWindow, setupStore, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
+import {clearCachedEntries} from '../reducers/all_entries.js';
 import {getFilesData, Store} from '../store.js';
 
-import {clearCachedEntries} from './all_entries.js';
+import {changeDirectory, updateSelection} from './current_directory.js';
 
 
 let fileSystem: MockFileSystem;

@@ -5,7 +5,7 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {Store} from '../../externs/ts/store.js';
-import {updateDirectoryContent, updateSelection} from '../../state/actions/current_directory.js';
+import {updateDirectoryContent, updateSelection} from '../../state/ducks/current_directory.js';
 
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 
