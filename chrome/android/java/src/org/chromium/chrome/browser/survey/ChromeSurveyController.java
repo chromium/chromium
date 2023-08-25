@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -19,15 +18,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.hats.SurveyController;
 import org.chromium.chrome.browser.ui.hats.SurveyControllerProvider;
+import org.chromium.chrome.browser.ui.hats.SurveyThrottler;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -44,9 +41,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Class that controls if and when to show surveys. One instance of this class is associated with
@@ -56,7 +50,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class ChromeSurveyController {
     private static final String TAG = "ChromeSurveyCtrler";
-    private static final int DOWNLOAD_ATTEMPTS_HIST_NUM_BUCKETS = 20;
     @VisibleForTesting
     public static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
     @VisibleForTesting
@@ -70,41 +63,17 @@ public class ChromeSurveyController {
     private static boolean sForceUmaEnabledForTesting;
     private static boolean sMessageShown;
 
-    /**
-     * Reasons that the user was rejected from being selected for a survey
-     * Note: these values cannot change and must match the SurveyFilteringResult enum in enums.xml
-     * because they're written to logs.
-     */
-    @IntDef({FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED,
-            FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT,
-            FilteringResult.USER_ALREADY_SAMPLED_TODAY, FilteringResult.MAX_NUMBER_MISSING,
-            FilteringResult.ROLLED_NON_ZERO_NUMBER, FilteringResult.USER_SELECTED_FOR_SURVEY,
-            FilteringResult.FIRST_TIME_USER, FilteringResult.NUM_ENTRIES})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface FilteringResult {
-        int SURVEY_PROMPT_ALREADY_DISPLAYED = 0;
-        int FORCE_SURVEY_ON_COMMAND_PRESENT = 2;
-        int USER_ALREADY_SAMPLED_TODAY = 3;
-        int MAX_NUMBER_MISSING = 4;
-        int ROLLED_NON_ZERO_NUMBER = 5;
-        int USER_SELECTED_FOR_SURVEY = 6;
-        int FIRST_TIME_USER = 8;
-        // Number of entries
-        int NUM_ENTRIES = 9;
-    }
-
     private TabModelSelector mTabModelSelector;
     private Handler mLoggingHandler;
     private Tab mSurveyPromptTab;
     private TabModelSelectorObserver mTabModelObserver;
 
     private final String mTriggerId;
-    private final String mPrefKeyPromptDisplayed;
-    private final String mPrefKeyDownloadAttempts;
     private final @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
     private final MessageDispatcher mMessageDispatcher;
     private SurveyController mSurveyController;
+    private SurveyThrottler mSurveyThrottler;
     private @Nullable TabObserver mTabObserver;
     private @Nullable PauseResumeWithNativeObserver mLifecycleObserver;
 
@@ -113,13 +82,11 @@ public class ChromeSurveyController {
             @Nullable ActivityLifecycleDispatcher lifecycleDispatcher, Activity activity,
             MessageDispatcher messageDispatcher) {
         mTriggerId = triggerId;
-        mPrefKeyPromptDisplayed =
-                ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(mTriggerId);
-        mPrefKeyDownloadAttempts =
-                ChromePreferenceKeys.CHROME_SURVEY_DOWNLOAD_ATTEMPTS.createKey(mTriggerId);
         mLifecycleDispatcher = lifecycleDispatcher;
         mActivity = activity;
         mMessageDispatcher = messageDispatcher;
+        mSurveyThrottler = new SurveyThrottler(triggerId, 1f / getMaxNumber(),
+                ChromeSurveyController::isUMAEnabled, getMaxDownloadAttempt());
     }
 
     /**
@@ -148,6 +115,7 @@ public class ChromeSurveyController {
      *                         shown.
      */
     private void startDownload(Context context, TabModelSelector tabModelSelector) {
+        mSurveyThrottler.recordDownloadAttempted();
         mLoggingHandler = new Handler();
         mTabModelSelector = tabModelSelector;
 
@@ -311,7 +279,7 @@ public class ChromeSurveyController {
             recordSurveyPromptDisplayed();
         } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
             recordSurveyPromptDisplayed();
-            recordSurveyAccepted();
+            mSurveyThrottler.recordSurveyAccepted();
         }
     }
 
@@ -339,6 +307,10 @@ public class ChromeSurveyController {
         };
     }
 
+    private SurveyThrottler getThrottler() {
+        return mSurveyThrottler;
+    }
+
     /**
      * Shows the prompt if the passed in tab is fully loaded and interactable.
      * @param tab The tab to attach the survey info bar.
@@ -352,32 +324,6 @@ public class ChromeSurveyController {
             showSurveyPrompt(tab, siteId);
         }
         tab.removeObserver(observer);
-    }
-
-    /** @return If the survey info bar for this survey was logged as seen before. */
-    @VisibleForTesting
-    boolean hasPromptBeenDisplayed() {
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
-
-        // TODO(https://crbug.com/1195928): Get an expiration date from feature flag.
-        if (preferences.readLong(mPrefKeyPromptDisplayed, -1L) != -1L) {
-            recordSurveyFilteringResult(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED);
-            return true;
-        }
-        return false;
-    }
-
-    private void recordDownloadAttempted() {
-        SharedPreferencesManager.getInstance().incrementInt(mPrefKeyDownloadAttempts);
-    }
-
-    /** Return whether the number of download attempts falls within the max cap. */
-    private boolean isDownloadAttemptAllowed() {
-        int maxDownloadAttempts = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID, MAX_DOWNLOAD_ATTEMPTS, 0);
-        int downloadAttemptsMade =
-                SharedPreferencesManager.getInstance().readInt(mPrefKeyDownloadAttempts, 0);
-        return maxDownloadAttempts <= 0 || downloadAttemptsMade < maxDownloadAttempts;
     }
 
     /**
@@ -399,27 +345,13 @@ public class ChromeSurveyController {
 
         mLoggingHandler.removeCallbacksAndMessages(null);
 
-        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
-        preferences.writeLong(mPrefKeyPromptDisplayed, System.currentTimeMillis());
+        mSurveyThrottler.recordSurveyPromptDisplayed();
         mSurveyPromptTab = null;
     }
 
     @VisibleForTesting
     void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
-    }
-
-    private void recordSurveyFilteringResult(@FilteringResult int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.Survey.SurveyFilteringResults", value, FilteringResult.NUM_ENTRIES);
-    }
-
-    private void recordSurveyAccepted() {
-        int downloadAttemptsMade =
-                SharedPreferencesManager.getInstance().readInt(mPrefKeyDownloadAttempts, 0);
-        RecordHistogram.recordLinearCountHistogram("Android.Survey.DownloadAttemptsBeforeAccepted",
-                downloadAttemptsMade, 1, DOWNLOAD_ATTEMPTS_HIST_NUM_BUCKETS,
-                DOWNLOAD_ATTEMPTS_HIST_NUM_BUCKETS + 1);
     }
 
     static class StartDownloadIfEligibleTask extends AsyncTask<Boolean> {
@@ -434,22 +366,13 @@ public class ChromeSurveyController {
 
         @Override
         protected Boolean doInBackground() {
-            if (!isUMAEnabled()) return false;
-
-            if (isSurveyForceEnabled()) {
-                mController.recordSurveyFilteringResult(
-                        FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT);
-                return true;
-            }
-            return !mController.hasPromptBeenDisplayed() && mController.isDownloadAttemptAllowed()
-                    && new SurveyThrottler(getMaxNumber()).isRandomlySelectedForSurvey();
+            return mController.getThrottler().canShowSurvey();
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
                 mController.startDownload(ContextUtils.getApplicationContext(), mSelector);
-                mController.recordDownloadAttempted();
             }
         }
     }
@@ -488,6 +411,11 @@ public class ChromeSurveyController {
     private static int getMaxNumber() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID, MAX_NUMBER, -1);
+    }
+
+    private static int getMaxDownloadAttempt() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID, MAX_DOWNLOAD_ATTEMPTS, 0);
     }
 
     /** @return Whether the message has been previously shown to the client. */

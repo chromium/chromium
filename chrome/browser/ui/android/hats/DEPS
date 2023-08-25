@@ -1,3 +1,10 @@
 include_rules = [
   "-chrome/browser/ui/android/hats/internal",
+]
+
+specific_include_rules = {
+  # Special-case that's temporary during modularization.
+  "SurveyThrottler\.java" : [
+    "+chrome/android/java/src/org/chromium/chrome/browser/survey/ChromeSurveyController.java"
   ]
+}

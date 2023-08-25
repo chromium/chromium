@@ -16,6 +16,7 @@ android_library("java") {
     "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  public_deps = [ ":utils_java" ]
 }
 
 android_library_factory("factory_java") {
@@ -24,6 +25,38 @@ android_library_factory("factory_java") {
   # This internal file will be replaced by a generated file so the resulting
   # android_library target does not actually depend on this internal file.
   sources = [ "internal/java/src/org/chromium/chrome/browser/ui/hats/SurveyClientFactory.java" ]
+}
+
+# Temporarily public to the rest of components during code movement.
+# TODO(crbug/1400731): Move into internal once public references are removed.
+android_library("utils_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottler.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/first_run/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottlerUnitTest.java",
+  ]
+  deps = [
+    ":utils_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/first_run/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/ui/android/hats:java",
+    "//third_party/junit",
+  ]
 }
 
 android_library("unit_device_javatests") {
