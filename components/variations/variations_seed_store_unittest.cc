@@ -345,6 +345,31 @@ TEST(VariationsSeedStoreTest, LoadSeed_InvalidSignature) {
   CheckSafeSeedPrefsAreSet(prefs);
 }
 
+TEST(VariationsSeedStoreTest, LoadSeed_InvalidProto) {
+  const std::string base64_seed = GzipAndBase64Encode("Not a proto");
+
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  SetAllSeedPrefsToNonDefaultValues(&prefs);
+  prefs.SetString(prefs::kVariationsCompressedSeed, base64_seed);
+
+  // Loading a valid seed with an invalid signature should return false and
+  // clear all associated prefs when signature verification is enabled.
+  TestVariationsSeedStore seed_store(&prefs);
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_base64_seed_signature;
+  EXPECT_FALSE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
+                                   &loaded_base64_seed_signature));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
+                                      LoadSeedResult::kCorruptProtobuf, 1);
+  CheckRegularSeedPrefsAreCleared(prefs);
+  CheckSafeSeedPrefsAreSet(prefs);
+}
+
 TEST(VariationsSeedStoreTest, LoadSeed_RejectEmptySignature) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string base64_seed = SerializeSeedBase64(seed);

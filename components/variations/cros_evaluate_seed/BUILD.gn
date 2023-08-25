@@ -19,6 +19,8 @@ source_set("evaluate_seed_lib") {
     "cros_safe_seed_manager.h",
     "cros_variations_field_trial_creator.cc",
     "cros_variations_field_trial_creator.h",
+    "early_boot_seed_store.cc",
+    "early_boot_seed_store.h",
     "evaluate_seed.cc",
     "evaluate_seed.h",
   ]
@@ -41,6 +43,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "cros_safe_seed_manager_unittest.cc",
+    "early_boot_seed_store_unittest.cc",
     "evaluate_seed_unittest.cc",
   ]
   deps = [
@@ -50,6 +53,7 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//chromeos/ash/components/dbus/featured:proto",
+    "//components/prefs:test_support",
     "//components/test:test_support",
     "//components/variations",
     "//components/variations/service:service",

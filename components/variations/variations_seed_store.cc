@@ -485,44 +485,67 @@ void VariationsSeedStore::ImportInitialSeed(
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
+    VariationsSeed* seed,
+    const std::string& seed_data,
+    const std::string& base64_seed_signature,
+    absl::optional<VerifySignatureResult>* verify_signature_result) {
+  // TODO(crbug/1335082): get rid of |signature_verification_enabled_| and only
+  // support switches::kAcceptEmptySeedSignatureForTesting.
+  if (signature_verification_enabled_ &&
+      !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
+    *verify_signature_result =
+        VerifySeedSignature(seed_data, base64_seed_signature);
+    if (*verify_signature_result != VerifySignatureResult::VALID_SIGNATURE) {
+      return LoadSeedResult::kInvalidSignature;
+    }
+  }
+
+  if (!seed->ParseFromString(seed_data)) {
+    return LoadSeedResult::kCorruptProtobuf;
+  }
+
+  return LoadSeedResult::kSuccess;
+}
+
 LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     SeedType seed_type,
     VariationsSeed* seed,
     std::string* seed_data,
     std::string* base64_seed_signature) {
   LoadSeedResult read_result = ReadSeedData(seed_type, seed_data);
-  if (read_result != LoadSeedResult::kSuccess)
+  if (read_result != LoadSeedResult::kSuccess) {
     return read_result;
+  }
 
   *base64_seed_signature = local_state_->GetString(
       seed_type == SeedType::LATEST ? prefs::kVariationsSeedSignature
                                     : prefs::kVariationsSafeSeedSignature);
-  // TODO(crbug/1335082): get rid of |signature_verification_enabled_| and only
-  // support switches::kAcceptEmptySeedSignatureForTesting.
-  if (signature_verification_enabled_ &&
-      !AcceptEmptySeedSignatureForTesting(*base64_seed_signature)) {
-    const VerifySignatureResult result =
-        VerifySeedSignature(*seed_data, *base64_seed_signature);
+
+  absl::optional<VerifySignatureResult> verify_signature_result;
+  LoadSeedResult result = VerifyAndParseSeed(
+      seed, *seed_data, *base64_seed_signature, &verify_signature_result);
+  if (verify_signature_result.has_value()) {
+    VerifySignatureResult signature_result = verify_signature_result.value();
     if (seed_type == SeedType::LATEST) {
-      UMA_HISTOGRAM_ENUMERATION("Variations.LoadSeedSignature", result,
+      UMA_HISTOGRAM_ENUMERATION("Variations.LoadSeedSignature",
+                                signature_result,
                                 VerifySignatureResult::ENUM_SIZE);
     } else {
       UMA_HISTOGRAM_ENUMERATION(
-          "Variations.SafeMode.LoadSafeSeed.SignatureValidity", result,
-          VerifySignatureResult::ENUM_SIZE);
+          "Variations.SafeMode.LoadSafeSeed.SignatureValidity",
+          signature_result, VerifySignatureResult::ENUM_SIZE);
     }
-    if (result != VerifySignatureResult::VALID_SIGNATURE) {
+    if (signature_result != VerifySignatureResult::VALID_SIGNATURE) {
       ClearPrefs(seed_type);
-      return LoadSeedResult::kInvalidSignature;
     }
   }
 
-  if (!seed->ParseFromString(*seed_data)) {
+  if (result == LoadSeedResult::kCorruptProtobuf) {
     ClearPrefs(seed_type);
-    return LoadSeedResult::kCorruptProtobuf;
   }
 
-  return LoadSeedResult::kSuccess;
+  return result;
 }
 
 LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
