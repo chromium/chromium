@@ -12207,6 +12207,14 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_20230824",
+                    "enable_features": [
+                        "PrivacyGuideAndroid",
+                        "PrivacyGuideAndroid3",
+                        "PrivacyGuideAndroidPostMVP"
+                    ]
+                },
+                {
                     "name": "Enabled_20230721",
                     "enable_features": [
                         "PrivacyGuideAndroid",
