@@ -168,11 +168,22 @@
                   }
                 },
                 {
+                  "trigger_data": "5",
+                  "filters": {
+                    "source_type": ["navigation"]
+                  },
+                  "not_filters": {
+                    "_lookback_window": 31,
+                    "product": ["789"]
+                  }
+                },
+                {
                   "trigger_data": "6",
                   "filters": {
                     "source_type": ["navigation"]
                   },
                   "not_filters": {
+                    "_lookback_window": 29,
                     "product": ["789"]
                   }
                 },
@@ -182,6 +193,7 @@
                     "source_type": ["navigation"]
                   },
                   "not_filters": {
+                    "_lookback_window": 29,
                     "product": ["789"]
                   }
                 }

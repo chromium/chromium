@@ -260,9 +260,15 @@ bool FilterData::Matches(mojom::SourceType source_type,
   // key does not match between the two (negating the function result is not
   // sufficient by the API definition).
   return base::ranges::any_of(filters, [&](const FilterConfig& config) {
-    if (config.lookback_window() &&
-        duration_since_source_registration > config.lookback_window().value()) {
-      return negated;
+    if (config.lookback_window()) {
+      if (duration_since_source_registration >
+          config.lookback_window().value()) {
+        if (!negated) {
+          return false;
+        }
+      } else if (negated) {
+        return false;
+      }
     }
 
     return base::ranges::all_of(
