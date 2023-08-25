@@ -215,6 +215,9 @@ class CookieSettingsBase {
   bool ShouldConsider3pcdSupportSettings(
       net::CookieSettingOverrides overrides) const;
 
+  bool ShouldConsider3pcdMetadataGrantsSettings(
+      net::CookieSettingOverrides overrides) const;
+
   // Returns a set of overrides that includes Storage Access API and Top-Level
   // Storage Access API overrides iff the config booleans indicate that Storage
   // Access API and Top-Level Storage Access API should unlock access to DOM
@@ -260,9 +263,8 @@ class CookieSettingsBase {
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
-  // ContentSettingsTypes. Currently only COOKIES,
-  // TPCD_SUPPORT, STORAGE_ACCESS and TOP_LEVEL_STORAGE_ACCESS
-  // are required.
+  // ContentSettingsTypes. Currently only COOKIES, TPCD_SUPPORT, STORAGE_ACCESS,
+  // TPCD_METADATA_GRANTS, and TOP_LEVEL_STORAGE_ACCESS are required.
   virtual ContentSetting GetContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,

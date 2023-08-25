@@ -52,6 +52,11 @@ struct CookieManagerParams {
   array<content_settings.mojom.ContentSettingPatternSource>
       settings_for_3pcd;
 
+  // Content settings for 3PCD Metadata grants which are set via component
+  // updater installer.
+  array<content_settings.mojom.ContentSettingPatternSource>
+      settings_for_3pcd_metadata_grants;
+
   // Content settings for which storage access grants have been set using
   // the Storage Access API.
   array<content_settings.mojom.ContentSettingPatternSource>
@@ -492,6 +497,11 @@ interface CookieManager {
   // or BlockThirdPartyCookies.
   SetContentSettingsFor3pcd(
       array<content_settings.mojom.ContentSettingPatternSource> settings);
+
+  // Sets content settings for which an entry exist within the 3PCD mitigations
+  // metadata delivered through component updater.
+  SetContentSettingsFor3pcdMetadataGrants(
+    array<content_settings.mojom.ContentSettingPatternSource> settings);
 
   // Sets content settings for which storage access grants exist. Will ack
   // the caller with a callback when settings have been updated.

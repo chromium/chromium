@@ -46,7 +46,8 @@ enum class StorageAccessResult {
   OBSOLETE_ACCESS_ALLOWED_FORCED = 3 /*(DEPRECATED)*/,
   ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT = 4,
   ACCESS_ALLOWED_3PCD = 5,
-  kMaxValue = ACCESS_ALLOWED_3PCD,
+  ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,
+  kMaxValue = ACCESS_ALLOWED_3PCD_METADATA_GRANT,
 };
 // This enum must match the numbering for BreakageIndicatorType in
 // histograms/enums.xml. Do not reorder or remove items, only add new items

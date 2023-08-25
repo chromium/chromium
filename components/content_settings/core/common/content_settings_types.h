@@ -344,12 +344,17 @@ enum class ContentSettingsType : int32_t {
   // Stores per origin metadata for cookie controls.
   COOKIE_CONTROLS_METADATA,
 
-  // Setting for supporting 3PCD.
+  // Content Setting for 3PC accesses granted via 3PC deprecation trial.
   TPCD_SUPPORT,
 
   // Content setting used to indicate whether entering picture-in-picture
   // automatically should be enabled.
   AUTO_PICTURE_IN_PICTURE,
+
+  // Content Setting for 3PC accesses granted by metadata delivered via the
+  // component updater service. This type will only be used when
+  // `net::features::kTpcdMetadataGrants` is enabled.
+  TPCD_METADATA_GRANTS,
 
   NUM_TYPES,
 };

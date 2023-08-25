@@ -25,6 +25,7 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -51,18 +52,41 @@ struct TestCase {
   bool storage_access_grant_eligible;
   bool top_level_storage_access_grant_eligible;
   bool eligible_for_3pcd_support;
+  // tpcd_metadata_grant_eligible aka the feature
+  // `net::features::kThirdPartyStoragePartitioning` is enabled.
+  bool tpcd_metadata_grant_eligible;
 };
 
 static constexpr TestCase kTestCases[] = {
-    {"disable_all", false, false, false},
-    {"disable_SAA_enable_TopLevel_disable_3PCD", false, true, false},
+    {"disable_all", false, false, false, false},
+    {"disable_SAA_disable_TopLevel_disable_3PCD_enable_metadata", false, false,
+     false, true},
+    {"disable_SAA_enable_TopLevel_disable_3PCD_enable_metadata", false, true,
+     false, true},
+    {"disable_SAA_enable_TopLevel_disable_3PCD_disable_metadata", false, true,
+     false, false},
 #if !BUILDFLAG(IS_IOS)
-    {"disable_SAA_enable_TopLevel_enable_3PCD", false, true, true},
-    {"disable_SAA_disable_TopLevel_enable_3PCD", false, false, true},
-    {"enable_SAA_disable_TopLevel_disable_3PCD", true, false, false},
-    {"enable_SAA_disable_TopLevel_enable_3PCD", true, false, true},
-    {"enable_SAA_enable_TopLevel_disable_3PCD", true, true, false},
-    {"enable_all", true, true, true},
+    {"disable_SAA_enable_TopLevel_enable_3PCD_enable_metadata", false, true,
+     true, true},
+    {"disable_SAA_disable_TopLevel_enable_3PCD_enable_metadata", false, false,
+     true, true},
+    {"enable_SAA_disable_TopLevel_disable_3PCD_enable_metadata", true, false,
+     false, true},
+    {"enable_SAA_disable_TopLevel_enable_3PCD_enable_metadata", true, false,
+     true, true},
+    {"enable_SAA_enable_TopLevel_disable_3PCD_enable_metadata", true, true,
+     false, true},
+    {"disable_SAA_enable_TopLevel_enable_3PCD_disable_metadata", false, true,
+     true, false},
+    {"disable_SAA_disable_TopLevel_enable_3PCD_disable_metadata", false, false,
+     true, false},
+    {"enable_SAA_disable_TopLevel_disable_3PCD_disable_metadata", true, false,
+     false, false},
+    {"enable_SAA_disable_TopLevel_enable_3PCD_disable_metadata", true, false,
+     true, false},
+    {"enable_SAA_enable_TopLevel_disable_3PCD_disable_metadata", true, true,
+     false, false},
+    {"enable_all", true, true, true, true},
 #endif
 };
 }  // namespace
@@ -129,6 +153,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(
         {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
+    enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back({kImprovedCookieControls, {}});
     disabled_features.push_back(net::features::kTpcdSupportSettings);
@@ -180,6 +205,10 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return GetParam().eligible_for_3pcd_support;
   }
 
+  bool Is3pcdMetadataGrantEligible() const {
+    return GetParam().tpcd_metadata_grant_eligible;
+  }
+
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
     if (IsStorageAccessGrantEligible()) {
@@ -191,6 +220,9 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     }
     if (Is3pcdSupportEligible()) {
       overrides.Put(net::CookieSettingOverride::k3pcdSupport);
+    }
+    if (Is3pcdMetadataGrantEligible()) {
+      overrides.Put(net::CookieSettingOverride::k3pcdMetadataGrantEligible);
     }
     return overrides;
   }
@@ -216,6 +248,13 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   ContentSetting SettingWith3pcdSupportOverride() const {
     return Is3pcdSupportEligible() ? CONTENT_SETTING_ALLOW
                                    : CONTENT_SETTING_BLOCK;
+  }
+
+  // Assumes that cookie access would be blocked if not for a
+  // `net::CookieSettingOverride::k3pcdMetadataGrantEligible` override.
+  ContentSetting SettingWith3pcdMetadataGrantEligibleOverride() const {
+    return Is3pcdMetadataGrantEligible() ? CONTENT_SETTING_ALLOW
+                                         : CONTENT_SETTING_BLOCK;
   }
 
   // The cookie access result would be blocked if not for a Storage Access API
@@ -251,6 +290,17 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   BlockedStorageAccessResultWith3pcdSupportOverride() const {
     if (Is3pcdSupportEligible()) {
       return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
+  }
+
+  // The storage access result would be blocked if not for a
+  // `net::CookieSettingOverride::k3pcdMetadataGrantEligible` override.
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWith3pcdMetadataGrantOverride() const {
+    if (Is3pcdMetadataGrantEligible()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_3PCD_METADATA_GRANT;
     }
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
@@ -1269,8 +1319,8 @@ TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
       kAllowedRequestsHistogram,
       static_cast<int>(BlockedStorageAccessResultWithTopLevelSaaOverride()), 1);
 
-  // Invalid pair the |top_level_url| granting access to |url| is now
-  // being loaded under |url| as the top level url.
+  // Invalid pair the |top_level_url| granting access to |url| is now being
+  // loaded under |url| as the top level url.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 top_level_url, url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
@@ -1411,8 +1461,49 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
       kAllowedRequestsHistogram,
       static_cast<int>(BlockedStorageAccessResultWith3pcdSupportOverride()), 1);
 
-  // Invalid pair the |top_level_url| granting access to |url| is now
-  // being loaded under |url| as the top level url.
+  // Invalid pair the |top_level_url| granting access to |url| is now being
+  // loaded under |url| as the top level url.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                top_level_url, url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Invalid pairs where a |third_url| is used.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, third_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
+  const GURL top_level_url(kFirstPartySite);
+  const GURL url(kAllowedSite);
+  const GURL third_url(kBlockedSite);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::FromURLNoWildcard(top_level_url),
+      ContentSettingsType::TPCD_METADATA_GRANTS, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWith3pcdMetadataGrantEligibleOverride());
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      static_cast<int>(
+          BlockedStorageAccessResultWith3pcdMetadataGrantOverride()),
+      1);
+
+  // Invalid pair the |top_level_url| granting access to |url| is now being
+  // loaded under |url| as the top level url.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 top_level_url, url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);

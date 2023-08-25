@@ -109,6 +109,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
       const ContentSettingsForOneType& settings) override;
   void SetContentSettingsFor3pcd(
       const ContentSettingsForOneType& settings) override;
+  void SetContentSettingsFor3pcdMetadataGrants(
+      const ContentSettingsForOneType& settings) override;
   void SetStorageAccessGrantSettings(
       const ContentSettingsForOneType& settings,
       SetStorageAccessGrantSettingsCallback callback) override;

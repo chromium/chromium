@@ -334,6 +334,12 @@ void CookieManager::SetContentSettingsFor3pcd(
   cookie_settings_.set_content_settings_for_3pcd(settings);
 }
 
+void CookieManager::SetContentSettingsFor3pcdMetadataGrants(
+    const ContentSettingsForOneType& settings) {
+  OnSettingsWillChange();
+  cookie_settings_.set_content_settings_for_3pcd_metadata_grants(settings);
+}
+
 void CookieManager::SetStorageAccessGrantSettings(
     const ContentSettingsForOneType& settings,
     SetStorageAccessGrantSettingsCallback callback) {
