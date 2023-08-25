@@ -10,10 +10,13 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
 
 namespace autofill {
 
@@ -49,7 +52,25 @@ class AutofillChange : public GenericAutofillChange<AutofillKey> {
 
 using AutofillChangeList = std::vector<AutofillChange>;
 
-// Change notification details for Autofill profile or credit card changes.
+template <
+    typename DataType,
+    std::enable_if_t<std::disjunction_v<std::is_same<DataType, AutofillProfile>,
+                                        std::is_same<DataType, CreditCard>,
+                                        std::is_same<DataType, Iban>>,
+                     bool> = true>
+bool DataModelEntryMatchesKey(const DataType& model, const std::string& key) {
+  return model.guid() == key || model.server_id() == key;
+}
+
+template <typename DataType,
+          std::enable_if_t<std::is_same_v<DataType, ServerCvc>, bool> = true>
+bool DataModelEntryMatchesKey(const DataType& model, const std::string& key) {
+  return base::NumberToString(model.instrument_id) == key;
+}
+
+// Change notification details for Autofill related changes.
+// TODO(crbug/1476099): Update the name for `AutofillDataModelChange` as it now
+// captures non data model changes.
 template <typename DataType>
 class AutofillDataModelChange : public GenericAutofillChange<std::string> {
  public:
@@ -61,7 +82,7 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
                           DataType data_model)
       : GenericAutofillChange<std::string>(type, key),
         data_model_(std::move(data_model)) {
-    DCHECK(data_model_.guid() == key || data_model_.server_id() == key);
+    CHECK(DataModelEntryMatchesKey(data_model_, key));
   }
 
   ~AutofillDataModelChange() override = default;
@@ -80,13 +101,12 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
 using AutofillProfileChange = AutofillDataModelChange<AutofillProfile>;
 using CreditCardChange = AutofillDataModelChange<CreditCard>;
 using IbanChange = AutofillDataModelChange<Iban>;
+using ServerCvcChange = AutofillDataModelChange<ServerCvc>;
 
 class AutofillProfileDeepChange : public AutofillProfileChange {
  public:
   AutofillProfileDeepChange(Type type, const AutofillProfile& profile)
       : AutofillProfileChange(type, profile.guid(), profile) {}
-
-  ~AutofillProfileDeepChange() override = default;
 
   const AutofillProfile& profile() const {
     return static_cast<const AutofillProfile&>(data_model());

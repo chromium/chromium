@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -179,6 +182,35 @@ bool AutofillWalletCredentialSyncBridge::IsEntityDataValid(
 
 AutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() const {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
+void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
+    const ServerCvcChange& change) {
+  // If sync isn't ready yet (most likely because the data type is disabled),
+  // ignore the change.
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+  auto data = std::make_unique<syncer::EntityData>();
+
+  switch (change.type()) {
+    case ServerCvcChange::ADD:
+    case ServerCvcChange::UPDATE:
+      data->name = base::NumberToString(change.data_model().instrument_id);
+      *data->specifics.mutable_autofill_wallet_credential() =
+          AutofillWalletCredentialSpecificsFromStructData(change.data_model());
+      change_processor()->Put(change.key(), std::move(data),
+                              metadata_change_list.get());
+      break;
+    case ServerCvcChange::REMOVE:
+      change_processor()->Delete(change.key(), metadata_change_list.get());
+      break;
+    case ServerCvcChange::EXPIRE:
+      NOTREACHED_NORETURN();
+  }
 }
 
 void AutofillWalletCredentialSyncBridge::LoadMetadata() {

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -73,6 +74,11 @@ class AutofillWalletCredentialSyncBridge : public base::SupportsUserData::Data,
 
   // Returns the table associated with the `web_data_backend_`.
   AutofillTable* GetAutofillTable() const;
+
+  // Syncing the changes on the local storage related to Wallet credentials aka
+  // CVC to the Chrome Sync server. `change` has the data which was updated in
+  // the local database.
+  void ActOnLocalChange(const ServerCvcChange& change);
 
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.
