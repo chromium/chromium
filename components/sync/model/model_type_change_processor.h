@@ -100,9 +100,9 @@ class ModelTypeChangeProcessor {
   virtual void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) = 0;
 
   // Returns a boolean representing whether the processor's metadata is
-  // currently up to date and accurately tracking the model type's data. If
-  // false, and ModelReadyToSync() has already been called, then Put and Delete
-  // will no-op and can be omitted by bridge.
+  // currently tracking the model type's data. This typically becomes true after
+  // ModelReadyToSync() was called (if the data type is enabled). If false,
+  // then Put() and Delete() will no-op and can be omitted by bridge.
   virtual bool IsTrackingMetadata() const = 0;
 
   // Returns the account ID for which metadata is being tracked, or empty if not
