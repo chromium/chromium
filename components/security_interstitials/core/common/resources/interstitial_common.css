@@ -4,7 +4,7 @@
 
 button {
   border: 0;
-  border-radius: 4px;
+  border-radius: 20px;
   box-sizing: border-box;
   color: var(--primary-button-text-color);
   cursor: pointer;
@@ -145,10 +145,14 @@ input[type=checkbox]:focus ~ .checkbox::after {
 }
 
 #enhanced-protection-message {
-  border-radius: 4px;
+  border-radius: 20px;
   font-size: 1em;
   margin-top: 32px;
   padding: 10px 5px;
+}
+
+#enhanced-protection-message a {
+  color: var(--google-red-10);
 }
 
 #enhanced-protection-message label {

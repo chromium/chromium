@@ -226,6 +226,9 @@ BASE_DECLARE_FEATURE(kNestedArchives);
 // managed browsers.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringForEnterprise);
 
+// Controls whether we are using red interstitial facelift updates.
+BASE_DECLARE_FEATURE(kRedInterstitialFacelift);
+
 // Enables modifying key parameters on the navigation event collection used to
 // populate referrer chains.
 BASE_DECLARE_FEATURE(kReferrerChainParameters);

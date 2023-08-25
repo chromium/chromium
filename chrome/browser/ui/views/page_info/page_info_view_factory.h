@@ -105,6 +105,9 @@ class PageInfoViewFactory {
   // Returns the not secure state icon for the SecurityInformationView.
   static const ui::ImageModel GetConnectionNotSecureIcon();
 
+  // Returns the dangerous icon for the SecurityInformationView.
+  static const ui::ImageModel GetConnectionDangerousIcon();
+
   // Returns the icon for the secure connection button.
   static const ui::ImageModel GetConnectionSecureIcon();
 

@@ -8,8 +8,13 @@ body.safe-browsing {
   --google-red-600: rgb(217, 48, 37);
   --google-red-500: rgb(234, 67, 53);
   --google-red-100: rgb(250, 210, 207);
+  --google-red-90: rgb(249, 222, 220);
   --google-red-50: rgb(252, 232, 230);
-  background-color: var(--google-red-600);
+  --google-red-40: rgb(179, 38, 30);
+  --google-red-10: rgb(65, 14, 11);
+  --google-primary-40: rgb(11, 87, 208);
+  --google-primary-90: rgb(211, 227, 253);
+  background-color: var(--google-red-40);
   color: white;
 }
 
@@ -21,7 +26,7 @@ body.safe-browsing {
 .safe-browsing button {
   background: white;
   border-color: white;
-  color: var(--google-red-700);
+  color: var(--google-primary-40);
 }
 
 .safe-browsing button:active {
@@ -30,12 +35,12 @@ body.safe-browsing {
 }
 
 .safe-browsing button:hover {
-  background: var(--google-red-50);
+  background: var(--google-primary-90);
 }
 
 .safe-browsing .secondary-button {
-  background-color: var(--google-red-600);
-  border-color: var(--google-red-100);
+  background-color: var(--google-red-40);
+  border-color: white;
   color: white;
 }
 
@@ -56,6 +61,14 @@ body.safe-browsing {
   background-image: -webkit-image-set(
       url(images/1x/triangle_white.png) 1x,
       url(images/2x/triangle_white.png) 2x);
+  color: var(--google-red-40);
+}
+
+.safe-browsing .new-icon {
+  background-image: -webkit-image-set(
+      url(images/1x/stop_sign_white.svg) 1x,
+      url(images/2x/stop_sign_white.svg) 2x);
+  color: var(--google-red-40);
 }
 
 @media (min-width: 240px) and (max-width: 420px) and
@@ -63,8 +76,8 @@ body.safe-browsing {
        (min-width: 421px) and (min-height: 240px) and
        (max-height: 560px) {
   body.safe-browsing .nav-wrapper {
-    background: var(--google-red-600);
-    box-shadow: 0 -12px 24px var(--google-red-600);
+    background: var(--google-red-40);
+    box-shadow: 0 -12px 24px var(--google-red-40);
   }
 }
 
@@ -75,10 +88,10 @@ body.safe-browsing {
 }
 
 .safe-browsing-enhanced-protection-message {
-  background-color: rgba(0, 0, 0, 0.2); /* black 20% opacity */
-  border: 1px solid rgba(0, 0, 0, 0.3); /* black 30% opacity */
+  background-color: var(--google-red-90);
+  color: var(--google-red-10);
 }
 
 .safe-browsing-enhanced-protection-message .icon {
-  background-image: url(images/light_bulb_white.svg);
+  background-image: url(images/light_bulb_red.svg);
 }

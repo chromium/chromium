@@ -121,6 +121,11 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
       break;
   }
 
+  // Change UI based on whether the facelift feature is enabled.
+  load_time_data.Set(
+      "shouldUseNewDangerIcon",
+      base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift));
+
   // Not used by this interstitial.
   load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("show_recurrent_error_paragraph", false);

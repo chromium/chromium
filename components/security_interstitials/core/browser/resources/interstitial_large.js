@@ -101,6 +101,10 @@ function setupEvents() {
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph = loadTimeData.getBoolean(
     'show_recurrent_error_paragraph');
+  const shouldUseNewDangerIcon =
+      loadTimeData.valueExists('shouldUseNewDangerIcon') ?
+      loadTimeData.getBoolean('shouldUseNewDangerIcon') :
+      false;
 
   const body = document.querySelector('#body');
   if (ssl || blockedInterception) {
@@ -279,6 +283,13 @@ function setupEvents() {
 
   if (lookalike) {
     console.warn(loadTimeData.getString('lookalikeConsoleMessage'));
+  }
+
+  if (shouldUseNewDangerIcon) {
+    // If red interstitial facelift is enabled, use new stop sign icons.
+    if (document.getElementById('icon')) {
+      document.getElementById('icon').classList.add('new-icon');
+    }
   }
 
   preventDefaultOnPoundLinkClicks();

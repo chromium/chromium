@@ -595,6 +595,12 @@ const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetConnectionDangerousIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kDangerousIcon, ui::kColorAlertHighSeverity, GetIconSize());
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
   return GetImageModel(features::IsChromeRefresh2023()
                            ? vector_icons::kHttpsValidChromeRefreshIcon
