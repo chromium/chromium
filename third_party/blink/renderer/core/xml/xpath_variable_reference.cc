@@ -26,7 +26,9 @@
 
 #include "third_party/blink/renderer/core/xml/xpath_variable_reference.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 namespace xpath {
@@ -36,8 +38,12 @@ VariableReference::VariableReference(const String& name) : name_(name) {}
 Value VariableReference::Evaluate(EvaluationContext& context) const {
   HashMap<String, String>& bindings = context.variable_bindings;
   if (!bindings.Contains(name_)) {
-    // FIXME: Is this the right thing to do if an unknown variable is
-    // referenced?
+    // TODO(crbug.com/1071243): Is this the right thing to do if an unknown
+    // variable is referenced?
+    if (context.use_counter) {
+      UseCounter::Count(context.use_counter,
+                        WebFeature::kXPathMissingVariableEvaluated);
+    }
     return "";
   }
   return bindings.at(name_);

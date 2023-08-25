@@ -25,9 +25,9 @@
     [Measure] constructor();
 
     // https://dom.spec.whatwg.org/#mixin-xpathevaluatorbase
-    [Measure, RaisesException] XPathExpression createExpression(DOMString expression, optional XPathNSResolver? resolver = null);
+    [Measure, RaisesException, CallWith=ExecutionContext] XPathExpression createExpression(DOMString expression, optional XPathNSResolver? resolver = null);
 
     [Measure] Node createNSResolver(Node nodeResolver);
 
-    [Measure, RaisesException] XPathResult evaluate(DOMString expression, Node contextNode, optional XPathNSResolver? resolver = null, optional unsigned short type = 0, optional object? inResult = null);
+    [Measure, RaisesException, CallWith=ExecutionContext] XPathResult evaluate(DOMString expression, Node contextNode, optional XPathNSResolver? resolver = null, optional unsigned short type = 0, optional object? inResult = null);
 };

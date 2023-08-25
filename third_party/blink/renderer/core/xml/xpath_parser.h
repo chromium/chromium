@@ -34,6 +34,7 @@
 namespace blink {
 
 class ExceptionState;
+class UseCounter;
 class V8XPathNSResolver;
 
 namespace xpath {
@@ -63,7 +64,7 @@ class Parser {
   STACK_ALLOCATED();
 
  public:
-  Parser();
+  explicit Parser(UseCounter* use_counter);
   Parser(const Parser&) = delete;
   Parser& operator=(const Parser&) = delete;
   ~Parser();
@@ -110,6 +111,7 @@ class Parser {
   String data_;
   int last_token_type_;
   V8XPathNSResolver* resolver_ = nullptr;
+  UseCounter* use_counter_ = nullptr;
 };
 
 }  // namespace xpath

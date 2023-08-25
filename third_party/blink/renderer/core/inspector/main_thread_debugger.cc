@@ -515,7 +515,7 @@ void MainThreadDebugger::XpathSelectorCallback(
                                  ExceptionState::kExecutionContext,
                                  "CommandLineAPI", "$x");
   XPathResult* result = XPathEvaluator::Create()->evaluate(
-      selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
+      nullptr, selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
       exception_state);
   if (exception_state.HadException() || !result)
     return;

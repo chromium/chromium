@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_expression.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_parser.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
@@ -41,9 +42,10 @@ XPathExpression::XPathExpression() = default;
 XPathExpression* XPathExpression::CreateExpression(
     const String& expression,
     V8XPathNSResolver* resolver,
+    ExecutionContext* execution_context,
     ExceptionState& exception_state) {
   auto* expr = MakeGarbageCollected<XPathExpression>();
-  xpath::Parser parser;
+  xpath::Parser parser(execution_context);
 
   expr->top_expression_ =
       parser.ParseStatement(expression, resolver, exception_state);
@@ -58,7 +60,8 @@ void XPathExpression::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-XPathResult* XPathExpression::evaluate(Node* context_node,
+XPathResult* XPathExpression::evaluate(ExecutionContext* execution_context,
+                                       Node* context_node,
                                        uint16_t type,
                                        const ScriptValue&,
                                        ExceptionState& exception_state) {
@@ -73,6 +76,7 @@ XPathResult* XPathExpression::evaluate(Node* context_node,
   bool had_type_conversion_error = false;
   xpath::EvaluationContext evaluation_context(*context_node,
                                               had_type_conversion_error);
+  evaluation_context.use_counter = execution_context;
   auto* result = MakeGarbageCollected<XPathResult>(
       evaluation_context, top_expression_->Evaluate(evaluation_context));
 

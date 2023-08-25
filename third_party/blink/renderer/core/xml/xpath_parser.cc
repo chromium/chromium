@@ -29,11 +29,13 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_grammar_generated.h"
 #include "third_party/blink/renderer/core/xml/xpath_path.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -343,6 +345,11 @@ Token Parser::NextTokenInternal() {
       String name;
       if (!LexQName(name))
         return Token(TokenType::kXPathError);
+      // DOM XPath API doesn't support any variables.
+      if (use_counter_) {
+        UseCounter::Count(use_counter_,
+                          WebFeature::kXPathMissingVariableParsed);
+      }
       return Token(TokenType::kVariableReference, name);
     }
   }
@@ -420,7 +427,7 @@ Token Parser::NextToken() {
   return to_ret;
 }
 
-Parser::Parser() {
+Parser::Parser(UseCounter* use_counter) : use_counter_(use_counter) {
   Reset(String());
 }
 

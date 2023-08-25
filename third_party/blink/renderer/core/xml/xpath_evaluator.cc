@@ -36,11 +36,12 @@
 namespace blink {
 
 XPathExpression* XPathEvaluator::createExpression(
+    ExecutionContext* execution_context,
     const String& expression,
     V8XPathNSResolver* resolver,
     ExceptionState& exception_state) {
   return XPathExpression::CreateExpression(expression, resolver,
-                                           exception_state);
+                                           execution_context, exception_state);
 }
 
 Node* XPathEvaluator::createNSResolver(Node* node_resolver) {
@@ -49,7 +50,8 @@ Node* XPathEvaluator::createNSResolver(Node* node_resolver) {
   return node_resolver;
 }
 
-XPathResult* XPathEvaluator::evaluate(const String& expression,
+XPathResult* XPathEvaluator::evaluate(ExecutionContext* execution_context,
+                                      const String& expression,
                                       Node* context_node,
                                       V8XPathNSResolver* resolver,
                                       uint16_t type,
@@ -63,12 +65,13 @@ XPathResult* XPathEvaluator::evaluate(const String& expression,
     return nullptr;
   }
 
-  XPathExpression* expr =
-      createExpression(expression, resolver, exception_state);
+  XPathExpression* expr = createExpression(execution_context, expression,
+                                           resolver, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  return expr->evaluate(context_node, type, ScriptValue(), exception_state);
+  return expr->evaluate(execution_context, context_node, type, ScriptValue(),
+                        exception_state);
 }
 
 }  // namespace blink

@@ -36,6 +36,8 @@
 
 namespace blink {
 
+class UseCounter;
+
 namespace xpath {
 
 struct CORE_EXPORT EvaluationContext {
@@ -50,6 +52,7 @@ struct CORE_EXPORT EvaluationContext {
   wtf_size_t size;
   wtf_size_t position;
   HashMap<String, String> variable_bindings;
+  UseCounter* use_counter = nullptr;
 
   bool& had_type_conversion_error;
 };

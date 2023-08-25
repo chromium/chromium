@@ -34,6 +34,7 @@
 namespace blink {
 
 class ExceptionState;
+class ExecutionContext;
 class Node;
 class ScriptValue;
 class V8XPathNSResolver;
@@ -49,11 +50,13 @@ class XPathExpression : public ScriptWrappable {
  public:
   static XPathExpression* CreateExpression(const String& expression,
                                            V8XPathNSResolver*,
+                                           ExecutionContext* execution_context,
                                            ExceptionState&);
 
   XPathExpression();
 
-  XPathResult* evaluate(Node* context_node,
+  XPathResult* evaluate(ExecutionContext* execution_context,
+                        Node* context_node,
                         uint16_t type,
                         const ScriptValue&,
                         ExceptionState&);

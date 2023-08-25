@@ -3970,6 +3970,8 @@ enum WebFeature {
   kGetAllScreensMedia = 4630,
   kInputEventToRecentlyMovedIframeMistakenlyDiscarded = 4631,
   kCSSRelativeColor = 4632,
+  kXPathMissingVariableParsed = 4633,
+  kXPathMissingVariableEvaluated = 4634,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
