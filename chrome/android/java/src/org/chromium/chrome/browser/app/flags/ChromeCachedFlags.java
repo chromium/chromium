@@ -6,6 +6,12 @@ package org.chromium.chrome.browser.app.flags;
 
 import android.text.TextUtils;
 
+import androidx.annotation.AnyThread;
+
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.FieldTrialList;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -18,11 +24,15 @@ import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.CachedFlag;
+import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -37,9 +47,11 @@ import java.util.List;
  * Caches the flags that Chrome might require before native is loaded in a later next run.
  */
 public class ChromeCachedFlags {
+    private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
+
     private boolean mIsFinishedCachingNativeFlags;
 
-    private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
+    private static String sReachedCodeProfilerTrialGroup;
 
     /**
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
@@ -67,7 +79,7 @@ public class ChromeCachedFlags {
         FirstRunUtils.cacheFirstRunPrefs();
 
         CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
-        CachedFeatureFlags.cacheAdditionalNativeFlags();
+        cacheAdditionalNativeFlags();
 
         //clang-format off
         List<CachedFieldTrialParameter> fieldTrialsToCache = List.of(
@@ -153,5 +165,67 @@ public class ChromeCachedFlags {
         CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
         CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
         CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
+    }
+
+    /**
+     * Caches a predetermined list of flags that must take effect on startup but are set via native
+     * code.
+     *
+     * Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
+     */
+    public static void cacheAdditionalNativeFlags() {
+        CachedFlagsSafeMode.cacheSafeModeForCachedFlagsEnabled();
+        cacheReachedCodeProfilerTrialGroup();
+
+        // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
+        // LibraryLoader itself because it lives in //base and can't depend on ChromeFeatureList.
+        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.REACHED_CODE_PROFILER),
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.REACHED_CODE_PROFILER, "sampling_interval_us", 0));
+
+        // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
+        LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
+
+        // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
+        ApplicationStatus.setCachingEnabled(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
+    }
+
+    /**
+     * Caches the trial group of the reached code profiler feature to be using on next startup.
+     */
+    private static void cacheReachedCodeProfilerTrialGroup() {
+        // Make sure that the existing value is saved in a static variable before overwriting it.
+        if (sReachedCodeProfilerTrialGroup == null) {
+            getReachedCodeProfilerTrialGroup();
+        }
+
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
+                FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
+    }
+
+    /**
+     * @return The trial group of the reached code profiler.
+     */
+    @CalledByNative
+    public static String getReachedCodeProfilerTrialGroup() {
+        if (sReachedCodeProfilerTrialGroup == null) {
+            sReachedCodeProfilerTrialGroup = SharedPreferencesManager.getInstance().readString(
+                    ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
+        }
+
+        return sReachedCodeProfilerTrialGroup;
+    }
+
+    @CalledByNative
+    @AnyThread
+    static boolean isEnabled(String featureName) {
+        CachedFlag cachedFlag = ChromeFeatureList.sAllCachedFlags.get(featureName);
+        assert cachedFlag != null;
+
+        return cachedFlag.isEnabled();
     }
 }

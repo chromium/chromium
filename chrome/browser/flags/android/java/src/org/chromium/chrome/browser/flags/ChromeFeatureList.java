@@ -687,6 +687,6 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFlag> sTestCachedFlags =
             List.of(sTestDefaultDisabled, sTestDefaultEnabled);
 
-    static final Map<String, CachedFlag> sAllCachedFlags = CachedFlag.createCachedFlagMap(
+    public static final Map<String, CachedFlag> sAllCachedFlags = CachedFlag.createCachedFlagMap(
             List.of(sFlagsCachedFullBrowser, sFlagsCachedInMinimalBrowser, sTestCachedFlags));
 }

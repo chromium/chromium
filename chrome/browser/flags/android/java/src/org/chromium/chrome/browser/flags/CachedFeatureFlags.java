@@ -6,10 +6,6 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.AnyThread;
 
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FieldTrialList;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -28,8 +24,6 @@ import java.util.Map;
  * - Add it to the list passed to {@code ChromeCachedFlags#cacheNativeFlags()}.
  * - Call {@code ChromeFeatureList.sMyFlag.isEnabled()} to query whether the cached flag is enabled.
  *   Consider this the source of truth for whether the flag is turned on in the current session.
- * - When querying whether a cached feature is enabled from native, call IsJavaDrivenFeatureEnabled
- *   in cached_feature_flags.h.
  *
  * For cached flags that are queried before native is initialized, when a new experiment
  * configuration is received the metrics reporting system will record metrics as if the
@@ -39,17 +33,6 @@ import java.util.Map;
  */
 public class CachedFeatureFlags {
     private static ValuesOverridden sValuesOverridden = new ValuesOverridden();
-
-    private static String sReachedCodeProfilerTrialGroup;
-
-    @CalledByNative
-    @AnyThread
-    static boolean isEnabled(String featureName) {
-        CachedFlag cachedFlag = ChromeFeatureList.sAllCachedFlags.get(featureName);
-        assert cachedFlag != null;
-
-        return cachedFlag.isEnabled();
-    }
 
     /**
      * Sets the feature flags to use in JUnit and instrumentation tests.
@@ -74,32 +57,6 @@ public class CachedFeatureFlags {
     }
 
     /**
-     * Caches a predetermined list of flags that must take effect on startup but are set via native
-     * code.
-     *
-     * Do not add new simple boolean flags here, use {@link #cacheNativeFlags} instead.
-     */
-    public static void cacheAdditionalNativeFlags() {
-        CachedFlagsSafeMode.getInstance().cacheSafeModeForCachedFlagsEnabled();
-        cacheReachedCodeProfilerTrialGroup();
-
-        // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
-        // LibraryLoader itself because it lives in //base and can't depend on ChromeFeatureList.
-        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.REACHED_CODE_PROFILER),
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.REACHED_CODE_PROFILER, "sampling_interval_us", 0));
-
-        // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
-        LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
-
-        // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
-        ApplicationStatus.setCachingEnabled(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
-    }
-
-    /**
      * Caches flags that must take effect on startup but are set via native code.
      */
     public static void cacheFieldTrialParameters(List<CachedFieldTrialParameter> parameters) {
@@ -120,33 +77,6 @@ public class CachedFeatureFlags {
     public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
         return SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS, 0);
-    }
-
-    /**
-     * Caches the trial group of the reached code profiler feature to be using on next startup.
-     */
-    private static void cacheReachedCodeProfilerTrialGroup() {
-        // Make sure that the existing value is saved in a static variable before overwriting it.
-        if (sReachedCodeProfilerTrialGroup == null) {
-            getReachedCodeProfilerTrialGroup();
-        }
-
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
-                FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
-    }
-
-    /**
-     * @return The trial group of the reached code profiler.
-     */
-    @CalledByNative
-    public static String getReachedCodeProfilerTrialGroup() {
-        if (sReachedCodeProfilerTrialGroup == null) {
-            sReachedCodeProfilerTrialGroup = SharedPreferencesManager.getInstance().readString(
-                    ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
-        }
-
-        return sReachedCodeProfilerTrialGroup;
     }
 
     /**
@@ -290,9 +220,5 @@ public class CachedFeatureFlags {
 
     static void setOverrideForTesting(String preferenceKey, String overrideValue) {
         sValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
-    }
-
-    static void setSafeModeExperimentEnabledForTesting(Boolean value) {
-        CachedFlagsSafeMode.getInstance().setExperimentEnabledForTesting(value);
     }
 }

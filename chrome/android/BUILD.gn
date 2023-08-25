@@ -3354,6 +3354,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/WebContentsFactory.java",
     "java/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridge.java",
     "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
+    "java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java",
     "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
     "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",

@@ -32,8 +32,8 @@
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
+#include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/signin/fre_mobile_identity_consistency_field_trial.h"
-#include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #endif

@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_FLAGS_ANDROID_CACHED_FEATURE_FLAGS_H_
-#define CHROME_BROWSER_FLAGS_ANDROID_CACHED_FEATURE_FLAGS_H_
+#ifndef CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_
+#define CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_
 
 #include <jni.h>
 
@@ -23,4 +23,4 @@ std::string GetReachedCodeProfilerTrialGroup();
 }  // namespace android
 }  // namespace chrome
 
-#endif  // CHROME_BROWSER_FLAGS_ANDROID_CACHED_FEATURE_FLAGS_H_
+#endif  // CHROME_BROWSER_ANDROID_FLAGS_CHROME_CACHED_FLAGS_H_

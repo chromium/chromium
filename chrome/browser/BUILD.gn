@@ -2746,6 +2746,8 @@ static_library("browser") {
       "android/feedback/screenshot_task.cc",
       "android/flags/bad_flags_snackbar_manager.cc",
       "android/flags/bad_flags_snackbar_manager.h",
+      "android/flags/chrome_cached_flags.cc",
+      "android/flags/chrome_cached_flags.h",
       "android/foreign_session_helper.cc",
       "android/foreign_session_helper.h",
       "android/framebust_intervention/framebust_blocked_delegate_android.cc",

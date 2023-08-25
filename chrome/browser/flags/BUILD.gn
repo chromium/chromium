@@ -42,7 +42,6 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
   ]
@@ -50,8 +49,6 @@ generate_jni("jni_headers") {
 
 static_library("flags_android") {
   sources = [
-    "android/cached_feature_flags.cc",
-    "android/cached_feature_flags.h",
     "android/chrome_session_state.cc",
     "android/chrome_session_state.h",
   ]

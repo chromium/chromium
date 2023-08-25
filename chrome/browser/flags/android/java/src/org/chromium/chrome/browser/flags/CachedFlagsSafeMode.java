@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Safe Mode is a mechanism that allows Chrome to prevent crashes gated behind flags used before
  * native from becoming a crash loop that cannot be recovered from by disabling the experiment.
  */
-class CachedFlagsSafeMode {
+public class CachedFlagsSafeMode {
     private static final String TAG = "Flags";
     private static final int CRASH_STREAK_TO_ENTER_SAFE_MODE = 2;
 
@@ -381,7 +381,7 @@ class CachedFlagsSafeMode {
         }
     }
 
-    void cacheSafeModeForCachedFlagsEnabled() {
+    public static void cacheSafeModeForCachedFlagsEnabled() {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED,
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_MODE_FOR_CACHED_FLAGS));
