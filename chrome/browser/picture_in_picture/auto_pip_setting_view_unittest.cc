@@ -20,8 +20,6 @@ using UiResult = AutoPipSettingView::UiResult;
 
 struct TestParams {
   UiResult ui_result;
-  bool expected_widget_closed = true;
-  bool expected_view_is_visible = false;
 };
 
 class AutoPipSettingViewTest : public views::ViewsTestBase,
@@ -94,6 +92,19 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
   base::MockOnceCallback<void(UiResult)>& result_cb() { return result_cb_; }
   base::MockOnceCallback<void()>& hide_view_cb() { return hide_view_cb_; }
 
+  const views::MdTextButton* GetButtonForUiResult(UiResult ui_result) const {
+    switch (ui_result) {
+      case UiResult::kAllowOnce:
+        return allow_once_button();
+      case UiResult::kAllowOnEveryVisit:
+        return allow_on_every_visit_button();
+      case UiResult::kBlock:
+        return block_button();
+      case UiResult::kDismissed:
+        return nullptr;
+    }
+  }
+
  private:
   base::MockOnceCallback<void(UiResult)> result_cb_;
   base::MockOnceCallback<void()> hide_view_cb_;
@@ -142,34 +153,14 @@ INSTANTIATE_TEST_SUITE_P(AllButtonCallbacks,
                          AutoPipSettingViewTest,
                          testing::ValuesIn(kTestParams));
 
-// TEST_F(AutoPipSettingHelperTest, AllowDoesNotCallCloseCb) {
-//   set_content_setting(CONTENT_SETTING_DEFAULT);
-//   AttachOverlayView();
-//   EXPECT_TRUE(setting_overlay());
-
-//   // Click allow.  Nothing should happen.
-//   EXPECT_CALL(close_cb(), Run()).Times(0);
-//   click_allow();
-//   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
-// }
-
 // Test UiResult callbacks.
 TEST_P(AutoPipSettingViewTest, ButtonCallbackTest) {
   EXPECT_TRUE(setting_view()->GetVisible());
 
-  const views::MdTextButton* button_to_test;
-  switch (GetParam().ui_result) {
-    case UiResult::kAllowOnce:
-      button_to_test = allow_once_button();
-      break;
-    case UiResult::kAllowOnEveryVisit:
-      button_to_test = allow_on_every_visit_button();
-      break;
-    case UiResult::kBlock:
-      button_to_test = block_button();
-      break;
-    case UiResult::kDismissed:
-      return;
+  const views::MdTextButton* button_to_test =
+      GetButtonForUiResult(GetParam().ui_result);
+  if (!button_to_test) {
+    return;
   }
 
   EXPECT_CALL(result_cb(), Run(GetParam().ui_result));
@@ -180,9 +171,8 @@ TEST_P(AutoPipSettingViewTest, ButtonCallbackTest) {
   event_generator()->ClickLeftButton();
 
   // Verify that the view is hidden and Widget closed.
-  EXPECT_EQ(setting_view()->GetWidget()->IsClosed(),
-            GetParam().expected_widget_closed);
-  EXPECT_EQ(setting_view()->GetVisible(), GetParam().expected_view_is_visible);
+  EXPECT_TRUE(setting_view()->GetWidget()->IsClosed());
+  EXPECT_FALSE(setting_view()->GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(AllMultipleClicks,
@@ -193,19 +183,10 @@ INSTANTIATE_TEST_SUITE_P(AllMultipleClicks,
 TEST_P(AutoPipSettingViewTest, MultipleClicksDontCrash) {
   EXPECT_TRUE(setting_view()->GetVisible());
 
-  const views::MdTextButton* button_to_test;
-  switch (GetParam().ui_result) {
-    case UiResult::kAllowOnce:
-      button_to_test = allow_once_button();
-      break;
-    case UiResult::kAllowOnEveryVisit:
-      button_to_test = allow_on_every_visit_button();
-      break;
-    case UiResult::kBlock:
-      button_to_test = block_button();
-      break;
-    case UiResult::kDismissed:
-      return;
+  const views::MdTextButton* button_to_test =
+      GetButtonForUiResult(GetParam().ui_result);
+  if (!button_to_test) {
+    return;
   }
 
   EXPECT_CALL(result_cb(), Run(GetParam().ui_result));
@@ -216,5 +197,29 @@ TEST_P(AutoPipSettingViewTest, MultipleClicksDontCrash) {
 
   // Perform multiple clicks to verify there are no crashes.
   event_generator()->ClickLeftButton();
+  event_generator()->ClickLeftButton();
+}
+
+INSTANTIATE_TEST_SUITE_P(AllButtonCallbacksHideOverlayBackgroundLayer,
+                         AutoPipSettingViewTest,
+                         testing::ValuesIn(kTestParams));
+
+// Verify that the |hide_view_cb_| is executed.
+TEST_P(AutoPipSettingViewTest, OverlayBackgroundLayerIsHidden) {
+  EXPECT_TRUE(setting_view()->GetVisible());
+
+  const views::MdTextButton* button_to_test =
+      GetButtonForUiResult(GetParam().ui_result);
+  if (!button_to_test) {
+    return;
+  }
+
+  EXPECT_CALL(result_cb(), Run(GetParam().ui_result));
+  // Verify that the |hide_view_cb_| is executed.
+  EXPECT_CALL(hide_view_cb(), Run());
+
+  // Move mouse to the center of the button.
+  event_generator()->MoveMouseTo(
+      button_to_test->GetBoundsInScreen().CenterPoint());
   event_generator()->ClickLeftButton();
 }

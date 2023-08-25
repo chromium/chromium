@@ -39,14 +39,15 @@ AutoPipSettingView::AutoPipSettingView(
     views::BubbleBorder::Arrow arrow,
     gfx::NativeView parent)
     : views::BubbleDialogDelegateView(anchor_view, arrow),
-      result_cb_(std::move(result_cb)),
-      hide_view_cb_(std::move(hide_view_cb)) {
+      result_cb_(std::move(result_cb)) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   DCHECK(parent);
   CHECK(result_cb_);
   set_parent_window(parent);
   SetAnchorView(anchor_view);
   set_fixed_width(kBubbleFixedWidth);
+  // Set up callback to hide AutoPiP overlay view semi-opaque background layer.
+  SetCloseCallback(std::move(hide_view_cb));
   InitBubble();
 }
 

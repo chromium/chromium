@@ -32,6 +32,18 @@ class AutoPipSettingView : public views::BubbleDialogDelegateView {
   // the AutoPiP setting view is closed.
   using HideViewCb = base::OnceCallback<void()>;
 
+  // Constructs an |AutoPipSettingView|. The constructor parameters are
+  // explained below:
+  //   * result_cb: Callback responsible for updating the content setting,
+  //   according to the button pressed.
+  //   * hide_view_cb: Callback responsible for hiding the AutoPiP overlay view.
+  //   Callback is executed after the |AutoPipSettingView| is closed.
+  //   * browser_view_overridden_bounds: These bounds represent the
+  //   Picture-in-Picture window bounds. Used to adjust the PiP window size to
+  //   accommodate the |AutoPipSettingView|.
+  //   * anchor_view: Anchor view for the bubble.
+  //   * arrow: The arrow position for the bubble.
+  //   * parent: The bubble's parent window.
   explicit AutoPipSettingView(ResultCb result_cb,
                               HideViewCb hide_view_cb,
                               const gfx::Rect& browser_view_overridden_bounds,
@@ -70,7 +82,6 @@ class AutoPipSettingView : public views::BubbleDialogDelegateView {
 
  private:
   ResultCb result_cb_;
-  HideViewCb hide_view_cb_;
   raw_ptr<views::Label> autopip_description_ = nullptr;
   raw_ptr<views::MdTextButton> allow_once_button_ = nullptr;
   raw_ptr<views::MdTextButton> allow_on_every_visit_button_ = nullptr;
