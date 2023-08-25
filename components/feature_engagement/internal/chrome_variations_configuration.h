@@ -19,9 +19,7 @@ namespace feature_engagement {
 // specified from code.
 class ChromeVariationsConfiguration : public Configuration {
  public:
-  explicit ChromeVariationsConfiguration(
-      ConfigurationProviderList configuration_providers);
-
+  ChromeVariationsConfiguration();
   ChromeVariationsConfiguration(const ChromeVariationsConfiguration&) = delete;
   ChromeVariationsConfiguration& operator=(
       const ChromeVariationsConfiguration&) = delete;
@@ -45,13 +43,19 @@ class ChromeVariationsConfiguration : public Configuration {
   // Read the variations configuration for all of the given |features| and
   // |groups| using the `configuration_providers`, and stores the result. It is
   // only valid to call this method once.
-  void LoadConfigs(const FeatureVector& features, const GroupVector& groups);
+  void LoadConfigs(const ConfigurationProviderList& configuration_providers,
+                   const FeatureVector& features,
+                   const GroupVector& groups);
 
  private:
-  void LoadFeatureConfig(const base::Feature& feature,
-                         const FeatureVector& all_features,
-                         const GroupVector& all_groups);
-  void LoadGroupConfig(const base::Feature& group);
+  void LoadFeatureConfig(
+      const base::Feature& feature,
+      const ConfigurationProviderList& configuration_providers,
+      const FeatureVector& all_features,
+      const GroupVector& all_groups);
+  void LoadGroupConfig(
+      const base::Feature& group,
+      const ConfigurationProviderList& configuration_providers);
 
   // Expands any group names in the existing FeatureConfig fields into the
   // feature names that are in the group.
@@ -62,10 +66,6 @@ class ChromeVariationsConfiguration : public Configuration {
 
   // The current group configurations.
   GroupConfigMap group_configs_;
-
-  // The configuration providers that will be used to fill out feature and group
-  // configurations.
-  const ConfigurationProviderList configuration_providers_;
 };
 
 }  // namespace feature_engagement

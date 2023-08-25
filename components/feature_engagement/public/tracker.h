@@ -153,7 +153,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       base::WeakPtr<TrackerEventExporter> event_exporter,
-      ConfigurationProviderList configuration_providers =
+      const ConfigurationProviderList& configuration_providers =
           GetDefaultConfigurationProviders());
 
   // Possibly adds a command line argument for a child browser process to

@@ -68,19 +68,19 @@ std::vector<std::string> FlattenGroupsAndFeatures(
 
 }  // namespace
 
-ChromeVariationsConfiguration::ChromeVariationsConfiguration(
-    ConfigurationProviderList configuration_providers)
-    : configuration_providers_(std::move(configuration_providers)) {}
+ChromeVariationsConfiguration::ChromeVariationsConfiguration() = default;
 ChromeVariationsConfiguration::~ChromeVariationsConfiguration() = default;
 
-void ChromeVariationsConfiguration::LoadConfigs(const FeatureVector& features,
-                                                const GroupVector& groups) {
+void ChromeVariationsConfiguration::LoadConfigs(
+    const ConfigurationProviderList& configuration_providers,
+    const FeatureVector& features,
+    const GroupVector& groups) {
   // This method should only be called once.
   CHECK(configs_.empty());
   CHECK(group_configs_.empty());
 
   for (auto* feature : features) {
-    LoadFeatureConfig(*feature, features, groups);
+    LoadFeatureConfig(*feature, configuration_providers, features, groups);
   }
 
   if (!base::FeatureList::IsEnabled(kIPHGroups)) {
@@ -90,12 +90,13 @@ void ChromeVariationsConfiguration::LoadConfigs(const FeatureVector& features,
   ExpandGroupNamesInFeatures(groups);
 
   for (auto* group : groups) {
-    LoadGroupConfig(*group);
+    LoadGroupConfig(*group, configuration_providers);
   }
 }
 
 void ChromeVariationsConfiguration::LoadFeatureConfig(
     const base::Feature& feature,
+    const ConfigurationProviderList& configuration_providers,
     const FeatureVector& all_features,
     const GroupVector& all_groups) {
   DCHECK(!base::Contains(configs_, feature.name));
@@ -103,7 +104,7 @@ void ChromeVariationsConfiguration::LoadFeatureConfig(
   DVLOG(3) << "Loading feature config for " << feature.name;
   bool loaded = false;
   FeatureConfig& config = configs_[feature.name];
-  for (const auto& provider : configuration_providers_) {
+  for (const auto& provider : configuration_providers) {
     const bool result = provider->MaybeProvideFeatureConfiguration(
         feature, config, all_features, all_groups);
     if (result) {
@@ -122,14 +123,15 @@ void ChromeVariationsConfiguration::LoadFeatureConfig(
 }
 
 void ChromeVariationsConfiguration::LoadGroupConfig(
-    const base::Feature& group) {
+    const base::Feature& group,
+    const ConfigurationProviderList& configuration_providers) {
   DCHECK(!base::Contains(group_configs_, group.name));
 
   DVLOG(3) << "Parsing group config for " << group.name;
 
   bool loaded = false;
   GroupConfig& config = group_configs_[group.name];
-  for (const auto& provider : configuration_providers_) {
+  for (const auto& provider : configuration_providers) {
     const bool result = provider->MaybeProvideGroupConfiguration(group, config);
     if (result) {
       RecordParseResult(group.name, config, *provider);
