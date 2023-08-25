@@ -259,7 +259,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   void PollHostedFilePinStates() override;
 
-  void CancelUploadByPath(const base::FilePath& path) override;
+  void CancelUploadByPath(
+      const base::FilePath& path,
+      drivefs::mojom::DriveFs::CancelUploadMode cancel_mode) override;
 
   void SetDocsOfflineEnabled(
       bool enabled,

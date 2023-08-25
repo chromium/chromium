@@ -1342,6 +1342,8 @@ void PinManager::OnFilePinned(const Id id,
   DCHECK(!files_to_pin_.contains(id));
 }
 
+// TODO(b/297442320): Remove `OnSyncingStatusUpdate` now we entirely rely on
+// `OnItemProgress.
 void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1368,6 +1370,7 @@ void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   PinSomeFiles();
 }
 
+// TODO(b/297442320): Remove `OnSyncingEvent`.
 bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1417,6 +1420,9 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
       UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
                           false);
       return true;
+    case State::kCancelledAndDeleted:
+    case State::kCancelledAndTrashed:
+      return false;
   }
 
   LOG(ERROR) << "Unexpected event type: " << Quote(event);

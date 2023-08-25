@@ -134,9 +134,17 @@ interface DriveFs {
   GetMetadataByStableId(int64 stable_id) => (
       FileError error, FileMetadata? metadata);
 
-  // Attempts to cancel an in progress upload. `path` must be made absolute
+  // Indicates what CelloFS should do after the upload is cancelled.
+  enum CancelUploadMode {
+    kTrashAfterCancellation,
+    kDeleteAfterCancellation,
+  };
+
+  // Attempts to cancel an in progress upload and either trash or delete the
+  // file afterwards, depending on `cancel_mode`. `path` must be made absolute
   // from the drive mount point.
-  CancelUploadByPath(mojo_base.mojom.FilePath path);
+  CancelUploadByPath(mojo_base.mojom.FilePath path,
+                      CancelUploadMode cancel_mode);
 
   // Enable Docs offline explicitly.
   SetDocsOfflineEnabled(bool enabled) => (FileError error);
@@ -546,6 +554,8 @@ struct ItemEvent {
     kInProgress,
     kCompleted,
     kFailed,
+    kCancelledAndDeleted,
+    kCancelledAndTrashed,
   };
 
   // The stable ID used by DriveFS.

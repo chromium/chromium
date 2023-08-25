@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-shared.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "components/drive/file_errors.h"
@@ -702,7 +703,9 @@ void FakeDriveFs::ToggleSyncForPath(
 
 void FakeDriveFs::PollHostedFilePinStates() {}
 
-void FakeDriveFs::CancelUploadByPath(const base::FilePath& path) {}
+void FakeDriveFs::CancelUploadByPath(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::CancelUploadMode cancel_mode) {}
 
 void FakeDriveFs::SetDocsOfflineEnabled(
     bool enabled,
