@@ -1041,7 +1041,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // Update the TableView and TableViewModel sections to match the new
     // sessionState.
     // Turn Off animations since UITableViewRowAnimationNone still animates.
-    BOOL animationsWereEnabled = [UIView areAnimationsEnabled];
+    const BOOL animationsWereEnabled = [UIView areAnimationsEnabled];
     [UIView setAnimationsEnabled:NO];
     if (newSessionState ==
         SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS) {
@@ -1211,9 +1211,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     }
     // Disable animations when setting the background color to prevent flash on
     // rotation.
+    const BOOL animationsWereEnabled = [UIView areAnimationsEnabled];
     [UIView setAnimationsEnabled:NO];
     signinPromoCell.backgroundColor = nil;
-    [UIView setAnimationsEnabled:YES];
+    [UIView setAnimationsEnabled:animationsWereEnabled];
   }
   // Retrieve favicons for closed tabs and remote sessions.
   if (itemTypeSelected == ItemTypeRecentlyClosed ||
