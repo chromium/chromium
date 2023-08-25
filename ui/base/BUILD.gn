@@ -932,7 +932,10 @@ if (is_android) {
 
 bundle_data("ui_base_unittests_bundle_data") {
   testonly = true
-  sources = [ "test/data/data_pack_unittest/truncated-header.pak" ]
+  sources = [
+    "//testing/buildbot/filters/ios.ui_base_unittests.filter",
+    "test/data/data_pack_unittest/truncated-header.pak",
+  ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
