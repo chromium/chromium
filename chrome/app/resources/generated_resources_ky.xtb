@@ -1826,6 +1826,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2412015533711271895">Бул кеңейтүүнү колдонуу үчүн ата-энең же камкорчу уруксат бериши керек</translation>
 <translation id="2412593942846481727">Жаңы версия бар</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> боюнча табылгандарды карай берүү</translation>
 <translation id="2414886740292270097">Кочкул</translation>
 <translation id="2416435988630956212">Баскычтоптун функционалдык баскычтары</translation>
 <translation id="2418307627282545839">Баары жарык болуп, жаркырап турсун</translation>
@@ -1965,6 +1966,10 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (тандалды)</translation>
 <translation id="2513396635448525189">Аккаунтка кирүү сүрөтү</translation>
+<translation id="251425554130284360">Эң акыркы аракеттериңизге кайтуу оңой болушу үчүн, издөө сурамдарынын варианттарын жана баш баккан барактарыңызды көрүп жатасыз.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Картанын менюсунан параметрлерди тескесеңиз болот же көбүрөөк параметрлерди көрүү үчүн Chrome'ду ыңгайлаштыруу бөлүмүнө өтүңүз.</translation>
 <translation id="2514326558286966059">Манжаңыздын изи менен кулпусун тезирээк ачыңыз</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Колдонуучунун атын ырастаңыз</translation>
@@ -2398,6 +2403,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2861402191395139055">Passpoint жазылуулары</translation>
 <translation id="2861941300086904918">Түпнуска Кардардын коопсуздугун башкаргыч</translation>
 <translation id="2862815659905780618">Linux'ту өнүктүрүү чөйрөсүн өчүрүү</translation>
+<translation id="2862986593239703553">ушул карта</translation>
 <translation id="2864601841139725659">Профилиңиздин сүрөтүн коюп алыңыз</translation>
 <translation id="2865057607286263192">Басым белгилерин жана атайын символдорду көрүү үчүн баскычтоптогу баскычтарды коё бербей басып туруңуз. Ушуну менен алфавиттин тамгаларын кайталоо өчүрүлөт. Англис (АКШ) тилинде гана жеткиликтүү.</translation>
 <translation id="2865919525181940183">Экрандагы программалардын скриншоту</translation>
@@ -3476,6 +3482,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB түзмөк менен байланышуу}other{# USB түзмөк менен байланышуу}}</translation>
 <translation id="3764753550716962406">Google себеттериңиздеги арзандатууларды тапсынбы?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө}}</translation>
+<translation id="3765055238058255342">картанын ушундай түрү</translation>
 <translation id="3765246971671567135">Демо режимде оффлайнда колдонуу саясаты окулбай койду.</translation>
 <translation id="3765696567014520261">Сайттар cookie файлдарыңыз аркылуу сиз көргөн вебсайттарды көрө албайт (мисалы, жарнамаларды жекелештирүү үчүн). Функциялар айрым сайттарда иштебеши мүмкүн</translation>
 <translation id="3766687283066842296">Phone Hub жөнүндө кеңири маалымат</translation>
@@ -4170,6 +4177,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> тили эч качан которулбасын</translation>
 <translation id="4332976768901252016">Ата-эненин көзөмөлүн жөндөө</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 RSA шифрлөөсү менен</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> кайра көрсөтүлбөйт</translation>
 <translation id="4339203724549370495">Колдонмону чыгарып салуу</translation>
 <translation id="4340125850502689798">Колдонуучунун аты жараксыз</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" колдонмосу менен байланышкысы келет</translation>

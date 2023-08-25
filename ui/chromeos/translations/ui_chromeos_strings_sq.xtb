@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Numri total i skedarëve</translation>
 <translation id="1755345808328621801">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="1757915090001272240">Alfabet latin me gjerësi të plotë</translation>
+<translation id="1761091787730831947">Ndaj me <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
 <translation id="180035236176489073">Duhet të jesh në linjë për t'u qasur te këta skedarë.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Instalo aplikacionin me Linux</translation>
 <translation id="2719020180254996569">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detaje</translation>
 <translation id="2724954091494693138">Turqisht me tastierën F</translation>
+<translation id="2732288874651063549">Menaxho ndarjen me <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamisht VNI</translation>
 <translation id="2735623501230989521">Jepi leje Parallels Desktop që të qaset në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">E ke përdorur të gjithë hapësirën tënde ruajtëse individuale të Google Workspace.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="3511705761158917664">Po përgatitet për të sinkronizuar <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="3522708245912499433">Portugalisht</translation>
+<translation id="3523225005467146490">1 dosje u nda me <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Kujdes! Këta skedarë janë të përkohshëm dhe mund të fshihen automatikisht për të liruar hapësirën në disk.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosje</translation>
 <translation id="3548125359243647069">Është futur shumë herë një kod PIN i gabuar.</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">Flutura</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6170470584681422115">Sandviç</translation>
+<translation id="6181912134988520389">Jepi leje <ph name="VM_NAME" /> që të ketë qasje te skedarët në "Diskun tënd të Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="6187719147498869044">Hungarisht</translation>
 <translation id="6198252989419008588">Ndrysho kodin PIN</translation>
 <translation id="6199801702437275229">Po pret për informacionin e hapësirës...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">Suedisht</translation>
 <translation id="6990081529015358884">Nuk ke më hapësirë të lirë</translation>
 <translation id="6993826899923627728">Këta artikuj janë te koshi</translation>
+<translation id="6996593023542748157">Ndaj dosjen me <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Organizata jote ka nevojë për më shumë hapësirë ruajtëse për ta përfunduar ngarkimin.</translation>
 <translation id="7009985720488544166">Zhvendosja e <ph name="COUNT" /> skedarëve është bllokuar nga politika e administratorit</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Bjellorusisht</translation>
 <translation id="8336153091935557858">Dje <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Ekziston tashmë një skedar ose një direktori me të njëjtin emër.</translation>
+<translation id="83651606385705612">Jepi leje <ph name="VM_NAME" /> që të ketë qasje te skedarët në dosjen "<ph name="FOLDER_NAME" />"</translation>
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8372852072747894550">Greqisht</translation>
 <translation id="8386903983509584791">Skanimi përfundoi</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>
 <translation id="8425213833346101688">Ndrysho</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> dosje u ndanë me <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Ndrysho PIN-in e kartës SIM</translation>
 <translation id="8437209419043462667">Amerikane</translation>
 <translation id="8452135315243592079">Karta SIM mungon</translation>

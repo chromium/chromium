@@ -1812,6 +1812,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2412015533711271895">Părintele sau tutorele trebuie să își dea acordul ca să poți folosi extensia</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Reia navigarea pentru <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Întunecat</translation>
 <translation id="2416435988630956212">Tastele pentru funcții de la tastatură</translation>
 <translation id="2418307627282545839">Menține conținutul luminos și spațios</translation>
@@ -1951,6 +1952,10 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selectată)</translation>
 <translation id="2513396635448525189">Imagine de conectare</translation>
+<translation id="251425554130284360">Vezi paginile pe care le-ai accesat și căutările sugerate pentru a reveni ușor la cea mai recentă activitate.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="2514326558286966059">Deblochează mai rapid folosind amprenta</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmă numele de utilizator</translation>
@@ -2384,6 +2389,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2861402191395139055">Abonamente Passpoint</translation>
 <translation id="2861941300086904918">Manager de securitate Client nativ</translation>
 <translation id="2862815659905780618">Elimină mediul de dezvoltare Linux</translation>
+<translation id="2862986593239703553">acest card</translation>
 <translation id="2864601841139725659">Setează fotografia de profil</translation>
 <translation id="2865057607286263192">Apasă lung pe tastele de pe tastatură pentru a vedea semnele de evidențiere și caracterele speciale. Astfel, se dezactivează apăsarea repetată a tastelor alfabetice. Opțiune disponibilă numai pentru limba engleză (S.U.A.).</translation>
 <translation id="2865919525181940183">Captură de ecran a programelor afișate pe ecran</translation>
@@ -3462,6 +3468,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunică cu un dispozitiv USB}few{Comunică cu # dispozitive USB}other{Comunică cu # de dispozitive USB}}</translation>
 <translation id="3764753550716962406">Permiți ca Google să utilizeze coșul tău de cumpărături pentru a găsi reducerile disponibile?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Se trimite <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}few{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}other{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">acest tip de card</translation>
 <translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
 <translation id="3765696567014520261">Site-urile nu pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile din anumite site-uri să nu ruleze</translation>
 <translation id="3766687283066842296">Află mai multe despre Phone Hub</translation>
@@ -4156,6 +4163,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4330387663455830245">Nu traduce niciodată din <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configurează controlul parental</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 cu criptare RSA</translation>
+<translation id="4334768748331667190">Nu vei mai vedea <ph name="MODULE_NAME" /></translation>
 <translation id="4339203724549370495">Dezinstalează aplicația</translation>
 <translation id="4340125850502689798">Nume de utilizator nevalid</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> dorește să comunice cu aplicația „<ph name="EXTENSION_NAME" />”</translation>

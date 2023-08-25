@@ -1786,6 +1786,7 @@
 <translation id="2412015533711271895">तपाईंका अभिभावकले तपाईंलाई यो एक्स्टेन्सन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> का बारेमा ब्राउज गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2416435988630956212">किबोर्डका फङ्सन कुञ्जीहरू</translation>
 <translation id="2418307627282545839">स्क्रिनलाई चम्किलो र हेरौँ हेरौँ लाग्ने बनाउनुहोस्</translation>
@@ -1924,6 +1925,10 @@
 <translation id="2509566264613697683">८ गुणा</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (चयन गरिएको)</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
+<translation id="251425554130284360">तपाईं आफूले हालसालै गरेको गतिविधिमा फर्कन सक्नुहोस् भन्नाका लागि तपाईंलाई तपाईंले हेरेका पेज र सिफारिस गरिएका खोजहरू देखाइँदै छन्।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तपाईं कार्ड मेनुमार्फत सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="2514326558286966059">फिंगरप्रिन्ट प्रयोग गरी अझ छिटो अनलक गर्नुहोस्</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">युजरनेम पुष्टि गर्नुहोस्</translation>
@@ -2352,6 +2357,7 @@
 <translation id="2861402191395139055">पासपोइन्टका सदस्यताहरू</translation>
 <translation id="2861941300086904918">स्वदेशी ग्राहक सुरक्षा व्यवस्थापक</translation>
 <translation id="2862815659905780618">Linux डेभलपमेन्ट इनभारमेन्ट हटाउनुहोस्</translation>
+<translation id="2862986593239703553">यो कार्ड</translation>
 <translation id="2864601841139725659">आफ्नो प्रोफाइल तस्बिर सेट गर्नुहोस्</translation>
 <translation id="2865057607286263192">एक्सेन्ट चिन्ह र विशेष वर्णहरू हेर्न किबोर्डका कीहरू थिचिराख्नुहोस्। तपाईंले यसो गर्नुभयो भने अङ्ग्रेजी अक्षरका कीहरू थिचिराख्दा तिनको वर्ण दोहोरिने सेटिङ अफ हुन्छ। अङ्ग्रेजी (सं. रा. अमेरिका) भाषामा मात्र उपलब्ध छ।</translation>
 <translation id="2865919525181940183">हाल स्क्रिनमा देखिएका कार्यक्रमहरूको स्क्रिनसट</translation>
@@ -3415,6 +3421,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ एउटा USB यन्त्रमार्फत संचार गर्नुहोस्}other{ # USB यन्त्रहरूमार्फत संचार गर्नुहोस्}}</translation>
 <translation id="3764753550716962406">Google लाई उपलब्ध छुट खोज्नका लागि तपाईंको कार्ट प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> मा <ph name="ATTACHMENTS" /> पठाइँदै}other{<ph name="DEVICE_NAME" /> मा <ph name="ATTACHMENTS" /> पठाइँदै}}</translation>
+<translation id="3765055238058255342">यस प्रकारको कार्ड</translation>
 <translation id="3765246971671567135">अफलाइन डेमो मोड नीति पढ्न सकिएन।</translation>
 <translation id="3765696567014520261">साइटहरूले विज्ञापन पर्सनलाइज गर्ने जस्ता प्रयोजनका लागि तपाईंले ब्राउजर प्रयोग गरी विभिन्न साइटहरूमा गर्नुभएका क्रियाकलाप हेर्न तपाईंका कुकीहरू प्रयोग गर्न सक्दैनन्। केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="3766687283066842296">फोन हबका बारेमा थप जान्नुहोस्</translation>
@@ -4096,6 +4103,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> लाई कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="4332976768901252016">अभिभावकीय नियन्त्रणहरू सेट अप गर्नुहोस्</translation>
 <translation id="4333854382783149454">RSA गुप्तिकरणको साथमा PKCS #1 SHA-1</translation>
+<translation id="4334768748331667190">तपाईं अब उप्रान्त <ph name="MODULE_NAME" /> देख्नु हुने छैन</translation>
 <translation id="4339203724549370495">एप अनइन्स्टल गर्नुहोस्</translation>
 <translation id="4340125850502689798">युजरनेम अवैध छ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> एपलाई "<ph name="EXTENSION_NAME" />" सँग सञ्चार गर्न चाहन्छ</translation>

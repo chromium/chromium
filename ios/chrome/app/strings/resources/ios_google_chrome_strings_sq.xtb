@@ -2,14 +2,24 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1143896152279775643">Fjalëkalimi yt do të ruhet në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Vazhdo të përdorësh të dhënat e Chrome në "Llogarinë tënde të Google".</translation>
 <translation id="1282031177488366470">Ndihmo në përmirësimin e veçorive dhe cilësisë së funksionimit të Chrome</translation>
 <translation id="1352919863522755794">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
+<translation id="1407843355326180937">Identifikohu në këtë sajt dhe Chrome për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
 <translation id="1462727070346936664">Identifikohu për të përfituar sa më shumë nga Chrome.</translation>
 <translation id="1479202195792305274">Chrome mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="1491435845014430217">Aktivizo “Kyç skedat 'e fshehta' kur mbyll Chrome”.</translation>
 <translation id="1493827051843127077">Caktoje Chrome si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="1504372625950710826">Chrome nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="1511320244449497906">Je identifikuar dhe po sinkronizon të dhënat me një llogari të menaxhuar nga <ph name="DOMAIN" />, ku administratori i saj tani mund të caktojë politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chrome.</translation>
+<translation id="1526327845902180576">Kur aktivizohet:
+<ph name="BEGIN_INDENT" />  • Ndihmo në përmirësimin e Chrome për njerëzit që e përdorin atë ashtu si ti.<ph name="END_INDENT" />
+
+Gjëra për të pasur parasysh:
+<ph name="BEGIN_INDENT" />  • Informacionet në lidhje me përdorimin e Chrome nga ana jote dërgohen te Google, por nuk lidhen me ty.
+
+  • Nëse Chrome ndërpritet aksidentalisht, detajet në lidhje me ndërprerjen aksidentale mund të përfshijnë disa informacione personale.
+  • Nëse sinkronizon historikun tënd te "Llogaria jote e Google", metrikat mund të përfshijnë gjithashtu informacione rreth URL-ve që ti viziton.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Ti ke sigurinë më të fortë të Chrome kundër sajteve të dëmshme të uebit</translation>
 <translation id="1682483655351012182">Sinkronizo të dhënat e tua të Chrome</translation>
 <translation id="1733654336159102143">Kyç modalitetin "E fshehtë" kur largohesh nga Chrome ose kur kalon te një aplikacion tjetër</translation>
@@ -56,6 +66,7 @@
 <translation id="3720541637541300822">Kyçi skedat "e fshehta" kur të mbyllësh Chrome</translation>
 <translation id="3827545470516145620">Po merr mbrojtjen standarde të sigurisë në këtë pajisje</translation>
 <translation id="384394811301901750">Google Chrome nuk mund të përdorë kamerën tënde për momentin</translation>
+<translation id="3901001113120561395">Përfito sa më shumë nga Chrome.</translation>
 <translation id="3980220367029651214">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chrome po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
@@ -71,6 +82,9 @@
 <translation id="4636900170638246267">Identifikohu në këtë sajt dhe në Chrome.</translation>
 <translation id="4698415050768537821">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google".
+
+        Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="484033449593719797">Nuk mbështetet në Chrome Beta</translation>
 <translation id="4840404732697892756">"Menaxheri i fjalëkalimeve i Google" mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="4903674399067644695">Kjo kartë të shfaq sugjerime se si të përfitosh sa më shumë nga Chrome.</translation>
@@ -78,6 +92,7 @@
 <translation id="5108659628347594808">Përmirëso Chrome</translation>
 <translation id="5119391094379141756">Zgjidh Chrome</translation>
 <translation id="5162467219239570114">Chrome është i papërditësuar Nëse nuk ofrohet një përditësim në <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ka mundësi që pajisja jote nuk i mbështet më versionet e reja të Chrome.</translation>
+<translation id="5190139289262548459">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si përdoret Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome nuk mund të përdorë kamerën tënde sepse ajo është në përdorim nga një aplikacion tjetër</translation>
 <translation id="5395376160638294582">Sigurohu që mund t'i përdorësh gjithmonë të dhënat e Chrome në "Llogarinë tënde të Google"</translation>
 <translation id="5439191312780166229">Të paralajmëron për sajtet e rrezikshme, edhe ato që Google nuk i ka njohur më parë, duke analizuar më shumë të dhëna nga sajtet sesa nga mbrojtja standarde. Mund të zgjedhësh që t'i kapërcesh paralajmërimet e Chrome.</translation>
@@ -107,6 +122,9 @@
 <translation id="6648150602980899529">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="6676840375528380067">Të pastrohen të dhënat e tua të Chrome nga kjo pajisje?</translation>
 <translation id="6709398533399187136">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh tani.</translation>
+<translation id="6815466750807582739">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
+
+Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
 <translation id="6964931465519938134">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="6975725306479268850">Zgjidh Chrome për AutoFill</translation>
@@ -152,6 +170,9 @@
 <translation id="8772179140489533211">Shfaq kërkesa për t'u identifikuar në Chrome.</translation>
 <translation id="8788269841521769222">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Cilësimet e Chrome</translation>
+<translation id="8856877214925961642">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat.
+
+Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër.</translation>
 <translation id="8897749957032330183">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje.</translation>
 <translation id="8969290730818637510">Kur aktivizohet:

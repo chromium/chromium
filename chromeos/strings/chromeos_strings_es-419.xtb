@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
 <translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks.</translation>
+<translation id="1154390310959620237">Solo puedes personalizar 5 combinaciones de teclas. Borra una combinación de teclas para agregar una nueva.</translation>
 <translation id="1164939766849482256">Protector de pantalla Del amanecer a la noche</translation>
 <translation id="1167755866710282443">Abre el menú para personalizar las teclas. Arrastra el menú para moverlo.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Reiniciando…</translation>
 <translation id="2533048460510040082">Contenido de ayuda sugerido</translation>
 <translation id="2536159006530886390">No puedo conectarme a Internet.</translation>
+<translation id="2555662516429796509">Presiona 1 a 4 modificadores y 1 tecla adicional en el teclado</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
 <translation id="2597774443162333062">Los archivos se enviarán a Google para depurarlos</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
 <translation id="3373141842870501561">Fondo de pantalla Flujo de la Tierra</translation>
 <translation id="337375748120863155">Información sobre la selección. Usa las teclas de flecha hacia la izquierda o la derecha para acceder a los controles.</translation>
+<translation id="3383623117265110236">Exclusivo</translation>
 <translation id="3404249063913988450">Habilitar el protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">disminuir brillo</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4176659219503619100">Panel de control</translation>
+<translation id="4185315616950253617">La combinación de teclas con las teclas de la fila superior debe incluir la tecla de búsqueda.</translation>
 <translation id="420283545744377356">Desactivar el protector de pantalla</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Latencia de HTTP</translation>
 <translation id="4271957103967917607">Ver en pantalla completa</translation>
 <translation id="4275663329226226506">Multimedia</translation>
+<translation id="4278766082079064416">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Edita o quita esta combinación para resolver el conflicto.</translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4289849978083912975">Presentación de diapositivas</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
 <translation id="4873827928179867585">Algoritmo de autenticación</translation>
 <translation id="4880328057631981605">Nombre de punto de acceso</translation>
+<translation id="488307179443832524">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Presiona una nueva combinación de teclas.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4891842000192098784">Esfuerzo</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Aumentar el brillo de la pantalla</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
+<translation id="5816802250591013230">No se asignó ningún acceso directo</translation>
 <translation id="5826644637650799838">Acerca del arte</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositivo no está conectado.</translation>
+<translation id="7046522406494308071">¿Quieres restablecer todas las combinaciones de teclas a los valores predeterminados?</translation>
 <translation id="7058278511608979688">Finalizar y guardar</translation>
 <translation id="7059230779847288458">Cargando, <ph name="TIME_VALUE" /> para completar la carga</translation>
 <translation id="7068619307603204412">Prepara el dispositivo</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Se produjo un error de autorización</translation>
 <translation id="7103252855940681301">El nombre del dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> es <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Elegir material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">ingresar</translation>
 <translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Proveedor de red celular</translation>
 <translation id="725133483556299729">Seleccionar un correo electrónico</translation>
 <translation id="7271040990581020067">El escáner está en uso. Vuelve a intentarlo más tarde.</translation>
+<translation id="7273347807225967898">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas con una tecla modificadora (Ctrl, Alt, Mayúsculas, Búsqueda o Selector).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Siente la brisa</translation>
 <translation id="7287310195820267359">Colecciones de fondo de pantalla</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">luz del teclado</translation>
 <translation id="773153675489693198">Conteo de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
+<translation id="7752963721013053477">Del amanecer a la noche: Exclusivo</translation>
 <translation id="7762130827864645708">El cambio de contraseña se hizo correctamente. De ahora en más, utiliza la nueva contraseña.</translation>
 <translation id="7763470514545477072">Coincidencia del sufijo de dominio</translation>
 <translation id="7769672763586021400">ID del modelo</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
+<translation id="7903695460270716054">Elegir imágenes y material gráfico seleccionados</translation>
 <translation id="7915220255123750251">Administra la configuración del APN de red. Los APNs establecen una conexión entre Internet y una red móvil.</translation>
 <translation id="7936303884198020182">no se encontraron servidores de nombres</translation>
 <translation id="7942349550061667556">Rojo</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8094062939584182041">Permitir que Google te envíe un correo electrónico sobre este problema</translation>
 <translation id="8104083085214006426">Estás usando una red abierta y no segura</translation>
+<translation id="8111706652656628199">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas con Mayúsculas y 1 tecla modificadora adicional (Ctrl, Alt, Búsqueda o Selector).</translation>
 <translation id="811820734797650957">(Android) se puede hacer ping a la puerta de enlace</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum de Google Fotos</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Presiona una nueva combinación de teclas. Para reemplazar la combinación original, vuelve a presionar esta combinación de teclas.</translation>
 <translation id="879568662008399081">Es posible que esta red tenga un portal cautivo</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798441408945964110">Nombre del proveedor</translation>

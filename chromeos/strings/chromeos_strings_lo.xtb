@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ເປີດໜ້າຈໍອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍນອກແລ້ວ. ມີ <ph name="NUM_UPDATES" /> ອັບເດດໃໝ່.</translation>
 <translation id="1145516343487477149">ຊອກຫາບົດຄວາມຊ່ວຍເຫຼືອ ແລະ ຄຳຕອບສຳລັບຄຳຖາມ Chromebook ທົ່ວໄປ</translation>
+<translation id="1154390310959620237">ທ່ານສາມາດປັບແຕ່ງທາງລັດໄດ້ 5 ອັນເທົ່ານັ້ນ. ລຶບທາງລັດໃດໜຶ່ງເພື່ອເພີ່ມອັນໃໝ່.</translation>
 <translation id="1164939766849482256">ພາບພັກໜ້າຈໍຮຸ່ງອະລຸນຈົນເຖິງກາງຄືນ</translation>
 <translation id="1167755866710282443">ເປີດເມນູເພື່ອປັບແຕ່ງກະແຈ. ລາກເມນູເພື່ອຍ້າຍ.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">ກຳ​ລັງ​ຣີ​ສະ​ຕາດ...</translation>
 <translation id="2533048460510040082">ເນື້ອຫາຊ່ວຍເຫຼືອທີ່ແນະນຳ</translation>
 <translation id="2536159006530886390">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້.</translation>
+<translation id="2555662516429796509">ກົດຕົວຂະຫຍາຍ 1-4 ລາຍການ ແລະ ກະແຈອື່ນໆອີກ 1 ລາຍການຢູ່ແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ເພື່ອຕັ້ງຄ່າ, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="2597774443162333062">ໄຟລ໌ຈະຖືກສົ່ງຫາ Google ສຳລັບການດີບັກ</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
 <translation id="3373141842870501561">ຮູບພື້ນຫຼັງການເຄື່ອນທີ່ຂອງໂລກ</translation>
 <translation id="337375748120863155">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບສິ່ງທີ່ທ່ານເລືອກ. ໃຊ້ແປ້ນລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອເຂົ້າເຖິງການຄວບຄຸມ.</translation>
+<translation id="3383623117265110236">ພິເສດສະເພາະ</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">ຫຼຸດຄວາມສະຫວ່າງລົງ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4176659219503619100">ແຜງຄວບຄຸມ</translation>
+<translation id="4185315616950253617">ທາງລັດທີ່ມີປຸ່ມແຖວເທິງສຸດຈະຕ້ອງມີປຸ່ມຊອກຫານຳ.</translation>
 <translation id="420283545744377356">ປິດສະກຣີນເຊັບເວີ</translation>
 <translation id="4213104098953699324">ແປ້ນພິມ USB</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
 <translation id="4271957103967917607">ເບິ່ງແບບເຕັມຈໍ</translation>
 <translation id="4275663329226226506">ມີເດຍ</translation>
+<translation id="4278766082079064416">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກະລຸນາແກ້ໄຂ ຫຼື ລຶບອອກເພື່ອແກ້ໄຂຂໍ້ຂັດແຍ່ງ.</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4289849978083912975">​ສະ​ໄລ້​ໂຊ</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}}</translation>
 <translation id="4873827928179867585">ອະກໍຣິທຶມການພິສູດຢືນຢັນ</translation>
 <translation id="4880328057631981605">ຊື່​ຈຸດ​ເຂົ້າ​ເຖິງ</translation>
+<translation id="488307179443832524">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກົດປຸ່ມທາງລັດໃໝ່.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ເລືອກລະຫັດຜ່ານໃໝ່ໃນທັນທີ</translation>
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">ເພີ່ມຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
+<translation id="5816802250591013230">ບໍ່ໄດ້ມອບໝາຍທາງລັດເທື່ອ</translation>
 <translation id="5826644637650799838">ກ່ຽວກັບສິນລະປະ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7040230719604914234">ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="7041549558901442110">ອຸປະກອນບໍ່ໄດ້ເຊື່ອມຕໍ່.</translation>
+<translation id="7046522406494308071">ຣີເຊັດທາງລັດທັງໝົດເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="7058278511608979688">ສິ້ນສຸດ ແລະ ບັນທຶກ</translation>
 <translation id="7059230779847288458">ກໍາລັງສາກ
 <ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
@@ -775,6 +783,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ບໍ່ສຳເລັດ, ການມອບສິດບໍ່ສຳເລັດ</translation>
 <translation id="7103252855940681301">ອຸປະກອນທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /> ຊື່ <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">ເລືອກໜ້າປົກພິເສດສະເພາະສຳລັບ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">ປ້ອນເຂົ້າ</translation>
 <translation id="7130438335435247835">ຊື່ຈຸດການເຂົ້າເຖິງ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
@@ -796,6 +805,7 @@
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
+<translation id="7273347807225967898">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift, ຊອກຫາ ຫຼື ຕົວເປີດໃຊ້).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ສຳຜັດສາຍລົມເຢັນ</translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>
@@ -855,6 +865,7 @@
 <translation id="7718231387947923843">ແສງແປ້ນພິມ</translation>
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
+<translation id="7752963721013053477">ຮຸ່ງອະລຸນສູ່ຄວາມມືດ - ພິເສດສະເພາະ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
 <translation id="7769672763586021400">ID ຮຸ່ນ</translation>
@@ -874,6 +885,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ປະ​ເພດ​ຜູ້ໃຫ້​ບໍ​ລິ​ການ​</translation>
 <translation id="7882501334836096755">ກະແຈສາທາລະນະ</translation>
+<translation id="7903695460270716054">ເລືອກໜ້າປົກ ແລະ ຮູບທີ່ຄັດສັນມາ</translation>
 <translation id="7915220255123750251">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ.</translation>
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
@@ -900,6 +912,7 @@
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
+<translation id="8111706652656628199">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍໃຊ້ shift ແລະ ປຸ່ມຕົວດັດແປງ 1 ປຸ່ມ (ctrl, alt, ຊອກຫາ ຫຼື ຕົວເປີດໃຊ້).</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
@@ -978,6 +991,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກົດປຸ່ມທາງລັດໃໝ່. ເພື່ອແທນທີ່ທາງລັດຕົ້ນສະບັບ, ໃຫ້ກົດປຸ່ມທາງລັດນີ້ອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="879568662008399081">ເຄືອຂ່າຍນີ້ອາດມີຊ່ອງ​ທາງ​ເຂົ້າ​ຮັກ​ສາ​ໄວ້</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
 <translation id="8798441408945964110">ຊື່ຜູ້ໃຫ້ບໍລິການ</translation>

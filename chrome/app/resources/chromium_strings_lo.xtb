@@ -209,11 +209,13 @@
 <translation id="5527463683072221100">ເປີດ PDF ໃນ Chromium</translation>
 <translation id="5614091477838198795">ເມື່ອເປີດໃຊ້, ທ່ານຈະອອກຈາກລະບົບ Chromium ນຳ</translation>
 <translation id="5623402015214259806">{0,plural, =0{ມີການອັບເດດ Chromium}=1{ມີການອັບເດດ Chromium}other{ມີການອັບເດດ Chromium ເປັນເວລາ # ມື້ແລ້ວ}}</translation>
+<translation id="5643865575100044307">ລຶບຂໍ້ມູນເວັບໄຊຈາກອຸປະກອນຂອງທ່ານທຸກເທື່ອທີ່ທ່ານປິດ Chromium</translation>
 <translation id="5653831366781983928">ກະລຸນາປິດເປີດ Chromium ຄືນໃໝ່ຕອນນີ້</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">ສະ​ແດງ Chromium ເປັນພາສານີ້</translation>
 <translation id="5862307444128926510">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium</translation>
 <translation id="5883558403894052917">Chromium ພົບວ່າລາຍການເຫຼົ່ານີ້ມີເມົາແວ:</translation>
+<translation id="5889361821821684993">Chromium ຈະກວດສອບເປັນປະຈຳເພື່ອໃຫ້ແນ່ໃຈວ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານມີການຕັ້ງຄ່າທີ່ປອດໄພທີ່ສຸດ. ພວກເຮົາຈະແຈ້ງໃຫ້ທ່ານຮູ້ຫາກມີຫຍັງທີ່ຕ້ອງໃຫ້ທ່ານກວດສອບ.</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ</translation>
 <translation id="5924017743176219022">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່​ອິນ​ເຕີ​ເນັດ...</translation>
@@ -224,6 +226,7 @@
 <translation id="5988505247484123880">ມັນເປັນເລື່ອງປົກກະຕິສຳລັບເວັບໄຊທີ່ທ່ານເຂົ້າໃນການຈື່ສິ່ງຕ່າງໆທີ່ທ່ານສົນໃຈ, ເພື່ອປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ. ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນກັບ Chromium ກ່ຽວກັບຄວາມສົນໃຈຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
+<translation id="6055611795418209449">Chromium ຈະບລັອກການດາວໂຫຼດບາງຢ່າງ</translation>
 <translation id="6055895534982063517">ມີ Chromium ລຸ້ນໃໝ່ຢູ່, ແລະມັນປອດໄພກ່ວາຜ່ານມາ.</translation>
 <translation id="6063093106622310249">&amp;ເປີດໃນ Chromium</translation>
 <translation id="6072279588547424923">ເພີ່ມ <ph name="EXTENSION_NAME" /> ໃສ່ Chromium ແລ້ວ</translation>
@@ -237,6 +240,7 @@
 <translation id="6132897690380286411">Chromium ຈະປິດ ແລະ ລຶບຂໍ້ມູນໃນໄວໆນີ້</translation>
 <translation id="6134968993075716475">Safe Browsing ປິດຢູ່. Chromium ຂໍແນະນຳໃຫ້ເປີດມັນ.</translation>
 <translation id="6145820983052037069">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chromium ໄດ້ຢູ່ບ່ອນນີ້</translation>
+<translation id="6175304430031192654">ນອກຈາກນັ້ນ, Chromium ຍັງອາດສົ່ງຄຸກກີ້ ແລະ URL ປັດຈຸບັນຂອງທ່ານນຳ, ຂຶ້ນກັບການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="6183079672144801177">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານ ແລ້ວລອງສົ່ງໃໝ່.</translation>
 <translation id="6212496753309875659">ຄອມພິວເຕີນີ້ມີ Chromium ລຸ້ນໃໝ່ກ່ວາຢູ່ຮຽບຮ້ອຍແລ້ວ. ຖ້າຊອບແວບໍ່ເຮັດວຽກ, ກະລຸນາຖອນຕິດຕັ້ງ Chromium ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ຈະເປີດຄືນໃໝ່ດຽວນີ້}=1{Chromium ຈະເປີດຄືນໃໝ່ໃນ 1 ວິນາທີ}other{Chromium ຈະເປີດຄືນໃໝ່ໃນ # ວິນາທີ}}</translation>
@@ -257,6 +261,7 @@
 <translation id="6373523479360886564">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຖອນຕິດຕັ້ງ Chromium?</translation>
 <translation id="6375219077595103062">ເພີ່ມທາງລັດໃສ່ຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />ພວກເຮົາໃຊ້ຂໍ້ມູນນີ້ແນວໃດ:<ph name="END_BOLD" /> Chromium ສາມາດປະເມີນຄວາມສົນໃຈຂອງທ່ານໄດ້. ເວັບໄຊໃດໜຶ່ງທີ່ທ່ານເຂົ້າເບິ່ງຈະສາມາດຂໍ Chromium ເພື່ອເບິ່ງຄວາມສົນໃຈຂອງທ່ານໃນພາຍຫຼັງໄດ້ເພື່ອປັບແຕ່ງໂຄສະນາທີ່ທ່ານເຫັນໃຫ້ເປັນສ່ວນຕົວ.</translation>
+<translation id="6400112897226594999">ໂລໂກ້ Chromium ພາຍໃນໜ້າຈໍຄອມພິວເຕີ.</translation>
 <translation id="6403826409255603130">Chromium ແມ່ນບຣາວເຊີເວັບທີ່ແລ່ນໜ້າເວັບ ແລະແອັບພລິເຄຊັນດ້ວຍຄວາມໄວແບບສາຍຟ້າແມັບ. ມັນໄວ, ໝັ້ນຄົງ, ແລະໃຊ້ງ່າຍ. ທ່ອງເວັບໄດ້ປອດໄພກ່ວາດ້ວຍການປົກປ້ອງມາລແວ ແລະພິຊຊິງທີ່ສ້າງຢູ່ໃນຕົວ Chromium.</translation>
 <translation id="6442900851116057561">ຣີສະຕາດ ChromiumOS</translation>
 <translation id="6455857529632101747">ຍິນດີຕ້ອນຮັບສູ່ໂປຣໄຟລ໌ Chromium</translation>
@@ -306,6 +311,7 @@
 <translation id="718435575166326686">Chromium ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7196312274710523067">ບໍ່ສາມາດເປີດໃຊ້ Chromium ໄດ້. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="7197677400338048821">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ຫຼັງຈາກ 24 ຊົ່ວໂມງ.</translation>
+<translation id="7213407614656404070">ໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານຄລິກລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ</translation>
 <translation id="7223968959479464213">ຕົວຈັດການໜ້າວຽກ - Chromium</translation>
 <translation id="7246575524853130370">ຄວາມສົນໃຈຂອງທ່ານຕາມທີ່ Chromium ປະເມີນ</translation>
 <translation id="7309928523159922338">ການວັດແທກໂຄສະນາຈະເຮັດໃຫ້ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດຮ້ອງຂໍຂໍ້ມູນຈາກ Chromium ທີ່ຊ່ວຍໃຫ້ເວັບໄຊວັດແທກປະສິດທິພາບຂອງໂຄສະນາຂອງເຂົາເຈົ້າໄດ້. ການວັດແທກໂຄສະນາຈະຈຳກັດການຕິດຕາມຂ້າມເວັບໄຊໂດຍການໂອນຍ້າຍຂໍ້ມູນໜ້ອຍທີ່ສຸດເທົ່າທີ່ຈະເປັນໄປໄດ້ລະຫວ່າງເວັບໄຊ.</translation>

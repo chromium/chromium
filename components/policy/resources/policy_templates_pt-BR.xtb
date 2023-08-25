@@ -2264,6 +2264,7 @@ A política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> pode substituir o co
 
       Alerta: não delegue o controle da versão do <ph name="PRODUCT_OS_NAME" /> para um aplicativo de quiosque, porque isso pode impedir que o dispositivo receba atualizações de software e correções de segurança críticas. Delegar o controle da versão do <ph name="PRODUCT_OS_NAME" /> pode colocar os usuários em risco.</translation>
 <translation id="2989404644164421834">Atualizar páginas</translation>
+<translation id="299104951237091027">Uma página do histórico do Chrome organizada em grupos não ficará visível em chrome://history/2.</translation>
 <translation id="299446489108785864">A lista de URLs especificando para quais URLs a <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> é válida. Esta política não tem impacto em valores de abertura automática definidos pelo usuário.
 
       Se esta política for definida, os arquivos serão abertos automaticamente se o URL fizer parte deste conjunto e o tipo de arquivo estiver listado em <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se alguma das condições for falsa, o download não será aberto automaticamente por padrão.
@@ -3096,6 +3097,7 @@ serão permitidas. Os URLs serão enviados ao Google diretamente e com uma frequ
 <translation id="3625900437628963632">Indica se o valor da senha do Kerberos definido neste item de política deve ser lembrado. Se o valor não for definido ou for definido como verdadeiro, a senha será lembrada. Se for definido como falso, a senha não será lembrada. Ela será ignorada se o campo de senha não for especificado para a conta. Há suporte para este campo desde a versão 116 do ChromeOS.</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
+<translation id="3632122147977480546">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/2.</translation>
 <translation id="3634117682099473917">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços. Esta política é muito semelhante à <ph name="DOH_TEMPLATES_POLICY_NAME" />, que será substituída se ela for especificada. Em contraste, ela permite especificar informações de identidade.
 
 Se a política <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_SECURE" />, esta política ou a <ph name="DOH_TEMPLATES_POLICY_NAME" /> precisará ser definida e não poderá estar vazia.
@@ -4430,6 +4432,7 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o recurso "Seu smartphone".
 
       Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
+<translation id="4774499365794632139">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/2 por padrão.</translation>
 <translation id="4783415902268741066">Permitir mostrar a página de resultados mais recente do mecanismo de pesquisa padrão em um painel lateral do navegador</translation>
 <translation id="4786784434769279324">Ações a serem executadas quando o computador estiver inativo</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.
@@ -6125,6 +6128,16 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
       Se a política for desativada ou deixada sem definição, os usuários poderão escolher se vão ou não usar a <ph name="CHROME_SYNC_NAME" />.
 
       Observação: não ative esta política quando a <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver ativada, porque esse recurso usa a mesma funcionalidade do lado do cliente. Nesse caso, a sincronização hospedada pelo Google será completamente desativada.</translation>
+<translation id="6320186400425850182">Esta política controla a visibilidade da página do histórico do Chrome organizada em grupos de páginas.
+
+      Se a política for ativada, uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/2.
+
+      Se a política for desativada, uma página do histórico do Chrome organizada em grupos não ficará visível em chrome://history/2.
+
+      Se a política for deixada sem definição, uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/2 por padrão.
+
+      Se a política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> for desativada, mas <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> for ativada ou deixada sem definição, uma página do histórico do Chrome organizada em grupos vai continuar disponível em chrome://history/2, mas poderá ser menos relevante para o usuário.
+</translation>
 <translation id="6320935916601887506">O novo comportamento de offsetParent vai ser usado por padrão.</translation>
 <translation id="6327643515544933974">Configurações de USB na Web</translation>
 <translation id="6330882599388782338">Permite que os sites acessem sensores</translation>
@@ -8832,6 +8845,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
        Se a política for desativada ou não for definida, o Chrome usará o ícone padrão em conexões seguras.</translation>
 <translation id="8650974590712548439">Local do registro do Windows para clientes do Windows:</translation>
 <translation id="8653085952260859632">Envia informações sobre a memória</translation>
+<translation id="8653212052128283886">Mostrar uma visualização do histórico do Chrome com grupos de páginas</translation>
 <translation id="8653561013005884087">Se esta política for definida como verdadeira, a resposta falada será ativada. Se esta política for definida como falsa, a resposta falada será desativada.
 
        Se você definir a política, os usuários não podem mudá-la. Se a política não for definida, a resposta falada é desativada inicialmente, mas os usuários podem mudar isso a qualquer momento.</translation>
