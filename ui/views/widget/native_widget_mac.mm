@@ -514,10 +514,7 @@ void NativeWidgetMac::SetBoundsConstrained(const gfx::Rect& bounds) {
 void NativeWidgetMac::SetSize(const gfx::Size& size) {
   if (!ns_window_host_)
     return;
-  // Ensure the top-left corner stays in-place (rather than the bottom-left,
-  // which -[NSWindow setContentSize:] would do).
-  ns_window_host_->SetBoundsInScreen(
-      gfx::Rect(GetWindowBoundsInScreen().origin(), size));
+  ns_window_host_->SetSize(size);
 }
 
 void NativeWidgetMac::StackAbove(gfx::NativeView native_view) {

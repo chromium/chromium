@@ -164,6 +164,12 @@ interface NativeWidgetNSWindow {
   SetBounds(gfx.mojom.Rect new_bounds,
             gfx.mojom.Size minimum_content_size);
 
+  // Specify new size for the window via |new_size|. The top-left corner of the
+  // window will be kept in place. The size of the window will be expanded so
+  // that the content size will be at least |minimum_content_size|.
+  SetSize(gfx.mojom.Size new_size,
+          gfx.mojom.Size minimum_content_size);
+
   // Centers the window and sets its content size to |content_size|. The size of
   // the window will be expanded so that the content size will be at least
   // |minimum_content_size|.

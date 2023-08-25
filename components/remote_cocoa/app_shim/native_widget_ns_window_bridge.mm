@@ -564,6 +564,16 @@ void NativeWidgetNSWindowBridge::SetBounds(
   }
 }
 
+void NativeWidgetNSWindowBridge::SetSize(
+    const gfx::Size& new_size,
+    const gfx::Size& minimum_content_size) {
+  // Ensure the top-left corner stays in-place (rather than the bottom-left,
+  // which -[NSWindow setContentSize:] would do).
+  gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
+  new_window_bounds.set_size(new_size);
+  SetBounds(new_window_bounds, minimum_content_size);
+}
+
 void NativeWidgetNSWindowBridge::SetSizeAndCenter(
     const gfx::Size& content_size,
     const gfx::Size& minimum_content_size) {

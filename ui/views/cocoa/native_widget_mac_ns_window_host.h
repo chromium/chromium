@@ -155,6 +155,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // screen coordinates).
   void SetBoundsInScreen(const gfx::Rect& bounds);
 
+  // Changes the size of the window, leaving the top-left corner in its current
+  // location.
+  void SetSize(const gfx::Size& size);
+
   // Tell the window to transition to being fullscreen or not-fullscreen.
   // If `fullscreen` is true, then `target_display_id` specifies the display to
   // which window should move (or an invalid display, to use the default).

@@ -528,6 +528,33 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
   }
 }
 
+void NativeWidgetMacNSWindowHost::SetSize(const gfx::Size& size) {
+  DCHECK(!size.IsEmpty() ||
+         !native_widget_mac_->GetWidget()->GetMinimumSize().IsEmpty())
+      << "Zero-sized windows are not supported on Mac";
+  GetNSWindowMojo()->SetSize(size,
+                             native_widget_mac_->GetWidget()->GetMinimumSize());
+
+  if (remote_ns_window_remote_) {
+    // Reflecting the logic above in SetBoundsInScreen, update our local
+    // version of what we think the bounds of the window are. These bounds
+    // are going to be not quite correct until OnWindowGeometryChanged is
+    // called by the remote process but this is better than keeping the old
+    // bounds around as code might try to make decisions based on the current
+    // perceived bounds of the window.
+    gfx::Rect bounds(GetWindowBoundsInScreen().origin(), size);
+    UpdateLocalWindowFrame(bounds);
+
+    gfx::Rect window_in_screen =
+        gfx::ScreenRectFromNSRect([in_process_ns_window_ frame]);
+    gfx::Rect content_in_screen =
+        gfx::ScreenRectFromNSRect([in_process_ns_window_
+            contentRectForFrameRect:[in_process_ns_window_ frame]]);
+
+    OnWindowGeometryChanged(window_in_screen, content_in_screen);
+  }
+}
+
 void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen,
                                                 int64_t target_display_id) {
   // Note that when the NSWindow begins a fullscreen transition, the value of
