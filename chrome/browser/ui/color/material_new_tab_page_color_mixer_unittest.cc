@@ -76,7 +76,7 @@ TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedEnabled) {
   AddMaterialColorMixers();
 
   EXPECT_EQ(color_provider().GetColor(kColorNewTabPageModuleBackground),
-            color_provider().GetColor(ui::kColorSysNeutralContainer));
+            color_provider().GetColor(ui::kColorSysBaseContainer));
   EXPECT_EQ(color_provider().GetColor(kColorNewTabPageModuleItemBackground),
             color_provider().GetColor(ui::kColorSysSurface));
 }
