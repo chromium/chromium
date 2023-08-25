@@ -46,9 +46,9 @@ class TestRunner:
     that is passed in.
 
     :param logger: Structured logger
-    :param command_queue: multiprocessing.Queue used to send commands to the
+    :param command_queue: subprocess.Queue used to send commands to the
                           process
-    :param result_queue: multiprocessing.Queue used to send results to the
+    :param result_queue: subprocess.Queue used to send results to the
                          parent TestRunnerManager process
     :param executor: TestExecutor object that will actually run a test.
     """
@@ -617,7 +617,6 @@ class TestRunnerManager(threading.Thread):
             wait_timeout = (self.state.test.timeout * self.executor_kwargs['timeout_multiplier'] +
                             3 * self.executor_cls.extra_timeout)
             self.timer = threading.Timer(wait_timeout, self._timeout)
-            self.timer.name = f"{self.name}-timeout"
 
         self.send_message("run_test", self.state.test)
         if self.timer:
@@ -774,7 +773,6 @@ class TestRunnerManager(threading.Thread):
                 self.logger.info("Restarting browser for new test group")
                 restart = True
         else:
-            subsuite = self.state.subsuite
             test_type = self.state.test_type
             test_group = self.state.test_group
             group_metadata = self.state.group_metadata
@@ -870,8 +868,6 @@ class TestRunnerManager(threading.Thread):
         self.logger.debug("TestRunnerManager cleanup")
         if self.browser:
             self.browser.cleanup()
-        if self.timer:
-            self.timer.cancel()
         while True:
             try:
                 cmd, data = self.command_queue.get_nowait()
@@ -893,6 +889,17 @@ class TestRunnerManager(threading.Thread):
                 self.logger.warning(f"Command left in remote_queue during cleanup: {cmd!r}, {data!r}")
             except Empty:
                 break
+
+
+def make_test_queue(tests, test_source):
+    queue, num_of_workers = test_source.cls.make_queue(tests, **test_source.kwargs)
+
+    # There is a race condition that means sometimes we continue
+    # before the tests have been written to the underlying pipe.
+    # Polling the pipe for data here avoids that
+    queue._reader.poll(10)
+    assert not queue.empty()
+    return queue, num_of_workers
 
 
 class ManagerGroup:
@@ -937,8 +944,8 @@ class ManagerGroup:
 
     def run(self, tests):
         """Start all managers in the group"""
-        test_queue, size = self.test_source.cls.make_queue(
-            tests, **self.test_source.kwargs)
+
+        test_queue, size = make_test_queue(tests, self.test_source)
         self.logger.info("Using %i child processes" % size)
 
         for idx in range(size):

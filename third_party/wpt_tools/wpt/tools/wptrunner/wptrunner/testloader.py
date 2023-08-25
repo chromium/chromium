@@ -6,7 +6,6 @@ import hashlib
 import itertools
 import json
 import os
-import queue
 from urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
 from queue import Empty
@@ -16,6 +15,7 @@ from typing import cast, Any, Dict, List, Optional, Set
 from . import manifestinclude
 from . import manifestexpected
 from . import manifestupdate
+from . import mpcontext
 from . import wpttest
 from mozlog import structured
 
@@ -502,7 +502,8 @@ class TestSource:
 
     @classmethod
     def make_queue(cls, tests_by_type, **kwargs):
-        test_queue = queue.SimpleQueue()
+        mp = mpcontext.get_context()
+        test_queue = mp.Queue()
         groups = cls.make_groups(tests_by_type, **kwargs)
         processes = cls.process_count(kwargs["processes"], len(groups))
         if processes > 1:
