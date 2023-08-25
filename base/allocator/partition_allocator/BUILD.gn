@@ -352,6 +352,8 @@ source_set("allocator_base") {
     "partition_alloc_base/export_template.h",
     "partition_alloc_base/gtest_prod_util.h",
     "partition_alloc_base/immediate_crash.h",
+    "partition_alloc_base/log_message.cc",
+    "partition_alloc_base/log_message.h",
     "partition_alloc_base/logging.cc",
     "partition_alloc_base/logging.h",
     "partition_alloc_base/memory/page_size.h",

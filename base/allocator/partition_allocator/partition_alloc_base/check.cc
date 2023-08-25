@@ -11,76 +11,75 @@ namespace partition_alloc::internal::logging {
 // TODO(1151236): Make CheckError not to allocate memory. So we can use
 // CHECK() inside PartitionAllocator when PartitionAllocator-Everywhere is
 // enabled. (Also need to modify LogMessage).
-CheckError CheckError::Check(const char* file,
-                             int line,
-                             const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+
+CheckError::CheckError(const char* file,
+                       int line,
+                       LogSeverity severity,
+                       const char* condition)
+    : log_message_(file, line, severity) {
+  log_message_.stream() << "Check failed: " << condition << ". ";
 }
 
-CheckError CheckError::DCheck(const char* file,
-                              int line,
-                              const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+CheckError::CheckError(const char* file, int line, LogSeverity severity)
+    : log_message_(file, line, severity) {}
+
+CheckError::CheckError(const char* file,
+                       int line,
+                       LogSeverity severity,
+                       const char* condition,
+                       SystemErrorCode err_code)
+    : errno_log_message_(file, line, severity, err_code), has_errno(true) {
+  errno_log_message_.stream() << "Check failed: " << condition << ". ";
 }
 
-CheckError CheckError::PCheck(const char* file,
-                              int line,
-                              const char* condition) {
-  SystemErrorCode err_code = logging::GetLastSystemErrorCode();
-#if BUILDFLAG(IS_WIN)
-  CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  CheckError check_error(
-      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code));
-#endif
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
-}
+check_error::Check::Check(const char* file, int line, const char* condition)
+    : CheckError(file, line, LOGGING_FATAL, condition) {}
 
-CheckError CheckError::PCheck(const char* file, int line) {
-  return PCheck(file, line, "");
-}
+check_error::DCheck::DCheck(const char* file, int line, const char* condition)
+    : CheckError(file, line, LOGGING_DCHECK, condition) {}
 
-CheckError CheckError::DPCheck(const char* file,
-                               int line,
-                               const char* condition) {
-  SystemErrorCode err_code = logging::GetLastSystemErrorCode();
-#if BUILDFLAG(IS_WIN)
-  CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  CheckError check_error(
-      new ErrnoLogMessage(file, line, LOGGING_DCHECK, err_code));
-#endif
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
-}
+check_error::PCheck::PCheck(const char* file, int line, const char* condition)
+    : CheckError(file,
+                 line,
+                 LOGGING_FATAL,
+                 condition,
+                 logging::GetLastSystemErrorCode()) {}
 
-CheckError CheckError::NotImplemented(const char* file,
-                                      int line,
-                                      const char* function) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_ERROR));
-  check_error.stream() << "Not implemented reached in " << function;
-  return check_error;
+check_error::PCheck::PCheck(const char* file, int line)
+    : PCheck(file, line, "") {}
+
+check_error::DPCheck::DPCheck(const char* file, int line, const char* condition)
+    : CheckError(file,
+                 line,
+                 LOGGING_DCHECK,
+                 condition,
+                 logging::GetLastSystemErrorCode()) {}
+
+check_error::NotImplemented::NotImplemented(const char* file,
+                                            int line,
+                                            const char* function)
+    : CheckError(file, line, LOGGING_ERROR) {
+  stream() << "Not implemented reached in " << function;
 }
 
 base::strings::CStringBuilder& CheckError::stream() {
-  return log_message_->stream();
+  return !has_errno ? log_message_.stream() : errno_log_message_.stream();
 }
 
 CheckError::~CheckError() {
   // Note: This function ends up in crash stack traces. If its full name
   // changes, the crash server's magic signature logic needs to be updated.
   // See cl/306632920.
-  delete log_message_;
+  if (!has_errno) {
+    log_message_.~LogMessage();
+  } else {
+#if BUILDFLAG(IS_WIN)
+    errno_log_message_.~Win32ErrorLogMessage();
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    errno_log_message_.~ErrnoLogMessage();
+#endif  // BUILDFLAG(IS_WIN)
+  }
 }
-
-CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
 void RawCheckFailure(const char* message) {
   RawLog(LOGGING_FATAL, message);

@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/log_message.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/cstring_builder.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
@@ -74,34 +75,70 @@ class LogMessage;
 // Class used for raising a check error upon destruction.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
  public:
-  static CheckError Check(const char* file, int line, const char* condition);
-
-  static CheckError DCheck(const char* file, int line, const char* condition);
-
-  static CheckError PCheck(const char* file, int line, const char* condition);
-  static CheckError PCheck(const char* file, int line);
-
-  static CheckError DPCheck(const char* file, int line, const char* condition);
-
-  static CheckError NotImplemented(const char* file,
-                                   int line,
-                                   const char* function);
-
   // Stream for adding optional details to the error message.
   base::strings::CStringBuilder& stream();
-
   PA_NOMERGE ~CheckError();
 
-  CheckError(const CheckError& other) = delete;
-  CheckError& operator=(const CheckError& other) = delete;
-  CheckError(CheckError&& other) = default;
-  CheckError& operator=(CheckError&& other) = default;
+ protected:
+  CheckError(const char* file,
+             int line,
+             LogSeverity severity,
+             const char* condition);
+  CheckError(const char* file, int line, LogSeverity severity);
+  CheckError(const char* file,
+             int line,
+             LogSeverity severity,
+             const char* condition,
+             SystemErrorCode err_code);
 
- private:
-  explicit CheckError(LogMessage* log_message);
+  union {
+    LogMessage log_message_;
+#if BUILDFLAG(IS_WIN)
+    Win32ErrorLogMessage errno_log_message_;
+#else
+    ErrnoLogMessage errno_log_message_;
+#endif
+  };
 
-  LogMessage* log_message_;
+  // |has_errno| describes which union member is used, |log_message_| or
+  // |errno_log_message_|. If |has_errno| is true, CheckError initializes
+  // |errno_log_message_| at its constructor and destroys at its destructor.
+  // (This also means the CheckError is an instance of the parent class of
+  // PCheck or DPCheck.)
+  // If false, CheckError initializes and destroys |log_message_|.
+  const bool has_errno = false;
 };
+
+namespace check_error {
+
+// Class used for raising a check error upon destruction.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Check : public CheckError {
+ public:
+  Check(const char* file, int line, const char* condition);
+};
+
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) DCheck : public CheckError {
+ public:
+  DCheck(const char* file, int line, const char* condition);
+};
+
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCheck : public CheckError {
+ public:
+  PCheck(const char* file, int line, const char* condition);
+  PCheck(const char* file, int line);
+};
+
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) DPCheck : public CheckError {
+ public:
+  DPCheck(const char* file, int line, const char* condition);
+};
+
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) NotImplemented : public CheckError {
+ public:
+  NotImplemented(const char* file, int line, const char* function);
+};
+
+}  // namespace check_error
 
 #if defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 #error "Debug builds are not expected to be optimized as official builds."
@@ -120,47 +157,47 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
 
 #define PA_BASE_CHECK_WILL_STREAM() false
 
-#define PA_BASE_PCHECK(condition)                                        \
-  PA_LAZY_CHECK_STREAM(                                                  \
-      ::partition_alloc::internal::logging::CheckError::PCheck(__FILE__, \
-                                                               __LINE__) \
-          .stream(),                                                     \
+#define PA_BASE_PCHECK(condition)                                         \
+  PA_LAZY_CHECK_STREAM(                                                   \
+      ::partition_alloc::internal::logging::check_error::PCheck(__FILE__, \
+                                                                __LINE__) \
+          .stream(),                                                      \
       PA_UNLIKELY(!(condition)))
 
 #else
 
-#define PA_BASE_CHECK(condition)                               \
-  PA_LAZY_CHECK_STREAM(                                        \
-      ::partition_alloc::internal::logging::CheckError::Check( \
-          __FILE__, __LINE__, #condition)                      \
-          .stream(),                                           \
+#define PA_BASE_CHECK(condition)                                \
+  PA_LAZY_CHECK_STREAM(                                         \
+      ::partition_alloc::internal::logging::check_error::Check( \
+          __FILE__, __LINE__, #condition)                       \
+          .stream(),                                            \
       !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #define PA_BASE_CHECK_WILL_STREAM() true
 
-#define PA_BASE_PCHECK(condition)                               \
-  PA_LAZY_CHECK_STREAM(                                         \
-      ::partition_alloc::internal::logging::CheckError::PCheck( \
-          __FILE__, __LINE__, #condition)                       \
-          .stream(),                                            \
+#define PA_BASE_PCHECK(condition)                                \
+  PA_LAZY_CHECK_STREAM(                                          \
+      ::partition_alloc::internal::logging::check_error::PCheck( \
+          __FILE__, __LINE__, #condition)                        \
+          .stream(),                                             \
       !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #endif
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
 
-#define PA_BASE_DCHECK(condition)                               \
-  PA_LAZY_CHECK_STREAM(                                         \
-      ::partition_alloc::internal::logging::CheckError::DCheck( \
-          __FILE__, __LINE__, #condition)                       \
-          .stream(),                                            \
-      !PA_ANALYZER_ASSUME_TRUE(condition))
-
-#define PA_BASE_DPCHECK(condition)                               \
+#define PA_BASE_DCHECK(condition)                                \
   PA_LAZY_CHECK_STREAM(                                          \
-      ::partition_alloc::internal::logging::CheckError::DPCheck( \
+      ::partition_alloc::internal::logging::check_error::DCheck( \
           __FILE__, __LINE__, #condition)                        \
           .stream(),                                             \
+      !PA_ANALYZER_ASSUME_TRUE(condition))
+
+#define PA_BASE_DPCHECK(condition)                                \
+  PA_LAZY_CHECK_STREAM(                                           \
+      ::partition_alloc::internal::logging::check_error::DPCheck( \
+          __FILE__, __LINE__, #condition)                         \
+          .stream(),                                              \
       !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #else

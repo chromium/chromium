@@ -22,7 +22,12 @@ namespace partition_alloc::internal::base::strings {
 // calloc, and so on.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CStringBuilder {
  public:
-  static constexpr size_t kBufferSize = 1024u;
+  // If kBufferSize is too large, PA_LOG() and PA_BASE_*CHECK() will spend
+  // much more stack. This causes out-of-stack.
+  // ThreadTest.StartWithOptions_StackSize checks if threads can run with
+  // some specified stack size. If kBufferSize==1024u, the test will fail
+  // on 32bit bots.
+  static constexpr size_t kBufferSize = 256u;
 
   CStringBuilder() : ptr_(buffer_) {}
 
