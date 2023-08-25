@@ -2313,6 +2313,14 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION1" desc="A part of the feature description of the standard protection section of the safe browsing card in the 'Privacy guide'.">
     Detects and warns you about dangerous events when they happen
   </message>
+  <if expr="_google_chrome">
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2_PROXY" desc="A part of the feature description of the standard protection section of the safe browsing card in the 'Privacy guide'.">
+      Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address
+    </message>
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1_PROXY" desc="A part of the privacy description of the standard protection section of the safe browsing card in the 'Privacy Guide'.">
+      If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google
+    </message>
+  </if>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_CARD_HEADER" desc="Header of the 'search suggestions' card in the 'Privacy Guide'.">
     Choose whether to get additional search suggestions
   </message>

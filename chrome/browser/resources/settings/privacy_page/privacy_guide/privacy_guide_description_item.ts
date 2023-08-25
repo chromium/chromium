@@ -44,6 +44,8 @@ export class PrivacyGuideDescriptionItemElement extends PolymerElement {
     };
   }
 
+  label: string;
+
   private sanitizeInnerHtml_(rawString: string): TrustedHTML {
     return sanitizeInnerHtml(rawString);
   }

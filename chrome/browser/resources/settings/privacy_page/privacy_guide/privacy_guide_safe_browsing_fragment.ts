@@ -62,6 +62,13 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
               'enableFriendlierSafeBrowsingSettings');
         },
       },
+
+      enableHashPrefixRealTimeLookups_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableHashPrefixRealTimeLookups');
+        },
+      },
     };
   }
 
@@ -69,6 +76,7 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
       MetricsBrowserProxyImpl.getInstance();
   private startStateEnhanced_: boolean;
   private enableFriendlierSafeBrowsingSettings_: boolean;
+  private enableHashPrefixRealTimeLookups_: boolean;
 
   override ready() {
     super.ready();
@@ -142,8 +150,24 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
         this.enableFriendlierSafeBrowsingSettings_ ?
+            this.enableHashPrefixRealTimeLookups_ ?
+            'safeBrowsingStandardDescUpdatedProxy' :
             'safeBrowsingStandardDescUpdated' :
             'safeBrowsingStandardDesc');
+  }
+
+  private getStandardProtectionFeatureDescription2_(): string {
+    return this.i18n(
+        this.enableHashPrefixRealTimeLookups_ ?
+            'privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2Proxy' :
+            'privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2');
+  }
+
+  private getStandardProtectionPrivacyDescription1_(): string {
+    return this.i18n(
+        this.enableHashPrefixRealTimeLookups_ ?
+            'privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1Proxy' :
+            'privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1');
   }
 }
 

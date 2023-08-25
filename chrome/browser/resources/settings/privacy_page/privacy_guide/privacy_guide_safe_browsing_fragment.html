@@ -143,7 +143,8 @@
         name="[[safeBrowsingSettingEnum_.STANDARD]]"
         label="$i18n{safeBrowsingStandard}"
         sub-label="[[getSafeBrowsingStandardSubLabel_(
-                    enableFriendlierSafeBrowsingSettings_)]]"
+                    enableFriendlierSafeBrowsingSettings_,
+                    enableHashPrefixRealTimeLookups_)]]"
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
         on-click="onSafeBrowsingStandardClick_">
         <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
@@ -160,9 +161,11 @@
                     label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription1}">
                 </privacy-guide-description-item>
                 <privacy-guide-description-item
+                    id="standardProtectionFeatureDescription2"
                     role="listitem"
                     icon="settings20:googleg"
-                    label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2}">
+                    label="[[getStandardProtectionFeatureDescription2_(
+                            enableHashPrefixRealTimeLookups_)]]">
                 </privacy-guide-description-item>
               </div>
             </div>
@@ -172,9 +175,11 @@
               </div>
               <div role="list">
                 <privacy-guide-description-item
+                    id="standardProtectionPrivacyDescription1"
                     role="listitem"
                     icon="settings20:data"
-                    label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1}">
+                    label="[[getStandardProtectionPrivacyDescription1_(
+                            enableHashPrefixRealTimeLookups_)]]">
                 </privacy-guide-description-item>
               </div>
             </div>
