@@ -32,7 +32,7 @@ suite(account_migration_welcome_test.suiteName, () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes.emptyHTML;
     testBrowserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.instance_ = testBrowserProxy;
+    AccountManagerBrowserProxyImpl.setInstance(testBrowserProxy);
     element = /** @type {AccountMigrationWelcomeElement} */ (
         document.createElement('account-migration-welcome'));
     document.body.appendChild(element);
