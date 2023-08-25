@@ -1515,6 +1515,10 @@ BASE_FEATURE(kScopeMemoryCachePerContext,
              "ScopeMemoryCachePerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPausePagesPerBrowsingContextGroup,
+             "PausePagesPerBrowsingContextGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls script streaming.
 BASE_FEATURE(kScriptStreaming,
              "ScriptStreaming",

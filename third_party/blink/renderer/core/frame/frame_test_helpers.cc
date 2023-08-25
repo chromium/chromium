@@ -712,6 +712,12 @@ void WebViewHelper::InitializeWebView(
     class WebView* opener,
     absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode) {
+  auto browsing_context_group_info = BrowsingContextGroupInfo::CreateUnique();
+  if (opener) {
+    WebViewImpl* opener_impl = To<WebViewImpl>(opener);
+    browsing_context_group_info.browsing_context_group_token =
+        opener_impl->GetPage()->BrowsingContextGroupToken();
+  }
   web_view_client =
       CreateDefaultClientIfNeeded(web_view_client, owned_web_view_client_);
   web_view_ = To<WebViewImpl>(
@@ -726,7 +732,7 @@ void WebViewHelper::InitializeWebView(
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/base::EmptyString(),
                       /*page_base_background_color=*/absl::nullopt,
-                      BrowsingContextGroupInfo::CreateUnique()));
+                      std::move(browsing_context_group_info)));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);

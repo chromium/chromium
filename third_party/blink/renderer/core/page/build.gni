@@ -62,6 +62,8 @@ blink_core_sources_page = [
   "popup_opening_observer.h",
   "print_context.cc",
   "print_context.h",
+  "scoped_browsing_context_group_pauser.cc",
+  "scoped_browsing_context_group_pauser.h",
   "scoped_page_pauser.cc",
   "scoped_page_pauser.h",
   "scrolling/element_fragment_anchor.cc",

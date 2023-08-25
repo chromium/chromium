@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/core/page/plugins_changed_observer.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
@@ -171,8 +172,18 @@ Page* Page::CreateOrdinary(
   }
 
   OrdinaryPages().insert(page);
-  if (ScopedPagePauser::IsActive())
+
+  bool should_pause = false;
+  if (base::FeatureList::IsEnabled(
+          features::kPausePagesPerBrowsingContextGroup)) {
+    should_pause = ScopedBrowsingContextGroupPauser::IsActive(*page);
+  } else {
+    should_pause = ScopedPagePauser::IsActive();
+  }
+  if (should_pause) {
     page->SetPaused(true);
+  }
+
   return page;
 }
 
