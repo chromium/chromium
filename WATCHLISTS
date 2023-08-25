@@ -2211,6 +2211,11 @@
     'weblayer_ssl': {
         'filepath': 'weblayer/browser/ssl',
     },
+    'webnn': {
+        'filepath': 'third_party/blink/renderer/modules/ml/webnn/'\
+                    '|services/webnn/'\
+                    '|components/ml/webnn/',
+    },
     'webotp': {
         'filepath': 'third_party/blink/renderer/modules/credentialmanager/credentials_container\.cc'\
                     '|third_party/blink/renderer/modules/credentialmanager/.*otp'\
@@ -3177,6 +3182,7 @@
                  'swestphal+watch@chromium.org'],
     'weblayer_safe_browsing' : ['carlosil+watch@chromium.org'],
     'weblayer_ssl' : ['carlosil+watch@chromium.org'],
+    'webnn': ['qjw@chromium.org'],
     'webotp': ['yigu+watch@chromium.org'],
     'webrtc_browser_tests': ['phoglund+watch@chromium.org'],
     'website_settings': ['dullweber+watch@chromium.org',
