@@ -6,9 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
-    <dimen name="modal_dialog_control_vertical_padding">2dp</dimen>
-    <dimen name="modal_dialog_control_horizontal_padding">8dp</dimen>
-    <dimen name="modal_dialog_control_vertical_padding_filled">10dp</dimen>
+    <dimen name="modal_dialog_control_vertical_padding_filled">16dp</dimen>
     <dimen name="modal_dialog_control_horizontal_padding_filled">16dp</dimen>
     <dimen name="modal_dialog_button_with_icon_start_padding">12dp</dimen>
     <dimen name="modal_dialog_button_with_icon_text_padding">8dp</dimen>

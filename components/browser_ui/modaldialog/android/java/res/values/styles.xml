@@ -11,32 +11,28 @@ found in the LICENSE file.
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimAmount">0.65</item>
         <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
+        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
+        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton" parent="ThemeOverlay.BrowserUI.ModalDialog">
         <item name="buttonBarButtonStyle">@style/TextButton</item>
-        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding</item>
-        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton" parent="ThemeOverlay.BrowserUI.ModalDialog">
         <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
-        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
-        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledNegativeButton" parent="ThemeOverlay.BrowserUI.ModalDialog">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
-        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
-        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
         <item name="buttonBarButtonStyle">@style/TextButton</item>
-        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding</item>
-        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding</item>
+        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
+        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
@@ -79,8 +75,8 @@ found in the LICENSE file.
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
         <item name="buttonBarButtonStyle">@style/TextButton</item>
-        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding</item>
-        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding</item>
+        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
+        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
