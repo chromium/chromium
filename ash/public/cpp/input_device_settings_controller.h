@@ -48,6 +48,13 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
         const mojom::PointingStick& pointing_stick) {}
     virtual void OnPointingStickSettingsUpdated(
         const mojom::PointingStick& pointing_stick) {}
+
+    virtual void OnGraphicsTabletConnected(
+        const mojom::GraphicsTablet& graphics_tablet) {}
+    virtual void OnGraphicsTabletDisconnected(
+        const mojom::GraphicsTablet& graphics_tablet) {}
+    virtual void OnGraphicsTabletSettingsUpdated(
+        const mojom::GraphicsTablet& graphics_tablet) {}
   };
 
   static InputDeviceSettingsController* Get();
@@ -60,6 +67,9 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual std::vector<mojom::MousePtr> GetConnectedMice() = 0;
   // Returns a list of currently connected pointing sticks and their settings.
   virtual std::vector<mojom::PointingStickPtr> GetConnectedPointingSticks() = 0;
+  // Returns a list of currently connected graphics tablets and their settings.
+  virtual std::vector<mojom::GraphicsTabletPtr>
+  GetConnectedGraphicsTablets() = 0;
 
   // Returns the settings of the keyboard with a device id of `id` or nullptr if
   // no such device exists.

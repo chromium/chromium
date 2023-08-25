@@ -223,6 +223,10 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
       override {
     return mojo::Clone(pointing_sticks_);
   }
+  std::vector<::ash::mojom::GraphicsTabletPtr> GetConnectedGraphicsTablets()
+      override {
+    return mojo::Clone(graphics_tablets_);
+  }
   const ::ash::mojom::KeyboardSettings* GetKeyboardSettings(
       DeviceId id) override {
     return nullptr;
@@ -363,6 +367,7 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   std::vector<::ash::mojom::TouchpadPtr> touchpads_;
   std::vector<::ash::mojom::MousePtr> mice_;
   std::vector<::ash::mojom::PointingStickPtr> pointing_sticks_;
+  std::vector<::ash::mojom::GraphicsTabletPtr> graphics_tablets_;
   ::ash::mojom::KeyboardPoliciesPtr keyboard_policies_ =
       ::ash::mojom::KeyboardPolicies::New();
   ::ash::mojom::MousePoliciesPtr mouse_policies_ =

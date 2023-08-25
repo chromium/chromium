@@ -99,6 +99,10 @@ template <>
 ASH_EXPORT std::vector<ui::InputDevice>
 InputDeviceNotifier<mojom::PointingStickPtr,
                     ui::InputDevice>::GetUpdatedDeviceList();
+template <>
+ASH_EXPORT std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::GraphicsTabletPtr,
+                    ui::InputDevice>::GetUpdatedDeviceList();
 
 extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>;
@@ -108,6 +112,8 @@ extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>;
 extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::PointingStickPtr, ui::InputDevice>;
+extern template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::GraphicsTabletPtr, ui::InputDevice>;
 
 }  // namespace ash
 

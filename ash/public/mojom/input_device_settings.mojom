@@ -213,6 +213,11 @@ struct GraphicsTablet {
   // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
   // Example: 5022:18d1.
   string device_key;
+  // Unique identifier for the graphics tablet which is assigned by ozone when
+  // it is connected and is reassigned when disconnected and reconnected to the
+  // system. These ids can be rarely reused for multiple devices if the original
+  // device holding the id had been disconnected.
+  uint32 id;
   GraphicsTabletSettings settings;
 };
 

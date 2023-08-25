@@ -366,6 +366,14 @@ InputDeviceNotifier<mojom::PointingStickPtr,
   return ui::DeviceDataManager::GetInstance()->GetPointingStickDevices();
 }
 
+template <>
+std::vector<ui::InputDevice>
+InputDeviceNotifier<mojom::GraphicsTabletPtr,
+                    ui::InputDevice>::GetUpdatedDeviceList() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  return ui::DeviceDataManager::GetInstance()->GetGraphicsTabletDevices();
+}
+
 // Explicit instantiations for each device type.
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>;
@@ -375,5 +383,7 @@ template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::PointingStickPtr, ui::InputDevice>;
+template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
+    InputDeviceNotifier<mojom::GraphicsTabletPtr, ui::InputDevice>;
 
 }  // namespace ash
