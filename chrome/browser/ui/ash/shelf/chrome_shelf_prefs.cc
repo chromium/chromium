@@ -324,17 +324,6 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     after = before.CreateBefore();
   }
 
-  // When chrome and lacros are enabled side-by-side, try positioning default
-  // apps after lacros icon.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    syncer::StringOrdinal lacros_position =
-        syncable_service->GetPinPosition(app_constants::kLacrosAppId);
-    if (lacros_position.IsValid() && lacros_position.LessThan(before) &&
-        lacros_position.GreaterThan(after)) {
-      after = lacros_position;
-    }
-  }
-
   for (const auto& app_id : app_ids) {
     // Check if we already processed the current app.
     auto* sync_item = syncable_service->GetSyncItem(app_id);
@@ -421,12 +410,8 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
       continue;
     }
 
-    // kLacrosAppId is only valid when side-by-side Lacros is enabled. When
-    // either lacros or ash is the only browser, kChromeAppId is the only valid
-    // sync ID for the browser.
-    bool lacros_side_by_side = crosapi::browser_util::IsLacrosEnabled() &&
-                               crosapi::browser_util::IsAshWebBrowserEnabled();
-    if (!lacros_side_by_side && item_id == app_constants::kLacrosAppId) {
+    // kChromeAppId is the only valid sync ID for the browser.
+    if (item_id == app_constants::kLacrosAppId) {
       continue;
     }
 
@@ -477,16 +462,6 @@ void ChromeShelfPrefs::RemovePinPosition(const ash::ShelfID& shelf_id) {
     return;
   }
   DCHECK(!app_id.empty());
-
-  // There currently exists a side-case that only exists in lacros side-by-side
-  // where ash-chrome can be unpinned. This won't occur in the long-term because
-  // lacros will be the only browser. Until then, explicitly disallow pinning of
-  // ash-chrome here. This is simpler than letter the logic leak into various
-  // parts of shelf and context menu code.
-  if (app_id == app_constants::kChromeAppId) {
-    LOG(ERROR) << "ash cannot be unpinned";
-    return;
-  }
   app_list::AppListSyncableServiceFactory::GetForProfile(profile_)
       ->RemovePinPosition(app_id);
 }

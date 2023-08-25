@@ -284,29 +284,3 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   EXPECT_TRUE(base::Contains(pinned_apps_strs, app_constants::kLacrosAppId));
   EXPECT_FALSE(base::Contains(pinned_apps_strs, app_constants::kChromeAppId));
 }
-
-// A user enables lacros side-by-side and then disables it. No Lacros id should
-// be in the shelf.
-TEST_F(ChromeShelfPrefsTest, EnableSideBySideLacrosDisable) {
-  // Set up ash-chrome in the middle position.
-  syncer::StringOrdinal ordinal1 =
-      syncer::StringOrdinal::CreateInitialOrdinal();
-  syncer::StringOrdinal ordinal2 = ordinal1.CreateAfter();
-
-  syncable_service().item_map_[app_constants::kLacrosAppId] =
-      MakeSyncItem(app_constants::kLacrosAppId, ordinal1);
-  syncable_service().item_map_[app_constants::kChromeAppId] =
-      MakeSyncItem(app_constants::kChromeAppId, ordinal2);
-
-  // Disable lacros.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, ash::standalone_browser::GetFeatureRefs());
-  AddRegularUser("test@test.com");
-
-  // Perform migration
-  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-
-  // Confirm that the ash-chrome is present but lacros-chrome is not
-  EXPECT_FALSE(base::Contains(pinned_apps_strs, app_constants::kLacrosAppId));
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, app_constants::kChromeAppId));
-}

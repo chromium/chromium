@@ -33,8 +33,6 @@
   </div>
 </template>
 
-<!-- In the case when the Ash-Browser and the Lacros-Browser run side by side,
-  the proxy configuration set in the Ash-Browser has priority. -->
 <template is="dom-if" if="[[proxySetByAshExtension_(managedProperties)]]">
   <div class="settings-box">
     <extension-controlled-indicator

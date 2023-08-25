@@ -1472,17 +1472,10 @@ void BrowserManager::OnLacrosChromeTerminated() {
   is_terminated_ = true;
   SetState(State::STOPPED);
 
-  // TODO(https://crbug.com/1109366): Restart lacros-chrome if it exits
-  // abnormally (e.g. crashes). For now, assume the user meant to close it.
-  // Relaunch lacros-chrome if it was closed due to ash shutting down.
-  // Note that this only matters for side-by-side lacros.
   if (!reload_requested_) {
     auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-    if (primary_user && primary_user->is_profile_created()) {
-      // We check that the user profile is available, to avoid the case
-      // in which Lacros is terminated before the profile is initialized.
-      SetLaunchOnLoginPref(shutdown_requested_);
-    } else if (shutdown_requested_ && !shutdown_requested_while_prelaunched_) {
+    if (!(primary_user && primary_user->is_profile_created()) &&
+        shutdown_requested_ && !shutdown_requested_while_prelaunched_) {
       // TODO(andreaorru): We expect that the case in which the profile isn't
       // initialized when shutting down only happens when prelaunching at login
       // screen. Here we collect other instances. Remove once we verify there
