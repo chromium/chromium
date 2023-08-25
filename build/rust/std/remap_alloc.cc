@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "build/build_config.h"
+#include "build/rust/std/alias.h"
 #include "build/rust/std/immediate_crash.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -157,6 +158,7 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc_zeroed(size_t size, size_t align) {
 
 REMAP_ALLOC_ATTRIBUTES void __rust_alloc_error_handler(size_t size,
                                                        size_t align) {
+  NO_CODE_FOLDING();
   IMMEDIATE_CRASH();
 }
 

@@ -34,6 +34,12 @@ if (toolchain_has_rust) {
   # Equivalent of allocator symbols injected by rustc.
   source_set("remap_alloc") {
     sources = [
+      # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
+      # copied from `//base`.
+      # TODO(https://crbug.com/1475734): Avoid duplication / reuse code.
+      "alias.cc",
+      "alias.h",
+      "compiler_specific.h",
       "immediate_crash.h",
       "remap_alloc.cc",
     ]
