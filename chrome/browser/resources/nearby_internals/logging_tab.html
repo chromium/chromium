@@ -22,6 +22,16 @@
           <label id="fastPairLabel">Fast Pair</label>
         </div>
       </div>
+      <div id="logFilters">
+        <div class="input-div">
+          <label id="logSearchLabel">Search</label>
+          <input aria-labelledby="logSearchLabel" id="logSearch" type="text">
+        </div>
+        <div id="filterApplyDiv">
+          <cr-button class="internals-button" id="filterApply"
+              on-click="addLogFilter">Apply Filters</cr-button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -141,7 +141,7 @@ np-object {
   flex-direction: column;
 }
 
-#logType {
+#logType, #logFilters {
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -158,6 +158,15 @@ label {
 
 input {
   width: 10%;
+}
+
+#logSearch {
+  margin-left: 5px;
+  width: 75%;
+}
+
+#logSearchLabel {
+  width: 15%;
 }
 
 log-object {

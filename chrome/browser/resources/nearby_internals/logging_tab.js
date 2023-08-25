@@ -107,6 +107,11 @@ Polymer({
     feature: {
       type: String,
     },
+
+    /** @private {!string} */
+    currentFilter: {
+      type: String,
+    },
   },
 
   /** @private {?LogProvider}*/
@@ -192,7 +197,20 @@ Polymer({
    */
   onLogMessageAdded_(log) {
     this.push('logList_', log);
-    this.push('filteredLogList_', log);
+    if (log.text.match(this.currentFilter) ||
+        log.file.match(this.currentFilter)) {
+      this.push('filteredLogList_', log);
+    }
+  },
+
+  addLogFilter() {
+    this.currentFilter = this.$.logSearch.value;
+    this.set(
+        'filteredLogList_',
+        this.logList_.filter(
+            (log) =>
+                (log.text.match(this.currentFilter) ||
+                 log.file.match(this.currentFilter))));
   },
 
   /**
