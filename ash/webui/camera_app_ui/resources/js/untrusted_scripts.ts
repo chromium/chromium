@@ -38,6 +38,7 @@ export function createUntrustedIframe(): UntrustedIFrame {
         'chrome-untrusted://camera-app/views/untrusted_script_loader.html');
   }
   iframe.hidden = true;
+  iframe.setAttribute('allow', 'cross-origin-isolated');
   document.body.appendChild(iframe);
   return {iframe, pageReadyEvent: untrustedPageReady};
 }

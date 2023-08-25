@@ -116,6 +116,10 @@ void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc,
       std::string("object-src 'self';"));
+
+  // Makes camera app cross-origin-isolated to measure memory usage.
+  source->OverrideCrossOriginOpenerPolicy("same-origin");
+  source->OverrideCrossOriginEmbedderPolicy("require-corp");
 }
 
 void GotSalt(
