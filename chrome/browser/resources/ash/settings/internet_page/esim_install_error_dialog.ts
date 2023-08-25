@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './esim_install_error_dialog.html.js';
 
-interface EsimInstallErrorDialogElement {
+export interface EsimInstallErrorDialogElement {
   $: {
     installErrorDialog: CrDialogElement,
   };
@@ -27,7 +27,8 @@ interface EsimInstallErrorDialogElement {
 
 const EsimInstallErrorDialogElementBase = I18nMixin(PolymerElement);
 
-class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
+export class EsimInstallErrorDialogElement extends
+    EsimInstallErrorDialogElementBase {
   static get is() {
     return 'esim-install-error-dialog' as const;
   }

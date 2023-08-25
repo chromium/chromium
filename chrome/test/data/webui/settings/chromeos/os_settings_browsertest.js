@@ -299,7 +299,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'device_page/per_device_pointing_stick_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
- ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
@@ -331,6 +330,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'InternetPageHotspotConfigDialog',
    'internet_page/hotspot_config_dialog_test.js',
    {enabled: ['ash::features::kHotspot']},
+ ],
+ [
+   'InternetPageEsimInstallErrorDialog',
+   'internet_page/esim_install_error_dialog_test.js'
  ],
  [
    'InternetPageHotspotSubpage',

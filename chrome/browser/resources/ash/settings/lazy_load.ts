@@ -149,6 +149,7 @@ export {SettingsCustomizeTabletButtonsSubpageElement} from './device_page/custom
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
+export {EsimInstallErrorDialogElement} from './internet_page/esim_install_error_dialog.js';
 export {SettingsHotspotSubpageElement} from './internet_page/hotspot_subpage.js';
 export {NetworkAlwaysOnVpnElement} from './internet_page/network_always_on_vpn.js';
 export {NetworkProxySectionElement} from './internet_page/network_proxy_section.js';

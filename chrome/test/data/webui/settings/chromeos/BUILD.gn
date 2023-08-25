@@ -26,7 +26,6 @@ build_webui_tests("build") {
     "cellular_roaming_toggle_button_test.js",
     "crostini_extra_containers_subpage_test.js",
     "crostini_page_test.js",
-    "esim_install_error_dialog_test.js",
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
     "fake_canvas_context.js",
@@ -122,6 +121,7 @@ build_webui_tests("build") {
     "guest_os/test_guest_os_browser_proxy.ts",
 
     "internet_page/cellular_setup_dialog_test.ts",
+    "internet_page/esim_install_error_dialog_test.ts",
     "internet_page/hotspot_config_dialog_test.ts",
     "internet_page/hotspot_subpage_test.ts",
     "internet_page/hotspot_summary_item_test.ts",
