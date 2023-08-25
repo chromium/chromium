@@ -269,13 +269,7 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
     return std::move(callback_).Run(public_key_, nullptr);
   }
 
-  std::string profile_email = user->GetAccountId().GetUserEmail();
-  if (profile_email.empty()) {
-    // In some cases (e.g. right after a crash) this returns an empty string
-    // even when the method above succeeds, so only use it as a fallback.
-    profile_email = profile_->GetProfileUserName();
-  }
-  if (profile_email.empty()) {
+  if (user->GetAccountId().GetUserEmail().empty()) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnEmptyUsername,
                         /*success=*/IsKeyPresent(public_key_));
     // This is not expected to happen, regular users should have a valid
@@ -291,7 +285,7 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
   if (policy_data && policy_data->has_username()) {
     // If the policy says that the current user is the owner, generate a new key
     // pair for them.
-    if (policy_data->username() == profile_->GetProfileUserName()) {
+    if (policy_data->username() == user->GetAccountId().GetUserEmail()) {
       // Expect public key to be present. It's not likely to lose private and
       // public keys simultaneously, they are stored independently.
       RecordOwnerKeyEvent(OwnerKeyEvent::kRegeneratingOwnerKeyBasedOnPolicy,
@@ -310,8 +304,9 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
   // If the policies are empty, check the local state PrefService.
   absl::optional<std::string> owner_email =
       user_manager::UserManager::Get()->GetOwnerEmail();
+
   if (owner_email.has_value() &&
-      owner_email.value() == profile_->GetProfileUserName()) {
+      owner_email.value() == user->GetAccountId().GetUserEmail()) {
     // This brunch is more likely to be used before device policies are created
     // for the first time, so expect the public key to not be present.
     RecordOwnerKeyEvent(OwnerKeyEvent::kRegeneratingOwnerKeyBasedOnLocalState,
@@ -319,7 +314,7 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
     LOG(WARNING) << "Generating new owner key based on local state data.";
     return GenerateNewKey();
   } else if (owner_email.has_value() &&
-             owner_email.value() != profile_->GetProfileUserName()) {
+             owner_email.value() != user->GetAccountId().GetUserEmail()) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnLocalState,
                         /*success=*/IsKeyPresent(public_key_));
     return std::move(callback_).Run(std::move(public_key_), nullptr);
