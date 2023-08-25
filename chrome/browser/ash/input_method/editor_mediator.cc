@@ -86,6 +86,14 @@ void EditorMediator::OnTextFieldContextualInfoChanged(
       IMEBridge::Get()->GetCurrentInputContext(), info);
 }
 
+bool EditorMediator::IsAllowedForUse() {
+  return editor_switch_->IsAllowedForUse();
+}
+
+bool EditorMediator::CanBeTriggered() {
+  return editor_switch_->CanBeTriggered();
+}
+
 ConsentStatus EditorMediator::GetConsentStatus() {
   return consent_store_->GetConsentStatus();
 }

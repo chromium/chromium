@@ -53,6 +53,12 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // EditorInstanceImpl::Delegate overrides
   void CommitEditorResult(std::string_view text) override;
 
+  // Checks if the feature should be visible.
+  bool IsAllowedForUse();
+
+  // Checks if the feature can be triggered.
+  bool CanBeTriggered();
+
   ConsentStatus GetConsentStatus();
 
   // ProfileObserver:
