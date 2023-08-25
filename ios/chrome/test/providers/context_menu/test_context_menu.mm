@@ -36,17 +36,9 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     NSTextCheckingResult* match,
     NSString* text,
+    CGPoint location,
     UIViewController* presenting_view_controller,
     id<MiniMapCommands> mini_map_handler) {
-  return nil;
-}
-
-NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
-    web::WebState* web_state,
-    NSTextCheckingResult* match,
-    NSString* text,
-    CGPoint location,
-    UIViewController* presenting_view_controller) {
   return nil;
 }
 

@@ -120,9 +120,9 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                                                  base_view_controller_,
                                                  mini_map_handler_)) {
     NSArray<CRWContextMenuItem*>* items =
-        ios::provider::GetContextMenuElementsToAdd(web_state, match, ns_text,
-                                                   base_view_controller_,
-                                                   mini_map_handler_);
+        ios::provider::GetContextMenuElementsToAdd(
+            web_state, match, ns_text, CGPoint(0, 0), base_view_controller_,
+            mini_map_handler_);
     if (items.count) {
       [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
     }
