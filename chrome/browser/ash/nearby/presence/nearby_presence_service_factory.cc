@@ -52,7 +52,8 @@ NearbyPresenceServiceFactory::NearbyPresenceServiceFactory()
 
 NearbyPresenceServiceFactory::~NearbyPresenceServiceFactory() = default;
 
-KeyedService* NearbyPresenceServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NearbyPresenceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!context) {
     return nullptr;
@@ -81,7 +82,7 @@ KeyedService* NearbyPresenceServiceFactory::BuildServiceInstanceFor(
   // TODO(b/276344576): add the NearbyPresence feature flag.
 
   VLOG(1) << __func__ << ": creating NearbyPresenceService.";
-  return new NearbyPresenceServiceImpl(
+  return std::make_unique<NearbyPresenceServiceImpl>(
       Profile::FromBrowserContext(context)->GetPrefs(),
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
