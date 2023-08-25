@@ -249,7 +249,8 @@ const base::FeatureParam<OsIntegrationSubManagersStage>::Option
 const base::FeatureParam<OsIntegrationSubManagersStage>
     kOsIntegrationSubManagersStageParam{
         &kOsIntegrationSubManagers, "stage",
-        OsIntegrationSubManagersStage::kWriteConfig, &sub_manager_stages};
+        OsIntegrationSubManagersStage::kExecuteAndWriteConfig,
+        &sub_manager_stages};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
