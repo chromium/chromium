@@ -111233,6 +111233,7 @@ others/histograms.xml -->
   <int value="41679711" label="Floral"/>
   <int value="711032077" label="Cityscapes"/>
   <int value="1129315377" label="Composition"/>
+  <int value="1541868299" label="Dawn to Dark"/>
   <int value="1659755048" label="Illustrations"/>
   <int value="1668389814" label="Art"/>
   <int value="1804492839" label="Colors"/>
@@ -111476,6 +111477,8 @@ others/histograms.xml -->
   <int value="14" label="Radiance - 14"/>
   <int value="15" label="Radiance - 15"/>
   <int value="16" label="Radiance - 16"/>
+  <int value="17" label="Dawn to Dark New Mexico - 17"/>
+  <int value="18" label="Dawn to Dark Clouds - 18"/>
   <int value="11921136" label="Art - 18441231667880650480"/>
   <int value="21374230" label="Element - 3650936971339030"/>
   <int value="50416017" label="Togetherness - 18439398008941529489"/>
