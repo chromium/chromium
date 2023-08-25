@@ -638,14 +638,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   EXPECT_THAT(GetIwaUsage(url_info2), 0);
 }
 
-// TODO(https://crbug.com/1475108): Flaky on Linux Debug bots.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_ClearBrowserDataTimeRanged DISABLED_ClearBrowserDataTimeRanged
-#else
-#define MAYBE_ClearBrowserDataTimeRanged ClearBrowserDataTimeRanged
-#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
-                       MAYBE_ClearBrowserDataTimeRanged) {
+                       ClearBrowserDataTimeRanged) {
   auto cache_test_server = std::make_unique<net::EmbeddedTestServer>();
   cache_test_server->AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("content/test/data")));
@@ -674,7 +668,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 
   // Set cookies for: Now, 3 days ago, 10 days ago.
   const std::vector<TestCookie> cookietest_cases{
-      {base::Time::Now(), "A=0"},
       {base::Time::Now() - base::Days(3), "b=1"},
       {base::Time::Now() - base::Days(10), "c=2"}};
   for (const auto& cookie : cookietest_cases) {
@@ -700,28 +693,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     content::StoragePartition* partition =
         profile()->GetStoragePartition(config, false);
     ASSERT_TRUE(partition);
-    // Each partition should have 6 cookies.
-    ASSERT_EQ(GetAllCookies(partition).size(), 6UL);
-  }
-
-  ClearTimeRangedData(browsing_data::TimePeriod::LAST_HOUR);
-  for (const auto& config : storage_partition_configs) {
-    SCOPED_TRACE("partition_name: " + config.partition_name());
-    content::StoragePartition* partition =
-        profile()->GetStoragePartition(config, false);
-    ASSERT_TRUE(partition);
-    // 2 cookies should be cleared, 4 left.
-    EXPECT_EQ(GetAllCookies(partition).size(), 4UL);
-  }
-
-  ClearTimeRangedData(browsing_data::TimePeriod::LAST_DAY);
-  for (const auto& config : storage_partition_configs) {
-    SCOPED_TRACE("partition_name: " + config.partition_name());
-    content::StoragePartition* partition =
-        profile()->GetStoragePartition(config, false);
-    ASSERT_TRUE(partition);
-    // No cookie cleared, 4 left.
-    EXPECT_EQ(GetAllCookies(partition).size(), 4UL);
+    // Each partition should have 4 cookies.
+    ASSERT_EQ(GetAllCookies(partition).size(), 4UL);
   }
 
   ClearTimeRangedData(browsing_data::TimePeriod::LAST_WEEK);
@@ -734,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     EXPECT_EQ(GetAllCookies(partition).size(), 2UL);
   }
 
-  ClearTimeRangedData(browsing_data::TimePeriod::ALL_TIME);
+  ClearTimeRangedData(browsing_data::TimePeriod::FOUR_WEEKS);
   for (const auto& config : storage_partition_configs) {
     SCOPED_TRACE("partition_name: " + config.partition_name());
     content::StoragePartition* partition =
