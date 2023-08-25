@@ -259,9 +259,10 @@ using password_manager::WarningType;
             initForWarningType:WarningType::kCompromisedPasswordsWarning
       baseNavigationController:self.baseNavigationController
                        browser:self.browser];
-  self.passwordIssuesCoordinator.delegate = self;
-  self.passwordIssuesCoordinator.reauthModule = self.reauthModule;
-  [self.passwordIssuesCoordinator start];
+  _passwordIssuesCoordinator.skipAuthenticationOnStart = YES;
+  _passwordIssuesCoordinator.delegate = self;
+  _passwordIssuesCoordinator.reauthModule = self.reauthModule;
+  [_passwordIssuesCoordinator start];
 }
 
 - (void)showDetailedViewForCredential:

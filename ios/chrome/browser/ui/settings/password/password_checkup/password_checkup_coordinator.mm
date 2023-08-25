@@ -128,6 +128,9 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
             initForWarningType:warningType
       baseNavigationController:self.baseNavigationController
                        browser:self.browser];
+  // No need to authenticate the user before showing password issues as the user
+  // was already authenticated when opening the password manager.
+  _passwordIssuesCoordinator.skipAuthenticationOnStart = YES;
   _passwordIssuesCoordinator.delegate = self;
   _passwordIssuesCoordinator.reauthModule = _reauthModule;
   [_passwordIssuesCoordinator start];
