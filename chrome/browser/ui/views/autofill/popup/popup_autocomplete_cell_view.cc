@@ -215,10 +215,11 @@ bool PopupAutocompleteCellView::HandleKeyPressEvent(
         DeleteAutocomplete();
         return true;
       }
-      return false;
+      break;
     default:
-      return false;
+      break;
   }
+  return PopupCellView::HandleKeyPressEvent(event);
 }
 
 void PopupAutocompleteCellView::SetSelected(bool selected) {

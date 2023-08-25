@@ -113,11 +113,10 @@ class PopupViewViews : public PopupBaseView,
   // selected.
   void SelectNextRow();
 
-  // Attempts to accept the selected cell. It will return false if the cell is
-  // not selectable or the current cell selection is invalid.
-  // If `tab_key_pressed` is true, only cells that trigger field filling or
-  // scanning a credit card qualify as selectable.
-  bool AcceptSelectedCell(bool tab_key_pressed);
+  // Attempts to accept the selected cell. It will return false if there is no
+  // selected cell or the cell does not trigger field filling or scanning a
+  // credit card.
+  bool AcceptSelectedContentOrCreditCardCell();
 
   // Attempts to remove the selected cell. Only content cells are allowed to be
   // selected.

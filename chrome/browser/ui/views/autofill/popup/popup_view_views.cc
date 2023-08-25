@@ -215,8 +215,6 @@ bool PopupViewViews::HandleKeyPressEvent(
       SetSelectedCell(absl::nullopt);
       SelectPreviousRow();
       return true;
-    case ui::VKEY_RETURN:
-      return AcceptSelectedCell(/*tab_key_pressed=*/false);
     case ui::VKEY_DELETE:
       return kHasShiftModifier && RemoveSelectedCell();
     case ui::VKEY_TAB:
@@ -226,7 +224,7 @@ bool PopupViewViews::HandleKeyPressEvent(
       // We do not want to handle Mod+TAB for other modifiers because this may
       // have other purposes (e.g., change the tab).
       if (!kHasNonShiftModifier) {
-        AcceptSelectedCell(/*tab_key_pressed=*/true);
+        AcceptSelectedContentOrCreditCardCell();
       }
       return false;
     default:
@@ -269,24 +267,21 @@ void PopupViewViews::SelectNextRow() {
   SetSelectedCell(CellIndex{new_row, kNewCellType});
 }
 
-bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
+bool PopupViewViews::AcceptSelectedContentOrCreditCardCell() {
   absl::optional<CellIndex> index = GetSelectedCell();
   if (!controller_ || !index) {
     return false;
   }
 
-  // If the tab key is pressed, only content cells that contain fillable items
-  // or scanning a credit card may be accepted.
-  if (tab_key_pressed) {
-    if (index->second != PopupRowView::CellType::kContent) {
-      return false;
-    }
-    PopupItemId popup_item_id =
-        controller_->GetSuggestionAt(index->first).popup_item_id;
-    if (!base::Contains(kItemsTriggeringFieldFilling, popup_item_id) &&
-        popup_item_id != PopupItemId::kScanCreditCard) {
-      return false;
-    }
+  if (index->second != PopupRowView::CellType::kContent) {
+    return false;
+  }
+
+  const PopupItemId popup_item_id =
+      controller_->GetSuggestionAt(index->first).popup_item_id;
+  if (!base::Contains(kItemsTriggeringFieldFilling, popup_item_id) &&
+      popup_item_id != PopupItemId::kScanCreditCard) {
+    return false;
   }
 
   controller_->AcceptSuggestion(index->first);
