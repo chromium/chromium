@@ -821,6 +821,50 @@ TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
       sticky_size);
 }
 
+TEST_F(ContainerQueryEvaluatorTest, FindSnapContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="container-type: sticky snap">
+      <div style="container-name:outer;container-type: snap">
+        <div style="container-name:outer">
+          <div style="container-type: snap">
+            <div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* sticky_snap = GetDocument().body()->firstElementChild();
+  Element* outer_snap = sticky_snap->firstElementChild();
+  Element* outer = outer_snap->firstElementChild();
+  Element* inner_snap = outer->firstElementChild();
+  Element* inner = inner_snap->firstElementChild();
+
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner,
+                ParseContainer("state(snapped: inline) and style(--foo: bar)")
+                    ->Selector(),
+                &GetDocument()),
+            inner_snap);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner,
+          ParseContainer("outer state(snapped: block) and style(--foo: bar)")
+              ->Selector(),
+          &GetDocument()),
+      outer_snap);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner,
+                ParseContainer("state((snapped: none) and (stuck: bottom))")
+                    ->Selector(),
+                &GetDocument()),
+            sticky_snap);
+}
+
 TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
   GetDocument()
       .documentElement()

@@ -1729,8 +1729,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool DependsOnContainerQueries() const {
     return DependsOnSizeContainerQueries() ||
-           DependsOnStyleContainerQueries() ||
-           DependsOnStickyContainerQueries();
+           DependsOnStyleContainerQueries() || DependsOnStateContainerQueries();
   }
 
   static bool IsContentVisibilityVisible(

@@ -124,11 +124,11 @@ class CORE_EXPORT MatchResult {
   bool DependsOnStyleContainerQueries() const {
     return depends_on_style_container_queries_;
   }
-  void SetDependsOnStickyContainerQueries() {
-    depends_on_sticky_container_queries_ = true;
+  void SetDependsOnStateContainerQueries() {
+    depends_on_state_container_queries_ = true;
   }
-  bool DependsOnStickyContainerQueries() const {
-    return depends_on_sticky_container_queries_;
+  bool DependsOnStateContainerQueries() const {
+    return depends_on_state_container_queries_;
   }
   void SetFirstLineDependsOnSizeContainerQueries() {
     first_line_depends_on_size_container_queries_ = true;
@@ -216,7 +216,7 @@ class CORE_EXPORT MatchResult {
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
   bool depends_on_style_container_queries_{false};
-  bool depends_on_sticky_container_queries_{false};
+  bool depends_on_state_container_queries_{false};
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};

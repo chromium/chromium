@@ -12,7 +12,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/container_stuck.h"
+#include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -111,11 +111,30 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual ContainerStuckLogical StuckBlock() const {
     return ContainerStuckLogical::kNo;
   }
+  // For boolean context evaluation.
+  bool Stuck() const {
+    return StuckHorizontal() != ContainerStuckPhysical::kNo ||
+           StuckVertical() != ContainerStuckPhysical::kNo;
+  }
+  // For evaluating state(snapped: block/inline)
+  bool SnappedBlock() const {
+    return SnappedFlags() &
+           static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock);
+  }
+  bool SnappedInline() const {
+    return SnappedFlags() &
+           static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline);
+  }
+  bool Snapped() const { return SnappedBlock() || SnappedInline(); }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }
 
  protected:
+  virtual ContainerSnappedFlags SnappedFlags() const {
+    return static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
+  }
+
   static double CalculateViewportWidth(LocalFrame*);
   static double CalculateViewportHeight(LocalFrame*);
   static double CalculateSmallViewportWidth(LocalFrame*);

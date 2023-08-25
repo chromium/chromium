@@ -71,6 +71,7 @@
     "device-posture",
     "horizontal-viewport-segments",
     "vertical-viewport-segments",
+    "snapped",
     "stuck",
     "inverted-colors",
   ],

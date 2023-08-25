@@ -588,7 +588,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
           result_.SetDependsOnStyleContainerQueries();
         }
         if (selects_sticky) {
-          result_.SetDependsOnStickyContainerQueries();
+          result_.SetDependsOnStateContainerQueries();
         }
       }
     }

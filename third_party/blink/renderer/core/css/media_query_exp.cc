@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -176,6 +177,19 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
         case CSSValueID::kInsetBlockEnd:
         case CSSValueID::kInsetInlineStart:
         case CSSValueID::kInsetInlineEnd:
+          return true;
+        default:
+          return false;
+      }
+    }
+  }
+
+  if (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
+    if (media_feature == media_feature_names::kSnappedMediaFeature) {
+      switch (ident) {
+        case CSSValueID::kNone:
+        case CSSValueID::kBlock:
+        case CSSValueID::kInline:
           return true;
         default:
           return false;
@@ -786,22 +800,24 @@ void MediaQueryFeatureExpNode::CollectExpressions(
 
 MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
     const {
-  FeatureFlags flags = 0;
-
-  if (exp_.IsWidthDependent()) {
-    flags |= kFeatureWidth;
+  if (exp_.MediaFeature() == media_feature_names::kStuckMediaFeature) {
+    return kFeatureSticky;
+  } else if (exp_.MediaFeature() == media_feature_names::kSnappedMediaFeature) {
+    return kFeatureSnap;
+  } else if (exp_.IsInlineSizeDependent()) {
+    return kFeatureInlineSize;
+  } else if (exp_.IsBlockSizeDependent()) {
+    return kFeatureBlockSize;
+  } else {
+    FeatureFlags flags = 0;
+    if (exp_.IsWidthDependent()) {
+      flags |= kFeatureWidth;
+    }
+    if (exp_.IsHeightDependent()) {
+      flags |= kFeatureHeight;
+    }
+    return flags;
   }
-  if (exp_.IsHeightDependent()) {
-    flags |= kFeatureHeight;
-  }
-  if (exp_.IsInlineSizeDependent()) {
-    flags |= kFeatureInlineSize;
-  }
-  if (exp_.IsBlockSizeDependent()) {
-    flags |= kFeatureBlockSize;
-  }
-
-  return flags;
 }
 
 void MediaQueryFeatureExpNode::Trace(Visitor* visitor) const {
@@ -842,9 +858,6 @@ MediaQueryExpNode::FeatureFlags MediaQueryFunctionExpNode::CollectFeatureFlags()
   FeatureFlags flags = MediaQueryUnaryExpNode::CollectFeatureFlags();
   if (name_ == AtomicString("style")) {
     flags |= kFeatureStyle;
-  }
-  if (name_ == AtomicString("state")) {
-    flags |= kFeatureState;
   }
   return flags;
 }

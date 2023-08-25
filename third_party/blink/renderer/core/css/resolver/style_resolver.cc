@@ -1448,8 +1448,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.DependsOnStyleContainerQueries()) {
     state.StyleBuilder().SetDependsOnStyleContainerQueries(true);
   }
-  if (match_result.DependsOnStickyContainerQueries()) {
-    state.StyleBuilder().SetDependsOnStickyContainerQueries(true);
+  if (match_result.DependsOnStateContainerQueries()) {
+    state.StyleBuilder().SetDependsOnStateContainerQueries(true);
   }
   if (match_result.FirstLineDependsOnSizeContainerQueries()) {
     state.StyleBuilder().SetFirstLineDependsOnSizeContainerQueries(true);

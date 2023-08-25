@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_QUERY_SCROLL_SNAPSHOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_QUERY_SCROLL_SNAPSHOT_H_
 
-#include "third_party/blink/renderer/core/css/container_stuck.h"
+#include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 

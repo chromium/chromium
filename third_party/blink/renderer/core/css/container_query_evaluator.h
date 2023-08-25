@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_selector.h"
-#include "third_party/blink/renderer/core/css/container_stuck.h"
+#include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
@@ -156,7 +156,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool referenced_by_unit_ = false;
   bool font_dirty_ = false;
   bool depends_on_style_ = false;
-  bool depends_on_sticky_ = false;
+  bool depends_on_state_ = false;
 };
 
 }  // namespace blink

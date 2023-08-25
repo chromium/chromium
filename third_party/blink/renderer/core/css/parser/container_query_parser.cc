@@ -109,7 +109,10 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
 
  public:
   bool IsAllowed(const String& feature) const override {
-    return feature == media_feature_names::kStuckMediaFeature;
+    return (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() &&
+            feature == media_feature_names::kStuckMediaFeature) ||
+           (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() &&
+            feature == media_feature_names::kSnappedMediaFeature);
   }
   bool IsAllowedWithoutValue(const String& feature,
                              const ExecutionContext*) const override {
@@ -189,10 +192,12 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
       context_.Count(WebFeature::kCSSStyleContainerQuery);
       return MediaQueryExpNode::Function(query, AtomicString("style"));
     }
-  } else if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() &&
+  } else if ((RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
+              RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) &&
              range.Peek().GetType() == kFunctionToken &&
              range.Peek().FunctionId() == CSSValueID::kState) {
-    // state(stuck: [top | left | right | bottom | inset-* ] )
+    // state(stuck: [ none | top | left | right | bottom | inset-* ] )
+    // state(snapped: [ none | block | inline ] )
     CSSParserTokenRange block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();

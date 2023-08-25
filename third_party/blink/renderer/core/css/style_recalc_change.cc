@@ -41,8 +41,8 @@ bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
           old_style->DependsOnSizeContainerQueries()) ||
          (RecalcStyleContainerQueryDependent() &&
           old_style->DependsOnStyleContainerQueries()) ||
-         (RecalcStickyContainerQueryDependent() &&
-          old_style->DependsOnStickyContainerQueries());
+         (RecalcStateContainerQueryDependent() &&
+          old_style->DependsOnStateContainerQueries());
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {

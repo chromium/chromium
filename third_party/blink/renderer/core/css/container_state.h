@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STUCK_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STUCK_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STATE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STATE_H_
+
+namespace blink {
 
 // Enum classes that represents whether a sticky positioned element is stuck to
 // a scroll container edge for a given axis. Used for evaluating stuck state
@@ -36,4 +38,16 @@ inline ContainerStuckLogical Flip(ContainerStuckLogical stuck) {
   }
 }
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STUCK_H_
+// Flags that represent whether a scroll-snapped query container is snapped to
+// its scroll container in a given direction.
+enum class ContainerSnapped {
+  kNone = 0,
+  kBlock = 1 << 0,
+  kInline = 1 << 1,
+};
+
+using ContainerSnappedFlags = unsigned;
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_STATE_H_

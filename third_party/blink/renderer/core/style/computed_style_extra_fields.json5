@@ -1106,7 +1106,7 @@
       default_value: "false",
     },
     {
-      name: "DependsOnStickyContainerQueries",
+      name: "DependsOnStateContainerQueries",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",

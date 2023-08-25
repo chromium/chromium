@@ -1459,8 +1459,7 @@ static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaQueryOperator op,
                                   const MediaValues& media_values) {
   if (!value.IsValid()) {
-    return media_values.StuckHorizontal() != ContainerStuckPhysical::kNo ||
-           media_values.StuckVertical() != ContainerStuckPhysical::kNo;
+    return media_values.Stuck();
   }
 
   switch (value.Id()) {
@@ -1483,6 +1482,25 @@ static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
       return media_values.StuckInline() == ContainerStuckLogical::kStart;
     case CSSValueID::kInsetInlineEnd:
       return media_values.StuckInline() == ContainerStuckLogical::kEnd;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
+                                    MediaQueryOperator op,
+                                    const MediaValues& media_values) {
+  if (!value.IsValid()) {
+    return media_values.Snapped();
+  }
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return media_values.Snapped();
+    case CSSValueID::kBlock:
+      return media_values.SnappedBlock();
+    case CSSValueID::kInline:
+      return media_values.SnappedInline();
     default:
       NOTREACHED();
       return false;

@@ -36,12 +36,12 @@ class CORE_EXPORT StyleRecalcChange {
     // Recalc size container query dependent elements within this container,
     // and also in nested containers.
     kRecalcStyleContainerDescendants = 1 << 3,
-    // Recalc sticky container query dependent elements within this container,
+    // Recalc state container query dependent elements within this container,
     // but not in nested containers.
-    kRecalcStickyContainer = 1 << 4,
-    // Recalc sticky container query dependent elements within this container,
+    kRecalcStateContainer = 1 << 4,
+    // Recalc state container query dependent elements within this container,
     // and also in nested containers.
-    kRecalcDescendantStickyContainers = 1 << 5,
+    kRecalcDescendantStateContainers = 1 << 5,
     // If set, need to reattach layout tree.
     kReattach = 1 << 6,
     // If set, will prevent style recalc for the node passed to
@@ -61,12 +61,12 @@ class CORE_EXPORT StyleRecalcChange {
   static const Flags kRecalcStyleContainerFlags =
       kRecalcStyleContainerChildren | kRecalcStyleContainerDescendants;
 
-  static const Flags kRecalcStickyContainerFlags =
-      kRecalcStickyContainer | kRecalcDescendantStickyContainers;
+  static const Flags kRecalcStateContainerFlags =
+      kRecalcStateContainer | kRecalcDescendantStateContainers;
 
   static const Flags kRecalcContainerFlags = kRecalcSizeContainerFlags |
                                              kRecalcStyleContainerFlags |
-                                             kRecalcStickyContainerFlags;
+                                             kRecalcStateContainerFlags;
 
  public:
   enum Propagate {
@@ -131,12 +131,12 @@ class CORE_EXPORT StyleRecalcChange {
     return {propagate_,
             static_cast<Flags>(flags_ | kRecalcStyleContainerDescendants)};
   }
-  StyleRecalcChange ForceRecalcStickyContainer() const {
-    return {propagate_, static_cast<Flags>(flags_ | kRecalcStickyContainer)};
+  StyleRecalcChange ForceRecalcStateContainer() const {
+    return {propagate_, static_cast<Flags>(flags_ | kRecalcStateContainer)};
   }
-  StyleRecalcChange ForceRecalcDescendantStickyContainers() const {
+  StyleRecalcChange ForceRecalcDescendantStateContainers() const {
     return {propagate_,
-            static_cast<Flags>(flags_ | kRecalcDescendantStickyContainers)};
+            static_cast<Flags>(flags_ | kRecalcDescendantStateContainers)};
   }
   StyleRecalcChange SuppressRecalc() const {
     return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
@@ -200,8 +200,8 @@ class CORE_EXPORT StyleRecalcChange {
   bool RecalcStyleContainerQueryDependent() const {
     return flags_ & kRecalcStyleContainerFlags;
   }
-  bool RecalcStickyContainerQueryDependent() const {
-    return flags_ & kRecalcStickyContainerFlags;
+  bool RecalcStateContainerQueryDependent() const {
+    return flags_ & kRecalcStateContainerFlags;
   }
   bool RecalcContainerQueryDependent() const {
     return flags_ & kRecalcContainerFlags;
