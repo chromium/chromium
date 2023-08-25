@@ -401,7 +401,6 @@
         'build1': 'ios_simulator_debug_static_bot_xctest_reclient',
         'build2': 'ios_simulator_debug_static_bot_xctest_reclient',
       },
-      'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Builder (reclient compare)': 'gpu_tests_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       # TODO(crbug.com/1260232): remove this after the migration.

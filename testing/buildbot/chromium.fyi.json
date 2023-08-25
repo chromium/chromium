@@ -46,11 +46,6 @@
       "all"
     ]
   },
-  "Linux Builder (j-500) (reclient)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "Linux Viz": {
     "additional_compile_targets": [
       "all"

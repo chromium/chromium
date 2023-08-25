@@ -1637,33 +1637,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
 )
 
 ci.builder(
-    name = "Linux Builder (j-500) (reclient)",
-    schedule = "triggered",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["use_clang_coverage"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "re",
-    ),
-    reclient_jobs = 500,
-    reclient_rewrapper_env = {
-        "RBE_platform": "container-image=docker://gcr.io/cloud-marketplace/google/rbe-ubuntu16-04@sha256:b4dad0bfc4951d619229ab15343a311f2415a16ef83bcaa55b44f4e2bf1cf635,pool=linux-e2-custom_0",
-    },
-)
-
-ci.builder(
     name = "Linux Builder (reclient compare)",
     builder_spec = builder_config.copy_from(
         "ci/Linux Builder",
