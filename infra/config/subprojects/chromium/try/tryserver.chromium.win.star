@@ -318,6 +318,7 @@ try_.gpu.optional_tests_builder(
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
+            # Inclusion filters.
             cq.location_filter(path_regexp = "chrome/browser/media/.+"),
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
             cq.location_filter(path_regexp = "components/cdm/renderer/.+"),
@@ -347,6 +348,9 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
             cq.location_filter(path_regexp = "tools/mb/mb_config_expectations/tryserver.chromium.win.json"),
             cq.location_filter(path_regexp = "ui/gl/.+"),
+
+            # Exclusion filters.
+            cq.location_filter(exclude = True, path_regexp = ".*\\.md"),
         ],
     ),
 )

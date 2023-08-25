@@ -191,6 +191,7 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//tools/mb/mb_config_expectations/tryserver.chromium.android.json`](https://cs.chromium.org/search?q=+file:tools/mb/mb_config_expectations/tryserver.chromium.android.json)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
 
 * [branch-config-verifier](https://ci.chromium.org/p/chromium/builders/try/branch-config-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""branch-config-verifier""))
 
@@ -338,6 +339,7 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//tools/mb/mb_config_expectations/tryserver.chromium.android.json`](https://cs.chromium.org/search?q=+file:tools/mb/mb_config_expectations/tryserver.chromium.android.json)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
 
 * [ios-simulator-cronet](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-cronet""))
 
@@ -454,6 +456,7 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//tools/mb/mb_config_expectations/tryserver.chromium.linux.json`](https://cs.chromium.org/search?q=+file:tools/mb/mb_config_expectations/tryserver.chromium.linux.json)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
 
 * [mac-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-dbg""))
 
@@ -491,6 +494,7 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//tools/mb/mb_config_expectations/tryserver.chromium.mac.json`](https://cs.chromium.org/search?q=+file:tools/mb/mb_config_expectations/tryserver.chromium.mac.json)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
 
 * [reclient-config-deployment-verifier](https://ci.chromium.org/p/chromium/builders/try/reclient-config-deployment-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""reclient-config-deployment-verifier""))
 
@@ -540,6 +544,7 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//tools/mb/mb_config_expectations/tryserver.chromium.win.json`](https://cs.chromium.org/search?q=+file:tools/mb/mb_config_expectations/tryserver.chromium.win.json)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
 
 
 ## Experimental builders
