@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -56,6 +57,7 @@ public class AuxiliarySearchProviderTest {
     private static final String TAB_URL = "https://tab.google.com/";
     private static final String BOOKMARK_TITLE = "bookmark";
     private static final String BOOKMARK_URL = "https://bookmark.google.com";
+    private static final String NEW_TAB_PAGE_URL = "chrome-native://newtab";
     private static final long FAKE_NATIVE_PROVIDER = 1;
 
     public @Rule JniMocker mJniMocker = new JniMocker();
@@ -72,6 +74,9 @@ public class AuxiliarySearchProviderTest {
     public void setUp() {
         mJniMocker.mock(AuxiliarySearchBridgeJni.TEST_HOOKS, mMockAuxiliarySearchBridgeJni);
         doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
+        doAnswer((Answer<Object[]>) invocation -> ((Object[]) invocation.getArguments()[1]))
+                .when(mMockAuxiliarySearchBridgeJni)
+                .getSearchableTabs(eq(FAKE_NATIVE_PROVIDER), any(Tab[].class));
         mAuxiliarySearchProvider = new AuxiliarySearchProvider(mProfile, mTabModelSelector);
     }
 

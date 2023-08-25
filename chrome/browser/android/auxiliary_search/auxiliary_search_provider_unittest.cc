@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -79,4 +80,46 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
     bookmark_titles_int.insert(title_int);
   }
   EXPECT_EQ(100u, bookmark_titles_int.size());
+}
+
+TEST_F(AuxiliarySearchProviderTest, QueryBookmarks_nativePageShouldBeFiltered) {
+  std::vector<GURL> urls_should_be_filtered = {
+      GURL(chrome::kChromeUINativeNewTabURL),
+      GURL("content://content_url"),
+      GURL("about:about_url"),
+      GURL("chrome://chrome_url"),
+      GURL("javascript:javascript_url"),
+      GURL("file://file_url"),
+      GURL("invalidscheme://invalidscheme_url")};
+
+  // Add two normal bookmarks
+  BookmarkNode* node = AsMutable(model_->AddURL(model_->bookmark_bar_node(), 0,
+                                                u"0", GURL("http://foo.com/")));
+  node->set_date_last_used(base::Time::FromTimeT(1));
+
+  node = AsMutable(model_->AddURL(model_->bookmark_bar_node(), 1, u"1",
+                                  GURL("https://bar.com/")));
+  node->set_date_last_used(base::Time::FromTimeT(2));
+
+  // Add some native page bookmarks
+  for (size_t i = 0; i < urls_should_be_filtered.size(); ++i) {
+    std::string number = base::NumberToString(i + 2);
+    node = AsMutable(model_->AddURL(model_->bookmark_bar_node(), i + 2,
+                                    base::UTF8ToUTF16(number),
+                                    urls_should_be_filtered.at(i)));
+    node->set_date_last_used(base::Time::FromTimeT(i + 2));
+  }
+
+  auxiliary_search::AuxiliarySearchBookmarkGroup group =
+      provider->GetBookmarks(model_.get());
+
+  EXPECT_EQ(2, group.bookmark_size());
+  EXPECT_TRUE(group.bookmark(0).has_creation_timestamp());
+  EXPECT_TRUE(group.bookmark(0).has_last_access_timestamp());
+  EXPECT_FALSE(group.bookmark(0).has_last_modification_timestamp());
+  EXPECT_EQ("1", group.bookmark(0).title());
+  EXPECT_TRUE(group.bookmark(1).has_creation_timestamp());
+  EXPECT_TRUE(group.bookmark(1).has_last_access_timestamp());
+  EXPECT_FALSE(group.bookmark(1).has_last_modification_timestamp());
+  EXPECT_EQ("0", group.bookmark(1).title());
 }

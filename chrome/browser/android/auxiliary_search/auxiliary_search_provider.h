@@ -34,6 +34,10 @@ class AuxiliarySearchProvider : public KeyedService {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
+  base::android::ScopedJavaLocalRef<jobjectArray> GetSearchableTabs(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& j_tabs_android) const;
+
   void GetNonSensitiveTabs(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& j_tabs_android,
@@ -43,12 +47,16 @@ class AuxiliarySearchProvider : public KeyedService {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest,
+                           QueryBookmarks_nativePageShouldBeFiltered);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
                            QuerySensitiveTab);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
                            QueryNonSensitiveTab);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
                            QueryEmptyTabList);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, NativeTabTest);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, FilterTabsTest);
 
   using NonSensitiveTabsCallback =
       base::OnceCallback<void(std::unique_ptr<std::vector<TabAndroid*>>)>;
@@ -56,9 +64,11 @@ class AuxiliarySearchProvider : public KeyedService {
   auxiliary_search::AuxiliarySearchBookmarkGroup GetBookmarks(
       bookmarks::BookmarkModel* model) const;
 
-  void GetNonSensitiveTabsInternal(
-      std::unique_ptr<std::vector<TabAndroid*>> all_tabs,
-      NonSensitiveTabsCallback callback) const;
+  static std::vector<TabAndroid*> FilterTabsByScheme(
+      const std::vector<TabAndroid*>& tabs);
+
+  void GetNonSensitiveTabsInternal(const std::vector<TabAndroid*>& all_tabs,
+                                   NonSensitiveTabsCallback callback) const;
 
   raw_ptr<Profile> profile_;
 
