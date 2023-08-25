@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -287,9 +288,8 @@ void SyncedNetworkMetricsLogger::RecordTotalCount(int count) {
 void SyncedNetworkMetricsLogger::RecordZeroNetworksEligibleForSync(
     base::flat_set<NetworkEligibilityStatus> network_eligibility_status_codes) {
   // There is an eligible network that was not synced for some reason.
-  if (network_eligibility_status_codes.find(
-          NetworkEligibilityStatus::kNetworkIsEligible) !=
-      network_eligibility_status_codes.end()) {
+  if (base::Contains(network_eligibility_status_codes,
+                     NetworkEligibilityStatus::kNetworkIsEligible)) {
     base::UmaHistogramEnumeration(kZeroNetworksSyncedReasonHistogram,
                                   NetworkEligibilityStatus::kNetworkIsEligible);
     return;

@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -297,7 +298,7 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
                                       base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (old_guid == new_guid &&
-      remaining_policy_guids_.find(new_guid) == remaining_policy_guids_.end()) {
+      !base::Contains(remaining_policy_guids_, new_guid)) {
     VLOG(1) << "Not updating existing managed configuration with guid "
             << new_guid << " because the policy didn't change.";
     std::move(callback).Run();

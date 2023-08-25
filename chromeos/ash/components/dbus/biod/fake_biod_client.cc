@@ -313,8 +313,10 @@ void FakeBiodClient::EndAuthSession(chromeos::VoidDBusMethodCallback callback) {
 void FakeBiodClient::SetRecordLabel(const dbus::ObjectPath& record_path,
                                     const std::string& label,
                                     chromeos::VoidDBusMethodCallback callback) {
-  if (records_.find(record_path) != records_.end())
-    records_[record_path].label = label;
+  auto it = records_.find(record_path);
+  if (it != records_.end()) {
+    it->second.label = label;
+  }
   SaveRecords();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
@@ -332,8 +334,10 @@ void FakeBiodClient::RemoveRecord(const dbus::ObjectPath& record_path,
 void FakeBiodClient::RequestRecordLabel(const dbus::ObjectPath& record_path,
                                         LabelCallback callback) {
   std::string record_label;
-  if (records_.find(record_path) != records_.end())
-    record_label = records_[record_path].label;
+  auto it = records_.find(record_path);
+  if (it != records_.end()) {
+    record_label = it->second.label;
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), record_label));

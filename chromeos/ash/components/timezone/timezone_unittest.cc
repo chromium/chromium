@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -238,14 +239,14 @@ TEST_F(TimeZoneTest, InvalidResponse) {
                                           base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
   std::string receiver_timezone = receiver.timezone()->ToStringForDebug();
-  EXPECT_NE(std::string::npos,
-            receiver_timezone.find("dstOffset=0.000000, rawOffset=0.000000, "
-                                   "timeZoneId='', timeZoneName='', "
-                                   "error_message='TimeZone provider at "
-                                   "'https://localhost/' : JSONReader "
-                                   "failed:"));
-  EXPECT_NE(std::string::npos,
-            receiver_timezone.find("status=6 (REQUEST_ERROR)"));
+  EXPECT_TRUE(base::Contains(receiver_timezone,
+                             "dstOffset=0.000000, rawOffset=0.000000, "
+                             "timeZoneId='', timeZoneName='', "
+                             "error_message='TimeZone provider at "
+                             "'https://localhost/' : JSONReader "
+                             "failed:"));
+
+  EXPECT_TRUE(base::Contains(receiver_timezone, "status=6 (REQUEST_ERROR)"));
   EXPECT_FALSE(receiver.server_error());
   EXPECT_GE(url_factory.attempts(), 2U);
   if (url_factory.attempts() > expected_retries + 1) {

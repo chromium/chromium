@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
@@ -151,7 +152,7 @@ base::flat_set<std::string> ProfilePolicies::ApplyOncNetworkConfigurationList(
         network.FindString(::onc::network_config::kGUID);
     DCHECK(guid_str && !guid_str->empty());
     std::string guid = *guid_str;
-    if (processed_guids.find(guid) != processed_guids.end()) {
+    if (base::Contains(processed_guids, guid)) {
       NET_LOG(ERROR) << "ONC Contains multiple entries for the same guid: "
                      << guid;
       continue;

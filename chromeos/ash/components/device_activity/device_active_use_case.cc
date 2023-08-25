@@ -200,9 +200,11 @@ std::vector<FresnelImportData> DeviceActiveUseCase::GetImportData() const {
 
 base::Time DeviceActiveUseCase::RetrievePsmIdDate(
     private_membership::rlwe::RlwePlaintextId id) {
-  if (psm_id_to_date_.find(id.sensitive_id()) == psm_id_to_date_.end())
+  auto it = psm_id_to_date_.find(id.sensitive_id());
+  if (it == psm_id_to_date_.end()) {
     return base::Time::UnixEpoch();
-  return psm_id_to_date_.at(id.sensitive_id());
+  }
+  return it->second;
 }
 
 std::string DeviceActiveUseCase::GetDigestString(

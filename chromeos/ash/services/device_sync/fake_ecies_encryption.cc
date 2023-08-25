@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/device_sync/fake_ecies_encryption.h"
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 
 namespace ash {
 
@@ -22,7 +23,7 @@ std::string GetPrivateKeyFromPublicKeyForTest(const std::string& public_key) {
 }
 
 std::string GetPublicKeyFromPrivateKeyForTest(const std::string& private_key) {
-  DCHECK_NE(std::string::npos, private_key.find(kPrivateKeyPrefix));
+  DCHECK(base::Contains(private_key, kPrivateKeyPrefix));
 
   return private_key.substr(strlen(kPrivateKeyPrefix), private_key.length());
 }

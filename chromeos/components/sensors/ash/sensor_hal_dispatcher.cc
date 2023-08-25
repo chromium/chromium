@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
@@ -100,7 +101,7 @@ bool SensorHalDispatcher::AuthenticateClient(
     const base::UnguessableToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return client_token_set_.find(token) != client_token_set_.end();
+  return base::Contains(client_token_set_, token);
 }
 
 void SensorHalDispatcher::TryToEstablishMojoChannelByServiceManager() {

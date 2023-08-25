@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/printing/uri.h"
 #include "chromeos/printing/uri_unittest.h"
@@ -30,7 +31,7 @@ bool IsStdChar(char c) {
 std::string Encode(const std::string& input, const std::string& allowed_chars) {
   std::string out;
   for (char c : input) {
-    if (IsStdChar(c) || allowed_chars.find(c) != std::string::npos) {
+    if (IsStdChar(c) || base::Contains(allowed_chars, c)) {
       out.push_back(c);
     } else {
       out.push_back('%');

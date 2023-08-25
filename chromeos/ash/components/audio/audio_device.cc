@@ -5,7 +5,9 @@
 #include "chromeos/ash/components/audio/audio_device.h"
 
 #include <stdint.h>
+
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -94,44 +96,46 @@ std::string AudioDevice::GetTypeString(AudioDeviceType type) {
 
 // static
 AudioDeviceType AudioDevice::GetAudioType(const std::string& node_type) {
-  if (node_type.find("HEADPHONE") != std::string::npos)
+  if (base::Contains(node_type, "HEADPHONE")) {
     return AudioDeviceType::kHeadphone;
-  else if (node_type.find("INTERNAL_MIC") != std::string::npos)
+  } else if (base::Contains(node_type, "INTERNAL_MIC")) {
     return AudioDeviceType::kInternalMic;
-  else if (node_type.find("FRONT_MIC") != std::string::npos)
+  } else if (base::Contains(node_type, "FRONT_MIC")) {
     return AudioDeviceType::kFrontMic;
-  else if (node_type.find("REAR_MIC") != std::string::npos)
+  } else if (base::Contains(node_type, "REAR_MIC")) {
     return AudioDeviceType::kRearMic;
-  else if (node_type.find("KEYBOARD_MIC") != std::string::npos)
+  } else if (base::Contains(node_type, "KEYBOARD_MIC")) {
     return AudioDeviceType::kKeyboardMic;
-  else if (node_type.find("BLUETOOTH_NB_MIC") != std::string::npos)
+  } else if (base::Contains(node_type, "BLUETOOTH_NB_MIC")) {
     return AudioDeviceType::kBluetoothNbMic;
-  else if (node_type.find("MIC") != std::string::npos)
+  } else if (base::Contains(node_type, "MIC")) {
     return AudioDeviceType::kMic;
-  else if (node_type.find("USB") != std::string::npos)
+  } else if (base::Contains(node_type, "USB")) {
     return AudioDeviceType::kUsb;
-  else if (node_type.find("BLUETOOTH") != std::string::npos)
+  } else if (base::Contains(node_type, "BLUETOOTH")) {
     return AudioDeviceType::kBluetooth;
-  else if (node_type.find("HDMI") != std::string::npos)
+  } else if (base::Contains(node_type, "HDMI")) {
     return AudioDeviceType::kHdmi;
-  else if (node_type.find("INTERNAL_SPEAKER") != std::string::npos)
+  } else if (base::Contains(node_type, "INTERNAL_SPEAKER")) {
     return AudioDeviceType::kInternalSpeaker;
+  }
   // TODO(hychao): Remove the 'AOKR' matching line after CRAS switches
   // node type naming to 'HOTWORD'.
-  else if (node_type.find("AOKR") != std::string::npos)
+  else if (base::Contains(node_type, "AOKR")) {
     return AudioDeviceType::kHotword;
-  else if (node_type.find("HOTWORD") != std::string::npos)
+  } else if (base::Contains(node_type, "HOTWORD")) {
     return AudioDeviceType::kHotword;
-  else if (node_type.find("LINEOUT") != std::string::npos)
+  } else if (base::Contains(node_type, "LINEOUT")) {
     return AudioDeviceType::kLineout;
-  else if (node_type.find("POST_MIX_LOOPBACK") != std::string::npos)
+  } else if (base::Contains(node_type, "POST_MIX_LOOPBACK")) {
     return AudioDeviceType::kPostMixLoopback;
-  else if (node_type.find("POST_DSP_LOOPBACK") != std::string::npos)
+  } else if (base::Contains(node_type, "POST_DSP_LOOPBACK")) {
     return AudioDeviceType::kPostDspLoopback;
-  else if (node_type.find("ALSA_LOOPBACK") != std::string::npos)
+  } else if (base::Contains(node_type, "ALSA_LOOPBACK")) {
     return AudioDeviceType::kAlsaLoopback;
-  else
+  } else {
     return AudioDeviceType::kOther;
+  }
 }
 
 AudioDevice::AudioDevice() = default;

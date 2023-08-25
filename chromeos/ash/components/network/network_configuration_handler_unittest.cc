@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -94,15 +95,13 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
 
   void OnBeforeConfigurationRemoved(const std::string& service_path,
                                     const std::string& guid) override {
-    ASSERT_EQ(before_remove_configurations_.end(),
-              before_remove_configurations_.find(service_path));
+    ASSERT_FALSE(base::Contains(before_remove_configurations_, service_path));
     before_remove_configurations_[service_path] = guid;
   }
 
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override {
-    ASSERT_EQ(removed_configurations_.end(),
-              removed_configurations_.find(service_path));
+    ASSERT_FALSE(base::Contains(removed_configurations_, service_path));
     removed_configurations_[service_path] = guid;
   }
 
@@ -114,23 +113,19 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
   }
 
   bool HasCreatedConfiguration(const std::string& service_path) {
-    return created_configurations_.find(service_path) !=
-           created_configurations_.end();
+    return base::Contains(created_configurations_, service_path);
   }
 
   bool HasCalledBeforeRemoveConfiguration(const std::string& service_path) {
-    return before_remove_configurations_.find(service_path) !=
-           before_remove_configurations_.end();
+    return base::Contains(before_remove_configurations_, service_path);
   }
 
   bool HasRemovedConfiguration(const std::string& service_path) {
-    return removed_configurations_.find(service_path) !=
-           removed_configurations_.end();
+    return base::Contains(removed_configurations_, service_path);
   }
 
   bool HasUpdatedConfiguration(const std::string& service_path) {
-    return updated_configurations_.find(service_path) !=
-           updated_configurations_.end();
+    return base::Contains(updated_configurations_, service_path);
   }
 
  private:

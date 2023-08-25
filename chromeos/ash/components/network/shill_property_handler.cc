@@ -160,8 +160,7 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     network_handler::ErrorCallback error_callback,
     base::OnceClosure success_callback) {
   if (enabled) {
-    if (prohibited_technologies_.find(technology) !=
-        prohibited_technologies_.end()) {
+    if (base::Contains(prohibited_technologies_, technology)) {
       NET_LOG(ERROR) << "Attempt to enable prohibited network technology: "
                      << technology;
       network_handler::RunErrorCallback(std::move(error_callback),
@@ -273,8 +272,9 @@ void ShillPropertyHandler::RequestScanByType(const std::string& type) const {
 
 void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
                                              const std::string& path) {
-  if (pending_updates_[type].find(path) != pending_updates_[type].end())
+  if (base::Contains(pending_updates_[type], path)) {
     return;  // Update already requested.
+  }
 
   NET_LOG(DEBUG) << "Request Properties for: " << NetworkPathId(path);
   pending_updates_[type].insert(path);
@@ -453,7 +453,7 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
     // that prevents it from sending property changed signals for cellular
     // devices (see crbug.com/321854).
     if (type == ManagedState::MANAGED_TYPE_DEVICE ||
-        requested_updates.find(*path) == requested_updates.end()) {
+        !base::Contains(requested_updates, *path)) {
       RequestProperties(type, *path);
     }
     new_requested_updates.insert(*path);

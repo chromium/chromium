@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -47,7 +48,7 @@ bool HasAESKL() {
       return false;
     }
 
-    return (crypto_info.find("aeskl") != std::string::npos);
+    return base::Contains(crypto_info, "aeskl");
   }();
   return hasKL;
 }

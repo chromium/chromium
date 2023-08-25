@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -178,7 +179,7 @@ TEST_P(NetworkSmsHandlerTest, DbusStub) {
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_EQ(messages.find(kMessage1), messages.end());
+  EXPECT_FALSE(base::Contains(messages, kMessage1));
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
@@ -191,7 +192,7 @@ TEST_P(NetworkSmsHandlerTest, DbusStub) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(test_observer_->message_count(), 1);
-  EXPECT_NE(messages.find(kMessage1), messages.end());
+  EXPECT_TRUE(base::Contains(messages, kMessage1));
 
   // There should be a request to delete the message after the message has been
   // received. Complete the request.
@@ -267,7 +268,7 @@ TEST_P(NetworkSmsHandlerTest, DeleteFailure) {
   // Note: The following string corresponds to values in
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_EQ(messages.find(kMessage1), messages.end());
+  EXPECT_FALSE(base::Contains(messages, kMessage1));
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
@@ -280,7 +281,7 @@ TEST_P(NetworkSmsHandlerTest, DeleteFailure) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(test_observer_->message_count(), 1);
-  EXPECT_NE(messages.find(kMessage1), messages.end());
+  EXPECT_TRUE(base::Contains(messages, kMessage1));
 
   // There should be a request to delete the message after the message has been
   // received.
@@ -366,7 +367,7 @@ TEST_P(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_EQ(messages.find(kMessage1), messages.end());
+  EXPECT_FALSE(base::Contains(messages, kMessage1));
 
   // Receive 2 SMSes.
   test_observer_->ClearMessages();
@@ -390,9 +391,8 @@ TEST_P(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(test_observer_->message_count(), 1);
-  EXPECT_EQ(messages.find(kMessage1), messages.end());
-  EXPECT_NE(messages.find("FakeSMSClient: Test Message: /SMS/2"),
-            messages.end());
+  EXPECT_FALSE(base::Contains(messages, kMessage1));
+  EXPECT_TRUE(base::Contains(messages, "FakeSMSClient: Test Message: /SMS/2"));
 
   // There should be a request to delete the second SMS. Complete the request.
   EXPECT_EQ(sms_path_2,
@@ -439,7 +439,7 @@ TEST_P(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_EQ(messages.find(kMessage1), messages.end());
+  EXPECT_FALSE(base::Contains(messages, kMessage1));
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
@@ -451,7 +451,7 @@ TEST_P(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(test_observer_->message_count(), 1);
-  EXPECT_NE(messages.find(kMessage1), messages.end());
+  EXPECT_TRUE(base::Contains(messages, kMessage1));
 }
 
 }  // namespace ash

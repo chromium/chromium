@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -81,7 +82,7 @@ std::string PpdPathInServingRoot(base::StringPiece ppd_basename) {
 // IEEE 1284 device id make and model.
 bool SupportsGenericZebraPPD(const PrinterSearchData& search_data) {
   return search_data.printer_id.make() == "Zebra" &&
-         search_data.printer_id.model().find("ZPL") != std::string::npos;
+         base::Contains(search_data.printer_id.model(), "ZPL");
 }
 
 // Helper struct for PpdProviderImpl. Allows PpdProviderImpl to defer

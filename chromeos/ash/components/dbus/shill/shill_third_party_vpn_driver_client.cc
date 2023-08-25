@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -218,7 +219,7 @@ void ShillThirdPartyVpnDriverClientImpl::SetParameters(
   dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{ss}", &array_writer);
   for (auto it : parameters) {
-    if (valid_keys_.find(it.first) == valid_keys_.end()) {
+    if (!base::Contains(valid_keys_, it.first)) {
       LOG(WARNING) << "Unknown key " << it.first;
       continue;
     }
