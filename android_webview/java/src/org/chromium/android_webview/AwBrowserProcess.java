@@ -192,6 +192,7 @@ public final class AwBrowserProcess {
                 }
 
                 PowerMonitor.create();
+                PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
             });
         }
     }

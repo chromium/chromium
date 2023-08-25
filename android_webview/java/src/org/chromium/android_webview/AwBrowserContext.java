@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
@@ -71,8 +70,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         if (isDefaultAwBrowserContext()) {
             migrateGeolocationPreferences();
         }
-
-        PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
 
         // Register MemoryPressureMonitor callbacks and make sure it polls only if there is at
         // least one WebView around.
