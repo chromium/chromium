@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 
+#include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -14,7 +15,7 @@ PasswordProtectionCommitDeferringCondition::
         content::NavigationHandle& navigation_handle,
         PasswordProtectionRequestContent& request)
     : content::CommitDeferringCondition(navigation_handle),
-      request_(request.AsWeakPtr()) {
+      request_(base::AsWeakPtr(&request)) {
   DCHECK(request_);
   request_->AddDeferredNavigation(*this);
 }

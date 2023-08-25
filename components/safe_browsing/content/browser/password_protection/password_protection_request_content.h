@@ -80,10 +80,6 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
 
   content::WebContents* web_contents() const { return web_contents_; }
 
-  base::WeakPtr<PasswordProtectionRequestContent> AsWeakPtr() {
-    return base::AsWeakPtr(this);
-  }
-
   // Keeps track of deferred navigations.
   void AddDeferredNavigation(
       PasswordProtectionCommitDeferringCondition& condition) {

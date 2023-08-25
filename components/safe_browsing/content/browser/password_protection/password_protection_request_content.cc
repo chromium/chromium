@@ -174,13 +174,13 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
   phishing_detector_->StartPhishingDetection(
       main_frame_url(),
       base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
-                          AsWeakPtr()));
+                          base::AsWeakPtr(this)));
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
-              AsWeakPtr()),
+              base::AsWeakPtr(this)),
           base::Milliseconds(kDomFeatureTimeoutMs));
 }
 
@@ -297,7 +297,7 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
   view->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(&PasswordProtectionRequestContent::OnScreenshotTaken,
-                     AsWeakPtr()));
+                     base::AsWeakPtr(this)));
 }
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
@@ -305,7 +305,7 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
   // Do the feature extraction on a worker thread, to avoid blocking the UI.
   auto ui_thread_callback = base::BindOnce(
       &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
-      AsWeakPtr());
+      base::AsWeakPtr(this));
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
