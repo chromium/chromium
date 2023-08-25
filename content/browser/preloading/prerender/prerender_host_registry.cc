@@ -629,6 +629,14 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
+    // Allow prerendering only HTTP(S) scheme URLs. For redirection, this will
+    // be checked in PrerenderNavigationThrottle::WillStartOrRedirectRequest().
+    if (!attributes.prerendering_url.SchemeIsHTTPOrHTTPS()) {
+      builder.RejectAsNotEligible(
+          attributes, PrerenderFinalStatus::kInvalidSchemeNavigation);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
     // Disallow all pages that have an effective URL like hosted apps and NTP.
     if (SiteInstanceImpl::HasEffectiveURL(
             prerender_web_contents.GetBrowserContext(),

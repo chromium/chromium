@@ -154,9 +154,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // Allow only HTTP(S) schemes.
   // https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs
   if (!navigation_url.SchemeIsHTTPOrHTTPS()) {
-    CancelPrerendering(is_redirection
-                           ? PrerenderFinalStatus::kInvalidSchemeRedirect
-                           : PrerenderFinalStatus::kInvalidSchemeNavigation);
+    // For non-redirection, this should be checked in
+    // PrerenderHostRegistry::CreateAndStartHost().
+    CHECK(is_redirection);
+    CancelPrerendering(PrerenderFinalStatus::kInvalidSchemeRedirect);
     return CANCEL;
   }
 
