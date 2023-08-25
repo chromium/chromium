@@ -1477,26 +1477,25 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
     std::vector<password_manager::PasskeyCredential> credentials;
     absl::optional<std::u16string> priority_phone =
         GetPrioritySyncedPhoneName();
-    base::ranges::transform(
-        ephemeral_state_.creds_, std::back_inserter(credentials),
-        [&priority_phone](const auto& credential) {
-          password_manager::PasskeyCredential passkey(
-              ToPasswordManagerSource(credential.source),
-              password_manager::PasskeyCredential::RpId(credential.rp_id),
-              password_manager::PasskeyCredential::CredentialId(
-                  credential.cred_id),
-              password_manager::PasskeyCredential::UserId(credential.user.id),
-              password_manager::PasskeyCredential::Username(
-                  credential.user.name.value_or("")),
-              password_manager::PasskeyCredential::DisplayName(
-                  credential.user.display_name.value_or("")));
-          if (credential.source == device::AuthenticatorType::kPhone &&
-              priority_phone) {
-            passkey.set_authenticator_label(l10n_util::GetStringFUTF16(
-                IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone));
-          }
-          return passkey;
-        });
+    for (const auto& credential : ephemeral_state_.creds_) {
+      if (credential.source == device::AuthenticatorType::kPhone &&
+          !priority_phone) {
+        continue;
+      }
+      password_manager::PasskeyCredential& passkey = credentials.emplace_back(
+          ToPasswordManagerSource(credential.source),
+          password_manager::PasskeyCredential::RpId(credential.rp_id),
+          password_manager::PasskeyCredential::CredentialId(credential.cred_id),
+          password_manager::PasskeyCredential::UserId(credential.user.id),
+          password_manager::PasskeyCredential::Username(
+              credential.user.name.value_or("")),
+          password_manager::PasskeyCredential::DisplayName(
+              credential.user.display_name.value_or("")));
+      if (credential.source == device::AuthenticatorType::kPhone) {
+        passkey.set_authenticator_label(l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone));
+      }
+    }
     bool offer_passkey_from_another_device;
     switch (transport_availability_.conditional_ui_treatment) {
       case TransportAvailabilityInfo::ConditionalUITreatment::kDefault:

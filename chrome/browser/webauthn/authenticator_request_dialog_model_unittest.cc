@@ -23,11 +23,13 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -2348,6 +2350,66 @@ class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       device::kWebAuthnNewPasskeyUI};
 };
+
+TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
+  NavigateAndCommit(GURL("rp.com"));
+
+  // Tests that passkeys are listed in conditional UI, but only if there is a
+  // phone from sync available.
+  ChromeWebAuthnCredentialsDelegate* delegate =
+      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+          ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(delegate);
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.recognized_credentials = {kPhoneCred1};
+  {
+    AuthenticatorRequestDialogModel model(main_rfh());
+    model.StartFlow(transports_info,
+                    /*is_conditional_mediation=*/true);
+
+    // There is no phone available, so no passkeys should be sent to autofill.
+    EXPECT_TRUE(delegate->GetPasskeys()->empty());
+  }
+  {
+    AuthenticatorRequestDialogModel model(main_rfh());
+    std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
+    phones.emplace_back(GetPairingFromQR());
+    model.set_cable_transport_info(
+        /*extension_is_v2=*/absl::nullopt, std::move(phones), base::DoNothing(),
+        absl::nullopt);
+    model.StartFlow(transports_info,
+                    /*is_conditional_mediation=*/true);
+
+    // There is no phone from sync, so no passkeys should be sent to autofill.
+    EXPECT_TRUE(delegate->GetPasskeys()->empty());
+  }
+  {
+    AuthenticatorRequestDialogModel model(main_rfh());
+    std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
+    phones.emplace_back(GetPairingFromSync());
+    model.set_cable_transport_info(
+        /*extension_is_v2=*/absl::nullopt, std::move(phones), base::DoNothing(),
+        absl::nullopt);
+    model.StartFlow(transports_info,
+                    /*is_conditional_mediation=*/true);
+
+    ASSERT_EQ(delegate->GetPasskeys()->size(), 1u);
+    const password_manager::PasskeyCredential& passkey =
+        delegate->GetPasskeys()->at(0);
+    EXPECT_EQ(passkey.credential_id(), kPhoneCred1.cred_id);
+    EXPECT_EQ(passkey.display_name(), "");
+    EXPECT_EQ(passkey.username(), kPhoneCred1.user.name);
+    EXPECT_EQ(passkey.GetAuthenticatorLabel(),
+              l10n_util::GetStringFUTF16(
+                  IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, u"Phone from sync"));
+    EXPECT_EQ(passkey.user_id(), kPhoneCred1.user.id);
+    EXPECT_EQ(passkey.rp_id(), kPhoneCred1.rp_id);
+    EXPECT_EQ(passkey.source(),
+              password_manager::PasskeyCredential::Source::kAndroidPhone);
+  }
+}
 
 TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   // Set up a model with two local passkeys and a GPM passkey.
