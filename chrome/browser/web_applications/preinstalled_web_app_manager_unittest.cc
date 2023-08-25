@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -189,7 +190,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     std::unique_ptr<TestingProfile> profile = CreateGuestProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager()->AddGuestUser();
-    user_manager()->LoginUser(user_manager()->GetGuestAccountId());
+    user_manager()->LoginUser(user_manager::GuestAccountId());
 #endif
     return profile;
   }

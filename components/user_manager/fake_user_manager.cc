@@ -364,16 +364,8 @@ bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
   return false;
 }
 
-const AccountId& FakeUserManager::GetGuestAccountId() const {
-  return GuestAccountId();
-}
-
 void FakeUserManager::AsyncRemoveCryptohome(const AccountId& account_id) const {
   NOTIMPLEMENTED();
-}
-
-bool FakeUserManager::IsGuestAccountId(const AccountId& account_id) const {
-  return account_id == GuestAccountId();
 }
 
 bool FakeUserManager::IsStubAccountId(const AccountId& account_id) const {

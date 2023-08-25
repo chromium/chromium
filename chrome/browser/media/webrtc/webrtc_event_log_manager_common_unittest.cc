@@ -25,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #endif
 
@@ -692,7 +693,7 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
           account_id, false, test_case.user_type, testing_profile.get());
       break;
     case user_manager::USER_TYPE_GUEST:
-      account_id = fake_user_manager_->GetGuestAccountId();
+      account_id = user_manager::GuestAccountId();
       fake_user_manager_->AddGuestUser();
       break;
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:

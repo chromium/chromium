@@ -542,6 +542,7 @@ source_set("unit_tests") {
     "//components/reporting/util:test_callbacks_support",
     "//components/strings:components_strings",
     "//components/ukm",
+    "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",

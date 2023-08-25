@@ -887,7 +887,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
     ProfileManagerTest::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    RegisterUser(GetFakeUserManager()->GetGuestAccountId());
+    RegisterUser(user_manager::GuestAccountId());
 #endif
   }
 

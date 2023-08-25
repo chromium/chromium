@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -109,7 +110,7 @@ class ScopedLogIn {
         return;
       case user_manager::USER_TYPE_GUEST:
         // Guest user must use the guest user account id.
-        EXPECT_EQ(account_id_, fake_user_manager_->GetGuestAccountId());
+        EXPECT_EQ(account_id_, user_manager::GuestAccountId());
         return;
       case user_manager::NUM_USER_TYPES:
         NOTREACHED();
@@ -222,10 +223,6 @@ class ChromeAssistantUtilTest : public testing::Test {
     return AccountId::FromUserEmailGaiaId(user_name, gaia_id);
   }
 
-  AccountId GetGuestAccountId() {
-    return GetFakeUserManager()->GetGuestAccountId();
-  }
-
  protected:
   base::test::ScopedFeatureList feature_list_;
 
@@ -272,7 +269,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_ChildUser) {
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GuestUser) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetGuestAccountId(), user_manager::USER_TYPE_GUEST);
+                    user_manager::GuestAccountId(),
+                    user_manager::USER_TYPE_GUEST);
 
   EXPECT_EQ(
       ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,

@@ -160,7 +160,7 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
 
 user_manager::User* FakeChromeUserManager::AddGuestUser() {
   user_manager::User* user =
-      user_manager::User::CreateGuestUser(GetGuestAccountId());
+      user_manager::User::CreateGuestUser(user_manager::GuestAccountId());
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()));
   users_.push_back(user);
@@ -292,18 +292,9 @@ void FakeChromeUserManager::SetOwnerId(const AccountId& account_id) {
   UserManagerBase::SetOwnerId(account_id);
 }
 
-const AccountId& FakeChromeUserManager::GetGuestAccountId() const {
-  return user_manager::GuestAccountId();
-}
-
 void FakeChromeUserManager::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   NOTIMPLEMENTED();
-}
-
-bool FakeChromeUserManager::IsGuestAccountId(
-    const AccountId& account_id) const {
-  return account_id == user_manager::GuestAccountId();
 }
 
 bool FakeChromeUserManager::IsStubAccountId(const AccountId& account_id) const {

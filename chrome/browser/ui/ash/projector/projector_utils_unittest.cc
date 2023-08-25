@@ -218,8 +218,7 @@ TEST_F(ProjectorUtilsChildTest, IsProjectorAllowedForProfile_ChildUser) {
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_GuestAccount) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    GetFakeUserManager()->GetGuestAccountId(),
+  ScopedLogIn login(GetFakeUserManager(), user_manager::GuestAccountId(),
                     user_manager::USER_TYPE_GUEST);
   EXPECT_FALSE(IsProjectorAllowedForProfile(profile()));
 }
@@ -262,8 +261,7 @@ TEST_F(ProjectorUtilsChildTest, IsProjectorAppEnabled_ChildUser) {
 }
 
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_GuestAccount) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    GetFakeUserManager()->GetGuestAccountId(),
+  ScopedLogIn login(GetFakeUserManager(), user_manager::GuestAccountId(),
                     user_manager::USER_TYPE_GUEST);
   EXPECT_FALSE(IsProjectorAppEnabled(profile()));
 }

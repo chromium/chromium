@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user_names.h"
 
 namespace user_manager {
 
@@ -113,8 +114,9 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
                                         const User* user,
                                         const bool browser_restart,
                                         const bool is_child) const {
-  if (IsGuestAccountId(account_id))
+  if (account_id == GuestAccountId()) {
     return USER_TYPE_GUEST;
+  }
 
   // This may happen after browser crash after device account was marked for
   // removal, but before clean exit.

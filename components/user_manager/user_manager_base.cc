@@ -33,6 +33,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -764,8 +765,9 @@ bool UserManagerBase::IsLoggedInAsStub() const {
 bool UserManagerBase::IsUserNonCryptohomeDataEphemeral(
     const AccountId& account_id) const {
   // Data belonging to the guest and stub users is always ephemeral.
-  if (IsGuestAccountId(account_id) || IsStubAccountId(account_id))
+  if (account_id == GuestAccountId() || IsStubAccountId(account_id)) {
     return true;
+  }
 
   // Data belonging to the owner, anyone found on the user list and obsolete
   // device local accounts whose data has not been removed yet is not ephemeral.
@@ -817,7 +819,7 @@ bool UserManagerBase::IsEphemeralAccountId(const AccountId& account_id) const {
   }
 
   // Data belonging to the guest user is always ephemeral.
-  if (IsGuestAccountId(account_id)) {
+  if (account_id == GuestAccountId()) {
     return true;
   }
 
@@ -1098,7 +1100,7 @@ User* UserManagerBase::FindUserInListAndModify(const AccountId& account_id) {
 
 void UserManagerBase::GuestUserLoggedIn() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  active_user_ = User::CreateGuestUser(GetGuestAccountId());
+  active_user_ = User::CreateGuestUser(GuestAccountId());
 }
 
 void UserManagerBase::AddUserRecord(User* user) {

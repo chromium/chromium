@@ -1222,21 +1222,12 @@ void ChromeUserManagerImpl::SetUserAffiliation(
   }
 }
 
-const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {
-  return user_manager::GuestAccountId();
-}
-
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   cryptohome::AccountIdentifier identifier =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id);
   mount_performer_->RemoveUserDirectoryByIdentifier(
       identifier, base::BindOnce(&OnRemoveUserComplete, account_id));
-}
-
-bool ChromeUserManagerImpl::IsGuestAccountId(
-    const AccountId& account_id) const {
-  return account_id == user_manager::GuestAccountId();
 }
 
 bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {

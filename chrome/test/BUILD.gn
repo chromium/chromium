@@ -320,6 +320,7 @@ static_library("test_support") {
     "//components/spellcheck/renderer",
     "//components/ukm:test_support",
     "//components/user_education/common",
+    "//components/user_manager",
     "//components/webapps/browser:browser",
     "//ui/webui",
   ]

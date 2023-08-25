@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -233,7 +234,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
       AccountId::FromUserEmail("web-kiosk@example.com");
   const auto* web_kiosk_user =
       user_manager->AddWebKioskAppUser(web_kiosk_account_id);
-  AccountId guest_user_id = user_manager->GetGuestAccountId();
+  AccountId guest_user_id = user_manager::GuestAccountId();
   const auto* guest_user = user_manager->AddGuestUser();
   AccountId child_user_id = AccountId::FromUserEmail("child@example.com");
   const auto* child_user = user_manager->AddChildUser(child_user_id);

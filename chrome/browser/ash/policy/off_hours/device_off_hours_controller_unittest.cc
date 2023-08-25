@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/user_manager/user_names.h"
 
 namespace policy::off_hours {
 
@@ -281,7 +282,7 @@ TEST_F(DeviceOffHoursControllerSimpleTest,
       device_off_hours_controller()->IsCurrentSessionAllowedOnlyForOffHours());
 
   user_manager_->AddGuestUser();
-  user_manager_->LoginUser(user_manager_->GetGuestAccountId());
+  user_manager_->LoginUser(user_manager::GuestAccountId());
 
   EXPECT_TRUE(
       device_off_hours_controller()->IsCurrentSessionAllowedOnlyForOffHours());
