@@ -3345,9 +3345,6 @@ extern const char kDropdownPanelDescription[];
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 
-extern const char kFastPairHandshakeRefactorName[];
-extern const char kFastPairHandshakeRefactorDescription[];
-
 extern const char kFastPairHandshakeLongTermRefactorName[];
 extern const char kFastPairHandshakeLongTermRefactorDescription[];
 

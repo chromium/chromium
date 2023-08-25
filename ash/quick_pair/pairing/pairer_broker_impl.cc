@@ -232,17 +232,13 @@ void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
                                           PairFailure failure) {
   if (num_handshake_attempts_[device->metadata_id()] <
       kMaxNumHandshakeAttempts) {
-    if (ash::features::IsFastPairHandshakeRefactorEnabled()) {
-      // Directly calling CreateHandshake() from here will cause the new
-      // handshake to be nested inside the failed handshake. Use a timer to give
-      // the failed handshake time to cleanup and avoid nesting.
-      retry_handshake_timer_.Start(
-          FROM_HERE, kRetryHandshakeDelay,
-          base::BindOnce(&PairerBrokerImpl::CreateHandshake,
-                         weak_pointer_factory_.GetWeakPtr(), device));
-    } else {
-      CreateHandshake(device);
-    }
+    // Directly calling CreateHandshake() from here will cause the new
+    // handshake to be nested inside the failed handshake. Use a timer to give
+    // the failed handshake time to cleanup and avoid nesting.
+    retry_handshake_timer_.Start(
+        FROM_HERE, kRetryHandshakeDelay,
+        base::BindOnce(&PairerBrokerImpl::CreateHandshake,
+                       weak_pointer_factory_.GetWeakPtr(), device));
     return;
   }
 

@@ -7572,11 +7572,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairDevicesBluetoothSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairDevicesBluetoothSettings)},
 
-    {"fast-pair-handshake-refactor",
-     flag_descriptions::kFastPairHandshakeRefactorName,
-     flag_descriptions::kFastPairHandshakeRefactorDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFastPairHandshakeRefactor)},
-
     {"fast-pair-handshake-long-term-refactor",
      flag_descriptions::kFastPairHandshakeLongTermRefactorName,
      flag_descriptions::kFastPairHandshakeLongTermRefactorDescription, kOsCrOS,

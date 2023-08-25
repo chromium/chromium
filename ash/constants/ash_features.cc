@@ -989,11 +989,6 @@ BASE_FEATURE(kFastPairDebugMetadata,
              "FastPairDebugMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using new Handshake retry logic for Fast Pair.
-BASE_FEATURE(kFastPairHandshakeRefactor,
-             "FastPairHandshakeRefactor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using longterm Handshake retry logic for Fast Pair.
 BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
              "FastPairHandshakeLongTermRefactor",
@@ -3181,10 +3176,6 @@ bool IsFastPairDebugMetadataEnabled() {
 
 bool IsFastPairDevicesBluetoothSettingsEnabled() {
   return base::FeatureList::IsEnabled(kFastPairDevicesBluetoothSettings);
-}
-
-bool IsFastPairHandshakeRefactorEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairHandshakeRefactor);
 }
 
 bool IsFastPairHandshakeLongTermRefactorEnabled() {

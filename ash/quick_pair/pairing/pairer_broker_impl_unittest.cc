@@ -822,9 +822,6 @@ TEST_F(PairerBrokerImplTest, ReuseHandshake_Retroactive) {
 
 TEST_F(PairerBrokerImplTest,
        PairAfterTwoHandshakeFailuresWithHandshakeRefactor_Initial) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kFastPairHandshakeRefactor};
-
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
 
@@ -859,9 +856,6 @@ TEST_F(PairerBrokerImplTest,
 
 TEST_F(PairerBrokerImplTest,
        PairAfterTwoHandshakeFailuresWithHandshakeRefactor_Subsequent) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kFastPairHandshakeRefactor};
-
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
 
@@ -896,9 +890,6 @@ TEST_F(PairerBrokerImplTest,
 
 TEST_F(PairerBrokerImplTest,
        PairAfterTwoHandshakeFailuresWithHandshakeRefactor_Retroactive) {
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kFastPairHandshakeRefactor};
-
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
 
