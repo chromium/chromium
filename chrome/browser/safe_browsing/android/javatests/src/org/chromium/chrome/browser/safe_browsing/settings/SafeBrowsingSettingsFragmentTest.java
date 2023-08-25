@@ -26,12 +26,16 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
@@ -344,6 +348,96 @@ public class SafeBrowsingSettingsFragmentTest {
                             mSafeBrowsingSettingsFragment.getString(
                                     R.string.help_context_safe_browsing),
                             null);
+        });
+    }
+
+    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // launched.
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION,
+            ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS})
+    public void
+    testStandardProtectionDescriptionWhenFriendlierStandardProtectionDisabledWithoutProxy() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            String standardProtectionDescription =
+                    mSafeBrowsingSettingsFragment.getContext().getString(
+                            R.string.safe_browsing_standard_protection_summary);
+            Assert.assertEquals(standardProtectionDescription,
+                    mSafeBrowsingPreference.getStandardProtectionButtonForTesting()
+                            .getDescriptionText());
+        });
+    }
+
+    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // launched.
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS})
+    @DisableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION})
+    public void
+    testStandardProtectionDescriptionWhenFriendlierStandardProtectionEnabledWithoutProxy() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // The summary remains the same when friendlier settings is disabled.
+            String standardProtectionDescription =
+                    mSafeBrowsingSettingsFragment.getContext().getString(
+                            R.string.safe_browsing_standard_protection_summary);
+            Assert.assertEquals(standardProtectionDescription,
+                    mSafeBrowsingPreference.getStandardProtectionButtonForTesting()
+                            .getDescriptionText());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION})
+    @DisableFeatures({ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS})
+    public void testStandardProtectionDescriptionWithoutProxy() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            String standardProtectionDescription =
+                    mSafeBrowsingSettingsFragment.getContext().getString(
+                            R.string.safe_browsing_standard_protection_summary_updated);
+            Assert.assertEquals(standardProtectionDescription,
+                    mSafeBrowsingPreference.getStandardProtectionButtonForTesting()
+                            .getDescriptionText());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION,
+            ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS})
+    public void
+    testStandardProtectionDescriptionWithProxy() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            String standardProtectionDescription =
+                    mSafeBrowsingSettingsFragment.getContext().getString(
+                            R.string.safe_browsing_standard_protection_summary_updated_proxy);
+            if (!BuildConfig.IS_CHROME_BRANDED) {
+                // HPRT is disabled on Chromium build.
+                standardProtectionDescription =
+                        mSafeBrowsingSettingsFragment.getContext().getString(
+                                R.string.safe_browsing_standard_protection_summary_updated);
+            }
+            Assert.assertEquals(standardProtectionDescription,
+                    mSafeBrowsingPreference.getStandardProtectionButtonForTesting()
+                            .getDescriptionText());
         });
     }
 

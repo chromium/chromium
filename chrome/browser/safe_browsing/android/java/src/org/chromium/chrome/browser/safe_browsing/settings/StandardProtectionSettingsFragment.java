@@ -64,7 +64,8 @@ public class StandardProtectionSettingsFragment
 
     /**
      * Updates the standard protection fragment based on the value of the friendlier settings
-     * feature flag. The updates include removing the two bullet points and updating the strings.
+     * feature flag and whether hash real-time lookup is eligible. The updates include removing the
+     * two bullet points and updating the strings.
      */
     private void updateToFriendlierSettings() {
         if (ChromeFeatureList.isEnabled(
@@ -85,6 +86,10 @@ public class StandardProtectionSettingsFragment
                     getContext().getString(R.string.passwords_leak_detection_switch_title_updated));
             mPasswordLeakDetectionPreference.setSummary(
                     getContext().getString(R.string.passwords_leak_detection_switch_summary));
+        } else if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
+            findPreference(PREF_BULLET_TWO)
+                    .setSummary(getContext().getString(
+                            R.string.safe_browsing_standard_protection_bullet_two_proxy));
         }
     }
 

@@ -285,6 +285,8 @@ public abstract class ChromeFeatureList {
             "FriendlierSafeBrowsingSettingsStandardProtection";
     public static final String GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES =
             "GridTabSwitcherLandscapeAspectRatioPhones";
+    public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
+            "SafeBrowsingHashPrefixRealTimeLookups";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String HISTORY_ORGANIC_REPEATABLE_QUERIES = "OrganicRepeatableQueries";
     public static final String IDENTITY_STATUS_CONSISTENCY = "IdentityStatusConsistency";

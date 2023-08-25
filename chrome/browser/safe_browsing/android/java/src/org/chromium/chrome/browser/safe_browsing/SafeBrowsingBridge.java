@@ -76,6 +76,13 @@ public final class SafeBrowsingBridge {
         return SafeBrowsingBridgeJni.get().isUnderAdvancedProtection();
     }
 
+    /**
+     * @return Whether hash real-time lookup is enabled.
+     */
+    public static boolean isHashRealTimeLookupEligibleInSession() {
+        return SafeBrowsingBridgeJni.get().isHashRealTimeLookupEligibleInSession();
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -88,5 +95,6 @@ public final class SafeBrowsingBridge {
         void setSafeBrowsingState(@SafeBrowsingState int state);
         boolean isSafeBrowsingManaged();
         boolean isUnderAdvancedProtection();
+        boolean isHashRealTimeLookupEligibleInSession();
     }
 }
