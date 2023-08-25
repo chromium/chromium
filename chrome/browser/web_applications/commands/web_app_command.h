@@ -67,6 +67,9 @@ using WebAppCommandQueueId = absl::optional<AppId>;
 //   ...
 // };
 //
+// See https://chromium-review.googlesource.com/c/chromium/src/+/4812799 for a
+// hello world example of adding a new command.
+//
 // See the `WebAppLockManager` for information about the available locks & how
 // they work.
 //
