@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/authentication/views/identity_button_control.h",
+  "+ios/chrome/browser/ui/authentication/views/identity_view.h",
+]

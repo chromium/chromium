@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("account_picker_confirmation") {
+  sources = [
+    "account_picker_confirmation_screen_constants.h",
+    "account_picker_confirmation_screen_constants.mm",
+    "account_picker_confirmation_screen_consumer.h",
+    "account_picker_confirmation_screen_coordinator.h",
+    "account_picker_confirmation_screen_coordinator.mm",
+    "account_picker_confirmation_screen_coordinator_delegate.h",
+    "account_picker_confirmation_screen_mediator.h",
+    "account_picker_confirmation_screen_mediator.mm",
+    "account_picker_confirmation_screen_view_controller.h",
+    "account_picker_confirmation_screen_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:system_identity",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
+    "//ios/chrome/browser/ui/account_picker:account_picker_layout",
+    "//ios/chrome/browser/ui/account_picker/account_picker_screen",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/common:button_config",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
