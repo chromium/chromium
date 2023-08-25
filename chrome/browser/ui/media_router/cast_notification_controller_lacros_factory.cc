@@ -34,12 +34,13 @@ CastNotificationControllerLacrosFactory::GetInstance() {
   return factory.get();
 }
 
-KeyedService* CastNotificationControllerLacrosFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CastNotificationControllerLacrosFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!media_router::MediaRouterEnabled(context)) {
     return nullptr;
   }
-  return new CastNotificationControllerLacros(
+  return std::make_unique<CastNotificationControllerLacros>(
       Profile::FromBrowserContext(context));
 }
 
