@@ -667,6 +667,104 @@ TEST(AXEventGeneratorTest, ActiveDescendantChanged) {
           HasEventAtNode(AXEventGenerator::Event::RELATED_NODE_CHANGED, 1)));
 }
 
+TEST(AXEventGeneratorTest, ActiveDescendantChangedAndNewNodeSelection) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(3);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kGrid;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[0].child_ids.push_back(3);
+  initial_state.nodes[0].AddIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, 2);
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kCell;
+  initial_state.nodes[1].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                          true);
+  initial_state.nodes[2].id = 3;
+  initial_state.nodes[2].role = ax::mojom::Role::kCell;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+  AXTreeUpdate update = initial_state;
+  update.nodes.resize(4);
+  update.nodes[0].int_attributes.clear();
+  update.nodes[0].child_ids.push_back(4);
+  update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                                  4);
+  update.nodes[1].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+  update.nodes[3].id = 4;
+  update.nodes[3].role = ax::mojom::Role::kCell;
+  update.nodes[3].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED, 1),
+          HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
+          HasEventAtNode(AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED, 1),
+          HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED, 2),
+          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+                         2),
+          HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED, 4),
+          HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 4),
+          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+                         4)));
+}
+
+TEST(AXEventGeneratorTest, ActiveDescendantChangedAndNewNodeSelectionIndirect) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(5);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kGrid;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[0].child_ids.push_back(4);
+  initial_state.nodes[0].AddIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, 3);
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].child_ids.push_back(3);
+  initial_state.nodes[2].id = 3;
+  initial_state.nodes[2].role = ax::mojom::Role::kCell;
+  initial_state.nodes[2].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                          true);
+  initial_state.nodes[3].id = 4;
+  initial_state.nodes[3].child_ids.push_back(5);
+  initial_state.nodes[4].id = 5;
+  initial_state.nodes[4].role = ax::mojom::Role::kCell;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+  AXTreeUpdate update = initial_state;
+  update.nodes.resize(7);
+  update.nodes[0].int_attributes.clear();
+  update.nodes[0].child_ids.push_back(6);
+  update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                                  7);
+  update.nodes[2].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+  update.nodes[5].id = 6;
+  update.nodes[5].child_ids.push_back(7);
+  update.nodes[6].id = 7;
+  update.nodes[6].role = ax::mojom::Role::kCell;
+  update.nodes[6].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED, 1),
+          HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
+          HasEventAtNode(AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED, 1),
+          HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED, 3),
+          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+                         3),
+          HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 6),
+          HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED, 7),
+          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
+                         7)));
+}
+
 TEST(AXEventGeneratorTest, CreateAlertAndLiveRegion) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;

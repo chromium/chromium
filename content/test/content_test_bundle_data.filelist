@@ -2003,6 +2003,11 @@ data/accessibility/event/aria-required-changed.html
 data/accessibility/event/aria-selected-changed-expected-android.txt
 data/accessibility/event/aria-selected-changed-expected-uia-win.txt
 data/accessibility/event/aria-selected-changed-expected-win.txt
+data/accessibility/event/aria-selected-changed-new-subtree-expected-auralinux.txt
+data/accessibility/event/aria-selected-changed-new-subtree-expected-mac.txt
+data/accessibility/event/aria-selected-changed-new-subtree-expected-uia-win.txt
+data/accessibility/event/aria-selected-changed-new-subtree-expected-win.txt
+data/accessibility/event/aria-selected-changed-new-subtree.html
 data/accessibility/event/aria-selected-changed.html
 data/accessibility/event/aria-setsize-changed-expected-uia-win.txt
 data/accessibility/event/aria-setsize-changed.html

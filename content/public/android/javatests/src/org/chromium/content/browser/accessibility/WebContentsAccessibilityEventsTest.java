@@ -448,6 +448,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaSelectedChangedNewSubtree() {
+        performTest("aria-selected-changed-new-subtree.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaSetsizeChanged() {
         performTest("aria-setsize-changed.html", EMPTY_EXPECTATIONS_FILE);
     }

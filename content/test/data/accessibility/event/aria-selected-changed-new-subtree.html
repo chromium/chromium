@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<table id='Grid' role='grid' aria-multiselectable='false'><tbody>
+  <tr>
+    <td id='GridCell1' role='gridcell' aria-selected='true' tabindex='0'
+        onclick='tdclick(this, event)'>Grid, GridCell1</td>
+    <td id='GridCell2' role='gridcell' aria-selected='false' tabindex='0'
+        onclick='tdclick(this, event)'>Grid, GridCell2</td>
+  </tr>
+</tbody></table>
+<select id='Select'>
+  <option id='Option1' value='1' selected
+          onclick='option_click(this, event)'>Select, Option1</option>
+  <option id='Option2' value='2'
+          onclick='option_click(this, event)'>Select, Option2</option>
+</select>
+<div id='DivSelect' role='listbox'>
+  <div id='Option1' role='option' aria-selected='true'
+       onclick='div_option_click(this, event)'>DivSelect, Option1</div>
+  <div id='Option2' role='option' aria-selected='false'
+       onclick='div_option_click(this, event)'>DivSelect, Option2</div>
+</div>
+<script>
+  function grid_select() {
+    var selected = document.querySelector('td#GridCell1');
+    var new_selection = selected.cloneNode(true);
+    selected.setAttribute('aria-selected', false);
+    new_selection.innerHTML = 'Grid, GridCell3';
+    new_selection.id - 'GridCell3'
+    selected.parentElement.appendChild(new_selection);
+  }
+
+  function option_select() {
+    var selected = document.querySelector('option#Option1');
+    var new_selection = selected.cloneNode(true);
+    selected.selected = false;
+    new_selection.value = '3';
+    new_selection.innerHTML = 'Select, Option3';
+    new_selection.id = 'Option3';
+    selected.parentElement.appendChild(new_selection);
+  }
+
+  function div_select() {
+    var selected = document.querySelector('div#Option1');
+    var new_selection = selected.cloneNode(true);
+    selected.setAttribute('aria-selected', false);
+    new_selection.innerHTML = 'DivSelect, Option3';
+    new_selection.id = 'Option3';
+    selected.parentElement.appendChild(new_selection);
+  }
+
+  const go_passes = [
+    () => grid_select(),
+    () => option_select(),
+    () => div_select(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

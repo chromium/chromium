@@ -1,0 +1,24 @@
+AriaProperties changed on role=gridcell, name=Grid, GridCell1
+AriaProperties changed on role=gridcell, name=Grid, GridCell3
+SelectionItemIsSelected changed on role=gridcell, name=Grid, GridCell1
+SelectionItemIsSelected changed on role=gridcell, name=Grid, GridCell3
+SelectionItem_ElementRemovedFromSelection on role=gridcell, name=Grid, GridCell1
+SelectionItem_ElementSelected on role=gridcell, name=Grid, GridCell3
+StructureChanged/ChildAdded on role=gridcell, name=Grid, GridCell3
+StructureChanged/ChildrenReordered on role=row
+=== Start Continuation ===
+AriaProperties changed on role=listitem, name=Select, Option3
+SelectionItemIsSelected changed on role=listitem, name=Select, Option3
+SelectionItem_ElementSelected on role=listitem, name=Select, Option3
+StructureChanged/ChildAdded on role=listitem, name=Select, Option3
+StructureChanged/ChildrenReordered on role=combobox
+Text_TextChanged on role=document
+ValueValue changed on role=combobox
+=== Start Continuation ===
+AriaProperties changed on role=option, name=DivSelect, Option1
+AriaProperties changed on role=option, name=DivSelect, Option3
+SelectionItemIsSelected changed on role=option, name=DivSelect, Option1
+SelectionItemIsSelected changed on role=option, name=DivSelect, Option3
+SelectionItem_ElementSelected on role=option, name=DivSelect, Option3
+StructureChanged/ChildAdded on role=option, name=DivSelect, Option3
+StructureChanged/ChildrenReordered on role=listbox

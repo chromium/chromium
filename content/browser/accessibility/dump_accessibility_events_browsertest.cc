@@ -1169,6 +1169,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaSelectedChangedNewSubtree) {
+  RunEventTest(FILE_PATH_LITERAL("aria-selected-changed-new-subtree.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsButtonClick) {
   RunEventTest(FILE_PATH_LITERAL("button-click.html"));
 }

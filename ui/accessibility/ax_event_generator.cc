@@ -836,6 +836,13 @@ void AXEventGenerator::OnAtomicUpdateFinished(
       continue;
     }
 
+    if (change.node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
+        (change.type == SUBTREE_CREATED || change.type == NODE_CREATED)) {
+      OnBoolAttributeChanged(tree, change.node,
+                             ax::mojom::BoolAttribute::kSelected,
+                             /*new_value*/ true);
+    }
+
     if (IsAlert(change.node->GetRole()))
       AddEvent(change.node, Event::ALERT);
     else if (change.node->data().IsActiveLiveRegionRoot())
