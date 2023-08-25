@@ -24,6 +24,7 @@ web_component_files = [
   "http_tab.js",
   "log_object.js",
   "logging_tab.js",
+  "log_types.js",
   "nearby_internals.js",
   "ui_trigger_list_object.js",
   "np_list_object.js",
@@ -72,7 +73,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
                "nearby_contact_browser_proxy.js",
                "nearby_http_browser_proxy.js",
-               "nearby_logs_browser_proxy.js",
+               "cross_device_logs_browser_proxy.js",
                "nearby_presence_browser_proxy.js",
                "nearby_prefs_browser_proxy.js",
                "nearby_ui_trigger_browser_proxy.js",
@@ -114,14 +115,15 @@ js_type_check("closure_compile") {
     ":contact_object",
     ":contact_tab",
     ":cross_device_internals",
+    ":cross_device_logs_browser_proxy",
     ":http_message_object",
     ":http_tab",
     ":log_object",
+    ":log_types",
     ":logging_tab",
     ":nearby_contact_browser_proxy",
     ":nearby_http_browser_proxy",
     ":nearby_internals",
-    ":nearby_logs_browser_proxy",
     ":nearby_prefs_browser_proxy",
     ":nearby_presence_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
@@ -134,6 +136,9 @@ js_type_check("closure_compile") {
 
 js_library("cross_device_internals") {
   deps = [
+    ":cross_device_logs_browser_proxy",
+    ":log_object",
+    ":log_types",
     ":logging_tab",
     ":nearby_presence_browser_proxy",
     ":np_list_object",
@@ -148,13 +153,13 @@ js_library("nearby_internals") {
   deps = [
     ":contact_object",
     ":contact_tab",
+    ":cross_device_logs_browser_proxy",
     ":http_message_object",
     ":http_tab",
     ":log_object",
     ":logging_tab",
     ":nearby_contact_browser_proxy",
     ":nearby_http_browser_proxy",
-    ":nearby_logs_browser_proxy",
     ":nearby_prefs_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
     ":np_list_object",
@@ -165,10 +170,17 @@ js_library("nearby_internals") {
   ]
 }
 
+js_library("log_types") {
+  deps = [
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("logging_tab") {
   deps = [
+    ":cross_device_logs_browser_proxy",
     ":log_object",
-    ":nearby_logs_browser_proxy",
     ":nearby_prefs_browser_proxy",
     ":types",
     "//ash/webui/common/resources:web_ui_listener_behavior",
@@ -178,13 +190,13 @@ js_library("logging_tab") {
 
 js_library("log_object") {
   deps = [
-    ":nearby_logs_browser_proxy",
+    ":cross_device_logs_browser_proxy",
     ":types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
-js_library("nearby_logs_browser_proxy") {
+js_library("cross_device_logs_browser_proxy") {
   deps = [
     ":types",
     "//ash/webui/common/resources:cr.m",

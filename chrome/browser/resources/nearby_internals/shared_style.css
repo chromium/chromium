@@ -60,7 +60,7 @@ cr-button {
 }
 
 #buttons {
-  margin-bottom: 8px;
+  margin-top: 5px;
   display: flex;
   flex-direction: row-reverse;
 }
@@ -71,8 +71,8 @@ cr-button {
 }
 
 /** CSS for controls panel */
-#controls, #logs {
-  width: 50%;
+#controls {
+  width: 40%;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -83,8 +83,10 @@ cr-button {
   margin-right: 12px;
 }
 
-#controlsPanel {
+.controls-panel {
   padding: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .control {
@@ -118,7 +120,7 @@ np-object {
 
 /** CSS for logs panel */
 #logsPanel {
-  width: 50%;
+  width: 60%;
   height: 100%;
   overflow: hidden;
   display: flex;

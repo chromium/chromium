@@ -7,6 +7,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import './np_list_object.js';
 import './logging_tab.js';
+import './log_object.js';
+import './log_types.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
@@ -16,8 +18,39 @@ import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listen
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cross_device_internals.html.js';
+import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
-import {ActionValues, FeatureValues, PresenceDevice, SelectOption} from './types.js';
+import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
+
+
+/**
+ * Converts log message to string format for saved download file.
+ * @param {!LogMessage} log
+ * @return {string}
+ */
+function logToSavedString_(log) {
+  // Convert to string value for |line.severity|.
+  let severity;
+  switch (log.severity) {
+    case Severity.INFO:
+      severity = 'INFO';
+      break;
+    case Severity.WARNING:
+      severity = 'WARNING';
+      break;
+    case Severity.ERROR:
+      severity = 'ERROR';
+      break;
+    case Severity.VERBOSE:
+      severity = 'VERBOSE';
+      break;
+  }
+
+  // Reduce the file path to just the file name for logging simplification.
+  const file = log.file.substring(log.file.lastIndexOf('/') + 1);
+
+  return `[${log.time} ${severity} ${file} (${log.line})] ${log.text}\n`;
+}
 
 Polymer({
   is: 'cross-device-internals',
@@ -42,10 +75,10 @@ Polymer({
     featuresList: {
       type: Array,
       value: [
-        {name: 'Nearby Presence', value: FeatureValues.NP},
-        {name: 'Nearby Share', value: FeatureValues.NS},
-        {name: 'Nearby Connections', value: FeatureValues.NC},
-        {name: 'Fast Pair', value: FeatureValues.FP},
+        {name: 'Nearby Presence', value: FeatureValues.NearbyPresence},
+        {name: 'Nearby Share', value: FeatureValues.NearbyShare},
+        {name: 'Nearby Connections', value: FeatureValues.NearbyConnections},
+        {name: 'Fast Pair', value: FeatureValues.FastPair},
       ],
     },
 
@@ -61,6 +94,17 @@ Polymer({
     },
 
     /** @private {!Array<!SelectOption>} */
+    logLevelList: {
+      type: Array,
+      value: [
+        {name: 'VERBOSE', value: Severity.VERBOSE},
+        {name: 'INFO', value: Severity.INFO},
+        {name: 'WARNING', value: Severity.WARNING},
+        {name: 'ERROR', value: Severity.ERROR},
+      ],
+    },
+
+    /** @private {!Array<!SelectOption>} */
     nearbyShareActionList: {
       type: Array,
       value: [],
@@ -72,26 +116,73 @@ Polymer({
       value: [],
     },
 
-
     /** @private {!Array<!SelectOption>} */
     fastPairActionList: {
       type: Array,
       value: [],
     },
 
+    /** @private {!Array<!SelectOption>} */
     actionsSelectList: {
       type: Array,
       value: [],
     },
 
+    /**
+     * @private {!Array<!LogMessage>}
+     */
+    logList_: {
+      type: Array,
+      value: [],
+    },
+
+    /**
+     * @private {!Array<!LogMessage>}
+     */
+    filteredLogList_: {
+      type: Array,
+      value: [],
+    },
+
+    /** @private {!string} */
+    feature: {
+      type: String,
+    },
+
+    /** @private {!string} */
+    currentFilter: {
+      type: String,
+    },
+
+    /** @private {!Severity} */
+    currentSeverity: {
+      type: Severity,
+      value: Severity.VERBOSE,
+    },
+
+    /** @private {!Array<FeatureValues>} */
+    currentLogTypes: {
+      type: FeatureValues,
+      value: [
+        FeatureValues.NearbyShare,
+        FeatureValues.NearbyConnections,
+        FeatureValues.NearbyPresence,
+        FeatureValues.FastPair,
+      ],
+    },
   },
+
+
+  /** @private {?LogProvider}*/
+  logProvider_: null,
 
   created() {
     this.browserProxy_ = NearbyPresenceBrowserProxy.getInstance();
   },
 
   /**
-   * When the page is initialized, notify the C++ layer to allow JavaScript.
+   * When the page is initialized, notify the C++ layer and load in the
+   * contents of its log buffer. Initialize WebUI Listeners.
    * @override
    */
   attached() {
@@ -104,6 +195,22 @@ Polymer({
     this.addWebUIListener(
         'presence-device-lost', device => this.onPresenceDeviceLost_(device));
     this.set('actionsSelectList', this.nearbyPresenceActionList);
+
+    this.logProvider_ = {
+      messageAddedEventName: 'log-message-added',
+      bufferClearedEventName: 'log-buffer-cleared',
+      logFilePrefix: 'cross_device_logs_',
+      getLogMessages: () =>
+          NearbyLogsBrowserProxy.getInstance().getLogMessages(),
+    };
+    this.addWebUIListener(
+        this.logProvider_.messageAddedEventName,
+        log => this.onLogMessageAdded_(log));
+    this.addWebUIListener(
+        this.logProvider_.bufferClearedEventName,
+        () => this.onWebUILogBufferCleared_());
+    this.logProvider_.getLogMessages().then(
+        logs => this.onGetLogMessages_(logs));
   },
 
   onStartScanClicked() {
@@ -111,24 +218,24 @@ Polymer({
   },
 
   updateActionsSelect() {
-    switch (this.$.actionGroup.value) {
-      case FeatureValues.NP:
+    switch (Number(this.$.actionGroup.value)) {
+      case FeatureValues.NearbyPresence:
         this.set('actionsSelectList', this.nearbyPresenceActionList);
         break;
-      case FeatureValues.NC:
+      case FeatureValues.NearbyConnections:
         this.set('actionsSelectList', this.nearbyConnectionsActionList);
         break;
-      case FeatureValues.NS:
+      case FeatureValues.NearbyShare:
         this.set('actionsSelectList', this.nearbyShareActionList);
         break;
-      case FeatureValues.FP:
+      case FeatureValues.FastPair:
         this.set('actionsSelectList', this.fastPairActionList);
         break;
     }
   },
 
   perform_action() {
-    switch (this.$.actionSelect.value) {
+    switch (Number(this.$.actionSelect.value)) {
       case ActionValues.STARTSCAN:
         this.browserProxy_.SendStartScan();
         break;
@@ -226,5 +333,146 @@ Polymer({
       'endpoint_id': endpointId,
       'actions': actions,
     };
+  },
+
+
+  /**
+   * Clears javascript logs displayed, but c++ log buffer remains.
+   * @private
+   */
+  onClearLogsButtonClicked_() {
+    this.clearLogBuffer_();
+  },
+
+  /**
+   * Saves and downloads all javascript logs.
+   * @private
+   */
+  onSaveUnfilteredLogsButtonClicked_() {
+    this.onSaveLogsButtonClicked_(false);
+  },
+
+  /**
+   * Saves and downloads javascript logs that currently appear on the page.
+   * @private
+   */
+  onSaveFilteredLogsButtonClicked_() {
+    this.onSaveLogsButtonClicked_(true);
+  },
+
+  /**
+   * Saves and downloads javascript logs.
+   * @param {!boolean} filtered
+   * @private
+   */
+  onSaveLogsButtonClicked_(filtered) {
+    let blob;
+    if (filtered) {
+      blob = new Blob(
+          this.filteredLogList_.map(logToSavedString_).reverse(),
+          {type: 'text/plain;charset=utf-8'});
+    } else {
+      blob = new Blob(
+          this.logList_.map(logToSavedString_).reverse(),
+          {type: 'text/plain;charset=utf-8'});
+    }
+    const url = URL.createObjectURL(blob);
+
+    const anchorElement = document.createElement('a');
+    anchorElement.href = url;
+    anchorElement.download =
+        this.logProvider_.logFilePrefix + new Date().toJSON() + '.txt';
+    document.body.appendChild(anchorElement);
+    anchorElement.click();
+
+    window.setTimeout(function() {
+      document.body.removeChild(anchorElement);
+      window.URL.revokeObjectURL(url);
+    }, 0);
+  },
+
+  /**
+   * Adds a log message to the javascript log list displayed. Called from the
+   * C++ WebUI handler when a log message is added to the log buffer.
+   * @param {!LogMessage} log
+   * @private
+   */
+  onLogMessageAdded_(log) {
+    this.push('logList_', log);
+    if ((log.text.match(this.currentFilter) ||
+         log.file.match(this.currentFilter)) &&
+        log.severity >= this.currentSeverity) {
+      this.push('filteredLogList_', log);
+    }
+  },
+
+  addLogFilter() {
+    switch (Number(this.$.logLevelSelector.value)) {
+      case Severity.VERBOSE:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.VERBOSE));
+        this.currentSeverity = Severity.VERBOSE;
+        break;
+      case Severity.INFO:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.INFO));
+        this.currentSeverity = Severity.INFO;
+        break;
+      case Severity.WARNING:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.WARNING));
+        this.currentSeverity = Severity.WARNING;
+        break;
+      case Severity.ERROR:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.ERROR));
+        this.currentSeverity = Severity.ERROR;
+        break;
+    }
+
+    this.set(
+        'currentLogTypes',
+        this.$.logType.currentLogTypes,
+    );
+
+    this.currentFilter = this.$.logSearch.value;
+    this.set(
+        'filteredLogList_',
+        this.filteredLogList_.filter(
+            (log) =>
+                (log.text.match(this.currentFilter) ||
+                 log.file.match(this.currentFilter))));
+  },
+
+  /**
+   * Called in response to WebUI handler clearing log buffer.
+   * @private
+   */
+  onWebUILogBufferCleared_() {
+    this.clearLogBuffer_();
+  },
+
+  /**
+   * Parses an array of log messages and adds to the javascript list sent in
+   * from the initial page load.
+   * @param {!Array<!LogMessage>} logs
+   * @private
+   */
+  onGetLogMessages_(logs) {
+    this.logList_ = logs.concat(this.logList_);
+    this.filteredLogList_ = logs.slice();
+  },
+
+  /**
+   * Clears the javascript log buffer.
+   * @private
+   */
+  clearLogBuffer_() {
+    this.logList_ = [];
+    this.filteredLogList_ = [];
   },
 });

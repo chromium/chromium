@@ -4,6 +4,7 @@
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
+
 import {LogMessage} from './types.js';
 
 /**

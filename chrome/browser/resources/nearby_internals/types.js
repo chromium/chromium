@@ -5,25 +5,25 @@
 /**
  * Enum of values to use for the feature select dropdown. If a new feature is
  * added, add it here.
- * @enum {string}
+ * @enum {number}
  */
 export const FeatureValues = {
-  NS: '0',
-  NC: '1',
-  NP: '2',
-  FP: '3',
+  NearbyShare: 0,
+  NearbyConnections: 1,
+  NearbyPresence: 2,
+  FastPair: 3,
 };
 
 /**
  * Enum of values to use for the action select dropdown. If a new action is
  * added, add it here.
- * @enum {string}
+ * @enum {number}
  */
 export const ActionValues = {
-  STARTSCAN: '0',
-  STOPSCAN: '1',
-  SYNCCREDENTIALS: '2',
-  FIRSTTIMEFLOW: '3',
+  STARTSCAN: 0,
+  STOPSCAN: 1,
+  SYNCCREDENTIALS: 2,
+  FIRSTTIMEFLOW: 3,
 };
 
 /**
@@ -43,6 +43,7 @@ export const Severity = {
  * chrome/browser/ui/webui/nearby_internals/nearby_internals_logs_handler.cc:
  * LogMessageToDictionary()
  * @typedef {{text: string,
+ *            feature: FeatureValues,
  *            time: string,
  *            file: string,
  *            line: number,

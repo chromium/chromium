@@ -11,8 +11,8 @@ import './shared_style.css.js';
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import {getTemplate} from './logging_tab.html.js';
-import {NearbyLogsBrowserProxy} from './nearby_logs_browser_proxy.js';
 import {LogMessage, LogProvider, SelectOption, Severity} from './types.js';
 
 /**
