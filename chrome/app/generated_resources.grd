@@ -15011,7 +15011,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         On other devices
       </message>
       <message name="IDS_WEBAUTHN_SOURCE_CHROME_PROFILE" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in the user's Chrome Profile.">
-        From your Chrome Profile
+        From your Chrome profile
       </message>
       <message name="IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in the user's iCloud Keychain.">
         From iCloud Keychain
