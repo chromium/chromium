@@ -166,7 +166,8 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
              * method
              */
             String url = event.getClipData().getItemAt(0).getIntent().getData().toString();
-            mAutocompleteDelegate.loadUrl(url, PageTransition.TYPED, SystemClock.uptimeMillis());
+            mAutocompleteDelegate.loadUrl(
+                    url, PageTransition.TYPED, SystemClock.uptimeMillis(), /*openInNewTab=*/false);
             recordDropType(DropType.CHROME_LINK);
         } else {
             // case where dragged object is not from Chrome

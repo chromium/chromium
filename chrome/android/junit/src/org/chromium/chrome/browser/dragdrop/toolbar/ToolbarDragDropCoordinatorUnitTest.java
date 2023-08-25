@@ -224,7 +224,7 @@ public class ToolbarDragDropCoordinatorUnitTest {
                 resultDragMultipleMimeTypes);
         verify(mAutocompleteDelegate)
                 .loadUrl(eq(JUnitTestGURLs.EXAMPLE_URL), eq(PageTransition.TYPED),
-                        ArgumentMatchers.anyLong());
+                        ArgumentMatchers.anyLong(), eq(false));
         histogramExpectation.assertExpected();
     }
 

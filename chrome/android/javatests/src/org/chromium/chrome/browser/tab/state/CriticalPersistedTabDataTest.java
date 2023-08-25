@@ -725,9 +725,10 @@ public class CriticalPersistedTabDataTest {
         assertEquals(18, LaunchTypeAtCreation.FROM_READING_LIST);
         assertEquals(19, LaunchTypeAtCreation.FROM_TAB_SWITCHER_UI);
         assertEquals(20, LaunchTypeAtCreation.FROM_RESTORE_TABS_UI);
+        assertEquals(21, LaunchTypeAtCreation.FROM_OMNIBOX);
         assertEquals("Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                23, LaunchTypeAtCreation.names.length);
+                24, LaunchTypeAtCreation.names.length);
     }
 
     @SmallTest

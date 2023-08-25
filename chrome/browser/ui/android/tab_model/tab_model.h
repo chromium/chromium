@@ -111,6 +111,8 @@ class TabModel {
     // Opened from the Restore Tabs UI. When restoring synced tabs the first
     // tab is opened but not brought to the foreground.
     FROM_RESTORE_TABS_UI,
+    // Opened to load an omnibox search query in a new tab.
+    FROM_OMNIBOX,
     // Must be last.
     SIZE
   };

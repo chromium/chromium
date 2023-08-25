@@ -436,12 +436,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 && (!mNativeInitialized || mAutocomplete == null)) {
             // clang-format off
             mDeferredLoadAction = () -> loadUrlForOmniboxMatch(
-                            matchIndex, suggestion, url, mLastActionUpTimestamp, true);
+                            matchIndex, suggestion, url, mLastActionUpTimestamp, true, /*openInNewTab=*/false);
             // clang-format on
             return;
         }
 
-        loadUrlForOmniboxMatch(matchIndex, suggestion, url, mLastActionUpTimestamp, true);
+        loadUrlForOmniboxMatch(matchIndex, suggestion, url, mLastActionUpTimestamp, true,
+                /*openInNewTab=*/false);
     }
 
     /**
@@ -763,14 +764,17 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     /**
      * Load the url corresponding to the typed omnibox text.
      * @param eventTime The timestamp the load was triggered by the user.
+     * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
+     *         will be loaded in a new tab. If {@code false}, The URL will be loaded in the current
+     *         tab.
      */
-    void loadTypedOmniboxText(long eventTime) {
+    void loadTypedOmniboxText(long eventTime, boolean openInNewTab) {
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
         if (mNativeInitialized && mAutocomplete != null) {
-            findMatchAndLoadUrl(urlText, eventTime);
+            findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
         } else {
-            mDeferredLoadAction = () -> findMatchAndLoadUrl(urlText, eventTime);
+            mDeferredLoadAction = () -> findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
         }
     }
 
@@ -778,9 +782,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * Search for a suggestion with the same associated URL as the supplied one.
      *
      * @param urlText The URL text to search for.
-     * @param eventTime The timestamp the load was triggered by the user.
+     * @param inputStart The timestamp the load was triggered by the user.
+     * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
+     *         will be loaded in a new tab. If {@code false}, The URL will be loaded in the current
+     *         tab.
      */
-    private void findMatchAndLoadUrl(String urlText, long inputStart) {
+    private void findMatchAndLoadUrl(String urlText, long inputStart, boolean openInNewTab) {
         AutocompleteMatch suggestionMatch;
         boolean inSuggestionList = true;
 
@@ -803,8 +810,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             if (suggestionMatch == null) return;
         }
 
-        loadUrlForOmniboxMatch(
-                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, inSuggestionList);
+        loadUrlForOmniboxMatch(0, suggestionMatch, suggestionMatch.getUrl(), inputStart,
+                inSuggestionList, openInNewTab);
     }
 
     /**
@@ -815,9 +822,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * @param url The URL to load.
      * @param inputStart The timestamp the input was started.
      * @param inVisibleSuggestionList Whether the suggestion is in the visible suggestion list.
+     * @param openInNewTab Whether the suggestion will be loaded in a new tab. If {@code true}, the
+     *         suggestion will be loaded in a new tab. If {@code false}, the suggestion will be
+     *         loaded in the current tab.
      */
     private void loadUrlForOmniboxMatch(int matchIndex, @NonNull AutocompleteMatch suggestion,
-            @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList) {
+            @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList,
+            boolean openInNewTab) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
             OmniboxMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
@@ -880,7 +891,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 mDelegate.loadUrlWithPostData(url.getSpec(), transition, inputStart,
                         suggestion.getPostContentType(), suggestion.getPostData());
             } else {
-                mDelegate.loadUrl(url.getSpec(), transition, inputStart);
+                mDelegate.loadUrl(url.getSpec(), transition, inputStart, openInNewTab);
             }
 
             if (mClearFocusAfterNavigationAsynchronously) {

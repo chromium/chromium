@@ -147,6 +147,8 @@ public class ChromeTabCreator extends TabCreator {
                 return "TabSwitcherUI";
             case TabLaunchType.FROM_RESTORE_TABS_UI:
                 return "RestoreTabsUI";
+            case TabLaunchType.FROM_OMNIBOX:
+                return "Omnibox";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -625,6 +627,7 @@ public class ChromeTabCreator extends TabCreator {
         int transition = PageTransition.LINK;
         switch (tabLaunchType) {
             case TabLaunchType.FROM_START_SURFACE:
+            case TabLaunchType.FROM_OMNIBOX:
                 transition = originalTransitionType;
                 break;
             case TabLaunchType.FROM_RESTORE:

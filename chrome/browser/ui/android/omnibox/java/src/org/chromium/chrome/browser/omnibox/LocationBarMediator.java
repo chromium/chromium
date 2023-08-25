@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -192,6 +194,7 @@ class LocationBarMediator
     private ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
     private boolean mShouldClearOmniboxOnFocus = true;
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -206,7 +209,8 @@ class LocationBarMediator
             @NonNull LensController lensController,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
-            @NonNull OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder) {
+            @NonNull OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder,
+            @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -229,6 +233,7 @@ class LocationBarMediator
         mOmniboxUma = omniboxUma;
         mIsToolbarMicEnabledSupplier = isToolbarMicEnabledSupplier;
         mEmbedderImpl = dropdownEmbedder;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     /**
@@ -465,12 +470,12 @@ class LocationBarMediator
                 mAutocompleteCoordinator.getSuggestionCount() != 0);
     }
 
-    /* package */ void loadUrl(String url, int transition, long inputStart) {
-        loadUrlWithPostData(url, transition, inputStart, null, null);
+    /* package */ void loadUrl(String url, int transition, long inputStart, boolean openInNewTab) {
+        loadUrlWithPostData(url, transition, inputStart, null, null, openInNewTab);
     }
 
-    /* package */ void loadUrlWithPostData(
-            String url, int transition, long inputStart, String postDataType, byte[] postData) {
+    /* package */ void loadUrlWithPostData(String url, int transition, long inputStart,
+            String postDataType, byte[] postData, boolean openInNewTab) {
         assert mLocationBarDataProvider != null;
         Tab currentTab = mLocationBarDataProvider.getTab();
 
@@ -527,7 +532,13 @@ class LocationBarMediator
                 loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
             }
 
-            currentTab.loadUrl(loadUrlParams);
+            if (openInNewTab && mTabModelSelectorSupplier != null
+                    && mTabModelSelectorSupplier.get() != null) {
+                mTabModelSelectorSupplier.get().openNewTab(loadUrlParams,
+                        TabLaunchType.FROM_OMNIBOX, currentTab, currentTab.isIncognito());
+            } else {
+                currentTab.loadUrl(loadUrlParams);
+            }
             RecordUserAction.record("MobileOmniboxUse");
         }
         mLocaleManager.recordLocaleBasedSearchMetrics(false, url, transition);
@@ -1271,7 +1282,7 @@ class LocationBarMediator
                 mTemplateUrlServiceSupplier.get().getUrlForSearchQuery(query, searchParams);
 
         if (!TextUtils.isEmpty(queryUrl)) {
-            loadUrl(queryUrl, PageTransition.GENERATED, 0);
+            loadUrl(queryUrl, PageTransition.GENERATED, 0, /*openInNewTab=*/false);
         } else {
             setSearchQuery(query);
         }
@@ -1316,7 +1327,7 @@ class LocationBarMediator
 
     @Override
     public void loadUrlFromVoice(String url) {
-        loadUrl(url, PageTransition.TYPED, 0);
+        loadUrl(url, PageTransition.TYPED, 0, /*openInNewTab=*/false);
     }
 
     @Override

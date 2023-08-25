@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -563,6 +564,20 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete2", true);
         verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionClicked_doesNotOpenInNewTab() {
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onNativeInitialized();
+        mMediator.onUrlFocusChange(true);
+        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+
+        mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
+        // Verify that the URL is not loaded in a new tab.
+        verify(mAutocompleteDelegate)
+                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
     }
 
     @Test

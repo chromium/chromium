@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.SkipCommandLineParameterization;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -60,6 +61,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressLint("SetTextI18n")
+@Batch(Batch.PER_CLASS)
 public class OmniboxTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -117,6 +119,37 @@ public class OmniboxTest {
             urlBar.setText("G");
         });
         Assert.assertEquals("Location bar should have text.", "G", urlBar.getText().toString());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testAltEnterOpensSearchResultInNewTab() {
+        int tabCount = ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity());
+        Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+
+        OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        omnibox.requestFocus();
+        omnibox.typeText("hello", false);
+        omnibox.checkSuggestionsShown();
+
+        // Dispatch ALT + ENTER key event.
+        final UrlBar urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        KeyEvent keyDownEvent = new KeyEvent(
+                0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
+        KeyEvent keyUpEvent = new KeyEvent(
+                0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            urlBar.dispatchKeyEvent(keyDownEvent);
+            urlBar.dispatchKeyEvent(keyUpEvent);
+        });
+
+        Tab resultTab = mActivityTestRule.getActivity().getActivityTab();
+        Assert.assertNotEquals(
+                "The result should be loaded in a new tab that is brought to the foreground.",
+                currentTab, resultTab);
+        Assert.assertEquals("Tab count should reflect new tab.", tabCount + 1,
+                ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity()));
     }
 
     /**

@@ -279,7 +279,7 @@ public class SearchActivity extends AsyncInitializationActivity
             new OpenHistoryClustersDelegate() {
                 @Override
                 public void openHistoryClustersUi(String query) {}
-            });
+            }, /*tabModelSelectorSupplier=*/null);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

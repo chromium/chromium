@@ -382,7 +382,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             return true;
         }
         if (KeyNavigationUtil.isEnter(event) && mParent.getVisibility() == View.VISIBLE) {
-            mMediator.loadTypedOmniboxText(event.getEventTime());
+            mMediator.loadTypedOmniboxText(event.getEventTime(), event.isAltPressed());
             return true;
         }
         return false;

@@ -40,13 +40,16 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
     boolean isKeyboardActive();
 
     /**
-     * Requests that the given URL be loaded in the current tab.
+     * Requests that the given URL be loaded in the current tab or in a new tab.
      *
      * @param url The URL to be loaded.
      * @param transition The transition type associated with the url load.
      * @param inputStart The time the input started for the load request.
+     * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
+     *         will be loaded in a new tab. If {@code false}, The URL will be loaded in the current
+     *         tab.
      */
-    void loadUrl(String url, @PageTransition int transition, long inputStart);
+    void loadUrl(String url, @PageTransition int transition, long inputStart, boolean openInNewTab);
 
     /**
      * Requests that the given URL be loaded in the current tab.

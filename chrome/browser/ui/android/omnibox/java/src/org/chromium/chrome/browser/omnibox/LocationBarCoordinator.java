@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -145,6 +146,7 @@ public class LocationBarCoordinator
      *         such as when called from a search activity.
      * @param reportExceptionCallback A {@link Callback} to report exceptions.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
+     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -171,7 +173,8 @@ public class LocationBarCoordinator
             @Nullable BackPressManager backPressManager,
             @NonNull OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
-            @Nullable OpenHistoryClustersDelegate openHistoryClustersDelegate) {
+            @Nullable OpenHistoryClustersDelegate openHistoryClustersDelegate,
+            @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -192,7 +195,8 @@ public class LocationBarCoordinator
                 overrideUrlLoadingDelegate, LocaleManager.getInstance(), templateUrlServiceSupplier,
                 backKeyBehavior, windowAndroid, isTabletWindow() && isTabletLayout(),
                 searchEngineLogoUtils, LensController.getInstance(), saveOfflineButtonState,
-                omniboxUma, isToolbarMicEnabledSupplier, mOmniboxDropdownEmbedderImpl);
+                omniboxUma, isToolbarMicEnabledSupplier, mOmniboxDropdownEmbedderImpl,
+                tabModelSelectorSupplier);
         if (backPressManager != null && BackPressManager.isEnabled()) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
@@ -432,17 +436,17 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public void loadUrl(String url, int transition, long inputStart) {
+    public void loadUrl(String url, int transition, long inputStart, boolean openInNewTab) {
         mShortCircuitUnfocusAnimation =
                 isUrlBarFocused() && OmniboxFeatures.shouldShortCircuitUnfocusAnimation();
-        mLocationBarMediator.loadUrl(url, transition, inputStart);
+        mLocationBarMediator.loadUrl(url, transition, inputStart, openInNewTab);
     }
 
     @Override
     public void loadUrlWithPostData(
             String url, int transition, long inputStart, String postDataType, byte[] postData) {
         mLocationBarMediator.loadUrlWithPostData(
-                url, transition, inputStart, postDataType, postData);
+                url, transition, inputStart, postDataType, postData, /*openInNewTab=*/false);
     }
 
     @Override

@@ -364,6 +364,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_RECENT_TABS;
             case LaunchTypeAtCreation.FROM_READING_LIST:
                 return TabLaunchType.FROM_READING_LIST;
+            case LaunchTypeAtCreation.FROM_OMNIBOX:
+                return TabLaunchType.FROM_OMNIBOX;
             case LaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case LaunchTypeAtCreation.UNKNOWN:
@@ -424,6 +426,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_RECENT_TABS;
             case LaunchTypeAtCreation.FROM_READING_LIST:
                 return TabLaunchType.FROM_READING_LIST;
+            case LaunchTypeAtCreation.FROM_OMNIBOX:
+                return TabLaunchType.FROM_OMNIBOX;
             case TabLaunchType.SIZE:
                 return LaunchTypeAtCreation.SIZE;
             default:
