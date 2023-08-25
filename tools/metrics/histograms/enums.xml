@@ -104087,6 +104087,12 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Leave Chrome"/>
 </enum>
 
+<enum name="TabRevisitTracker.TabState">
+  <int value="0" label="Active"/>
+  <int value="1" label="Background"/>
+  <int value="2" label="Closed"/>
+</enum>
+
 <enum name="TabScreenshotAction">
   <int value="0" label="User took no actions">
     User made a screenshot, but did not take any actions with it before

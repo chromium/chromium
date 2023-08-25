@@ -31,19 +31,33 @@ class TabRevisitTracker : public GraphOwned,
   ~TabRevisitTracker() override;
 
  private:
+  friend class TabRevisitTrackerTest;
+
   enum class State {
+    // The order of the leading elements must match the one in enums.xml
+    // `TabRevisitTracker.TabState`.
     kActive,
     kBackground,
+    kClosed,
+    // The following entries aren't present in enums.xml but they are used for
+    // internal tracking
     kDiscarded,
   };
 
   struct StateBundle {
     State state;
     absl::optional<base::TimeTicks> last_active_time;
+    base::TimeTicks last_state_change_time;
+    int64_t num_revisits;
   };
 
   void RecordRevisitHistograms(const TabPageDecorator::TabHandle* tab_handle);
   void RecordCloseHistograms(const TabPageDecorator::TabHandle* tab_handle);
+  void RecordStateChangeUkm(const TabPageDecorator::TabHandle* tab_handle,
+                            State new_state);
+
+  int64_t StateToSample(TabRevisitTracker::State state);
+  static int64_t ExponentiallyBucketedSeconds(base::TimeDelta time);
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;

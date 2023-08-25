@@ -24529,6 +24529,67 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TabRevisitTracker.TabStateChange">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when a tab changes state to/from &quot;active&quot;,
+    &quot;background&quot;, and &quot;closed&quot;.
+  </summary>
+  <metric name="ConnectednessToActiveTab">
+    <summary>
+      How connected the tab is to the active tab, if `NewState` isn't `Active`.
+      Computed from tab switches in the current session, and represents a
+      probability in the range [0.0, 1.0].
+    </summary>
+  </metric>
+  <metric name="NewState" enum="TabRevisitTracker.TabState">
+    <summary>
+      The state the tab is in after the transition.
+    </summary>
+  </metric>
+  <metric name="NumTabsOnSameUrl">
+    <summary>
+      The count of tabs with the same main frame URL as this one in the current
+      browser session. Used to identify instances of duplicate tabs. Bucketed in
+      20 buckets (0 to 20) + an overflow bucket.
+    </summary>
+  </metric>
+  <metric name="NumTotalRevisits">
+    <summary>
+      The count of times this tab was revisited since it was created. Bucketed
+      in 20 buckets (0 to 20) + an overflow bucket.
+    </summary>
+  </metric>
+  <metric name="PreviousState" enum="TabRevisitTracker.TabState">
+    <summary>
+      The state the tab was in before the transition.
+    </summary>
+  </metric>
+  <metric name="SameTabGroupAsActiveTab" enum="Boolean">
+    <summary>
+      Whether the tab is in the same tab group as the current active tab.
+    </summary>
+  </metric>
+  <metric name="SameWindowAsActiveTab" enum="Boolean">
+    <summary>
+      Whether the tab is in the same browser window as the current active tab.
+    </summary>
+  </metric>
+  <metric name="TimeInPreviousState">
+    <summary>
+      The time spent by the tab in `PreviousState`, before transitioning to
+      `NewState`, in seconds.
+    </summary>
+  </metric>
+  <metric name="TotalTimeActive">
+    <summary>
+      The total time the tab has spent as the active tab since it was created,
+      in seconds.
+    </summary>
+  </metric>
+</event>
+
 <event name="TabStripOrganization">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
