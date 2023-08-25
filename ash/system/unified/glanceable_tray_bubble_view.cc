@@ -99,7 +99,9 @@ GlanceableTrayBubbleView::GlanceableTrayBubbleView(
           std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr)) {
 }
 
-GlanceableTrayBubbleView::~GlanceableTrayBubbleView() = default;
+GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {
+  Shell::Get()->glanceables_v2_controller()->NotifyGlanceablesBubbleClosed();
+}
 
 void GlanceableTrayBubbleView::InitializeContents() {
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -190,6 +192,20 @@ bool GlanceableTrayBubbleView::CanActivate() const {
   return true;
 }
 
+void GlanceableTrayBubbleView::OnWidgetClosing(views::Widget* widget) {
+  if (tasks_bubble_view_) {
+    tasks_bubble_view_->CancelUpdates();
+  }
+  if (classroom_bubble_teacher_view_) {
+    classroom_bubble_teacher_view_->CancelUpdates();
+  }
+  if (classroom_bubble_student_view_) {
+    classroom_bubble_student_view_->CancelUpdates();
+  }
+
+  TrayBubbleView::OnWidgetClosing(widget);
+}
+
 void GlanceableTrayBubbleView::OnDisplayConfigurationChanged() {
   int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
@@ -220,7 +236,7 @@ void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerHeightChanged(
     int height_delta) {
-  if (!IsDrawn()) {
+  if (!IsDrawn() || !GetWidget() || GetWidget()->IsClosed()) {
     return;
   }
 

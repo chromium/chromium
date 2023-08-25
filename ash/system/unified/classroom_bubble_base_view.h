@@ -43,6 +43,10 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
 
+  // Invalidates any pending assignments requests. Called when the
+  // glanceables bubble widget starts closing to avoid unnecessary UI updates.
+  void CancelUpdates();
+
  protected:
   // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
   // classroom web UI based on the selected menu option.

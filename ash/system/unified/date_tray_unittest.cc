@@ -517,6 +517,7 @@ TEST_P(DateTrayTest, CloseBubble) {
   EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  base::RunLoop().RunUntilIdle();
   if (AreGlanceablesV2Enabled()) {
     EXPECT_EQ(1,
               fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
@@ -530,6 +531,7 @@ TEST_P(DateTrayTest, CloseBubble) {
   EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(GetUnifiedSystemTray()->is_active());
   EXPECT_FALSE(GetDateTray()->is_active());
+  base::RunLoop().RunUntilIdle();
   if (AreGlanceablesV2Enabled()) {
     EXPECT_EQ(0,
               fake_glanceables_tasks_client()->GetAndResetBubbleClosedCount());
@@ -923,6 +925,72 @@ TEST_P(GlanceablesDateTrayTest,
             new_work_area.width() - new_view_bounds.right());
   EXPECT_EQ(old_work_area.height() - old_view_bounds.bottom(),
             new_work_area.height() - new_view_bounds.bottom());
+}
+
+TEST_P(GlanceablesDateTrayTest,
+       BubbleClosedUsingTrayButtonWithPendingTasksRequests) {
+  fake_glanceables_tasks_client()->set_paused(true);
+
+  LeftClickOn(GetDateTray());
+  ASSERT_TRUE(IsBubbleShown());
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+
+  EXPECT_EQ(1u,
+            fake_glanceables_tasks_client()->RunPendingGetTaskListsCallbacks());
+
+  LeftClickOn(GetDateTray());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsBubbleShown());
+}
+
+TEST_P(GlanceablesDateTrayTest, TasksListFetchedWhileBubbleClosing) {
+  fake_glanceables_tasks_client()->set_paused(true);
+
+  LeftClickOn(GetDateTray());
+  ASSERT_TRUE(IsBubbleShown());
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+
+  EXPECT_EQ(1u,
+            fake_glanceables_tasks_client()->RunPendingGetTaskListsCallbacks());
+
+  GetGlanceableTrayBubble()->GetBubbleWidget()->Close();
+  EXPECT_EQ(1u, fake_glanceables_tasks_client()->RunPendingGetTasksCallbacks());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsBubbleShown());
+}
+
+TEST_P(GlanceablesDateTrayTest, TaskListsFetchedWhileBubbleClosing) {
+  fake_glanceables_tasks_client()->set_paused(true);
+
+  LeftClickOn(GetDateTray());
+  ASSERT_TRUE(IsBubbleShown());
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+
+  GetGlanceableTrayBubble()->GetBubbleWidget()->Close();
+  EXPECT_EQ(1u,
+            fake_glanceables_tasks_client()->RunPendingGetTaskListsCallbacks());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsBubbleShown());
+}
+
+TEST_P(GlanceablesDateTrayTest, AssignmentListFetchedWhileBubbleClosing) {
+  LeftClickOn(GetDateTray());
+  ASSERT_TRUE(IsBubbleShown());
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+
+  glanceables_classroom_client()->RespondToPendingIsStudentRoleEnabledCallbacks(
+      /*is_active=*/true);
+
+  GetGlanceableTrayBubble()->GetBubbleWidget()->Close();
+  ASSERT_TRUE(glanceables_classroom_client()
+                  ->RespondToNextPendingStudentAssignmentsCallback(
+                      CreateAssignmentsForTeachers(/*count=*/1)));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsBubbleShown());
 }
 
 }  // namespace ash

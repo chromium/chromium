@@ -51,6 +51,9 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
   // Runs `pending_get_tasks_callbacks_` and returns their number.
   size_t RunPendingGetTasksCallbacks();
 
+  // Runs `pending_get_task_lists_callbacks_` and returns their number.
+  size_t RunPendingGetTaskListsCallbacks();
+
   void set_paused(bool paused) { paused_ = paused; }
 
  private:
@@ -75,6 +78,7 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
   // `RunPending**Callbacks()` is called.
   bool paused_ = false;
   std::list<base::OnceClosure> pending_get_tasks_callbacks_;
+  std::list<base::OnceClosure> pending_get_task_lists_callbacks_;
 };
 
 }  // namespace ash

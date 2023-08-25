@@ -127,6 +127,10 @@ void ClassroomBubbleBaseView::OnViewFocused(views::View* view) {
   AnnounceListStateOnComboBoxAccessibility();
 }
 
+void ClassroomBubbleBaseView::CancelUpdates() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void ClassroomBubbleBaseView::AboutToRequestAssignments() {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
   combo_box_view_->SetAccessibleDescription(u"");

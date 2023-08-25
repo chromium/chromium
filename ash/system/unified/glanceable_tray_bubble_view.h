@@ -40,6 +40,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
 
   // TrayBubbleView:
   bool CanActivate() const override;
+  void OnWidgetClosing(views::Widget* widget) override;
 
   // ScreenLayoutObserver:
   void OnDisplayConfigurationChanged() override;

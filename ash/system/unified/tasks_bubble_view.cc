@@ -69,6 +69,10 @@ void TasksBubbleView::OnViewFocused(views::View* view) {
   AnnounceListStateOnComboBoxAccessibility();
 }
 
+void TasksBubbleView::CancelUpdates() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   // TODO(b:277268122): Implement empty tasks glanceable state.
   if (task_list->item_count() == 0) {

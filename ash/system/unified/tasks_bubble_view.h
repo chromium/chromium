@@ -81,6 +81,10 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
 
+  // Invalidates any pending tasks, or tasks lists requests. Called when the
+  // glanceables bubble widget starts closing to avoid unnecessary UI updates.
+  void CancelUpdates();
+
  private:
   // Setup child views.
   void InitViews(ui::ListModel<GlanceablesTaskList>* task_list);
