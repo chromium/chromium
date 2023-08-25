@@ -34,7 +34,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   PasswordSaveUpdateView(content::WebContents* web_contents,
                          views::View* anchor_view,
                          DisplayReason reason);
-
+#ifdef UNIT_TEST
   views::Combobox* DestinationDropdownForTesting() {
     return destination_dropdown_;
   }
@@ -42,6 +42,11 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   views::EditableCombobox* username_dropdown_for_testing() const {
     return username_dropdown_.get();
   }
+
+  views::EditablePasswordCombobox* password_dropdown_for_testing() const {
+    return password_dropdown_.get();
+  }
+#endif  // #ifdef UNIT_TEST
 
  private:
   // Type of the IPH to show.

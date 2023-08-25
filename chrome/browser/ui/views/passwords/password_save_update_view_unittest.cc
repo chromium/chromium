@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -177,4 +178,21 @@ TEST_F(PasswordSaveUpdateViewTest,
   pending_password_.match_type =
       password_manager::PasswordForm::MatchType::kExact;
   CreateViewAndShow();
+}
+
+// This is a regression test for crbug.com/1475021
+TEST_F(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
+  CreateViewAndShow();
+  const PasswordSaveUpdateView* save_bubble =
+      static_cast<const PasswordSaveUpdateView*>(view());
+  const views::DialogDelegate* dialog_delegate = view();
+
+  save_bubble->password_dropdown_for_testing()->SetText(u"password");
+  EXPECT_TRUE(dialog_delegate->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  save_bubble->password_dropdown_for_testing()->SetText(u"");
+  EXPECT_FALSE(dialog_delegate->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  save_bubble->password_dropdown_for_testing()->SetText(u"pass");
+  EXPECT_TRUE(dialog_delegate->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 }

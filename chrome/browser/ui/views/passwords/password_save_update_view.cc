@@ -339,6 +339,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
             password_form,
             base::BindRepeating(&PasswordSaveUpdateView::TogglePasswordRevealed,
                                 base::Unretained(this)));
+    password_dropdown->SetCallback(base::BindRepeating(
+        &PasswordSaveUpdateView::OnContentChanged, base::Unretained(this)));
     // Set up layout:
     SetLayoutManager(std::make_unique<AutoResizingLayout>());
     views::View* root_view = AddChildView(std::make_unique<views::View>());
