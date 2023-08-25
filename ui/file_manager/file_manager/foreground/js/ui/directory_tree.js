@@ -2081,30 +2081,67 @@ export class DirectoryTree extends Tree {
     if (util.isSearchV2Enabled()) {
       /** @type {!SearchData|undefined} */
       this.cachedSearchState_ = {};
-      getStore().subscribe(this);
     }
+
+    /**
+     * Subscribe to the store so that we can listen to ODFS getting enabled or
+     * disabled. When ODFS first gets added in the store,
+     * `isODFSVolumeDisabled_` gets initialized to the right value and the
+     * directory tree and its data model are updated through other mechanisms.
+     * @type {boolean}
+     */
+    this.isODFSVolumeDisabled_ = false;
+    getStore().subscribe(this);
   }
 
   /**
    * @param {!State} state
    */
   onStateChanged(state) {
+    // Search.
     const searchState = state.search;
-    if (searchState === this.cachedSearchState_) {
-      return;
-    }
-    this.cachedSearchState_ = searchState;
-    if (searchState === undefined) {
-      this.setActiveItemHighlighted_(true);
-    } else {
-      if (searchState.status === undefined) {
+    if (searchState !== this.cachedSearchState_) {
+      this.cachedSearchState_ = searchState;
+      if (searchState === undefined) {
         this.setActiveItemHighlighted_(true);
-      } else if (
-          searchState.status === PropStatus.STARTED && searchState.query) {
-        this.setActiveItemHighlighted_(
-            (searchState.options || {}).location ===
-            SearchLocation.THIS_FOLDER);
+      } else {
+        if (searchState.status === undefined) {
+          this.setActiveItemHighlighted_(true);
+        } else if (
+            searchState.status === PropStatus.STARTED && searchState.query) {
+          this.setActiveItemHighlighted_(
+              (searchState.options || {}).location ===
+              SearchLocation.THIS_FOLDER);
+        }
       }
+    }
+
+    // ODFS.
+    const odfsDisabledUpdated =
+        Object.values(state.volumes)
+            .some(
+                volume => volume && util.isOneDriveId(volume.providerId) &&
+                    !!volume.isDisabled !== this.isODFSVolumeDisabled_);
+    if (odfsDisabledUpdated) {
+      this.isODFSVolumeDisabled_ = !this.isODFSVolumeDisabled_;
+      // Refresh data model.
+      this.dataModel.refreshNavigationItems();
+      // Navigate away from ODFS if the current directory is on ODFS and
+      // ODFS just got disabled.
+      if (util.isOneDrive(this.directoryModel_.getCurrentVolumeInfo())) {
+        this.volumeManager.getDefaultDisplayRoot((displayRoot) => {
+          this.directoryModel_.changeDirectoryEntry(displayRoot);
+        });
+      }
+      // Remove ODFS volumes from the directoryTree so that they get redrawn
+      // with the right attributes.
+      for (const treeItem of this.items) {
+        if (util.isOneDrive(treeItem.modelItem.volumeInfo)) {
+          this.remove(treeItem);
+        }
+      }
+      // Force-redraw directory tree.
+      this.redraw(true);
     }
   }
 
