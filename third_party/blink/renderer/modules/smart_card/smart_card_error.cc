@@ -115,6 +115,17 @@ void SmartCardError::Reject(ScriptPromiseResolver* resolver,
           V8SmartCardResponseCode::Enum::kUnsupportedFeature));
       break;
 
+    // TypeError:
+    // This is not only triggered by bad PC/SC API usage (e.g., passing a null
+    // context), which would be a browser implementation bug. It can also be
+    // returned by the reader driver or card on input that, from a pure PC/SC
+    // API perspective, is perfectly valid.
+    case device::mojom::blink::SmartCardError::kInvalidParameter:
+      resolver->RejectWithTypeError(
+          "One or more of the supplied parameters could not be properly "
+          "interpreted.");
+      break;
+
     // DOMException:
     // "InvalidStateError"
     case device::mojom::blink::SmartCardError::kInvalidHandle:
@@ -177,7 +188,6 @@ void SmartCardError::Reject(ScriptPromiseResolver* resolver,
     // Again, technically nothing stops the PC/SC stack from spilling those
     // unexpectedly.
     case device::mojom::blink::SmartCardError::kInsufficientBuffer:
-    case device::mojom::blink::SmartCardError::kInvalidParameter:
     case device::mojom::blink::SmartCardError::kInvalidValue:
       LOG(WARNING) << "An unexpected PC/SC error has occurred: " << mojom_error;
       resolver->RejectWithDOMException(
