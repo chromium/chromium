@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -291,14 +292,14 @@ void RemoveUselessCredentials(
         network_context_getter) {
   DCHECK(cleaning_tasks_runner);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   // Can be null for some unittests.
   if (!network_context_getter.is_null()) {
     cleaning_tasks_runner->MaybeAddCleaningTask(
         std::make_unique<password_manager::HttpCredentialCleaner>(
             store, network_context_getter, prefs));
   }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
   // TODO(crbug.com/450621): Remove this when enough number of clients switch
   // to the new version of Chrome.

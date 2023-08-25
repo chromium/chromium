@@ -391,7 +391,7 @@ static_library("browser") {
     ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
@@ -727,7 +727,8 @@ source_set("unit_tests") {
   }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
-  } else {
+  }
+  if (use_blink) {
     sources += [ "http_credentials_cleaner_unittest.cc" ]
   }
 
