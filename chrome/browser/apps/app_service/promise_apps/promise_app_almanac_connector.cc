@@ -124,8 +124,10 @@ void PromiseAppAlmanacConnector::OnGetPromiseAppResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     GetPromiseAppCallback callback,
     std::unique_ptr<std::string> response_body) {
-  if (HasDownloadError(loader->NetError(), loader->ResponseInfo(),
-                       response_body.get(), "promise app")) {
+  absl::Status error = GetDownloadError(
+      loader->NetError(), loader->ResponseInfo(), response_body.get());
+  if (!error.ok()) {
+    LOG(ERROR) << error.message();
     std::move(callback).Run(absl::nullopt);
     return;
   }

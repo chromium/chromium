@@ -10,10 +10,12 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -70,11 +72,11 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
   return loader;
 }
 
-bool HasDownloadError(int net_error,
-                      const network::mojom::URLResponseHead* response_info,
-                      const std::string* response_body,
-                      std::string_view endpoint,
-                      const absl::optional<std::string>& histogram_name) {
+absl::Status GetDownloadError(
+    int net_error,
+    const network::mojom::URLResponseHead* response_info,
+    const std::string* response_body,
+    const absl::optional<std::string>& histogram_name) {
   int response_code = 0;
   if (response_info && response_info->headers) {
     response_code = response_info->headers->response_code();
@@ -85,22 +87,18 @@ bool HasDownloadError(int net_error,
                              response_code > 0 ? response_code : net_error);
   }
   if (net_error != net::OK) {
-    LOG(ERROR) << endpoint << " net error: " << net::ErrorToString(net_error);
-    return true;
+    return absl::InternalError(
+        base::StrCat({"net error: ", net::ErrorToString(net_error)}));
   }
-  // HTTP error codes in the 500-599 range represent server errors.
-  if (response_code >= 500 && response_code < 600) {
-    LOG(ERROR) << endpoint << " server error code: " << response_code;
-    return true;
+
+  if ((response_code >= 200 && response_code < 300) || response_code == 0) {
+    if (!response_body) {
+      return absl::InternalError("request body is nullptr");
+    }
+    return absl::OkStatus();
   }
-  if (response_code != 200 && response_code != 0) {
-    LOG(ERROR) << endpoint << " response code: " << response_code;
-    return true;
-  }
-  if (!response_body) {
-    LOG(ERROR) << endpoint << " request body is empty";
-    return true;
-  }
-  return false;
+
+  return absl::InternalError(
+      base::StrCat({"HTTP error code: ", base::NumberToString(response_code)}));
 }
 }  // namespace apps

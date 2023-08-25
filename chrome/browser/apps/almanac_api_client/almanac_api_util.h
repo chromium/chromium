@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -40,15 +42,16 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
     const std::string& request_body,
     std::string_view endpoint_suffix);
 
-// Checks whether an error occurred during downloading and handles it. Logs the
-// error for the given endpoint. Adds the error to UMA if a histogram name is
-// specified. Note the response body can be empty even if no other error
-// occurred.
-bool HasDownloadError(
+// Returns an InternalError with a descriptive message if an error occurred
+// during downloading. Note the response_body can be a nullptr even if no other
+// error occurred. So if the method returns OK, response_body is guaranteed to
+// be non-null (but can be empty).
+// Adds the error to UMA if a histogram name is specified. The histogram must be
+// defined in histograms.xml using enum "CombinedHttpResponseAndNetErrorCode".
+absl::Status GetDownloadError(
     int net_error,
     const network::mojom::URLResponseHead* response_info,
     const std::string* response_body,
-    std::string_view endpoint,
     const absl::optional<std::string>& histogram_name = absl::nullopt);
 }  // namespace apps
 

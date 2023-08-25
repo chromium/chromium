@@ -98,9 +98,11 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     base::TimeTicks request_start_time,
     GetInitialAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
-  if (HasDownloadError(loader->NetError(), loader->ResponseInfo(),
-                       response_body.get(), "preloads",
-                       kServerErrorHistogramName)) {
+  absl::Status error =
+      GetDownloadError(loader->NetError(), loader->ResponseInfo(),
+                       response_body.get(), kServerErrorHistogramName);
+  if (!error.ok()) {
+    LOG(ERROR) << error.message();
     std::move(callback).Run(absl::nullopt);
     return;
   }
