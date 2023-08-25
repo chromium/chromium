@@ -75,7 +75,8 @@ std::string TreeToString(const AXTree& tree) {
 AXTreeUpdate SerializeEntireTree(AXSerializableTree& tree) {
   std::unique_ptr<AXTreeSource<const AXNode*>> tree_source(
       tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*> serializer(tree_source.get());
+  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>> serializer(
+      tree_source.get());
   AXTreeUpdate update;
   CHECK(serializer.SerializeChanges(tree.root(), &update));
   return update;
@@ -270,7 +271,8 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
           // empty tree |dst_tree|.
           std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source(
               tree0.CreateTreeSource());
-          AXTreeSerializer<const AXNode*> serializer(tree0_source.get());
+          AXTreeSerializer<const AXNode*, std::vector<const AXNode*>>
+              serializer(tree0_source.get());
           AXTreeUpdate update0;
           ASSERT_TRUE(serializer.SerializeChanges(tree0.root(), &update0));
 

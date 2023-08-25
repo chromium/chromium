@@ -457,7 +457,8 @@ void ReadAnythingAppController::Distill() {
       model_.GetTreeFromId(model_.active_tree_id()).get();
   std::unique_ptr<ui::AXTreeSource<const ui::AXNode*>> tree_source(
       tree->CreateTreeSource());
-  ui::AXTreeSerializer<const ui::AXNode*> serializer(tree_source.get());
+  ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>
+      serializer(tree_source.get());
   ui::AXTreeUpdate snapshot;
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.SetDistillationInProgress(true);

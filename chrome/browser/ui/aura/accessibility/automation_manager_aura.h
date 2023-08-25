@@ -33,7 +33,9 @@ class AXAuraObjWrapper;
 class View;
 }  // namespace views
 
-using AuraAXTreeSerializer = ui::AXTreeSerializer<views::AXAuraObjWrapper*>;
+using AuraAXTreeSerializer =
+    ui::AXTreeSerializer<views::AXAuraObjWrapper*,
+                         std::vector<views::AXAuraObjWrapper*>>;
 
 // Manages a tree of automation nodes backed by aura constructs.
 class AutomationManagerAura : public ui::AXActionHandler,

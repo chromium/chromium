@@ -41,7 +41,9 @@ class ScreenAIAXTreeSerializer final {
  private:
   const std::unique_ptr<ui::AXSerializableTree> tree_;
   std::unique_ptr<ui::AXTreeSource<const ui::AXNode*>> tree_source_;
-  mutable std::unique_ptr<ui::AXTreeSerializer<const ui::AXNode*>> serializer_;
+  mutable std::unique_ptr<
+      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>>
+      serializer_;
 };
 
 }  // namespace screen_ai

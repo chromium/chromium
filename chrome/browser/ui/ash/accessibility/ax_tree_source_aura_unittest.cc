@@ -33,7 +33,9 @@ using views::Textfield;
 using views::View;
 using views::Widget;
 
-using AuraAXTreeSerializer = ui::AXTreeSerializer<views::AXAuraObjWrapper*>;
+using AuraAXTreeSerializer =
+    ui::AXTreeSerializer<views::AXAuraObjWrapper*,
+                         std::vector<views::AXAuraObjWrapper*>>;
 
 // Helper to count the number of nodes in a tree.
 size_t GetSize(AXAuraObjWrapper* tree) {

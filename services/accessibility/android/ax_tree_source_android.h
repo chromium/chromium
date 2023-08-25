@@ -30,7 +30,8 @@ namespace ax::android {
 class AXTreeSourceAndroidTest;
 
 using AXTreeAndroidSerializer =
-    ui::AXTreeSerializer<AccessibilityInfoDataWrapper*>;
+    ui::AXTreeSerializer<AccessibilityInfoDataWrapper*,
+                         std::vector<AccessibilityInfoDataWrapper*>>;
 
 // This class represents the accessibility tree from the focused ARC window.
 class AXTreeSourceAndroid

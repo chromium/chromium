@@ -378,7 +378,8 @@ TEST(AXTreeTest, SerializeSimpleAXTree) {
 
   std::unique_ptr<AXTreeSource<const AXNode*>> tree_source(
       src_tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*> serializer(tree_source.get());
+  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>> serializer(
+      tree_source.get());
   AXTreeUpdate update;
   serializer.SerializeChanges(src_tree.root(), &update);
 

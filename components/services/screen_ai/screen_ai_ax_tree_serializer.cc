@@ -43,7 +43,8 @@ ScreenAIAXTreeSerializer::ScreenAIAXTreeSerializer(
   tree_source_ = base::WrapUnique<ui::AXTreeSource<const ui::AXNode*>>(
       tree_->CreateTreeSource());
   DCHECK(tree_source_);
-  serializer_ = std::make_unique<ui::AXTreeSerializer<const ui::AXNode*>>(
+  serializer_ = std::make_unique<
+      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>>(
       tree_source_.get(), /* crash_on_error */ true);
 }
 
