@@ -152,7 +152,8 @@ bool FFmpegGlue::OpenContext(bool is_local_file) {
   else if (strcmp(format_context_->iformat->name, "avi") == 0)
     container_ = container_names::CONTAINER_AVI;
 
-  DCHECK_NE(container_, container_names::CONTAINER_UNKNOWN);
+  // For a successfully opened file, we will get a container we've compiled in.
+  CHECK_NE(container_, container_names::CONTAINER_UNKNOWN);
   LogContainer(is_local_file, container_);
 
   return true;
