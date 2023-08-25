@@ -36,6 +36,8 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link AutofillSaveCardBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveCardBottomSheetBridgeTest {
+    private static final long MOCK_POINTER = 0xb00fb00f;
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -51,7 +53,8 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         Context mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mAutofillSaveCardBottomSheetBridge = new AutofillSaveCardBottomSheetBridge(mWindow);
+        mAutofillSaveCardBottomSheetBridge =
+                new AutofillSaveCardBottomSheetBridge(MOCK_POINTER, mWindow);
     }
 
     @After
@@ -63,7 +66,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     @Test
     @SmallTest
     public void requestShowContent_callsControllerRequestShowContent() {
-        mAutofillSaveCardBottomSheetBridge.requestShowContent();
+        mAutofillSaveCardBottomSheetBridge.requestShowContent(/*saveCardDelegate=*/null);
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -74,7 +77,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     @Test
     @SmallTest
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
-        mAutofillSaveCardBottomSheetBridge.requestShowContent();
+        mAutofillSaveCardBottomSheetBridge.requestShowContent(/*saveCardDelegate=*/null);
 
         ArgumentCaptor<AutofillSaveCardBottomSheetBridge.BottomSheetContentImpl> contentCaptor =
                 ArgumentCaptor.forClass(

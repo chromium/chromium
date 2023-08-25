@@ -30,6 +30,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #endif
 
 namespace autofill {
@@ -45,7 +47,11 @@ class MockAutofillSaveCardBottomSheetBridge
       : AutofillSaveCardBottomSheetBridge(
             base::android::ScopedJavaGlobalRef<jobject>(nullptr)) {}
 
-  MOCK_METHOD(bool, RequestShowContent, (), (override));
+  MOCK_METHOD(void,
+              RequestShowContent,
+              (const AutofillSaveCardUiInfo&,
+               std::unique_ptr<AutofillSaveCardDelegate>),
+              (override));
 };
 #endif
 
@@ -216,12 +222,24 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
   auto* bottom_sheet_bridge =
       autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
 
-  EXPECT_CALL(*bottom_sheet_bridge, RequestShowContent());
+  EXPECT_CALL(*bottom_sheet_bridge,
+              RequestShowContent(testing::An<const AutofillSaveCardUiInfo&>(),
+                                 testing::NotNull()));
 
   autofill_client->ConfirmSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
       base::DoNothing());
+}
+
+TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+       ConfirmSaveCreditCardToCloud_DoesNotFailWithoutAWindow) {
+  TestChromeAutofillClient* autofill_client = client();
+
+  EXPECT_NO_FATAL_FAILURE(autofill_client->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      base::DoNothing()));
 }
 #endif
 

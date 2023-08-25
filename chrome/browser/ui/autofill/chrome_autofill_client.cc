@@ -772,15 +772,6 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
-    if (!autofill_save_card_bottom_sheet_bridge_) {
-      autofill_save_card_bottom_sheet_bridge_ =
-          std::make_unique<AutofillSaveCardBottomSheetBridge>(web_contents());
-    }
-    autofill_save_card_bottom_sheet_bridge_->RequestShowContent();
-    return;
-  }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
@@ -789,6 +780,22 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       options, card, legal_message_lines, account_info);
   auto common_delegate =
       std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
+    if (!autofill_save_card_bottom_sheet_bridge_) {
+      // During shutdown the window may be null. There is no need to show the
+      // bottom sheet during shutdown.
+      auto* window_android = web_contents()->GetTopLevelNativeWindow();
+      if (!window_android) {
+        return;
+      }
+      autofill_save_card_bottom_sheet_bridge_ =
+          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android);
+    }
+    autofill_save_card_bottom_sheet_bridge_->RequestShowContent(
+        ui_info, std::move(common_delegate));
+    return;
+  }
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(

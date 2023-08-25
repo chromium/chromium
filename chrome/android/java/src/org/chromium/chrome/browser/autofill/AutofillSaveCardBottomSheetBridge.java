@@ -12,6 +12,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -22,12 +24,15 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @JNINamespace("autofill")
 public class AutofillSaveCardBottomSheetBridge {
+    private long mNativeAutofillSaveCardBottomSheetBridge;
     private WindowAndroid mWindow;
     private BottomSheetController mBottomSheetController;
 
     @CalledByNative
     @VisibleForTesting
-    /* package */ AutofillSaveCardBottomSheetBridge(WindowAndroid window) {
+    /* package */ AutofillSaveCardBottomSheetBridge(
+            long nativeAutofillSaveCardBottomSheetBridge, WindowAndroid window) {
+        mNativeAutofillSaveCardBottomSheetBridge = nativeAutofillSaveCardBottomSheetBridge;
         mWindow = window;
         mBottomSheetController = BottomSheetControllerProvider.from(window);
     }
@@ -41,7 +46,7 @@ public class AutofillSaveCardBottomSheetBridge {
      * @return True if shown.
      */
     @CalledByNative
-    public boolean requestShowContent() {
+    public boolean requestShowContent(AutofillSaveCardUiInfo uiInfo) {
         return mBottomSheetController.requestShowContent(
                 new BottomSheetContentImpl(mWindow.getApplicationContext()), /* animate= */ true);
     }
@@ -103,5 +108,13 @@ public class AutofillSaveCardBottomSheetBridge {
         public int getSheetClosedAccessibilityStringId() {
             return android.R.string.ok;
         }
+    }
+
+    @NativeMethods
+    public interface Natives {
+        void onUiShown(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiAccepted(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiCanceled(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiIgnored(long nativeAutofillSaveCardBottomSheetBridge);
     }
 }

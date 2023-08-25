@@ -5,17 +5,25 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE_H_
 
+#include <jni.h>
+
 #include "base/android/scoped_java_ref.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "ui/android/window_android.h"
+
+namespace ui {
+class WindowAndroid;
+}
 
 namespace autofill {
+
+class AutofillSaveCardDelegate;
+struct AutofillSaveCardUiInfo;
 
 // Bridge class owned by ChromeAutofillClient providing an entry point
 // to trigger the save card bottom sheet on Android.
 class AutofillSaveCardBottomSheetBridge {
  public:
-  explicit AutofillSaveCardBottomSheetBridge(content::WebContents* contents);
+  // The window must not be null.
+  explicit AutofillSaveCardBottomSheetBridge(ui::WindowAndroid* window_android);
 
   AutofillSaveCardBottomSheetBridge(const AutofillSaveCardBottomSheetBridge&) =
       delete;
@@ -25,9 +33,20 @@ class AutofillSaveCardBottomSheetBridge {
   virtual ~AutofillSaveCardBottomSheetBridge();
 
   // Requests to show the save card bottom sheet.
-  // Returns true if the bottom sheet was shown.
   // Overridden in tests.
-  virtual bool RequestShowContent();
+  virtual void RequestShowContent(
+      const AutofillSaveCardUiInfo& ui_info,
+      std::unique_ptr<AutofillSaveCardDelegate> delegate);
+
+  // -- JNI calls bridged to AutofillSaveCardDelegate --
+  // Called when the UI is shown.
+  void OnUiShown(JNIEnv* env);
+  // Called when the user has accepted the prompt.
+  void OnUiAccepted(JNIEnv* env);
+  // Called when the user explicitly cancelled the prompt.
+  void OnUiCanceled(JNIEnv* env);
+  // Called if the user has ignored the prompt.
+  void OnUiIgnored(JNIEnv* env);
 
  protected:
   // Used in tests to inject dependencies.
@@ -38,6 +57,7 @@ class AutofillSaveCardBottomSheetBridge {
  private:
   base::android::ScopedJavaGlobalRef<jobject>
       java_autofill_save_card_bottom_sheet_bridge_;
+  std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate_;
 };
 
 }  // namespace autofill

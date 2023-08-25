@@ -202,17 +202,21 @@ android_library("payments_autofill_java") {
   sources = [
     "java/src/org/chromium/components/autofill/Completable.java",
     "java/src/org/chromium/components/autofill/EditableOption.java",
+    "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/CardDetail.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
   deps = [
     "//base:jni_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  srcjar_deps = [ ":payments_jni_headers" ]
 }
 
 robolectric_library("payments_autofill_junit_tests") {
   sources = [
+    "javatests/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",
     "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
     "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
   ]
@@ -220,14 +224,17 @@ robolectric_library("payments_autofill_junit_tests") {
     ":payments_autofill_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
 generate_jni("payments_jni_headers") {
   sources = [
+    "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
   deps = [ "//base:jni_java" ]

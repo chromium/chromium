@@ -943,6 +943,7 @@ static_library("ui") {
       "//chrome/browser/ui/android/toolbar:jni_headers",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//components/autofill/android:payments_autofill_cc",
+      "//components/autofill/android:payments_jni_headers",
       "//components/browser_ui/accessibility/android",
       "//components/browser_ui/client_certificate/android",
       "//components/browser_ui/share/android",

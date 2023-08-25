@@ -4,30 +4,66 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 
-#include <jni.h>
+#include <memory>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/android/chrome_jni_headers/AutofillSaveCardBottomSheetBridge_jni.h"
+#include "chrome/browser/android/resource_mapper.h"
+#include "components/autofill/android/payments/legal_message_line_android.h"
+#include "components/autofill/android/payments_jni_headers/AutofillSaveCardUiInfo_jni.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 
 namespace autofill {
 
+namespace {
+
+static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
+    JNIEnv* env,
+    const AutofillSaveCardUiInfo& ui_info) {
+  // LINT.IfChange
+  return Java_AutofillSaveCardUiInfo_Constructor(
+      env, ui_info.is_for_upload,
+      ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),
+      ResourceMapper::MapToJavaDrawableId(ui_info.issuer_icon_id),
+      LegalMessageLineAndroid::ConvertToJavaLinkedList(
+          ui_info.legal_message_lines),
+      base::android::ConvertUTF16ToJavaString(env, ui_info.card_label),
+      base::android::ConvertUTF16ToJavaString(env, ui_info.card_sub_label),
+      base::android::ConvertUTF16ToJavaString(env, ui_info.title_text),
+      base::android::ConvertUTF16ToJavaString(env, ui_info.confirm_text),
+      base::android::ConvertUTF16ToJavaString(env, ui_info.cancel_text),
+      ui_info.is_google_pay_branding_enabled,
+      base::android::ConvertUTF16ToJavaString(env, ui_info.description_text));
+  // LINT.ThenChange(//components/autofill/android/java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java)
+}
+
+}  // namespace
+
 AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
-    content::WebContents* web_contents) {
-  auto* window = web_contents->GetNativeView()->GetWindowAndroid();
+    ui::WindowAndroid* window_android) {
+  CHECK(window_android);
   java_autofill_save_card_bottom_sheet_bridge_ =
       Java_AutofillSaveCardBottomSheetBridge_Constructor(
-          base::android::AttachCurrentThread(), window->GetJavaObject());
+          base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+          window_android->GetJavaObject());
 }
 
 AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() =
     default;
 
-bool AutofillSaveCardBottomSheetBridge::RequestShowContent() {
-  return Java_AutofillSaveCardBottomSheetBridge_requestShowContent(
-      base::android::AttachCurrentThread(),
-      java_autofill_save_card_bottom_sheet_bridge_);
+void AutofillSaveCardBottomSheetBridge::RequestShowContent(
+    const AutofillSaveCardUiInfo& ui_info,
+    std::unique_ptr<AutofillSaveCardDelegate> delegate) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  save_card_delegate_ = std::move(delegate);
+  Java_AutofillSaveCardBottomSheetBridge_requestShowContent(
+      env, java_autofill_save_card_bottom_sheet_bridge_,
+      ConvertUiInfoToJavaObject(env, ui_info));
 }
 
 AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
@@ -35,5 +71,24 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
         java_autofill_save_card_bottom_sheet_bridge)
     : java_autofill_save_card_bottom_sheet_bridge_(
           java_autofill_save_card_bottom_sheet_bridge) {}
+
+void AutofillSaveCardBottomSheetBridge::OnUiShown(JNIEnv* env) {
+  save_card_delegate_->OnUiShown();
+}
+
+void AutofillSaveCardBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
+  save_card_delegate_->OnUiAccepted();
+  save_card_delegate_.reset(nullptr);
+}
+
+void AutofillSaveCardBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
+  save_card_delegate_->OnUiCanceled();
+  save_card_delegate_.reset(nullptr);
+}
+
+void AutofillSaveCardBottomSheetBridge::OnUiIgnored(JNIEnv* env) {
+  save_card_delegate_->OnUiIgnored();
+  save_card_delegate_.reset(nullptr);
+}
 
 }  // namespace autofill
