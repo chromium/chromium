@@ -188,8 +188,8 @@ class TabstripLikeBackground : public views::Background {
  private:
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    bool painted = TopContainerBackground::PaintThemeCustomImage(
-        canvas, view, browser_view_, /*translate_view_coordinates=*/false);
+    bool painted = TopContainerBackground::PaintThemeCustomImage(canvas, view,
+                                                                 browser_view_);
     if (!painted) {
       SkColor frame_color =
           browser_view_->frame()->GetFrameView()->GetFrameColor(

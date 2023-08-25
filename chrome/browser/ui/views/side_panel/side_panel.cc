@@ -130,9 +130,7 @@ class SidePanelBorder : public views::Border {
       gfx::ScopedCanvas scoped_rescale(canvas);
       canvas->Scale(dsf, dsf);
 
-      TopContainerBackground::PaintBackground(
-          canvas, &view, browser_view_,
-          /*translate_view_coordinates=*/true);
+      TopContainerBackground::PaintBackground(canvas, &view, browser_view_);
     }
 
     // Paint the inner border around SidePanel content.

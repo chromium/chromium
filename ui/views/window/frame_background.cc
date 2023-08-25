@@ -125,8 +125,12 @@ void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
 #endif
 
   // Draw the theme frame and overlay, if available.
+  // See TopContainerBackground::PaintThemeCustomImage for details on the
+  // positioning logic.
   if (!theme_image_.isNull()) {
-    canvas->TileImageInt(theme_image_, 0, theme_image_y_inset_, x, y, width,
+    int x_offset = theme_image_inset_.x() + x;
+    int y_offset = theme_image_inset_.y() + y;
+    canvas->TileImageInt(theme_image_, x_offset, y_offset, x, y, width,
                          top_area_height_, 1.0f, SkTileMode::kRepeat,
                          SkTileMode::kMirror);
   }

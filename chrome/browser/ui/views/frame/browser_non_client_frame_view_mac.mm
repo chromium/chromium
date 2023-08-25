@@ -507,9 +507,17 @@ gfx::Rect BrowserNonClientFrameViewMac::GetCenteredTitleBounds(
 }
 
 void BrowserNonClientFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
+  // On macOS the origin of the BrowserNonClientFrameViewMac is (0,0) so no
+  // further modification is necessary. See
+  // TopContainerBackground::PaintThemeCustomImage for details.
+  gfx::Point theme_image_offset =
+      browser_view()->GetThemeOffsetFromBrowserView();
+
   gfx::ImageSkia image = GetFrameImage();
-  canvas->TileImageInt(image, 0, TopUIFullscreenYOffset(), width(),
-                       image.height());
+  canvas->TileImageInt(image, theme_image_offset.x(), theme_image_offset.y(), 0,
+                       TopUIFullscreenYOffset(), width(), image.height(),
+                       /*tile_scale=*/1.0f, SkTileMode::kRepeat,
+                       SkTileMode::kMirror);
   gfx::ImageSkia overlay = GetFrameOverlayImage();
   canvas->DrawImageInt(overlay, 0, 0);
 }

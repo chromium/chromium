@@ -600,7 +600,7 @@ gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFrameHeaderImage(
 }
 
 int BrowserNonClientFrameViewChromeOS::GetFrameHeaderImageYInset() {
-  return ThemeProperties::kFrameHeightAboveTabs - GetTopInset(false);
+  return browser_view()->GetThemeOffsetFromBrowserView().y();
 }
 
 gfx::ImageSkia BrowserNonClientFrameViewChromeOS::GetFrameHeaderOverlayImage(

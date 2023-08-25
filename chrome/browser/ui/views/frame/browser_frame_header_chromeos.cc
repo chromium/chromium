@@ -220,7 +220,7 @@ void BrowserFrameHeaderChromeOS::PaintFrameImages(gfx::Canvas* canvas) {
 
   PaintFrameImagesInRoundRect(canvas, frame_image, frame_overlay_image,
                               appearance_provider_->GetFrameHeaderColor(active),
-                              GetPaintedBounds(), GetThemeBackgroundXInset(),
+                              GetPaintedBounds(), /*image_inset_x=*/0,
                               appearance_provider_->GetFrameHeaderImageYInset(),
                               header_corner_radius());
 }

@@ -884,8 +884,9 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     frame_background_->set_use_custom_frame(frame()->UseCustomFrame());
     frame_background_->set_is_active(ShouldPaintAsActive());
     frame_background_->set_theme_image(GetFrameImage());
-    frame_background_->set_theme_image_y_inset(
-        ThemeProperties::kFrameHeightAboveTabs - GetTopAreaHeight());
+
+    frame_background_->set_theme_image_inset(
+        browser_view()->GetThemeOffsetFromBrowserView());
     frame_background_->set_theme_overlay_image(GetFrameOverlayImage());
     frame_background_->set_top_area_height(GetTopAreaHeight());
     PaintRestoredFrameBorderLinux(

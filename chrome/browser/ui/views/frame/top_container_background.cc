@@ -18,50 +18,47 @@ TopContainerBackground::TopContainerBackground(BrowserView* browser_view)
 
 void TopContainerBackground::Paint(gfx::Canvas* canvas,
                                    views::View* view) const {
-  PaintBackground(canvas, view, browser_view_,
-                  /*translate_view_coordinates=*/false);
+  PaintBackground(canvas, view, browser_view_);
 }
 
 bool TopContainerBackground::PaintThemeCustomImage(
     gfx::Canvas* canvas,
     const views::View* view,
-    const BrowserView* browser_view,
-    bool translate_view_coordinates) {
+    const BrowserView* browser_view) {
   const ui::ThemeProvider* const theme_provider = view->GetThemeProvider();
   if (!theme_provider->HasCustomImage(IDR_THEME_TOOLBAR)) {
     return false;
   }
 
-  // This is a recapitulation of the logic originally used to place the
-  // background image in the bookmarks bar. It is used to ensure backwards-
-  // compatibility with existing themes, even though it is not technically
-  // correct in all cases.
-  gfx::Point view_offset = view->GetMirroredPosition();
-  // TODO(pbos): See if we can figure out how to translate correctly
-  // unconditionally from this bool.
-  if (translate_view_coordinates) {
-    views::View::ConvertPointToTarget(view, browser_view, &view_offset);
-  }
-  gfx::Point pos =
-      view_offset + browser_view->GetMirroredPosition().OffsetFromOrigin();
-  pos.Offset(browser_view->frame()->GetThemeBackgroundXInset(),
-             -browser_view->tabstrip()->GetStrokeThickness() -
-                 browser_view->frame()->GetTopInset());
-  const gfx::Rect bounds = view->GetLocalBounds();
-
-  canvas->TileImageInt(*theme_provider->GetImageSkiaNamed(IDR_THEME_TOOLBAR),
-                       pos.x(), pos.y(), bounds.x(), bounds.y(), bounds.width(),
-                       bounds.height(), 1.0f, SkTileMode::kRepeat,
-                       SkTileMode::kMirror);
+  PaintThemeAlignedImage(canvas, view, browser_view,
+                         theme_provider->GetImageSkiaNamed(IDR_THEME_TOOLBAR));
   return true;
+}
+
+void TopContainerBackground::PaintThemeAlignedImage(
+    gfx::Canvas* canvas,
+    const views::View* view,
+    const BrowserView* browser_view,
+    gfx::ImageSkia* image) {
+  // Get the origin of this view and translate it to coordinate system of the
+  // BrowserView.
+  gfx::Point pos;
+  views::View::ConvertPointToTarget(view, browser_view, &pos);
+
+  // Add in the translation to account for positioning of the theme image
+  // relative of the origin of BrowserView.
+  pos.Offset(0, ThemeProperties::kFrameHeightAboveTabs);
+
+  const gfx::Rect bounds = view->GetLocalBounds();
+  canvas->TileImageInt(*image, pos.x(), pos.y(), bounds.x(), bounds.y(),
+                       bounds.width(), bounds.height(), 1.0f,
+                       SkTileMode::kRepeat, SkTileMode::kMirror);
 }
 
 void TopContainerBackground::PaintBackground(gfx::Canvas* canvas,
                                              const views::View* view,
-                                             const BrowserView* browser_view,
-                                             bool translate_view_coordinates) {
-  bool painted = PaintThemeCustomImage(canvas, view, browser_view,
-                                       translate_view_coordinates);
+                                             const BrowserView* browser_view) {
+  bool painted = PaintThemeCustomImage(canvas, view, browser_view);
   if (!painted) {
     canvas->DrawColor(view->GetColorProvider()->GetColor(kColorToolbar));
   }

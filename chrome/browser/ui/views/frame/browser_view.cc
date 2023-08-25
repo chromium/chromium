@@ -1544,6 +1544,18 @@ void BrowserView::SetLoadingAnimationStateChangeClosureForTesting(
   loading_animation_state_change_closure_ = std::move(closure);
 }
 
+gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
+  gfx::Point browser_view_origin;
+  const views::View* root_view = this;
+  while (root_view->parent()) {
+    root_view = root_view->parent();
+  }
+  views::View::ConvertPointToTarget(this, root_view, &browser_view_origin);
+  return gfx::Point(
+      -browser_view_origin.x(),
+      ThemeProperties::kFrameHeightAboveTabs - browser_view_origin.y());
+}
+
 bool BrowserView::IsLoadingAnimationRunningForTesting() const {
   return loading_animation_timer_.IsRunning();
 }
