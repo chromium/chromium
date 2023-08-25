@@ -7,9 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
-#include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
-#include "ash/system/model/system_tray_model.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -105,10 +103,6 @@ bool UsingCameraLEDFallback() {
   // Can happen in some testing environments
   CHECK(camera_led_fallback_for_testing.has_value());
   return camera_led_fallback_for_testing.value();
-}
-
-void OpenPrivacyControlsInSettings() {
-  Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();
 }
 
 ScopedCameraLedFallbackForTesting::ScopedCameraLedFallbackForTesting(

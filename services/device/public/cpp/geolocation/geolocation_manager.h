@@ -35,10 +35,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Sets the global instance of the Geolocation Manager.
   static void SetInstance(std::unique_ptr<GeolocationManager> manager);
 
-  GeolocationManager(const GeolocationManager&) = delete;
-  GeolocationManager& operator=(const GeolocationManager&) = delete;
-  virtual ~GeolocationManager();
-
   void TrackGeolocationAttempted();
   void TrackGeolocationRelinquished();
   void RequestSystemPermission();
@@ -49,7 +45,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // operation systems for which we don't support system-level geolocation. A
   // separate class (as opposed to nullptr) makes sure no unsupported calls are
   // made in such context.
-
 };  // class GeolocationManager
 
 #else
@@ -75,6 +70,9 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
 
   explicit GeolocationManager(
       std::unique_ptr<SystemGeolocationSource> system_geolocation_source);
+  GeolocationManager(const GeolocationManager&) = delete;
+  GeolocationManager& operator=(const GeolocationManager&) = delete;
+  virtual ~GeolocationManager();
 
   // Synchronously retrieves the current system permission status.
   LocationSystemPermissionStatus GetSystemPermission() const;

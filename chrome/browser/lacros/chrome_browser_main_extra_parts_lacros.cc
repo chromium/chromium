@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -132,15 +131,9 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
         std::make_unique<DeviceLocalAccountExtensionInstallerLacros>();
   }
 
-  const auto* const geolocation_manager =
-      device::GeolocationManager::GetInstance();
-  if (!geolocation_manager) {
-    device::GeolocationManager::SetInstance(
-        SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
-  } else {
-    // Geolocation manager instance can be set at this point only in tests.
-    CHECK_IS_TEST();
-  }
+  DCHECK(!device::GeolocationManager::GetInstance());
+  device::GeolocationManager::SetInstance(
+      SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {

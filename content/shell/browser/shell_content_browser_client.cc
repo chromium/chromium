@@ -77,7 +77,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/ssl/client_cert_identity.h"
-#include "services/device/public/cpp/geolocation/buildflags.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -98,10 +97,13 @@
 #include "base/android/path_utils.h"
 #include "components/variations/android/variations_seed_bridge.h"
 #include "content/shell/android/shell_descriptors.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #endif
 
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -253,14 +255,14 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
 // needed should be added here so that it's shared between the instances.
 struct SharedState {
   SharedState() {
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(IS_MAC)
     location_manager = std::make_unique<device::FakeGeolocationManager>();
     location_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 #endif
   }
 
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::FakeGeolocationManager> location_manager;
 #endif
 
@@ -429,7 +431,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
 }
 
 device::GeolocationManager* ShellContentBrowserClient::GetGeolocationManager() {
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(IS_MAC)
   return GetSharedState().location_manager.get();
 #elif BUILDFLAG(IS_IOS)
   // TODO(crbug.com/1431447, 1411704): Unify this to FakeGeolocationManager once

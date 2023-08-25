@@ -48,14 +48,13 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
@@ -304,7 +303,7 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       /* explanatory_string_id = */ 0);
 }
 
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#if BUILDFLAG(IS_MAC)
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
@@ -410,10 +409,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
       /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
 }
 
-#if BUILDFLAG(IS_MAC)
 TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
-  // This is run only on Mac, because the kLocationPermissionExperiment is a Mac
-  // only feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kLocationPermissionsExperiment}, {});
   auto test_geolocation_manager =
@@ -478,9 +474,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
         IDS_GEOLOCATION_TURNED_OFF);
   }
 }
-#endif  // BUILDFLAG(IS_MAC)
-
-#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#endif
 
 // Regression test for https://crbug.com/955408
 // See also: ContentSettingBubbleModelTest.SensorAccessPermissionsChanged

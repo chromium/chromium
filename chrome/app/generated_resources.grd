@@ -13049,12 +13049,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Turn on "Google Chrome" in Location Services on your Mac
         </message>
       </if>
-      <message name="IDS_GEOLOCATION_TURNED_OFF_IN_OS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level (platform independent wording).">
-        Location is turned off in the System Preferences
-      </message>
-      <message name="IDS_GEOLOCATION_TURNED_OFF" desc="Description text in the omnibox icon showing when location permission is blocked on an OS level.">
-        Location turned off
-      </message>
+        <message name="IDS_GEOLOCATION_TURNED_OFF" desc="Description text in the omnibox icon showing when location permission is blocked on an OS level.">
+          Location turned off
+        </message>
 
       <!-- Web MIDI messages -->
       <message name="IDS_ALLOWED_MIDI_SYSEX_TITLE" desc="Title of the info bubble shown when a site is allowed to use MIDI system exclusive messages.">
@@ -13135,27 +13132,23 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_MIC_TURNED_OFF_IN_MACOS" desc="Title for the media status bubble that is used when a site requests microphone access, but microphone is blocked on an OS level in macOS.">
           Microphone is turned off in Mac System Preferences
         </message>
+        <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in macOS, in order for the user to be able to modify the ability to access camera and microphone for Chrome. The translation for this string should match the translation of the System Settings app title in the macOS target locale. You can find this by selecting the locale from https://support.apple.com/guide/mac-help/mh15217/mac/localeselector. The title of the next page after that includes the desired translation. Note that, for size reasons, the English string omits 'System' and the same contraction may be suitable in other languages.">
+          Open Settings
+        </message>
         <message name="IDS_CAMERA" desc="Description text for the camera.">
           Camera
         </message>
         <message name="IDS_MIC" desc="Decription text for the microphone.">
           Microphone
         </message>
+        <message name="IDS_TURNED_OFF" desc="Description text for the state of camera or microphone">
+          Turned off
+        </message>
         <message name="IDS_CAMERA_TURNED_OFF" desc="Description text in the omnibox icon showing when camera permission is turned off.">
           Camera turned off
         </message>
         <message name="IDS_MIC_TURNED_OFF" desc="Decription text in the omnibox icon showing when microphone permission is turned off.">
           Microphone turned off
-        </message>
-      </if>
-
-      <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in the OS. In order for the user to be able to modify the ability to access camera and microphone for Chrome. The translation for this string should match the translation of the OS System Settings app title in the target locale. For Mac OS, you can find this by selecting the locale from https://support.apple.com/guide/mac-help/mh15217/mac/localeselector. The title of the next page after that includes the desired translation. Note that, for size reasons, the English string omits 'System' and the same contraction may be suitable in other languages.">
-        Open Settings
-      </message>
-
-      <if expr="is_macosx or is_chromeos">
-        <message name="IDS_TURNED_OFF" desc="Description text for the state of camera or microphone">
-          Turned off
         </message>
       </if>
 
