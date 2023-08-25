@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class ScopedBrowsingContextGroupPauser;
+class ScopedPagePauser;
 class WebLocalFrameImpl;
 
 // WebScopedPagePauser implements the concept of 'pause' in HTML standard.
@@ -19,15 +21,16 @@ class WebLocalFrameImpl;
 // exists.
 class WebScopedPagePauser {
  public:
-  BLINK_EXPORT static std::unique_ptr<WebScopedPagePauser> Create(
-      WebLocalFrameImpl&);
+  explicit WebScopedPagePauser(WebLocalFrameImpl&);
 
   WebScopedPagePauser(const WebScopedPagePauser&) = delete;
   WebScopedPagePauser& operator=(const WebScopedPagePauser&) = delete;
   BLINK_EXPORT ~WebScopedPagePauser();
 
  private:
-  explicit WebScopedPagePauser(WebLocalFrameImpl&);
+  std::unique_ptr<ScopedPagePauser> page_pauser_;
+  std::unique_ptr<ScopedBrowsingContextGroupPauser>
+      browsing_context_group_pauser_;
 };
 
 }  // namespace blink

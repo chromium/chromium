@@ -244,7 +244,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
       view->GetChromeClient().NotifyPopupOpeningObservers();
 
     // 2. Disable active objects
-    page_pauser_ = WebScopedPagePauser::Create(*frame);
+    page_pauser_ = std::make_unique<WebScopedPagePauser>(*frame);
 
     // 3. Process messages until quitNow is called.
     message_loop_->Run();
