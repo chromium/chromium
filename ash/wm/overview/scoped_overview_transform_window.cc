@@ -574,7 +574,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
 
   // Depending on the size of `backdrop_view`, we might not want to round the
   // window associated with `layer`.
-  auto* backdrop_view = overview_item_->overview_item_view()->backdrop_view();
+  auto* backdrop_view = overview_item_->GetBackDropView();
   const bool has_rounding = window_util::ShouldRoundThumbnailWindow(
       backdrop_view, GetTransformedBounds());
 

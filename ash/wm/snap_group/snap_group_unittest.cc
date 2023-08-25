@@ -417,7 +417,7 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
 
     // The `window2` gets selected in the overview will be snapped to the
     // non-occupied snap position and the overview session will end.
-    OverviewItem* item2 = GetOverviewItemForWindow(window2);
+    auto* item2 = GetOverviewItemForWindow(window2);
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(
         gfx::ToRoundedPoint(item2->GetTransformedBounds().CenterPoint()));
@@ -899,7 +899,7 @@ TEST_F(SnapGroupEntryPointArm1Test, UpdateWindowButtonTest) {
 
   // Upon selecting another item in the overview session, a new snap group will
   // be formed.
-  OverviewItem* item3 = GetOverviewItemForWindow(w3.get());
+  auto* item3 = GetOverviewItemForWindow(w3.get());
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(
       gfx::ToRoundedPoint(item3->GetTransformedBounds().CenterPoint()));
@@ -929,7 +929,7 @@ TEST_F(SnapGroupEntryPointArm1Test, UpdateWindowButtonTest) {
 
   // Do another update for the snap group by selecting another candidate from
   // the overview session and verify that the snap group has been updated.
-  OverviewItem* item4 = GetOverviewItemForWindow(w4.get());
+  auto* item4 = GetOverviewItemForWindow(w4.get());
   event_generator->MoveMouseTo(
       gfx::ToRoundedPoint(item4->GetTransformedBounds().CenterPoint()));
   event_generator->ClickLeftButton();
@@ -1046,7 +1046,7 @@ TEST_F(SnapGroupEntryPointArm1Test,
             chromeos::WindowStateType::kPrimarySnapped);
   ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
 
-  OverviewItem* w2_overview_item = GetOverviewItemForWindow(w2.get());
+  auto* w2_overview_item = GetOverviewItemForWindow(w2.get());
   EXPECT_TRUE(w2_overview_item);
   const gfx::Point outside_point =
       gfx::ToRoundedPoint(

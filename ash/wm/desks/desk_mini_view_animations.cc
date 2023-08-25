@@ -662,10 +662,10 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
   OverviewGrid* grid = bar_view->overview_grid();
   CHECK(grid);
 
-  base::flat_set<OverviewItem*> ignored_items;
+  base::flat_set<OverviewItemBase*> ignored_items;
   if (auto* drag_controller =
           grid->overview_session()->window_drag_controller()) {
-    OverviewItem* dragged_item = drag_controller->item();
+    auto* dragged_item = drag_controller->item();
     if (dragged_item && dragged_item->overview_grid() == grid) {
       ignored_items.insert(dragged_item);
     }

@@ -681,9 +681,8 @@ TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnSavedDeskGridShow) {
 
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
 
-  OverviewItem* snappable_overview_item =
-      GetOverviewItemForWindow(test_window.get());
-  OverviewItem* unsnappable_overview_item =
+  auto* snappable_overview_item = GetOverviewItemForWindow(test_window.get());
+  auto* unsnappable_overview_item =
       GetOverviewItemForWindow(unsnappable_window.get());
 
   // Note: Cannot snap widget will be created on demand.
@@ -991,7 +990,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   // https://crbug.com/1289020.
 
   // Delete an overview item and verify.
-  OverviewItem* item = GetOverviewItemForWindow(test_widget->GetNativeWindow());
+  auto* item = GetOverviewItemForWindow(test_widget->GetNativeWindow());
   item->CloseWindow();
 
   // `NativeWidgetAura::Close()` fires a post task.
@@ -3440,7 +3439,7 @@ TEST_F(SavedDeskTest, NoAnimationWhenRemovingDesk) {
   RemoveDesk(desks_controller->active_desk());
 
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  OverviewItem* overview_item =
+  auto* overview_item =
       overview_grid->GetOverviewItemContaining(test_window.get());
   ASSERT_TRUE(overview_item);
   ui::Layer* item_widget_layer = overview_item->item_widget()->GetLayer();
@@ -3676,8 +3675,7 @@ TEST_F(SavedDeskTest, ButtonsEnabledForUnsupportedWindowAndSplitView) {
   EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
   EXPECT_EQ(1, GetOverviewGridList()[0]->num_unsupported_windows());
 
-  OverviewItem* snappable_overview_item =
-      GetOverviewItemForWindow(app_window.get());
+  auto* snappable_overview_item = GetOverviewItemForWindow(app_window.get());
 
   EXPECT_FALSE(GetCannotSnapWidget(snappable_overview_item));
 
@@ -4121,7 +4119,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerVisibleAfterSwipeToClose) {
 
   ToggleOverview();
 
-  OverviewItem* item1 = GetOverviewItemForWindow(widget1->GetNativeWindow());
+  auto* item1 = GetOverviewItemForWindow(widget1->GetNativeWindow());
   ASSERT_TRUE(item1);
 
   // Swipe down on `item1` to close it.
@@ -4137,7 +4135,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerVisibleAfterSwipeToClose) {
 
   // Tests that the save desk as template button and the remaining overview item
   // bounds do not intersect (they are both fully visible).
-  OverviewItem* item2 = GetOverviewItemForWindow(widget2->GetNativeWindow());
+  auto* item2 = GetOverviewItemForWindow(widget2->GetNativeWindow());
   ASSERT_TRUE(item2);
   SavedDeskSaveDeskButtonContainer* save_desk_button_container =
       GetSaveDeskButtonContainerForRoot(Shell::GetPrimaryRootWindow());
@@ -4517,7 +4515,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithAllDeskWindow) {
 
   // Verify the overview item window for all desk window is not visible since
   // it's still in the library view.
-  OverviewItem* all_desk_window_overview_item =
+  auto* all_desk_window_overview_item =
       GetOverviewItemForWindow(tracker.windows().front());
   EXPECT_FALSE(all_desk_window_overview_item->item_widget()->IsVisible());
 }

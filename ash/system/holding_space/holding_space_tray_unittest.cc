@@ -2309,11 +2309,14 @@ TEST_F(
 
   // Tap the test window preview within the overview UI, and tap it to exit
   // overview.
-  OverviewItem* overview_item =
-      Shell::Get()
-          ->overview_controller()
-          ->overview_session()
-          ->GetOverviewItemForWindow(widget->GetNativeWindow());
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  ASSERT_TRUE(overview_session);
+  auto* window = widget->GetNativeWindow();
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window)->GetLeafItemForWindow(
+          window);
+
   GetEventGenerator()->GestureTapAt(overview_item->overview_item_view()
                                         ->preview_view()
                                         ->GetBoundsInScreen()

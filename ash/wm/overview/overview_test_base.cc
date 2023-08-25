@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
@@ -23,7 +24,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
-#include "components/app_constants/constants.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -49,7 +50,7 @@ bool OverviewTestBase::InOverviewSession() {
   return GetOverviewController()->InOverviewSession();
 }
 
-void OverviewTestBase::DispatchLongPress(OverviewItem* item) {
+void OverviewTestBase::DispatchLongPress(OverviewItemBase* item) {
   const gfx::Point point =
       gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
   ui::GestureEvent long_press(
@@ -128,27 +129,31 @@ gfx::Rect OverviewTestBase::GetTransformedBoundsInRootWindow(
   return transform.MapRect(gfx::Rect(window->bounds().size()));
 }
 
-OverviewItem* OverviewTestBase::GetDropTarget(int grid_index) {
+OverviewItemBase* OverviewTestBase::GetDropTarget(int grid_index) {
   return GetOverviewSession()->grid_list_[grid_index]->GetDropTarget();
 }
 
-CloseButton* OverviewTestBase::GetCloseButton(OverviewItem* item) {
-  return item->overview_item_view_->close_button();
+CloseButton* OverviewTestBase::GetCloseButton(OverviewItemBase* item) {
+  return item->GetLeafItemForWindow(item->GetWindow())
+      ->overview_item_view_->close_button();
 }
 
-views::Label* OverviewTestBase::GetLabelView(OverviewItem* item) {
-  return item->overview_item_view_->header_view()->title_label();
+views::Label* OverviewTestBase::GetLabelView(OverviewItemBase* item) {
+  return item->GetLeafItemForWindow(item->GetWindow())
+      ->overview_item_view_->header_view()
+      ->title_label();
 }
 
-views::View* OverviewTestBase::GetBackdropView(OverviewItem* item) {
-  return item->overview_item_view_->backdrop_view();
+views::View* OverviewTestBase::GetBackdropView(OverviewItemBase* item) {
+  return item->GetBackDropView();
 }
 
-WindowPreviewView* OverviewTestBase::GetPreviewView(OverviewItem* item) {
-  return item->overview_item_view_->preview_view();
+WindowPreviewView* OverviewTestBase::GetPreviewView(OverviewItemBase* item) {
+  return item->GetLeafItemForWindow(item->GetWindow())
+      ->overview_item_view_->preview_view();
 }
 
-gfx::Rect OverviewTestBase::GetShadowBounds(OverviewItem* item) const {
+gfx::Rect OverviewTestBase::GetShadowBounds(OverviewItemBase* item) const {
   SystemShadow* shadow = item->shadow_.get();
   if (!shadow || !shadow->GetLayer()->visible()) {
     return gfx::Rect();
@@ -157,37 +162,36 @@ gfx::Rect OverviewTestBase::GetShadowBounds(OverviewItem* item) const {
   return shadow->GetContentBounds();
 }
 
-views::Widget* OverviewTestBase::GetCannotSnapWidget(OverviewItem* item) {
+views::Widget* OverviewTestBase::GetCannotSnapWidget(OverviewItemBase* item) {
   return item->cannot_snap_widget_.get();
 }
 
-void OverviewTestBase::SetAnimatingToClose(OverviewItem* item, bool val) {
+void OverviewTestBase::SetAnimatingToClose(OverviewItemBase* item, bool val) {
   item->animating_to_close_ = val;
 }
 
-float OverviewTestBase::GetCloseButtonOpacity(OverviewItem* item) {
+float OverviewTestBase::GetCloseButtonOpacity(OverviewItemBase* item) {
   return GetCloseButton(item)->layer()->opacity();
 }
 
-float OverviewTestBase::GetTitlebarOpacity(OverviewItem* item) {
-  return item->overview_item_view_->header_view()->layer()->opacity();
+float OverviewTestBase::GetTitlebarOpacity(OverviewItemBase* item) {
+  return item->GetLeafItemForWindow(item->GetWindow())
+      ->overview_item_view_->header_view()
+      ->layer()
+      ->opacity();
 }
 
-const ScopedOverviewTransformWindow& OverviewTestBase::GetTransformWindow(
-    OverviewItem* item) const {
-  return item->transform_window_;
-}
-
-bool OverviewTestBase::HasRoundedCorner(OverviewItem* item) {
-  const ui::Layer* layer = item->transform_window_.IsMinimized()
+bool OverviewTestBase::HasRoundedCorner(OverviewItemBase* item) {
+  aura::Window* window = item->GetWindow();
+  const ui::Layer* layer = window_util::IsMinimizedOrTucked(window)
                                ? GetPreviewView(item)->layer()
-                               : GetTransformWindow(item).window()->layer();
+                               : window->layer();
   return !layer->rounded_corner_radii().IsEmpty();
 }
 
 void OverviewTestBase::CheckWindowAndCloseButtonInScreen(
     aura::Window* window,
-    OverviewItem* window_item) {
+    OverviewItemBase* window_item) {
   const gfx::Rect screen_bounds =
       window_item->root_window()->GetBoundsInScreen();
   EXPECT_TRUE(window_item->Contains(window));

@@ -2597,7 +2597,7 @@ TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
   auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview(OverviewStartAction::kTests);
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  OverviewItem* overview_item =
+  auto* overview_item =
       overview_controller->overview_session()->GetOverviewItemForWindow(
           window.get());
   const auto target_bounds = overview_item->target_bounds();

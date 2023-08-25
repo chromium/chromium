@@ -97,13 +97,13 @@ void UnpauseOcclusionTracker() {
       kOcclusionPauseDurationForDrag);
 }
 
-bool GetVirtualDesksBarEnabled(OverviewItem* item) {
+bool GetVirtualDesksBarEnabled(OverviewItemBase* item) {
   return desks_util::ShouldDesksBarBeCreated() &&
          item->overview_grid()->desks_bar_view();
 }
 
 // Returns whether |item|'s window is visible on all desks.
-bool DraggedItemIsVisibleOnAllDesks(OverviewItem* item) {
+bool DraggedItemIsVisibleOnAllDesks(OverviewItemBase* item) {
   aura::Window* const dragged_window = item->GetWindow();
   return dragged_window &&
          desks_util::IsWindowVisibleOnAllWorkspaces(dragged_window);
@@ -217,7 +217,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
       session->AddItemInMruOrder(window, /*reposition=*/false,
                                  /*animate=*/false, /*restack=*/false,
                                  /*use_spawn_animation=*/false);
-      OverviewItem* item = session->GetOverviewItemForWindow(window);
+      OverviewItemBase* item = session->GetOverviewItemForWindow(window);
       DCHECK(item);
       item->SetBounds(target_item_bounds_, OVERVIEW_ANIMATION_NONE);
       item->set_should_restack_on_animation_end(true);
@@ -235,7 +235,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
 
 OverviewWindowDragController::OverviewWindowDragController(
     OverviewSession* overview_session,
-    OverviewItem* item,
+    OverviewItemBase* item,
     bool is_touch_dragging)
     : overview_session_(overview_session),
       item_(item),
@@ -430,7 +430,7 @@ OverviewWindowDragController::DragResult OverviewWindowDragController::Fling(
   if (current_drag_behavior_ == DragBehavior::kDragToClose ||
       current_drag_behavior_ == DragBehavior::kUndefined) {
     if (std::abs(velocity_y) > kFlingToCloseVelocityThreshold) {
-      item_->AnimateAndCloseWindow(
+      item_->AnimateAndCloseItem(
           (location_in_screen - initial_event_location_).y() < 0);
       did_move_ = false;
       item_ = nullptr;
@@ -489,7 +489,7 @@ void OverviewWindowDragController::ResetGesture() {
   }
 
   // No need to position windows that are being destroyed.
-  base::flat_set<OverviewItem*> ignored_items;
+  base::flat_set<OverviewItemBase*> ignored_items;
   if (item_->GetWindow()->is_destroying()) {
     ignored_items.insert(item_);
   }
@@ -570,7 +570,7 @@ OverviewWindowDragController::CompleteDragToClose(
   overview_session_->GetGridWithRootWindow(item_->root_window())->EndNudge();
   const float y_distance = (location_in_screen - initial_event_location_).y();
   if (std::abs(y_distance) > kDragToCloseDistanceThresholdDp) {
-    item_->AnimateAndCloseWindow(/*up=*/y_distance < 0);
+    item_->AnimateAndCloseItem(/*up=*/y_distance < 0);
     RecordDragToClose(kSwipeToCloseSuccessful);
     return DragResult::kSuccessfulDragToClose;
   }

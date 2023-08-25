@@ -14,7 +14,7 @@
 
 namespace ash {
 class OverviewHighlightableView;
-class OverviewItem;
+class OverviewItemBase;
 class OverviewSession;
 class ScopedA11yOverrideWindowSetter;
 
@@ -94,7 +94,7 @@ class ASH_EXPORT OverviewHighlightController {
 
   // Tries to get the item that is currently highlighted. Returns null if there
   // is no highlight, or if the highlight is on a desk view.
-  OverviewItem* GetHighlightedItem() const;
+  OverviewItemBase* GetHighlightedItem() const;
 
   // If `highlighted_view_` is not null, remove the highlight. The next tab will
   // start at the beginning of the tab order. This can be used when a lot of

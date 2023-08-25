@@ -17,8 +17,6 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/desks/zero_state_button.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
@@ -29,7 +27,6 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
-#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
@@ -97,7 +94,7 @@ TEST_P(OverviewHighlightControllerTest, BasicTabKeyNavigation) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
 
   ToggleOverview();
-  const std::vector<std::unique_ptr<OverviewItem>>& overview_windows =
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
       GetOverviewItemsForRoot(0);
   SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
   EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewHighlightedWindow());
@@ -119,7 +116,7 @@ TEST_P(OverviewHighlightControllerTest, BasicTabKeyNavigationTablet) {
 
   TabletModeControllerTestApi().EnterTabletMode();
   ToggleOverview();
-  const std::vector<std::unique_ptr<OverviewItem>>& overview_windows =
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
       GetOverviewItemsForRoot(0);
   SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
   EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewHighlightedWindow());
@@ -166,7 +163,7 @@ TEST_P(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
 
   for (size_t key_index = 0; key_index < std::size(arrow_keys); ++key_index) {
     ToggleOverview();
-    const std::vector<std::unique_ptr<OverviewItem>>& overview_windows =
+    const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
         GetOverviewItemsForRoot(0);
     for (size_t i = 0; i < test_windows + 1; ++i) {
       SendKeyUntilOverviewItemIsHighlighted(arrow_keys[key_index]);
@@ -217,9 +214,9 @@ TEST_P(OverviewHighlightControllerTest, BasicMultiMonitorArrowKeyNavigation) {
 
   ToggleOverview();
 
-  const std::vector<std::unique_ptr<OverviewItem>>& overview_root1 =
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_root1 =
       GetOverviewItemsForRoot(0);
-  const std::vector<std::unique_ptr<OverviewItem>>& overview_root2 =
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_root2 =
       GetOverviewItemsForRoot(1);
   SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
   EXPECT_EQ(GetOverviewHighlightedWindow(), overview_root1[0]->GetWindow());
@@ -337,7 +334,7 @@ TEST_P(OverviewHighlightControllerTest, HighlightLocationWhileDragging) {
   // Tab once to show the highlight.
   SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
   EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
-  OverviewItem* item = GetOverviewItemForWindow(window3.get());
+  auto* item = GetOverviewItemForWindow(window3.get());
 
   // Tests that while dragging an item, tabbing does not change which item the
   // highlight is hovered over, but the highlight is hidden. Drag the item in a
@@ -431,7 +428,8 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
 
   // Tests that the overview item gets highlighted first.
   SendKey(ui::VKEY_TAB);
-  auto* item2 = GetOverviewItemForWindow(window2.get());
+  auto* item2 = GetOverviewItemForWindow(window2.get())
+                    ->GetLeafItemForWindow(window2.get());
   EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "overview item");
 
@@ -536,7 +534,8 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   // Tests that the next highlighted item when reversing is the last overview
   // item.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  auto* item1 = GetOverviewItemForWindow(window1.get());
+  auto* item1 = GetOverviewItemForWindow(window1.get())
+                    ->GetLeafItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
   // Tests that the next highlighted item when reversing is the save desk for
@@ -616,10 +615,12 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   // Tests that tabbing initially will go through the two overview items on the
   // first display.
   SendKey(ui::VKEY_TAB);
-  auto* item2 = GetOverviewItemForWindow(window2.get());
+  auto* item2 = GetOverviewItemForWindow(window2.get())
+                    ->GetLeafItemForWindow(window2.get());
   EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-  auto* item1 = GetOverviewItemForWindow(window1.get());
+  auto* item1 = GetOverviewItemForWindow(window1.get())
+                    ->GetLeafItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
   // Tests that further tabbing will go through the desk preview views,  desk
@@ -658,7 +659,8 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   // Tests that the next tab will bring us to the first overview item on the
   // second display.
   SendKey(ui::VKEY_TAB);
-  auto* item3 = GetOverviewItemForWindow(window3.get());
+  auto* item3 = GetOverviewItemForWindow(window3.get())
+                    ->GetLeafItemForWindow(window3.get());
   EXPECT_EQ(item3->overview_item_view(), GetHighlightedView());
 
   SendKey(ui::VKEY_TAB);
@@ -689,7 +691,8 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   // Tests that after tabbing through the items on the second display, the
   // next tab will bring us to the first overview item on the third display.
   SendKey(ui::VKEY_TAB);
-  auto* item4 = GetOverviewItemForWindow(window4.get());
+  auto* item4 = GetOverviewItemForWindow(window4.get())
+                    ->GetLeafItemForWindow(window4.get());
   EXPECT_EQ(item4->overview_item_view(), GetHighlightedView());
 
   SendKey(ui::VKEY_TAB);

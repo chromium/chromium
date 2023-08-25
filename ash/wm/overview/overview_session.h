@@ -49,6 +49,7 @@ class OverviewDelegate;
 class OverviewGrid;
 class OverviewHighlightController;
 class OverviewItem;
+class OverviewItemBase;
 class OverviewWindowDragController;
 class SavedDeskDialogController;
 class SavedDeskPresenter;
@@ -89,8 +90,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // false otherwise.
   bool AcceptSelection();
 
-  // Activates |item's| window.
-  void SelectWindow(OverviewItem* item);
+  // Activates the window or window group associated with the `item`.
+  void SelectWindow(OverviewItemBase* item);
 
   // Sets the dragged window on the split view drag indicators.
   void SetSplitViewDragIndicatorsDraggedWindow(aura::Window* dragged_window);
@@ -108,12 +109,12 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void ResetSplitViewDragIndicatorsWindowDraggingStates();
 
   // See |OverviewGrid::RearrangeDuringDrag|.
-  void RearrangeDuringDrag(OverviewItem* dragged_item);
+  void RearrangeDuringDrag(OverviewItemBase* dragged_item);
 
   // Updates the appearance of each drop target to visually indicate when the
   // dragged window is being dragged over it.
   void UpdateDropTargetsBackgroundVisibilities(
-      OverviewItem* dragged_item,
+      OverviewItemBase* dragged_item,
       const gfx::PointF& location_in_screen);
 
   // Retrieves the window grid whose root window matches |root_window|. Returns
@@ -129,7 +130,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void AddItem(aura::Window* window,
                bool reposition,
                bool animate,
-               const base::flat_set<OverviewItem*>& ignored_items,
+               const base::flat_set<OverviewItemBase*>& ignored_items,
                size_t index);
 
   // Similar to the above function, but adds the window at the end of the grid.
@@ -149,20 +150,21 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                          bool use_spawn_animation);
 
   // Removes |overview_item| from the corresponding grid.
-  void RemoveItem(OverviewItem* overview_item);
-  void RemoveItem(OverviewItem* overview_item,
+  void RemoveItem(OverviewItemBase* overview_item);
+  void RemoveItem(OverviewItemBase* overview_item,
                   bool item_destroying,
                   bool reposition);
 
   void RemoveDropTargets();
 
-  void InitiateDrag(OverviewItem* item,
+  void InitiateDrag(OverviewItemBase* item,
                     const gfx::PointF& location_in_screen,
                     bool is_touch_dragging);
-  void Drag(OverviewItem* item, const gfx::PointF& location_in_screen);
-  void CompleteDrag(OverviewItem* item, const gfx::PointF& location_in_screen);
+  void Drag(OverviewItemBase* item, const gfx::PointF& location_in_screen);
+  void CompleteDrag(OverviewItemBase* item,
+                    const gfx::PointF& location_in_screen);
   void StartNormalDragMode(const gfx::PointF& location_in_screen);
-  void Fling(OverviewItem* item,
+  void Fling(OverviewItemBase* item,
              const gfx::PointF& location_in_screen,
              float velocity_x,
              float velocity_y);
@@ -196,15 +198,16 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void MergeWindowIntoOverviewForWebUITabStrip(aura::Window* dragged_window);
 
   // Positions all overview items except those in |ignored_items|.
-  void PositionWindows(bool animate,
-                       const base::flat_set<OverviewItem*>& ignored_items = {});
+  void PositionWindows(
+      bool animate,
+      const base::flat_set<OverviewItemBase*>& ignored_items = {});
 
   // Returns true if |window| is currently showing in overview.
   bool IsWindowInOverview(const aura::Window* window);
 
-  // Returns the overview item for |window|, or nullptr if |window| doesn't have
-  // a corresponding item in overview mode.
-  OverviewItem* GetOverviewItemForWindow(const aura::Window* window);
+  // Returns the `OverviewItemBase` for the given `window`, or nullptr if
+  // `window` doesn't have a corresponding item in overview mode.
+  OverviewItemBase* GetOverviewItemForWindow(const aura::Window* window);
 
   // Set the window grid that's displaying in |root_window| not animate when
   // exiting overview mode, i.e., all window items in the grid will not animate
@@ -259,8 +262,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RestoreWindowActivation(bool restore);
 
   // Handles requests to active or close the currently highlighted |item|.
-  void OnHighlightedItemActivated(OverviewItem* item);
-  void OnHighlightedItemClosed(OverviewItem* item);
+  void OnHighlightedItemActivated(OverviewItemBase* item);
+  void OnHighlightedItemClosed(OverviewItemBase* item);
 
   // Called explicitly (with no list of observers) by the |RootWindowController|
   // of |root|, so that the associated grid is properly removed and destroyed.
@@ -273,7 +276,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Returns the current dragged overview item if any. Note that windows that
   // are dragged into overview from the shelf don't have an OverviewItem while
   // dragging.
-  OverviewItem* GetCurrentDraggedOverviewItem() const;
+  OverviewItemBase* GetCurrentDraggedOverviewItem() const;
 
   // Overview objects which handle events (OverviewItemView,
   // OverviewGridEventHandler) should call this function to check if they can
@@ -494,8 +497,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The selected item when exiting overview mode. nullptr if no window
   // selected.
-  raw_ptr<OverviewItem, DanglingUntriaged | ExperimentalAsh> selected_item_ =
-      nullptr;
+  raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh>
+      selected_item_ = nullptr;
 
   // The drag controller for a window in the overview mode.
   std::unique_ptr<OverviewWindowDragController> window_drag_controller_;

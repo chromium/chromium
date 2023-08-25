@@ -19,4 +19,15 @@ OverviewItemBase::OverviewItemBase(OverviewSession* overview_session,
 
 OverviewItemBase::~OverviewItemBase() = default;
 
+// static
+std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
+    aura::Window* window,
+    OverviewSession* overview_session,
+    OverviewGrid* overview_grid) {
+  // TODO(b/295067715): Use switch to build different types of overview items
+  // by checking whether the given `window` belongs to a snap group or not.
+  return std::make_unique<OverviewItem>(window, overview_session,
+                                        overview_grid);
+}
+
 }  // namespace ash

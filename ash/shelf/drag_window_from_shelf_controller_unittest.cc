@@ -640,7 +640,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideOverviewDuringDragging) {
   OverviewGrid* current_grid =
       overview_controller->overview_session()->GetGridWithRootWindow(
           window1->GetRootWindow());
-  OverviewItem* drop_target_item = current_grid->GetDropTarget();
+  auto* drop_target_item = current_grid->GetDropTarget();
   EXPECT_TRUE(drop_target_item);
   EXPECT_EQ(drop_target_item->GetWindow()->layer()->GetTargetOpacity(), 1.f);
 
@@ -1213,7 +1213,7 @@ TEST_F(DragWindowFromShelfControllerTest, NoAnimationWhenReturnToMaximize) {
   // Get the bounds and transform of the item associated with |item2|.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  OverviewItem* item = GetOverviewItemForWindow(window2.get());
+  auto* item = GetOverviewItemForWindow(window2.get());
   ASSERT_TRUE(item);
   aura::Window* item_window = item->item_widget()->GetNativeWindow();
   const gfx::Rect pre_exit_bounds = item_window->bounds();
@@ -1328,7 +1328,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(overview_grid);
   ASSERT_EQ(1u, overview_grid->window_list().size());
 
-  OverviewItem* overview_item = overview_grid->window_list()[0].get();
+  auto* overview_item = overview_grid->window_list()[0].get();
 
   // Press on `overview_item` to exit overview mode and show windows.
   auto* event_generator = GetEventGenerator();

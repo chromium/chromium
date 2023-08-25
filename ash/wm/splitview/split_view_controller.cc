@@ -241,7 +241,7 @@ void RemoveSnappingWindowFromOverviewIfApplicable(
     return;
   }
 
-  OverviewItem* item = overview_session->GetOverviewItemForWindow(window);
+  OverviewItemBase* item = overview_session->GetOverviewItemForWindow(window);
   if (!item) {
     return;
   }
@@ -1129,7 +1129,7 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
     // |OverviewItem::OnSelectorItemDragEnded| already was called on all
     // overview items and |previous_snapped_window| was not yet among them.
     overview_session->GetOverviewItemForWindow(previous_snapped_window)
-        ->OnSelectorItemDragEnded(/*snap=*/true);
+        ->OnOverviewItemDragEnded(/*snap=*/true);
   }
 
   if (split_view_type_ == SplitViewType::kTabletType) {

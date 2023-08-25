@@ -843,7 +843,7 @@ TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
 
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
-  OverviewItem* overview_item =
+  auto* overview_item =
       overview_session->GetOverviewItemForWindow(window2.get());
   gfx::PointF drag_point = overview_item->target_bounds().CenterPoint();
   overview_session->InitiateDrag(overview_item, drag_point,
@@ -882,7 +882,7 @@ TEST_F(SplitViewControllerTest, DividerStateWhenOverviewItemDragCancelled) {
 
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
-  OverviewItem* overview_item =
+  auto* overview_item =
       overview_session->GetOverviewItemForWindow(window2.get());
   gfx::PointF drag_point = overview_item->target_bounds().CenterPoint();
   overview_session->InitiateDrag(overview_item, drag_point,

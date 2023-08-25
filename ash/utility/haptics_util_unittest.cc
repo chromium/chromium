@@ -143,7 +143,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
   for (size_t i = 0; i < test_cases.size(); i++) {
     std::pair<gfx::Point, gfx::Rect> test_case = test_cases[i];
     EnterOverview();
-    OverviewItem* overview_item =
+    auto* overview_item =
         overview_controller->overview_session()->GetOverviewItemForWindow(
             window.get());
 
@@ -164,7 +164,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
   for (size_t i = 0; i < test_cases.size(); i++) {
     std::pair<gfx::Point, gfx::Rect> test_case = test_cases[i];
     EnterOverview();
-    OverviewItem* overview_item =
+    auto* overview_item =
         overview_controller->overview_session()->GetOverviewItemForWindow(
             window.get());
 
@@ -300,7 +300,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
 
   // Drag a window in overview. Test that kTick feedback is sent.
   EnterOverview();
-  OverviewItem* overview_item =
+  auto* overview_item =
       overview_controller->overview_session()->GetOverviewItemForWindow(
           window.get());
   const gfx::RectF bounds_f = overview_item->target_bounds();

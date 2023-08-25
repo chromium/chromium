@@ -172,7 +172,7 @@ void RemoveAllWindowsFromOverview() {
       Shell::Get()->overview_controller()->overview_session();
   for (const auto& grid : overview_session->grid_list()) {
     while (!grid->empty()) {
-      OverviewItem* overview_item = grid->window_list()[0].get();
+      OverviewItemBase* overview_item = grid->window_list()[0].get();
 
       // We want to restore the window here primarily because when we are
       // undoing the removal of an active desk outside of overview, we do not
@@ -933,7 +933,7 @@ bool DesksController::MoveWindowFromActiveDeskTo(
     auto* item = overview_session->GetOverviewItemForWindow(window);
     // `item` can be null when we are switching users.
     if (item) {
-      item->OnMovingWindowToAnotherDesk();
+      item->OnMovingItemToAnotherDesk();
       // The item no longer needs to be in the overview grid.
       overview_session->RemoveItem(item);
     } else if (visible_on_all_desks) {

@@ -11,6 +11,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_base.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -58,7 +59,7 @@ bool HighlightOverviewWindow(const aura::Window* window) {
 }
 
 const aura::Window* GetOverviewHighlightedWindow() {
-  OverviewItem* item =
+  auto* item =
       GetOverviewSession()->highlight_controller()->GetHighlightedItem();
   if (!item)
     return nullptr;
@@ -97,12 +98,12 @@ OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
   return overview_controller->overview_session()->GetGridWithRootWindow(root);
 }
 
-const std::vector<std::unique_ptr<OverviewItem>>& GetOverviewItemsForRoot(
+const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(
     int index) {
   return GetOverviewSession()->grid_list()[index]->window_list();
 }
 
-OverviewItem* GetOverviewItemForWindow(aura::Window* window) {
+OverviewItemBase* GetOverviewItemForWindow(aura::Window* window) {
   return GetOverviewSession()->GetOverviewItemForWindow(window);
 }
 
@@ -115,7 +116,7 @@ gfx::Rect ShrinkBoundsByHotseatInset(const gfx::Rect& rect) {
   return new_rect;
 }
 
-void DragItemToPoint(OverviewItem* item,
+void DragItemToPoint(OverviewItemBase* item,
                      const gfx::Point& screen_location,
                      ui::test::EventGenerator* event_generator,
                      bool by_touch_gestures,

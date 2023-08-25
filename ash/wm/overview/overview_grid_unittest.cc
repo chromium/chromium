@@ -7,7 +7,6 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -19,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -69,9 +67,11 @@ class OverviewGridTest : public AshTestBase {
                 grid_->window_list()[i]->should_animate_when_entering());
     }
 
-    for (size_t i = 0; i < grid_->window_list().size(); ++i)
+    for (size_t i = 0; i < grid_->window_list().size(); ++i) {
       grid_->window_list()[i]->set_target_bounds_for_testing(target_bounds[i]);
-    OverviewItem* selected_item =
+    }
+
+    auto* selected_item =
         selected_window_index
             ? grid_->window_list()[*selected_window_index].get()
             : nullptr;
@@ -306,8 +306,8 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   // Tests that |window3| is not animated even though its bounds are larger than
   // |window2| because it is fully occluded by |window1| + |window2| and the
   // split view divider.
-  OverviewItem* item2 = GetOverviewItemForWindow(window2.get());
-  OverviewItem* item3 = GetOverviewItemForWindow(window3.get());
+  auto* item2 = GetOverviewItemForWindow(window2.get());
+  auto* item3 = GetOverviewItemForWindow(window3.get());
   EXPECT_TRUE(item2->should_animate_when_entering());
   EXPECT_FALSE(item3->should_animate_when_entering());
 }

@@ -5,18 +5,14 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -33,7 +29,6 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -253,14 +248,15 @@ bool OverviewHighlightController::MaybeActivateHighlightedViewOnOverviewExit() {
              overview_session_);
 }
 
-OverviewItem* OverviewHighlightController::GetHighlightedItem() const {
+OverviewItemBase* OverviewHighlightController::GetHighlightedItem() const {
   if (!highlighted_view_)
     return nullptr;
 
   for (auto& grid : overview_session_->grid_list()) {
     for (auto& item : grid->window_list()) {
-      if (highlighted_view_->GetView() == item->overview_item_view())
+      if (highlighted_view_->GetView() == item->GetFocusableView()->GetView()) {
         return item.get();
+      }
     }
   }
 
@@ -303,7 +299,7 @@ OverviewHighlightController::GetTraversableViews() const {
       }
     } else {
       for (auto& item : grid->window_list())
-        traversable_views.push_back(item->overview_item_view());
+        traversable_views.push_back(item->GetFocusableView());
     }
 
     AddDesksBarTraversableViews(grid.get(), traversable_views);

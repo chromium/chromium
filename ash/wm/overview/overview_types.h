@@ -7,12 +7,6 @@
 
 namespace ash {
 
-// Defines the overview item types.
-enum class OverviewItemType {
-  kSingleItem,
-  kGroupItem,
-};
-
 // Enumeration of the different overview mode animations.
 enum OverviewAnimationType {
   OVERVIEW_ANIMATION_NONE,

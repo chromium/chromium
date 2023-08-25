@@ -43,7 +43,7 @@ namespace ash {
 namespace {
 
 // Drags the item by |x| and |y| and does not drop it.
-void StartDraggingItemBy(OverviewItem* item,
+void StartDraggingItemBy(OverviewItemBase* item,
                          int x,
                          int y,
                          bool by_touch_gestures,
@@ -148,7 +148,7 @@ class OverviewWindowDragControllerTest : public AshTestBase {
     return overview_grid()->desks_bar_view()->GetWidget();
   }
 
-  OverviewItem* GetOverviewItemForWindow(aura::Window* window) {
+  OverviewItemBase* GetOverviewItemForWindow(aura::Window* window) {
     return overview_session()->GetOverviewItemForWindow(window);
   }
 

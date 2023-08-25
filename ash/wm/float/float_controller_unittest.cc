@@ -855,7 +855,7 @@ TEST_F(WindowFloatTest, FloatWindowUpdatedOnOverview) {
   RemoveDesk(desk_1, DeskCloseType::kCombineDesks);
   ASSERT_EQ(desks_controller->desks().size(), 1u);
   // Floated window should be appended to overview items.
-  const std::vector<std::unique_ptr<OverviewItem>>& overview_items =
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_items =
       GetOverviewItemsForRoot(0);
   ASSERT_EQ(overview_items.size(), 1u);
   EXPECT_EQ(window.get(), overview_items[0]->GetWindow());

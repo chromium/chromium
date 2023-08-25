@@ -20,7 +20,7 @@ class PresentationTimeRecorder;
 namespace ash {
 
 class OverviewGrid;
-class OverviewItem;
+class OverviewItemBase;
 class OverviewSession;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -92,7 +92,7 @@ class ASH_EXPORT OverviewWindowDragController {
   };
 
   OverviewWindowDragController(OverviewSession* overview_session,
-                               OverviewItem* item,
+                               OverviewItemBase* item,
                                bool is_touch_dragging);
 
   OverviewWindowDragController(const OverviewWindowDragController&) = delete;
@@ -124,7 +124,7 @@ class ASH_EXPORT OverviewWindowDragController {
   // after a gesture is completed if there is an animation.
   void DestroyFloatDragHelper();
 
-  OverviewItem* item() { return item_; }
+  OverviewItemBase* item() { return item_; }
 
   bool is_touch_dragging() const { return is_touch_dragging_; }
 
@@ -200,7 +200,8 @@ class ASH_EXPORT OverviewWindowDragController {
   raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // The drag target window in the overview mode.
-  raw_ptr<OverviewItem, DanglingUntriaged | ExperimentalAsh> item_ = nullptr;
+  raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh> item_ =
+      nullptr;
 
   DragBehavior current_drag_behavior_ = DragBehavior::kNoDrag;
 
