@@ -111,6 +111,7 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // with value matches the given parameter and make the option as the suggested
   // selection. The goal of introducing suggested value is to not leak any
   // information to JavaScript.
+  // A null value indicates that the suggested value should be hidden.
   void SetSuggestedValue(const WebString&);
   // Returns suggested value of element. If element doesn't fall into input
   // element, textarea element and select element categories, a null string is

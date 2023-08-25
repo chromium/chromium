@@ -60,6 +60,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   // Sets the suggested value and puts the element into
   // WebAutofillState::kPreviewed state if |value| is non-empty, or
   // WebAutofillState::kNotFilled otherwise.
+  // A null value indicates that the suggested value should be hidden.
   void SetSuggestedValue(const String& value) override;
 
   // For ValidityState
