@@ -10,9 +10,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include "content/public/browser/web_contents.h"
 
 // Interface for password-specific keyboard accessory controller between the
 // ManualFillingController and PasswordManagerClient.
