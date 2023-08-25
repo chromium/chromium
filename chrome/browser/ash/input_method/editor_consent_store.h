@@ -5,30 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONSENT_STORE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONSENT_STORE_H_
 
-#include "chrome/browser/ash/input_method/editor_consent_action.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::input_method {
-
-// Defines the status of the consent which we ask the user to provide before
-// we can display the feature to them.
-enum class ConsentStatus : int {
-  // User has agreed to consent by pressing "Yes/Agree" button to all dialogs
-  // from the consent window.
-  kApproved,
-  // User has disagreed to consent by pressing "No/Disagree" button to any
-  // dialog from the consent window.
-  kDeclined,
-  // User has dismissed the consent page too many times and is deemed to
-  // implicitly decline the consent.
-  kImplicitlyDeclined,
-  // Invalid state of the consent result.
-  kInvalid,
-  // No explicit consent to use the feature has been received yet.
-  kPending,
-  // No request has been sent to users to collect their consent.
-  kUnset,
-};
 
 // Manages consent status read/write from and to the user prefs.
 // Each user has a separate consent status bound with their pref
@@ -42,18 +24,29 @@ class EditorConsentStore {
 
   ConsentStatus GetConsentStatus() const;
 
-  void SetConsentStatus(ConsentStatus consent_status);
-
   // Updates the consent status based on user consent action.
   void ProcessConsentAction(ConsentAction consent_action);
 
  private:
+  void SetConsentStatus(ConsentStatus consent_status);
+
+  // Updates the consent status based on the change in the user prefs.
+  void OnUserPrefChanged();
+
   int GetConsentWindowDismissCount();
 
   void IncrementConsentWindowDismissCount();
 
+  void ResetConsentWindowDismissCount();
+
+  void OverrideUserPref(bool new_pref_value);
+
   // Not owned by this class.
   raw_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  base::WeakPtrFactory<EditorConsentStore> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::input_method

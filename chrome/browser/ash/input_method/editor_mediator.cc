@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_op.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 
@@ -20,14 +20,13 @@ EditorMediator* g_instance_ = nullptr;
 EditorMediator::EditorMediator(Profile* profile)
     : profile_(profile),
       editor_instance_impl_(this),
-      editor_switch_(profile->GetProfilePolicyConnector()->IsManaged()),
+      editor_switch_(std::make_unique<EditorSwitch>(profile)),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
   DCHECK(!g_instance_);
   g_instance_ = this;
 
   profile_observation_.Observe(profile_);
-  editor_switch_.OnConsentStatusUpdated(consent_store_->GetConsentStatus());
 }
 
 EditorMediator::~EditorMediator() {
@@ -61,12 +60,11 @@ void EditorMediator::OnBlur() {
 }
 
 void EditorMediator::OnActivateIme(std::string_view engine_id) {
-  editor_switch_.OnActivateIme(engine_id);
+  editor_switch_->OnActivateIme(engine_id);
 }
 
 void EditorMediator::OnConsentActionReceived(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
-  editor_switch_.OnConsentStatusUpdated(consent_store_->GetConsentStatus());
 }
 
 void EditorMediator::CommitEditorResult(std::string_view text) {
@@ -84,7 +82,7 @@ void EditorMediator::CommitEditorResult(std::string_view text) {
 
 void EditorMediator::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  editor_switch_.OnInputContextUpdated(
+  editor_switch_->OnInputContextUpdated(
       IMEBridge::Get()->GetCurrentInputContext(), info);
 }
 
@@ -94,8 +92,10 @@ ConsentStatus EditorMediator::GetConsentStatus() {
 
 void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observation_.Reset();
+
   profile_ = nullptr;
   consent_store_ = nullptr;
+  editor_switch_ = nullptr;
 }
 
 }  // namespace input_method

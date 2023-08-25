@@ -5,7 +5,10 @@
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -56,7 +59,9 @@ bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
 
 }  // namespace
 
-EditorSwitch::EditorSwitch(bool is_managed) {
+EditorSwitch::EditorSwitch(Profile* profile) : profile_(profile) {
+  bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
+
   is_allowed_for_use_ =
       (base::FeatureList::IsEnabled(features::kOrcaDogfood) && is_managed) ||
       (chromeos::features::IsOrcaEnabled() && !is_managed);
@@ -69,12 +74,15 @@ bool EditorSwitch::IsAllowedForUse() {
 }
 
 bool EditorSwitch::CanBeTriggered() {
-  return can_be_triggered_;
-}
+  ConsentStatus current_consent_status = GetConsentStatusFromInteger(
+      profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
-void EditorSwitch::OnConsentStatusUpdated(ConsentStatus consent_status) {
-  consent_status_ = consent_status;
-  UpdateTriggerableCache();
+  return is_allowed_for_use_ && IsInputMethodEngineAllowed(active_engine_id_) &&
+         IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
+         IsTriggerableFromConsentStatus(current_consent_status) &&
+         // user pref value
+         profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled);
+  ;
 }
 
 void EditorSwitch::OnInputContextUpdated(
@@ -82,19 +90,10 @@ void EditorSwitch::OnInputContextUpdated(
     const TextFieldContextualInfo& text_field_contextual_info) {
   input_type_ = input_context.type;
   app_type_ = text_field_contextual_info.app_type;
-  UpdateTriggerableCache();
 }
 
 void EditorSwitch::OnActivateIme(std::string_view engine_id) {
   active_engine_id_ = engine_id;
-  UpdateTriggerableCache();
-}
-
-void EditorSwitch::UpdateTriggerableCache() {
-  can_be_triggered_ =
-      is_allowed_for_use_ && IsInputMethodEngineAllowed(active_engine_id_) &&
-      IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
-      IsTriggerableFromConsentStatus(consent_status_);
 }
 
 }  // namespace ash::input_method

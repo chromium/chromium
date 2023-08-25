@@ -5,7 +5,12 @@
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,7 +38,9 @@ class EditorSwitchTest : public ::testing::Test {
 
 TEST_F(EditorSwitchTest,
        FeatureWillNotBeAvailableForUseWithoutReceivingOrcaFlag) {
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
@@ -41,7 +48,9 @@ TEST_F(EditorSwitchTest,
 TEST_F(EditorSwitchTest,
        FeatureWillNotBeAvailableForUnmanagedAccountOnDogfoodDevices) {
   base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
@@ -49,7 +58,9 @@ TEST_F(EditorSwitchTest,
 TEST_F(EditorSwitchTest,
        FeatureWillNotBeAvailableForManagedAccountOnNonDogfoodDevices) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
-  EditorSwitch editor_switch(/*is_managed=*/true);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
@@ -57,19 +68,26 @@ TEST_F(EditorSwitchTest,
 TEST_F(EditorSwitchTest,
        FeatureWillBeAvailableForUseForManagedAccountOnDogfoodDevices) {
   base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
-  EditorSwitch editor_switch(/*is_managed=*/true);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
 }
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kDeclined));
+  editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
-  editor_switch.OnConsentStatusUpdated(ConsentStatus::kDeclined);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_FALSE(editor_switch.CanBeTriggered());
@@ -77,10 +95,14 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
-  editor_switch.OnActivateIme("nacl_mozc_jp");
-  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
@@ -91,10 +113,14 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
   editor_switch.OnActivateIme("nacl_mozc_jp");
-  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
@@ -104,14 +130,34 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
 }
 
 TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
   editor_switch.OnActivateIme("xkb:us::eng");
-  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_FALSE(editor_switch.CanBeTriggered());
+}
+
+TEST_F(EditorSwitchTest,
+       FeatureCanNotBeTriggeredIfUserSwitchesOffSettingToggle) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, false);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
@@ -122,12 +168,36 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
 
 TEST_F(
     EditorSwitchTest,
+    FeatureCanBeTriggeredIfUserSwitchesOnSettingToggleAndHasNotGivenConsent) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(prefs::kOrcaConsentStatus,
+                                  base::to_underlying(ConsentStatus::kPending));
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_TRUE(editor_switch.CanBeTriggered());
+}
+
+TEST_F(
+    EditorSwitchTest,
     FeatureCanBeTriggeredOnANormalTextFieldOnABrowserWindowAndWithEnglishInputMethod) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_);
 
-  EditorSwitch editor_switch(/*is_managed=*/false);
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
   editor_switch.OnActivateIme("xkb:us::eng");
-  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));

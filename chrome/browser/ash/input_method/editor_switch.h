@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 
 #include "ash/constants/app_types.h"
-#include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
 namespace ash::input_method {
@@ -17,7 +17,7 @@ namespace ash::input_method {
 // should be popped up given a particular input context.
 class EditorSwitch {
  public:
-  explicit EditorSwitch(bool is_managed);
+  explicit EditorSwitch(Profile* profile);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
   ~EditorSwitch();
@@ -29,8 +29,6 @@ class EditorSwitch {
   // not allowed for use, then returns false.
   bool CanBeTriggered();
 
-  void OnConsentStatusUpdated(ConsentStatus consent_status);
-
   // Handles the change in input context.
   void OnInputContextUpdated(
       const TextInputMethod::InputContext& input_context,
@@ -39,11 +37,9 @@ class EditorSwitch {
   void OnActivateIme(std::string_view engine_id);
 
  private:
-  void UpdateTriggerableCache();
+  raw_ptr<Profile> profile_;
 
   bool is_allowed_for_use_ = false;
-  bool can_be_triggered_ = false;
-  ConsentStatus consent_status_;
   std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   ash::AppType app_type_ = ash::AppType::NON_APP;

@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace ash {
 namespace input_method {
@@ -60,12 +61,15 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
  private:
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
+  bool GetUserPref();
+  void SetUserPref(bool value);
+
   // Not owned by this class
   raw_ptr<Profile> profile_;
 
   EditorInstanceImpl editor_instance_impl_;
   EditorTextActuator text_actuator_;
-  EditorSwitch editor_switch_;
+  std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorConsentStore> consent_store_;
 
   // May contain an instance of MakoPageHandler. This is used to control the

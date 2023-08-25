@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/input_method/editor_consent_action.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 
 namespace ash {
 namespace input_method {

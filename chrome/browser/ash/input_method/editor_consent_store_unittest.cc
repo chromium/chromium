@@ -21,15 +21,6 @@ class EditorConsentStoreTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(EditorConsentStoreTest, SettingConsentStatusShouldUpdateUserPrefs) {
-  TestingProfile profile_;
-  EditorConsentStore store(profile_.GetPrefs());
-
-  store.SetConsentStatus(ConsentStatus::kApproved);
-
-  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kApproved);
-}
-
 TEST_F(EditorConsentStoreTest,
        ReceivingDeclineResponseWillLeadToConsentDecline) {
   TestingProfile profile_;
@@ -61,6 +52,33 @@ TEST_F(EditorConsentStoreTest,
   store.ProcessConsentAction(ConsentAction::kDismissed);
 
   EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kImplicitlyDeclined);
+}
+
+TEST_F(EditorConsentStoreTest,
+       SwitchingOnSettingToggleWillResetConsentWhichWasPreviouslyDeclined) {
+  TestingProfile profile_;
+  EditorConsentStore store(profile_.GetPrefs());
+
+  store.ProcessConsentAction(ConsentAction::kDeclined);
+  // Simulate a user action to switch on the orca toggle.
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+
+  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kUnset);
+}
+
+TEST_F(
+    EditorConsentStoreTest,
+    SwitchingOnSettingToggleWillResetConsentWhichWasPreviouslyImplicitlyDeclined) {
+  TestingProfile profile_;
+  EditorConsentStore store(profile_.GetPrefs());
+
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+  store.ProcessConsentAction(ConsentAction::kDismissed);
+  // Simulate a user action to switch on the orca toggle.
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+
+  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kUnset);
 }
 
 }  // namespace
