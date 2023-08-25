@@ -2186,8 +2186,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskApi.{Method}.Result" units="BooleanSuccess"
-    expires_after="2023-10-07">
-  <owner>aprilzhou@chromium.org</owner>
+    expires_after="2024-04-07">
+  <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     Recorded when a desk API {Method} method succeeded or failed.
@@ -2996,7 +2996,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.DeskTemplate.ReplaceTemplate" enum="BooleanHit"
     expires_after="2023-10-03">
-  <owner>aprilzhou@chromium.org</owner>
+  <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     Recorded when replace dialog opens and user accepted it, is never false.
