@@ -14,18 +14,18 @@ by making a test to generate expectations itself.
 
 `Tree tests` are designed to test accessible tree. It loads an HTML file, waits
 for it to load, then dumps the accessible tree. The dumped tree is compared
-to an expectation file. The tests are driven by `DumpAccessibilityTree` testing
-class.
+to an expectation file. The tests are driven by `DumpAccessibilityTreeTest`
+testing class.
 
 `Node tests` are used to run a test for a single node, for example, to check
 a specific property. The test loads an HTML file, waits for it to load, then
 dump a single accessible node for a DOM element whose `id` or `class` attribute
 is `test`. There is no support for multiple "test" nodes and the output will be
-for the first match located. The tests are driven by `DumpAccessibilityNode`
+for the first match located. The tests are driven by `DumpAccessibilityNodeTest`
 testing class.
 
 `Script tests` are used to run a script and test its output against
-expectations. The tests is driven by `DumpAccessibilityScript` testing
+expectations. The tests is driven by `DumpAccessibilityScriptTest` testing
 class.
 
 `Event tests` tests use a similar format but the events are dumped after
@@ -399,9 +399,9 @@ If you are adding a new test file remember to add a corresponding test case in:
 If you are adding a new events test, remember to add a corresponding test case
 for Android, see more info below.
 
-## More details on DumpAccessibilityEvents tests
+## More details on DumpAccessibilityEventsTest tests
 
-These tests are similar to `DumpAccessibilityTree` tests in that they first
+These tests are similar to `DumpAccessibilityTreeTest` tests in that they first
 load an HTML document, then dump something, then compare the output to
 an expectation file. The difference is that what's dumped is accessibility
 events that are fired.
@@ -425,7 +425,7 @@ to IA2, we will receive duplicated events for Focus, MenuOpened and MenuClosed.
 
 ### Including Tests for Android
 
-The Android DumpAccessibilityEvents tests work differently than the other
+The Android `DumpAccessibilityEventsTests` tests work differently than the other
 platforms and are driven by the Java-side code. The tests all reside in the
 [WebContentsAccessibilityEventsTest.java](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java)
 class. The tests are controlled from the Java code so that they can leverage the
