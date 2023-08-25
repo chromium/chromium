@@ -2251,19 +2251,19 @@ TEST_F(CalendarViewWithMessageCenterTest,
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown());
 
-  int number_of_focusable_views_in_message_center =
-      GetNumberOfFocusableViewsInMessageCenter();
-
   // Today's date cell should be focused now.
   PressTab();
   auto* current_date_cell_view = calendar_focus_manager()->GetFocusedView();
+  ASSERT_TRUE(calendar_focus_manager()->GetFocusedView());
   EXPECT_STREQ(current_date_cell_view->GetClassName(), "CalendarDateCellView");
 
   // Enter the message center.
-  PressTab();
+  while (calendar_focus_manager()->GetFocusedView()) {
+    PressTab();
+  }
 
   // Keep tabbing until exiting the message center.
-  for (int i = 0; i < number_of_focusable_views_in_message_center; i++) {
+  while (!calendar_focus_manager()->GetFocusedView()) {
     PressTab();
   }
 
@@ -2273,14 +2273,17 @@ TEST_F(CalendarViewWithMessageCenterTest,
 
   // Move back to the message center.
   PressShiftTab();
+  ASSERT_FALSE(calendar_focus_manager()->GetFocusedView());
 
   // Keep tabbing backwards until exiting the message center.
-  for (int i = 0; i < number_of_focusable_views_in_message_center; i++) {
+  while (!calendar_focus_manager()->GetFocusedView()) {
     PressShiftTab();
   }
 
-  // Today's date cell should be focused now.
-  EXPECT_EQ(current_date_cell_view, calendar_focus_manager()->GetFocusedView());
+  // Focus moves to the last view in the calendar's focus order - the calendar
+  // view's `down_button_`.
+  EXPECT_STREQ("IconButton",
+               calendar_focus_manager()->GetFocusedView()->GetClassName());
 }
 
 class CalendarViewWithJellyEnabledTest : public CalendarViewTest {

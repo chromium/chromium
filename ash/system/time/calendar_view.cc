@@ -1641,13 +1641,14 @@ void CalendarView::OnEvent(ui::Event* event) {
   }
 
   if (!IsDateCellViewFocused()) {
-    if (is_tab_key_pressed && key_event->IsShiftDown()) {
-      // If this is reverse tab navigation (Shift+Tab) and current focused view
-      // is the last focusable view, then make an attempt to navigate to the
-      // previous widget (most likely to the message center). Stop the
-      // propagation of the event if the attempt was successful.
-      const auto* next_reverse_view = focus_manager->GetNextFocusableView(
-          focus_manager->GetFocusedView(), GetWidget(), /*reverse=*/true,
+    if (is_tab_key_pressed) {
+      // If the current focused view is the last focusable view in the focus
+      // list, then make an attempt to navigate to the previous widget (most
+      // likely to the message center). Stop the propagation of the event if
+      // the attempt was successful.
+      const auto* next_view = focus_manager->GetNextFocusableView(
+          focus_manager->GetFocusedView(), GetWidget(),
+          /*reverse=*/key_event->IsShiftDown(),
           /*dont_loop=*/true);
       auto* unified_system_tray_bubble =
           RootWindowController::ForWindow(GetWidget()->GetNativeWindow())
@@ -1655,7 +1656,7 @@ void CalendarView::OnEvent(ui::Event* event) {
               ->unified_system_tray()
               ->bubble();
 
-      if (!next_reverse_view && unified_system_tray_bubble &&
+      if (!next_view && unified_system_tray_bubble &&
           unified_system_tray_bubble->unified_system_tray_controller()
               ->FocusOut(/*reverse=*/true)) {
         event->StopPropagation();
@@ -1668,18 +1669,11 @@ void CalendarView::OnEvent(ui::Event* event) {
   // When tab key is pressed, stops focusing on any `CalendarDateCellView` and
   // goes to the next focusable button in the header.
   if (is_tab_key_pressed) {
-    // Set focus on `down_button_`/`event_list_view_` or null
-    // pointer to escape the focusing on the date cell.
-    if (key_event->IsShiftDown()) {
-      down_button_->RequestFocus();
-    } else if (event_list_view_) {
-      // Moves focusing ring to the close button of the event list.
-      event_list_view_->RequestFocus();
-      focus_manager->AdvanceFocus(/*reverse=*/false);
-    } else {
-      scroll_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-      scroll_view_->RequestFocus();
-    }
+    // Focus the whole scroll view so `focus_manager->AdvanceFocus()` moves the
+    // focus out of the scroll view, to the next view in the focus order. This
+    // avoids focusing the next date cell view.
+    scroll_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
+    scroll_view_->RequestFocus();
 
     current_month_->DisableFocus();
     previous_month_->DisableFocus();
@@ -1688,12 +1682,11 @@ void CalendarView::OnEvent(ui::Event* event) {
 
     TrayDetailedView::OnEvent(event);
 
-    // Should move the focus to the next widget, so `AdvanceFocus` from the last
-    // view.
-    if (!key_event->IsShiftDown() && !event_list_view_) {
-      focus_manager->AdvanceFocus(/*reverse=*/false);
-      scroll_view_->SetFocusBehavior(FocusBehavior::NEVER);
-    }
+    // Should move the focus out of the scroll view (the whole scroll view
+    // temporarily grabbed focus in place of the initially focused date cell
+    // view).
+    focus_manager->AdvanceFocus(/*reverse=*/key_event->IsShiftDown());
+    scroll_view_->SetFocusBehavior(FocusBehavior::NEVER);
     event->StopPropagation();
     content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
     return;
