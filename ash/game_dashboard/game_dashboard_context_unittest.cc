@@ -28,6 +28,8 @@
 #include "ash/style/switch.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "base/check.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -1089,6 +1091,78 @@ TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
   test_api_->OpenTheToolbar();
   EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
             ToolbarSnapLocation::kBottomLeft);
+}
+
+// -----------------------------------------------------------------------------
+// OnOverviewModeEndedWaiter:
+class OnOverviewModeEndedWaiter : public OverviewObserver {
+ public:
+  OnOverviewModeEndedWaiter()
+      : overview_controller_(Shell::Get()->overview_controller()) {
+    CHECK(overview_controller_);
+    overview_controller_->AddObserver(this);
+  }
+  OnOverviewModeEndedWaiter(const OnOverviewModeEndedWaiter&) = delete;
+  OnOverviewModeEndedWaiter& operator=(const OnOverviewModeEndedWaiter&) =
+      delete;
+  ~OnOverviewModeEndedWaiter() override {
+    overview_controller_->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // OverviewObserver:
+  void OnOverviewModeEnded() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+  // Owned by Shell.
+  const raw_ptr<OverviewController, ExperimentalAsh> overview_controller_;
+};
+
+// Verifies that in overview mode, the main menu button is not visible, the main
+// menu is closed, and the toolbar visibility is unchanged.
+TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller);
+  auto* main_menu_button_widget = test_api_->GetMainMenuButtonWidget();
+  ASSERT_TRUE(main_menu_button_widget);
+
+  // Open the main menu view and toolbar.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+
+  // Verify the initial state.
+  // Main menu button is visible.
+  EXPECT_TRUE(main_menu_button_widget->IsVisible());
+  // Toolbar is visible.
+  auto* toolbar_widget = test_api_->GetToolbarWidget();
+  ASSERT_TRUE(toolbar_widget);
+  EXPECT_TRUE(toolbar_widget->IsVisible());
+  // Main menu is visible.
+  auto* main_menu_widget = test_api_->GetMainMenuWidget();
+  ASSERT_TRUE(main_menu_widget);
+  EXPECT_TRUE(main_menu_widget->IsVisible());
+
+  EnterOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Verify states in overview mode.
+  EXPECT_FALSE(main_menu_button_widget->IsVisible());
+  ASSERT_EQ(toolbar_widget, test_api_->GetToolbarWidget());
+  EXPECT_TRUE(toolbar_widget->IsVisible());
+  EXPECT_FALSE(test_api_->GetMainMenuWidget());
+
+  OnOverviewModeEndedWaiter waiter;
+  ExitOverview();
+  waiter.Wait();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+
+  // Verify states after exiting overview mode.
+  EXPECT_TRUE(main_menu_button_widget->IsVisible());
+  ASSERT_EQ(toolbar_widget, test_api_->GetToolbarWidget());
+  EXPECT_TRUE(toolbar_widget->IsVisible());
+  EXPECT_FALSE(test_api_->GetMainMenuWidget());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -985,7 +985,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
   std::unique_ptr<FocusModeController> focus_mode_controller_;
-  std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<BootingAnimationController> booting_animation_controller_;
   std::unique_ptr<GlanceablesController> glanceables_controller_;
@@ -1061,6 +1060,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;
   std::unique_ptr<OverviewController> overview_controller_;
+  std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   // Owned by |focus_controller_|.
   raw_ptr<AshFocusRules, ExperimentalAsh> focus_rules_ = nullptr;
   std::unique_ptr<::wm::ShadowController> shadow_controller_;

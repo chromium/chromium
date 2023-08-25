@@ -12,6 +12,8 @@
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/window_types.h"
@@ -58,11 +60,13 @@ GameDashboardController::GameDashboardController(
   CHECK(aura::Env::HasInstance());
   env_observation_.Observe(aura::Env::GetInstance());
   CaptureModeController::Get()->AddObserver(this);
+  Shell::Get()->overview_controller()->AddObserver(this);
 }
 
 GameDashboardController::~GameDashboardController() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  Shell::Get()->overview_controller()->RemoveObserver(this);
   CaptureModeController::Get()->RemoveObserver(this);
 }
 
@@ -158,6 +162,24 @@ void GameDashboardController::OnRecordedWindowChangingRoot(
 
 void GameDashboardController::OnRecordingStartAborted() {
   OnRecordingEnded();
+}
+
+void GameDashboardController::OnOverviewModeWillStart() {
+  // In overview mode, hide the main menu button, and if open, close the main
+  // menu.
+  for (auto const& [_, context] : game_window_contexts_) {
+    context->main_menu_button_widget()->Hide();
+    if (context->IsMainMenuOpen()) {
+      context->CloseMainMenu();
+    }
+  }
+}
+
+void GameDashboardController::OnOverviewModeEnded() {
+  // Make the main menu button visible.
+  for (auto const& [_, context] : game_window_contexts_) {
+    context->main_menu_button_widget()->Show();
+  }
 }
 
 GameDashboardController::WindowGameState

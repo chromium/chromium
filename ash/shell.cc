@@ -861,7 +861,6 @@ Shell::~Shell() {
 
   // Has to happen before ~MruWindowTracker.
   window_cycle_controller_.reset();
-  overview_controller_.reset();
 
   // As clients of `capture_mode_controller_`, `projector_controller_` and
   // `game_dashboard_controller_` need to be destroyed before
@@ -874,6 +873,10 @@ Shell::~Shell() {
   // need to access those windows and it will be a UAF.
   // https://crbug.com/1350711.
   capture_mode_controller_.reset();
+
+  // Has to happen before `~MruWindowTracker` and after
+  // `~GameDashboardController`.
+  overview_controller_.reset();
 
   // This must be called before deleting all the windows below in
   // `CloseAllRootWindowChildWindows()` since host_windows(which gets destroyed)
@@ -1225,11 +1228,6 @@ void Shell::Init(
     focus_mode_controller_ = std::make_unique<FocusModeController>();
   }
 
-  if (features::IsGameDashboardEnabled()) {
-    game_dashboard_controller_ = std::make_unique<GameDashboardController>(
-        shell_delegate_->CreateGameDashboardDelegate());
-  }
-
   // Accelerometer file reader starts listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StartListenToTabletModeController();
 
@@ -1334,6 +1332,13 @@ void Shell::Init(
   focus_controller_->AddObserver(this);
 
   overview_controller_ = std::make_unique<OverviewController>();
+
+  // `GameDashboardController` has dependencies on `OverviewController` and
+  // `CaptureModeController`.
+  if (features::IsGameDashboardEnabled()) {
+    game_dashboard_controller_ = std::make_unique<GameDashboardController>(
+        shell_delegate_->CreateGameDashboardDelegate());
+  }
 
   // `SnapGroupController` has dependencies on `OverviweController` and
   // `TabletModeController`.

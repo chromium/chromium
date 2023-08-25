@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_observer.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
@@ -27,7 +28,8 @@ namespace ash {
 // Controls the Game Dashboard behavior on supported windows.
 class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
                                            public aura::WindowObserver,
-                                           public CaptureModeObserver {
+                                           public CaptureModeObserver,
+                                           public OverviewObserver {
  public:
   explicit GameDashboardController(
       std::unique_ptr<GameDashboardDelegate> delegate);
@@ -81,6 +83,10 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
                             const gfx::ImageSkia& thumbnail) override;
   void OnRecordedWindowChangingRoot(aura::Window* new_root) override;
   void OnRecordingStartAborted() override;
+
+  // OverviewObserver:
+  void OnOverviewModeWillStart() override;
+  void OnOverviewModeEnded() override;
 
  private:
   friend class GameDashboardControllerTest;
