@@ -37,7 +37,7 @@ class ChromeScrollJank(TestSuite):
     return DiffTestBlueprint(
         trace=DataPath('event_latency_with_args.perfetto-trace'),
         query="""
-        SELECT RUN_METRIC('chrome/event_latency_to_breakdowns.sql');
+        SELECT IMPORT('chrome.scroll_jank.event_latency_to_breakdowns');
 
         SELECT
           event_latency_ts,
@@ -48,7 +48,7 @@ class ChromeScrollJank(TestSuite):
           BrowserMainToRendererCompositorNs,
           RendererCompositorQueueingDelayNs,
           unknown_stages_seen
-        FROM event_latency_to_breakdowns
+        FROM chrome_event_latency_to_breakdowns
         ORDER BY event_latency_id
         LIMIT 30;
         """,
@@ -58,7 +58,7 @@ class ChromeScrollJank(TestSuite):
     return DiffTestBlueprint(
         trace=DataPath('chrome_input_with_frame_view.pftrace'),
         query="""
-        SELECT RUN_METRIC('chrome/chrome_scroll_jank_v3.sql');
+        SELECT IMPORT('chrome.scroll_jank.scroll_jank_v3');
 
         SELECT
           cause_of_jank,
@@ -73,7 +73,7 @@ class ChromeScrollJank(TestSuite):
     return DiffTestBlueprint(
         trace=DataPath('chrome_input_with_frame_view.pftrace'),
         query="""
-        SELECT RUN_METRIC('chrome/chrome_scroll_jank_v3.sql');
+        SELECT IMPORT('chrome.scroll_jank.scroll_jank_v3');
 
         SELECT
           delayed_frame_percentage
@@ -85,7 +85,7 @@ class ChromeScrollJank(TestSuite):
     return DiffTestBlueprint(
         trace=DataPath('event_latency_with_args.perfetto-trace'),
         query="""
-        SELECT RUN_METRIC('chrome/event_latency_scroll_jank.sql');
+        SELECT IMPORT('chrome.scroll_jank.event_latency_scroll_jank');
 
         SELECT
           jank,
@@ -100,7 +100,7 @@ class ChromeScrollJank(TestSuite):
           next_dur,
           prev_ts,
           prev_dur
-        FROM scroll_event_latency_jank
+        FROM chrome_scroll_event_latency_jank
         ORDER BY jank DESC
         LIMIT 10;
         """,
@@ -110,7 +110,7 @@ class ChromeScrollJank(TestSuite):
     return DiffTestBlueprint(
         trace=DataPath('event_latency_with_args.perfetto-trace'),
         query="""
-        SELECT RUN_METRIC('chrome/event_latency_scroll_jank_cause.sql');
+        SELECT IMPORT('chrome.scroll_jank.event_latency_scroll_jank_cause');
 
         SELECT
           dur,
@@ -123,7 +123,7 @@ class ChromeScrollJank(TestSuite):
           cause_of_jank,
           max_delta_dur_ns,
           sub_cause_of_jank
-        FROM event_latency_scroll_jank_cause
+        FROM chrome_event_latency_scroll_jank_cause
         ORDER by ts;
         """,
         out=Path('event_latency_scroll_jank_cause.out'))
@@ -373,7 +373,8 @@ class ChromeScrollJank(TestSuite):
     return DiffTestBlueprint(
         trace=DataPath('fling_with_input_delay.pftrace'),
         query="""
-        SELECT RUN_METRIC('chrome/chrome_tasks_delaying_input_processing.sql',
+        SELECT
+        RUN_METRIC('chrome/chrome_tasks_delaying_input_processing.sql',
           'duration_causing_jank_ms',
          /* duration_causing_jank_ms = */ '8');
 
@@ -391,7 +392,7 @@ class ChromeScrollJank(TestSuite):
         trace=DataPath('long_task_tracking_trace'),
         query="""
         SELECT
-          RUN_METRIC('chrome/chrome_long_tasks_delaying_input_processing.sql');
+        RUN_METRIC('chrome/chrome_long_tasks_delaying_input_processing.sql');
 
         SELECT
           full_name,
@@ -655,35 +656,33 @@ class ChromeScrollJank(TestSuite):
   def test_chrome_scroll_jank_v3(self):
     return DiffTestBlueprint(
         trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query=Metric('chrome_scroll_jank_v3'),
-        out=TextProto(r"""
-        [perfetto.protos.chrome_scroll_jank_v3] {
-          trace_num_frames: 291
-          trace_num_janky_frames: 3
-          trace_scroll_jank_percentage: 1.0309278350515463
-          vsync_interval_ms: 16.368
-          scrolls {
-            num_frames: 105
-            num_janky_frames: 2
-            scroll_jank_percentage: 1.9047619047619047
-            max_delay_since_last_frame: 6.126221896383187
-            scroll_jank_causes {
-              delay_since_last_frame: 2.044354838709678
-            }
-            scroll_jank_causes {
-              cause: "RendererCompositorFinishedToBeginImplFrame"
-              delay_since_last_frame: 6.126221896383187
-            }
-          }
-          scrolls {
-            num_frames: 84
-            num_janky_frames: 1
-            scroll_jank_percentage: 1.1904761904761905
-            max_delay_since_last_frame: 2.040811339198436
-            scroll_jank_causes {
-              cause: "RendererCompositorQueueingDelay"
-              delay_since_last_frame: 2.040811339198436
-            }
-          }
-        }
+        query="""
+          SELECT IMPORT('chrome.scroll_jank.scroll_jank_v3');
+
+          SELECT
+            (SELECT COUNT(*) FROM chrome_janky_frame_info_with_delay)
+              AS trace_num_frames,
+            (SELECT COUNT(*) FROM chrome_janky_frames)
+              AS trace_num_janky_frames,
+            causes.vsync_interval,
+            frames.num_frames,
+            frames.num_janky_frames,
+            frames.scroll_jank_percentage,
+            causes.max_delay_since_last_frame,
+            c.cause_of_jank,
+            c.delay_since_last_frame
+          FROM chrome_frames_per_scroll AS frames
+          INNER JOIN chrome_causes_per_scroll AS causes USING(scroll_id)
+          INNER JOIN chrome_janky_frames c USING (scroll_id)
+        """,
+        out=Csv("""
+        "trace_num_frames","trace_num_janky_frames","vsync_interval",
+                "num_frames","num_janky_frames","scroll_jank_percentage",
+                "max_delay_since_last_frame","cause_of_jank",
+                "delay_since_last_frame"
+        291,3,16.368000,105,2,1.904762,6.126222,"[NULL]",33.462000
+        291,3,16.368000,105,2,1.904762,6.126222,
+                "RendererCompositorFinishedToBeginImplFrame",100.274000
+        291,3,16.368000,84,1,1.190476,2.040811,
+                "RendererCompositorQueueingDelay",33.404000
         """))
