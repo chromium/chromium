@@ -69,6 +69,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
     REACHED_CODE_SCENARIO_TRIGGERED = 15,
     FINALIZATION_STARTED_WITH_LOCAL_OUTPUT = 16,
     DATABASE_INITIALIZATION_FAILED = 17,
+    DATABASE_CLEANUP_FAILED = 18,
     NUMBER_OF_BACKGROUND_TRACING_METRICS,
   };
   static void RecordMetric(Metrics metric);
@@ -193,7 +194,9 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
       pending_agents_;
 
   // This contains all the traces saved locally.
-  base::SequenceBound<TraceReportDatabase> trace_database_;
+  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
+  std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
+      trace_database_;
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -25,6 +26,18 @@ class TraceReportDatabaseTest : public testing::Test {
 
 TEST_F(TraceReportDatabaseTest, CreatingAndDroppingLocalTraceTable) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+}
+
+// Test without Initializing the database before
+TEST(TraceReportDatabaseNoOpenTest, OpenDatabaseIfExists) {
+  base::ScopedTempDir temp_dir;
+  TraceReportDatabase trace_report;
+
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  EXPECT_FALSE(trace_report.OpenDatabaseIfExists(temp_dir.GetPath()));
+
+  EXPECT_TRUE(trace_report.OpenDatabase(temp_dir.GetPath()));
 }
 
 TEST_F(TraceReportDatabaseTest, AddingNewReport) {

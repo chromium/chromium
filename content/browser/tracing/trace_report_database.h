@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "content/common/content_export.h"
@@ -97,6 +98,9 @@ class CONTENT_EXPORT TraceReportDatabase {
 
   bool OpenDatabase(const base::FilePath& path);
 
+  // Open database only if it already exists.
+  bool OpenDatabaseIfExists(const base::FilePath& path);
+
   // Initialize DB and open in it memory.
   bool OpenDatabaseForTesting();
 
@@ -133,6 +137,11 @@ class CONTENT_EXPORT TraceReportDatabase {
 
   sql::Database database_;
   base::FilePath db_file_path_;
+
+  bool initialized_ = false;
+
+  // Guards usage of |database_|
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

@@ -10510,6 +10510,7 @@ Called by update_autofill_enums.py.-->
   <int value="16"
       label="Trace finalization started with a local output location"/>
   <int value="17" label="Failed to initialize the trace report database"/>
+  <int value="18" label="Failed to clean the trace report database"/>
 </enum>
 
 <enum name="BackingStoreResults">

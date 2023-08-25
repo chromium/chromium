@@ -122,9 +122,11 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
     : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
-      trace_database_(base::ThreadPool::CreateSequencedTaskRunner(
+      database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      trace_database_(new TraceReportDatabase,
+                      base::OnTaskRunnerDeleter(database_task_runner_)) {
   SetInstance(this);
   g_background_tracing_manager_impl = this;
   BackgroundStartupTracingObserver::GetInstance();
@@ -151,7 +153,7 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!creation_result) {
     RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
-    trace_database_.Reset();
+    trace_database_.reset();
     return;
   }
   clean_database_timer_.Start(
@@ -302,11 +304,13 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
 void BackgroundTracingManagerImpl::InitializeTraceReportDatabase() {
   auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
   if (database_dir.has_value()) {
-    trace_database_.AsyncCall(&TraceReportDatabase::OpenDatabase)
-        .WithArgs(database_dir.value())
-        .Then(base::BindOnce(
-            &BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
-            weak_factory_.GetWeakPtr()));
+    database_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&TraceReportDatabase::OpenDatabase,
+                       base::Unretained(trace_database_.get()),
+                       std::move(*database_dir)),
+        base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
+                       weak_factory_.GetWeakPtr()));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -592,19 +596,40 @@ void BackgroundTracingManagerImpl::OnScenarioAborted() {
 void BackgroundTracingManagerImpl::CleanDatabase() {
   DCHECK(trace_database_);
 
-  trace_database_
-      .AsyncCall(
-          base::IgnoreResult(&TraceReportDatabase::DeleteTracesOlderThan))
-      .WithArgs(kTraceTimeToLive);
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TraceReportDatabase* trace_database, base::TimeDelta age) {
+            trace_database->DeleteTracesOlderThan(age);
+          },
+          base::Unretained(trace_database_.get()), kTraceTimeToLive));
 }
 
 void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
                                                            base::Time end) {
-  InitializeTraceReportDatabase();
-  trace_database_
-      .AsyncCall(
-          base::IgnoreResult(&TraceReportDatabase::DeleteTracesInDateRange))
-      .WithArgs(start, end);
+  // Exit early if |trace_database_| was not initialized successfully.
+  if (!trace_database_) {
+    return;
+  }
+
+  // The trace report database needs to exist for clean up. Avoid creating or
+  // initializing the trace report database to perform a database clean up.
+  auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
+  if (database_dir.has_value()) {
+    database_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](TraceReportDatabase* trace_database,
+               absl::optional<base::FilePath> database_dir, base::Time start,
+               base::Time end) {
+              if (trace_database->OpenDatabaseIfExists(database_dir.value())) {
+                if (!trace_database->DeleteTracesInDateRange(start, end)) {
+                  RecordMetric(Metrics::DATABASE_CLEANUP_FAILED);
+                }
+              }
+            },
+            base::Unretained(trace_database_.get()), database_dir, start, end));
+  }
 }
 
 // static
@@ -613,7 +638,6 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
     mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
         pending_provider) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   // Delay agent initialization until we have an interested AgentObserver.
   // We set disconnect handler for cleanup when the tracing target is closed.
   mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider(

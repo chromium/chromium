@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -19,9 +20,9 @@ namespace content {
 
 namespace {
 
-const base::FilePath::CharType kLocalTracesDatabaseName[] =
+const base::FilePath::CharType kLocalTracesDatabasePath[] =
     FILE_PATH_LITERAL("LocalTraces.db");
-
+const char kLocalTracesTableName[] = "local_traces";
 constexpr int kCurrentVersionNumber = 2;
 
 TraceReportDatabase::ClientReport GetReportFromStatement(
@@ -84,10 +85,11 @@ TraceReportDatabase::ClientReport::~ClientReport() = default;
 
 bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
   if (database_.is_open()) {
-    return true;
+    DCHECK_EQ(db_file_path_, path.Append(kLocalTracesDatabasePath));
+    return EnsureTableCreated();
   }
 
-  db_file_path_ = path.Append(kLocalTracesDatabaseName);
+  db_file_path_ = path.Append(kLocalTracesDatabasePath);
 
   // For logging memory dumps
   database_.set_histogram_tag("LocalTraces");
@@ -106,7 +108,7 @@ bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
 
 bool TraceReportDatabase::OpenDatabaseForTesting() {
   if (database_.is_open()) {
-    return true;
+    return EnsureTableCreated();
   }
 
   if (!database_.OpenInMemory()) {
@@ -116,7 +118,31 @@ bool TraceReportDatabase::OpenDatabaseForTesting() {
   return EnsureTableCreated();
 }
 
+bool TraceReportDatabase::OpenDatabaseIfExists(const base::FilePath& path) {
+  if (database_.is_open()) {
+    DCHECK_EQ(db_file_path_, path.Append(kLocalTracesDatabasePath));
+    return database_.DoesTableExist(kLocalTracesTableName);
+  }
+
+  db_file_path_ = path.Append(kLocalTracesDatabasePath);
+  const base::FilePath dir = db_file_path_.DirName();
+  if (!base::DirectoryExists(dir)) {
+    return false;
+  }
+
+  if (!database_.Open(db_file_path_)) {
+    return false;
+  }
+
+  if (!database_.DoesTableExist(kLocalTracesTableName)) {
+    return false;
+  }
+
+  return EnsureTableCreated();
+}
+
 bool TraceReportDatabase::AddTrace(NewReport new_report) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
   }
@@ -148,6 +174,7 @@ bool TraceReportDatabase::AddTrace(NewReport new_report) {
 }
 
 bool TraceReportDatabase::UserRequestedUpload(base::Uuid uuid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
   }
@@ -168,6 +195,8 @@ bool TraceReportDatabase::UserRequestedUpload(base::Uuid uuid) {
 }
 
 bool TraceReportDatabase::UploadComplete(base::Uuid uuid, base::Time time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!database_.is_open()) {
     return false;
   }
@@ -189,6 +218,7 @@ bool TraceReportDatabase::UploadComplete(base::Uuid uuid, base::Time time) {
 
 absl::optional<std::string> TraceReportDatabase::GetProtoValue(
     base::Uuid uuid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return absl::nullopt;
   }
@@ -215,6 +245,7 @@ absl::optional<std::string> TraceReportDatabase::GetProtoValue(
 }
 
 bool TraceReportDatabase::DeleteTrace(base::Uuid uuid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
   }
@@ -230,6 +261,7 @@ bool TraceReportDatabase::DeleteTrace(base::Uuid uuid) {
 }
 
 bool TraceReportDatabase::DeleteAllTraces() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
   }
@@ -244,6 +276,7 @@ bool TraceReportDatabase::DeleteAllTraces() {
 
 bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
                                                   const base::Time end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
   }
@@ -261,6 +294,7 @@ bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
 }
 
 bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
   }
@@ -279,9 +313,13 @@ bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
 bool TraceReportDatabase::EnsureTableCreated() {
   DCHECK(database_.is_open());
 
+  if (initialized_) {
+    return true;
+  }
+
   sql::MetaTable meta_table;
   bool has_metatable = meta_table.DoesTableExist(&database_);
-  bool has_schema = database_.DoesTableExist("local_traces");
+  bool has_schema = database_.DoesTableExist(kLocalTracesTableName);
   if (!has_metatable && has_schema) {
     // Existing DB with no meta table. Cannot determine DB version.
     if (!database_.Raze()) {
@@ -304,11 +342,14 @@ bool TraceReportDatabase::EnsureTableCreated() {
       return false;
     }
   }
-  return database_.Execute(kLocalTracesTableSql);
+  initialized_ = database_.Execute(kLocalTracesTableSql);
+
+  return initialized_;
 }
 
 std::vector<TraceReportDatabase::ClientReport>
 TraceReportDatabase::GetAllReports() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<TraceReportDatabase::ClientReport> all_reports;
 
   if (!database_.is_open()) {
@@ -329,6 +370,7 @@ TraceReportDatabase::GetAllReports() {
 
 absl::optional<TraceReportDatabase::ClientReport>
 TraceReportDatabase::GetNextReportPendingUpload() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return absl::nullopt;
   }
