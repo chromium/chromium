@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Root element has a direction
+PASS Element outside the document tree has a direction
+FAIL Non-HTML element outside the document tree has a direction assert_true: expected true got false
+PASS Element without direction has parent element direction
+FAIL Non-HTML element without direction has parent element direction assert_true: expected true got false
+Harness: the test ran to completion.
+
