@@ -12,9 +12,11 @@ var logging = requireNative('logging');
 // Internals
 var fileManagerPrivateInternal = getInternalApi('fileManagerPrivateInternal');
 
-// Shorthands
-var GetFileSystem = fileManagerPrivateNatives.GetFileSystem;
-var GetExternalFileEntry = fileManagerPrivateNatives.GetExternalFileEntry;
+// Wrapper that ensures only that a single parameter is passed to the function
+// so it can be used with Array.map.
+function getExternalFileEntry(entry) {
+  return fileManagerPrivateNatives.GetExternalFileEntry(entry);
+}
 
 // Adaptor to help propagating errors emitted by calls to internal API
 // implementations.
@@ -54,9 +56,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   // to be able to send to fileManagerPrivate API.
   function getEntryURL(entry) {
     const nativeEntry = entry.getNativeEntry && entry.getNativeEntry();
-    if (nativeEntry)
+    if (nativeEntry) {
       entry = nativeEntry;
-
+    }
     return fileManagerPrivateNatives.GetEntryURL(entry);
   }
 
@@ -65,17 +67,17 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setCustomCallback('searchDrive',
       function(callback, response) {
     if (response && !response.error && response.entries) {
-      response.entries = response.entries.map(function(entry) {
-        return GetExternalFileEntry(entry);
-      });
+      response.entries = response.entries.map(getExternalFileEntry);
     }
 
     // So |callback| doesn't break if response is not defined.
-    if (!response)
+    if (!response) {
       response = {};
+    }
 
-    if (callback)
+    if (callback) {
       callback(response.entries, response.nextFeed);
+    }
   });
 
   apiFunctions.setCustomCallback('searchDriveMetadata',
@@ -83,28 +85,26 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     if (response && !response.error) {
       for (var i = 0; i < response.length; i++) {
         response[i].entry =
-            GetExternalFileEntry(response[i].entry);
+            getExternalFileEntry(response[i].entry);
       }
     }
 
     // So |callback| doesn't break if response is not defined.
-    if (!response)
+    if (!response) {
       response = [];
+    }
 
-    if (callback)
+    if (callback) {
       callback(response);
+    }
   });
 
   apiFunctions.setHandleRequest(
       'resolveIsolatedEntries',
       function(entries, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         let resultHandler = function(entryDescriptions) {
-          return entryDescriptions.map((description) => {
-            return GetExternalFileEntry(description);
-          });
+          return entryDescriptions.map(getExternalFileEntry);
         };
         fileManagerPrivateInternal.resolveIsolatedEntries(
             urls,
@@ -114,7 +114,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getVolumeRoot', function(options, successCallback, failureCallback) {
         let resultHandler = function(entry) {
-          return entry ? GetExternalFileEntry(entry) : undefined;
+          return entry ? getExternalFileEntry(entry) : undefined;
         };
         fileManagerPrivateInternal.getVolumeRoot(
             options,
@@ -124,9 +124,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getEntryProperties',
       function(entries, names, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getEntryProperties(
             urls, names, callbackAdaptor(successCallback, failureCallback));
       });
@@ -147,9 +145,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'getCustomActions', function(entries, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getCustomActions(
             urls, callbackAdaptor(successCallback, failureCallback));
       });
@@ -157,9 +153,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'executeCustomAction',
       function(entries, actionId, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.executeCustomAction(
             urls, actionId, callbackAdaptor(successCallback, failureCallback));
       });
@@ -192,7 +186,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           newParams.rootUrl = getEntryURL(params.rootDir);
         }
         let resultHandler = function(entryList) {
-          return (entryList || []).map(entry => GetExternalFileEntry(entry));
+          return (entryList || []).map(getExternalFileEntry);
         };
         fileManagerPrivateInternal.searchFiles(
             newParams,
@@ -253,9 +247,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'executeTask',
       function(descriptor, entries, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.executeTask(
             descriptor, urls,
             callbackAdaptor(successCallback, failureCallback));
@@ -265,9 +257,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'setDefaultTask',
       function(
           descriptor, entries, mimeTypes, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.setDefaultTask(
             descriptor, urls, mimeTypes,
             callbackAdaptor(successCallback, failureCallback));
@@ -276,9 +266,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getFileTasks',
       function(entries, dlpSourceUrls, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getFileTasks(
             urls, dlpSourceUrls,
             callbackAdaptor(successCallback, failureCallback));
@@ -347,9 +335,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           restriction, file_type, invalidate_cache, successCallback,
           failureCallback) {
         let resultHandler = function(entryDescriptions) {
-          return entryDescriptions.map(description => {
-            return GetExternalFileEntry(description);
-          });
+          return entryDescriptions.map(getExternalFileEntry);
         };
         fileManagerPrivateInternal.getRecentFiles(
             restriction, file_type, invalidate_cache,
@@ -359,9 +345,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'sharePathsWithCrostini',
       function(vmName, entries, persist, successCallback, failureCallback) {
-        const urls = entries.map((entry) => {
-          return getEntryURL(entry);
-        });
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.sharePathsWithCrostini(
             vmName, urls, persist,
             callbackAdaptor(successCallback, failureCallback));
@@ -385,10 +369,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             observeFirstForSession, vmName,
             function(entryDescriptions, firstForSession) {
               successCallback(
-                  entryDescriptions.map(function(description) {
-                    return GetExternalFileEntry(description);
-                  }),
-                  firstForSession);
+                  entryDescriptions.map(getExternalFileEntry), firstForSession);
             });
       });
 
@@ -410,9 +391,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setCustomCallback('searchFiles',
       function(callback, response) {
     if (response && !response.error && response.entries) {
-      response.entries = response.entries.map(function(entry) {
-        return GetExternalFileEntry(entry);
-      });
+      response.entries = response.entries.map(getExternalFileEntry);
     }
 
     // So |callback| doesn't break if response is not defined.
@@ -433,9 +412,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'sharesheetHasTargets',
       function(entries, successCallback, failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.sharesheetHasTargets(
             urls, callbackAdaptor(successCallback, failureCallback));
       });
@@ -445,9 +422,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       function(
           entries, launchSource, dlpSourceUrls, successCallback,
           failureCallback) {
-        var urls = entries.map(function(entry) {
-          return getEntryURL(entry);
-        });
+        var urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.invokeSharesheet(
             urls, launchSource, dlpSourceUrls,
             callbackAdaptor(successCallback, failureCallback));
@@ -456,7 +431,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'toggleAddedToHoldingSpace',
       function(entries, added, successCallback, failureCallback) {
-        const urls = entries.map(entry => getEntryURL(entry));
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.toggleAddedToHoldingSpace(
             urls, added, callbackAdaptor(successCallback, failureCallback));
       });
@@ -464,7 +439,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'startIOTask',
       function(type, entries, params, successCallback, failureCallback) {
-        const urls = entries.map(entry => getEntryURL(entry));
+        const urls = entries.map(getEntryURL);
         let newParams = {};
         if (params.destinationFolder) {
           newParams.destinationFolderUrl =
@@ -484,11 +459,11 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'parseTrashInfoFiles',
       function(entries, successCallback, failureCallback) {
-        const urls = entries.map(entry => getEntryURL(entry));
+        const urls = entries.map(getEntryURL);
         let resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(description => {
             description.restoreEntry =
-                GetExternalFileEntry(description.restoreEntry);
+                getExternalFileEntry(description.restoreEntry);
             return description;
           });
         };
@@ -501,7 +476,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 bindingUtil.registerEventArgumentMassager(
     'fileManagerPrivate.onDirectoryChanged', function(args, dispatch) {
   // Convert the entry arguments into a real Entry object.
-  args[0].entry = GetExternalFileEntry(args[0].entry);
+  args[0].entry = getExternalFileEntry(args[0].entry);
   dispatch(args);
 });
 
@@ -510,7 +485,7 @@ bindingUtil.registerEventArgumentMassager(
   // Convert entries arguments into real Entry objects.
   const entries = args[0].entries;
   for (let i = 0; i < entries.length; i++) {
-    entries[i] = GetExternalFileEntry(entries[i]);
+    entries[i] = getExternalFileEntry(entries[i]);
   }
   dispatch(args);
 });
@@ -521,7 +496,7 @@ bindingUtil.registerEventArgumentMassager(
       const outputs = args[0].outputs;
       if (outputs) {
         for (let i = 0; i < outputs.length; i++) {
-          outputs[i] = GetExternalFileEntry(outputs[i]);
+          outputs[i] = getExternalFileEntry(outputs[i]);
         }
       }
       dispatch(args);
