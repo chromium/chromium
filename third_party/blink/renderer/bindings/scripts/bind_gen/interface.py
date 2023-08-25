@@ -219,28 +219,6 @@ def constant_name(cg_context):
     return name_style.constant(property_name)
 
 
-def custom_function_name(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    if cg_context.named_property_getter:
-        return "NamedPropertyGetterCustom"
-    if cg_context.named_property_setter:
-        return "NamedPropertySetterCustom"
-    if cg_context.named_property_deleter:
-        return "NamedPropertyDeleterCustom"
-
-    if cg_context.attribute_get:
-        suffix = "AttributeGetterCustom"
-    elif cg_context.attribute_set:
-        suffix = "AttributeSetterCustom"
-    elif cg_context.operation_group:
-        suffix = "MethodCustom"
-    else:
-        assert False
-
-    return name_style.func(cg_context.property_.identifier, suffix)
-
-
 # ----------------------------------------------------------------------------
 # Callback functions
 # ----------------------------------------------------------------------------
@@ -1891,16 +1869,6 @@ def make_attribute_get_callback_def(cg_context, function_name):
         EmptyNode(),
         make_check_coop_restrict_properties_access(cg_context),
         EmptyNode(),
-    ])
-
-    if "Getter" in cg_context.property_.extended_attributes.values_of(
-            "Custom"):
-        text = _format("${class_name}::{}(${info});",
-                       custom_function_name(cg_context))
-        body.append(TextNode(text))
-        return func_def
-
-    body.extend([
         make_return_value_cache_return_early(cg_context),
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
@@ -1941,13 +1909,6 @@ def make_attribute_set_callback_def(cg_context, function_name):
         make_log_activity(cg_context),
         EmptyNode(),
     ])
-
-    if "Setter" in cg_context.property_.extended_attributes.values_of(
-            "Custom"):
-        text = _format("${class_name}::{}(${v8_property_value}, ${info});",
-                       custom_function_name(cg_context))
-        body.append(TextNode(text))
-        return func_def
 
     # Binary size reduction hack
     # 1. Drop the check of argument length although this is a violation of
@@ -2704,15 +2665,6 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_check_coop_restrict_properties_access(cg_context),
         EmptyNode(),
-    ])
-
-    if "Custom" in cg_context.property_.extended_attributes:
-        text = _format("${class_name}::{}(${info});",
-                       custom_function_name(cg_context))
-        body.append(TextNode(text))
-        return func_def
-
-    body.extend([
         make_no_alloc_direct_call_flush_deferred_actions(cg_context),
         EmptyNode(),
         make_check_argument_length(cg_context),
@@ -2734,9 +2686,6 @@ def make_operation_callback_def(cg_context, function_name):
     assert isinstance(function_name, str)
 
     operation_group = cg_context.operation_group
-
-    assert (not ("Custom" in operation_group.extended_attributes)
-            or len(operation_group) == 1)
 
     nodes = SequenceNode()
     if "NoAllocDirectCall" in operation_group.extended_attributes:
@@ -3234,12 +3183,6 @@ def make_named_property_getter_callback(cg_context, function_name):
     bind_return_value(
         body, cg_context, overriding_args=["${blink_property_name}"])
 
-    if "Custom" in cg_context.named_property_getter.extended_attributes:
-        text = _format("${class_name}::{}(${blink_property_name}, ${info});",
-                       custom_function_name(cg_context))
-        body.append(TextNode(text))
-        return func_decl, func_def
-
     # The named property getter's implementation of Blink is not designed to
     # represent the property existence, and we have to determine the property
     # existence by heuristics.
@@ -3343,14 +3286,6 @@ if (!is_creating) {
             cg_context.named_property_setter.arguments[1].idl_type,
             argument=cg_context.named_property_setter.arguments[1]))
 
-    if "Custom" in cg_context.named_property_setter.extended_attributes:
-        text = _format(
-            "${class_name}::{}"
-            "(${blink_property_name}, ${v8_property_value}, ${info});",
-            custom_function_name(cg_context))
-        body.append(TextNode(text))
-        return func_decl, func_def
-
     body.extend([
         TextNode("""\
 // 3.9.2. [[Set]]
@@ -3445,12 +3380,6 @@ if (does_exist) {
 
     bind_return_value(
         body, cg_context, overriding_args=["${blink_property_name}"])
-
-    if "Custom" in cg_context.named_property_deleter.extended_attributes:
-        text = _format("${class_name}::{}(${blink_property_name}, ${info});",
-                       custom_function_name(cg_context))
-        body.append(TextNode(text))
-        return func_decl, func_def
 
     body.extend([
         TextNode("""\
@@ -7138,86 +7067,6 @@ def generate_class_like(class_like,
             constants_def.public_section.append(
                 make_constant_constant_def(cgc, constant_name(cgc)))
 
-    # Custom callback implementations
-    custom_callback_impl_decls = ListNode()
-
-    def add_custom_callback_impl_decl(**params):
-        arg_decls = params.pop("arg_decls")
-        name = params.pop("name", None)
-        if name is None:
-            name = custom_function_name(cg_context.make_copy(**params))
-        custom_callback_impl_decls.append(
-            CxxFuncDeclNode(
-                name=name,
-                arg_decls=arg_decls,
-                return_type="void",
-                static=True))
-
-    for attribute in class_like.attributes:
-        custom_values = attribute.extended_attributes.values_of("Custom")
-        is_cross_origin = "CrossOrigin" in attribute.extended_attributes
-        cross_origin_values = attribute.extended_attributes.values_of(
-            "CrossOrigin")
-        if "Getter" in custom_values:
-            add_custom_callback_impl_decl(
-                attribute=attribute,
-                attribute_get=True,
-                arg_decls=["const v8::FunctionCallbackInfo<v8::Value>&"])
-            if is_cross_origin and (not cross_origin_values
-                                    or "Getter" in cross_origin_values):
-                add_custom_callback_impl_decl(
-                    attribute=attribute,
-                    attribute_get=True,
-                    arg_decls=["const v8::PropertyCallbackInfo<v8::Value>&"])
-        if "Setter" in custom_values:
-            add_custom_callback_impl_decl(
-                attribute=attribute,
-                attribute_set=True,
-                arg_decls=[
-                    "v8::Local<v8::Value>",
-                    "const v8::FunctionCallbackInfo<v8::Value>&",
-                ])
-            if is_cross_origin and "Setter" in cross_origin_values:
-                add_custom_callback_impl_decl(
-                    attribute=attribute,
-                    attribute_set=True,
-                    arg_decls=[
-                        "v8::Local<v8::Value>",
-                        "const v8::PropertyCallbackInfo<void>&",
-                    ])
-    for operation_group in class_like.operation_groups:
-        if "Custom" in operation_group.extended_attributes:
-            add_custom_callback_impl_decl(
-                operation_group=operation_group,
-                arg_decls=["const v8::FunctionCallbackInfo<v8::Value>&"])
-    if interface and interface.indexed_and_named_properties:
-        props = interface.indexed_and_named_properties
-        operation = props.own_named_getter
-        if operation and "Custom" in operation.extended_attributes:
-            add_custom_callback_impl_decl(
-                named_property_getter=operation,
-                arg_decls=[
-                    "const AtomicString& property_name",
-                    "const v8::PropertyCallbackInfo<v8::Value>&",
-                ])
-        operation = props.own_named_setter
-        if operation and "Custom" in operation.extended_attributes:
-            add_custom_callback_impl_decl(
-                named_property_setter=operation,
-                arg_decls=[
-                    "const AtomicString& property_name",
-                    "v8::Local<v8::Value> v8_property_value",
-                    "const v8::PropertyCallbackInfo<v8::Value>&",
-                ])
-        operation = props.own_named_deleter
-        if operation and "Custom" in operation.extended_attributes:
-            add_custom_callback_impl_decl(
-                named_property_deleter=operation,
-                arg_decls=[
-                    "const AtomicString& property_name",
-                    "const v8::PropertyCallbackInfo<v8::Value>&",
-                ])
-
     # Cross-component trampolines
     if is_cross_components:
         # tp_ = trampoline name
@@ -7554,13 +7403,6 @@ def generate_class_like(class_like,
     else:
         api_class_def.public_section.append(installer_function_decls)
         api_class_def.public_section.append(EmptyNode())
-
-    if custom_callback_impl_decls:
-        api_class_def.public_section.extend([
-            TextNode("// Custom callback implementations"),
-            custom_callback_impl_decls,
-            EmptyNode(),
-        ])
 
     if indexed_and_named_property_decls:
         api_class_def.public_section.extend([

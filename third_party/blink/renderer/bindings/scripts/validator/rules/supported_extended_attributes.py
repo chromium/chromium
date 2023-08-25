@@ -75,10 +75,6 @@ def _build_supported_extended_attributes():
           forms=[F.NO_ARGS, F.IDENT, F.IDENT_LIST],
           values=["Getter", "Setter"]),
         E("CrossOriginIsolated", applicable_to=T_EXPOSURE),
-        E("Custom",
-          applicable_to=[T.ATTRIBUTE, T.OPERATION],
-          forms=[F.NO_ARGS, F.IDENT],
-          values=["Getter", "Setter"]),
         E("DeprecateAs",
           applicable_to=[
               T.ATTRIBUTE, T.CONSTANT, T.CONSTRUCTOR, T.DICTIONARY_MEMBER,
