@@ -29,7 +29,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -42,6 +41,8 @@
 namespace ash {
 
 namespace {
+
+const int kMaxButtonNameLength = 64;
 
 mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
   const auto device_type =
@@ -175,6 +176,46 @@ bool TouchpadSettingsAreValid(const mojom::Touchpad& touchpad,
   return touchpad.is_haptic ||
          (touchpad.settings->haptic_enabled == settings.haptic_enabled &&
           touchpad.settings->haptic_sensitivity == settings.haptic_sensitivity);
+}
+
+// ValidateButtonRemappingList verifies if the new button remapping list has
+// the same buttons as these in the original button remapping list and all the
+// button remapping names should be fewer than 64 characters.
+bool ValidateButtonRemappingList(
+    const std::vector<mojom::ButtonRemappingPtr>& original_remapping_list,
+    const std::vector<mojom::ButtonRemappingPtr>& new_remapping_list) {
+  if (original_remapping_list.size() != new_remapping_list.size()) {
+    return false;
+  }
+
+  for (const auto& new_remapping : new_remapping_list) {
+    bool found = false;
+    for (const auto& original_remapping : original_remapping_list) {
+      if (*original_remapping->button == *new_remapping->button) {
+        found = true;
+        break;
+      }
+    }
+    if (!found || new_remapping->name.size() >= kMaxButtonNameLength) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Valid graphics tablet settings should have the same tablet and pen buttons
+// as these in the graphics tablet and all the button remapping names should be
+// fewer than 64 characters.
+bool GraphicsTabletSettingsAreValid(
+    const mojom::GraphicsTablet& graphics_tablet,
+    const mojom::GraphicsTabletSettings& settings) {
+  return ValidateButtonRemappingList(
+             graphics_tablet.settings->tablet_button_remappings,
+             settings.tablet_button_remappings) &&
+         ValidateButtonRemappingList(
+             graphics_tablet.settings->pen_button_remappings,
+             settings.pen_button_remappings);
 }
 
 void RecordSetKeyboardSettingsValidMetric(bool is_valid) {
@@ -828,6 +869,9 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
   }
 
   auto& found_graphics_tablet = *found_graphics_tablet_iter->second;
+  if (!GraphicsTabletSettingsAreValid(found_graphics_tablet, *settings)) {
+    return;
+  }
   found_graphics_tablet.settings = settings.Clone();
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
       active_pref_service_, found_graphics_tablet);
@@ -1003,10 +1047,14 @@ void InputDeviceSettingsControllerImpl::
     observer.OnGraphicsTabletDisconnected(*graphics_tablet);
   }
 }
-// TODO(wangdanny): Implement DispatchGraphicsTabletSettingsChanged.
+
 void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
     DeviceId id) {
-  NOTIMPLEMENTED();
+  DCHECK(base::Contains(graphics_tablets_, id));
+  const auto& graphics_tablet = *graphics_tablets_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnGraphicsTabletSettingsUpdated(graphics_tablet);
+  }
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
@@ -1086,6 +1134,17 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(graphics_tablet);
     // TODO(wangdanny): Add InitializeGraphicsTabletSettings.
+    std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings;
+    std::vector<mojom::ButtonRemappingPtr> pen_button_remappings;
+    tablet_button_remappings.push_back(mojom::ButtonRemapping::New(
+        /*name=*/"test1",
+        /*button=*/
+        mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+        /*remapping_action=*/
+        mojom::RemappingAction::NewAction(
+            ash::AcceleratorAction::kBrightnessUp)));
+    mojom_graphics_tablet->settings = mojom::GraphicsTabletSettings::New(
+        std::move(tablet_button_remappings), std::move(pen_button_remappings));
     graphics_tablets_.insert_or_assign(graphics_tablet.id,
                                        std::move(mojom_graphics_tablet));
     DispatchGraphicsTabletConnected(graphics_tablet.id);

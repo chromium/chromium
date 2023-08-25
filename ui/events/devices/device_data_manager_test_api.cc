@@ -64,6 +64,11 @@ void DeviceDataManagerTestApi::SetKeyboardDevices(
   DeviceDataManager::instance_->OnKeyboardDevicesUpdated(devices);
 }
 
+void DeviceDataManagerTestApi::SetGraphicsTabletDevices(
+    const std::vector<InputDevice>& devices) {
+  DeviceDataManager::instance_->OnGraphicsTabletDevicesUpdated(devices);
+}
+
 void DeviceDataManagerTestApi::SetMouseDevices(
     const std::vector<InputDevice>& devices) {
   DeviceDataManager::instance_->OnMouseDevicesUpdated(devices);
