@@ -338,7 +338,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       rfh ? absl::optional<int>(rfh->GetProcess()->GetID()) : absl::nullopt,
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,
-      worklet_info_.wasm_url, worklet_info_.signals_url);
+      worklet_info_.wasm_url, worklet_info_.signals_url,
+      worklet_info_.needs_cors_for_additional_bid);
 
   switch (worklet_info_.type) {
     case WorkletType::kBidder: {
@@ -419,11 +420,13 @@ AuctionWorkletManager::WorkletKey::WorkletKey(
     const GURL& script_url,
     const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& signals_url,
+    bool needs_cors_for_additional_bid,
     absl::optional<uint16_t> experiment_group_id)
     : type(type),
       script_url(script_url),
       wasm_url(wasm_url),
       signals_url(signals_url),
+      needs_cors_for_additional_bid(needs_cors_for_additional_bid),
       experiment_group_id(experiment_group_id) {}
 
 AuctionWorkletManager::WorkletKey::WorkletKey(const WorkletKey&) = default;
@@ -447,6 +450,8 @@ size_t AuctionWorkletManager::WorkletKey::GetHash() const {
   hash = CombineHash(hash,
                      signals_url ? FastHash(signals_url->spec()) : 0xbee1271e);
   hash = CombineHash(hash,
+                     needs_cors_for_additional_bid ? 0x6748ee16 : 0xc2a13cd1);
+  hash = CombineHash(hash,
                      experiment_group_id ? *experiment_group_id : 0xd60fc235);
   return hash;
 }
@@ -454,9 +459,10 @@ size_t AuctionWorkletManager::WorkletKey::GetHash() const {
 bool AuctionWorkletManager::WorkletKey::WorkletKey::operator<(
     const WorkletKey& other) const {
   return std::tie(type, script_url, wasm_url, signals_url,
-                  experiment_group_id) <
+                  needs_cors_for_additional_bid, experiment_group_id) <
          std::tie(other.type, other.script_url, other.wasm_url,
-                  other.signals_url, other.experiment_group_id);
+                  other.signals_url, other.needs_cors_for_additional_bid,
+                  other.experiment_group_id);
 }
 
 AuctionWorkletManager::WorkletHandle::~WorkletHandle() {
@@ -586,10 +592,12 @@ AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
     const GURL& bidding_logic_url,
     const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
+    bool needs_cors_for_additional_bid,
     absl::optional<uint16_t> experiment_group_id) {
   return WorkletKey(WorkletType::kBidder,
                     /*script_url=*/bidding_logic_url, wasm_url,
                     /*signals_url=*/trusted_bidding_signals_url,
+                    needs_cors_for_additional_bid,
                     trusted_bidding_signals_url.has_value()
                         ? experiment_group_id
                         : absl::nullopt);
@@ -599,13 +607,14 @@ void AuctionWorkletManager::RequestBidderWorklet(
     const GURL& bidding_logic_url,
     const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
+    bool needs_cors_for_additional_bid,
     absl::optional<uint16_t> experiment_group_id,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
   RequestWorkletByKey(
       BidderWorkletKey(bidding_logic_url, wasm_url, trusted_bidding_signals_url,
-                       experiment_group_id),
+                       needs_cors_for_additional_bid, experiment_group_id),
       std::move(worklet_available_callback), std::move(fatal_error_callback),
       out_worklet_handle);
 }
@@ -621,6 +630,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
                           /*script_url=*/decision_logic_url,
                           /*wasm_url=*/absl::nullopt,
                           /*signals_url=*/trusted_scoring_signals_url,
+                          /*needs_cors_for_additional_bid=*/false,
                           experiment_group_id);
   RequestWorkletByKey(std::move(worklet_info),
                       std::move(worklet_available_callback),

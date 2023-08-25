@@ -121,6 +121,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
                const GURL& script_url,
                const absl::optional<GURL>& wasm_url,
                const absl::optional<GURL>& signals_url,
+               bool needs_cors_for_additional_bid,
                absl::optional<uint16_t> experiment_group_id);
     WorkletKey(const WorkletKey&);
     WorkletKey(WorkletKey&&);
@@ -130,6 +131,10 @@ class CONTENT_EXPORT AuctionWorkletManager {
     GURL script_url;
     absl::optional<GURL> wasm_url;
     absl::optional<GURL> signals_url;
+
+    // `needs_cors_for_additional_bid` is set for buyer reporting for additional
+    // bids; those need to perform a CORS check others don't.
+    bool needs_cors_for_additional_bid;
     absl::optional<uint16_t> experiment_group_id;
 
     // Fast, non-cryptographic hash to count unique worklets for UKM.
@@ -222,6 +227,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const GURL& bidding_logic_url,
       const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
+      bool needs_cors_for_additional_bid,
       absl::optional<uint16_t> experiment_group_id);
 
   // Requests a worklet with the specified properties. The top frame origin and
@@ -255,6 +261,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const GURL& bidding_logic_url,
       const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
+      bool needs_cors_for_additional_bid,
       absl::optional<uint16_t> experiment_group_id,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,

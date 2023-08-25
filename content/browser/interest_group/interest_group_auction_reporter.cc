@@ -631,7 +631,9 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   auction_worklet_manager_->RequestBidderWorklet(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
-      interest_group.trusted_bidding_signals_url, experiment_group_id,
+      interest_group.trusted_bidding_signals_url,
+      /*needs_cors_for_additional_bid=*/
+      winning_bid_info_.provided_as_additional_bid, experiment_group_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                      base::Unretained(this), signals_for_winner),
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletFatalError,

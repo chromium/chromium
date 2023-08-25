@@ -63,7 +63,8 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
     const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& trusted_signals_base_url)
+    const absl::optional<GURL>& trusted_signals_base_url,
+    bool needs_cors_for_additional_bid)
     : receiver_(this, std::move(pending_receiver)),
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
@@ -79,13 +80,17 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
                                           url::Origin::Create(script_url))),
       script_url_(script_url),
       wasm_url_(wasm_url),
-      trusted_signals_base_url_(trusted_signals_base_url) {
+      trusted_signals_base_url_(trusted_signals_base_url),
+      needs_cors_for_additional_bid_(needs_cors_for_additional_bid) {
   DCHECK(client_security_state_);
   if (trusted_signals_base_url_) {
     std::move(preconnect_socket_callback)
         .Run(*trusted_signals_base_url_,
              isolation_info_.network_anonymization_key());
   }
+
+  // `needs_cors_for_additional_bid_` applies only to buyer stuff.
+  DCHECK(!(is_for_seller_ && needs_cors_for_additional_bid_));
 }
 
 AuctionURLLoaderFactoryProxy::~AuctionURLLoaderFactoryProxy() = default;
@@ -176,7 +181,16 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
   }
 
-  if (!maybe_subresource_info) {
+  if (maybe_subresource_info || needs_cors_for_additional_bid_) {
+    // CORS is needed.
+    //
+    // For subresource bundle requests, CORS is supported if the subresource
+    // URL's scheme is https and not uuid-in-package. However, unlike
+    // traditional network requests, the browser cannot read the response if
+    // kNoCors is used, even with CORS-safe methods and headers -- the response
+    // is blocked by CORB.
+    new_request.mode = network::mojom::RequestMode::kCors;
+  } else {
     // CORS is not needed.
     //
     // For bidder worklets, the requests are same origin to the InterestGroup's
@@ -190,15 +204,6 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // is only made available to the same-origin script, so CORB isn't needed
     // here.
     new_request.mode = network::mojom::RequestMode::kNoCors;
-  } else {
-    // CORS is needed.
-    //
-    // For subresource bundle requests, CORS is supported if the subresource
-    // URL's scheme is https and not uuid-in-package. However, unlike
-    // traditional network requests, the browser cannot read the response if
-    // kNoCors is used, even with CORS-safe methods and headers -- the response
-    // is blocked by CORB.
-    new_request.mode = network::mojom::RequestMode::kCors;
   }
 
   GetUrlLoaderFactoryCallback url_loader_factory_getter =
@@ -230,6 +235,9 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
       new_request.trusted_params->client_security_state =
           client_security_state_.Clone();
     }
+  } else if (needs_cors_for_additional_bid_) {
+    // For additional bid reporting, act like the frame provided it as well.
+    url_loader_factory_getter = get_frame_url_loader_factory_;
   } else {
     // Treat this as a subresource request from the owner's origin, using the
     // trusted URLLoaderFactory.

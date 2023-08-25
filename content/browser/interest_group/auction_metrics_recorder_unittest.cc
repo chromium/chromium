@@ -175,6 +175,7 @@ TEST_F(AuctionMetricsRecorderTest, NumBidderWorklets) {
                              base::NumberToString(distinct_worklet)})),
           /*wasm_url=*/absl::nullopt,
           /*signals_url=*/absl::nullopt,
+          /*needs_cors_for_additional_bid=*/false,
           /*experiment_group_id=*/absl::nullopt);
       recorder().ReportBidderWorkletKey(worklet_key);
     }

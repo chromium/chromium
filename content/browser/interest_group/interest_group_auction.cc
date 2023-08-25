@@ -4143,6 +4143,7 @@ InterestGroupAuction::GetOtherSellerParam(const Bid& bid) const {
 AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
     BidState& bid_state) {
   DCHECK(!bid_state.worklet_handle);
+  DCHECK(!bid_state.additional_bid_buyer);
 
   const blink::InterestGroup& interest_group = bid_state.bidder->interest_group;
 
@@ -4152,7 +4153,8 @@ AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
   return AuctionWorkletManager::BidderWorkletKey(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
-      interest_group.trusted_bidding_signals_url, experiment_group_id);
+      interest_group.trusted_bidding_signals_url,
+      /*needs_cors_for_additional_bid=*/false, experiment_group_id);
 }
 
 void InterestGroupAuction::OnDecompressedServerResponse(
