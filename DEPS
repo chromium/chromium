@@ -4267,12 +4267,6 @@ deps = {
       'condition': 'checkout_linux and checkout_src_internal',
   },
 
-  'src/remoting/internal': {
-      'url': Var('chrome_git') + '/chrome/app-streaming.git' + '@' +
-        'd4e99ab2c43b3301e1d3ba88a7cfccd93511c8b0',
-      'condition': 'checkout_src_internal',
-  },
-
   'src/remoting/test/internal': {
       'url': Var('chrome_git') + '/chrome/remoting/test/internal.git' + '@' +
         '34ff3657e2176fc48a57fad555b076a50a409de6',
@@ -4282,12 +4276,6 @@ deps = {
   'src/remoting/tools/internal': {
       'url': Var('chrome_git') + '/chrome/remoting/tools/internal.git' + '@' +
         'acfed9c3a363694f37aadfb5cda4c31109661eb8',
-      'condition': 'checkout_src_internal',
-  },
-
-  'src/remoting/webapp/app_remoting/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/webapp/app_remoting/internal.git' + '@' +
-        '5ad5339af97c3bd193d595de03f34282491ce495',
       'condition': 'checkout_src_internal',
   },
 

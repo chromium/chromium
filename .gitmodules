@@ -728,10 +728,6 @@
 	path = remoting/host/installer/linux/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/host/installer/linux/internal.git
 	gclient-condition = checkout_linux and checkout_src_internal
-[submodule "remoting/internal"]
-	path = remoting/internal
-	url = https://chrome-internal.googlesource.com/chrome/app-streaming.git
-	gclient-condition = checkout_src_internal
 [submodule "remoting/test/internal"]
 	path = remoting/test/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/test/internal.git
@@ -739,10 +735,6 @@
 [submodule "remoting/tools/internal"]
 	path = remoting/tools/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/tools/internal.git
-	gclient-condition = checkout_src_internal
-[submodule "remoting/webapp/app_remoting/internal"]
-	path = remoting/webapp/app_remoting/internal
-	url = https://chrome-internal.googlesource.com/chrome/remoting/webapp/app_remoting/internal.git
 	gclient-condition = checkout_src_internal
 [submodule "signing_keys"]
 	path = signing_keys
