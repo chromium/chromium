@@ -355,6 +355,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://b/294977915
   "bruschetta.*@eve",
 
+  # b/297433358
+  "inputs.InputMethodShelfInputs",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
