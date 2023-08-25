@@ -42,6 +42,17 @@ const tests = [
     });
     toolbar.toggleAnnotation();
   },
+  function testEnteringAnnotationsModeDisablesPresentationMode() {
+    const toolbar = createToolbar();
+    chrome.test.assertFalse(toolbar.annotationMode);
+
+    toolbar.toggleAnnotation();
+    // This is normally done by the parent in response to the event fired by
+    // toggleAnnotation().
+    toolbar.annotationMode = true;
+    chrome.test.assertTrue(toolbar.$['present-button'].disabled);
+    chrome.test.succeed();
+  },
   function testEnteringAnnotationsModeDisablesTwoUp() {
     const toolbar = createToolbar();
     chrome.test.assertFalse(toolbar.annotationMode);

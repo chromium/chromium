@@ -320,7 +320,11 @@
 
   <hr>
 
-  <button id="present-button" class="dropdown-item" on-click="onPresentClick_">
+  <button id="present-button" class="dropdown-item" on-click="onPresentClick_"
+<if expr="enable_ink">
+      disabled="[[annotationMode]]"
+</if>
+      >
     <span class="check-container" aria-hidden="true"></span>
     $i18n{present}
   </button>
