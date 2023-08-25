@@ -262,8 +262,9 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kInputDeviceSettingsSplit);
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
+                                           features::kInputDeviceSettingsSplit},
+                                          {});
     NoSessionAshTestBase::SetUp();
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
 
@@ -392,7 +393,8 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingAndRemoving) {
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
 }
 
-TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
+TEST_F(InputDeviceSettingsControllerTest,
+       DeletesPrefsWhenInputDeviceSettingsSplitFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
 
@@ -411,6 +413,10 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
                         test_pref_value.Clone());
   pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
                         test_pref_value.Clone());
+  GetSessionControllerClient()->SetUserPrefService(account_id_3,
+                                                   std::move(pref_service));
+
+  SetActiveUser(account_id_3);
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -423,6 +429,41 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
                 prefs::kPointingStickDeviceSettingsDictPref));
   EXPECT_EQ(base::Value::Dict(), active_pref_service->GetDict(
                                      prefs::kTouchpadDeviceSettingsDictPref));
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       DeletesPrefsWhenPeripheralCustomizationFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPeripheralCustomization);
+
+  std::unique_ptr<TestingPrefServiceSimple> pref_service =
+      std::make_unique<TestingPrefServiceSimple>();
+  ash::RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                                /*for_test=*/true);
+
+  base::Value::Dict test_pref_value;
+  test_pref_value.Set("Fake Key", base::Value::Dict());
+  pref_service->SetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref,
+                        test_pref_value.Clone());
+  pref_service->SetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref,
+                        test_pref_value.Clone());
+  pref_service->SetDict(prefs::kMouseButtonRemappingsDictPref,
+                        test_pref_value.Clone());
+  GetSessionControllerClient()->SetUserPrefService(account_id_3,
+                                                   std::move(pref_service));
+
+  SetActiveUser(account_id_3);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  EXPECT_EQ(base::Value::Dict(),
+            active_pref_service->GetDict(
+                prefs::kGraphicsTabletPenButtonRemappingsDictPref));
+  EXPECT_EQ(base::Value::Dict(),
+            active_pref_service->GetDict(
+                prefs::kGraphicsTabletTabletButtonRemappingsDictPref));
+  EXPECT_EQ(base::Value::Dict(), active_pref_service->GetDict(
+                                     prefs::kMouseButtonRemappingsDictPref));
 }
 
 TEST_F(InputDeviceSettingsControllerTest,

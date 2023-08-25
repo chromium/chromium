@@ -269,6 +269,10 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
   pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
+  pref_registry->RegisterDictionaryPref(
+      prefs::kGraphicsTabletPenButtonRemappingsDictPref);
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
@@ -282,6 +286,13 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
     return;
+  }
+
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    pref_service->ClearPref(
+        prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
+    pref_service->ClearPref(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+    pref_service->ClearPref(prefs::kMouseButtonRemappingsDictPref);
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from
