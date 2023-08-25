@@ -276,6 +276,15 @@ void MacNotificationServiceNS::CloseAllNotifications() {
   [notification_center_ removeAllDeliveredNotifications];
 }
 
+void MacNotificationServiceNS::OkayToTerminateService(
+    OkayToTerminateServiceCallback callback) {
+  GetDisplayedNotifications(
+      nullptr, base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
+                                     notifications) {
+                 return notifications.empty();
+               }).Then(std::move(callback)));
+}
+
 }  // namespace mac_notifications
 
 @implementation AlertNSNotificationCenterDelegate {

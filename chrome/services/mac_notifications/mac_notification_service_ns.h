@@ -36,6 +36,7 @@ class MacNotificationServiceNS : public mojom::MacNotificationService {
   void CloseNotificationsForProfile(
       mojom::ProfileIdentifierPtr profile) override;
   void CloseAllNotifications() override;
+  void OkayToTerminateService(OkayToTerminateServiceCallback callback) override;
 
  private:
   mojo::Receiver<mojom::MacNotificationService> binding_;

@@ -109,7 +109,9 @@ MacNotificationServiceUN::MacNotificationServiceUN(
                                 weak_factory_.GetWeakPtr())];
   notification_center_.delegate = delegate_;
   LogUNNotificationSettings(notification_center_);
-  // TODO(crbug.com/1129366): Determine when to ask for permissions.
+  // TODO(crbug.com/1129366): Determine when to ask for permissions. Make sure
+  // to also update the initial value of `permission_request_is_pending_` when
+  // this changes.
   RequestPermission();
   // Schedule a timer to regularly check for any closed notifications.
   ScheduleSynchronizeNotifications();
@@ -308,8 +310,32 @@ void MacNotificationServiceUN::CloseAllNotifications() {
   delivered_notifications_.clear();
 }
 
+void MacNotificationServiceUN::OkayToTerminateService(
+    OkayToTerminateServiceCallback callback) {
+  if (permission_request_is_pending_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  GetDisplayedNotifications(
+      nullptr, base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
+                                     notifications) {
+                 return notifications.empty();
+               }).Then(std::move(callback)));
+}
+
 void MacNotificationServiceUN::RequestPermission() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  __block auto update_pending_status_callback =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          [](base::WeakPtr<MacNotificationServiceUN> service) {
+            if (service) {
+              service->permission_request_is_pending_ = false;
+            }
+          },
+          weak_factory_.GetWeakPtr()));
+
   UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
                                        UNAuthorizationOptionSound |
                                        UNAuthorizationOptionBadge;
@@ -322,6 +348,7 @@ void MacNotificationServiceUN::RequestPermission() {
                    : UNNotificationRequestPermissionResult::kPermissionDenied;
     }
     LogUNNotificationRequestPermissionResult(result);
+    std::move(update_pending_status_callback).Run();
   };
 
   [notification_center_ requestAuthorizationWithOptions:authOptions

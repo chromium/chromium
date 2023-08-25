@@ -55,7 +55,7 @@ class NotificationDispatcherMojo
       mac_notifications::mojom::NotificationActionInfoPtr info) override;
 
  private:
-  void CheckIfNotificationsRemaining();
+  void CheckIfServiceCanBeTerminated();
   void OnServiceDisconnectedGracefully(bool gracefully);
   bool HasNoDisplayedNotifications() const;
 

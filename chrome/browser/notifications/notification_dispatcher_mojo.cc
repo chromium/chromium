@@ -43,7 +43,7 @@ NotificationDispatcherMojo::NotificationDispatcherMojo(
   // Force start the notification service once so we show the permission request
   // to users on the first start of Chrome.
   // TODO(crbug.com/1129366): Find a better time to ask for permissions.
-  CheckIfNotificationsRemaining();
+  CheckIfServiceCanBeTerminated();
 }
 
 NotificationDispatcherMojo::~NotificationDispatcherMojo() = default;
@@ -67,7 +67,7 @@ void NotificationDispatcherMojo::CloseNotificationWithId(
           identifier.notification_id,
           mac_notifications::mojom::ProfileIdentifier::New(
               identifier.profile_id, identifier.incognito)));
-  CheckIfNotificationsRemaining();
+  CheckIfServiceCanBeTerminated();
 }
 
 void NotificationDispatcherMojo::CloseNotificationsWithProfileId(
@@ -78,7 +78,7 @@ void NotificationDispatcherMojo::CloseNotificationsWithProfileId(
 
   GetOrCreateService()->CloseNotificationsForProfile(
       mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito));
-  CheckIfNotificationsRemaining();
+  CheckIfServiceCanBeTerminated();
 }
 
 void NotificationDispatcherMojo::CloseAllNotifications() {
@@ -126,29 +126,26 @@ void NotificationDispatcherMojo::OnNotificationAction(
     mac_notifications::mojom::NotificationActionInfoPtr info) {
   ProcessMacNotificationResponse(provider_factory_->notification_style(),
                                  std::move(info));
-  CheckIfNotificationsRemaining();
+  CheckIfServiceCanBeTerminated();
 }
 
-void NotificationDispatcherMojo::CheckIfNotificationsRemaining() {
+void NotificationDispatcherMojo::CheckIfServiceCanBeTerminated() {
   no_notifications_checker_.Reset(base::BindOnce(
       &NotificationDispatcherMojo::OnServiceDisconnectedGracefully,
       base::Unretained(this), /*gracefully=*/true));
 
-  // This block will be called with all displayed notifications. If there are
-  // none left we close the mojo connection (only if the callback has not been
-  // canceled yet).
-  // TODO(crbug.com/1127306): Revisit this for the UNNotification API as we need
-  // to keep the process running during the initial permission request.
-  GetOrCreateService()->GetDisplayedNotifications(
-      /*profile=*/nullptr,
-      base::BindOnce(
-          [](base::OnceClosure disconnect_closure,
-             std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
-                 notifications) {
-            if (notifications.empty())
-              std::move(disconnect_closure).Run();
-          },
-          no_notifications_checker_.callback()));
+  // The service will indicate it is okay to be terminated if there are no
+  // displayed notifications left, and (in the case of the UNNotification API)
+  // there are no pending permission requests either.
+  // If this happens, we close the mojo connection (only if the callback has not
+  // been canceled yet).
+  GetOrCreateService()->OkayToTerminateService(base::BindOnce(
+      [](base::OnceClosure disconnect_closure, bool can_terminate) {
+        if (can_terminate) {
+          std::move(disconnect_closure).Run();
+        }
+      },
+      no_notifications_checker_.callback()));
 }
 
 void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
@@ -180,13 +177,13 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     next_service_restart_timer_delay_ = next_service_restart_timer_delay_ * 2;
 
   if (!gracefully) {
-    // Calling CheckIfNotificationsRemaining() will force a new connection
+    // Calling CheckIfServiceCanBeTerminated() will force a new connection
     // attempt. base::Unretained(this) is safe here because |this| owns
     // |service_restart_timer_|.
     service_restart_timer_.Start(
         FROM_HERE, next_service_restart_timer_delay_,
         base::BindOnce(
-            &NotificationDispatcherMojo::CheckIfNotificationsRemaining,
+            &NotificationDispatcherMojo::CheckIfServiceCanBeTerminated,
             base::Unretained(this)));
   } else {
     service_restart_timer_.AbandonAndStop();
@@ -228,7 +225,7 @@ void NotificationDispatcherMojo::DispatchGetNotificationsReply(
 
   // Check if there are any notifications left after this.
   if (notification_ids.empty())
-    CheckIfNotificationsRemaining();
+    CheckIfServiceCanBeTerminated();
 
   std::move(callback).Run(std::move(notification_ids),
                           /*supports_synchronization=*/true);
@@ -247,7 +244,7 @@ void NotificationDispatcherMojo::DispatchGetAllNotificationsReply(
 
   // Check if there are any notifications left after this.
   if (notification_ids.empty())
-    CheckIfNotificationsRemaining();
+    CheckIfServiceCanBeTerminated();
 
   // Initialize the base::flat_set via a std::vector to avoid N^2 runtime.
   base::flat_set<MacNotificationIdentifier> identifiers(

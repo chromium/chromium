@@ -56,6 +56,10 @@ class MockNotificationService
               (mac_notifications::mojom::ProfileIdentifierPtr),
               (override));
   MOCK_METHOD(void, CloseAllNotifications, (), (override));
+  MOCK_METHOD(void,
+              OkayToTerminateService,
+              (OkayToTerminateServiceCallback),
+              (override));
 };
 
 class MockNotificationProvider
@@ -191,10 +195,10 @@ class NotificationDispatcherMojoTest : public testing::Test {
             on_disconnect_.Get());
     provider_factory_ = provider_factory.get();
 
-    // NotificationDispatcherMojo will query the list of displayed notifications
+    // NotificationDispatcherMojo will query if it can terminate the service
     // at startup. Once that finishes it should disconnect due to inactivity.
     base::RunLoop run_loop;
-    EmulateNoNotifications();
+    EmulateOkayToTerminate(/*can_terminate=*/true);
     ExpectDisconnect(run_loop.QuitClosure());
 
     notification_dispatcher_ = std::make_unique<NotificationDispatcherMojo>(
@@ -221,26 +225,14 @@ class NotificationDispatcherMojoTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void EmulateNoNotifications() {
-    EXPECT_CALL(service(), GetDisplayedNotifications)
-        .WillOnce([](mac_notifications::mojom::ProfileIdentifierPtr profile,
-                     MockNotificationService::GetDisplayedNotificationsCallback
-                         callback) {
-          // Emulate an empty list of notifications.
-          std::move(callback).Run({});
-        });
-  }
-
-  void EmulateOneNotification(base::OnceClosure callback) {
-    EXPECT_CALL(service(), GetDisplayedNotifications)
-        .WillOnce(testing::DoAll(
+  void EmulateOkayToTerminate(bool can_terminate,
+                              base::OnceClosure callback = base::DoNothing()) {
+    EXPECT_CALL(service(), OkayToTerminateService)
+        .WillRepeatedly(testing::DoAll(
             base::test::RunOnceClosure(std::move(callback)),
-            [](mac_notifications::mojom::ProfileIdentifierPtr profile,
-               MockNotificationService::GetDisplayedNotificationsCallback
-                   callback) {
-              // Emulate one remaining notification.
-              std::move(callback).Run(CreateOneNotificationList());
-            }));
+            [can_terminate](
+                MockNotificationService::OkayToTerminateServiceCallback
+                    callback) { std::move(callback).Run(can_terminate); }));
   }
 
   void DisplayNotificationSync() {
@@ -276,7 +268,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndDisconnect) {
             EXPECT_EQ(kProfileId, identifier->profile->id);
             EXPECT_TRUE(identifier->profile->incognito);
           });
-  EmulateNoNotifications();
+  EmulateOkayToTerminate(/*can_terminate=*/true);
   notification_dispatcher_->CloseNotificationWithId(
       {kNotificationId, kProfileId, /*incognito=*/true});
   run_loop.Run();
@@ -288,7 +280,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndKeepConnected) {
   base::RunLoop run_loop;
   // Expect that we continue running if there are remaining notifications.
   EXPECT_CALL(service(), CloseNotification);
-  EmulateOneNotification(run_loop.QuitClosure());
+  EmulateOkayToTerminate(/*can_terminate=*/false, run_loop.QuitClosure());
   notification_dispatcher_->CloseNotificationWithId(
       {kNotificationId, kProfileId, /*incognito=*/true});
   run_loop.Run();
@@ -303,7 +295,7 @@ TEST_F(NotificationDispatcherMojoTest,
   // Expect that we continue running when showing a new notification just after
   // closing the last one.
   EXPECT_CALL(service(), CloseNotification);
-  EmulateNoNotifications();
+  EmulateOkayToTerminate(/*can_terminate=*/true);
   notification_dispatcher_->CloseNotificationWithId(
       {kNotificationId, kProfileId, /*incognito=*/true});
 
@@ -335,7 +327,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
         EXPECT_EQ(kProfileId, profile->id);
         EXPECT_TRUE(profile->incognito);
       });
-  EmulateNoNotifications();
+  EmulateOkayToTerminate(/*can_terminate=*/true);
   notification_dispatcher_->CloseNotificationsWithProfileId(kProfileId,
                                                             /*incognito=*/true);
   run_loop.Run();
@@ -356,7 +348,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
   // Expect that we disconnect after closing the last notification.
   base::RunLoop run_loop;
   ExpectDisconnect(run_loop.QuitClosure());
-  EmulateNoNotifications();
+  EmulateOkayToTerminate(/*can_terminate=*/true);
   EXPECT_CALL(service(), CloseNotification);
   notification_dispatcher_->CloseNotificationWithId(
       {kNotificationId, kProfileId, /*incognito=*/true});
@@ -395,7 +387,7 @@ TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
 TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
   base::HistogramTester histograms;
   // Show a new notification.
-  EmulateNoNotifications();
+  EmulateOkayToTerminate(/*can_terminate=*/true);
   EXPECT_CALL(service(), DisplayNotification);
   notification_dispatcher_->DisplayNotification(
       NotificationHandler::Type::WEB_PERSISTENT, profile_,
@@ -424,7 +416,7 @@ TEST_F(NotificationDispatcherMojoTest, TestUnexpectedDisconnectReconnects) {
   EXPECT_FALSE(provider_factory_->is_service_connected());
 
   // Expect the service to be restarted after a short timeout.
-  EmulateOneNotification(base::DoNothing());
+  EmulateOkayToTerminate(/*can_terminate=*/false);
   task_environment_.FastForwardBy(base::Milliseconds(500));
   EXPECT_TRUE(provider_factory_->is_service_connected());
 }
@@ -440,7 +432,7 @@ TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
   task_environment_.FastForwardBy(base::Milliseconds(499));
   EXPECT_FALSE(provider_factory_->is_service_connected());
   // Expect the service to be restarted after a short timeout.
-  EmulateOneNotification(base::DoNothing());
+  EmulateOkayToTerminate(/*can_terminate=*/false);
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(provider_factory_->is_service_connected());
 
@@ -451,7 +443,7 @@ TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
   task_environment_.FastForwardBy(base::Milliseconds(999));
   EXPECT_FALSE(provider_factory_->is_service_connected());
   // Expect the service to be restarted after a short timeout.
-  EmulateOneNotification(base::DoNothing());
+  EmulateOkayToTerminate(/*can_terminate=*/false);
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(provider_factory_->is_service_connected());
 }

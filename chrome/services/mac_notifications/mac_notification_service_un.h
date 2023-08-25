@@ -49,6 +49,7 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void CloseNotificationsForProfile(
       mojom::ProfileIdentifierPtr profile) override;
   void CloseAllNotifications() override;
+  void OkayToTerminateService(OkayToTerminateServiceCallback callback) override;
 
  private:
   // Requests notification permissions from the system. This will ask the user
@@ -89,6 +90,11 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   base::flat_map<std::string, mojom::NotificationMetadataPtr>
       delivered_notifications_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingTimer synchronize_displayed_notifications_timer_;
+
+  // The constructor immediately kicks of a permission request, so on
+  // construction this should be true. Set to false when that permission request
+  // resolves.
+  bool permission_request_is_pending_ = true;
 
   // Ensures that the methods in this class are called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

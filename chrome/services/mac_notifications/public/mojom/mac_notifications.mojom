@@ -129,6 +129,11 @@ interface MacNotificationService {
   // Closes all notifications shown by the helper app in the system notification
   // center for all profiles.
   CloseAllNotifications();
+
+  // Checks if it is okay to terminate this service. Returns false if for
+  // example there are still displayed notifications, or if terminating the
+  // service would interrupt/abort any pending permission requests.
+  OkayToTerminateService() => (bool can_terminate);
 };
 
 // Handles notification actions such as click or close. Implemented in the
