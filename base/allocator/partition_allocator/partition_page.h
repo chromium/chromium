@@ -77,7 +77,7 @@ using AllocationStateMap =
 #pragma pack(push, 1)
 struct SlotSpanMetadata {
  private:
-  PartitionFreelistEntry* freelist_head = nullptr;
+  EncodedNextFreelistEntry* freelist_head = nullptr;
 
  public:
   // TODO(lizeb): Make as many fields as possible private or const, to
@@ -120,13 +120,13 @@ struct SlotSpanMetadata {
   // Note the matching Alloc() functions are in PartitionPage.
   PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
       size_t number_of_freed);
-  PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
+  PA_ALWAYS_INLINE EncodedNextFreelistEntry* PopForAlloc(size_t size);
   PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root);
   // Appends the passed freelist to the slot-span's freelist. Please note that
   // the function doesn't increment the tags of the passed freelist entries,
   // since FreeNoHooks() did it already.
-  PA_ALWAYS_INLINE void AppendFreeList(PartitionFreelistEntry* head,
-                                       PartitionFreelistEntry* tail,
+  PA_ALWAYS_INLINE void AppendFreeList(EncodedNextFreelistEntry* head,
+                                       EncodedNextFreelistEntry* tail,
                                        size_t number_of_freed,
                                        PartitionRoot* root);
 
@@ -161,10 +161,10 @@ struct SlotSpanMetadata {
   PA_ALWAYS_INLINE void SetRawSize(size_t raw_size);
   PA_ALWAYS_INLINE size_t GetRawSize() const;
 
-  PA_ALWAYS_INLINE PartitionFreelistEntry* get_freelist_head() const {
+  PA_ALWAYS_INLINE EncodedNextFreelistEntry* get_freelist_head() const {
     return freelist_head;
   }
-  PA_ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
+  PA_ALWAYS_INLINE void SetFreelistHead(EncodedNextFreelistEntry* new_head);
 
   // Returns size of the region used within a slot. The used region comprises
   // of actual allocated data, extras and possibly empty space in the middle.
@@ -593,7 +593,7 @@ PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
 }
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
-    PartitionFreelistEntry* new_head) {
+    EncodedNextFreelistEntry* new_head) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // |this| is in the metadata region, hence isn't MTE-tagged. Untag |new_head|
   // as well.
@@ -608,12 +608,12 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
   freelist_is_sorted_ = false;
 }
 
-PA_ALWAYS_INLINE PartitionFreelistEntry* SlotSpanMetadata::PopForAlloc(
+PA_ALWAYS_INLINE EncodedNextFreelistEntry* SlotSpanMetadata::PopForAlloc(
     size_t size) {
   // Not using bucket->slot_size directly as the compiler doesn't know that
   // |bucket->slot_size| is the same as |size|.
   PA_DCHECK(size == bucket->slot_size);
-  PartitionFreelistEntry* result = freelist_head;
+  EncodedNextFreelistEntry* result = freelist_head;
   // Not setting freelist_is_sorted_ to false since this doesn't destroy
   // ordering.
   freelist_head = freelist_head->GetNext(size);
@@ -627,7 +627,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
     // static analysis doesn't require the implementation.
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
   DCheckRootLockIsAcquired(root);
-  auto* entry = static_cast<internal::PartitionFreelistEntry*>(
+  auto* entry = static_cast<internal::EncodedNextFreelistEntry*>(
       SlotStartAddr2Ptr(slot_start));
   // Catches an immediate double free.
   PA_CHECK(entry != freelist_head);
@@ -651,8 +651,8 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
 }
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
-    PartitionFreelistEntry* head,
-    PartitionFreelistEntry* tail,
+    EncodedNextFreelistEntry* head,
+    EncodedNextFreelistEntry* tail,
     size_t number_of_freed,
     PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)

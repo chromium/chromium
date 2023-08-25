@@ -17,36 +17,36 @@ namespace partition_alloc::internal {
 // This implementation of PartitionAlloc's freelist uses pool offsets
 // rather than naked pointers. This is intended to prevent usage of
 // freelist pointers to easily jump around to freed slots.
-class PartitionFreelistEntry {
+class PoolOffsetFreelistEntry {
  private:
-  constexpr explicit PartitionFreelistEntry(std::nullptr_t) {}
+  constexpr explicit PoolOffsetFreelistEntry(std::nullptr_t) {}
 
-  explicit PartitionFreelistEntry(PartitionFreelistEntry* next)
+  explicit PoolOffsetFreelistEntry(PoolOffsetFreelistEntry* next)
       : next_(PoolOffset(reinterpret_cast<uintptr_t>(next))) {}
 
   // For testing only.
-  PartitionFreelistEntry(void* next, bool make_shadow_match)
+  PoolOffsetFreelistEntry(void* next, bool make_shadow_match)
       : next_(PoolOffset(reinterpret_cast<uintptr_t>(next))) {}
 
  public:
-  ~PartitionFreelistEntry() = delete;
+  ~PoolOffsetFreelistEntry() = delete;
 
-  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitNull(
+  PA_ALWAYS_INLINE static PoolOffsetFreelistEntry* EmplaceAndInitNull(
       void* slot_start_tagged) {
-    auto* entry = new (slot_start_tagged) PartitionFreelistEntry(nullptr);
+    auto* entry = new (slot_start_tagged) PoolOffsetFreelistEntry(nullptr);
     return entry;
   }
 
-  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitNull(
+  PA_ALWAYS_INLINE static PoolOffsetFreelistEntry* EmplaceAndInitNull(
       uintptr_t slot_start) {
     return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
   }
 
-  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitForThreadCache(
+  PA_ALWAYS_INLINE static PoolOffsetFreelistEntry* EmplaceAndInitForThreadCache(
       uintptr_t slot_start,
-      PartitionFreelistEntry* next) {
+      PoolOffsetFreelistEntry* next) {
     auto* entry =
-        new (SlotStartAddr2Ptr(slot_start)) PartitionFreelistEntry(next);
+        new (SlotStartAddr2Ptr(slot_start)) PoolOffsetFreelistEntry(next);
     return entry;
   }
 
@@ -54,7 +54,7 @@ class PartitionFreelistEntry {
                                                      void* next,
                                                      bool make_shadow_match) {
     new (SlotStartAddr2Ptr(slot_start))
-        PartitionFreelistEntry(next, make_shadow_match);
+        PoolOffsetFreelistEntry(next, make_shadow_match);
   }
 
   void CorruptNextForTesting(uintptr_t v) {
@@ -63,13 +63,13 @@ class PartitionFreelistEntry {
   }
 
   template <bool crash_on_corruption>
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
+  PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNextForThreadCache(
       size_t slot_size) const {
     return GetNextInternal<crash_on_corruption, /*for_thread_cache=*/true>(
         slot_size);
   }
 
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t slot_size) const {
+  PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNext(size_t slot_size) const {
     return GetNextInternal<true, /*for_thread_cache=*/false>(slot_size);
   }
 
@@ -86,7 +86,7 @@ class PartitionFreelistEntry {
     }
   }
 
-  PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* entry) {
+  PA_ALWAYS_INLINE void SetNext(PoolOffsetFreelistEntry* entry) {
     next_ = PoolOffset(reinterpret_cast<uintptr_t>(entry));
   }
 
@@ -107,13 +107,13 @@ class PartitionFreelistEntry {
   }
 
   template <bool crash_on_corruption, bool for_thread_cache>
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
+  PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNextInternal(
       size_t slot_size) const {
     if (IsEncodedNextPtrZero()) {
       return nullptr;
     }
 
-    auto* ret = reinterpret_cast<PartitionFreelistEntry*>(
+    auto* ret = reinterpret_cast<PoolOffsetFreelistEntry*>(
         GetPoolInfo(reinterpret_cast<uintptr_t>(this)).base + next_);
     if (PA_UNLIKELY(!IsWellFormed<for_thread_cache>(this, ret))) {
       if constexpr (crash_on_corruption) {
@@ -130,8 +130,8 @@ class PartitionFreelistEntry {
   // (and freeslot bitmaps).
   template <bool for_thread_cache>
   PA_ALWAYS_INLINE static bool IsWellFormed(
-      const PartitionFreelistEntry* here,
-      const PartitionFreelistEntry* next) {
+      const PoolOffsetFreelistEntry* here,
+      const PoolOffsetFreelistEntry* next) {
     const uintptr_t here_address = SlotStartPtr2Addr(here);
     const uintptr_t next_address = SlotStartPtr2Addr(next);
 

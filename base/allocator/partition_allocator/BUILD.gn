@@ -111,7 +111,7 @@ component("partition_alloc") {
 
 # Changes the freelist implementation to use pointer offsets in lieu
 # of full-on pointers. Defaults to false, which implies the use of
-# `EncodedPartitionFreelistEntryPtr`.
+# "encoded next" freelist entry.
 #
 # Only usable when pointers are 64-bit.
 use_freelist_pool_offsets = has_64_bit_pointers && false

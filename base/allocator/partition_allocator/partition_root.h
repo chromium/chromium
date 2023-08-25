@@ -204,7 +204,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using SlotSpan = internal::SlotSpanMetadata;
   using Page = internal::PartitionPage;
   using Bucket = internal::PartitionBucket;
-  using FreeListEntry = internal::PartitionFreelistEntry;
+  using FreeListEntry = internal::EncodedNextFreelistEntry;
   using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
   using DirectMapExtent = internal::PartitionDirectMapExtent;
 #if BUILDFLAG(USE_STARSCAN)

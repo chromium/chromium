@@ -691,7 +691,7 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
 }
 
 template <bool crash_on_corruption>
-void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
+void ThreadCache::FreeAfter(internal::EncodedNextFreelistEntry* head,
                             size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock

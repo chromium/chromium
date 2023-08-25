@@ -43,8 +43,8 @@ TEST(HardeningTest, PartialCorruption) {
   // Even if it looks reasonable (valid encoded pointer), freelist corruption
   // detection will make the code crash, because shadow_ doesn't match
   // encoded_next_.
-  PartitionFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
-                                                to_corrupt, false);
+  EncodedNextFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
+                                                  to_corrupt, false);
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
 }
 
@@ -65,8 +65,8 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
 
   // See "PartialCorruption" above for details. This time, make shadow_
   // consistent.
-  PartitionFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
-                                                to_corrupt, true);
+  EncodedNextFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
+                                                  to_corrupt, true);
 
   // Crashes, because |to_corrupt| is not on the same superpage as data.
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
@@ -86,7 +86,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
 
   uintptr_t slot_start = root.ObjectToSlotStart(data);
   auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start);
-  PartitionFreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
+  EncodedNextFreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
 
   // Crashes, because |metadata| points inside the metadata area.
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
@@ -117,8 +117,8 @@ TEST(HardeningTest, SuccessfulCorruption) {
   root.Free(data2);
   root.Free(data);
 
-  PartitionFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
-                                                to_corrupt, true);
+  EncodedNextFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
+                                                  to_corrupt, true);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   // This part crashes with freeslot bitmap because it detects freelist
