@@ -451,6 +451,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsInputModeChangeIcon;
     case kKeyboardShortcutMicrophone:
       return &kKsMicrophoneIcon;
+      // TODO(http://b/issues/216049298): Add the following icons.
+    case kKeyboardShortcutPower:
+    case kKeyboardShortcutKeyboardBacklightToggle:
+    case kKeyboardShortcutKeyboardBrightnessDown:
+    case kKeyboardShortcutKeyboardBrightnessUp:
+      return nullptr;
     default:
       return nullptr;
   }

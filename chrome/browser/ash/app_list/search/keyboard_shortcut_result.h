@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_RESULT_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_RESULT_H_
 
+#include <string>
+#include <vector>
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
@@ -71,24 +73,32 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       const std::vector<std::u16string>& replacement_strings,
       const std::vector<ui::KeyboardCode>& shortcut_key_codes);
 
-  // Add the `accelerator` to the `text_vector`.
+  // Add the `accelerator` to the `text_vector` and populate
+  // `accessible_strings`.
   void PopulateTextVector(TextVector* text_vector,
+                          std::vector<std::u16string>& accessible_strings,
                           const ui::Accelerator& accelerator);
 
-  // Add the `accelerator_parts` to the `text_vector`.
+  // Add the `accelerator_parts` to the `text_vector` and populate
+  // `accessible_strings`.
   void PopulateTextVectorWithTextParts(
       TextVector* text_vector,
+      std::vector<std::u16string>& accessible_strings,
       const std::vector<ash::mojom::TextAcceleratorPartPtr>& accelerator_parts);
 
-  // Add the `accelerator_info` to the `text_vector`.
+  // Add the `accelerator_info` to the `text_vector` and populate
+  // `accessible_strings`.
   void PopulateTextVector(
       TextVector* text_vector,
+      std::vector<std::u16string>& accessible_strings,
       const ash::mojom::AcceleratorInfoPtr& accelerator_info);
 
-  // Add `accelerator_1` and `accelerator_2` to the `text_vector`. When there
-  // are more than one shortcuts, we only show the first two.
+  // Add `accelerator_1` and `accelerator_2` to the `text_vector` and populate
+  // `accessible_strings`. When there are more than one shortcuts, we only show
+  // the first two.
   void PopulateTextVectorWithTwoShortcuts(
       TextVector* text_vector,
+      std::vector<std::u16string>& accessible_strings,
       const ash::mojom::AcceleratorInfoPtr& accelerator_1,
       const ash::mojom::AcceleratorInfoPtr& accelerator_2);
 

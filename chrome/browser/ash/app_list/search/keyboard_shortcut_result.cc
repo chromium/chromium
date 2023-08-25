@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/constants/ash_features.h"
@@ -24,6 +25,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
@@ -37,6 +39,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -62,6 +65,102 @@ constexpr bool kStripDiacritics = true;
 
 // Flag to enable/disable acronym matcher.
 constexpr bool kUseAcronymMatcher = true;
+
+// The icon labels used by the shortcuts app can be found here:
+// https://crsrc.org/c/ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.cc;l=125.
+absl::optional<int> GetStringIdForIconCode(IconCode icon_code) {
+  switch (icon_code) {
+    case ash::SearchResultTextItem::kKeyboardShortcutPower:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER;
+    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardBacklightToggle:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_KEYBOARD_BACKLIGHT_TOGGLE;
+    case ash::SearchResultTextItem::kKeyboardShortcutMicrophone:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MICROPHONE_MUTE_TOGGLE;
+    case ash::SearchResultTextItem::kKeyboardShortcutAssistant:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_ASSISTANT;
+    case ash::SearchResultTextItem::kKeyboardShortcutAllApps:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_VIEW_ALL_APPS;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrowserBack:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_BACK;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrowserForward:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrowserRefresh:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrowserSearch:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH;
+    case ash::SearchResultTextItem::kKeyboardShortcutCalculator:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_APPLICATION2;
+    case ash::SearchResultTextItem::kKeyboardShortcutDictationToggle:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_OR_TOGGLE_DICTATION;
+    case ash::SearchResultTextItem::kKeyboardShortcutEmojiPicker:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_EMOJI_PICKER;
+    case ash::SearchResultTextItem::kKeyboardShortcutInputModeChange:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MODE_CHANGE;
+    case ash::SearchResultTextItem::kKeyboardShortcutZoom:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaLaunchApp1:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_APPLICATION1;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaFastForward:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_FAST_FORWARD;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaPause:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_PAUSE;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaPlay:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_PLAY;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaPlayPause:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_PLAY_PAUSE;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaTrackNext:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_TRACK_NEXT;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaTrackPrevious:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_TRACK_PREVIOUS;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrightnessDown:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_KEYBOARD_BRIGHTNESS_DOWN;
+    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardBrightnessDown:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_KEYBOARD_BRIGHTNESS_DOWN;
+    case ash::SearchResultTextItem::kKeyboardShortcutBrightnessUp:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BRIGHTNESS_UP;
+    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardBrightnessUp:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_KEYBOARD_BRIGHTNESS_UP;
+    case ash::SearchResultTextItem::kKeyboardShortcutVolumeMute:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_AUDIO_VOLUME_MUTE;
+    case ash::SearchResultTextItem::kKeyboardShortcutVolumeDown:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_AUDIO_VOLUME_DOWN;
+    case ash::SearchResultTextItem::kKeyboardShortcutVolumeUp:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_AUDIO_VOLUME_UP;
+    case ash::SearchResultTextItem::kKeyboardShortcutUp:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_UP;
+    case ash::SearchResultTextItem::kKeyboardShortcutDown:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_DOWN;
+    case ash::SearchResultTextItem::kKeyboardShortcutLeft:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_LEFT;
+    case ash::SearchResultTextItem::kKeyboardShortcutRight:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_RIGHT;
+    case ash::SearchResultTextItem::kKeyboardShortcutPrivacyScreenToggle:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_PRIVACY_SCREEN_TOGGLE;
+    case ash::SearchResultTextItem::kKeyboardShortcutSettings:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_SETTINGS;
+    case ash::SearchResultTextItem::kKeyboardShortcutSnapshot:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_PRINT_SCREEN;
+    case ash::SearchResultTextItem::kKeyboardShortcutLauncher:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER;
+    case ash::SearchResultTextItem::kKeyboardShortcutSearch:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH;
+  }
+}
+
+std::u16string GetAccessibleStringForIcon(IconCode icon_code) {
+  const absl::optional<int> icon_code_string_id =
+      GetStringIdForIconCode(icon_code);
+  CHECK(icon_code_string_id.has_value());
+
+  return l10n_util::GetStringFUTF16(
+      IDS_SHORTCUT_CUSTOMIZATION_ARIA_LABEL_FOR_A_KEY,
+      l10n_util::GetStringUTF16(icon_code_string_id.value()));
+}
+
+std::u16string GetAccessibleStringForKey(const std::u16string& key_string) {
+  return l10n_util::GetStringFUTF16(
+      IDS_SHORTCUT_CUSTOMIZATION_ARIA_LABEL_FOR_A_KEY, key_string);
+}
 
 }  // namespace
 
@@ -145,27 +244,50 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
   }
 }
 
+// This map matches the `keyToIconNameMap` of the shortcuts app frontend:
+// https://crsrc.org/c/ash/webui/shortcut_customization_ui/resources/js/input_key.ts;l=30.
 absl::optional<ash::SearchResultTextItem::IconCode>
 KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
-  static constexpr auto kIconCodes =
-      base::MakeFixedFlatMap<base::StringPiece16, IconCode>(
-          {{u"BrowserBack", IconCode::kKeyboardShortcutBrowserBack},
-           {u"BrowserForward", IconCode::kKeyboardShortcutBrowserForward},
-           {u"BrowserRefresh", IconCode::kKeyboardShortcutBrowserRefresh},
-           {u"ZoomToggle", IconCode::kKeyboardShortcutZoom},
-           {u"LaunchApplication1", IconCode::kKeyboardShortcutMediaLaunchApp1},
-           {u"BrightnessDown", IconCode::kKeyboardShortcutBrightnessDown},
-           {u"BrightnessUp", IconCode::kKeyboardShortcutBrightnessUp},
-           {u"AudioVolumeMute", IconCode::kKeyboardShortcutVolumeMute},
-           {u"AudioVolumeDown", IconCode::kKeyboardShortcutVolumeDown},
-           {u"AudioVolumeUp", IconCode::kKeyboardShortcutVolumeUp},
-           {u"ArrowUp", IconCode::kKeyboardShortcutUp},
-           {u"ArrowDown", IconCode::kKeyboardShortcutDown},
-           {u"ArrowLeft", IconCode::kKeyboardShortcutLeft},
-           {u"ArrowRight", IconCode::kKeyboardShortcutRight},
-           {u"PrivacyScreenToggle",
-            IconCode::kKeyboardShortcutPrivacyScreenToggle},
-           {u"PrintScreen", IconCode::kKeyboardShortcutSnapshot}});
+  static constexpr auto kIconCodes = base::MakeFixedFlatMap<base::StringPiece16,
+                                                            IconCode>(
+      {{u"ArrowDown", IconCode::kKeyboardShortcutDown},
+       {u"ArrowLeft", IconCode::kKeyboardShortcutLeft},
+       {u"ArrowRight", IconCode::kKeyboardShortcutRight},
+       {u"ArrowUp", IconCode::kKeyboardShortcutUp},
+       {u"AudioVolumeDown", IconCode::kKeyboardShortcutVolumeDown},
+       {u"AudioVolumeMute", IconCode::kKeyboardShortcutVolumeMute},
+       {u"AudioVolumeUp", IconCode::kKeyboardShortcutVolumeUp},
+       {u"BrightnessDown", IconCode::kKeyboardShortcutBrightnessDown},
+       {u"BrightnessUp", IconCode::kKeyboardShortcutBrightnessUp},
+       {u"BrowserBack", IconCode::kKeyboardShortcutBrowserBack},
+       {u"BrowserForward", IconCode::kKeyboardShortcutBrowserForward},
+       {u"BrowserRefresh", IconCode::kKeyboardShortcutBrowserRefresh},
+       {u"BrowserSearch", IconCode::kKeyboardShortcutBrowserSearch},
+       {u"EmojiPicker", IconCode::kKeyboardShortcutEmojiPicker},
+       {u"EnableOrToggleDictation", IconCode::kKeyboardShortcutDictationToggle},
+       {u"KeyboardBacklightToggle",
+        IconCode::kKeyboardShortcutKeyboardBacklightToggle},
+       {u"KeyboardBrightnessDown",
+        IconCode::kKeyboardShortcutKeyboardBrightnessDown},
+       {u"KeyboardBrightnessUp",
+        IconCode::kKeyboardShortcutKeyboardBrightnessUp},
+       {u"LaunchApplication1", IconCode::kKeyboardShortcutMediaLaunchApp1},
+       {u"LaunchApplication2", IconCode::kKeyboardShortcutCalculator},
+       {u"LaunchAssistant", IconCode::kKeyboardShortcutAssistant},
+       {u"MediaFastForward", IconCode::kKeyboardShortcutMediaFastForward},
+       {u"MediaPause", IconCode::kKeyboardShortcutMediaPause},
+       {u"MediaPlay", IconCode::kKeyboardShortcutMediaPlay},
+       {u"MediaPlayPause", IconCode::kKeyboardShortcutMediaPlayPause},
+       {u"MediaTrackNext", IconCode::kKeyboardShortcutMediaTrackNext},
+       {u"MediaTrackPrevious", IconCode::kKeyboardShortcutMediaTrackPrevious},
+       {u"MicrophoneMuteToggle", IconCode::kKeyboardShortcutMicrophone},
+       {u"ModeChange", IconCode::kKeyboardShortcutInputModeChange},
+       {u"Power", IconCode::kKeyboardShortcutPower},
+       {u"PrintScreen", IconCode::kKeyboardShortcutSnapshot},
+       {u"PrivacyScreenToggle", IconCode::kKeyboardShortcutPrivacyScreenToggle},
+       {u"Settings", IconCode::kKeyboardShortcutSettings},
+       {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
+       {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});
 
   auto* it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {
@@ -241,6 +363,7 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
 
 void KeyboardShortcutResult::PopulateTextVector(
     TextVector* text_vector,
+    std::vector<std::u16string>& accessible_strings,
     const ui::Accelerator& accelerator) {
   CHECK(text_vector);
 
@@ -268,14 +391,18 @@ void KeyboardShortcutResult::PopulateTextVector(
       // The KeyboardCode has a corresponding IconCode, and therefore an
       // icon image is supported by the front-end.
       text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+      accessible_strings.push_back(
+          GetAccessibleStringForIcon(icon_code.value()));
     } else {
       // KeyboardCode does not have a corresponding IconCode. The
       // key text will be styled to look like an icon ("iconified
       // text").
       //
       // All keys including modifiers should be displayed in lower case.
-      text_vector->push_back(CreateIconifiedTextTextItem(
-          base::ToLowerASCII(ash::GetStringForKeyboardCode(key_code))));
+      const std::u16string key_string =
+          base::ToLowerASCII(ash::GetStringForKeyboardCode(key_code));
+      text_vector->push_back(CreateIconifiedTextTextItem(key_string));
+      accessible_strings.push_back(GetAccessibleStringForKey(key_string));
     }
   }
 }
@@ -293,22 +420,27 @@ void KeyboardShortcutResult::PopulateTextVector(
 //
 void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
     TextVector* text_vector,
+    std::vector<std::u16string>& accessible_strings,
     const std::vector<ash::mojom::TextAcceleratorPartPtr>& accelerator_parts) {
   for (auto& part : accelerator_parts) {
     switch (part->type) {
       case ash::mojom::TextAcceleratorPartType::kPlainText:
       case ash::mojom::TextAcceleratorPartType::kDelimiter:
         text_vector->push_back(CreateStringTextItem(part->text));
+        accessible_strings.push_back(part->text);
         break;
       case ash::mojom::TextAcceleratorPartType::kKey:
       case ash::mojom::TextAcceleratorPartType::kModifier:
         const auto icon_code = GetIconCodeByKeyString(part->text);
         if (icon_code) {
           text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+          accessible_strings.push_back(
+              GetAccessibleStringForIcon(icon_code.value()));
         } else {
           // All keys including modifiers should be displayed in lower case.
-          text_vector->push_back(
-              CreateIconifiedTextTextItem(base::ToLowerASCII(part->text)));
+          const std::u16string key_string = base::ToLowerASCII(part->text);
+          text_vector->push_back(CreateIconifiedTextTextItem(key_string));
+          accessible_strings.push_back(GetAccessibleStringForKey(key_string));
         }
         break;
     }
@@ -317,20 +449,24 @@ void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
 
 void KeyboardShortcutResult::PopulateTextVector(
     TextVector* text_vector,
+    std::vector<std::u16string>& accessible_strings,
     const ash::mojom::AcceleratorInfoPtr& accelerator_info) {
   if (accelerator_info->layout_properties->is_standard_accelerator()) {
     const ash::mojom::StandardAcceleratorPropertiesPtr& standard_accelerator =
         accelerator_info->layout_properties->get_standard_accelerator();
-    PopulateTextVector(text_vector, standard_accelerator->accelerator);
+    PopulateTextVector(text_vector, accessible_strings,
+                       standard_accelerator->accelerator);
   } else {
     const ash::mojom::TextAcceleratorPropertiesPtr& text_accelerator =
         accelerator_info->layout_properties->get_text_accelerator();
-    PopulateTextVectorWithTextParts(text_vector, text_accelerator->parts);
+    PopulateTextVectorWithTextParts(text_vector, accessible_strings,
+                                    text_accelerator->parts);
   }
 }
 
 void KeyboardShortcutResult::PopulateTextVectorWithTwoShortcuts(
     TextVector* text_vector,
+    std::vector<std::u16string>& accessible_strings,
     const ash::mojom::AcceleratorInfoPtr& accelerator_1,
     const ash::mojom::AcceleratorInfoPtr& accelerator_2) {
   CHECK(accelerator_1);
@@ -353,21 +489,24 @@ void KeyboardShortcutResult::PopulateTextVectorWithTwoShortcuts(
         CreateStringTextItem(template_string.substr(0, first_index)));
   }
   // Add first shortcut.
-  PopulateTextVector(text_vector, accelerator_1);
+  PopulateTextVector(text_vector, accessible_strings, accelerator_1);
   // Add text between the two placeholders if any.
   // Since first_index points to the first char of "$1", the text we are
   // interested in starts at first_index + 2.
   const size_t between_len = second_index - first_index - 2;
   if (between_len > 0) {
-    text_vector->push_back(CreateStringTextItem(
-        template_string.substr(first_index + 2, between_len)));
+    const auto between_text =
+        template_string.substr(first_index + 2, between_len);
+    text_vector->push_back(CreateStringTextItem(between_text));
+    accessible_strings.push_back(between_text);
   }
   // Add second shortcut.
-  PopulateTextVector(text_vector, accelerator_2);
+  PopulateTextVector(text_vector, accessible_strings, accelerator_2);
   // Add text after the second placeholder if any.
   if (second_index + 2 < template_string.size()) {
     text_vector->push_back(
         CreateStringTextItem(template_string.substr(second_index + 2)));
+    accessible_strings.push_back(template_string.substr(second_index + 2));
   }
 }
 
@@ -511,8 +650,10 @@ KeyboardShortcutResult::KeyboardShortcutResult(
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);
 
-  // TODO(xiangdongkong): generate the accessible_string.
-  std::u16string accessible_string;
+  std::vector<std::u16string> accessible_strings;
+  accessible_strings.push_back(
+      base::StrCat({title(), u", ", details(), u", "}));
+
   TextVector text_vector;
 
   switch (search_result->accelerator_infos.size()) {
@@ -521,18 +662,18 @@ KeyboardShortcutResult::KeyboardShortcutResult(
       break;
     case 1:
       // Only one shortcut for the accelerator.
-      PopulateTextVector(&text_vector, search_result->accelerator_infos[0]);
+      PopulateTextVector(&text_vector, accessible_strings,
+                         search_result->accelerator_infos[0]);
       break;
     default:
       // When there are more than one shortcuts, we only show the first two.
-      PopulateTextVectorWithTwoShortcuts(&text_vector,
+      PopulateTextVectorWithTwoShortcuts(&text_vector, accessible_strings,
                                          search_result->accelerator_infos[0],
                                          search_result->accelerator_infos[1]);
       break;
   }
 
-  SetAccessibleName(
-      base::StrCat({title(), u", ", details(), u", ", accessible_string}));
+  SetAccessibleName(base::JoinString(accessible_strings, u" "));
   SetKeyboardShortcutTextVector(text_vector);
 }
 
