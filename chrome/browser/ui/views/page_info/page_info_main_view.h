@@ -69,7 +69,6 @@ class PageInfoMainView : public views::View,
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
 
-  gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // PermissionToggleRowViewObserver:
