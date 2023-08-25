@@ -347,9 +347,9 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
   NOT_DESTROYED();
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {
-    if ((!IsLayoutNGContainingBlock(this) && child->IsFloating()) ||
-        child->IsOutOfFlowPositioned() || child->IsColumnSpanAll())
+    if (child->IsOutOfFlowPositioned() || child->IsColumnSpanAll()) {
       continue;
+    }
 
     AddVisualOverflowFromChild(*child);
   }

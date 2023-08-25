@@ -1403,11 +1403,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.Floating();
   }
 
-  bool IsFloatingWithNonContainingBlockParent() const {
-    NOT_DESTROYED();
-    return IsFloating() && Parent() && !Parent()->IsLayoutBlockFlow();
-  }
-
   virtual bool IsInitialLetterBox() const {
     NOT_DESTROYED();
     return false;

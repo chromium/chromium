@@ -62,15 +62,6 @@ inline bool AreNGBlockFlowChildrenInline(const LayoutBlock* block) {
   return false;
 }
 
-// Return true if the block is of NG type, or if it's a block invisible to
-// LayoutNG and it has an NG containg block. False if it's hosted by the legacy
-// layout engine.
-inline bool IsLayoutNGContainingBlock(const LayoutBlock* containing_block) {
-  if (UNLIKELY(containing_block->IsLayoutFlowThread()))
-    containing_block = containing_block->ContainingBlock();
-  return containing_block && containing_block->IsLayoutNGObject();
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_

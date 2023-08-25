@@ -3333,12 +3333,6 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
   if (object_.HasLayer() &&
       To<LayoutBoxModelObject>(object_).HasSelfPaintingLayer()) {
     context_.painting_layer = To<LayoutBoxModelObject>(object_).Layer();
-  } else if (!IsInNGFragmentTraversal() &&
-             (object_.IsColumnSpanAll() ||
-              object_.IsFloatingWithNonContainingBlockParent())) {
-    // See LayoutObject::paintingLayer() for the special-cases of floating under
-    // inline and multicolumn.
-    context_.painting_layer = object_.PaintingLayer();
   }
   DCHECK(context_.painting_layer == object_.PaintingLayer());
 }

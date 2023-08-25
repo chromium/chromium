@@ -35,19 +35,11 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
   if (object.HasLayer() &&
       To<LayoutBoxModelObject>(object).HasSelfPaintingLayer()) {
     context.painting_layer = To<LayoutBoxModelObject>(object).Layer();
-  } else if (object.IsColumnSpanAll() ||
-             object.IsFloatingWithNonContainingBlockParent()) {
-    // See |LayoutObject::PaintingLayer| for the special-cases of floating under
-    // inline and multicolumn.
-    // Post LayoutNG the |LayoutObject::IsFloatingWithNonContainingBlockParent|
-    // check can be removed as floats will be painted by the correct layer.
-    context.painting_layer = object.PaintingLayer();
   }
 
-  if (object.IsFloating() &&
-      (object.IsInLayoutNGInlineFormattingContext() ||
-       IsLayoutNGContainingBlock(object.ContainingBlock())))
+  if (object.IsFloating()) {
     context.painting_layer->SetNeedsPaintPhaseFloat();
+  }
 
   if (!context.painting_layer->NeedsPaintPhaseDescendantOutlines() &&
       ((object != context.painting_layer->GetLayoutObject() &&
