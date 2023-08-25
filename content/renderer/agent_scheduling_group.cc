@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_shared_storage_worklet_thread.h"
@@ -407,9 +408,12 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
 }
 
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(
-    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver) {
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver,
+    blink::mojom::WorkletGlobalScopeCreationParamsPtr
+        global_scope_creation_params) {
   blink::WebSharedStorageWorkletThread::Start(
-      agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
+      agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver),
+      std::move(global_scope_creation_params));
 }
 
 void AgentSchedulingGroup::BindAssociatedInterfaces(

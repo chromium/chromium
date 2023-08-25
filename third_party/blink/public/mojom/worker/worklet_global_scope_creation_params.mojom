@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
+
+// Interface implemented in the browser for the worklets to forward
+// ready-for-inspection notification.
+interface WorkletDevToolsHost {
+  // Indicates that the worklet is ready for inspection, passes a DevToolsAgent
+  // interface for this worklet and requests a corresponding host.
+  OnReadyForInspection(
+    pending_remote<blink.mojom.DevToolsAgent> agent,
+    pending_receiver<blink.mojom.DevToolsAgentHost> agent_host);
+};
+
+// Parameters for initializing WorkerOrWorkletGlobalScope. This is suitable for
+// worklets starting from a different process.
+struct WorkletGlobalScopeCreationParams {
+  url.mojom.Url script_url;
+  mojo_base.mojom.UnguessableToken devtools_token;
+  pending_remote<WorkletDevToolsHost> devtools_host;
+};

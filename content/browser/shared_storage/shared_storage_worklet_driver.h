@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
+#include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-forward.h"
 
 namespace content {
 
@@ -20,7 +21,9 @@ class SharedStorageWorkletDriver {
   // Called when starting the worklet service.
   virtual void StartWorkletService(
       mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService>
-          pending_receiver) = 0;
+          pending_receiver,
+      blink::mojom::WorkletGlobalScopeCreationParamsPtr
+          global_scope_creation_params) = 0;
 
   // Returns the process host associated with the worklet. Returns nullptr if
   // the process has gone.

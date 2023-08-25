@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/messaging/blink_cloneable_message_mojom_traits.h"
@@ -107,6 +108,30 @@ std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> CreateBatchResult(
   }
   return result;
 }
+
+class TestWorkletDevToolsHost : public mojom::blink::WorkletDevToolsHost {
+ public:
+  explicit TestWorkletDevToolsHost(
+      mojo::PendingReceiver<mojom::blink::WorkletDevToolsHost> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  void OnReadyForInspection(
+      mojo::PendingRemote<mojom::blink::DevToolsAgent> agent,
+      mojo::PendingReceiver<mojom::blink::DevToolsAgentHost> agent_host)
+      override {
+    EXPECT_FALSE(ready_for_inspection_);
+    ready_for_inspection_ = true;
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  bool ready_for_inspection() const { return ready_for_inspection_; }
+
+ private:
+  bool ready_for_inspection_ = false;
+
+  mojo::Receiver<mojom::blink::WorkletDevToolsHost> receiver_{this};
+};
 
 class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
  public:
@@ -380,6 +405,7 @@ class SharedStorageWorkletTest : public PageTestBase {
   base::test::TestFuture<void> worklet_terminated_future_;
 
   std::unique_ptr<TestClient> test_client_;
+  std::unique_ptr<TestWorkletDevToolsHost> test_worklet_devtools_host_;
   std::unique_ptr<MockMojomPrivateAggregationHost>
       mock_private_aggregation_host_;
 
@@ -435,11 +461,23 @@ class SharedStorageWorkletTest : public PageTestBase {
     mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver =
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver();
 
+    mojo::PendingRemote<mojom::blink::WorkletDevToolsHost>
+        pending_devtools_host_remote;
+    mojo::PendingReceiver<mojom::blink::WorkletDevToolsHost>
+        pending_devtools_host_receiver =
+            pending_devtools_host_remote.InitWithNewPipeAndPassReceiver();
+    test_worklet_devtools_host_ = std::make_unique<TestWorkletDevToolsHost>(
+        std::move(pending_devtools_host_receiver));
+
     messaging_proxy_ = MakeGarbageCollected<SharedStorageWorkletMessagingProxy>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         CrossVariantMojoReceiver<
             mojom::blink::SharedStorageWorkletServiceInterfaceBase>(
             std::move(receiver)),
+        mojom::blink::WorkletGlobalScopeCreationParams::New(
+            KURL(kModuleScriptSource),
+            /*devtools_worker_token=*/base::UnguessableToken(),
+            std::move(pending_devtools_host_remote)),
         worklet_terminated_future_.GetCallback());
 
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
@@ -475,6 +513,9 @@ TEST_F(SharedStorageWorkletTest, AddModule_SimpleScriptSuccess) {
   AddModuleResult result = AddModule(/*script_content=*/"let a = 1;");
   EXPECT_TRUE(result.success);
   EXPECT_TRUE(result.error_message.empty());
+
+  test_worklet_devtools_host_->FlushForTesting();
+  EXPECT_TRUE(test_worklet_devtools_host_->ready_for_inspection());
 }
 
 TEST_F(SharedStorageWorkletTest, AddModule_SimpleScriptError) {
@@ -482,6 +523,9 @@ TEST_F(SharedStorageWorkletTest, AddModule_SimpleScriptError) {
   EXPECT_FALSE(result.success);
   EXPECT_THAT(result.error_message,
               testing::HasSubstr("ReferenceError: a is not defined"));
+
+  test_worklet_devtools_host_->FlushForTesting();
+  EXPECT_TRUE(test_worklet_devtools_host_->ready_for_inspection());
 }
 
 TEST_F(SharedStorageWorkletTest, AddModule_ScriptDownloadError) {

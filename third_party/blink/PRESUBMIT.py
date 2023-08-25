@@ -78,12 +78,11 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/loader/resource_load_info',
         'third_party/blink/public/mojom/loader/resource_load_info_notifier',
         'third_party/blink/public/mojom/worker/subresource_loader_updater',
+        'third_party/blink/public/mojom/worker/worklet_global_scope_creation_params',
         'third_party/blink/public/mojom/loader/transferrable_url_loader',
         'third_party/blink/public/mojom/loader/code_cache',
-        'media/mojo/mojom/interface_factory',
-        'media/mojo/mojom/audio_decoder',
-        'media/mojo/mojom/audio_encoder',
-        'media/mojo/mojom/video_decoder',
+        'media/mojo/mojom/interface_factory', 'media/mojo/mojom/audio_decoder',
+        'media/mojo/mojom/audio_encoder', 'media/mojo/mojom/video_decoder',
         'media/mojo/mojom/media_metrics_provider')
 
     for f in input_api.AffectedFiles(file_filter=source_file_filter):

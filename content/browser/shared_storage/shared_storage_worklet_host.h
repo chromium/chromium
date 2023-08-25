@@ -170,6 +170,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   }
 
  private:
+  class ScopedDevToolsHandle;
+
   void OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
       const GURL& urn_uuid,
       base::TimeTicks start_time,
@@ -205,6 +207,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const absl::optional<std::string>& context_id);
 
   bool IsSharedStorageAllowed();
+
+  // RAII helper object for talking to `SharedStorageWorkletDevToolsManager`.
+  std::unique_ptr<ScopedDevToolsHandle> devtools_handle_;
 
   AddModuleState add_module_state_ = AddModuleState::kNotInitiated;
 

@@ -244,6 +244,7 @@ mojom("mojom_platform") {
     "worker/worker_content_settings_proxy.mojom",
     "worker/worker_main_script_load_params.mojom",
     "worker/worker_options.mojom",
+    "worker/worklet_global_scope_creation_params.mojom",
   ]
 
   if (is_android) {

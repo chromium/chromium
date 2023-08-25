@@ -1758,13 +1758,15 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/shared-storage",
+      "http/tests/inspector-protocol/shared-storage",
       "http/tests/inspector-protocol/storage/shared-storage.js",
       "http/tests/inspector-protocol/storage/shared-storage-delete.js",
       "http/tests/inspector-protocol/storage/shared-storage-set.js",
       "http/tests/inspector-protocol/storage/shared-storage-tracking-disabled.js"
     ],
     "exclusive_tests": [
-      "external/wpt/shared-storage"
+      "external/wpt/shared-storage",
+      "http/tests/inspector-protocol/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,FencedFramesEnforceFocus",
              "--disable-threaded-compositing", "--disable-threaded-animation"],

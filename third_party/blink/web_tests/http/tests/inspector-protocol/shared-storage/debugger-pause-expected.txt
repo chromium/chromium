@@ -1,0 +1,4 @@
+Tests debugger pause in shared storage worklet.
+Paused in the worklet
+Worklet state: globalVar=5
+

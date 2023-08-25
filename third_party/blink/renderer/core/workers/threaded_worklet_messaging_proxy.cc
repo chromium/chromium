@@ -45,7 +45,9 @@ ThreadedWorkletMessagingProxy::ThreadedWorkletMessagingProxy(
 void ThreadedWorkletMessagingProxy::Initialize(
     WorkerClients* worker_clients,
     WorkletModuleResponsesMap* module_responses_map,
-    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data) {
+    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    mojom::blink::WorkletGlobalScopeCreationParamsPtr
+        client_provided_global_scope_creation_params) {
   DCHECK(IsMainThread());
   if (AskedToTerminate())
     return;
@@ -66,8 +68,9 @@ void ThreadedWorkletMessagingProxy::Initialize(
   // to support an out-of-process worklet architecture where the
   // GlobalScopeCreationParams is reasonably filled in.
   if (!GetExecutionContext()) {
+    CHECK(client_provided_global_scope_creation_params);
     auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-        /*script_url=*/KURL(),
+        client_provided_global_scope_creation_params->script_url,
         /*script_type=*/mojom::blink::ScriptType::kModule, global_scope_name,
         /*user_agent=*/String(),
         /*ua_metadata=*/absl::optional<UserAgentMetadata>(),
@@ -83,15 +86,34 @@ void ThreadedWorkletMessagingProxy::Initialize(
         /*worker_clients=*/nullptr,
         /*content_settings_client=*/nullptr,
         /*inherited_trial_features=*/nullptr,
-        /*parent_devtools_token=*/base::UnguessableToken::Create(),
+        /*parent_devtools_token=*/
+        client_provided_global_scope_creation_params->devtools_token,
         /*worker_settings=*/nullptr,
         /*v8_cache_options=*/mojom::blink::V8CacheOptions::kDefault,
         /*module_responses_map=*/nullptr);
 
+    auto devtools_params = std::make_unique<WorkerDevToolsParams>();
+    devtools_params->devtools_worker_token =
+        client_provided_global_scope_creation_params->devtools_token;
+    mojo::PendingRemote<mojom::blink::DevToolsAgent> devtools_agent_remote;
+    devtools_params->agent_receiver =
+        devtools_agent_remote.InitWithNewPipeAndPassReceiver();
+    mojo::PendingReceiver<mojom::blink::DevToolsAgentHost>
+        devtools_agent_host_receiver =
+            devtools_params->agent_host_remote.InitWithNewPipeAndPassReceiver();
+
     InitializeWorkerThread(std::move(creation_params), thread_startup_data,
-                           absl::nullopt);
+                           /*token=*/absl::nullopt, std::move(devtools_params));
+
+    mojo::Remote<mojom::blink::WorkletDevToolsHost> devtools_host(
+        std::move(client_provided_global_scope_creation_params->devtools_host));
+    devtools_host->OnReadyForInspection(
+        std::move(devtools_agent_remote),
+        std::move(devtools_agent_host_receiver));
     return;
   }
+
+  CHECK(!client_provided_global_scope_creation_params);
 
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   ContentSecurityPolicy* csp = window->GetContentSecurityPolicy();

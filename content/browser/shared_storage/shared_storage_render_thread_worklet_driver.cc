@@ -8,6 +8,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"
 
 namespace content {
 
@@ -36,7 +37,9 @@ SharedStorageRenderThreadWorkletDriver::
 
 void SharedStorageRenderThreadWorkletDriver::StartWorkletService(
     mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService>
-        pending_receiver) {
+        pending_receiver,
+    blink::mojom::WorkletGlobalScopeCreationParamsPtr
+        global_scope_creation_params) {
   // `StartWorkletService` will be called right after the driver is created when
   // the document is still alive, as the driver is created on-demand on the
   // first worklet operation. Thus, the `agent_scheduling_group_host_` should
@@ -44,7 +47,7 @@ void SharedStorageRenderThreadWorkletDriver::StartWorkletService(
   DCHECK(agent_scheduling_group_host_);
 
   agent_scheduling_group_host_->CreateSharedStorageWorkletService(
-      std::move(pending_receiver));
+      std::move(pending_receiver), std::move(global_scope_creation_params));
 }
 
 RenderProcessHost* SharedStorageRenderThreadWorkletDriver::GetProcessHost() {

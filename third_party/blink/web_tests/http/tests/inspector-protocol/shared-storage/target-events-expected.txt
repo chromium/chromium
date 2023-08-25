@@ -1,0 +1,13 @@
+Tests target attach and crash for shared storage worklet.
+{
+    attached : true
+    browserContextId : <string>
+    canAccessOpener : false
+    targetId : <string>
+    title : Shared storage worklet for http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/module.js
+    type : shared_storage_worklet
+    url : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/module.js
+}
+Stopped shared storage worklet and received Inspector.targetCrashed event
+
+
