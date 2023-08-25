@@ -533,7 +533,8 @@ std::vector<std::string> ExtensionWebRequestEventRouter::GetEventNames() {
 // NOTE(benjhayden) New APIs should not use this sub_event_name trick! It does
 // not play well with event pages. See downloads.onDeterminingFilename and
 // ExtensionDownloadsEventRouter for an alternative approach.
-ExtensionWebRequestEventRouter::EventListener::EventListener(ID id) : id(id) {}
+ExtensionWebRequestEventRouter::EventListener::EventListener(ID id)
+    : id(std::move(id)) {}
 ExtensionWebRequestEventRouter::EventListener::~EventListener() = default;
 
 // Contains info about requests that are blocked waiting for a response from
@@ -825,6 +826,40 @@ ExtensionWebRequestEventRouter::BrowserContextData::BrowserContextData(
     BrowserContextData&&) = default;
 ExtensionWebRequestEventRouter::BrowserContextData::~BrowserContextData() =
     default;
+
+ExtensionWebRequestEventRouter::EventListener::ID::ID(
+    content::BrowserContext* browser_context,
+    const std::string& extension_id,
+    const std::string& sub_event_name,
+    int render_process_id,
+    int web_view_instance_id,
+    int worker_thread_id,
+    int64_t service_worker_version_id)
+    : browser_context(browser_context),
+      extension_id(extension_id),
+      sub_event_name(sub_event_name),
+      render_process_id(render_process_id),
+      web_view_instance_id(web_view_instance_id),
+      worker_thread_id(worker_thread_id),
+      service_worker_version_id(service_worker_version_id) {}
+
+ExtensionWebRequestEventRouter::EventListener::ID::ID(const ID& source) =
+    default;
+ExtensionWebRequestEventRouter::EventListener::ID::ID(ID&& source) = default;
+
+bool ExtensionWebRequestEventRouter::EventListener::ID::operator==(
+    const ID& that) const {
+  // Since EventListeners are segmented by browser_context, check that
+  // last, as it is exceedingly unlikely to be different.
+  return extension_id == that.extension_id &&
+         sub_event_name == that.sub_event_name &&
+         web_view_instance_id == that.web_view_instance_id &&
+         render_process_id == that.render_process_id &&
+         worker_thread_id == that.worker_thread_id &&
+         service_worker_version_id == that.service_worker_version_id &&
+         browser_context == that.browser_context;
+}
+
 //
 // ExtensionWebRequestEventRouter
 //
@@ -1541,7 +1576,7 @@ void ExtensionWebRequestEventRouter::OnEventHandled(
     int web_view_instance_id,
     int worker_thread_id,
     int64_t service_worker_version_id,
-    EventResponse* response) {
+    std::unique_ptr<EventResponse> response) {
   BrowserContextData& context_data =
       data_[GetBrowserContextID(browser_context)];
   EventListener::ID id(browser_context, extension_id, sub_event_name,
@@ -1571,7 +1606,7 @@ void ExtensionWebRequestEventRouter::OnEventHandled(
 
   listener->blocked_requests.erase(request_id);
   DecrementBlockCount(browser_context, extension_id, event_name, request_id,
-                      response, listener->extra_info_spec);
+                      std::move(response), listener->extra_info_spec);
 }
 
 bool ExtensionWebRequestEventRouter::AddEventListener(
@@ -1602,7 +1637,8 @@ bool ExtensionWebRequestEventRouter::AddEventListener(
     return false;
   }
 
-  std::unique_ptr<EventListener> listener(new EventListener(id));
+  std::unique_ptr<EventListener> listener =
+      std::make_unique<EventListener>(std::move(id));
   listener->extension_name = extension_name;
   listener->histogram_value = GetEventHistogramValue(event_name);
   listener->filter = std::move(filter);
@@ -2153,10 +2189,8 @@ void ExtensionWebRequestEventRouter::DecrementBlockCount(
     const std::string& extension_id,
     const std::string& event_name,
     uint64_t request_id,
-    EventResponse* response,
+    std::unique_ptr<EventResponse> response,
     int extra_info_spec) {
-  std::unique_ptr<EventResponse> response_scoped(response);
-
   // It's possible that this request was deleted, or cancelled by a previous
   // event handler or handled by Declarative Net Request API. If so, ignore this
   // response.
@@ -2176,7 +2210,7 @@ void ExtensionWebRequestEventRouter::DecrementBlockCount(
 
   if (response) {
     helpers::EventResponseDelta delta = CalculateDelta(
-        browser_context, blocked_request, response, extra_info_spec);
+        browser_context, blocked_request, response.get(), extra_info_spec);
 
     activity_monitor::OnWebRequestApiUsed(
         static_cast<content::BrowserContext*>(browser_context), extension_id,

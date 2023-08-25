@@ -55,17 +55,6 @@ class ExtensionWebRequestEventRouter {
 
   struct BlockedRequest;
 
-  // Identifier for a `BrowserContext` to scope the lifetime for references.
-  // `BrowserContextID` is derived from `BrowserContext*`, used in comparison
-  // only, and are never deferenced.
-  using BrowserContextID = std::uintptr_t;
-
-  static BrowserContextID GetBrowserContextID(
-      content::BrowserContext* browser_context) {
-    return reinterpret_cast<BrowserContextID>(
-        static_cast<void*>(browser_context));
-  }
-
   // The events denoting the lifecycle of a given network request.
   enum EventTypes {
     kInvalidEvent = 0,
@@ -269,7 +258,7 @@ class ExtensionWebRequestEventRouter {
                       int web_view_instance_id,
                       int worker_thread_id,
                       int64_t service_worker_version_id,
-                      EventResponse* response);
+                      std::unique_ptr<EventResponse> response);
 
   // Adds a listener to the given event. |event_name| specifies the event being
   // listened to. |sub_event_name| is an internal event uniquely generated in
@@ -346,6 +335,17 @@ class ExtensionWebRequestEventRouter {
   }
 
  private:
+  // Identifier for a `BrowserContext` to scope the lifetime for references.
+  // `BrowserContextID` is derived from `BrowserContext*`, used in comparison
+  // only, and are never deferenced.
+  using BrowserContextID = std::uintptr_t;
+
+  static BrowserContextID GetBrowserContextID(
+      content::BrowserContext* browser_context) {
+    return reinterpret_cast<BrowserContextID>(
+        static_cast<void*>(browser_context));
+  }
+
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
 
@@ -360,6 +360,7 @@ class ExtensionWebRequestEventRouter {
          int64_t service_worker_version_id);
 
       ID(const ID& source);
+      ID(ID&& source);
 
       bool operator==(const ID& that) const;
 
@@ -526,13 +527,12 @@ class ExtensionWebRequestEventRouter {
   // Decrements the count of event handlers blocking the given request. When the
   // count reaches 0, we stop blocking the request and proceed it using the
   // method requested by the extension with the highest precedence. Precedence
-  // is decided by extension install time. If |response| is non-NULL, this
-  // method assumes ownership.
+  // is decided by extension install time.
   void DecrementBlockCount(content::BrowserContext* browser_context,
                            const std::string& extension_id,
                            const std::string& event_name,
                            uint64_t request_id,
-                           EventResponse* response,
+                           std::unique_ptr<EventResponse> response,
                            int extra_info_spec);
 
   // Processes the generated deltas from blocked_requests_ on the specified

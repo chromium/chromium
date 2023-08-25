@@ -780,7 +780,7 @@ void WebRequestInternalEventHandledFunction::OnError(
   ExtensionWebRequestEventRouter::GetInstance()->OnEventHandled(
       browser_context(), extension_id_safe(), event_name, sub_event_name,
       request_id, render_process_id, web_view_instance_id, worker_thread_id(),
-      service_worker_version_id(), response.release());
+      service_worker_version_id(), std::move(response));
 }
 
 ExtensionFunction::ResponseAction
@@ -925,7 +925,7 @@ WebRequestInternalEventHandledFunction::Run() {
   ExtensionWebRequestEventRouter::GetInstance()->OnEventHandled(
       browser_context(), extension_id_safe(), event_name, sub_event_name,
       request_id, render_process_id, web_view_instance_id, worker_thread_id(),
-      service_worker_version_id(), response.release());
+      service_worker_version_id(), std::move(response));
 
   return RespondNow(NoArguments());
 }
@@ -956,38 +956,6 @@ ExtensionFunction::ResponseAction
 WebRequestHandlerBehaviorChangedFunction::Run() {
   helpers::ClearCacheOnNavigation();
   return RespondNow(NoArguments());
-}
-
-ExtensionWebRequestEventRouter::EventListener::ID::ID(
-    content::BrowserContext* browser_context,
-    const std::string& extension_id,
-    const std::string& sub_event_name,
-    int render_process_id,
-    int web_view_instance_id,
-    int worker_thread_id,
-    int64_t service_worker_version_id)
-    : browser_context(browser_context),
-      extension_id(extension_id),
-      sub_event_name(sub_event_name),
-      render_process_id(render_process_id),
-      web_view_instance_id(web_view_instance_id),
-      worker_thread_id(worker_thread_id),
-      service_worker_version_id(service_worker_version_id) {}
-
-ExtensionWebRequestEventRouter::EventListener::ID::ID(const ID& source) =
-    default;
-
-bool ExtensionWebRequestEventRouter::EventListener::ID::operator==(
-    const ID& that) const {
-  // Since EventListeners are segmented by browser_context, check that
-  // last, as it is exceedingly unlikely to be different.
-  return extension_id == that.extension_id &&
-         sub_event_name == that.sub_event_name &&
-         web_view_instance_id == that.web_view_instance_id &&
-         render_process_id == that.render_process_id &&
-         worker_thread_id == that.worker_thread_id &&
-         service_worker_version_id == that.service_worker_version_id &&
-         browser_context == that.browser_context;
 }
 
 }  // namespace extensions
