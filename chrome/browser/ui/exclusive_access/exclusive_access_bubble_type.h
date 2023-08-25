@@ -18,6 +18,10 @@ class ExtensionRegistry;
 // web page then requests mouse lock, "do you want to allow mouse lock"
 // will be shown.
 enum ExclusiveAccessBubbleType {
+  // This "type" typically signifies closing the exclusive access bubble, except
+  // when used with `notify_download == true`, in which case it means that a
+  // "download started" notice is added to whatever else the exclusive access
+  // bubble type would have been.
   EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE = 0,
 
   // For tab fullscreen mode.

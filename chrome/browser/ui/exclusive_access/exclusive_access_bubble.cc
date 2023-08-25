@@ -32,10 +32,12 @@ const int ExclusiveAccessBubble::kSimplifiedPopupTopPx = 45;
 ExclusiveAccessBubble::ExclusiveAccessBubble(
     ExclusiveAccessManager* manager,
     const GURL& url,
-    ExclusiveAccessBubbleType bubble_type)
+    ExclusiveAccessBubbleType bubble_type,
+    bool notify_download)
     : manager_(manager),
       url_(url),
       bubble_type_(bubble_type),
+      notify_download_(notify_download),
       hide_timeout_(
           FROM_HERE,
           base::Milliseconds(kInitialDelayMs),
@@ -56,7 +58,7 @@ ExclusiveAccessBubble::ExclusiveAccessBubble(
           base::Milliseconds(1000 / kPositionCheckHz),
           base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
                               base::Unretained(this))) {
-  DCHECK_NE(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, bubble_type_);
+  DCHECK(notify_download_ || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type_);
 }
 
 ExclusiveAccessBubble::~ExclusiveAccessBubble() = default;

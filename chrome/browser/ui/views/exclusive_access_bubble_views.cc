@@ -46,7 +46,8 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback)
     : ExclusiveAccessBubble(context->GetExclusiveAccessManager(),
                             url,
-                            bubble_type),
+                            bubble_type,
+                            notify_download),
       bubble_view_context_(context),
       popup_(nullptr),
       bubble_first_hide_callback_(std::move(bubble_first_hide_callback)),
@@ -79,7 +80,6 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   browser_fullscreen_exit_accelerator_ = accelerator.GetShortcutText();
 #endif
 
-  notify_download_ = notify_download;
   UpdateViewContent(bubble_type_);
 
   // Initialize the popup.

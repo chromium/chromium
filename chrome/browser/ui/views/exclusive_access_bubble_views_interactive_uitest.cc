@@ -63,3 +63,14 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, NativeClose) {
   EXPECT_TRUE(was_observing_in_destroying_);
   EXPECT_TRUE(was_destroying_);
 }
+
+// Tests that creating an exclusive access bubble for a download does not crash,
+// despite the type being EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE. See
+// crbug.com/1472150.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
+  ExclusiveAccessBubbleViews bubble(
+      BrowserView::GetBrowserViewForBrowser(browser()), GURL(),
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, /*notify_download=*/true,
+      base::DoNothing());
+  EXPECT_TRUE(IsBubbleDownloadNotification(&bubble));
+}
