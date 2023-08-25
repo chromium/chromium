@@ -4002,6 +4002,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "enable-wifi-qos",
+    "owners": ["chuweih", "jiejiang", "cros-networking@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-windows-gaming-input-data-fetcher",
     "owners": ["gabrielbrito@microsoft.com", "qiaye@microsoft.com" ],
     "expiry_milestone": 121

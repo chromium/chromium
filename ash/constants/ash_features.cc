@@ -877,6 +877,12 @@ BASE_FEATURE(kEnableTouchscreensInDiagnosticsApp,
              "EnableTouchscreensInDiagnosticsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables WiFi QoS to detect and prioritize selected egress network traffic
+// using WiFi QoS/WMM in congested WiFi environments.
+BASE_FEATURE(kEnableWifiQos,
+             "EnableWifiQos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enforces Ash extension keep-list. Only the extensions/Chrome apps in the
 // keep-list are enabled in Ash.
 BASE_FEATURE(kEnforceAshExtensionKeeplist,

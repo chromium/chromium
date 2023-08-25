@@ -3471,6 +3471,9 @@ extern const char kEnableTouchpadsInDiagnosticsAppDescription[];
 extern const char kEnableTouchscreensInDiagnosticsAppName[];
 extern const char kEnableTouchscreensInDiagnosticsAppDescription[];
 
+extern const char kEnableWifiQosName[];
+extern const char kEnableWifiQosDescription[];
+
 extern const char kEnableZramWriteback[];
 extern const char kEnableZramWritebackDescription[];
 

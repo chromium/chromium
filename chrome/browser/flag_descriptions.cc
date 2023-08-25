@@ -6037,6 +6037,11 @@ const char kEnableTouchscreensInDiagnosticsAppDescription[] =
     "Shows touchscreen cards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
+const char kEnableWifiQosName[] = "Enable WiFi QoS";
+const char kEnableWifiQosDescription[] =
+    "If enabled the system will start automatic prioritization of egress "
+    "traffic with WiFi QoS/WMM.";
+
 const char kEnableZramWriteback[] = "Enable Zram Writeback";
 const char kEnableZramWritebackDescription[] =
     "If enabled zram swap will be able to write back to disk increasing "
