@@ -23,6 +23,8 @@ source_set("safety_check") {
     "//components/version_info",
     "//ios/chrome/browser/omaha",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common",
@@ -98,6 +100,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/upgrade",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
@@ -271,6 +273,9 @@ void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
 
   safe_browsing_check_state_ = state;
 
+  // The safe browsing state changed, log a freshness signal for Safety Check.
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+
   local_pref_service_->SetString(
       prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
       NameForSafetyCheckState(state));
@@ -330,6 +335,15 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
     return;
   }
 
+  // Only log that there was a freshness signal if the new state has a different
+  // end result (a password issue, safe).
+  if (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
+      state == PasswordSafetyCheckState::kReusedPasswords ||
+      state == PasswordSafetyCheckState::kWeakPasswords ||
+      state == PasswordSafetyCheckState::kSafe) {
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+  }
+
   password_check_state_ = state;
 
   local_pref_service_->SetString(
@@ -350,6 +364,13 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
 
   if (update_chrome_check_state_ == state || ignore_omaha_changes_) {
     return;
+  }
+
+  // Only log that there was a freshness signal if the new state has a different
+  // end result (out of date, up to date).
+  if (state == UpdateChromeSafetyCheckState::kOutOfDate ||
+      state == UpdateChromeSafetyCheckState::kUpToDate) {
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
   }
 
   update_chrome_check_state_ = state;

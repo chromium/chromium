@@ -69,14 +69,28 @@
       }
       break;
     }
+
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+      if (_localState) {
+        // Increment freshness pref since it is an impression of
+        // the latest Safety Check results as the top module.
+        int freshness_impression_count = _localState->GetInteger(
+            prefs::
+                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
+        _localState->SetInteger(
+            prefs::
+                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
+      break;
+    }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, type);
