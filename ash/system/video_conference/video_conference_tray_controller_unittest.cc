@@ -509,29 +509,52 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
 
   AnchoredNudgeManager::Get()->Cancel(nudge_id);
 
-  // Waits for 60 seconds to simulate that the cool down has passed.
-  task_environment()->AdvanceClock(base::Seconds(60));
-
-  // Nudge should not be displayed as nudge can show only once per session.
+  // The second nudge should not show until the 2 mins cool down passed.
+  task_environment()->AdvanceClock(base::Minutes(2) - base::Seconds(5));
   controller()->OnSpeakOnMuteDetected();
   EXPECT_FALSE(IsNudgeShown(nudge_id));
 
+  task_environment()->AdvanceClock(base::Seconds(5));
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  AnchoredNudgeManager::Get()->Cancel(nudge_id);
+
+  // The third nudge should not show until the 4 mins cool down passed.
+  task_environment()->AdvanceClock(base::Minutes(4) - base::Seconds(5));
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  task_environment()->AdvanceClock(base::Seconds(5));
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  AnchoredNudgeManager::Get()->Cancel(nudge_id);
+
+  // The forth nudge should not show until the 8 mins cool down passed.
+  task_environment()->AdvanceClock(base::Minutes(8) - base::Seconds(5));
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  task_environment()->AdvanceClock(base::Seconds(5));
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  AnchoredNudgeManager::Get()->Cancel(nudge_id);
+
+  // Maximum 4 nudges can show per session.
+  task_environment()->AdvanceClock(base::Minutes(16));
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Nudge should be displayed again as the mute action will reset the nudge
+  // cool down timer.
   controller()->OnInputMuteChanged(
       /*mute_on=*/false,
       CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
   controller()->OnInputMuteChanged(
       /*mute_on=*/true,
       CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
-
-  // Nudge should not be displayed as there is 60-second cool down for the nudge
-  // to show after the mute action.
-  controller()->OnSpeakOnMuteDetected();
-  EXPECT_FALSE(IsNudgeShown(nudge_id));
-
-  // Waits for 60 seconds to simulate that the cool down has passed.
-  task_environment()->AdvanceClock(base::Seconds(60));
-
-  // Nudge should be displayed again as the nudge cool down has passed.
   controller()->OnSpeakOnMuteDetected();
   EXPECT_TRUE(IsNudgeShown(nudge_id));
 
@@ -544,9 +567,6 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
   // Mute microphone through SW and show nudge again.
   controller()->OnInputMuteChanged(
       /*mute_on=*/true, CrasAudioHandler::InputMuteChangeMethod::kOther);
-
-  // Waits for 60 seconds to simulate that the cool down has passed.
-  task_environment()->AdvanceClock(base::Seconds(60));
 
   controller()->OnSpeakOnMuteDetected();
   EXPECT_TRUE(IsNudgeShown(nudge_id));

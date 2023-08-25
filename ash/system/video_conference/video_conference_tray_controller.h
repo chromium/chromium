@@ -257,15 +257,17 @@ class ASH_EXPORT VideoConferenceTrayController
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
 
-  // Boolean flag to indicate whether or not a speak-on-mute notification should
-  // show. At most one notification can show per mute session, and it is reset
-  // if:
-  // - A new VC tray pops up.
-  // - The mic is muted.
-  bool should_show_speak_on_mute_notification = true;
+  // The last time speak-on-mute nudge shown.
+  // The cool down periods for nudges:
+  // 1. No cool down for the first nudge,
+  // 2. 2 mins for the second nudge,
+  // 3. 4 mins for the third nudge,
+  // 4. 8 mins for the forth nudge.
+  base::TimeTicks last_speak_on_mute_nudge_shown_time_;
 
-  // The last time mic is muted.
-  base::TimeTicks last_mic_muted_time_;
+  // The counter of how many time the speak-on-mute nudge has shown in the
+  // current session.
+  int speak_on_mute_nudge_shown_count_ = 0;
 
   // video_conference_manager_ should be valid after initialized_.
   // Currently, VideoConferenceTrayController is destroyed inside
