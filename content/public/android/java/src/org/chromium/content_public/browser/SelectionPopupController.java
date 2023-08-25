@@ -76,10 +76,9 @@ public interface SelectionPopupController {
     }
 
     /**
-     * Set {@link ActionMode.Callback} used by {@link SelectionPopupController}.
-     * @param callback ActionMode.Callback instance.
+     * Set {@link ActionModeCallback} used by {@link SelectionPopupController}.
      */
-    void setActionModeCallback(ActionMode.Callback2 callback);
+    void setActionModeCallback(ActionModeCallback callback);
 
     /**
      * Sets the {@link AdditionalSelectionMenuItemProvider} used by {@link SelectionPopupController}

@@ -5,13 +5,13 @@
 package org.chromium.content_public.browser.test.util;
 
 import android.content.Intent;
-import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.SelectionClient;
@@ -26,7 +26,7 @@ public class TestSelectionPopupController implements SelectionPopupController {
     public TestSelectionPopupController() {}
 
     @Override
-    public void setActionModeCallback(ActionMode.Callback2 callback) {}
+    public void setActionModeCallback(ActionModeCallback callback) {}
 
     @Override
     public void setNonSelectionAdditionalMenuItemProvider(

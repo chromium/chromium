@@ -15,8 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -24,7 +27,7 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * A class that handles selection action mode for Android WebView.
  */
-public class AwActionModeCallback extends ActionMode.Callback2 {
+public class AwActionModeCallback extends ActionModeCallback {
     private final Context mContext;
     private final AwContents mAwContents;
     private final ActionModeCallbackHelper mHelper;
@@ -35,7 +38,7 @@ public class AwActionModeCallback extends ActionMode.Callback2 {
         mAwContents = awContents;
         mHelper =
                 SelectionPopupController.fromWebContents(webContents).getActionModeCallbackHelper();
-        mHelper.setAllowedMenuItems(0);  // No item is allowed by default for WebView.
+        mHelper.setAllowedMenuItems(0); // No item is allowed by default for WebView.
     }
 
     @Override
@@ -75,9 +78,7 @@ public class AwActionModeCallback extends ActionMode.Callback2 {
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         if (!mHelper.isActionModeValid()) return true;
 
-        int groupId = item.getGroupId();
-
-        if (groupId == R.id.select_action_menu_text_processing_items) {
+        if (isProcessTextMenuItem(item.getGroupId())) {
             processText(item.getIntent());
             // The ActionMode is not dismissed to match the behavior with
             // TextView in Android M.
@@ -85,6 +86,21 @@ public class AwActionModeCallback extends ActionMode.Callback2 {
             return mHelper.onActionItemClicked(mode, item);
         }
         return true;
+    }
+
+    @Override
+    public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+            @Nullable View.OnClickListener clickListener) {
+        if (isProcessTextMenuItem(groupId)) {
+            assert intent != null : "Text processing item must have an intent associated with it";
+            processText(intent);
+            return true;
+        }
+        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
+    }
+
+    private boolean isProcessTextMenuItem(final int groupId) {
+        return groupId == R.id.select_action_menu_text_processing_items;
     }
 
     @Override
@@ -99,8 +115,8 @@ public class AwActionModeCallback extends ActionMode.Callback2 {
 
     private void processText(Intent intent) {
         RecordUserAction.record("MobileActionMode.ProcessTextIntent");
-        String query = ActionModeCallbackHelper.sanitizeQuery(mHelper.getSelectedText(),
-                ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
+        String query = ActionModeCallbackHelper.sanitizeQuery(
+                mHelper.getSelectedText(), ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
         if (TextUtils.isEmpty(query)) return;
 
         intent.putExtra(Intent.EXTRA_PROCESS_TEXT, query);

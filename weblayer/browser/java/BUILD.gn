@@ -107,7 +107,6 @@ android_library("base_module_java") {
 
 android_library("java") {
   sources = [
-    "org/chromium/weblayer_private/ActionModeCallback.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
@@ -156,6 +155,7 @@ android_library("java") {
     "org/chromium/weblayer_private/WebApkServiceConnection.java",
     "org/chromium/weblayer_private/WebContentsGestureStateTracker.java",
     "org/chromium/weblayer_private/WebLayerAccessibilityUtil.java",
+    "org/chromium/weblayer_private/WebLayerActionModeCallback.java",
     "org/chromium/weblayer_private/WebLayerExceptionFilter.java",
     "org/chromium/weblayer_private/WebLayerFactoryImpl.java",
     "org/chromium/weblayer_private/WebLayerImpl.java",

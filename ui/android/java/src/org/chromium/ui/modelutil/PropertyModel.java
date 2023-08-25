@@ -273,6 +273,15 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         mData = startingValues;
     }
 
+    /**
+     * Returns true if the property map contains a specific {@link PropertyKey}.
+     * Other returns false.
+     * @param key the property key being checked for.
+     */
+    public boolean containsKey(PropertyKey key) {
+        return mData.containsKey(key);
+    }
+
     private void validateKey(PropertyKey key) {
         if (BuildConfig.ENABLE_ASSERTS && !mData.containsKey(key)) {
             throw new IllegalArgumentException(

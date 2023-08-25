@@ -55,6 +55,7 @@ import org.chromium.content.browser.selection.SelectActionMenuHelper.SelectActio
 import org.chromium.content.browser.selection.SelectActionMenuHelper.TextProcessingIntentHandler;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
+import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -150,7 +151,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private Context mContext;
     private WindowAndroid mWindowAndroid;
     private WebContentsImpl mWebContents;
-    private ActionMode.Callback2 mCallback;
+    private ActionModeCallback mCallback;
     private RenderFrameHost mRenderFrameHost;
     private long mNativeSelectionPopupController;
 
@@ -235,10 +236,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private MagnifierAnimator mMagnifierAnimator;
 
     /**
-     * A Map of {@link MenuItem}s to {@link android.view.View.OnClickListener} for
-     * menu items with a custom set click listener.
+     * Custom {@link android.view.View.OnClickListener} map for ActionMode menu items.
      */
-    private final Map<MenuItem, View.OnClickListener> mCustomMenuItemClickListeners;
+    private final Map<MenuItem, View.OnClickListener> mCustomActionMenuItemClickListeners;
 
     /**
      * An interface for getting {@link View} for readback.
@@ -368,7 +368,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         mResultCallback = new SmartSelectionCallback();
         mLastSelectedText = "";
-        mCustomMenuItemClickListeners = new HashMap<>();
+        mCustomActionMenuItemClickListeners = new HashMap<>();
         getPopupController().registerPopup(this);
     }
 
@@ -417,7 +417,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @Override
-    public void setActionModeCallback(ActionMode.Callback2 callback) {
+    public void setActionModeCallback(ActionModeCallback callback) {
         mCallback = callback;
     }
 
@@ -467,9 +467,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public int getAllowedMenuItemIfAny(ActionMode mode, MenuItem item) {
         if (!isActionModeValid()) return 0;
+        return getAllowedMenuItemIfAny(item.getGroupId(), item.getItemId());
+    }
 
-        int id = item.getItemId();
-        int groupId = item.getGroupId();
+    @Override
+    public int getAllowedMenuItemIfAny(int groupId, int id) {
         if (id == R.id.select_action_menu_share) {
             return MENU_ITEM_SHARE;
         } else if (id == R.id.select_action_menu_web_search) {
@@ -716,28 +718,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private SelectionDropdownMenuDelegate.ItemClickListener getDropdownItemClickListener(
             SelectionDropdownMenuDelegate delegate) {
         return item -> {
+            final int groupId = delegate.getGroupId(item);
             final int id = delegate.getItemId(item);
-            logSelectionAction(delegate.getGroupId(item), id);
-
-            final Runnable dismissRunnable = () -> {
-                if (id != R.id.select_action_menu_select_all) {
-                    // We will clear the selection for all actions other
-                    // than select all.
-                    clearSelection();
-                }
-                destroyDropdownMenu();
-            };
-
-            // Use the click listener for the item if it has one.
-            @Nullable
-            View.OnClickListener clickListener = delegate.getClickListener(item);
-            if (clickListener != null) {
-                clickListener.onClick(null);
-            } else {
-                handleMenuItemClick(id);
-            }
-
-            dismissRunnable.run();
+            logSelectionAction(groupId, id);
+            mCallback.onDropdownItemClicked(
+                    groupId, id, delegate.getItemIntent(item), delegate.getClickListener(item));
         };
     }
 
@@ -781,7 +766,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             title != null ? title.toString() : null,
                             contentDescription != null ? contentDescription.toString() : null,
                             group.id, item.id, item.getIcon(mContext), item.isIconTintable,
-                            groupContainsIcon, item.isEnabled, item.clickListener));
+                            groupContainsIcon, item.isEnabled, item.clickListener, item.intent));
                 }
                 group = allItemGroups.poll();
                 i++;
@@ -864,6 +849,22 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
             // Should be nulled out in case #onDestroyActionMode() is not invoked in response.
             setActionMode(null);
+        }
+    }
+
+    @Override
+    public void dismissMenu() {
+        final int type = getMenuType();
+        switch (type) {
+            case SelectionMenuType.ACTION_MODE:
+                finishActionMode();
+                break;
+            case SelectionMenuType.PASTE:
+                destroyPastePopup();
+                break;
+            case SelectionMenuType.DROPDOWN:
+                destroyDropdownMenu();
+                break;
         }
     }
 
@@ -994,9 +995,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         SelectActionMenuHelper.removeAllAddedGroupsFromMenu(menu);
-        mCustomMenuItemClickListeners.clear();
-        initializeActionMenu(
-                mContext, getSelectionMenuItems(), menu, mCustomMenuItemClickListeners, item -> {
+        mCustomActionMenuItemClickListeners.clear();
+        initializeActionMenu(mContext, getSelectionMenuItems(), menu,
+                mCustomActionMenuItemClickListeners, item -> {
                     logSelectionAction(item.getGroupId(), item.getItemId());
                     return false;
                 });
@@ -1028,13 +1029,17 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         for (SelectionMenuGroup group : menuGroups) {
-            addMenuGroupToMenu(context, group, menu, customMenuItemClickListeners,
+            addMenuItemsToActionMenu(context, group, menu, customMenuItemClickListeners,
                     additionalMenuItemClickListener);
         }
     }
 
-    private static void addMenuGroupToMenu(Context context, SelectionMenuGroup group, Menu menu,
-            Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
+    /**
+     * Adds the menu items from the {@link SelectionMenuGroup} to the action menu.
+     * @param additionalMenuItemClickListener executes after every menu item is clicked.
+     */
+    private static void addMenuItemsToActionMenu(Context context, SelectionMenuGroup group,
+            Menu menu, Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         for (SelectionMenuItem item : group.items) {
             if (!item.isEnabled) {
@@ -1150,8 +1155,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         SelectionMenuGroup textProcessingItems = SelectActionMenuHelper.getTextProcessingItems(
                 mContext, false, false, this::processText);
         if (textProcessingItems != null) {
-            addMenuGroupToMenu(
-                    mContext, textProcessingItems, menu, mCustomMenuItemClickListeners, null);
+            addMenuItemsToActionMenu(
+                    mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null);
         }
     }
 
@@ -1162,7 +1167,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (!isActionModeValid()) return true;
 
         // Check to see if this menu item has a custom click listener to handle it.
-        View.OnClickListener customMenuItemClickListener = mCustomMenuItemClickListeners.get(item);
+        View.OnClickListener customMenuItemClickListener =
+                mCustomActionMenuItemClickListeners.get(item);
         if (customMenuItemClickListener != null) {
             customMenuItemClickListener.onClick(mView);
         } else {
@@ -1173,6 +1179,24 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (item.getItemId() != R.id.select_action_menu_select_all) {
             mode.finish();
         }
+        return true;
+    }
+
+    @Override
+    public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+            @Nullable View.OnClickListener clickListener) {
+        // Use the click listener for the item if it has one.
+        if (clickListener != null) {
+            clickListener.onClick(null);
+        } else {
+            handleMenuItemClick(id);
+        }
+        if (id != R.id.select_action_menu_select_all) {
+            // We will clear the selection for all actions other
+            // than select all.
+            clearSelection();
+        }
+        destroyDropdownMenu();
         return true;
     }
 
