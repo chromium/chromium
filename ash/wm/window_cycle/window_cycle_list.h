@@ -23,11 +23,13 @@ class Window;
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
 
 class WindowCycleView;
+
+using WindowCyclingDirection = WindowCycleController::WindowCyclingDirection;
 
 // Tracks a set of Windows that can be stepped through. This class is used by
 // the WindowCycleController.
@@ -62,7 +64,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // If |starting_alt_tab_or_switching_mode| is true and |direction| is
   // forward, the highlight moves to the first non-active window in MRU list:
   // the second window by default or the first window if it is not active.
-  void Step(WindowCycleController::WindowCyclingDirection direction,
+  void Step(WindowCyclingDirection direction,
             bool starting_alt_tab_or_switching_mode);
 
   // Should be called when a user drags their finger on the touch screen.
@@ -201,7 +203,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
       nullptr;
 
   // The most recent direction `Step()` was called with.
-  WindowCycleController::WindowCyclingDirection last_cycling_direction_;
+  WindowCyclingDirection last_cycling_direction_;
 };
 
 }  // namespace ash

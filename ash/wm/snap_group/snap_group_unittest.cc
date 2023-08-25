@@ -1135,9 +1135,10 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowReorderInAltTab) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
   SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   wm::ActivateWindow(window2.get());
-  // Initial window activation order: window2 --> window1--> window0.
+  // Initial window activation order: window2, [window1, window0].
   ASSERT_TRUE(wm::IsActiveWindow(window2.get()));
 
   WindowCycleController* window_cycle_controller =
@@ -1149,17 +1150,17 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowReorderInAltTab) {
 
   // Test that the two windows in a snap group are reordered to be adjacent
   // with each other to reflect the window layout with the revised order as :
-  // window2 --> window0--> window1.
+  // window2, [window0, window1].
   ASSERT_EQ(windows.size(), 3u);
   EXPECT_EQ(windows.at(0), window2.get());
   EXPECT_EQ(windows.at(1), window0.get());
   EXPECT_EQ(windows.at(2), window1.get());
   CompleteWindowCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
-  // With the activation of `window0`, `window1` will be appended right after
-  // `window0`.
-  // The new window cycle list order as : window0 --> window1 -->window2. Cycle
+  // With the activation of `window1`, `window0` will be inserted right before
+  // `window1`.
+  // The new window cycle list order as: [window0, window1], window2. Cycle
   // twice to focus on `window2`.
   CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
   CompleteWindowCycling();
@@ -1213,6 +1214,8 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowInSnapGroupDestructionInAltTab) {
 
   // Destroy `window0` which belongs to a snap group.
   window0.reset();
+  // Verify that we should still be cycling.
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
   const auto* updated_window_cycle_list =
       window_cycle_controller->window_cycle_list();
   const auto& updated_windows =
@@ -1223,6 +1226,49 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowInSnapGroupDestructionInAltTab) {
   // Verify that the number of child views hosted by mirror container will still
   // be two.
   EXPECT_EQ(cycle_view->mirror_container_for_testing()->children().size(), 2u);
+}
+
+// Tests and verifies the steps it takes to focus on a window cycle item by
+// tabbing and reverse tabbing. The focused item will be activated upon
+// completion of window cycling.
+TEST_F(SnapGroupEntryPointArm1Test, SteppingInWindowCycleView) {
+  std::unique_ptr<aura::Window> window3 =
+      CreateAppWindow(gfx::Rect(300, 300), AppType::CHROME_APP);
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(200, 200), AppType::CHROME_APP);
+  std::unique_ptr<aura::Window> window1 =
+      CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+  std::unique_ptr<aura::Window> window0 =
+      CreateAppWindow(gfx::Rect(10, 10), AppType::BROWSER);
+
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+  WindowState::Get(window3.get())->Activate();
+  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
+
+  // Window cycle list:
+  // window3, [window0, window1], window2
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Window cycle list:
+  // window2, window3, [window0, window1]
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
+
+  // Window cycle list:
+  // window3, window2, [window0, window1]
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+
+  // Window cycle list:
+  // [window0, window1], window3, window2
+  CycleWindow(WindowCyclingDirection::kBackward, /*steps=*/1);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
 // Tests that after creating a snap group in clamshell, transition to tablet
