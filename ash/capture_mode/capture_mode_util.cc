@@ -161,21 +161,21 @@ gfx::PointF GetEventScreenLocation(const ui::LocatedEvent& event) {
 gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
                                           FineTunePosition position) {
   switch (position) {
-    case FineTunePosition::kTopLeft:
+    case FineTunePosition::kTopLeftVertex:
       return rect.origin();
-    case FineTunePosition::kTopCenter:
+    case FineTunePosition::kTopEdge:
       return rect.top_center();
-    case FineTunePosition::kTopRight:
+    case FineTunePosition::kTopRightVertex:
       return rect.top_right();
-    case FineTunePosition::kRightCenter:
+    case FineTunePosition::kRightEdge:
       return rect.right_center();
-    case FineTunePosition::kBottomRight:
+    case FineTunePosition::kBottomRightVertex:
       return rect.bottom_right();
-    case FineTunePosition::kBottomCenter:
+    case FineTunePosition::kBottomEdge:
       return rect.bottom_center();
-    case FineTunePosition::kBottomLeft:
+    case FineTunePosition::kBottomLeftVertex:
       return rect.bottom_left();
-    case FineTunePosition::kLeftCenter:
+    case FineTunePosition::kLeftEdge:
       return rect.left_center();
     default:
       break;
@@ -187,10 +187,10 @@ gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
 
 bool IsCornerFineTunePosition(FineTunePosition position) {
   switch (position) {
-    case FineTunePosition::kTopLeft:
-    case FineTunePosition::kTopRight:
-    case FineTunePosition::kBottomRight:
-    case FineTunePosition::kBottomLeft:
+    case FineTunePosition::kTopLeftVertex:
+    case FineTunePosition::kTopRightVertex:
+    case FineTunePosition::kBottomRightVertex:
+    case FineTunePosition::kBottomLeftVertex:
       return true;
     default:
       break;

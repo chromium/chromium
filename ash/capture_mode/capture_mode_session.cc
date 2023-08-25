@@ -246,19 +246,19 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
 ui::mojom::CursorType GetCursorTypeForFineTunePosition(
     FineTunePosition position) {
   switch (position) {
-    case FineTunePosition::kTopLeft:
+    case FineTunePosition::kTopLeftVertex:
       return ui::mojom::CursorType::kNorthWestResize;
-    case FineTunePosition::kBottomRight:
+    case FineTunePosition::kBottomRightVertex:
       return ui::mojom::CursorType::kSouthEastResize;
-    case FineTunePosition::kTopCenter:
-    case FineTunePosition::kBottomCenter:
+    case FineTunePosition::kTopEdge:
+    case FineTunePosition::kBottomEdge:
       return ui::mojom::CursorType::kNorthSouthResize;
-    case FineTunePosition::kTopRight:
+    case FineTunePosition::kTopRightVertex:
       return ui::mojom::CursorType::kNorthEastResize;
-    case FineTunePosition::kBottomLeft:
+    case FineTunePosition::kBottomLeftVertex:
       return ui::mojom::CursorType::kSouthWestResize;
-    case FineTunePosition::kLeftCenter:
-    case FineTunePosition::kRightCenter:
+    case FineTunePosition::kLeftEdge:
+    case FineTunePosition::kRightEdge:
       return ui::mojom::CursorType::kEastWestResize;
     case FineTunePosition::kCenter:
       return ui::mojom::CursorType::kMove;
@@ -354,6 +354,55 @@ bool IsWidgetOverlappedWithCameraPreview(views::Widget* widget) {
          camera_preview_widget->GetLayer()->GetTargetOpacity() > 0.f &&
          camera_preview_widget->GetWindowBoundsInScreen().Intersects(
              widget->GetWindowBoundsInScreen());
+}
+
+gfx::Rect GetHitTestRectAroundPoint(gfx::Point point, int hit_radius) {
+  return gfx::Rect(point.x() - hit_radius, point.y() - hit_radius,
+                   hit_radius * 2, hit_radius * 2);
+}
+
+gfx::Rect GetHitTestRectForFineTunePosition(
+    int hit_radius,
+    const gfx::Rect& capture_region_in_screen,
+    FineTunePosition position) {
+  switch (position) {
+    case FineTunePosition::kTopLeftVertex:
+      return GetHitTestRectAroundPoint(capture_region_in_screen.origin(),
+                                       hit_radius);
+    case FineTunePosition::kTopRightVertex:
+      return GetHitTestRectAroundPoint(capture_region_in_screen.top_right(),
+                                       hit_radius);
+    case FineTunePosition::kBottomRightVertex:
+      return GetHitTestRectAroundPoint(capture_region_in_screen.bottom_right(),
+                                       hit_radius);
+    case FineTunePosition::kBottomLeftVertex:
+      return GetHitTestRectAroundPoint(capture_region_in_screen.bottom_left(),
+                                       hit_radius);
+    case FineTunePosition::kTopEdge:
+    case FineTunePosition::kBottomEdge: {
+      const gfx::Size horizontal_size(
+          capture_region_in_screen.width() - 2 * hit_radius, 2 * hit_radius);
+      const int horizontal_x = capture_region_in_screen.x() + hit_radius;
+      const int horizontal_y =
+          position == FineTunePosition::kTopEdge
+              ? capture_region_in_screen.y() - hit_radius
+              : capture_region_in_screen.bottom() - hit_radius;
+      return gfx::Rect(gfx::Point(horizontal_x, horizontal_y), horizontal_size);
+    }
+    case FineTunePosition::kLeftEdge:
+    case FineTunePosition::kRightEdge: {
+      const gfx::Size vertical_size(
+          2 * hit_radius, capture_region_in_screen.height() - 2 * hit_radius);
+      const int vertical_x =
+          position == FineTunePosition::kLeftEdge
+              ? capture_region_in_screen.x() - hit_radius
+              : capture_region_in_screen.right() - hit_radius;
+      const int vertical_y = capture_region_in_screen.y() + hit_radius;
+      return gfx::Rect(gfx::Point(vertical_x, vertical_y), vertical_size);
+    }
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace
@@ -1896,22 +1945,17 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
   // In the case of overlapping affordances, prioritize the bottomm right
   // corner, then the rest of the corners, then the edges.
   static const std::vector<FineTunePosition> drag_positions = {
-      FineTunePosition::kBottomRight,  FineTunePosition::kBottomLeft,
-      FineTunePosition::kTopLeft,      FineTunePosition::kTopRight,
-      FineTunePosition::kBottomCenter, FineTunePosition::kLeftCenter,
-      FineTunePosition::kTopCenter,    FineTunePosition::kRightCenter};
+      FineTunePosition::kBottomRightVertex, FineTunePosition::kBottomLeftVertex,
+      FineTunePosition::kTopLeftVertex,     FineTunePosition::kTopRightVertex,
+      FineTunePosition::kBottomEdge,        FineTunePosition::kLeftEdge,
+      FineTunePosition::kTopEdge,           FineTunePosition::kRightEdge};
 
   const int hit_radius =
       is_touch ? kAffordanceCircleTouchHitRadiusDp : kAffordanceCircleRadiusDp;
-  const int hit_radius_squared = hit_radius * hit_radius;
   for (FineTunePosition position : drag_positions) {
-    const gfx::Point position_location =
-        capture_mode_util::GetLocationForFineTunePosition(
-            capture_region_in_screen, position);
-    // If `location_in_screen` is within `hit_radius` of `position_location` for
-    // both x and y, then `position` is the current pressed down affordance.
-    if ((position_location - location_in_screen).LengthSquared() <=
-        hit_radius_squared) {
+    if (GetHitTestRectForFineTunePosition(hit_radius, capture_region_in_screen,
+                                          position)
+            .Contains(location_in_screen)) {
       return position;
     }
   }
@@ -2021,11 +2065,11 @@ void CaptureModeSession::OnLocatedEventDragged(
   // one of the anchor points secondary axis value will ensure that for the
   // duration of a drag, GetRectEnclosingPoints will return a rect whose
   // secondary dimension does not change.
-  if (fine_tune_position_ == FineTunePosition::kLeftCenter ||
-      fine_tune_position_ == FineTunePosition::kRightCenter) {
+  if (fine_tune_position_ == FineTunePosition::kLeftEdge ||
+      fine_tune_position_ == FineTunePosition::kRightEdge) {
     resizing_point.set_y(points.front().y());
-  } else if (fine_tune_position_ == FineTunePosition::kTopCenter ||
-             fine_tune_position_ == FineTunePosition::kBottomCenter) {
+  } else if (fine_tune_position_ == FineTunePosition::kTopEdge ||
+             fine_tune_position_ == FineTunePosition::kBottomEdge) {
     resizing_point.set_x(points.front().x());
   }
   points.push_back(resizing_point);
@@ -2179,32 +2223,32 @@ std::vector<gfx::Point> CaptureModeSession::GetAnchorPointsForPosition(
     case FineTunePosition::kNone:
     case FineTunePosition::kCenter:
       break;
-    case FineTunePosition::kTopLeft:
+    case FineTunePosition::kTopLeftVertex:
       anchor_points.push_back(rect.bottom_right());
       break;
-    case FineTunePosition::kTopCenter:
+    case FineTunePosition::kTopEdge:
       anchor_points.push_back(rect.bottom_left());
       anchor_points.push_back(rect.bottom_right());
       break;
-    case FineTunePosition::kTopRight:
+    case FineTunePosition::kTopRightVertex:
       anchor_points.push_back(rect.bottom_left());
       break;
-    case FineTunePosition::kLeftCenter:
+    case FineTunePosition::kLeftEdge:
       anchor_points.push_back(rect.top_right());
       anchor_points.push_back(rect.bottom_right());
       break;
-    case FineTunePosition::kRightCenter:
+    case FineTunePosition::kRightEdge:
       anchor_points.push_back(rect.origin());
       anchor_points.push_back(rect.bottom_left());
       break;
-    case FineTunePosition::kBottomLeft:
+    case FineTunePosition::kBottomLeftVertex:
       anchor_points.push_back(rect.top_right());
       break;
-    case FineTunePosition::kBottomCenter:
+    case FineTunePosition::kBottomEdge:
       anchor_points.push_back(rect.origin());
       anchor_points.push_back(rect.top_right());
       break;
-    case FineTunePosition::kBottomRight:
+    case FineTunePosition::kBottomRightVertex:
       anchor_points.push_back(rect.origin());
       break;
   }
@@ -2528,15 +2572,15 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
   switch (key_code) {
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT:
-      if (focused_fine_tune_position == FineTunePosition::kTopCenter ||
-          focused_fine_tune_position == FineTunePosition::kBottomCenter) {
+      if (focused_fine_tune_position == FineTunePosition::kTopEdge ||
+          focused_fine_tune_position == FineTunePosition::kBottomEdge) {
         return;
       }
       break;
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      if (focused_fine_tune_position == FineTunePosition::kLeftCenter ||
-          focused_fine_tune_position == FineTunePosition::kRightCenter) {
+      if (focused_fine_tune_position == FineTunePosition::kLeftEdge ||
+          focused_fine_tune_position == FineTunePosition::kRightEdge) {
         return;
       }
       break;

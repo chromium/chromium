@@ -663,7 +663,7 @@ TEST_F(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
 
   // For each edge point try dragging to several points and verify that the
   // capture region is as expected.
-  struct {
+  struct DragEdgeCase {
     std::string trace;
     gfx::Point drag_point;
     // True if horizontal direction (left, right). Height stays the same while
@@ -673,19 +673,34 @@ TEST_F(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
     // |drag_point|. For example, if |drag_point| is the left center of
     // |target_region|, then |anchor_edge| is the right edge.
     int anchor_edge;
-  } kDragEdgeCases[] = {
+  };
+
+  // Cases where the drag starts in the center of the edge, i.e., at the
+  // indicator circles.
+  std::vector<DragEdgeCase> drag_edge_cases = {
       {"left", target_region.left_center(), true, target_region.right()},
       {"top", target_region.top_center(), false, target_region.bottom()},
       {"right", target_region.right_center(), true, target_region.x()},
       {"bottom", target_region.bottom_center(), false, target_region.y()},
   };
 
+  // Append cases where the drag starts along the edge but not at the circles.
+  std::vector<DragEdgeCase> offset_cases = {};
+  for (auto center_case : drag_edge_cases) {
+    DragEdgeCase new_case(center_case);
+    center_case.horizontal ? new_case.drag_point.Offset(0, 25)
+                           : new_case.drag_point.Offset(25, 0);
+    offset_cases.push_back(new_case);
+  }
+  drag_edge_cases.insert(drag_edge_cases.end(), offset_cases.begin(),
+                         offset_cases.end());
+
   // Drag to a couple of points that change both x and y. In all these cases,
   // only the width or height should change.
   auto drag_test_points = {gfx::Point(150, 150), gfx::Point(350, 350),
                            gfx::Point(450, 450)};
   auto* event_generator = GetEventGenerator();
-  for (auto test_case : kDragEdgeCases) {
+  for (auto test_case : drag_edge_cases) {
     SCOPED_TRACE(test_case.trace);
     event_generator->set_current_screen_location(test_case.drag_point);
     event_generator->PressLeftButton();
@@ -835,10 +850,11 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
   struct {
     std::string trace;
     FineTunePosition position;
-  } kFineTunePositions[] = {{"top_left", FineTunePosition::kTopLeft},
-                            {"top_right", FineTunePosition::kTopRight},
-                            {"bottom_right", FineTunePosition::kBottomRight},
-                            {"bottom_left", FineTunePosition::kBottomLeft}};
+  } kFineTunePositions[] = {
+      {"top_left_vertex", FineTunePosition::kTopLeftVertex},
+      {"top_right_vertex", FineTunePosition::kTopRightVertex},
+      {"bottom_right_vertex", FineTunePosition::kBottomRightVertex},
+      {"bottom_left_vertex", FineTunePosition::kBottomLeftVertex}};
   for (const auto& fine_tune_position : kFineTunePositions) {
     SCOPED_TRACE(fine_tune_position.trace);
     const gfx::Point drag_affordance_location =

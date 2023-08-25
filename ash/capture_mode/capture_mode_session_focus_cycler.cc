@@ -51,11 +51,11 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
 
 // The focusable items for the FocusGroup::kSelection group.
 constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
-    FineTunePosition::kCenter,       FineTunePosition::kTopLeft,
-    FineTunePosition::kTopCenter,    FineTunePosition::kTopRight,
-    FineTunePosition::kRightCenter,  FineTunePosition::kBottomRight,
-    FineTunePosition::kBottomCenter, FineTunePosition::kBottomLeft,
-    FineTunePosition::kLeftCenter};
+    FineTunePosition::kCenter,     FineTunePosition::kTopLeftVertex,
+    FineTunePosition::kTopEdge,    FineTunePosition::kTopRightVertex,
+    FineTunePosition::kRightEdge,  FineTunePosition::kBottomRightVertex,
+    FineTunePosition::kBottomEdge, FineTunePosition::kBottomLeftVertex,
+    FineTunePosition::kLeftEdge};
 
 // We inset the `window_of_interest` by `kWindowOfInterestInset` and outset any
 // other window by `kIntersectingWindowOutset` we intersect with it, so that the

@@ -52,17 +52,20 @@ enum class FineTunePosition {
   // The initial press was inside the select region. Subsequent drags will
   // move the entire region.
   kCenter,
-  // The initial press was on one of the drag affordance circles. Subsequent
-  // drags will resize the region. These are sorted clockwise starting at the
-  // top left.
-  kTopLeft,
-  kTopCenter,
-  kTopRight,
-  kRightCenter,
-  kBottomRight,
-  kBottomCenter,
-  kBottomLeft,
-  kLeftCenter,
+  // The initial press was on one of the drag affordance circles in the corners.
+  // Subsequent drags will resize the region. These are sorted clockwise
+  // starting at the top left.
+  kTopLeftVertex,
+  kTopRightVertex,
+  kBottomRightVertex,
+  kBottomLeftVertex,
+  // The initial press was along the edges of the region. Subsequent drags will
+  // resize the region, but only along one dimension. These are sorted clockwise
+  // starting at the top.
+  kTopEdge,
+  kRightEdge,
+  kBottomEdge,
+  kLeftEdge,
 };
 
 // Defines the supported recording formats.
