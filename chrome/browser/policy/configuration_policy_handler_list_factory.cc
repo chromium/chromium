@@ -943,6 +943,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGoogleWorkspaceCloudUpload,
     prefs::kGoogleWorkspaceCloudUpload,
     base::Value::Type::STRING},
+    { key::kMicrosoftOneDriveMount,
+    prefs::kMicrosoftOneDriveMount,
+    base::Value::Type::STRING},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

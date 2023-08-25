@@ -2089,6 +2089,10 @@ inline constexpr char kOfficeFileMovedToGoogleDrive[] =
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Pref that contains the value of the MicrosoftOneDriveMount policy.
+inline constexpr char kMicrosoftOneDriveMount[] =
+    "filebrowser.office.microsoft_one_drive_mount";
+
 // Pref that contains the value of the MicrosoftOfficeCloudUpload policy.
 inline constexpr char kMicrosoftOfficeCloudUpload[] =
     "filebrowser.office.microsoft_office_cloud_upload";

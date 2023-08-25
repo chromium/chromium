@@ -52,6 +52,8 @@ source_set("chromeos") {
     "arc/open_with_menu.h",
     "arc/start_smart_selection_action_menu.cc",
     "arc/start_smart_selection_action_menu.h",
+    "enterprise/cloud_storage/policy_utils.cc",
+    "enterprise/cloud_storage/policy_utils.h",
     "enterprise/incognito_navigation_throttle.cc",
     "enterprise/incognito_navigation_throttle.h",
     "extensions/accessibility_service_private.cc",

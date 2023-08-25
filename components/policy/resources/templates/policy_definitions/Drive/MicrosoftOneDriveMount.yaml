@@ -1,0 +1,42 @@
+caption: Configures the mounting of <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph>
+default: allowed
+default_for_enterprise_users: disallowed
+desc: |-
+  This policy allows the admins to configure the mounting of <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph>.
+
+  Setting the policy to '<ph name="ALLOWED_NAME">allowed</ph>' lets the user set up <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> if they wish to.
+  After completing the setup process, <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> will be mounted in the file manager.
+
+  Setting the policy to '<ph name="DISALLOWED_NAME">disallowed</ph>' prohibits the user from setting up <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph>.
+
+  Setting the policy to '<ph name="AUTOMATED_NAME">automated</ph>' attempts to set up <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> automatically. In case of failure it falls back to showing the setup flow.
+
+  Leaving the policy unset is functionally equivalent to setting it to '<ph name="ALLOWED_NAME">allowed</ph>' for regular users; for enterprise users unset policy defaults to '<ph name="DISALLOWED_NAME">disallowed</ph>'.
+example_value: allowed
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow setup of <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph>
+  name: allowed
+  value: allowed
+- caption: Disallow setup of <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph>
+  name: disallowed
+  value: disallowed
+- caption: Automate setup of <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph>
+  name: automated
+  value: automated
+owners:
+- simonha@google.com
+- file://ui/file_manager/OWNERS
+- cros-commercial-clippy-eng@google.com
+schema:
+  enum:
+  - allowed
+  - disallowed
+  - automated
+  type: string
+future_on:
+- chrome_os
+tags: []
+type: string-enum
