@@ -31,7 +31,6 @@ def __step_config(ctx, step_config):
     ])
     return step_config
 
-
 blink_all = module(
     "blink_all",
     filegroups = __filegroups,

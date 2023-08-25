@@ -218,6 +218,7 @@ def __step_config(ctx, step_config):
                 "command_prefix": rule["command_prefix"],
                 "handler": "rewrite_clang_code_coverage_wrapper",
             }
+
             # Insert clang-coverage/ rules at the top.
             # They are more specific than reproxy clang/ rules, therefore should not be placed after.
             new_rules.insert(0, new_rule)
