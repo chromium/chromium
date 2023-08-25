@@ -368,20 +368,30 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
 const FeatureEntry::FeatureParam kMagicStackMostVisitedModule[] = {
     {kMagicStackMostVisitedModuleParam, "true"},
     {kReducedSpaceParam, "-80"}};
+const FeatureEntry::FeatureParam
+    kMagicStackMostVisitedModuleHideIrrelevantModules[] = {
+        {kMagicStackMostVisitedModuleParam, "true"},
+        {kReducedSpaceParam, "-80"},
+        {kHideIrrelevantModulesParam, "true"}};
 const FeatureEntry::FeatureParam kMagicStackPushedDown[] = {
     {kMagicStackMostVisitedModuleParam, "false"},
     {kReducedSpaceParam, "-30"}};
-const FeatureEntry::FeatureParam kMagicStackReducedNTPTopSpace[] = {
+const FeatureEntry::FeatureParam kMagicStackPushedDownHidIrrelevantModules[] = {
     {kMagicStackMostVisitedModuleParam, "false"},
-    {kReducedSpaceParam, "20"}};
+    {kReducedSpaceParam, "-30"},
+    {kHideIrrelevantModulesParam, "true"}};
 
 const FeatureEntry::FeatureVariation kMagicStackVariations[]{
     {"Most Visited Tiles in Magic Stack", kMagicStackMostVisitedModule,
      std::size(kMagicStackMostVisitedModule), nullptr},
+    {"Most Visited Tiles in Magic Stack and hide irrelevant modules",
+     kMagicStackMostVisitedModuleHideIrrelevantModules,
+     std::size(kMagicStackMostVisitedModuleHideIrrelevantModules), nullptr},
     {"Magic Stack with more NTP Top Space", kMagicStackPushedDown,
      std::size(kMagicStackPushedDown), nullptr},
-    {"Magic Stack with Reduced NTP Top Space", kMagicStackReducedNTPTopSpace,
-     std::size(kMagicStackReducedNTPTopSpace), nullptr},
+    {"Magic Stack with more NTP Top Space and hide irrelevant modules",
+     kMagicStackPushedDownHidIrrelevantModules,
+     std::size(kMagicStackPushedDownHidIrrelevantModules), nullptr},
 };
 
 const FeatureEntry::FeatureParam kEnableDefaultModel[] = {

@@ -33,6 +33,10 @@ extern const char kMagicStackMostVisitedModuleParam[];
 // is negative, it will increase the top space margin.
 extern const char kReducedSpaceParam[];
 
+// A parameter representing whether modules should not be added to the Magic
+// Stack if their content is irrelevant.
+extern const char kHideIrrelevantModulesParam[];
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 // TODO(crbug.com/1385512): Remove this.
@@ -54,6 +58,10 @@ bool ShouldPutMostVisitedSitesInMagicStack();
 
 // How much the NTP top margin should be reduced by for the Magic Stack design.
 double ReducedNTPTopMarginSpaceForMagicStack();
+
+// Whether modules should not be added to the Magic Stack if their content is
+// irrelevant.
+bool ShouldHideIrrelevantModules();
 
 // Whether the Most Visited Tiles should be hidden.
 bool ShouldHideMVT();

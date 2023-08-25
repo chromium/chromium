@@ -32,6 +32,8 @@ const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
 
 const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
 
+const char kHideIrrelevantModulesParam[] = "HideIrrelevantModules";
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -55,6 +57,11 @@ bool ShouldPutMostVisitedSitesInMagicStack() {
 double ReducedNTPTopMarginSpaceForMagicStack() {
   return base::GetFieldTrialParamByFeatureAsDouble(kMagicStack,
                                                    kReducedSpaceParam, 0);
+}
+
+bool ShouldHideIrrelevantModules() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kMagicStack, kHideIrrelevantModulesParam, false);
 }
 
 bool ShouldHideMVT() {

@@ -991,6 +991,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     } else if (label == segmentation_platform::kShortcuts) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
+    } else if (label == segmentation_platform::kSafetyCheck) {
+      // If ShouldHideIrrelevantModules() is enabled and it is not the first
+      // ranked module, do not add it to the Magic Stack.
+      if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
+        [self addSafetyCheckToMagicStackOrder:magicStackOrder];
+      }
     }
   }
   [self.consumer setMagicStackOrder:magicStackOrder];
@@ -1015,25 +1021,16 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
-  // TODO(crbug.com/1472382): In a follow-up CL, the module will be placed at
-  // different places in the Magic Stack depending on the Safety Check state(s).
-  // However, for now, the module will simply be inserted at the front of the
-  // Magic Stack.
-  int moduleIndex = 0;
-
   int checkIssuesCount = CheckIssuesCount(_safetyCheckState);
 
   if (checkIssuesCount > 2) {
-    [order insertObject:@(int(ContentSuggestionsModuleType::
-                                  kSafetyCheckMultiRowOverflow))
-                atIndex:moduleIndex];
+    [order addObject:@(int(ContentSuggestionsModuleType::
+                               kSafetyCheckMultiRowOverflow))];
   } else if (checkIssuesCount > 1) {
     [order
-        insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow))
-             atIndex:moduleIndex];
+        addObject:@(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow))];
   } else {
-    [order insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))
-                atIndex:moduleIndex];
+    [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
   }
 }
 

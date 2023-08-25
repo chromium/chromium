@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -362,14 +363,18 @@ TEST_F(ContentSuggestionsMediatorTest,
       {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
        {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
         {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
-       {kMagicStack, {}}},
+       {kMagicStack, {}},
+       {kSafetyCheckMagicStack, {}}},
       {});
   OCMExpect(
       [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
                    NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;
-                   return [magicStackOrder count] == 2 &&
+                   // Ensure MVT, Shortcuts, and Safety Check are returned in
+                   // that order.
+                   return [magicStackOrder count] == 3 &&
                           0 == [magicStackOrder[0] intValue] &&
-                          1 == [magicStackOrder[1] intValue];
+                          1 == [magicStackOrder[1] intValue] &&
+                          7 == [magicStackOrder[2] intValue];
                  }]]);
   mediator_.consumer = consumer_;
 
