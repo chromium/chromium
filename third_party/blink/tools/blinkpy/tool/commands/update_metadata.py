@@ -552,6 +552,16 @@ class DisabledUpdate(manifestupdate.PropertyUpdate):
                                                    props)
 
 
+class BugUpdate(manifestupdate.AppendOnlyListUpdate):
+    property_name = 'bug'
+
+    def from_ini_value(self, value: Union[str, List[str]]) -> List[str]:
+        return [value] if isinstance(value, str) else value
+
+    def to_ini_value(self, value: List[str]) -> Union[str, List[str]]:
+        return value[0] if len(value) == 1 else value  # Unwrap single bugs.
+
+
 class TestInfo(NamedTuple):
     extra_bugs: Set[str]
     extra_comments: List[str]
@@ -952,10 +962,7 @@ class MetadataUpdater:
             for section, test_info in self._sections_to_annotate(expected):
                 self._migrate_disables(section, test_info)
                 self._migrate_comments(section, test_info)
-            if self._bug:
-                for test in expected.iterchildren():
-                    if test.modified:
-                        self._add_bug_urls(test, {f'crbug.com/{self._bug}'})
+                self._update_bugs(section, test_info)
 
         modified = expected and expected.modified
         if modified:
@@ -1020,8 +1027,17 @@ class MetadataUpdater:
         section.node.comments.clear()
         section.node.comments.extend(
             ('comment', comment) for comment in test_info.extra_comments)
-        self._add_bug_urls(section, test_info.extra_bugs, overwrite=False)
         section.modified = True
+
+    def _update_bugs(self, section: wptmanifest.ManifestItem,
+                     test_info: TestInfo):
+        update = BugUpdate(section)
+        for extra_bug in test_info.extra_bugs:
+            update.set(None, extra_bug)
+        if self._bug and section.modified:
+            section.set('bug', [])  # Overwrite existing bugs.
+            update.set(None, f'crbug.com/{self._bug}')
+        update.update()
 
     def _sections_to_annotate(
         self,
@@ -1035,23 +1051,6 @@ class MetadataUpdater:
         else:
             for test in expected.iterchildren():
                 yield test, self._test_info[test.id]
-
-    def _add_bug_urls(self,
-                      test: manifestupdate.TestNode,
-                      new_bugs: FrozenSet[str],
-                      overwrite: bool = True,
-                      key: str = 'bug'):
-        bugs = []
-        with contextlib.suppress(KeyError):
-            bugs = test.get(key)
-            if isinstance(bugs, str):
-                bugs = [bugs]
-        if overwrite:
-            bugs.clear()
-        bugs = sorted({*bugs, *new_bugs})
-        test.clear(key)
-        if bugs:
-            test.set(key, bugs[0] if len(bugs) == 1 else bugs)
 
 
 def _strip_comment(maybe_comment: str) -> str:
