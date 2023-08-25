@@ -69,7 +69,8 @@ inline bool HasSameAttributes(
                          attributes.size() * sizeof(Attribute));
 }
 
-ElementData* ElementDataCache::ElementDataWithAttributes(
+ShareableElementData*
+ElementDataCache::CachedShareableElementDataWithAttributes(
     const Vector<Attribute, kAttributePrealloc>& attributes) {
   DCHECK(!attributes.empty());
 
@@ -81,13 +82,8 @@ ElementData* ElementDataCache::ElementDataWithAttributes(
   if (it->value && !HasSameAttributes(attributes, *it->value))
     return ShareableElementData::CreateWithAttributes(attributes);
 
-  if (!it->value) {
-    if (attributes.size() < ShareableElementData::kMaxNumberOfAttributes) {
-      it->value = ShareableElementData::CreateWithAttributes(attributes);
-    } else {
-      return MakeGarbageCollected<UniqueElementData>(attributes);
-    }
-  }
+  if (!it->value)
+    it->value = ShareableElementData::CreateWithAttributes(attributes);
 
   return it->value.Get();
 }

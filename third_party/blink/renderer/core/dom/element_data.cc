@@ -52,31 +52,27 @@ static AdditionalBytes AdditionalBytesForShareableElementDataWithAttributeCount(
 }
 
 ElementData::ElementData()
-    : bit_field_(IsUniqueFlag::encode(true) | ShareableArraySize::encode(0) |
+    : bit_field_(IsUniqueFlag::encode(true) | ArraySize::encode(0) |
                  PresentationAttributeStyleIsDirty::encode(false) |
                  StyleAttributeIsDirty::encode(false) |
-                 SvgAttributesAreDirty::encode(false) |
-                 ClassIsDirty::encode(true)) {}
+                 SvgAttributesAreDirty::encode(false)) {}
 
 ElementData::ElementData(unsigned array_size)
-    : bit_field_(
-          IsUniqueFlag::encode(false) | ShareableArraySize::encode(array_size) |
-          PresentationAttributeStyleIsDirty::encode(false) |
-          StyleAttributeIsDirty::encode(false) |
-          SvgAttributesAreDirty::encode(false) | ClassIsDirty::encode(true)) {}
+    : bit_field_(IsUniqueFlag::encode(false) | ArraySize::encode(array_size) |
+                 PresentationAttributeStyleIsDirty::encode(false) |
+                 StyleAttributeIsDirty::encode(false) |
+                 SvgAttributesAreDirty::encode(false)) {}
 
 ElementData::ElementData(const ElementData& other, bool is_unique)
     : bit_field_(
           IsUniqueFlag::encode(is_unique) |
-          ShareableArraySize::encode(is_unique ? 0
-                                               : other.Attributes().size()) |
+          ArraySize::encode(is_unique ? 0 : other.Attributes().size()) |
           PresentationAttributeStyleIsDirty::encode(
               other.bit_field_.get<PresentationAttributeStyleIsDirty>()) |
           StyleAttributeIsDirty::encode(
               other.bit_field_.get<StyleAttributeIsDirty>()) |
           SvgAttributesAreDirty::encode(
-              other.bit_field_.get<SvgAttributesAreDirty>()) |
-          ClassIsDirty::encode(other.bit_field_.get<ClassIsDirty>())),
+              other.bit_field_.get<SvgAttributesAreDirty>())),
       class_names_(other.class_names_),
       id_for_style_resolution_(other.id_for_style_resolution_) {
   // NOTE: The inline style is copied by the subclass copy constructor since we
@@ -129,15 +125,13 @@ void ElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
 ShareableElementData::ShareableElementData(
     const Vector<Attribute, kAttributePrealloc>& attributes)
     : ElementData(attributes.size()) {
-  for (unsigned i = 0; i < bit_field_.get<ShareableArraySize>(); ++i) {
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     new (&attribute_array_[i]) Attribute(attributes[i]);
-  }
 }
 
 ShareableElementData::~ShareableElementData() {
-  for (unsigned i = 0; i < bit_field_.get<ShareableArraySize>(); ++i) {
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     attribute_array_[i].~Attribute();
-  }
 }
 
 ShareableElementData::ShareableElementData(const UniqueElementData& other)
@@ -148,9 +142,8 @@ ShareableElementData::ShareableElementData(const UniqueElementData& other)
     inline_style_ = other.inline_style_->ImmutableCopyIfNeeded();
   }
 
-  for (unsigned i = 0; i < bit_field_.get<ShareableArraySize>(); ++i) {
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     new (&attribute_array_[i]) Attribute(other.attribute_vector_.at(i));
-  }
 }
 
 ShareableElementData* ShareableElementData::CreateWithAttributes(
@@ -190,10 +183,6 @@ ShareableElementData* UniqueElementData::MakeShareableCopy() const {
           attribute_vector_.size()),
       *this);
 }
-
-UniqueElementData::UniqueElementData(
-    const Vector<Attribute, kAttributePrealloc>& attrs)
-    : attribute_vector_(attrs) {}
 
 void UniqueElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(presentation_attribute_style_);
