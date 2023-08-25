@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -109,19 +110,10 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);
-  // Required for lottie animations.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types "
-      // Required by lottie.
-      "lottie-worker-script-loader webui-test-script "
-      // Required by lit-html.
-      "lit-html "
-      // Required by polymer.
-      "polymer-html-literal polymer-template-event-attribute-policy;");
+  ash::EnableTrustedTypesCSP(source);
 }
 
 CloudUploadUI::~CloudUploadUI() = default;
