@@ -108,12 +108,12 @@ class Re2RegExCache {
 
   // Returns a pointer to a constant compiled expression that matches |pattern|
   // case-sensitively.
-  const RE2* GetRegEx(const std::string& pattern);
+  const RE2* GetRegEx(std::string_view pattern);
 
 #ifdef UNIT_TEST
   // Returns true if the compiled regular expression corresponding to |pattern|
   // is cached.
-  bool IsRegExCachedForTesting(const std::string& pattern) {
+  bool IsRegExCachedForTesting(std::string_view pattern) {
     return regex_map_.count(pattern) > 0;
   }
 #endif
@@ -126,7 +126,7 @@ class Re2RegExCache {
   friend class base::NoDestructor<Re2RegExCache>;
 
   // Stores a compiled regular expression keyed by its corresponding |pattern|.
-  std::map<std::string, std::unique_ptr<const RE2>> regex_map_;
+  std::map<std::string, std::unique_ptr<const RE2>, std::less<>> regex_map_;
 
   // A lock to prevent concurrent access to the map.
   base::Lock lock_;
@@ -199,7 +199,7 @@ ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern);
 
 // Returns a compiled case sensitive regular expression for |pattern|.
-std::unique_ptr<const RE2> BuildRegExFromPattern(const std::string& pattern);
+std::unique_ptr<const RE2> BuildRegExFromPattern(std::string_view pattern);
 
 // Returns true if |value| can be matched by the enumuerated RegEx |regex|.
 bool IsPartialMatch(const std::string& value, RegEx regex);

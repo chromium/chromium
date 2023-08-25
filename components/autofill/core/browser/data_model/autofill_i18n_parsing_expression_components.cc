@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 
 namespace autofill::i18n_model_definition {
@@ -14,8 +15,8 @@ inline std::string RemoveVersionSuffix(const std::string& token) {
 }
 
 absl::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
-    const std::string& value,
-    const std::string& pattern) {
+    std::string_view value,
+    std::string_view pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
   if (!regex || !regex->ok()) {
     return absl::nullopt;
@@ -59,8 +60,8 @@ absl::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
 }
 
 // Check that the condition regex is matched if exist.
-bool ConditionIsMatched(const std::string& condition_regex,
-                        const std::string& value) {
+bool ConditionIsMatched(std::string_view condition_regex,
+                        std::string_view value) {
   if (condition_regex.empty()) {
     return true;
   }
@@ -69,15 +70,14 @@ bool ConditionIsMatched(const std::string& condition_regex,
 }
 }  // namespace
 
-ValueParsingResults Decomposition::Parse(const std::string& value) const {
-  std::string prefix = anchor_beginning_ ? "^" : "";
-  std::string suffix = anchor_end_ ? "$" : "";
-  std::string regex = prefix + parsing_regex_ + suffix;
+ValueParsingResults Decomposition::Parse(std::string_view value) const {
+  std::string_view prefix = anchor_beginning_ ? "^" : "";
+  std::string_view suffix = anchor_end_ ? "$" : "";
+  std::string regex = base::StrCat({prefix, parsing_regex_, suffix});
   return ParseUsingRegex(value, regex);
 }
 
-ValueParsingResults DecompositionCascade::Parse(
-    const std::string& value) const {
+ValueParsingResults DecompositionCascade::Parse(std::string_view value) const {
   if (!ConditionIsMatched(condition_regex_, value)) {
     return absl::nullopt;
   }
@@ -91,7 +91,7 @@ ValueParsingResults DecompositionCascade::Parse(
   return absl::nullopt;
 }
 
-ValueParsingResults ExtractPart::Parse(const std::string& value) const {
+ValueParsingResults ExtractPart::Parse(std::string_view value) const {
   if (!ConditionIsMatched(condition_regex_, value)) {
     return absl::nullopt;
   }
@@ -99,7 +99,7 @@ ValueParsingResults ExtractPart::Parse(const std::string& value) const {
   return ParseUsingRegex(value, parsing_regex_);
 }
 
-ValueParsingResults ExtractParts::Parse(const std::string& value) const {
+ValueParsingResults ExtractParts::Parse(std::string_view value) const {
   if (!ConditionIsMatched(condition_regex_, value)) {
     return absl::nullopt;
   }

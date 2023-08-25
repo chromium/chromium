@@ -75,7 +75,7 @@ Re2RegExCache* Re2RegExCache::Instance() {
   return g_re2regex_cache.get();
 }
 
-const RE2* Re2RegExCache::GetRegEx(const std::string& pattern) {
+const RE2* Re2RegExCache::GetRegEx(std::string_view pattern) {
   // For thread safety, acquire a lock to prevent concurrent access.
   base::AutoLock lock(lock_);
 
@@ -128,7 +128,7 @@ const AddressRewriter& RewriterCache::GetRewriter(
   return result.first->second;
 }
 
-std::unique_ptr<const RE2> BuildRegExFromPattern(const std::string& pattern) {
+std::unique_ptr<const RE2> BuildRegExFromPattern(std::string_view pattern) {
   RE2::Options opt;
   // By default, patters are case sensitive.
   // Note that, the named-capture-group patterns build with
@@ -139,7 +139,7 @@ std::unique_ptr<const RE2> BuildRegExFromPattern(const std::string& pattern) {
   auto regex = std::make_unique<const RE2>(pattern, opt);
 
   if (!regex->ok()) {
-    DEBUG_ALIAS_FOR_CSTR(pattern_copy, pattern.c_str(), 128);
+    DEBUG_ALIAS_FOR_CSTR(pattern_copy, pattern.data(), 128);
     base::debug::DumpWithoutCrashing();
   }
 

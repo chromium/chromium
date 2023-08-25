@@ -42,7 +42,7 @@ class AutofillParsingProcess {
   virtual ~AutofillParsingProcess() = default;
 
   // Parses `value` and returns the extracted field type matches.
-  virtual ValueParsingResults Parse(const std::string& value) const = 0;
+  virtual ValueParsingResults Parse(std::string_view value) const = 0;
 };
 
 // A Decomposition parsing process attempts to match an entire string (unless
@@ -50,20 +50,22 @@ class AutofillParsingProcess {
 // and then extracts the captured field type values.
 class Decomposition : public AutofillParsingProcess {
  public:
-  constexpr Decomposition(std::string parsing_regex,
+  // Note that `parsing_regex` needs to survive the lifetime of the
+  // Decomposition.
+  constexpr Decomposition(std::string_view parsing_regex,
                           bool anchor_beginning,
                           bool anchor_end)
-      : parsing_regex_(std::move(parsing_regex)),
+      : parsing_regex_(parsing_regex),
         anchor_beginning_(anchor_beginning),
         anchor_end_(anchor_end) {}
   Decomposition(const Decomposition&) = delete;
   Decomposition& operator=(const Decomposition&) = delete;
   ~Decomposition() override = default;
 
-  ValueParsingResults Parse(const std::string& value) const override;
+  ValueParsingResults Parse(std::string_view value) const override;
 
  private:
-  const std::string parsing_regex_;
+  const std::string_view parsing_regex_;
   const bool anchor_beginning_ = true;
   const bool anchor_end_ = true;
 };
@@ -74,21 +76,20 @@ class Decomposition : public AutofillParsingProcess {
 // an empty string.
 class DecompositionCascade : public AutofillParsingProcess {
  public:
-  // Note that `alternatives` need to survive the lifetime of the
-  // DecompositionCascade.
+  // Note that `condition_regex` and `alternatives` need to survive the lifetime
+  // of the DecompositionCascade.
   constexpr DecompositionCascade(
-      std::string condition_regex,
+      std::string_view condition_regex,
       base::span<const AutofillParsingProcess* const> alternatives)
-      : condition_regex_(std::move(condition_regex)),
-        alternatives_(alternatives) {}
+      : condition_regex_(condition_regex), alternatives_(alternatives) {}
   DecompositionCascade(const DecompositionCascade&) = delete;
   DecompositionCascade& operator=(const DecompositionCascade&) = delete;
   ~DecompositionCascade() override = default;
 
-  ValueParsingResults Parse(const std::string& value) const override;
+  ValueParsingResults Parse(std::string_view value) const override;
 
  private:
-  const std::string condition_regex_;
+  const std::string_view condition_regex_;
   const base::span<const AutofillParsingProcess* const> alternatives_;
 };
 
@@ -101,19 +102,21 @@ class DecompositionCascade : public AutofillParsingProcess {
 // should be extracted (the apartment number).
 class ExtractPart : public AutofillParsingProcess {
  public:
-  constexpr ExtractPart(std::string condition_regex, std::string parsing_regex)
-      : condition_regex_(std::move(condition_regex)),
-        parsing_regex_(std::move(parsing_regex)) {}
+  // Note that `condition_regex` and `parsing_regex` need to survive the
+  // lifetime of the DecompositionCascade.
+  constexpr ExtractPart(std::string_view condition_regex,
+                        std::string_view parsing_regex)
+      : condition_regex_(condition_regex), parsing_regex_(parsing_regex) {}
 
   ExtractPart(const ExtractPart&) = delete;
   ExtractPart& operator=(const ExtractPart&) = delete;
   ~ExtractPart() override = default;
 
-  ValueParsingResults Parse(const std::string& value) const override;
+  ValueParsingResults Parse(std::string_view value) const override;
 
  private:
-  const std::string condition_regex_;
-  const std::string parsing_regex_;
+  const std::string_view condition_regex_;
+  const std::string_view parsing_regex_;
 };
 
 // Unlike for a DecompositionCascade, ExtractParts does not follow the "the
@@ -124,18 +127,19 @@ class ExtractPart : public AutofillParsingProcess {
 // The lack of a condition is expressed by an empty string.
 class ExtractParts : public AutofillParsingProcess {
  public:
-  // Note that `pieces` need to survive the lifetime of the ExtractParts.
-  constexpr ExtractParts(std::string condition_regex,
+  // Note that `condition_regex` and `pieces` need to survive the lifetime of
+  // the ExtractParts.
+  constexpr ExtractParts(std::string_view condition_regex,
                          base::span<const ExtractPart* const> pieces)
-      : condition_regex_(std::move(condition_regex)), pieces_(pieces) {}
+      : condition_regex_(condition_regex), pieces_(pieces) {}
   ExtractParts(const ExtractParts&) = delete;
   ExtractParts& operator=(const ExtractParts&) = delete;
   ~ExtractParts() override = default;
 
-  ValueParsingResults Parse(const std::string& value) const override;
+  ValueParsingResults Parse(std::string_view value) const override;
 
  private:
-  const std::string condition_regex_;
+  const std::string_view condition_regex_;
   const base::span<const ExtractPart* const> pieces_;
 };
 
