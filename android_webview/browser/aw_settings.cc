@@ -20,6 +20,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
@@ -224,7 +225,7 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
     const bool propagate_uach_metadata =
         base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint) &&
         !ua_string_override.empty() &&
-        ua_string_override.find(ua_default) != std::string::npos;
+        base::Contains(ua_string_override, ua_default);
     if (propagate_uach_metadata) {
       override_ua_with_metadata.ua_metadata_override =
           AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -209,7 +210,7 @@ class AwPermissionManager::PendingRequest {
   }
 
   bool HasPermissionType(PermissionType type) {
-    return permission_index_map_.find(type) != permission_index_map_.end();
+    return base::Contains(permission_index_map_, type);
   }
 
   bool IsCompleted() const {

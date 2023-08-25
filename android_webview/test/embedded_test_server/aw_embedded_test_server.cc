@@ -32,24 +32,29 @@ namespace {
 std::unique_ptr<HttpResponse> HandleClickRedirect(const HttpRequest& request) {
   if (!ShouldHandle(request, "/click-redirect"))
     return nullptr;
-  GURL request_url = request.GetURL();
-  RequestQuery query = ParseQuery(request_url);
+
+  const GURL request_url = request.GetURL();
+  const RequestQuery query = ParseQuery(request_url);
 
   std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse);
   http_response->set_content_type("text/html");
   http_response->AddCustomHeader("Cache-Control", "no-cache, no-store");
 
   std::string url;
-  if (query.find("url") != query.end()) {
-    url = query.at("url").front();
+  auto url_query_iter = query.find("url");
+  if (url_query_iter != query.end() && !url_query_iter->second.empty()) {
+    url = url_query_iter->second.front();
   }
 
   std::string content;
-  if (query.find("header") != query.end()) {
-    for (const auto& header : query.at("header")) {
+  auto header_query_iter = query.find("header");
+  if (header_query_iter != query.end() && !header_query_iter->second.empty()) {
+    for (const std::string& header : header_query_iter->second) {
       std::string header_value = "None";
-      if (request.headers.find(header) != request.headers.end())
-        header_value = request.headers.at(header);
+      auto header_iter = request.headers.find(header);
+      if (header_iter != request.headers.end()) {
+        header_value = header_iter->second;
+      }
       content += header_value + "\n";
     }
   }
@@ -69,15 +74,17 @@ std::unique_ptr<HttpResponse> HandleEchoHeaderAndSetData(
     const HttpRequest& request) {
   if (!ShouldHandle(request, "/echoheader-and-set-data"))
     return nullptr;
-  GURL request_url = request.GetURL();
-  RequestQuery query = ParseQuery(request_url);
+
+  const GURL request_url = request.GetURL();
+  const RequestQuery query = ParseQuery(request_url);
 
   std::string header_content;
-  if (query.find("header") != query.end()) {
-    for (const auto& header : query.at("header")) {
-      std::string header_value = "None";
-      if (request.headers.find(header) != request.headers.end())
-        header_value = request.headers.at(header);
+  auto header_query_iter = query.find("header");
+  if (header_query_iter != query.end() && !header_query_iter->second.empty()) {
+    for (const std::string& header : header_query_iter->second) {
+      auto header_iter = request.headers.find(header);
+      std::string header_value =
+          (header_iter != request.headers.end()) ? header_iter->second : "None";
       if (!header_content.empty())
         header_content += ",";
       header_content += "\"" + header_value + "\"";
@@ -85,8 +92,9 @@ std::unique_ptr<HttpResponse> HandleEchoHeaderAndSetData(
   }
 
   std::string data_content;
-  if (query.find("data") != query.end()) {
-    for (const auto& data : query.at("data")) {
+  auto data_query_iter = query.find("data");
+  if (data_query_iter != query.end() && !data_query_iter->second.empty()) {
+    for (const std::string& data : data_query_iter->second) {
       if (!data_content.empty())
         data_content += ", ";
       data_content += "\"" + data + "\"";
@@ -113,20 +121,23 @@ std::unique_ptr<HttpResponse> HandleServerRedirectEchoHeader(
     const HttpRequest& request) {
   if (!ShouldHandle(request, "/server-redirect-echoheader"))
     return nullptr;
-  GURL request_url = request.GetURL();
-  RequestQuery query = ParseQuery(request_url);
+
+  const GURL request_url = request.GetURL();
+  const RequestQuery query = ParseQuery(request_url);
 
   std::string url;
-  if (query.find("url") != query.end()) {
-    url = query.at("url").front();
+  auto url_query_iter = query.find("url");
+  if (url_query_iter != query.end() && !url_query_iter->second.empty()) {
+    url = url_query_iter->second.front();
   }
 
   std::string url_suffix;
-  if (query.find("header") != query.end()) {
-    for (const auto& header : query.at("header")) {
-      std::string header_value = "None";
-      if (request.headers.find(header) != request.headers.end())
-        header_value = request.headers.at(header);
+  auto header_query_iter = query.find("header");
+  if (header_query_iter != query.end() && !header_query_iter->second.empty()) {
+    for (const std::string& header : header_query_iter->second) {
+      auto header_iter = request.headers.find(header);
+      std::string header_value =
+          (header_iter != request.headers.end()) ? header_iter->second : "None";
       url_suffix += "&data=" + header_value;
     }
   }
@@ -147,17 +158,21 @@ std::unique_ptr<HttpResponse> HandleSetImageResponse(
     const HttpRequest& request) {
   if (!ShouldHandle(request, "/image-response-if-header-not-exists"))
     return nullptr;
-  GURL request_url = request.GetURL();
-  RequestQuery query = ParseQuery(request_url);
+
+  const GURL request_url = request.GetURL();
+  const RequestQuery query = ParseQuery(request_url);
 
   std::string resource;
-  if (query.find("resource") != query.end()) {
-    resource = query.at("resource").front();
+  auto resource_query_iter = query.find("resource");
+  if (resource_query_iter != query.end() &&
+      !resource_query_iter->second.empty()) {
+    resource = resource_query_iter->second.front();
   }
 
   bool header_exist = false;
-  if (query.find("header") != query.end()) {
-    for (const auto& header : query.at("header")) {
+  auto header_query_iter = query.find("header");
+  if (header_query_iter != query.end() && !header_query_iter->second.empty()) {
+    for (const std::string& header : header_query_iter->second) {
       if (request.headers.find(header) != request.headers.end()) {
         header_exist = true;
         break;
@@ -172,12 +187,13 @@ std::unique_ptr<HttpResponse> HandleSetImageResponse(
   std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse);
   http_response->set_content_type("image/png");
   http_response->AddCustomHeader("Cache-Control", "no-store");
-  if (!header_exist)
+  if (!header_exist) {
     http_response->set_content(decoded_resource);
-  else {
+  } else {
     http_response->set_code(net::HTTP_NOT_FOUND);
     http_response->set_content("Found Extra Header. Validation Failed.");
   }
+
   return std::move(http_response);
 }
 
@@ -187,20 +203,26 @@ std::unique_ptr<HttpResponse> HandleImageOnloadHtml(
     const HttpRequest& request) {
   if (!ShouldHandle(request, "/image-onload-html"))
     return nullptr;
-  GURL request_url = request.GetURL();
-  RequestQuery query = ParseQuery(request_url);
+
+  const GURL request_url = request.GetURL();
+  const RequestQuery query = ParseQuery(request_url);
 
   std::string image_url;
-  if (query.find("imagesrc") != query.end()) {
-    image_url = query.at("imagesrc").front();
+  auto imagesrc_query_iter = query.find("imagesrc");
+  if (imagesrc_query_iter != query.end() &&
+      !imagesrc_query_iter->second.empty()) {
+    image_url = imagesrc_query_iter->second.front();
   }
 
   std::string content;
-  if (query.find("header") != query.end()) {
-    for (const auto& header : query.at("header")) {
+  auto header_query_iter = query.find("header");
+  if (header_query_iter != query.end() && !header_query_iter->second.empty()) {
+    for (const std::string& header : header_query_iter->second) {
       std::string header_value = "None";
-      if (request.headers.find(header) != request.headers.end())
-        header_value = request.headers.at(header);
+      auto header_value_iter = request.headers.find(header);
+      if (header_value_iter != request.headers.end()) {
+        header_value = header_value_iter->second;
+      }
       content += header_value + "\n";
     }
   }
@@ -214,6 +236,7 @@ std::unique_ptr<HttpResponse> HandleImageOnloadHtml(
       "<div onload='updateTitle();'><img id='img' onload='updateTitle();' "
       "src='%s'></div></body></html>",
       content.c_str(), image_url.c_str()));
+
   return std::move(http_response);
 }
 

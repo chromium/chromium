@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "android_webview/browser_jni_headers/AwContentsLifecycleNotifier_jni.h"
+#include "base/containers/contains.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::android::AttachCurrentThread;
@@ -66,7 +67,7 @@ void AwContentsLifecycleNotifier::OnWebViewCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   has_aw_contents_ever_created_ = true;
   bool first_created = !HasAwContentsInstance();
-  DCHECK(aw_contents_to_data_.find(aw_contents) == aw_contents_to_data_.end());
+  DCHECK(!base::Contains(aw_contents_to_data_, aw_contents));
 
   aw_contents_to_data_.emplace(aw_contents, AwContentsData());
   state_count_[ToIndex(AwContentsState::kDetached)]++;
@@ -206,7 +207,7 @@ bool AwContentsLifecycleNotifier::HasAwContentsInstance() const {
 
 AwContentsLifecycleNotifier::AwContentsData*
 AwContentsLifecycleNotifier::GetAwContentsData(const AwContents* aw_contents) {
-  DCHECK(aw_contents_to_data_.find(aw_contents) != aw_contents_to_data_.end());
+  DCHECK(base::Contains(aw_contents_to_data_, aw_contents));
   return &aw_contents_to_data_.at(aw_contents);
 }
 
