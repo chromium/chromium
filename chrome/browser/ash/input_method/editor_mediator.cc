@@ -18,10 +18,16 @@ EditorMediator* g_instance_ = nullptr;
 }  // namespace
 
 EditorMediator::EditorMediator(Profile* profile)
-    : editor_instance_impl_(this),
-      editor_switch_(profile->GetProfilePolicyConnector()->IsManaged()) {
+    : profile_(profile),
+      editor_instance_impl_(this),
+      editor_switch_(profile->GetProfilePolicyConnector()->IsManaged()),
+      consent_store_(
+          std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
   DCHECK(!g_instance_);
   g_instance_ = this;
+
+  profile_observation_.Observe(profile_);
+  editor_switch_.OnConsentStatusUpdated(consent_store_->GetConsentStatus());
 }
 
 EditorMediator::~EditorMediator() {
@@ -58,6 +64,11 @@ void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_switch_.OnActivateIme(engine_id);
 }
 
+void EditorMediator::OnConsentActionReceived(ConsentAction consent_action) {
+  consent_store_->ProcessConsentAction(consent_action);
+  editor_switch_.OnConsentStatusUpdated(consent_store_->GetConsentStatus());
+}
+
 void EditorMediator::CommitEditorResult(std::string_view text) {
   // This assumes that focus will return to the original text input client after
   // the mako web ui is hidden from view. Thus we queue the text to be inserted
@@ -75,6 +86,16 @@ void EditorMediator::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
   editor_switch_.OnInputContextUpdated(
       IMEBridge::Get()->GetCurrentInputContext(), info);
+}
+
+ConsentStatus EditorMediator::GetConsentStatus() {
+  return consent_store_->GetConsentStatus();
+}
+
+void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_ = nullptr;
+  consent_store_ = nullptr;
 }
 
 }  // namespace input_method

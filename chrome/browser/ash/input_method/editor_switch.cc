@@ -48,6 +48,12 @@ bool IsAppTypeAllowed(AppType app_type) {
   return base::Contains(kAppTypeAllowlist, app_type);
 }
 
+bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
+  return consent_status == ConsentStatus::kApproved ||
+         consent_status == ConsentStatus::kPending ||
+         consent_status == ConsentStatus::kUnset;
+}
+
 }  // namespace
 
 EditorSwitch::EditorSwitch(bool is_managed) {
@@ -66,6 +72,11 @@ bool EditorSwitch::CanBeTriggered() {
   return can_be_triggered_;
 }
 
+void EditorSwitch::OnConsentStatusUpdated(ConsentStatus consent_status) {
+  consent_status_ = consent_status;
+  UpdateTriggerableCache();
+}
+
 void EditorSwitch::OnInputContextUpdated(
     const TextInputMethod::InputContext& input_context,
     const TextFieldContextualInfo& text_field_contextual_info) {
@@ -82,7 +93,8 @@ void EditorSwitch::OnActivateIme(std::string_view engine_id) {
 void EditorSwitch::UpdateTriggerableCache() {
   can_be_triggered_ =
       is_allowed_for_use_ && IsInputMethodEngineAllowed(active_engine_id_) &&
-      IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_);
+      IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
+      IsTriggerableFromConsentStatus(consent_status_);
 }
 
 }  // namespace ash::input_method

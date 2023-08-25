@@ -62,11 +62,25 @@ TEST_F(EditorSwitchTest,
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
 }
 
+TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  EditorSwitch editor_switch(/*is_managed=*/false);
+
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+  editor_switch.OnConsentStatusUpdated(ConsentStatus::kDeclined);
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_FALSE(editor_switch.CanBeTriggered());
+}
+
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   EditorSwitch editor_switch(/*is_managed=*/false);
 
   editor_switch.OnActivateIme("nacl_mozc_jp");
+  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
@@ -76,19 +90,17 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
 }
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca},
-      /*disabled_features=*/{});
-  EditorSwitch editorSwitch(/*is_managed=*/false);
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  EditorSwitch editor_switch(/*is_managed=*/false);
 
-  editorSwitch.OnActivateIme("nacl_mozc_jp");
-  editorSwitch.OnInputContextUpdated(
+  editor_switch.OnActivateIme("nacl_mozc_jp");
+  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
+  editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
-  EXPECT_TRUE(editorSwitch.IsAllowedForUse());
-  EXPECT_FALSE(editorSwitch.CanBeTriggered());
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_FALSE(editor_switch.CanBeTriggered());
 }
 
 TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
@@ -97,32 +109,31 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
       /*enabled_features=*/{chromeos::features::kOrca},
       /*disabled_features=*/{});
 
-  EditorSwitch editorSwitch(/*is_managed=*/false);
-  editorSwitch.OnActivateIme("xkb:us::eng");
-  editorSwitch.OnInputContextUpdated(
+  EditorSwitch editor_switch(/*is_managed=*/false);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
+  editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
 
-  EXPECT_TRUE(editorSwitch.IsAllowedForUse());
-  EXPECT_FALSE(editorSwitch.CanBeTriggered());
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_FALSE(editor_switch.CanBeTriggered());
 }
 
 TEST_F(
     EditorSwitchTest,
     FeatureCanBeTriggeredOnANormalTextFieldOnABrowserWindowAndWithEnglishInputMethod) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
 
-  EditorSwitch editorSwitch(/*is_managed=*/false);
-  editorSwitch.OnActivateIme("xkb:us::eng");
-  editorSwitch.OnInputContextUpdated(
+  EditorSwitch editor_switch(/*is_managed=*/false);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnConsentStatusUpdated(ConsentStatus::kApproved);
+  editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
-  EXPECT_TRUE(editorSwitch.IsAllowedForUse());
-  EXPECT_TRUE(editorSwitch.CanBeTriggered());
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_TRUE(editor_switch.CanBeTriggered());
 }
 
 }  // namespace

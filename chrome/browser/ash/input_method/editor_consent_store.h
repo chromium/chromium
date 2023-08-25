@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONSENT_STORE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONSENT_STORE_H_
 
+#include "chrome/browser/ash/input_method/editor_consent_action.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::input_method {
@@ -29,15 +30,6 @@ enum class ConsentStatus : int {
   kUnset,
 };
 
-enum class ConsentAction : int {
-  // User explicitly hits "Yes/Agree" button.
-  kApproved,
-  // User misses the consent window.
-  kDismissed,
-  // User explicitly hits "No/Disagree" button.
-  kDeclined
-};
-
 // Manages consent status read/write from and to the user prefs.
 // Each user has a separate consent status bound with their pref
 // store.
@@ -60,7 +52,8 @@ class EditorConsentStore {
 
   void IncrementConsentWindowDismissCount();
 
-  const raw_ptr<PrefService> pref_service_;
+  // Not owned by this class.
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace ash::input_method

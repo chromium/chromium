@@ -88,4 +88,5 @@ void EditorConsentStore::IncrementConsentWindowDismissCount() {
   pref_service_->SetInteger(prefs::kOrcaConsentWindowDismissCount,
                             GetConsentWindowDismissCount() + 1);
 }
+
 }  // namespace ash::input_method

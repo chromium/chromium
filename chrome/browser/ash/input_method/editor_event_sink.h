@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "chrome/browser/ash/input_method/editor_consent_action.h"
+
 namespace ash {
 namespace input_method {
 
@@ -16,6 +18,7 @@ class EditorEventSink {
   virtual void OnFocus(int context_id) = 0;
   virtual void OnBlur() = 0;
   virtual void OnActivateIme(std::string_view engine_id) = 0;
+  virtual void OnConsentActionReceived(ConsentAction consent_action) = 0;
 };
 
 }  // namespace input_method
