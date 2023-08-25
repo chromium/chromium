@@ -87,7 +87,7 @@ async function generateURNFromFledgeRawURL(
   let interestGroup = {
     name: 'testAd1',
     owner: location.origin,
-    biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
+    biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
     ads: [{renderUrl: href, bid: 1}],
     userBiddingSignals: {biddingToken: bidding_token},
     trustedBiddingSignalsKeys: ['key1'],
@@ -95,7 +95,7 @@ async function generateURNFromFledgeRawURL(
   };
 
   let biddingUrlParams =
-      new URLSearchParams(interestGroup.biddingLogicUrl.search);
+    new URLSearchParams(interestGroup.biddingLogicURL.search);
   if (requested_size)
     biddingUrlParams.set(
         'requested-size', requested_size[0] + '-' + requested_size[1]);
@@ -103,7 +103,7 @@ async function generateURNFromFledgeRawURL(
     biddingUrlParams.set('ad-with-size', 1);
   if (automatic_beacon)
     biddingUrlParams.set('automatic-beacon', 1);
-  interestGroup.biddingLogicUrl.search = biddingUrlParams;
+  interestGroup.biddingLogicURL.search = biddingUrlParams;
 
   if (ad_with_size) {
     interestGroup.ads[0].sizeGroup = 'group1';

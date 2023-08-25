@@ -6651,7 +6651,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
                                 navigator.joinAdInterestGroup({
                                   name: 'cars',
                                   owner: $1,
-                                  biddingLogicUrl: $2,
+                                  biddingLogicURL: $2,
                                   userBiddingSignals: [],
                                   ads: [{
                                     renderURL: 'https://example.com/render',

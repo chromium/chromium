@@ -9,7 +9,7 @@
     navigator.joinAdInterestGroup({
         name: ${id},
         owner: "${baseOrigin}",
-        biddingLogicUrl: "${base}fledge_bidding_logic.js.php",
+        biddingLogicURL: "${base}fledge_bidding_logic.js.php",
         ads: [{
           renderUrl: 'https://example.com/render' + ${id},
           metadata: {ad: 'metadata', here: [1, 2, 3]}

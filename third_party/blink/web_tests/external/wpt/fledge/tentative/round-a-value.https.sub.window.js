@@ -60,7 +60,8 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
   await joinInterestGroup(test, uuid,
-    { biddingLogicUrl: createBiddingScriptUrl({ bid: 1.99 }),
+    {
+      biddingLogicURL: createBiddingScriptURL({ bid: 1.99 }),
       name: 'other interest group 1' });
   await runReportTest(
     test, uuid,

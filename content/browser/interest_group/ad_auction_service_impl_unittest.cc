@@ -1273,7 +1273,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                              "browserSignals.reserved":-1},
 "sellerCapabilities": {"%s": ["latency-stats"],
                        "*": ["interest-group-counts", "latencyStats"]},
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "biddingWasmHelperUrl":"%s/interest_group/new_bidding_wasm_helper_url.wasm",
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
@@ -2181,7 +2181,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
     network_responder_->RegisterUpdateResponse(
         kUpdateUrlPath,
         base::StringPrintf(R"({
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "ads": [{"renderURL": %s,
         "metadata": {"new_a": "b"},
         "allowedReportingOrigins": %s
@@ -2229,7 +2229,7 @@ TEST_F(AdAuctionServiceImplTest,
   content_browser_client_.SetAllowList({kOriginG});
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "ads": [{"renderURL": "https://test.com",
         "metadata": {"new_a": "b"},
         "allowedReportingOrigins": ["https://a.test", "https://g.test"]
@@ -2261,7 +2261,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
 "priority": "high",
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js"
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js"
 })",
                                          kOriginStringA));
 
@@ -6675,7 +6675,7 @@ class AdAuctionServiceImplRestrictedPermissionsPolicyTest
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromTopFrame) {
   network_responder_->RegisterUpdateResponse(
-      kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})",
+      kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicURL": "%s%s"})",
                                          kOriginStringA, kNewBiddingUrlPath));
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -6704,7 +6704,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromSameSiteIframe) {
   network_responder_->RegisterUpdateResponse(
-      kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})",
+      kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicURL": "%s%s"})",
                                          kOriginStringA, kNewBiddingUrlPath));
   // Create a same site subframe and use it to send the interest group requests.
   content::RenderFrameHostTester* rfh_tester =
@@ -6741,7 +6741,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromCrossSiteIFrame) {
   network_responder_->RegisterUpdateResponse(
-      kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})",
+      kUpdateUrlPath, base::StringPrintf(R"({"biddingLogicURL": "%s%s"})",
                                          kOriginStringC, kNewBiddingUrlPath));
 
   NavigateAndCommit(kUrlC);

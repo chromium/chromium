@@ -2291,7 +2291,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupPriorityVector) {
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
   const std::string kGenerateBidBody =
-      R"({ad: interestGroup.biddingLogicUrl, bid:1,
+      R"({ad: interestGroup.biddingLogicURL, bid:1,
         render:"https://response.test/"})";
 
   RunGenerateBidWithReturnValueExpectingResult(

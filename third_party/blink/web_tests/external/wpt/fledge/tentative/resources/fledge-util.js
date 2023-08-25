@@ -127,7 +127,7 @@ async function waitForObservedRequests(uuid, expectedRequests) {
 // run, unless it returns something or throws.
 //
 // The default reportWin() method is empty.
-function createBiddingScriptUrl(params = {}) {
+function createBiddingScriptURL(params = {}) {
   let url = new URL(`${BASE_URL}resources/bidding-logic.sub.py`);
   if (params.generateBid)
     url.searchParams.append('generateBid', params.generateBid);
@@ -188,8 +188,8 @@ async function joinInterestGroup(test, uuid, interestGroupOverrides = {},
   let interestGroup = {
     owner: window.location.origin,
     name: DEFAULT_INTEREST_GROUP_NAME,
-    biddingLogicUrl: createBiddingScriptUrl(
-        { reportWin: `sendReportTo('${createBidderReportUrl(uuid)}');` }),
+    biddingLogicURL: createBiddingScriptURL(
+      { reportWin: `sendReportTo('${createBiddingScriptURL(uuid)}');` }),
     ads: [{renderUrl: createRenderUrl(uuid)}],
     ...interestGroupOverrides
   };
@@ -335,19 +335,19 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportUrls,
                  }
                  ${reportWin}`;
   }
-  let biddingScriptUrlParams = {};
+  let biddingScriptURLParams = {};
 
   if (generateBid !== undefined) {
-    biddingScriptUrlParams.generateBid = generateBid;
+    biddingScriptURLParams.generateBid = generateBid;
   }
 
   if (reportWin !== null)
-    biddingScriptUrlParams.reportWin = reportWin;
+    biddingScriptURLParams.reportWin = reportWin;
   else
-    biddingScriptUrlParams.error = 'no-reportWin';
+    biddingScriptURLParams.error = 'no-reportWin';
 
   let interestGroupOverrides =
-      { biddingLogicUrl: createBiddingScriptUrl(biddingScriptUrlParams) };
+    { biddingLogicURL: createBiddingScriptURL(biddingScriptURLParams) };
   if (renderUrlOverride)
     interestGroupOverrides.ads = [{renderUrl: renderUrlOverride}]
 

@@ -32,7 +32,7 @@ for (const substring of kDanglingMarkupSubstrings) {
     const interestGroup = {
       name: 'testAd1',
       owner: location.origin,
-      biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
+      biddingLogicURL: new URL(FLEDGE_BIDDING_URL, location.origin),
       ads: [{renderUrl: url_string, bid: 1}],
       userBiddingSignals: {biddingToken: bidding_token},
       trustedBiddingSignalsKeys: ['key1'],

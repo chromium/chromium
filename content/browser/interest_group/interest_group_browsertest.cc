@@ -751,7 +751,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
              SellerCapabilitiesToDict(group.seller_capabilities,
                                       group.all_sellers_capabilities));
     if (group.bidding_url) {
-      dict.Set("biddingLogicUrl", group.bidding_url->spec());
+      dict.Set("biddingLogicURL", group.bidding_url->spec());
     }
     if (group.bidding_wasm_helper_url) {
       dict.Set("biddingWasmHelperUrl", group.bidding_wasm_helper_url->spec());
@@ -3318,7 +3318,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          biddingLogicUrl: 'https://invalid^&',
+          biddingLogicURL: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -7702,7 +7702,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
   const ig_1= {
     owner: $1,
     name: "name_1",
-    biddingLogicUrl: $3,
+    biddingLogicURL: $3,
     ads: [{renderUrl: $1}],
   };
 
@@ -7711,7 +7711,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
     name: "name_2",
     // Intentionally use invalid bidding logic URL -- this results in the bid
     // being filtered.
-    biddingLogicUrl: $1,
+    biddingLogicURL: $1,
     ads: [{renderUrl: $1}],
     enableBiddingSignalsPrioritization: true,
     trustedBiddingSignalsUrl: $1
@@ -9573,7 +9573,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     {
       name: $1,
       owner: $2,
-      biddingLogicUrl: $3,
+      biddingLogicURL: $3,
       ads: $4
     },
     /*joinDurationSec=*/ 300);
@@ -11426,7 +11426,7 @@ function validateAuctionConfig(auctionConfig) {
           owner: $1,
           trustedBiddingSignalsUrl: $2,
           trustedBiddingSignalsKeys: ['key1'],
-          biddingLogicUrl: $3,
+          biddingLogicURL: $3,
           userBiddingSignals: 1,
           ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
@@ -11543,7 +11543,7 @@ function validateAuctionConfig(auctionConfig) {
         {
           name: 'cars',
           owner: $1,
-          biddingLogicUrl: $2,
+          biddingLogicURL: $2,
           ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
@@ -11648,7 +11648,7 @@ function validateAuctionConfig(auctionConfig) {
         {
           name: 'cars',
           owner: $1,
-          biddingLogicUrl: $2,
+          biddingLogicURL: $2,
           ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
@@ -11792,7 +11792,7 @@ function validateDirectFromSellerSignals(directFromSellerSignals) {
         {
           name: 'cars',
           owner: $1,
-          biddingLogicUrl: $2,
+          biddingLogicURL: $2,
           ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
@@ -11942,7 +11942,7 @@ function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
         {
           name: 'cars',
           owner: $1,
-          biddingLogicUrl: $2,
+          biddingLogicURL: $2,
           ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
@@ -12026,7 +12026,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
   constexpr char kUpdateUrlPath[] = "/interest_group/update_partial.json";
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
@@ -12114,7 +12114,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
   constexpr char kUpdateUrlPath[] = "/interest_group/update_partial.json";
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
@@ -12205,7 +12205,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   constexpr char kUpdateUrlPath[] = "/interest_group/update_partial.json";
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
@@ -12935,11 +12935,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   GURL new_bidding_url =
       https_server_->GetURL("a.test", "/interest_group/new_bidding_logic.js");
 
-  // The server JSON updates biddingLogicUrl only.
+  // The server JSON updates biddingLogicURL only.
   network_responder_->RegisterNetworkResponse(update_url.path(),
                                               JsReplace(R"(
 {
-  "biddingLogicUrl": $1
+  "biddingLogicURL": $1
 }
                                                         )",
                                                         new_bidding_url));
@@ -13069,10 +13069,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   const GURL new_bidding_url_c =
       https_server_->GetURL("c.test", kNewBiddingPath);
 
-  // The server JSON updates biddingLogicUrl only.
+  // The server JSON updates biddingLogicURL only.
   constexpr char kUpdateContentTemplate[] = R"(
 {
-  "biddingLogicUrl": $1
+  "biddingLogicURL": $1
 }
 )";
   // a.test's response is delayed until later.
