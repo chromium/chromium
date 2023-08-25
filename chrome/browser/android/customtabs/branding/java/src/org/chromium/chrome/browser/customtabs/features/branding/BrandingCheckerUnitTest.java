@@ -35,6 +35,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingAppIdType;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingLaunchTimeStorage;
 
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class BrandingCheckerUnitTest {
     private static final String PACKAGE_1 = "com.example.myapplication";
     private static final String PACKAGE_2 = "org.foo.bar";
     private static final String NEW_APPLICATION = "com.example.new.application";
-    private static final String INVALID_PACKAGE = "invalid.package";
+    private static final String INVALID_ID = "";
     private static final long TEST_BRANDING_CADENCE = 10;
     private static final long PACKAGE_1_BRANDING_SHOWN_SINCE_START = 2;
     private static final long PACKAGE_2_BRANDING_SHOWN_SINCE_START = 5;
@@ -152,17 +153,29 @@ public class BrandingCheckerUnitTest {
     @Test
     public void testInvalidPackage() {
         CallbackDelegate callbackDelegate = new CallbackDelegate();
-        BrandingChecker checker = createBrandingChecker(INVALID_PACKAGE, callbackDelegate);
+        BrandingChecker checker = createBrandingChecker(INVALID_ID, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         mainLooper().idle();
         assertEquals("Package is invalid, BrandingDecision should be the test default. ",
                 BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
-        assertEquals("Branding time should not record for invalid package.", -1,
-                mStorage.get(INVALID_PACKAGE));
+        assertEquals(
+                "Branding time should not record for invalid id.", -1, mStorage.get(INVALID_ID));
 
         assertHistogramRecorded(/*decision*/ BrandingDecision.TOAST, /*isPackageValid*/ false,
                 /*isTaskCanceled*/ false);
+    }
+
+    @Test
+    public void testBrandingAppIdType() {
+        assertEquals(BrandingAppIdType.PACKAGE_NAME, BrandingChecker.getAppIdType(PACKAGE_1));
+        assertEquals(BrandingAppIdType.PACKAGE_NAME, BrandingChecker.getAppIdType(PACKAGE_2));
+
+        assertEquals(BrandingAppIdType.INVALID, BrandingChecker.getAppIdType(""));
+
+        // Package not installed. Regarded as referrer string.
+        assertEquals(BrandingAppIdType.REFERRER, BrandingChecker.getAppIdType("com.not.installed"));
+        assertEquals(BrandingAppIdType.REFERRER, BrandingChecker.getAppIdType("2//com.seedly"));
     }
 
     @Test

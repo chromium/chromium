@@ -33,7 +33,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
@@ -458,18 +457,18 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testGetReferrerPackageName() {
+    public void testGetAppIdFromReferrer() {
         assertEquals("extra.activity.referrer",
-                CustomTabIntentDataProvider.getReferrerPackageName(
+                CustomTabIntentDataProvider.getAppIdFromReferrer(
                         buildMockActivity("android-app://extra.activity.referrer")));
         assertEquals("co.abc.xyz",
-                CustomTabIntentDataProvider.getReferrerPackageName(
+                CustomTabIntentDataProvider.getAppIdFromReferrer(
                         buildMockActivity("android-app://co.abc.xyz")));
 
-        assertReferrerInvalid("");
-        assertReferrerInvalid("invalid");
-        assertReferrerInvalid("android-app://");
-        assertReferrerInvalid(Uri.parse("https://www.one.com").toString());
+        assertNonPackageUriReferrer("");
+        assertNonPackageUriReferrer("invalid");
+        assertNonPackageUriReferrer("android-app://"); // empty host name is invalid.
+        assertNonPackageUriReferrer(Uri.parse("https://www.one.com").toString());
     }
 
     @Test
@@ -785,10 +784,9 @@ public class CustomTabIntentDataProviderTest {
         return Uri.parse("https://www.example.com/");
     }
 
-    private void assertReferrerInvalid(String referrerStr) {
-        assertTrue("Referrer should be invalid for the input: " + referrerStr,
-                TextUtils.isEmpty(CustomTabIntentDataProvider.getReferrerPackageName(
-                        buildMockActivity(referrerStr))));
+    private void assertNonPackageUriReferrer(String referrerStr) {
+        assertEquals(referrerStr,
+                CustomTabIntentDataProvider.getAppIdFromReferrer(buildMockActivity(referrerStr)));
     }
 
     private Activity buildMockActivity(String referrer) {

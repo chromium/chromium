@@ -81,7 +81,7 @@ public class BrandingController {
             new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
-    private final String mAppName;
+    private final String mBrowserName;
     private final boolean mEnableIconAnimation;
     @Nullable
     private final PureJavaExceptionReporter mExceptionReporter;
@@ -94,14 +94,14 @@ public class BrandingController {
     /**
      * Branding controller responsible for showing branding.
      * @param context Context used to fetch package information for embedded app.
-     * @param packageName The package name for the embedded app.
-     * @param appName The appName shown on the branding toast.
+     * @param appId The ID for the embedded app.
+     * @param browserName The browser name shown on the branding toast.
      * @param exceptionReporter Optional reporter that reports wrong state quietly.
      */
-    public BrandingController(Context context, String packageName, String appName,
+    public BrandingController(Context context, String appId, String browserName,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
-        mAppName = appName;
+        mBrowserName = browserName;
         mExceptionReporter = exceptionReporter;
         mEnableIconAnimation = ANIMATE_TOOLBAR_ICON_TRANSITION.getValue();
         mBrandingDecision.onAvailable(
@@ -110,7 +110,7 @@ public class BrandingController {
                 ChromeFeatureList.sCctBrandTransparencyMemoryImprovement.isEnabled();
 
         // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
-        mBrandingChecker = new BrandingChecker(packageName,
+        mBrandingChecker = new BrandingChecker(appId,
                 SharedPreferencesBrandingTimeStorage.getInstance(), mBrandingDecision::set,
                 BRANDING_CADENCE_MS.getValue(), BrandingDecision.TOAST);
         mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
@@ -192,7 +192,7 @@ public class BrandingController {
         }
 
         String toastText = mContext.getResources().getString(
-                R.string.twa_running_in_chrome_template, mAppName);
+                R.string.twa_running_in_chrome_template, mBrowserName);
         TextView runInChromeTextView = (TextView) LayoutInflater.from(mContext).inflate(
                 R.layout.custom_tabs_toast_branding_layout, null, false);
         runInChromeTextView.setText(toastText);

@@ -503,19 +503,24 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Get the package name from {@link #getReferrerUriString(Activity)}. If the referrer format
-     * is invalid, return an empty string.
+     * Extracts the name that identifies the embedding app from the referrer.
+     * @return Host name as an id if the referrer is of a well-formed URI with app intent scheme.
+     *    If not, just the whole referrer string.
      * TODO(https://crbug.com/1350252): Move this to IntentHandler.
-     * */
-    static String getReferrerPackageName(Activity activity) {
+     */
+    static String getAppIdFromReferrer(Activity activity) {
         String referrer =
                 CustomTabActivityLifecycleUmaTracker.getReferrerUriString(activity).toLowerCase(
                         Locale.US);
         if (TextUtils.isEmpty(referrer)) return "";
 
         Uri uri = Uri.parse(referrer);
-        return TextUtils.equals(UrlConstants.APP_INTENT_SCHEME, uri.getScheme()) ? uri.getHost()
-                                                                                 : "";
+        boolean isUrl = TextUtils.equals(UrlConstants.APP_INTENT_SCHEME, uri.getScheme());
+        if (isUrl) {
+            String host = uri.getHost();
+            if (!TextUtils.isEmpty(host)) return host;
+        }
+        return referrer;
     }
 
     /**

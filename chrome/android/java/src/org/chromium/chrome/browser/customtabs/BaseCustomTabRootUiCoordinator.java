@@ -200,13 +200,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
                 && !intentDataProvider.get().isOpenedByChrome()
                 && !intentDataProvider.get().isIncognito()) {
-            String packageName = mIntentDataProvider.get().getClientPackageName();
-            if (TextUtils.isEmpty(packageName)) {
-                packageName = CustomTabIntentDataProvider.getReferrerPackageName(activity);
+            String appId = mIntentDataProvider.get().getClientPackageName();
+            if (TextUtils.isEmpty(appId)) {
+                appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
             }
-            String appName = activity.getResources().getString(R.string.app_name);
+            String browserName = activity.getResources().getString(R.string.app_name);
             mBrandingController = new BrandingController(
-                    activity, packageName, appName, new ChromePureJavaExceptionReporter());
+                    activity, appId, browserName, new ChromePureJavaExceptionReporter());
         }
         mTabController = tabController;
         mPageInsightsToken = TokenHolder.INVALID_TOKEN;
