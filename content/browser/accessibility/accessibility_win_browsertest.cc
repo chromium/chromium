@@ -1190,21 +1190,23 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   document_checker.CheckAccessible(GetRendererAccessible());
 }
 
-// TODO(accessibility): re-enable after fixing it to work withi
-// kSerializeAccessibilityPostLifecycle.
-IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
-                       DISABLED_FocusEventOnPageLoad) {
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FocusEventOnPageLoad) {
   // Some screen readers, such as older versions of Jaws, require a focus event
   // on the top document after the page loads, if there is no focused element on
   // the page.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
-  GURL html_data_url(
-      "data:text/html," +
-      base::EscapeQueryParamValue(R"HTML(<p> Hello</ p>)HTML", false));
-  EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
-  WaitForAccessibilityFocusChange();
+  {
+    base::RunLoop run_loop;
+    GURL html_data_url(
+        "data:text/html," +
+        base::EscapeQueryParamValue(R"HTML(<p> Hello</ p>)HTML", false));
+    BrowserAccessibilityManager::SetFocusChangeCallbackForTesting(
+        run_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
+    run_loop.Run();  // Wait for the focus change.
+  }
   // TODO(https://crbug.com/1332468): Investigate why this does not return
   // true.
   ASSERT_TRUE(waiter.WaitForNotification());
