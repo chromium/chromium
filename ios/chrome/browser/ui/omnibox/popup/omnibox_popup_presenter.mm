@@ -49,6 +49,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 // The layout guide center to use to refer to the omnibox.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+@property(nonatomic, strong) UILayoutGuide* topOmniboxGuide;
 
 @end
 
@@ -233,12 +234,15 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
                                   constant:kPopupBottomPaddingTablet];
 
   // Install in the superview the guide tracking the top omnibox.
-  UILayoutGuide* topOmniboxGuide =
+  if (self.topOmniboxGuide) {
+    [[popup superview] removeLayoutGuide:self.topOmniboxGuide];
+  }
+  self.topOmniboxGuide =
       [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
-  [[popup superview] addLayoutGuide:topOmniboxGuide];
+  [[popup superview] addLayoutGuide:self.topOmniboxGuide];
   // Position the top anchor of the popup relatively to that layout guide.
   NSLayoutConstraint* topConstraint =
-      [popup.topAnchor constraintEqualToAnchor:topOmniboxGuide.bottomAnchor
+      [popup.topAnchor constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
                                       constant:kVerticalOffset];
 
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
@@ -248,9 +252,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
       IsRegularXRegularSizeClass(self.popupContainerView)) {
     [constraintsToActivate addObjectsFromArray:@[
       [popup.leadingAnchor
-          constraintEqualToAnchor:topOmniboxGuide.leadingAnchor],
+          constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor],
       [popup.trailingAnchor
-          constraintEqualToAnchor:topOmniboxGuide.trailingAnchor],
+          constraintEqualToAnchor:self.topOmniboxGuide.trailingAnchor],
     ]];
   } else {
     [constraintsToActivate addObjectsFromArray:@[
