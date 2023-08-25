@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/render_view_host.h"
@@ -21,6 +22,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 class EyeDropperView::ViewPositionHandler {
  public:
@@ -79,11 +84,25 @@ class EyeDropperView::ScreenCapturer
 };
 
 EyeDropperView::ScreenCapturer::ScreenCapturer() {
+  static bool allow_wgc_screen_capture =
+#if BUILDFLAG(IS_WIN)
+      // Allow WGC screen capture if Windows version is greater or equal
+      // than 10.0.20348.0, as the following API, which controls if a border is
+      // to be painted around the captured content, needs to be present as the
+      // border should not be shown during eye dropper color selection:
+      // https://learn.microsoft.com/en-us/uwp/api/windows.graphics.capture.graphicscapturesession.isborderrequired
+      base::win::GetVersion() >= base::win::Version::SERVER_2022 &&
+#endif  // BUILDFLAG(IS_WIN)
+      base::FeatureList::IsEnabled(features::kAllowEyeDropperWGCScreenCapture);
   // TODO(iopopesc): Update the captured frame after a period of time to match
   // latest content on screen.
-  capturer_ = content::desktop_capture::CreateScreenCapturer();
+  capturer_ =
+      content::desktop_capture::CreateScreenCapturer(allow_wgc_screen_capture);
   if (capturer_) {
     capturer_->Start(this);
+    if (allow_wgc_screen_capture) {
+      capturer_->SelectSource(webrtc::kFullDesktopScreenId);
+    }
     capturer_->CaptureFrame();
   }
 }

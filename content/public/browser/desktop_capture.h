@@ -27,7 +27,8 @@ namespace desktop_capture {
 CONTENT_EXPORT webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions();
 
 // Creates specific DesktopCapturer with required settings.
-CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer();
+CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer(
+    bool allow_wgc_screen_capturer = false);
 CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
