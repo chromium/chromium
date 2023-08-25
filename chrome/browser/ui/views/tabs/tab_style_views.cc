@@ -1194,12 +1194,22 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
       const int right_separator_overlap =
           tab_style()->GetSeparatorSize().width() - left_separator_overlap;
 
-      left -= (tab_style()->GetSeparatorMargins().right() +
-               left_separator_overlap) *
-              scale;
-      right += (tab_style()->GetSeparatorMargins().left() +
-                right_separator_overlap) *
-               scale;
+      // If there is a tab before this one, then expand into its overlap.
+      const Tab* const previous_tab =
+          tab()->controller()->GetAdjacentTab(tab(), -1);
+      if (previous_tab) {
+        left -= (tab_style()->GetSeparatorMargins().right() +
+                 left_separator_overlap) *
+                scale;
+      }
+
+      // If there is a tab after this one, then expand into its overlap.
+      const Tab* const next_tab = tab()->controller()->GetAdjacentTab(tab(), 1);
+      if (next_tab) {
+        right += (tab_style()->GetSeparatorMargins().left() +
+                  right_separator_overlap) *
+                 scale;
+      }
     }
 
     SkPath path;

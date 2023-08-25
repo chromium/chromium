@@ -139,8 +139,11 @@ void TabContainerImpl::SetAvailableWidthCallback(
 Tab* TabContainerImpl::AddTab(std::unique_ptr<Tab> tab,
                               int model_index,
                               TabPinned pinned) {
+  // First add the tab to the view model, this is done because AddChildView sets
+  // some tooltip information which tries to calculate the hit test, which needs
+  // information about its adjacent tabs which it gets from the view model.
+  AddTabToViewModel(tab.get(), model_index, pinned);
   Tab* tab_ptr = AddChildView(std::move(tab));
-  AddTabToViewModel(tab_ptr, model_index, pinned);
   OrderTabSlotView(tab_ptr);
 
   // Don't animate the first tab, it looks weird, and don't animate anything
