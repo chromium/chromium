@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Host from 'devtools/core/host/host.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -33,7 +34,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       const rootTarget = SDK.TargetManager.TargetManager.instance().rootTarget();
       await TestRunner.waitForEvent(
           Host.InspectorFrontendHostAPI.Events.ReattachRootTarget,
-          Host.InspectorFrontendHost.events);
+          Host.InspectorFrontendHost.InspectorFrontendHostInstance.events);
       next();
     },
 

@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Host from 'devtools/core/host/host.js';
 
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
@@ -181,7 +182,7 @@ import * as Common from 'devtools/core/common/common.js';
         dumpWorkspaceUISourceCodes();
 
         dir.addFile('bar.js', '');
-        InspectorFrontendHost.events.dispatchEventToListeners(
+        Host.InspectorFrontendHost.InspectorFrontendHostInstance.events.dispatchEventToListeners(
             Host.InspectorFrontendHostAPI.Events.FileSystemFilesChangedAddedRemoved,
             {changed: [], added: ['/var/www4/html/bar.js'], removed: []});
 
