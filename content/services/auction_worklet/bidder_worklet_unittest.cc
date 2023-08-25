@@ -2378,16 +2378,16 @@ TEST_F(BidderWorkletTest,
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
   const std::string kGenerateBidBody =
-      R"({ad: "updateUrl" in interestGroup ?
-            interestGroup.updateUrl : "missing",
+      R"({ad: "updateURL" in interestGroup ?
+            interestGroup.updateURL : "missing",
         bid:1,
         render:"https://response.test/"})";
   // TODO(https://crbug.com/1420080): Remove this and tests that use it when
   // removing support for the deprecated `dailyUpdateUrl` field, in favor of
-  // `updateUrl`.
+  // `updateURL`.
   const std::string kGenerateBidBodyUsingDeprecatedDailyUpdateUrl =
       R"({ad: "dailyUpdateUrl" in interestGroup ?
-            interestGroup.updateUrl : "missing",
+            interestGroup.updateURL : "missing",
         bid:1,
         render:"https://response.test/"})";
 

@@ -761,7 +761,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       // being true.
       DCHECK(set_update_url_ || set_daily_update_url_);
       if (set_update_url_) {
-        dict.Set("updateUrl", group.update_url->spec());
+        dict.Set("updateURL", group.update_url->spec());
       }
       if (set_daily_update_url_) {
         dict.Set("dailyUpdateUrl", group.update_url->spec());
@@ -1460,11 +1460,11 @@ function provideAdditionalBids(seller, nonce, bidStringList) {
   std::unique_ptr<NetworkResponder> network_responder_;
 
   // These determine, when joining an interest group in Javascript using a
-  // blink::InterestGroup with a non-null update_url field, whether `updateUrl`,
+  // blink::InterestGroup with a non-null update_url field, whether `updateURL`,
   // `dailyUpdateUrl`, or both are set on the Javascript `interestGroup` object.
   //
   // TODO(https://crbug.com/1420080): Remove these once support for
-  // `dailyUpdateUrl` has been removed, and always set `updateUrl` only.
+  // `dailyUpdateUrl` has been removed, and always set `updateURL` only.
   bool set_update_url_ = true;
   bool set_daily_update_url_ = false;
 };
@@ -3381,7 +3381,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          updateUrl: 'https://invalid^&',
+          updateURL: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3430,7 +3430,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 // TODO(https://crbug.com/1420080): Remove one support for `dailyUpdateUrl` has
 // been removed.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       JoinInterestGroupDifferentUpdateUrlAndDailyUpdateUrl) {
+                       JoinInterestGroupDifferentUpdateURLAndDailyUpdateUrl) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
@@ -3449,7 +3449,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          updateUrl: $1 + '/foo',
+          updateURL: $1 + '/foo',
           dailyUpdateUrl:  $1 + '/bar',
         },
         /*joinDurationSec=*/1);
@@ -12013,7 +12013,7 @@ navigator.runAdAuction({
   WaitForUrl(https_server_->GetURL("/hung"));
 }
 
-// These tests validate the `updateUrl` and navigator.updateAdInterestGroups()
+// These tests validate the `updateURL` and navigator.updateAdInterestGroups()
 // functionality.
 
 // The server JSON updates a number of updatable fields.
@@ -12186,7 +12186,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
 }
 
 // The server JSON updates a number of updatable fields, using the deprecated
-// `dailyUpdateUrl` field, and the `updateUrl` field. Both have the same value.
+// `dailyUpdateUrl` field, and the `updateURL` field. Both have the same value.
 // This is what consumers are expected to due during migration from one name to
 // the other, so best to make sure it works.
 //

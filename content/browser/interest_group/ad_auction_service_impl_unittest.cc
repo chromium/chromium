@@ -1255,7 +1255,7 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
   EXPECT_NE(interest_group.expiry, actual_expiry);
 }
 
-// These tests validate the `updateUrl` and navigator.updateAdInterestGroups()
+// These tests validate the `updateURL` and navigator.updateAdInterestGroups()
 // functionality.
 
 // The server JSON updates all fields that can be updated.
