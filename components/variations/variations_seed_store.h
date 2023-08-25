@@ -17,7 +17,6 @@
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -102,8 +101,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Side effect: Upon failing to read or validate the safe seed, clears all
   // of the safe seed pref values.
   //
-  // Virtual for testing and for early-boot CrOS experiments to use a different
-  // safe seed.
+  // Virtual for testing.
   [[nodiscard]] virtual bool LoadSafeSeed(VariationsSeed* seed,
                                           ClientFilterableState* client_state);
 
@@ -155,15 +153,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   static VerifySignatureResult VerifySeedSignatureForTesting(
       const std::string& seed_bytes,
       const std::string& base64_seed_signature);
-
- protected:
-  // Verify an already-loaded |seed_data| along with its |base64_seed_signature|
-  // and, if verification passes, parse it into |*seed|.
-  [[nodiscard]] LoadSeedResult VerifyAndParseSeed(
-      VariationsSeed* seed,
-      const std::string& seed_data,
-      const std::string& base64_seed_signature,
-      absl::optional<VerifySignatureResult>* verify_signature_result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);
