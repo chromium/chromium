@@ -38,6 +38,10 @@ EditorMediator* EditorMediator::Get() {
   return g_instance_;
 }
 
+bool EditorMediator::HasInstance() {
+  return g_instance_ != nullptr;
+}
+
 void EditorMediator::BindEditorInstance(
     mojo::PendingReceiver<mojom::EditorInstance> pending_receiver) {
   editor_instance_impl_.BindReceiver(std::move(pending_receiver));

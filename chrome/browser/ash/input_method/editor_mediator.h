@@ -36,6 +36,8 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // constructed prior to calling this method.
   static EditorMediator* Get();
 
+  static bool HasInstance();
+
   // Binds a new editor instance request from a client.
   void BindEditorInstance(
       mojo::PendingReceiver<mojom::EditorInstance> pending_receiver);

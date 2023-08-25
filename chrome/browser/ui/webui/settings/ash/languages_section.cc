@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -168,9 +169,9 @@ void AddSmartInputsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  // TODO: b/294962917 - Hook up with the EditorSwitch component instead of
-  // hard-coding "false".
-  html_source->AddBoolean("allowOrca", false);
+  html_source->AddBoolean(
+      "allowOrca", input_method::EditorMediator::HasInstance() &&
+                       input_method::EditorMediator::Get()->IsAllowedForUse());
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
 }
 
