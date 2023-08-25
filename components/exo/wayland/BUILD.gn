@@ -17,6 +17,8 @@ assert(use_ozone)
 
 source_set("wayland") {
   sources = [
+    "client_tracker.cc",
+    "client_tracker.h",
     "content_type.cc",
     "content_type.h",
     "output_metrics.cc",
@@ -276,6 +278,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "client_tracker_unittest.cc",
     "clients/security_delegate_binding_test.cc",
     "output_metrics_unittest.cc",
     "server_unittest.cc",
