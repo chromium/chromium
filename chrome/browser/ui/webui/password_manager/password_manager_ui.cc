@@ -245,8 +245,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"localPasswordManager",
      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
     {"manage", IDS_SETTINGS_MANAGE},
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
     {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
+#elif BUILDFLAG(IS_MAC)
+    {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
 #endif
     {"menu", IDS_MENU},
     {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
