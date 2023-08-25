@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
@@ -21,12 +22,16 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -58,6 +63,11 @@ constexpr base::TimeDelta kNewMiniViewsFadeInAnimationDuration =
 constexpr base::TimeDelta kRemovedMiniViewsFadeOutDuration =
     base::Milliseconds(200);
 
+constexpr base::TimeDelta kDeskBarBoundsScaleUpDuration =
+    base::Milliseconds(200);
+constexpr base::TimeDelta kDeskBarBoundsScaleDownDuration =
+    base::Milliseconds(150);
+
 constexpr base::TimeDelta kZeroStateAnimationDuration = base::Milliseconds(200);
 
 // Animation duration when feature flag `Jellyroll` is enabled.
@@ -75,7 +85,7 @@ constexpr float kEnterOrExitZeroStateScale = 0.6f;
 constexpr base::TimeDelta kLabelFadeInDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kLabelFadeInDuration = base::Milliseconds(50);
 
-// The animiation duration of desk bar slide out animation when exiting
+// The animation duration of desk bar slide out animation when exiting
 // overview mode.
 constexpr base::TimeDelta kExpandedDeskBarSlideDuration =
     base::Milliseconds(350);
@@ -467,11 +477,25 @@ void PerformNewDeskMiniViewAnimation(
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
   AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
 
-  // The new desk button and the library button in the expanded desk bar
-  // always move to the right when a new desk is added.
-  const auto& button_transform = base::i18n::IsRTL()
-                                     ? mini_views_left_begin_transform
-                                     : mini_views_right_begin_transform;
+  // No need to animate library and new desk buttons when shelf is on the right
+  // side.
+  bool is_bento_button = bar_view->type() == DeskBarViewBase::Type::kDeskButton;
+  auto shelf_type = Shelf::ForWindow(bar_view->root())->alignment();
+  if (is_bento_button && shelf_type == ShelfAlignment::kRight) {
+    return;
+  }
+
+  gfx::Transform button_transform;
+  if (is_bento_button && shelf_type == ShelfAlignment::kLeft) {
+    // When shelf is on the left side, buttons get animated to the left.
+    button_transform.Translate(-new_mini_views[0]->bounds().width(), 0);
+  } else {
+    // The new desk button and the library button in the expanded desk bar
+    // always move to the right when a new desk is added.
+    button_transform = base::i18n::IsRTL() ? mini_views_left_begin_transform
+                                           : mini_views_right_begin_transform;
+  }
+
   if (chromeos::features::IsJellyrollEnabled()) {
     AnimateView(bar_view->new_desk_button(), button_transform);
     if (bar_view->new_desk_button_label()->GetVisible()) {
@@ -546,6 +570,55 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(
     ScaleUpAndFadeInView(expanded_state_library_button, bar_x_center);
   }
   PositionWindowsInOverview();
+}
+
+void PerformDeskBarAddDeskAnimation(DeskBarViewBase* bar_view,
+                                    const gfx::Rect& old_bar_bounds) {
+  CHECK(bar_view->background_view());
+  const gfx::Rect new_bar_bounds = bar_view->bounds();
+  ui::Layer* layer = bar_view->background_view()->layer();
+  const gfx::Transform initial_state = gfx::TransformBetweenRects(
+      gfx::RectF(new_bar_bounds), gfx::RectF(old_bar_bounds));
+  views::AnimationBuilder animation_builder;
+  bar_view->set_animation_abort_handle(animation_builder.GetAbortHandle());
+  layer->SetTransform(initial_state);
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kDeskBarBoundsScaleUpDuration)
+      .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_20_DECEL_100);
+}
+
+void PerformDeskBarRemoveDeskAnimation(DeskBarViewBase* bar_view,
+                                       const gfx::Rect& old_background_bounds) {
+  CHECK(bar_view->background_view());
+  const gfx::Rect new_background_bounds = bar_view->background_view()->bounds();
+  ui::Layer* layer = bar_view->background_view()->layer();
+
+  const gfx::Transform transform = gfx::TransformBetweenRects(
+      gfx::RectF(new_background_bounds), gfx::RectF(old_background_bounds));
+
+  base::OnceClosure ondone =
+      base::BindOnce(base::BindOnce([](DeskBarViewBase* bar_view) {
+                       bar_view->set_hold_update_for_view_bounds(false);
+                       // TODO(b/293658108): Set bounds needs to be done
+                       // separately from Layout().
+                       bar_view->Layout();
+                     }),
+                     base::Unretained(bar_view));
+  views::AnimationBuilder animation_builder;
+  bar_view->set_animation_abort_handle(animation_builder.GetAbortHandle());
+  auto split = base::SplitOnceCallback(std::move(ondone));
+  layer->SetTransform(transform);
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(kDeskBarBoundsScaleDownDuration)
+      .SetTransform(layer, kEndTransform, gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(

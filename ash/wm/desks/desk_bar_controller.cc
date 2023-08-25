@@ -301,6 +301,9 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
                                           DeskBarViewBase::Type::kDeskButton);
     bar_view = bar_widget->SetContentsView(std::make_unique<DeskBarView>(root));
     bar_view->Init();
+    // TODO(b/293658108): remove this once the bento bar bounds and layout are
+    // correctly set.
+    bar_widget->GetRootView()->SetUseDefaultFillLayout(false);
 
     // Ownership transfer and bookkeeping.
     desk_bars_.emplace_back(bar_view, std::move(bar_widget));

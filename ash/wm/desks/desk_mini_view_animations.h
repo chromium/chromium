@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
 class Transform;
@@ -90,6 +91,15 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
 void PerformExpandedStateToZeroStateMiniViewAnimation(
     DeskBarViewBase* bar_view,
     std::vector<DeskMiniView*> removed_mini_views);
+
+// Performs the animation for desk bar when desk is added. Desk bar will expand
+// during animation.
+void PerformDeskBarAddDeskAnimation(DeskBarViewBase* bar_view,
+                                    const gfx::Rect& old_bar_bounds);
+// Performs the animation for desk bar when desk is removed. Desk bar will
+// shrink during animation.
+void PerformDeskBarRemoveDeskAnimation(DeskBarViewBase* bar_view,
+                                       const gfx::Rect& old_background_bounds);
 
 // Performs the mini_view reorder animation. It moves the desks to make space at
 // `new_index` for the mini_view at `old_index`. Before reordering, if

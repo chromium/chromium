@@ -86,6 +86,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
     is_bounds_animation_on_going_ = value;
   }
 
+  void set_hold_update_for_view_bounds(bool value) {
+    hold_update_for_view_bounds_ = value;
+  }
+
   const gfx::Point& last_dragged_item_screen_location() const {
     return last_dragged_item_screen_location_;
   }
@@ -95,6 +99,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   OverviewGrid* overview_grid() const { return overview_grid_.get(); }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
+
+  views::View* background_view() { return background_view_; }
 
   const views::View* scroll_view_contents() const {
     return scroll_view_contents_;
@@ -404,6 +410,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // done to eliminate the unnecessary `Layout` calls during the animation.
   bool is_bounds_animation_on_going_ = false;
 
+  // TODO(yongshun): Currently view bounds is being updated at Layout(), which
+  // will cause the desk animation to not update correctly. Set this value to
+  // true so bounds can be updated after animation.
+  bool hold_update_for_view_bounds_ = false;
+
   // Mini view whose preview is being dragged.
   raw_ptr<DeskMiniView, ExperimentalAsh> drag_view_ = nullptr;
 
@@ -426,6 +437,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;
+
+  // The view representing the desk bar background view. It's owned by views
+  // hierarchy. It exists only in the shelf desk bar as it's needed for
+  // animation.
+  raw_ptr<views::View> background_view_ = nullptr;
 
   // Put the contents in a `ScrollView` to support scrollable desks.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
