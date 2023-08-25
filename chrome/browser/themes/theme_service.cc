@@ -552,8 +552,11 @@ SkColor ThemeService::GetPolicyThemeColor() const {
 
 void ThemeService::SetBrowserColorScheme(
     ThemeService::BrowserColorScheme color_scheme) {
-  profile_->GetPrefs()->SetInteger(prefs::kBrowserColorScheme,
-                                   static_cast<int>(color_scheme));
+  {
+    base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
+    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorScheme,
+                                     static_cast<int>(color_scheme));
+  }
   NotifyThemeChanged();
 }
 
@@ -585,8 +588,11 @@ absl::optional<SkColor> ThemeService::GetUserColor() const {
 
 void ThemeService::SetBrowserColorVariant(
     ui::mojom::BrowserColorVariant color_variant) {
-  profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
-                                   static_cast<int>(color_variant));
+  {
+    base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
+    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
+                                     static_cast<int>(color_variant));
+  }
   NotifyThemeChanged();
 }
 

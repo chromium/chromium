@@ -807,11 +807,6 @@ int StatusBubbleViews::GetWidthForURL(const std::u16string& url_string) {
   return elided_url_width + (kShadowThickness + kTextHorizPadding) * 2 + 1;
 }
 
-void StatusBubbleViews::OnThemeChanged() {
-  if (popup_)
-    popup_->ThemeChanged();
-}
-
 void StatusBubbleViews::SetStatus(const std::u16string& status_text) {
   if (size_.IsEmpty())
     return;  // We have no bounds, don't attempt to show the popup.

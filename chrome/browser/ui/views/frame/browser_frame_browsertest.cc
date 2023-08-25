@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -33,6 +34,7 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/native_theme/test_native_theme.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/views_delegate.h"
 
 namespace {
@@ -102,6 +104,45 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, WebAppsHasBoundsOnOpen) {
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_TRUE(app_browser->is_type_app());
   app_browser->window()->Close();
+}
+
+class MockThemeObserver : public views::WidgetObserver {
+ public:
+  explicit MockThemeObserver(views::Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
+  MOCK_METHOD(void, OnWidgetThemeChanged, (views::Widget*));
+
+ private:
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+};
+
+// Verifies that theme change notifications are propagated to child widgets for
+// browser theme changes.
+IN_PROC_BROWSER_TEST_F(BrowserFrameTest, ChildWidgetsReceiveThemeUpdates) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // Create a child popup Widget for the BrowserFrame.
+  const auto child_widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.shadow_elevation = 1;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.bounds = {0, 0, 200, 200};
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.parent = browser_view->GetWidget()->GetNativeView();
+  params.child = true;
+  child_widget->Init(std::move(params));
+
+  // Add a bubble widget and set up the theme change observer.
+  MockThemeObserver widget_child_observer(child_widget.get());
+
+  // Propagate a browser theme change notification to the root BrowserFrame
+  // widget and ensure the child widget is forwarded the theme change
+  // notification.
+  EXPECT_CALL(widget_child_observer, OnWidgetThemeChanged(testing::_)).Times(1);
+  static_cast<BrowserFrame*>(browser_view->GetWidget())
+      ->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
 }
 
 // Runs browser color provider tests with ChromeRefresh2023 enabled and

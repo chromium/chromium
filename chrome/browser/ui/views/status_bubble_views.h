@@ -66,9 +66,6 @@ class StatusBubbleViews : public StatusBubble {
   // Gets the width that a bubble should be for a given string
   int GetWidthForURL(const std::u16string& url_string);
 
-  // Notifies the bubble's popup that browser's theme is changed.
-  void OnThemeChanged();
-
   // Overridden from StatusBubble:
   void SetStatus(const std::u16string& status) override;
   void SetURL(const GURL& url) override;

@@ -251,8 +251,21 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
 
   // When the browser theme changes, the NativeTheme may also change.
   // In Incognito, the usage of dark or normal hinges on the browser theme.
-  if (theme_change_type == BrowserThemeChangeType::kBrowserTheme)
+  // TODO(tluk): This should no longer be necessary as the dark NativeTheme is
+  // no longer used for dark mode.
+  if (theme_change_type == BrowserThemeChangeType::kBrowserTheme) {
     SetNativeTheme(SelectNativeTheme());
+
+    // Browser theme changes are directly observed by the BrowserFrame. However
+    // the other Widgets in the frame's hierarchy may inherit this new theme
+    // information in their ColorProviderKeys and thus should also be forwarded
+    // theme change notifications.
+    Widget::Widgets widgets;
+    GetAllOwnedWidgets(GetNativeView(), &widgets);
+    for (auto* widget : widgets) {
+      widget->ThemeChanged();
+    }
+  }
 
   if (!RegenerateFrameOnThemeChange(theme_change_type)) {
     // If RegenerateFrame() returns true, ThemeChanged() was implicitly called,

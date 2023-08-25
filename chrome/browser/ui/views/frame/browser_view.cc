@@ -4186,9 +4186,6 @@ void BrowserView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void BrowserView::OnThemeChanged() {
   views::ClientView::OnThemeChanged();
 
-  if (status_bubble_)
-    status_bubble_->OnThemeChanged();
-
   FrameColorsChanged();
 }
 
