@@ -33,19 +33,19 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="bullet_three"
         android:summary="@string/safe_browsing_enhanced_protection_bullet_three_updated"
-        android:icon="@drawable/ic_vpn_key_grey"
+        android:icon="@drawable/ic_gshield"
         app:iconTint="@color/default_icon_color_tint_list"
         app:allowDividerBelow="false" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="bullet_four"
         android:summary="@string/safe_browsing_enhanced_protection_bullet_four_updated"
-        android:icon="@drawable/ic_gshield"
+        android:icon="@drawable/ic_language"
         app:iconTint="@color/default_icon_color_tint_list"
         app:allowDividerBelow="false" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="bullet_five"
         android:summary="@string/safe_browsing_enhanced_protection_bullet_five_updated"
-        android:icon="@drawable/ic_language"
+        android:icon="@drawable/ic_vpn_key_grey"
         app:iconTint="@color/default_icon_color_tint_list"
         app:allowDividerBelow="false" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
