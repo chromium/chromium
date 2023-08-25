@@ -24,30 +24,39 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          const bool is_thread_safe,
                          VmaAllocator* pAllocator) {
   auto* function_pointers = gpu::GetVulkanFunctionPointers();
-  VmaVulkanFunctions functions = {
-      function_pointers->vkGetPhysicalDeviceProperties.get(),
-      function_pointers->vkGetPhysicalDeviceMemoryProperties.get(),
-      function_pointers->vkAllocateMemory.get(),
-      function_pointers->vkFreeMemory.get(),
-      function_pointers->vkMapMemory.get(),
-      function_pointers->vkUnmapMemory.get(),
-      function_pointers->vkFlushMappedMemoryRanges.get(),
-      function_pointers->vkInvalidateMappedMemoryRanges.get(),
-      function_pointers->vkBindBufferMemory.get(),
-      function_pointers->vkBindImageMemory.get(),
-      function_pointers->vkGetBufferMemoryRequirements.get(),
-      function_pointers->vkGetImageMemoryRequirements.get(),
-      function_pointers->vkCreateBuffer.get(),
-      function_pointers->vkDestroyBuffer.get(),
-      function_pointers->vkCreateImage.get(),
-      function_pointers->vkDestroyImage.get(),
-      function_pointers->vkCmdCopyBuffer.get(),
-      function_pointers->vkGetBufferMemoryRequirements2.get(),
-      function_pointers->vkGetImageMemoryRequirements2.get(),
-      function_pointers->vkBindBufferMemory2.get(),
-      function_pointers->vkBindImageMemory2.get(),
-      function_pointers->vkGetPhysicalDeviceMemoryProperties2.get(),
-  };
+  VmaVulkanFunctions functions = {};
+  functions.vkGetPhysicalDeviceProperties =
+      function_pointers->vkGetPhysicalDeviceProperties.get();
+  functions.vkGetPhysicalDeviceMemoryProperties =
+      function_pointers->vkGetPhysicalDeviceMemoryProperties.get();
+  functions.vkAllocateMemory = function_pointers->vkAllocateMemory.get();
+  functions.vkFreeMemory = function_pointers->vkFreeMemory.get();
+  functions.vkMapMemory = function_pointers->vkMapMemory.get();
+  functions.vkUnmapMemory = function_pointers->vkUnmapMemory.get();
+  functions.vkFlushMappedMemoryRanges =
+      function_pointers->vkFlushMappedMemoryRanges.get();
+  functions.vkInvalidateMappedMemoryRanges =
+      function_pointers->vkInvalidateMappedMemoryRanges.get();
+  functions.vkBindBufferMemory = function_pointers->vkBindBufferMemory.get();
+  functions.vkBindImageMemory = function_pointers->vkBindImageMemory.get();
+  functions.vkGetBufferMemoryRequirements =
+      function_pointers->vkGetBufferMemoryRequirements.get();
+  functions.vkGetImageMemoryRequirements =
+      function_pointers->vkGetImageMemoryRequirements.get();
+  functions.vkCreateBuffer = function_pointers->vkCreateBuffer.get();
+  functions.vkDestroyBuffer = function_pointers->vkDestroyBuffer.get();
+  functions.vkCreateImage = function_pointers->vkCreateImage.get();
+  functions.vkDestroyImage = function_pointers->vkDestroyImage.get();
+  functions.vkCmdCopyBuffer = function_pointers->vkCmdCopyBuffer.get();
+  functions.vkGetBufferMemoryRequirements2KHR =
+      function_pointers->vkGetBufferMemoryRequirements2.get();
+  functions.vkGetImageMemoryRequirements2KHR =
+      function_pointers->vkGetImageMemoryRequirements2.get();
+  functions.vkBindBufferMemory2KHR =
+      function_pointers->vkBindBufferMemory2.get();
+  functions.vkBindImageMemory2KHR = function_pointers->vkBindImageMemory2.get();
+  functions.vkGetPhysicalDeviceMemoryProperties2KHR =
+      function_pointers->vkGetPhysicalDeviceMemoryProperties2.get();
 
   static_assert(kVulkanRequiredApiVersion >= VK_API_VERSION_1_1, "");
   VmaAllocatorCreateInfo allocator_info = {
@@ -175,7 +184,7 @@ void GetPhysicalDeviceProperties(
 }
 
 void GetBudget(VmaAllocator allocator, VmaBudget* budget) {
-  vmaGetBudget(allocator, budget);
+  vmaGetHeapBudgets(allocator, budget);
 }
 
 std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
@@ -183,14 +192,14 @@ std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
   // See GrVkMemoryAllocatorImpl::totalAllocatedAndUsedMemory() in skia for
   // reference.
   VmaBudget budget[VK_MAX_MEMORY_HEAPS];
-  vmaGetBudget(allocator, budget);
+  GetBudget(allocator, budget);
   const VkPhysicalDeviceMemoryProperties* pPhysicalDeviceMemoryProperties;
   vmaGetMemoryProperties(allocator, &pPhysicalDeviceMemoryProperties);
   uint64_t total_allocated_memory = 0, total_used_memory = 0;
   for (uint32_t i = 0; i < pPhysicalDeviceMemoryProperties->memoryHeapCount;
        ++i) {
-    total_allocated_memory += budget[i].blockBytes;
-    total_used_memory += budget[i].allocationBytes;
+    total_allocated_memory += budget[i].statistics.blockBytes;
+    total_used_memory += budget[i].statistics.allocationBytes;
   }
   DCHECK_LE(total_used_memory, total_allocated_memory);
 

@@ -203,8 +203,8 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     vmaGetMemoryProperties(allocator_, &physical_device_memory_properties);
     for (uint32_t i = 0; i < physical_device_memory_properties->memoryHeapCount;
          ++i) {
-      total_allocated_memory += budget[i].blockBytes;
-      total_used_memory += budget[i].allocationBytes;
+      total_allocated_memory += budget[i].statistics.blockBytes;
+      total_used_memory += budget[i].statistics.allocationBytes;
     }
     DCHECK_LE(total_used_memory, total_allocated_memory);
     return {total_allocated_memory, total_used_memory};
