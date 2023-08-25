@@ -446,7 +446,7 @@ class BrowserAutofillManager : public AutofillManager,
     // The timer used to trigger a refill.
     base::OneShotTimer on_refill_timer;
     // The field type groups that were initially filled.
-    std::set<FieldTypeGroup> type_groups_originally_filled;
+    DenseSet<FieldTypeGroup> type_groups_originally_filled;
     // If populated, this map determines which values will be filled into a
     // field (it does not matter whether the field already contains a value).
     std::map<FieldGlobalId, std::u16string> forced_fill_values;
@@ -468,8 +468,8 @@ class BrowserAutofillManager : public AutofillManager,
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const Section& filling_section,
-      const absl::optional<CreditCard>& optional_credit_card,
-      const std::set<FieldTypeGroup>& type_groups_originally_filled,
+      const CreditCard* optional_credit_card,
+      const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
       bool skip_unrecognized_autocomplete_fields,
       bool is_refill) const;
 

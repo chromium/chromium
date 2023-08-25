@@ -2289,8 +2289,8 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
     const FormStructure& form_structure,
     const FormFieldData& trigger_field,
     const Section& filling_section,
-    const absl::optional<CreditCard>& optional_credit_card,
-    const std::set<FieldTypeGroup>& type_groups_originally_filled,
+    const CreditCard* optional_credit_card,
+    const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
     bool skip_unrecognized_autocomplete_fields,
     bool is_refill) const {
   // Counts the number of times a type was seen in the section to be filled.
@@ -2364,8 +2364,9 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
 
     // On a refill, only fill fields from type groups that were present during
     // the initial fill.
-    if (is_refill &&
-        !base::Contains(type_groups_originally_filled, field_group_type)) {
+    if (is_refill && optional_type_groups_originally_filled &&
+        !base::Contains(*optional_type_groups_originally_filled,
+                        field_group_type)) {
       skip_statuses[i] = SkipStatus::kRefillNotInInitialFill;
       continue;
     }
@@ -2493,10 +2494,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   std::vector<SkipStatus> skip_statuses = GetSkipStatuses(
       result, *form_structure, field, autofill_trigger_field->section,
       absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
-          ? absl::make_optional(
-                *absl::get<const CreditCard*>(profile_or_credit_card))
-          : absl::nullopt,
-      filling_context->type_groups_originally_filled,
+          ? absl::get<const CreditCard*>(profile_or_credit_card)
+          : nullptr,
+      filling_context ? &filling_context->type_groups_originally_filled
+                      : nullptr,
       /*skip_unrecognized_autocomplete_fields=*/
       trigger_details.trigger_source !=
           AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized,
@@ -2810,8 +2811,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       form.fields.size() == form_structure.field_count()
           ? GetSkipStatuses(
                 form, form_structure, field, autofill_field.section,
-                /*optional_credit_card=*/absl::nullopt,
-                /*type_groups_originally_filled=*/{},
+                /*optional_credit_card=*/nullptr,
+                /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
                     AutofillSuggestionTriggerSource::
                         kManualFallbackForAutocompleteUnrecognized,
