@@ -20,9 +20,9 @@
 namespace {
 
 // Sign-in time out duration.
-constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
+constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
-}
+}  // namespace
 
 @interface ConsistencyPromoSigninMediator () <
     IdentityManagerObserverBridgeDelegate> {
@@ -51,8 +51,6 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 // Identity for the sign-in in progress.
 @property(nonatomic, weak) id<SystemIdentity> signingIdentity;
-// Duration before sign-in timeout. The property is overwritten in unittests.
-@property(nonatomic, assign, readonly) NSInteger signinTimeoutDurationSeconds;
 
 @end
 
@@ -179,12 +177,6 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
 }
 
-#pragma mark - Properties
-
-- (NSInteger)signinTimeoutDurationSeconds {
-  return kSigninTimeoutDurationSeconds;
-}
-
 #pragma mark - Private
 
 - (void)authenticationFlowCompletedWithSuccess:(BOOL)success {
@@ -205,8 +197,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
           cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
     }));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, _cookieTimeoutClosure.callback(),
-        base::Seconds(self.signinTimeoutDurationSeconds));
+        FROM_HERE, _cookieTimeoutClosure.callback(), kSigninTimeout);
     return;
   }
   [self.delegate consistencyPromoSigninMediatorSignInDone:self
