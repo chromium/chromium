@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
@@ -83,11 +84,14 @@
   switch (reason) {
     case HistorySyncSkipReason::kNotSignedIn:
     case HistorySyncSkipReason::kSyncForbiddenByPolicies:
+      base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
       base::UmaHistogramEnumeration(
           "Signin.HistorySyncOptIn.Skipped", accessPoint,
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
       break;
     case HistorySyncSkipReason::kAlreadyOptedIn:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_HistorySync_AlreadyOptedIn"));
       base::UmaHistogramEnumeration(
           "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint,
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
@@ -160,6 +164,7 @@
     base::UmaHistogramEnumeration("FirstRun.Stage",
                                   first_run::kHistorySyncScreenStart);
   }
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
   base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started", _accessPoint,
                                 signin_metrics::AccessPoint::ACCESS_POINT_MAX);
   _recordOptInEndAtStop = YES;
@@ -178,6 +183,7 @@
     //
     // This can also occur during the FRE, for instance if Chrome shuts down
     // when the screen is shown, or if FRE is dismissed due to policies change.
+    base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Aborted"));
     base::UmaHistogramEnumeration(
         "Signin.HistorySyncOptIn.Aborted", _accessPoint,
         signin_metrics::AccessPoint::ACCESS_POINT_MAX);
@@ -206,6 +212,7 @@
 
 - (void)didTapPrimaryActionButton {
   [_mediator enableHistorySyncOptin];
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Completed"));
   if (_firstRun) {
     base::UmaHistogramEnumeration(
         "FirstRun.Stage", first_run::kHistorySyncScreenCompletionWithSync);
@@ -218,6 +225,7 @@
 }
 
 - (void)didTapSecondaryActionButton {
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Declined"));
   if (_firstRun) {
     base::UmaHistogramEnumeration(
         "FirstRun.Stage", first_run::kHistorySyncScreenCompletionWithoutSync);

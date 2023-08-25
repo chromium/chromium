@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -137,6 +138,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   // This should be triggered only if user dismisses the screen manually.
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_SwipedDown"));
   [_historySyncCoordinator stop];
   _historySyncCoordinator = nil;
   _navigationController.presentationController.delegate = nil;
