@@ -197,7 +197,6 @@ export {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './os_bluetoo
 export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, Stage} from './os_files_page/google_drive_browser_proxy.js';
 export {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {OneDriveBrowserProxy, OneDrivePageCallbackRouter, OneDrivePageHandlerRemote, OneDrivePageRemote} from './os_files_page/one_drive_browser_proxy.js';
-export {OsSettingsLanguagesSectionElement} from './os_languages_page/os_languages_section.js';
 export {createPageAvailability as createPageAvailabilityForTesting, OsPageAvailability} from './os_page_availability.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';

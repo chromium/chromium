@@ -656,14 +656,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    },
  ],
  [
-   'OsLanguagesPage',
-   'os_languages_page/os_languages_page_test.js',
- ],
- [
    'OsLanguagesPageInputMethodOptionsPage',
    'os_languages_page/input_method_options_page_test.js'
  ],
  ['OsLanguagesPageInputPage', 'os_languages_page/input_page_test.js'],
+ [
+   'OsLanguagesPageLanguageSettingsCard',
+   'os_languages_page/language_settings_card_test.js',
+ ],
  [
    'OsLanguagesPageOsClearPersonalizationDataPage',
    'os_languages_page/os_clear_personalization_data_page_test.js'

@@ -1,0 +1,30 @@
+<style include="settings-shared"></style>
+
+<settings-card header-text="$i18n{osLanguagesPageTitle}">
+  <cr-link-row
+      id="languagesRow"
+      label="$i18n{languagesPageTitle}"
+      sub-label="[[getLanguageDisplayName_(
+          languages.prospectiveUILanguage, languageHelper)]]"
+      on-click="onLanguagesV2Click_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+  <cr-link-row
+      id="inputRow"
+      class="hr"
+      label="$i18n{inputPageTitleV2}"
+      sub-label="[[getInputMethodDisplayName_(
+        languages.inputMethods.currentId, languageHelper)]]"
+      on-click="onInputClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+  <template is="dom-if" if="[[smartInputsEnabled_]]">
+    <cr-link-row
+        id="smartInputsRow"
+        class="hr"
+        label="$i18n{smartInputsTitle}"
+        on-click="onSmartInputsClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
+</settings-card>

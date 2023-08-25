@@ -8,34 +8,11 @@
 <!-- Top-level settings section. -->
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
-    <settings-card header-text="$i18n{osLanguagesPageTitle}">
-      <cr-link-row
-          id="languagesRow"
-          label="$i18n{languagesPageTitle}"
-          sub-label="[[getLanguageDisplayName_(
-              languages.prospectiveUILanguage, languageHelper)]]"
-          on-click="onLanguagesV2Click_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <cr-link-row
-          id="inputRow"
-          class="hr"
-          label="[[inputPageTitle_]]"
-          sub-label="[[getInputMethodDisplayName_(
-            languages.inputMethods.currentId, languageHelper)]]"
-          on-click="onInputClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <template is="dom-if" if="[[smartInputsEnabled_]]">
-        <cr-link-row
-            id="smartInputsRow"
-            class="hr"
-            label="$i18n{smartInputsTitle}"
-            on-click="onSmartInputsClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
-    </settings-card>
+    <language-settings-card
+        prefs="{{prefs}}"
+        languages="[[languages]]"
+        language-helper="[[languageHelper]]">
+    </language-settings-card>
   </div>
 
   <!-- "Languages" page. -->
@@ -51,7 +28,7 @@
 
   <!-- "Input" page. -->
   <template is="dom-if" route-path="/osLanguages/input">
-    <os-settings-subpage page-title="[[inputPageTitle_]]">
+    <os-settings-subpage page-title="$i18n{inputPageTitleV2}">
       <os-settings-input-page language-helper="[[languageHelper]]"
           languages="[[languages]]" prefs="{{prefs}}">
       </os-settings-input-page>

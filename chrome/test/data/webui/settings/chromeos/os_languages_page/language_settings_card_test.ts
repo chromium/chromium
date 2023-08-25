@@ -2,31 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsLanguagesSectionElement, OsSettingsRoutes, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {LanguageSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OsSettingsRoutes, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 interface SubpageTriggerData {
   triggerSelector: string;
   routeName: keyof OsSettingsRoutes;
 }
 
-suite('<os-settings-languages-section>', () => {
-  let page: OsSettingsLanguagesSectionElement;
+suite('<language-settings-card>', () => {
+  let card: LanguageSettingsCardElement;
 
-  function createPage() {
-    page = document.createElement('os-settings-languages-section');
-    document.body.appendChild(page);
+  function createLanguagesCard(): void {
+    card = document.createElement('language-settings-card');
+    document.body.appendChild(card);
     flush();
   }
 
+  setup(() => {
+    loadTimeData.overrideValues({allowEmojiSuggestion: true});
+  });
+
   teardown(() => {
-    page.remove();
+    card.remove();
     Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Smart inputs row is visible if smart inputs are enabled', () => {
+    loadTimeData.overrideValues({allowEmojiSuggestion: true});
+    createLanguagesCard();
+    const smartInputsRow =
+        card.shadowRoot!.querySelector<HTMLElement>('#smartInputsRow');
+    assertTrue(isVisible(smartInputsRow));
+  });
+
+  test('Smart inputs row is hidden if smart inputs are disabled', () => {
+    loadTimeData.overrideValues({allowEmojiSuggestion: false});
+    createLanguagesCard();
+    const smartInputsRow =
+        card.shadowRoot!.querySelector<HTMLElement>('#smartInputsRow');
+    assertFalse(isVisible(smartInputsRow));
   });
 
   const subpageTriggerData: SubpageTriggerData[] = [
@@ -48,10 +70,10 @@ suite('<os-settings-languages-section>', () => {
         `Row for ${routeName} is focused when returning from subpage`,
         async () => {
           Router.getInstance().navigateTo(routes.OS_LANGUAGES);
-          createPage();
+          createLanguagesCard();
 
           const subpageTrigger =
-              page.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+              card.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
           assertTrue(!!subpageTrigger);
 
           // Sub-page trigger navigates to subpage for route
@@ -62,10 +84,10 @@ suite('<os-settings-languages-section>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           Router.getInstance().navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitAfterNextRender(page);
+          await waitAfterNextRender(card);
 
           assertEquals(
-              subpageTrigger, page.shadowRoot!.activeElement,
+              subpageTrigger, card.shadowRoot!.activeElement,
               `${triggerSelector} should be focused.`);
         });
   });

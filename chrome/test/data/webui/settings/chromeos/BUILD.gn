@@ -222,9 +222,9 @@ build_webui_tests("build") {
 
     "os_languages_page/input_method_options_page_test.ts",
     "os_languages_page/input_page_test.ts",
+    "os_languages_page/language_settings_card_test.ts",
     "os_languages_page/os_clear_personalization_data_page_test.ts",
     "os_languages_page/os_edit_dictionary_page_test.ts",
-    "os_languages_page/os_languages_page_test.ts",
     "os_languages_page/os_languages_page_v2_test.ts",
     "os_languages_page/smart_inputs_page_test.ts",
 

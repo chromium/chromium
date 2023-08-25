@@ -244,6 +244,7 @@ build_webui("build") {
     "os_languages_page/cr_checkbox_with_policy.ts",
     "os_languages_page/input_method_options_page.ts",
     "os_languages_page/input_page.ts",
+    "os_languages_page/language_settings_card.ts",
     "os_languages_page/os_add_languages_dialog.ts",
     "os_languages_page/os_edit_dictionary_page.ts",
     "os_languages_page/os_japanese_clear_ime_data_dialog.ts",
