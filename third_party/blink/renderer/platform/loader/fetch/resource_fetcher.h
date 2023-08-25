@@ -195,9 +195,8 @@ class PLATFORM_EXPORT ResourceFetcher
     return cached_resources_map_;
   }
 
-  const HeapHashSet<Member<Resource>> MoveResourceStrongReferences() {
-    return std::move(document_resource_strong_refs_);
-  }
+  const HeapHashSet<Member<Resource>> MoveResourceStrongReferences();
+  bool HasStrongReferenceForTesting(Resource* resource);
 
   enum class ImageLoadBlockingPolicy {
     kDefault,
@@ -519,7 +518,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
-  void RemoveResourceStrongReference(Resource* image_resource);
+  void RemoveResourceStrongReference(Resource* resource);
 
   // Information about a resource fetch that had started but not completed yet.
   // Would be added to the response data when the response arrives.
@@ -571,6 +570,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // document_resource_strong_refs_ keeps strong references for fonts, images,
   // scripts and stylesheets within their freshness lifetime.
   HeapHashSet<Member<Resource>> document_resource_strong_refs_;
+  size_t document_resource_strong_refs_total_size_ = 0;
 
   // |image_resources_| is the subset of all image resources for the document.
   HeapHashSet<WeakMember<Resource>> image_resources_;

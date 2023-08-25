@@ -200,7 +200,8 @@ bool ShouldResourceBeKeptStrongReferenceByType(Resource* resource) {
           !base::FeatureList::IsEnabled(
               features::kMemoryCacheStrongReferenceFilterScripts)) ||
          resource->GetType() == ResourceType::kFont ||
-         resource->GetType() == ResourceType::kCSSStyleSheet;
+         resource->GetType() == ResourceType::kCSSStyleSheet ||
+         resource->GetType() == ResourceType::kMock;  // For tests.
 }
 
 bool ShouldResourceBeKeptStrongReference(Resource* resource) {
@@ -739,6 +740,12 @@ Resource* ResourceFetcher::CachedResource(const KURL& resource_url) const {
   if (it == cached_resources_map_.end())
     return nullptr;
   return it->value.Get();
+}
+
+const HeapHashSet<Member<Resource>>
+ResourceFetcher::MoveResourceStrongReferences() {
+  document_resource_strong_refs_total_size_ = 0;
+  return std::move(document_resource_strong_refs_);
 }
 
 mojom::ControllerServiceWorkerMode
@@ -1463,9 +1470,17 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 }
 
 void ResourceFetcher::RemoveResourceStrongReference(Resource* resource) {
-  if (resource) {
+  if (resource && document_resource_strong_refs_.Contains(resource)) {
+    const size_t resource_size =
+        static_cast<size_t>(resource->GetResponse().DecodedBodyLength());
     document_resource_strong_refs_.erase(resource);
+    CHECK_GE(document_resource_strong_refs_total_size_, resource_size);
+    document_resource_strong_refs_total_size_ -= resource_size;
   }
+}
+
+bool ResourceFetcher::HasStrongReferenceForTesting(Resource* resource) {
+  return document_resource_strong_refs_.Contains(resource);
 }
 
 void ResourceFetcher::ResourceTimingReportTimerFired(TimerBase* timer) {
@@ -2806,9 +2821,20 @@ void ResourceFetcher::CancelWebBundleSubresourceLoadersFor(
 }
 
 void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
+  static const size_t total_size_threshold = static_cast<size_t>(
+      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
+  static const size_t resource_size_threshold = static_cast<size_t>(
+      features::kMemoryCacheStrongReferenceResourceSizeThresholdParam.Get());
+  const size_t resource_size =
+      static_cast<size_t>(resource->GetResponse().DecodedBodyLength());
+  const bool size_is_small_enough = resource_size <= resource_size_threshold &&
+                                    resource_size <= total_size_threshold &&
+                                    document_resource_strong_refs_total_size_ <=
+                                        total_size_threshold - resource_size;
   if (base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference) &&
-      ShouldResourceBeKeptStrongReference(resource)) {
+      ShouldResourceBeKeptStrongReference(resource) && size_is_small_enough) {
     document_resource_strong_refs_.insert(resource);
+    document_resource_strong_refs_total_size_ += resource_size;
     freezable_task_runner_->PostDelayedTask(
         FROM_HERE,
         WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
@@ -2820,6 +2846,7 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
 void ResourceFetcher::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   document_resource_strong_refs_.clear();
+  document_resource_strong_refs_total_size_ = 0;
 }
 
 void ResourceFetcher::SetResourceCache(

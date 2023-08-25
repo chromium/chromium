@@ -32,7 +32,9 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
@@ -1606,6 +1608,47 @@ TEST_F(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
   EXPECT_EQ(resource1, resource3);
   EXPECT_FALSE(fetcher->ContainsAsPreload(resource1));
   EXPECT_FALSE(resource1->IsUnusedPreload());
+}
+
+TEST_F(ResourceFetcherTest, StrongReferenceThreshold) {
+  // `kTestResourceFilename` has 103 bytes.
+  const int64_t kMockResourceSize = 103;
+
+  // Set up the strong reference feature so that the memory cache can keep
+  // strong references to `kTestResourcefilename` up to two resources.
+  const int64_t kTotalSizeThreshold = kMockResourceSize * 2;
+  const int64_t kResourceSizeThreshold = kMockResourceSize;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {
+          {features::kMemoryCacheStrongReference,
+           {{"memory_cache_strong_ref_total_size_threshold",
+             base::NumberToString(kTotalSizeThreshold)},
+            {"memory_cache_strong_ref_resource_size_threshold",
+             base::NumberToString(kResourceSizeThreshold)}}},
+      },
+      /*disabled_features=*/{});
+
+  ResourceFetcher* fetcher = CreateFetcher();
+
+  // A closure that fetches the given URL with `kTestResourceFilename` and
+  // returns whether the memory cache has a strong reference to the resource.
+  auto perform_fetch = base::BindLambdaForTesting([&](const KURL& url) {
+    ResourceResponse response(url);
+    platform_->GetURLLoaderMockFactory()->RegisterURL(
+        url, WrappedResourceResponse(response),
+        test::PlatformTestDataPath(kTestResourceFilename));
+    FetchParameters fetch_params =
+        FetchParameters::CreateForTest(ResourceRequest(url));
+    Resource* resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
+    platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+    return fetcher->HasStrongReferenceForTesting(resource);
+  });
+
+  ASSERT_TRUE(perform_fetch.Run(KURL("http://127.0.0.1:8000/foo.png")));
+  ASSERT_TRUE(perform_fetch.Run(KURL("http://127.0.0.1:8000/bar.png")));
+  ASSERT_FALSE(perform_fetch.Run(KURL("http://127.0.0.1:8000/baz.png")));
 }
 
 }  // namespace blink

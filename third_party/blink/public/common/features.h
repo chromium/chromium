@@ -627,6 +627,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // Keep strong references in the blink memory cache to maximize resource reuse.
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReference);
+// The threshold for the total decoded size of resources that keep strong
+// references.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMemoryCacheStrongReferenceTotalSizeThresholdParam;
+// The threshold for the decoded size of a resource that can keep a strong
+// reference.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMemoryCacheStrongReferenceResourceSizeThresholdParam;
 // Exclude images from the saved strong references for resources.
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

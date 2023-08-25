@@ -1149,6 +1149,14 @@ BASE_FEATURE(kMemoryCacheStrongReferenceFilterScripts,
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kMemoryCacheStrongReferenceTotalSizeThresholdParam{
+        &kMemoryCacheStrongReference,
+        "memory_cache_strong_ref_total_size_threshold", 10 * 1024 * 1024};
+const base::FeatureParam<int>
+    kMemoryCacheStrongReferenceResourceSizeThresholdParam{
+        &kMemoryCacheStrongReference,
+        "memory_cache_strong_ref_resource_size_threshold", 3 * 1024 * 1024};
 
 BASE_FEATURE(kMemoryCacheStrongReferenceSingleUnload,
              "MemoryCacheStrongReferenceSingleUnload",
