@@ -79,29 +79,28 @@ class ProfileAttributesStorage
   // They are not sorted in any particular order.
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes() const;
 
-  // Returns all non-Guest profile attributes sorted by name.
-  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName()
-      const;
-
-  // Returns all non-Guest profile attributes sorted by local profile name.
-  std::vector<ProfileAttributesEntry*>
-  GetAllProfilesAttributesSortedByLocalProfileName() const;
-
   // Return all user profile attributes sorted using the `prefs::kProfilesOrder`
   // profile order stored.
   std::vector<ProfileAttributesEntry*>
   GetAllProfilesAttributesSortedForDisplay() const;
 
-  // Updates `prefs::kProfilesOrder`. Move profile keys at `from_index` and
-  // place it at `to_index` shifting all keys in between by 1 spot.
-  void UpdateProfilesOrderPref(size_t from_index, size_t to_index);
-
   // Conditionally returns the sorted list based on the feature flag
   // `kProfilesReordering`. It will return the sorted list based on the stored
   // order if the feature is enabled, or the sorted list based on the local
   // profile name if the feature is disabled.
-  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedWithCheck()
-      const;
+  std::vector<ProfileAttributesEntry*>
+  GetAllProfilesAttributesSortedByLocalProfileNameWithCheck() const;
+
+  // Conditionally returns the sorted list based on the feature flag
+  // `kProfilesReordering`. It will return the sorted list based on the stored
+  // order if the feature is enabled, or the sorted list based on the name if
+  // the feature is disabled.
+  std::vector<ProfileAttributesEntry*>
+  GetAllProfilesAttributesSortedByNameWithCheck() const;
+
+  // Updates `prefs::kProfilesOrder`. Move profile keys at `from_index` and
+  // place it at `to_index` shifting all keys in between by 1 spot.
+  void UpdateProfilesOrderPref(size_t from_index, size_t to_index);
 
   // Returns a ProfileAttributesEntry with the data for the profile at |path|
   // if the operation is successful. Returns |nullptr| otherwise.
@@ -233,6 +232,14 @@ class ProfileAttributesStorage
                              const std::string& key,
                              const base::FilePath& image_path,
                              base::OnceClosure callback);
+
+  // Returns all non-Guest profile attributes sorted by name.
+  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName()
+      const;
+
+  // Returns all non-Guest profile attributes sorted by local profile name.
+  std::vector<ProfileAttributesEntry*>
+  GetAllProfilesAttributesSortedByLocalProfileName() const;
 
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSorted(
       bool use_local_profile_name) const;

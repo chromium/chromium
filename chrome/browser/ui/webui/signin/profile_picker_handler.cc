@@ -1046,7 +1046,7 @@ ProfilePickerHandler::GetProfileAttributes() {
   std::vector<ProfileAttributesEntry*> ordered_entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetAllProfilesAttributesSortedWithCheck();
+          .GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
   base::EraseIf(ordered_entries, [](const ProfileAttributesEntry* entry) {
     return entry->IsOmitted();
   });

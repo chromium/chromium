@@ -626,12 +626,21 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedForDisplay() const {
   return ret_ordered_entries;
 }
 
-std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributesSortedWithCheck() const {
+std::vector<ProfileAttributesEntry*> ProfileAttributesStorage::
+    GetAllProfilesAttributesSortedByLocalProfileNameWithCheck() const {
   if (base::FeatureList::IsEnabled(kProfilesReordering)) {
     return GetAllProfilesAttributesSortedForDisplay();
   }
   return GetAllProfilesAttributesSortedByLocalProfileName();
+}
+
+std::vector<ProfileAttributesEntry*>
+ProfileAttributesStorage::GetAllProfilesAttributesSortedByNameWithCheck()
+    const {
+  if (base::FeatureList::IsEnabled(kProfilesReordering)) {
+    return GetAllProfilesAttributesSortedForDisplay();
+  }
+  return GetAllProfilesAttributesSortedByName();
 }
 
 std::vector<ProfileAttributesEntry*>

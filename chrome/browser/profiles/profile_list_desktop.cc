@@ -32,7 +32,7 @@ const AvatarMenu::Item& ProfileListDesktop::GetItemAt(size_t index) const {
 
 void ProfileListDesktop::RebuildMenu() {
   std::vector<ProfileAttributesEntry*> entries =
-      profile_storage_->GetAllProfilesAttributesSortedByName();
+      profile_storage_->GetAllProfilesAttributesSortedByNameWithCheck();
 
   items_.clear();
   for (ProfileAttributesEntry* entry : entries) {

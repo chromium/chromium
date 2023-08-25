@@ -121,7 +121,7 @@ base::Value::List ProfileInternalsHandler::GetProfilesList() {
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetAllProfilesAttributesSortedByLocalProfileName();
+          .GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
   std::vector<Profile*> loaded_profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   base::flat_set<base::FilePath> loaded_profile_paths =

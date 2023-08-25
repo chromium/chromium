@@ -502,7 +502,9 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
     AddTestingProfile();
     EXPECT_EQ(i + 1, storage()->GetNumberOfProfiles());
     EXPECT_EQ(i + 1, storage()->GetAllProfilesAttributes().size());
-    EXPECT_EQ(i + 1, storage()->GetAllProfilesAttributesSortedByName().size());
+    EXPECT_EQ(
+        i + 1,
+        storage()->GetAllProfilesAttributesSortedByNameWithCheck().size());
     EXPECT_EQ(i + 1,
               storage()->GetAllProfilesAttributesSortedForDisplay().size());
   }
@@ -530,7 +532,8 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
               attributes_entry->GetPath());
   }
 
-  EXPECT_EQ(4U, storage()->GetAllProfilesAttributesSortedByName().size());
+  EXPECT_EQ(4U,
+            storage()->GetAllProfilesAttributesSortedByNameWithCheck().size());
   EXPECT_EQ(4U, storage()->GetAllProfilesAttributesSortedForDisplay().size());
 }
 
@@ -2187,17 +2190,20 @@ class ProfileAttributesStorageTestWithProfileReorderingParam
 };
 
 // In this test we are checking the order of which the method
-// `GetAllProfilesAttributesSortedWithCheck()` based on the feature flag
-// `kProfilesReordering`.
-// When the feature is on, we expect the order to be the same as the order of
-// profile insertion. When the feature is off, we expect the order to be
-// alphabetically sorted based on the profile name.
+// `GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()` based on the
+// feature flag `kProfilesReordering`. When the feature is on, we expect the
+// order to be the same as the order of profile insertion. When the feature is
+// off, we expect the order to be alphabetically sorted based on the profile
+// name.
 TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
        ProfileOrderWith_GetAllProfilesAttributesSortedWithCheck) {
   DisableObserver();
 
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
-  EXPECT_EQ(0U, storage()->GetAllProfilesAttributesSortedWithCheck().size());
+  EXPECT_EQ(0U,
+            storage()
+                ->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck()
+                .size());
 
   const std::u16string profile1(u"D");
   const std::u16string profile2(u"C");
@@ -2208,7 +2214,8 @@ TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
   AddSimpleTestingProfileWithName(profile3);
 
   {
-    auto sorted_entries = storage()->GetAllProfilesAttributesSortedWithCheck();
+    auto sorted_entries =
+        storage()->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
     ASSERT_EQ(2U, sorted_entries.size());
     if (IsParamFeatureEnabled()) {
       EXPECT_EQ(profile1, sorted_entries[0]->GetLocalProfileName());
@@ -2223,7 +2230,8 @@ TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
   AddSimpleTestingProfileWithName(profile2);
 
   {
-    auto sorted_entries = storage()->GetAllProfilesAttributesSortedWithCheck();
+    auto sorted_entries =
+        storage()->GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
     ASSERT_EQ(3U, sorted_entries.size());
     if (IsParamFeatureEnabled()) {
       EXPECT_EQ(profile1, sorted_entries[0]->GetLocalProfileName());

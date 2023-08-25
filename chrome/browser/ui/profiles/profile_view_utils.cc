@@ -106,7 +106,7 @@ std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(
   auto profile_entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetAllProfilesAttributesSortedByLocalProfileName();
+          .GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
 
   std::vector<ProfileAttributesEntry*> result;
 

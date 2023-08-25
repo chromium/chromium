@@ -808,7 +808,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   // ownership.
   profile_manager->RegisterTestingProfile(std::move(supervised_profile), true);
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  EXPECT_FALSE(storage.GetAllProfilesAttributesSortedByName()[0]->IsOmitted());
+  EXPECT_FALSE(
+      storage.GetAllProfilesAttributesSortedByNameWithCheck()[0]->IsOmitted());
 #endif
 
   const base::FilePath nonsupervised_path =
