@@ -1,17 +1,5 @@
 # This file is generated. DO NOT EDIT.
 
-aom_unit_test_common_intrin_avx2 =
-    [ "//third_party/libaom/source/libaom/test/simd_cmp_avx2.cc" ]
-
-aom_unit_test_common_intrin_neon =
-    [ "//third_party/libaom/source/libaom/test/simd_cmp_neon.cc" ]
-
-aom_unit_test_common_intrin_sse2 =
-    [ "//third_party/libaom/source/libaom/test/simd_cmp_sse2.cc" ]
-
-aom_unit_test_common_intrin_ssse3 =
-    [ "//third_party/libaom/source/libaom/test/simd_cmp_ssse3.cc" ]
-
 aom_unit_test_common_sources = [
   "//third_party/libaom/source/libaom/test/acm_random.h",
   "//third_party/libaom/source/libaom/test/aom_image_test.cc",
@@ -68,9 +56,6 @@ aom_unit_test_decoder_sources = [
   "//third_party/libaom/source/libaom/test/ivf_video_source.h",
   "//third_party/libaom/source/libaom/test/test_vector_test.cc",
 ]
-
-aom_unit_test_encoder_intrin_sse4_1 =
-    [ "//third_party/libaom/source/libaom/test/simd_cmp_sse4.cc" ]
 
 aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/active_map_test.cc",
