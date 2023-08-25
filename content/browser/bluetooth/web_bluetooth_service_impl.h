@@ -276,13 +276,13 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteDescriptorWriteValueCallback callback) override;
   void RequestScanningStart(
       mojo::PendingAssociatedRemote<
-          blink::mojom::WebBluetoothAdvertisementClient> client_info,
+          blink::mojom::WebBluetoothAdvertisementClient> client_remote,
       blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
       RequestScanningStartCallback callback) override;
   void WatchAdvertisementsForDevice(
       const blink::WebBluetoothDeviceId& device_id,
       mojo::PendingAssociatedRemote<
-          blink::mojom::WebBluetoothAdvertisementClient> client_info,
+          blink::mojom::WebBluetoothAdvertisementClient> client_remote,
       WatchAdvertisementsForDeviceCallback callback) override;
 
   void RequestDeviceImpl(
@@ -296,13 +296,13 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // Callbacks for BLE scanning.
   void RequestScanningStartImpl(
       mojo::PendingAssociatedRemote<
-          blink::mojom::WebBluetoothAdvertisementClient> client_info,
+          blink::mojom::WebBluetoothAdvertisementClient> client_remote,
       blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
       RequestScanningStartCallback callback,
       scoped_refptr<device::BluetoothAdapter> adapter);
   void OnStartDiscoverySessionForScanning(
       mojo::PendingAssociatedRemote<
-          blink::mojom::WebBluetoothAdvertisementClient> client_info,
+          blink::mojom::WebBluetoothAdvertisementClient> client_remote,
       blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
       std::unique_ptr<device::BluetoothDiscoverySession> session);
   void OnDiscoverySessionErrorForScanning();
@@ -311,7 +311,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   void WatchAdvertisementsForDeviceImpl(
       const blink::WebBluetoothDeviceId& device_id,
       mojo::PendingAssociatedRemote<
-          blink::mojom::WebBluetoothAdvertisementClient> client_info,
+          blink::mojom::WebBluetoothAdvertisementClient> client_remote,
       WatchAdvertisementsForDeviceCallback callback,
       scoped_refptr<device::BluetoothAdapter> adapter);
   void OnStartDiscoverySessionForWatchAdvertisements(

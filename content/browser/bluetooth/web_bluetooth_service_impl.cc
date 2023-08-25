@@ -1334,7 +1334,7 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
 
 void WebBluetoothServiceImpl::RequestScanningStart(
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
-        client_info,
+        client_remote,
     blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
     RequestScanningStartCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1362,10 +1362,10 @@ void WebBluetoothServiceImpl::RequestScanningStart(
   if (!GetAdapter()) {
     if (BluetoothAdapterFactoryWrapper::Get().IsLowEnergySupported()) {
       BluetoothAdapterFactoryWrapper::Get().AcquireAdapter(
-          this,
-          base::BindOnce(&WebBluetoothServiceImpl::RequestScanningStartImpl,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(client_info),
-                         std::move(options), std::move(callback)));
+          this, base::BindOnce(
+                    &WebBluetoothServiceImpl::RequestScanningStartImpl,
+                    weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+                    std::move(options), std::move(callback)));
       return;
     }
     std::move(callback).Run(
@@ -1373,14 +1373,14 @@ void WebBluetoothServiceImpl::RequestScanningStart(
     return;
   }
 
-  RequestScanningStartImpl(std::move(client_info), std::move(options),
+  RequestScanningStartImpl(std::move(client_remote), std::move(options),
                            std::move(callback), GetAdapter());
 }
 
 void WebBluetoothServiceImpl::WatchAdvertisementsForDevice(
     const blink::WebBluetoothDeviceId& device_id,
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
-        client_info,
+        client_remote,
     WatchAdvertisementsForDeviceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1402,7 +1402,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDevice(
           this, base::BindOnce(
                     &WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl,
                     weak_ptr_factory_.GetWeakPtr(), device_id,
-                    std::move(client_info), std::move(callback)));
+                    std::move(client_remote), std::move(callback)));
       return;
     }
     std::move(callback).Run(
@@ -1410,7 +1410,8 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDevice(
     return;
   }
 
-  WatchAdvertisementsForDeviceImpl(std::move(device_id), std::move(client_info),
+  WatchAdvertisementsForDeviceImpl(std::move(device_id),
+                                   std::move(client_remote),
                                    std::move(callback), GetAdapter());
 }
 
@@ -1440,7 +1441,7 @@ void WebBluetoothServiceImpl::MaybeStopDiscovery() {
 
 void WebBluetoothServiceImpl::RequestScanningStartImpl(
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
-        client_info,
+        client_remote,
     blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
     RequestScanningStartCallback callback,
     scoped_refptr<BluetoothAdapter> adapter) {
@@ -1459,7 +1460,7 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
 
   if (ble_scan_discovery_session_) {
     auto scanning_client = std::make_unique<ScanningClient>(
-        /*service=*/this, std::move(client_info), std::move(options),
+        /*service=*/this, std::move(client_remote), std::move(options),
         std::move(callback));
 
     if (AreScanFiltersAllowed(scanning_client->scan_options().filters)) {
@@ -1490,7 +1491,7 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
       kScanClientNameRequestLeScan,
       base::BindOnce(
           &WebBluetoothServiceImpl::OnStartDiscoverySessionForScanning,
-          weak_ptr_factory_.GetWeakPtr(), std::move(client_info),
+          weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
           std::move(options)),
       base::BindOnce(
           &WebBluetoothServiceImpl::OnDiscoverySessionErrorForScanning,
@@ -1499,7 +1500,7 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
 
 void WebBluetoothServiceImpl::OnStartDiscoverySessionForScanning(
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
-        client_info,
+        client_remote,
     blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
     std::unique_ptr<BluetoothDiscoverySession> session) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1508,7 +1509,7 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForScanning(
   ble_scan_discovery_session_ = std::move(session);
 
   auto scanning_client = std::make_unique<ScanningClient>(
-      /*service=*/this, std::move(client_info), std::move(options),
+      /*service=*/this, std::move(client_remote), std::move(options),
       std::move(request_scanning_start_callback_));
 
   if (AreScanFiltersAllowed(scanning_client->scan_options().filters)) {
@@ -1600,7 +1601,7 @@ void WebBluetoothServiceImpl::GetDevicesImpl(
 void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
     const blink::WebBluetoothDeviceId& device_id,
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
-        client_info,
+        client_remote,
     WatchAdvertisementsForDeviceCallback callback,
     scoped_refptr<BluetoothAdapter> adapter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1612,7 +1613,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
   }
 
   auto pending_client = std::make_unique<WatchAdvertisementsClient>(
-      /*service=*/this, std::move(client_info), std::move(device_id),
+      /*service=*/this, std::move(client_remote), std::move(device_id),
       std::move(callback));
   if (watch_advertisements_discovery_session_) {
     pending_client->RunCallback(blink::mojom::WebBluetoothResult::SUCCESS);
