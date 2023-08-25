@@ -6768,3 +6768,9 @@ crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/p
 crbug.com/1456636 [ Linux ] virtual/view-transition-mpa-serialization/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
 
 crbug.com/1367789 [ Win10.20h2 ] external/wpt/orientation-event/motion/page-visibility.https.html [ Timeout ]
+
+# Gardener 2023-08-24
+crbug.com/1475824 [ Mac10.15 ] external/wpt/fetch/api/basic/scheme-blob.sub.any.html [ Failure Pass ]
+crbug.com/1475824 [ Mac10.15 ] external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html [ Failure Pass ]
+crbug.com/1475824 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/basic/scheme-blob.sub.any.html [ Failure Pass ]
+crbug.com/1475824 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html [ Failure Pass ]
