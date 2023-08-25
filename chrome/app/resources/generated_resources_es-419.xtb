@@ -1729,6 +1729,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2411666601450687801">No se permiten máquinas virtuales en este dispositivo</translation>
 <translation id="2412015533711271895">Tu madre, padre o tutor debe indicar que puedes usar esta extensión.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Reanudar la búsqueda de <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2416435988630956212">Teclas de función del teclado</translation>
 <translation id="2418307627282545839">Mantén los elementos luminosos y brillantes</translation>
@@ -1865,6 +1866,10 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionado)</translation>
 <translation id="2513396635448525189">Imagen de acceso</translation>
+<translation id="251425554130284360">Estás viendo páginas que visitaste y búsquedas sugeridas para ayudarte a volver fácilmente a tu actividad más reciente.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="2514326558286966059">Desbloquea más rápido con tu huella dactilar</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmar tu nombre de usuario</translation>
@@ -2273,6 +2278,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2861402191395139055">Suscripciones de Passpoint</translation>
 <translation id="2861941300086904918">Administrador de seguridad NATIVE_CLIENT</translation>
 <translation id="2862815659905780618">Quita el entorno de desarrollo de Linux</translation>
+<translation id="2862986593239703553">esta tarjeta</translation>
 <translation id="2864601841139725659">Establecer tu foto de perfil</translation>
 <translation id="2865057607286263192">Mantén presionadas las teclas para ver tildes y caracteres especiales. Esta acción desactiva la pulsación repetida de teclas cuando se presionan las teclas del alfabeto. Solo disponible en inglés (EE.UU.).</translation>
 <translation id="2865919525181940183">Captura de pantalla de los programas que aparecen</translation>
@@ -3295,6 +3301,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicarse con un dispositivo USB}other{Comunicarse con # dispositivos USB}}</translation>
 <translation id="3764753550716962406">¿Quieres que Google use tu carrito para buscar descuentos disponibles?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">este tipo de tarjeta</translation>
 <translation id="3765246971671567135">No se pudo leer la política del modo de demostración sin conexión.</translation>
 <translation id="3765696567014520261">Los sitios no pueden usar tus cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="3766687283066842296">Obtener más información sobre Phone Hub</translation>
@@ -3957,6 +3964,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4330387663455830245">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configura los controles parentales</translation>
 <translation id="4333854382783149454">PKCS N. º 1, SHA-1 con encriptación RSA</translation>
+<translation id="4334768748331667190">No se volverá a mostrar <ph name="MODULE_NAME" /></translation>
 <translation id="4336434711095810371">Borrar todos los datos</translation>
 <translation id="4339203724549370495">Desinstalar app</translation>
 <translation id="4340125850502689798">Nombre de usuario no válido</translation>

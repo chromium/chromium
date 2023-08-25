@@ -1748,6 +1748,7 @@
 <translation id="2411666601450687801">Не се дозволени виртуелни машини на уредов</translation>
 <translation id="2412015533711271895">Твојот родител или старател мора да каже дека е во ред да ја користиш екстензијава</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Продолжете го прелистувањето за <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2416435988630956212">Функциски копчиња на тастатурата</translation>
 <translation id="2418307627282545839">Работите на екранот нека бидат светли и нежни</translation>
@@ -1884,6 +1885,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (избран)</translation>
 <translation id="2513396635448525189">Слика при најавување</translation>
+<translation id="251425554130284360">Ги гледате страниците што сте ги отвориле и предложените пребарувања за да може лесно да се вратите на вашата последна активност.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="2514326558286966059">Отклучувајте побрзо со вашиот отпечаток</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Потврдете го вашето корисничко име</translation>
@@ -2292,6 +2297,7 @@
 <translation id="2861402191395139055">Претплати на Passpoint</translation>
 <translation id="2861941300086904918">Управник за безбедност на матичен клиент</translation>
 <translation id="2862815659905780618">Отстранете ја Linux-околината за програмирање</translation>
+<translation id="2862986593239703553">оваа картичка</translation>
 <translation id="2864601841139725659">Поставете ја сликата на профилот</translation>
 <translation id="2865057607286263192">Притиснете и задржете ги копчињата на тастатурата за да ги видите ознаките за акцент и специјалните знаци. Ова го исклучува повторливото притискање на копчињата со букви од азбуката. Достапно е само за англиски (САД).</translation>
 <translation id="2865919525181940183">Слика од екранот со прикажаните програми</translation>
@@ -3314,6 +3320,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуницирај со USB-уред}one{Комуницирај со # USB-уред}other{Комуницирај со # USB-уреди}}</translation>
 <translation id="3764753550716962406">Да се дозволи Google да ја користи вашата кошничка за да наоѓа достапни попусти?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Се испраќа <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />…}one{Се испраќа <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />…}other{Се испраќаат <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />…}}</translation>
+<translation id="3765055238058255342">овој тип картичка</translation>
 <translation id="3765246971671567135">Не може да се вчита правилото за офлајн демо-режим.</translation>
 <translation id="3765696567014520261">Сајтовите не може да користат колачиња за да ја гледаат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами. Функциите на некои сајтови може да не функционираат</translation>
 <translation id="3766687283066842296">Дознајте повеќе за Phone Hub</translation>
@@ -3976,6 +3983,7 @@
 <translation id="4330387663455830245">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Поставете родителски контроли</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 со RSA енкрипција</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> веќе нема да се прикажува</translation>
 <translation id="4336434711095810371">Избриши ги сите податоци</translation>
 <translation id="4339203724549370495">Деинсталирај ја апликацијата</translation>
 <translation id="4340125850502689798">Неважечко корисничко име</translation>

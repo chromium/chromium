@@ -1747,6 +1747,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2411666601450687801">No virtual machines are allowed on this device</translation>
 <translation id="2412015533711271895">Your parent or guardian has to say that it's OK for you to use this extension</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Resume browsing for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2416435988630956212">Keyboard function keys</translation>
 <translation id="2418307627282545839">Keep things bright and airy</translation>
@@ -1883,6 +1884,10 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selected)</translation>
 <translation id="2513396635448525189">Login image</translation>
+<translation id="251425554130284360">You’re seeing pages you've visited and suggested searches to help you easily get back to your most recent activity.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="2514326558286966059">Unlock faster with your fingerprint</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirm your username</translation>
@@ -2291,6 +2296,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2861402191395139055">Passpoint subscriptions</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Remove Linux development environment</translation>
+<translation id="2862986593239703553">this card</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
 <translation id="2865057607286263192">Press and hold keyboard keys to see accent marks and special characters. This turns off the repeat key press for alphabet keys. Only available for English (US).</translation>
 <translation id="2865919525181940183">Screenshot of programs that are currently on the screen</translation>
@@ -3313,6 +3319,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communicate with a USB device}other{Communicate with # USB devices}}</translation>
 <translation id="3764753550716962406">Let Google use your basket to find available discounts?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">this type of card</translation>
 <translation id="3765246971671567135">Could not read offline demo mode policy.</translation>
 <translation id="3765696567014520261">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may not work</translation>
 <translation id="3766687283066842296">Learn more about Phone Hub</translation>
@@ -3975,6 +3982,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4330387663455830245">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Set Up Parental Controls</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 With RSA Encryption</translation>
+<translation id="4334768748331667190">You won't see <ph name="MODULE_NAME" /> again</translation>
 <translation id="4336434711095810371">Clear all data</translation>
 <translation id="4339203724549370495">Uninstall app</translation>
 <translation id="4340125850502689798">Invalid username</translation>

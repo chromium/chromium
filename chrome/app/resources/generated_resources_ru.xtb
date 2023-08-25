@@ -1734,6 +1734,7 @@
 <translation id="2411666601450687801">На этом устройстве запрещено использовать виртуальные машины</translation>
 <translation id="2412015533711271895">Твой родитель или опекун должен одобрить использование этого расширения.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Продолжить просмотр: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Темная</translation>
 <translation id="2416435988630956212">Функциональные клавиши клавиатуры</translation>
 <translation id="2418307627282545839">Делает изображение на экране ярче.</translation>
@@ -1870,6 +1871,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (выбран)</translation>
 <translation id="2513396635448525189">Изображение на экране входа</translation>
+<translation id="251425554130284360">Вы видите сайты, которые посетили, и варианты поисковых запросов, чтобы вам было удобнее возвращаться к недавним действиям.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете изменить настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="2514326558286966059">Снимайте блокировку с помощью отпечатка пальца ещё быстрее</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Подтвердите имя пользователя</translation>
@@ -2278,6 +2283,7 @@
 <translation id="2861402191395139055">Подписки Passpoint</translation>
 <translation id="2861941300086904918">Менеджер безопасности – Native Client</translation>
 <translation id="2862815659905780618">Удалить среду разработки Linux</translation>
+<translation id="2862986593239703553">Эта карточка</translation>
 <translation id="2864601841139725659">Выберите фото профиля</translation>
 <translation id="2865057607286263192">Нажмите и удерживайте клавиши, чтобы увидеть диакритические знаки и специальные символы. Если этот параметр включен, повтор ввода для клавиш с буквами отключается. Доступно только для английского языка (США).</translation>
 <translation id="2865919525181940183">Скриншот с открытыми программами на экране</translation>
@@ -3300,6 +3306,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Доступно 1 USB-устройство}one{Доступно # USB-устройство}few{Доступно # USB-устройства}many{Доступно # USB-устройств}other{Доступно # USB-устройства}}</translation>
 <translation id="3764753550716962406">Разрешить Google доступ к корзине, чтобы искать скидки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
+<translation id="3765055238058255342">Этот тип карточек</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
 <translation id="3765696567014520261">Сайты не смогут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы. Функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="3766687283066842296">Подробнее о функции "Управление телефоном"</translation>
@@ -3962,6 +3969,7 @@
 <translation id="4330387663455830245">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Настройка родительского контроля</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 с шифрованием RSA</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> больше не будет показываться.</translation>
 <translation id="4336434711095810371">Удалить все данные</translation>
 <translation id="4339203724549370495">Удалить приложение</translation>
 <translation id="4340125850502689798">Неверное имя пользователя.</translation>

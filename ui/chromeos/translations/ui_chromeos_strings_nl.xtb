@@ -215,7 +215,7 @@
 <translation id="2781645665747935084">Belgisch</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2802583107108007218">Meer informatie over deze beperkingen</translation>
-<translation id="2803375539583399270">Pincode opgeven</translation>
+<translation id="2803375539583399270">Pincode invoeren</translation>
 <translation id="2820957248982571256">Scannen…</translation>
 <translation id="2830077785865012357">Chinees (Zhuyin)</translation>
 <translation id="2843806747483486897">Standaardactie wijzigen...</translation>
@@ -391,7 +391,7 @@
 <translation id="4277536868133419688">Het filter <ph name="FILTER_NAME" /> staat aan.</translation>
 <translation id="4290535918735525311">1 map gedeeld met Linux</translation>
 <translation id="4299729908419173967">Braziliaans</translation>
-<translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode opgeven om verbinding te maken met dit mobiele netwerk</translation>
+<translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode invoeren om verbinding te maken met dit mobiele netwerk</translation>
 <translation id="4303531889494116116">Dit netwerk is bezig. Probeer het later opnieuw.</translation>
 <translation id="4309915981827077375">Algemene informatie</translation>
 <translation id="432252891123397018">Roemeens met standaard toetsenbord</translation>
@@ -593,7 +593,7 @@
 <translation id="5625294776298156701">Tamil met Tamil99-toetsenbord</translation>
 <translation id="5633226425545095130">Als je dit item verplaatst, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
 <translation id="5649768706273821470">Luisteren</translation>
-<translation id="5669691691057771421">Nieuwe pincode opgeven</translation>
+<translation id="5669691691057771421">Nieuwe pincode invoeren</translation>
 <translation id="5678784840044122290">De Linux-app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan een archiveringsschijf of virtuele schijf niet deactiveren<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />

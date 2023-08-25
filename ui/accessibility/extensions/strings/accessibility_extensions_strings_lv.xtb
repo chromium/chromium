@@ -19,14 +19,14 @@
 <translation id="2648340354586434750">Lai pārvietotos pa vārdiem, turiet nospiestu taustiņu &lt;span class='key'&gt;Option&lt;/span&gt;.</translation>
 <translation id="2795227192542594043">Ja izmantojat šo paplašinājumu, tīmekļa lapā tiek rādīts kustīgs kursors, lai jūs varētu atlasīt tekstu, lietojot tastatūru.</translation>
 <translation id="2808027189040546825">1. darbība. Atlasiet rindu ar blāvākajām zvaigznēm:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Kad sasniedzat saiti vai vadīklu, tā tiek automātiski fokusēta. Lai noklikšķinātu uz saites vai pogas, nospiediet taustiņu &lt;span class='key'&gt;Enter&lt;/span&gt;. &lt;/p&gt; &lt;p&gt;Kad fokusētā vadīklā (piemēram, tekstlodziņā vai saraksta lodziņā) tiek tverti bulttaustiņi, nospiediet taustiņu &lt;span class='key'&gt;Esc&lt;/span&gt; un pēc tam — kreiso vai labo bulttaustiņu, lai turpinātu taustiņpārlūkošanu. &lt;/p&gt; &lt;p&gt; Varat arī nospiest taustiņu &lt;span class='key'&gt;Tab&lt;/span&gt;, lai pārvietotos uz nākamo fokusējamo vadīklu.&lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Kad sasniedzat saiti vai vadīklu, tā tiek automātiski fokusēta. Lai noklikšķinātu uz saites vai pogas, nospiediet taustiņu &lt;span class='key'&gt;Enter&lt;/span&gt;. &lt;/p&gt; &lt;p&gt;Kad fokusētā vadīklā (piemēram, tekstlodziņā vai saraksta lodziņā) tiek tverti bulttaustiņi, nospiediet taustiņu &lt;span class='key'&gt;Esc&lt;/span&gt; un pēc tam — kreiso vai labo bultiņu, lai turpinātu taustiņpārlūkošanu. &lt;/p&gt; &lt;p&gt; Varat arī nospiest taustiņu &lt;span class='key'&gt;Tab&lt;/span&gt;, lai pārvietotos uz nākamo fokusējamo vadīklu.&lt;/p&gt;</translation>
 <translation id="3252573918265662711">Iestatīšana</translation>
 <translation id="3410969471888629217">Aizmirst vietnes pielāgojumus</translation>
 <translation id="3435896845095436175">Iespējot</translation>
 <translation id="3622586652998721735">Iestatīt kā noklusējuma shēmu</translation>
 <translation id="3812541808639806898">Attēlu “ALT” teksta skatītājs</translation>
 <translation id="381767806621926835">Lai piekļūtu garajam aprakstam, ar peles labo pogu noklikšķiniet uz jebkura elementa, kuram ir atribūts “longdesc” vai “aria-describedat”.</translation>
-<translation id="4023902424053835668">Pārlūkot tīmekļa lapu tekstu, izmantojot bulttaustiņus.</translation>
+<translation id="4023902424053835668">Pārlūkot tīmekļa lapu tekstu, izmantojot bultiņas.</translation>
 <translation id="4388820049312272371">Izcelt kursora pozīciju ar ātru mirgošanu.</translation>
 <translation id="4394049700291259645">Atspējot</translation>
 <translation id="4769065380738716500">Attēli ir aizstāti, izmantojot to alternatīvo tekstu.</translation>
@@ -37,7 +37,7 @@
 <translation id="5041932793799765940">Krāsu pielāgošana</translation>
 <translation id="5094574508723441140">Palielināts kontrasts</translation>
 <translation id="5173942593318174089">Izcelt kursora pozīciju ar animāciju.</translation>
-<translation id="5287723860611749454">&lt;p&gt;Lai pārvietotos visā dokumentā, izmantojiet bulttaustiņus. &lt;/p&gt;&lt;p&gt;Lai pārvietotu kursoru uz kādu vietu, noklikšķiniet attiecīgajā vietā. &lt;/p&gt; &lt;p&gt;Lai atlasītu tekstu, nospiediet taustiņu &lt;span class='key'&gt;Shift&lt;/span&gt; un attiecīgo bultiņu.&lt;/p&gt;</translation>
+<translation id="5287723860611749454">&lt;p&gt;Lai pārvietotos visā dokumentā, izmantojiet bultiņas. &lt;/p&gt;&lt;p&gt;Lai pārvietotu kursoru uz kādu vietu, noklikšķiniet attiecīgajā vietā. &lt;/p&gt; &lt;p&gt;Lai atlasītu tekstu, nospiediet taustiņu &lt;span class='key'&gt;Shift&lt;/span&gt; un attiecīgo bultiņu.&lt;/p&gt;</translation>
 <translation id="5331422999063554397">Apgrieztas krāsas</translation>
 <translation id="5555153510860501336">Lielais kontrasts ir atspējots</translation>
 <translation id="5558600050691192317">Tastatūras komandas</translation>

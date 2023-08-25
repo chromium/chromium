@@ -1735,6 +1735,7 @@
 <translation id="2411666601450687801">Віртуальныя машыны нельга выкарыстоўваць на гэтай прыладзе</translation>
 <translation id="2412015533711271895">Каб выкарыстоўваць гэта пашырэнне, трэба атрымаць дазвол аднаго з бацькоў або апекуна</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Узнавіць прагляд: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2416435988630956212">Функцыянальныя клавішы клавіятуры</translation>
 <translation id="2418307627282545839">Яркая і лёгкая палітра колераў</translation>
@@ -1871,6 +1872,10 @@
 <translation id="2509566264613697683">8х</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (выбрана)</translation>
 <translation id="2513396635448525189">Відарыс уліковага запісу</translation>
+<translation id="251425554130284360">Вы бачыце наведаныя вамі старонкі і прапанаваныя пошукавыя запыты, з дапамогай якіх можна з лёгкасцю вяртацца да сваіх самых нядаўніх дзеянняў.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="2514326558286966059">Ажыццяўляйце разблакіроўку прылады хутчэй, выкарыстоўваючы адбітак пальца</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Пацвердзіце імя карыстальніка</translation>
@@ -2279,6 +2284,7 @@
 <translation id="2861402191395139055">Падпіскі Passpoint</translation>
 <translation id="2861941300086904918">Менеджар бяспекі Native Client</translation>
 <translation id="2862815659905780618">Выдаліць асяроддзе распрацоўкі Linux</translation>
+<translation id="2862986593239703553">гэта картка</translation>
 <translation id="2864601841139725659">Задайце сваё фота профілю</translation>
 <translation id="2865057607286263192">Каб пабачыць дыякрытычныя знакі і спецыяльныя сімвалы, націскайце і ўтрымлівайце клавішы на клавіятуры. Калі гэты параметр уключаны, паўтор уводу пры націсканні клавіш з літарамі адключаецца. Даступна толькі для англійскай мовы (ЗША).</translation>
 <translation id="2865919525181940183">Здымак экрана з праграмамі</translation>
@@ -3299,6 +3305,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Абмен данымі з прыладай USB}one{Абмен данымі з # прыладай USB}few{Абмен данымі з # прыладамі USB}many{Абмен данымі з # прыладамі USB}other{Абмен данымі з # прылады USB}}</translation>
 <translation id="3764753550716962406">Дазволіць Google выкарыстоўваць інфармацыю пра тавары ў вашым кошыку для пошуку даступных скідак?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}one{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}few{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}many{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}other{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
+<translation id="3765055238058255342">гэты тып картак</translation>
 <translation id="3765246971671567135">Не ўдалося прачытаць пазасеткавую палітыку дэманстрацыйнага рэжыму.</translation>
 <translation id="3765696567014520261">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу. На некаторых сайтах можа не працаваць частка функцый</translation>
 <translation id="3766687283066842296">Даведацца больш пра Тэлефонны цэнтр</translation>
@@ -3961,6 +3968,7 @@
 <translation id="4330387663455830245">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Наладжванне бацькоўскага кантролю</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 з шыфраваннем RSA</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> больш не будзе паказвацца</translation>
 <translation id="4336434711095810371">Выдаліць усе даныя</translation>
 <translation id="4339203724549370495">Выдаліць праграму</translation>
 <translation id="4340125850502689798">Несапраўднае імя карыстальніка</translation>

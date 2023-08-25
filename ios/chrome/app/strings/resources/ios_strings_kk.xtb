@@ -116,7 +116,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">"Google Calendar жүйесіне қосу" немесе "Apple Calendar жүйесіне қосу" параметрін таңдаңыз.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> бұрын қолданылған құпия сөз</translation>
-<translation id="1641113438599504367">Қауіпсіз шолу</translation>
+<translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="165008673352427892">Жаңа функция</translation>
 <translation id="1650222530560417226">JavaScript консолі журналдарын және барлық қойындыдағы қателерді тіркеу үшін "Тіркеуді бастау" түймесін түртіңіз. Журналдар бет жабылғанға дейін немесе "Тіркеуді тоқтату" түймесі басылғанша жинала береді (жадқа сақталады).</translation>
@@ -521,7 +521,7 @@
 <translation id="4263576668337963058">Қолжетімді бет әрекеттерін көрсету</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{{COUNT} ескертуді қабылдамадыңыз}other{{COUNT} ескертуді қабылдамадыңыз}}</translation>
 <translation id="4272631900155121838">QR кодын сканерлеу үшін, параметрлер тармағында камераны қосыңыз</translation>
-<translation id="4277990410970811858">Қауіпсіз шолу</translation>
+<translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Қызмет көрсету шарттары</translation>
 <translation id="4293080268407233932">Іздеу</translation>
 <translation id="4302248187517737842">Пайдаланушы аты жоқ ••••••••</translation>

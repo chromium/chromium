@@ -184,7 +184,7 @@
 <translation id="2216790501338699346">Saites URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Pārvietot atpakaļ par vienu rakstzīmi</translation>
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
-<translation id="2243633977138166243">Lai pārvietotos, nospiediet labo vai kreiso bulttaustiņu; lai aktivizētu, nospiediet taustiņu Enter</translation>
+<translation id="2243633977138166243">Lai pārvietotos, nospiediet labo vai kreiso bultiņu; lai aktivizētu, nospiediet taustiņu Enter</translation>
 <translation id="224426591676115802">Balss nav pieejama šādai valodai: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Notiek mācību režīma atspējošana.</translation>
 <translation id="2247870315273396641">Balss priekšskatījums</translation>
@@ -704,7 +704,7 @@
 <translation id="5653397561111110475">Chromebook skārienekrāna pieejamības funkciju izmantošana</translation>
 <translation id="5655682562155942719">Pārejas komandas</translation>
 <translation id="56637627897541303">Teksta apgabals</translation>
-<translation id="5669637233317991674">Lai pārvietotos šajā nodarbībā, nospiediet meklēšanas taustiņu un labo bulttaustiņu vai meklēšanas taustiņu un kreiso bulttaustiņu.</translation>
+<translation id="5669637233317991674">Lai pārvietotos šajā nodarbībā, nospiediet meklēšanas taustiņu un labo bultiņu vai meklēšanas taustiņu un kreiso bultiņu.</translation>
 <translation id="5677240841070992068">Pašreizējā atrašanās vieta</translation>
 <translation id="5678161956734658133">teksta apgabals</translation>
 <translation id="5681643281275621376">definīcija</translation>
@@ -732,11 +732,11 @@
 <translation id="5850707923114094062">Pārvietot atpakaļ</translation>
 <translation id="5851548754964597211">Ciļņu saraksts</translation>
 <translation id="5866042630553435010">Daļēji atzīmēts</translation>
-<translation id="5866210856231860256">Nospiediet meklēšanas taustiņu un labo bulttaustiņu vai meklēšanas taustiņu un kreiso bulttaustiņu, lai pārlūkotu šīs tēmas nodarbības.</translation>
+<translation id="5866210856231860256">Nospiediet meklēšanas taustiņu un labo bultiņu vai meklēšanas taustiņu un kreiso bultiņu, lai pārlūkotu šīs tēmas nodarbības.</translation>
 <translation id="5867591286054666064">Šīs pamācības laikā nospiediet jebkuru taustiņu, lai dzirdētu tā nosaukumu.</translation>
 <translation id="5869546221129391014">Režģis</translation>
 <translation id="5876817486144482042">Samazināt runas skaļumu</translation>
-<translation id="5878206664863390311">Nospiediet meklēšanas taustiņu un labo bulttaustiņu vai meklēšanas taustiņu un kreiso bulttaustiņu, lai pārlūkotu tēmas.</translation>
+<translation id="5878206664863390311">Nospiediet meklēšanas taustiņu un labo bultiņu vai meklēšanas taustiņu un kreiso bultiņu, lai pārlūkotu tēmas.</translation>
 <translation id="5878908838135392163">Gaiši pelēkzila</translation>
 <translation id="588108970619830498">Atiestatīt teksta pārvēršanas runā iestatījumu noklusējuma vērtības</translation>
 <translation id="5891934789323004067">Tabula</translation>
@@ -821,7 +821,7 @@
 <translation id="6508059270146105198">Pārvietot Braila raksta attēlojumu uz lapas apakšdaļu</translation>
 <translation id="6521550811716689390">Tumši violeta</translation>
 <translation id="6536157907112457272">Linu</translation>
-<translation id="6540201937398578274">ChromeVox meklēšanas taustiņš ir modificētājtaustiņš. Lielākā daļa ChromeVox īsinājumtaustiņu sākas ar meklēšanas taustiņu. Navigācijai izmantojiet arī bulttaustiņus.</translation>
+<translation id="6540201937398578274">ChromeVox meklēšanas taustiņš ir modificētājtaustiņš. Lielākā daļa ChromeVox īsinājumtaustiņu sākas ar meklēšanas taustiņu. Navigācijai izmantojiet arī bultiņas.</translation>
 <translation id="6544923685317771506">Gliemežvāku</translation>
 <translation id="6551185905438378412">Ziloņkaula</translation>
 <translation id="6561818612645211875">Pāriet uz pašreizējās rindas sākumu</translation>
@@ -843,7 +843,7 @@
 <translation id="6702609185760332517">{COUNT,plural, =1{izsaukuma zīme}zero{# izsaukuma zīmju}one{# izsaukuma zīme}other{# izsaukuma zīmes}}</translation>
 <translation id="670717715607710284">Izslēgt ekrānu</translation>
 <translation id="6714813999819678458">Iepriekšējais 2. līmeņa virsraksts</translation>
-<translation id="6730312624811567147">Lai pārietu uz lapas sākumu vai beigām, izmantojiet meklēšanas taustiņu un kreiso vai labo bulttaustiņu. Lai pārietu uz rindiņas sākumu vai beigām, izmantojiet meklēšanas taustiņu, vadības taustiņu un kreiso vai labo bulttaustiņu. Lai lapā pārietu uz augšu vai uz leju, izmantojiet meklēšanas taustiņu un augšupvērsto vai lejupvērsto bulttaustiņu.</translation>
+<translation id="6730312624811567147">Lai pārietu uz lapas sākumu vai beigām, izmantojiet meklēšanas taustiņu un kreiso vai labo bultiņu. Lai pārietu uz rindiņas sākumu vai beigām, izmantojiet meklēšanas taustiņu, vadības taustiņu un kreiso vai labo bultiņu. Lai lapā pārietu uz augšu vai uz leju, izmantojiet meklēšanas taustiņu un augšupvērsto vai lejupvērsto bultiņu.</translation>
 <translation id="6736510033526053669">Tika izveidota cilne.</translation>
 <translation id="675895815784134693">progresa josla</translation>
 <translation id="6759710362319508545">Resursi</translation>
@@ -861,7 +861,7 @@
 <translation id="6858047746862060282">Prologs</translation>
 <translation id="6859876496651143278">Velciet ar vienu pirkstu pa kreisi</translation>
 <translation id="6865519907510167493">Pareizrakstības kļūda</translation>
-<translation id="6873188295213080042">Norāde: turiet meklēšanas taustiņu un nospiediet bulttaustiņus, lai pārvietotos.</translation>
+<translation id="6873188295213080042">Norāde: turiet meklēšanas taustiņu un nospiediet bultiņas, lai pārvietotos.</translation>
 <translation id="6894148351896207544">Nosaukt pašreizējo laiku un datumu</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6897341342232909480">Pārvietoties pa kreisi</translation>
@@ -971,7 +971,7 @@
 <translation id="762020119231868829">Tiek pārtraukta visu pašlaik aktīvo multivides logrīku darbība.</translation>
 <translation id="7625690649919402823">Nākamā tabula</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. līmenis</translation>
-<translation id="7637342083105831460">Nospiediet meklēšanas taustiņu un labo bulttaustiņu, lai atrastu vingrināšanās apgabalu, vai pogu Nākamā nodarbība. Pēc tam nospiediet meklēšanas taustiņu un atstarpes taustiņu, lai aktivizētu.</translation>
+<translation id="7637342083105831460">Nospiediet meklēšanas taustiņu un labo bultiņu, lai atrastu vingrināšanās apgabalu, vai pogu Nākamā nodarbība. Pēc tam nospiediet meklēšanas taustiņu un atstarpes taustiņu, lai aktivizētu.</translation>
 <translation id="7639968568612851608">Tumši pelēka</translation>
 <translation id="7663318257180412551">2. līmeņa virsraksts</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{stunda}zero{stundas}one{stunda}other{stundas}}</translation>
@@ -1095,11 +1095,11 @@
 <translation id="8473540203671727883">Izrunāt tekstu, virs kura novietots kursors</translation>
 <translation id="8476408756881832830">Apturēt atskaņošanu ChromeVox komentāru izvades laikā</translation>
 <translation id="8476508772960940536">loga kopsavilkums</translation>
-<translation id="8480873377842220259">Tagad jūs uzzināsiet par dažām navigācijas pamatiespējām. Varat turēt nospiestu meklēšanas taustiņu un nospiest bulttaustiņus, lai pārvietotos ekrānā. Lai turpinātu, nospiediet meklēšanas taustiņu un labo bulttaustiņu.</translation>
+<translation id="8480873377842220259">Tagad jūs uzzināsiet par dažām navigācijas pamatiespējām. Varat turēt nospiestu meklēšanas taustiņu un nospiest bultiņus, lai pārvietotos ekrānā. Lai turpinātu, nospiediet meklēšanas taustiņu un labo bultiņu.</translation>
 <translation id="8503360654911991865">Samazināt navigācijas precizitāti</translation>
 <translation id="8520472399088452386">Skaitītājpoga</translation>
 <translation id="8534394844575788431">Formatēšana</translation>
-<translation id="8542271685829952264">Lai izpētītu visas ChromeVox komandas un īsinājumtaustiņus, nospiediet Search + punkta taustiņu, pēc tam pārlūkojiet izvēlnes, izmantojot bulttaustiņus, un aktivizējiet komandu, nospiežot Enter. Lai atgrieztos šeit, nospiediet Search + o, pēc tam — t.</translation>
+<translation id="8542271685829952264">Lai izpētītu visas ChromeVox komandas un īsinājumtaustiņus, nospiediet Search + punkta taustiņu, pēc tam pārlūkojiet izvēlnes, izmantojot bultiņas, un aktivizējiet komandu, nospiežot Enter. Lai atgrieztos šeit, nospiediet Search + o, pēc tam — t.</translation>
 <translation id="8548973727659841685">Rakstzīme</translation>
 <translation id="8561322612995434619">ietver uznirstošu elementu</translation>
 <translation id="8571096049907249734">vairākatlase</translation>
@@ -1133,7 +1133,7 @@
 <translation id="875769700429317857">Faila “<ph name="FILE_NAME" />” lejupielāde ir pabeigta</translation>
 <translation id="8767968232364267681">Nākamais 4. līmeņa virsraksts</translation>
 <translation id="8770473310765924354">aizvērt strukturētu saturu, piemēram, tabulas</translation>
-<translation id="8775203254697638994">Dažkārt jums būs jāatlasa elements no nolaižamā saraksta. Lai to izdarītu, vispirms izvērsiet sarakstu, nospiežot meklēšanas taustiņu un atstarpes taustiņu. Pēc tam izmantojiet augšupvērsto vai lejupvērsto bulttaustiņu, lai atlasītu elementu. Visbeidzot, sakļaujiet sarakstu, nospiežot meklēšanas taustiņu un atstarpes taustiņu.</translation>
+<translation id="8775203254697638994">Dažkārt jums būs jāatlasa elements no nolaižamā saraksta. Lai to izdarītu, vispirms izvērsiet sarakstu, nospiežot meklēšanas taustiņu un atstarpes taustiņu. Pēc tam izmantojiet augšupvērsto vai lejupvērsto bultiņu, lai atlasītu elementu. Visbeidzot, sakļaujiet sarakstu, nospiežot meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="8779057862865475116">Nav iepriekšējās saites.</translation>
 <translation id="8796411681063377102">Nākamais 3. līmeņa virsraksts</translation>
 <translation id="8823311177246872527"><ph name="CURRENTPAGE" />. lapa no <ph name="TOTALPAGES" /></translation>
