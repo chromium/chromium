@@ -7979,26 +7979,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Newtab_Tabgrid",
+                    "name": "Newtab_Tabgrid_History",
                     "enable_features": [
                         "IPHForSafariSwitcher",
+                        "IPH_iOSHistoryOnOverflowMenuFeature",
                         "IPH_iOSNewTabToolbarItemFeature",
                         "IPH_iOSTabGridToolbarItemFeature"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSIPHForSafariSwitcherHistoryOnly": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_iOSHistoryOnOverflowMenuFeature"
                     ]
                 }
             ]
