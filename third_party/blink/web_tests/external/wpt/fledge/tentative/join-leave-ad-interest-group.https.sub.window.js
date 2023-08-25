@@ -194,31 +194,31 @@ const SIMPLE_JOIN_LEAVE_TEST_CASES = [
                      biddingLogicURL: 'relative/path' }
   },
 
-  // "biddingWasmHelperUrl" tests
+  // "biddingWasmHelperURL" tests
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     biddingWasmHelperUrl: null }
+                     biddingWasmHelperURL: null }
   },
   { expectJoinSucces: false,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     biddingWasmHelperUrl: 'https://{{hosts[][www]}}/foo.js' }
+                     biddingWasmHelperURL: 'https://{{hosts[][www]}}/foo.js' }
   },
   { expectJoinSucces: false,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     biddingWasmHelperUrl: 'data:application/wasm,Foo' }
+                     biddingWasmHelperURL: 'data:application/wasm,Foo' }
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     biddingWasmHelperUrl: `${window.location.origin}/foo.js`}
+                     biddingWasmHelperURL: `${window.location.origin}/foo.js`}
   },
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-                     biddingWasmHelperUrl: 'relative/path' }
+                     biddingWasmHelperURL: 'relative/path' }
   },
 
   // "dailyUpdateUrl" tests

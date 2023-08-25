@@ -754,7 +754,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       dict.Set("biddingLogicURL", group.bidding_url->spec());
     }
     if (group.bidding_wasm_helper_url) {
-      dict.Set("biddingWasmHelperUrl", group.bidding_wasm_helper_url->spec());
+      dict.Set("biddingWasmHelperURL", group.bidding_wasm_helper_url->spec());
     }
     if (group.update_url) {
       // It doesn't really make sense to set `update_url` without one of these
@@ -3339,7 +3339,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          biddingWasmHelperUrl: 'https://invalid^&',
+          biddingWasmHelperURL: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
   } catch (e) {
