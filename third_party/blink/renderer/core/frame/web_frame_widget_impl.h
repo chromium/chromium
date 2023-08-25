@@ -595,6 +595,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Called when the main frame navigates.
   void DidNavigate();
 
+  // Ensures all queued input in the widget has been processed and the queues
+  // emptied.
+  void FlushInputForTesting(base::OnceClosure done_callback);
+
   // Called when the widget should get targeting input.
   void SetMouseCapture(bool capture);
 

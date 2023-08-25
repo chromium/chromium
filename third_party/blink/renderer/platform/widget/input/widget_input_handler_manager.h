@@ -190,6 +190,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     return main_thread_task_runner_.get();
   }
 
+  // Immediately dispatches all queued events in both the main and compositor
+  // queues such that the queues are emptied. Invokes the passed closure when
+  // both main and compositor thread queues have been processed.
+  void FlushEventQueuesForTesting(base::OnceClosure done_callback);
+
  protected:
   friend class base::RefCountedThreadSafe<WidgetInputHandlerManager>;
   ~WidgetInputHandlerManager() override;
@@ -289,6 +294,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void LogInputTimingUMA();
 
   void RecordMetricsForDroppedEventsBeforePaint(const base::TimeTicks&);
+
+  // Helpers for FlushEventQueuesForTesting.
+  void FlushCompositorQueueForTesting();
+  void FlushMainThreadQueueForTesting(base::OnceClosure done);
 
   // Only valid to be called on the main thread.
   base::WeakPtr<WidgetBase> widget_;

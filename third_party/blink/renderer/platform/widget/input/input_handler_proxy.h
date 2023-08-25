@@ -249,6 +249,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
     return currently_active_gesture_device_.value();
   }
 
+  // Immediately dispatches all queued events.
+  void FlushQueuedEventsForTesting();
+
  private:
   friend class test::TestInputHandlerProxy;
   friend class test::InputHandlerProxyTest;

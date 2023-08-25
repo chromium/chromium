@@ -84,6 +84,11 @@ class WebFrameTestProxy : public RenderFrameImpl,
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback completion_callback) override;
   void DidClearWindowObject() override;
+  void DidCommitNavigation(
+      blink::WebHistoryCommitType commit_type,
+      bool should_reset_browser_interface_broker,
+      const blink::ParsedPermissionsPolicy& permissions_policy_header,
+      const blink::DocumentPolicyFeatureState& document_policy_header) override;
 
   // mojom::WebTestRenderFrame implementation.
   void SynchronouslyCompositeAfterTest(
@@ -93,6 +98,8 @@ class WebFrameTestProxy : public RenderFrameImpl,
                             bool starting_test) override;
   void OnDeactivated() override;
   void OnReactivated() override;
+  void BlockTestUntilStart() override;
+  void StartTest() override;
 
  private:
   void BindReceiver(
@@ -115,6 +122,10 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   mojo::AssociatedReceiver<mojom::WebTestRenderFrame>
       web_test_render_frame_receiver_{this};
+
+  // Prevents parsing on the next committed document. This is used to stop a
+  // test from running until StartTest() is called.
+  bool should_block_parsing_in_next_commit_ = false;
 };
 
 }  // namespace content

@@ -3792,6 +3792,11 @@ void WebFrameWidgetImpl::DidNavigate() {
   widget_base_->widget_input_handler_manager()->DidNavigate();
 }
 
+void WebFrameWidgetImpl::FlushInputForTesting(base::OnceClosure done_callback) {
+  widget_base_->widget_input_handler_manager()->FlushEventQueuesForTesting(
+      std::move(done_callback));
+}
+
 void WebFrameWidgetImpl::SetMouseCapture(bool capture) {
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_base_->widget_input_handler_manager()

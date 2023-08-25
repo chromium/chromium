@@ -3276,6 +3276,27 @@ void WebLocalFrameImpl::SetResourceCacheRemote(
   GetFrame()->SetResourceCacheRemote(std::move(remote));
 }
 
+void WebLocalFrameImpl::BlockParserForTesting() {
+  // Avoid blocking for MHTML tests since MHTML archives are loaded
+  // synchronously during commit. WebFrameTestProxy only has a chance to act at
+  // DidCommit after that's happened.
+  if (GetFrame()->Loader().GetDocumentLoader()->Archive()) {
+    return;
+  }
+  GetFrame()->Loader().GetDocumentLoader()->BlockParser();
+}
+
+void WebLocalFrameImpl::ResumeParserForTesting() {
+  if (GetFrame()->Loader().GetDocumentLoader()->Archive()) {
+    return;
+  }
+  GetFrame()->Loader().GetDocumentLoader()->ResumeParser();
+}
+
+void WebLocalFrameImpl::FlushInputForTesting(base::OnceClosure done_callback) {
+  frame_widget_->FlushInputForTesting(std::move(done_callback));
+}
+
 void WebLocalFrameImpl::SetTargetToCurrentHistoryItem(const WebString& target) {
   current_history_item_->SetTarget(target);
 }

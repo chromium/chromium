@@ -272,6 +272,7 @@ class WebTestControlHost : public WebContentsObserver,
       override;
 
   void DiscardMainWindow();
+  void FlushInputAndStartTest(WeakDocumentPtr rfh);
   // Closes all windows opened by the test. This is every window but the main
   // window, since it is created by the test harness and reused between tests.
   void CloseTestOpenedWindows();
@@ -455,6 +456,19 @@ class WebTestControlHost : public WebContentsObserver,
   };
   NextPointerLockAction next_pointer_lock_action_ =
       NextPointerLockAction::kWillSucceed;
+
+  // When navigating to a new web test, the control host blocks the renderer
+  // from starting the test while some initialization to a known state occurs
+  // (e.g. flushing synthetic input events associated with navigation).
+  //
+  // It does so by resetting this bit to `true` at the end of each web test.
+  // When this bit is set, the next ReadyToCommitNavigation seen will call
+  // BlockTestUntilStart in the renderer to block the renderer parser,
+  // preventing the test from running. When that navigation finishes in
+  // DidFinishNavigation, this bit is turned off and this class performs
+  // initialization. Once the initialization is complete, StartTest is run in
+  // the renderer, unblocking the parser.
+  bool next_non_blank_nav_is_new_test_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

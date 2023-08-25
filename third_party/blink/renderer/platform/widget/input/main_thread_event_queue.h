@@ -143,6 +143,9 @@ class PLATFORM_EXPORT MainThreadEventQueue
                mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
   }
 
+  // Acquires a lock but use is restricted to tests.
+  bool IsEmptyForTesting();
+
  protected:
   friend class base::RefCountedThreadSafe<MainThreadEventQueue>;
   virtual ~MainThreadEventQueue();

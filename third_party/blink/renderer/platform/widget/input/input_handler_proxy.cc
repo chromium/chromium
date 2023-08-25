@@ -1606,6 +1606,14 @@ void InputHandlerProxy::UpdateBrowserControlsState(
   input_handler_->UpdateBrowserControlsState(constraints, current, animate);
 }
 
+void InputHandlerProxy::FlushQueuedEventsForTesting() {
+  // The queue is blocked while there's a ScrollBegin hit test in progress.
+  CHECK(!scroll_begin_main_thread_hit_test_reasons_);
+
+  DispatchQueuedInputEvents(/*frame_aligned=*/true);
+  CHECK(compositor_event_queue_->empty());
+}
+
 void InputHandlerProxy::HandleOverscroll(
     const gfx::PointF& causal_event_viewport_point,
     const cc::InputHandlerScrollResult& scroll_result) {

@@ -122,6 +122,15 @@ interface WebTestRenderFrame {
   // Notifies a frame that has been restored from backward/forward cache.
   // This is called on main frames to add them to TestRunner's management list.
   OnReactivated();
+
+  // Prevents a new test from being run by blocking parsing. Parsing will
+  // resume when StartTest is called.
+  BlockTestUntilStart();
+
+  // Notifies the frame that the browser has fully completed any
+  // potentially-renderer-visible changes it needed to make. The frame may now
+  // perform any initialization and start running the test.
+  StartTest();
 };
 
 // Web test messages related runtime flags sent from the browser process to the

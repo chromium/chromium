@@ -369,6 +369,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetResourceCacheRemote(
       CrossVariantMojoRemote<mojom::blink::ResourceCacheInterfaceBase> remote)
       override;
+  void BlockParserForTesting() override;
+  void ResumeParserForTesting() override;
+  void FlushInputForTesting(base::OnceClosure done_callback) override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;

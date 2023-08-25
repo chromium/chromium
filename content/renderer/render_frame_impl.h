@@ -784,6 +784,8 @@ class CONTENT_EXPORT RenderFrameImpl
   bool IsLocalRoot() const;
   const RenderFrameImpl* GetLocalRoot() const;
 
+  base::WeakPtr<RenderFrameImpl> GetWeakPtr();
+
  private:
   friend class RenderFrameImplTest;
   friend class RenderFrameObserver;

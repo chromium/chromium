@@ -933,6 +933,16 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetResourceCacheRemote(
       CrossVariantMojoRemote<mojom::ResourceCacheInterfaceBase> remote) = 0;
 
+  // Used to block and resume parsing of the current document in the frame.
+  virtual void BlockParserForTesting() {}
+  virtual void ResumeParserForTesting() {}
+
+  // Processes all pending input in the widget associated with this frame.
+  // This is an asynchronous operation since it processes the compositor queue
+  // as well. The passed closure is invoked when queues of both threads have
+  // been processed.
+  virtual void FlushInputForTesting(base::OnceClosure) {}
+
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,
                          const LocalFrameToken& frame_token)

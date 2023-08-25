@@ -583,6 +583,11 @@ void MainThreadEventQueue::ClearRafFallbackTimerForTesting() {
   raf_fallback_timer_.reset();
 }
 
+bool MainThreadEventQueue::IsEmptyForTesting() {
+  base::AutoLock lock(shared_state_lock_);
+  return shared_state_.events_.empty();
+}
+
 void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
   if (raf_fallback_timer_)
     raf_fallback_timer_->Stop();
