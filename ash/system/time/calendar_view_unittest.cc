@@ -2784,6 +2784,33 @@ TEST_F(
   EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
 }
 
+TEST_F(CalendarViewWithJellyEnabledTest,
+       ShouldFocusEventListCloseButton_WhenFocusMovedFromTodayButton) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+
+  // When fetched events are in the next 10 mins, then up next should have been
+  // created.
+  ASSERT_TRUE(up_next_view());
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  reset_to_today_button()->RequestFocus();
+  ASSERT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
+  GestureTapOn(up_next_todays_events_button());
+
+  ASSERT_TRUE(event_list_view());
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+}
+
 TEST_F(CalendarViewWithJellyEnabledTest, RecordEventsDisplayedToUserOnce) {
   base::HistogramTester histogram_tester;
   base::Time now;

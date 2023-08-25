@@ -1942,9 +1942,7 @@ void CalendarView::OnCloseEventListAnimationComplete() {
 
 void CalendarView::RequestFocusForEventListCloseButton() {
   DCHECK(event_list_view_);
-  auto* focus_manager = GetFocusManager();
-  event_list_view_->RequestFocus();
-  focus_manager->AdvanceFocus(/*reverse=*/false);
+  event_list_view_->RequestCloseButtonFocus();
   current_month_->DisableFocus();
   previous_month_->DisableFocus();
   next_month_->DisableFocus();

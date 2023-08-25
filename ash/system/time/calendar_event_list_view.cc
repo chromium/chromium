@@ -153,13 +153,13 @@ CalendarEventListView::CalendarEventListView(
       features::IsCalendarJellyEnabled() ? kCloseButtonContainerInsetsJelly
                                          : kCloseButtonContainerInsets));
 
-  auto* close_button =
-      new IconButton(views::Button::PressedCallback(base::BindRepeating(
-                         &CalendarViewController::CloseEventListView,
-                         base::Unretained(calendar_view_controller))),
-                     IconButton::Type::kMediumFloating, &views::kIcCloseIcon,
-                     IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION);
-  close_button_container_->AddChildView(close_button);
+  close_button_ =
+      close_button_container_->AddChildView(std::make_unique<IconButton>(
+          views::Button::PressedCallback(
+              base::BindRepeating(&CalendarViewController::CloseEventListView,
+                                  base::Unretained(calendar_view_controller))),
+          IconButton::Type::kMediumFloating, &views::kIcCloseIcon,
+          IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   scroll_view_->SetAllowKeyboardScrolling(false);
   scroll_view_->SetBackgroundColor(absl::nullopt);
@@ -213,6 +213,10 @@ void CalendarEventListView::Layout() {
   if (gradient_helper_) {
     gradient_helper_->UpdateGradientMask();
   }
+}
+
+void CalendarEventListView::RequestCloseButtonFocus() {
+  close_button_->RequestFocus();
 }
 
 void CalendarEventListView::OnSelectedDateUpdated() {
