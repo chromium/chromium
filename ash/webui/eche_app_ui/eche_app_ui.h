@@ -56,6 +56,9 @@ class EcheAppUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<mojom::KeyboardLayoutHandler> receiver);
+
  private:
   raw_ptr<EcheAppManager> manager_;
 

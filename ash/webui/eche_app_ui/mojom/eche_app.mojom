@@ -183,6 +183,32 @@ interface ConnectionStatusObserver {
   OnConnectionStatusChanged(ConnectionStatus status);
 };
 
+// Interface for when the Eche SWA requests for the current keyboard layout and
+// sets an observer to see whenever the layout changes within ChromeOS.
+interface KeyboardLayoutHandler {
+  // Notifies the native code that the Eche SWA has requested for the current
+  // keyboard layout.
+  RequestCurrentKeyboardLayout();
+
+  // Registers a generic interface to observe events from browser-to-renderer.
+  SetKeyboardLayoutObserver(pending_remote<KeyboardLayoutObserver> observer);
+};
+
+// A generic interface to let Eche SWA observe the system's keyboard layout
+// changes.
+interface KeyboardLayoutObserver {
+  // Sends the keyboard layout information to the Eche SWA.
+  // id        - ID that identifies the IME (e.g., "t:latn-post", "pinyin").
+  // longName  - Long name of the IME, which is used as the user-visible name.
+  // shortName - UI indicator for the IME (e.g., "US"). If the IME has no
+  //             indicator, uses the first two characters in its preferred
+  //             keyboard layout or language code (e.g., "ko", "ja", "en-US").
+  // layoutTag - Keyboard layout name (e.g., "us(workman)", "us(colemak)", "us",
+  //             "fr(oss)", "gb(extd)").
+  OnKeyboardLayoutChanged(string id, string longName, string shortName,
+                          string layoutTag);
+};
+
 // Enum representing what EntryPoint was used to launch the eche app stream.
 // Keep in sync with AppStreamLaunchEntryPoint in
 // tools/metrics/histograms/enums.xml

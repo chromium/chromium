@@ -46,6 +46,19 @@ parentMessagePipe.registerHandler(Message.STREAM_ACTION, async (message) => {
   streamActionCallback(/** @type {!StreamAction} */ (message.action));
 });
 
+let keyboardLayoutChangedCallback = null;
+parentMessagePipe.registerHandler(
+    Message.KEYBOARD_LAYOUT_INFO, async (message) => {
+      if (!keyboardLayoutChangedCallback) {
+        return;
+      }
+      keyboardLayoutChangedCallback(
+          /** @type {string} */ (message.id),
+          /** @type {string} */ (message.longName),
+          /** @type {string} */ (message.shortName),
+          /** @type {string} */ (message.layoutTag));
+    });
+
 let virtualKeyboardCallback = null;
 parentMessagePipe.registerHandler(
     Message.IS_VIRTUAL_KEYBOARD_ENABLED, async (message) => {
@@ -183,6 +196,11 @@ const EcheApiBindingImpl = new (class {
         Message.CONNECTION_STATUS_CHANGED, {connectionStatus});
   }
 
+  requestCurrentKeyboardLayout() {
+    console.log('echeapi receiver.js requestCurrentKeyboardLayout');
+    parentMessagePipe.sendMessage(Message.KEYBOARD_LAYOUT_REQUEST);
+  }
+
   onReceivedVirtualKeyboardChanged(callback) {
     console.log('echeapi receiver.js onReceivedVirtualKeyboardChanged');
     virtualKeyboardCallback = callback;
@@ -191,6 +209,11 @@ const EcheApiBindingImpl = new (class {
   onAndroidDeviceNetworkInfoChanged(callback) {
     console.log('echeapi receiver.js onAndroidDeviceNetworkInfoChanged');
     androidNetworkInfoCallback = callback;
+  }
+
+  onKeyboardLayoutChanged(callback) {
+    console.log('echeapi receiver.js onKeyboardLayoutChanged');
+    keyboardLayoutChangedCallback = callback;
   }
 
   // TODO: rename this and similar methods to set'Xxx'Callback
@@ -246,6 +269,8 @@ echeapi.system.registerStreamActionReceiver =
 echeapi.system.registerVirtualKeyboardChangedReceiver =
     EcheApiBindingImpl.onReceivedVirtualKeyboardChanged.bind(
         EcheApiBindingImpl);
+echeapi.system.registerKeyboardLayoutChangedReceiver =
+    EcheApiBindingImpl.onKeyboardLayoutChanged.bind(EcheApiBindingImpl);
 echeapi.system.registerAndroidNetworkInfoChangedReceiver =
     EcheApiBindingImpl.onAndroidDeviceNetworkInfoChanged.bind(
         EcheApiBindingImpl);
@@ -253,5 +278,7 @@ echeapi.system.onStreamOrientationChanged =
     EcheApiBindingImpl.onStreamOrientationChanged.bind(EcheApiBindingImpl);
 echeapi.system.onConnectionStatusChanged =
     EcheApiBindingImpl.onConnectionStatusChanged.bind(EcheApiBindingImpl);
+echeapi.system.requestCurrentKeyboardLayout =
+    EcheApiBindingImpl.requestCurrentKeyboardLayout.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
 console.log('echeapi receiver.js finish bind the implementation of echeapi');
