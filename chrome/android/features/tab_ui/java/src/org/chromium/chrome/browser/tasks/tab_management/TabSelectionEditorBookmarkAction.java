@@ -93,6 +93,7 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
     public boolean performAction(List<Tab> tabs) {
         assert !tabs.isEmpty() : "Bookmark action should not be enabled for no tabs.";
         SnackbarManager snackbarManager = getActionDelegate().getSnackbarManager();
+        snackbarManager.dismissAllSnackbars();
 
         if (mDelegate != null) {
             assert snackbarManager != null;
