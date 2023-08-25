@@ -60,12 +60,6 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
     }
     InProcessBrowserTest::TearDownOnMainThread();
   }
-
-  bool IsRunningAgainstOlderAsh() {
-    base::Version ash_version = GetAshChromeVersion();
-    base::Version lacros_version = version_info::GetVersion();
-    return ash_version < lacros_version;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
@@ -123,5 +117,27 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromCookieControls) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceCookieControls);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       ShowFeedbackPageFromSettingsPerformancePage) {
+  base::HistogramTester histogram_tester;
+  ShowFeedbackPageWithFeedbackSource(
+      chrome::kFeedbackSourceSettingsPerformancePage);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       ShowFeedbackPageFromProfileErrorDialog) {
+  base::HistogramTester histogram_tester;
+  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceProfileErrorDialog);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       ShowFeedbackPageFromQuickOffice) {
+  base::HistogramTester histogram_tester;
+  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceQuickOffice);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }

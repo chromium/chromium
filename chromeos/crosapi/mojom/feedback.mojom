@@ -26,6 +26,9 @@ enum LacrosFeedbackSource {
   // Deprecated as the window layout menu feedback button has been removed.
   [MinVersion=3] kDeprecatedLacrosWindowLayoutMenu = 7,
   [MinVersion=4] kFeedbackSourceCookieControls = 8,
+  [MinVersion=5] kFeedbackSourceSettingsPerformancePage = 9,
+  [MinVersion=5] kFeedbackSourceProfileErrorDialog = 10,
+  [MinVersion=5] kFeedbackSourceQuickOffice=11,
 };
 
 [Stable]
