@@ -6,6 +6,8 @@ import("//build/config/chrome_build.gni")
 
 source_set("consistency_promo_signin") {
   sources = [
+    "account_cookie_waiter.h",
+    "account_cookie_waiter.mm",
     "consistency_promo_signin_coordinator.h",
     "consistency_promo_signin_coordinator.mm",
     "consistency_promo_signin_mediator.h",
