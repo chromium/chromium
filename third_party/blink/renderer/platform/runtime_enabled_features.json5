@@ -3629,6 +3629,10 @@
       base_feature: "none",
     },
     {
+      name: "TextMetricsBaselines",
+      status: "stable",
+    },
+    {
       // Support for the timeline-scope property.
       //
       // https://drafts.csswg.org/scroll-animations-1/#timeline-scope

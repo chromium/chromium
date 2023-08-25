@@ -1392,13 +1392,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter actualBoundingBoxLeft
 [Worker]     getter actualBoundingBoxRight
 [Worker]     getter advances
+[Worker]     getter alphabeticBaseline
 [Worker]     getter emHeightAscent
 [Worker]     getter emHeightDescent
 [Worker]     getter fontBoundingBoxAscent
 [Worker]     getter fontBoundingBoxDescent
+[Worker]     getter hangingBaseline
+[Worker]     getter ideographicBaseline
 [Worker]     getter width
 [Worker]     method constructor
-[Worker]     method getBaselines
 [Worker] interface TimestampTrigger
 [Worker]     attribute @@toStringTag
 [Worker]     getter timestamp

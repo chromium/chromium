@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 750 tests; 741 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 750 tests; 744 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -282,9 +282,9 @@ PASS TextMetrics interface: attribute actualBoundingBoxAscent
 PASS TextMetrics interface: attribute actualBoundingBoxDescent
 PASS TextMetrics interface: attribute emHeightAscent
 PASS TextMetrics interface: attribute emHeightDescent
-FAIL TextMetrics interface: attribute hangingBaseline assert_true: The prototype object must have a property "hangingBaseline" expected true got false
-FAIL TextMetrics interface: attribute alphabeticBaseline assert_true: The prototype object must have a property "alphabeticBaseline" expected true got false
-FAIL TextMetrics interface: attribute ideographicBaseline assert_true: The prototype object must have a property "ideographicBaseline" expected true got false
+PASS TextMetrics interface: attribute hangingBaseline
+PASS TextMetrics interface: attribute alphabeticBaseline
+PASS TextMetrics interface: attribute ideographicBaseline
 PASS ImageData interface: existence and properties of interface object
 PASS ImageData interface object length
 PASS ImageData interface object name

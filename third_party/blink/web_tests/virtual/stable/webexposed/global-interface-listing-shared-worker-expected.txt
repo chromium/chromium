@@ -1253,8 +1253,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter actualBoundingBoxDescent
 [Worker]     getter actualBoundingBoxLeft
 [Worker]     getter actualBoundingBoxRight
+[Worker]     getter alphabeticBaseline
 [Worker]     getter fontBoundingBoxAscent
 [Worker]     getter fontBoundingBoxDescent
+[Worker]     getter hangingBaseline
+[Worker]     getter ideographicBaseline
 [Worker]     getter width
 [Worker]     method constructor
 [Worker] interface TransformStream

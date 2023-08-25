@@ -53,12 +53,14 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   double fontBoundingBoxAscent() const { return font_bounding_box_ascent_; }
   double fontBoundingBoxDescent() const { return font_bounding_box_descent_; }
   double actualBoundingBoxAscent() const { return actual_bounding_box_ascent_; }
+  double alphabeticBaseline() const { return baselines_->alphabetic(); }
+  double hangingBaseline() const { return baselines_->hanging(); }
+  double ideographicBaseline() const { return baselines_->ideographic(); }
   double actualBoundingBoxDescent() const {
     return actual_bounding_box_descent_;
   }
   double emHeightAscent() const { return em_height_ascent_; }
   double emHeightDescent() const { return em_height_descent_; }
-  Baselines* getBaselines() const { return baselines_; }
 
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 

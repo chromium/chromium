@@ -314,6 +314,10 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.w.html [ Failure ]
+# Tests failed due to missing OpenType table reading capabilities:
+crbug.com/1473117 external/wpt/html/canvas/element/text/2d.text.measure.baselines.html [ Failure ]
+crbug.com/1473117 external/wpt/html/canvas/offscreen/text/2d.text.measure.baselines.html [ Failure ]
+crbug.com/1473117 external/wpt/html/canvas/offscreen/text/2d.text.measure.baselines.worker.html [ Failure ]
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac11-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]

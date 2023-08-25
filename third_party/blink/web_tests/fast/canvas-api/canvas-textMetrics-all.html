@@ -13,9 +13,9 @@
 function testTextMetrics(textMetrics, expected)
 {
     var w  = textMetrics.width;
-    var ba = textMetrics.getBaselines().alphabetic;
-    var bh = textMetrics.getBaselines().hanging;
-    var bi = textMetrics.getBaselines().ideographic;
+    var ba = textMetrics.alphabeticBaseline;
+    var bh = textMetrics.hangingBaseline;
+    var bi = textMetrics.ideographicBaseline;
     var fa = textMetrics.fontBoundingBoxAscent;
     var fd = textMetrics.fontBoundingBoxDescent;
     var ea = textMetrics.emHeightAscent;
@@ -27,9 +27,9 @@ function testTextMetrics(textMetrics, expected)
 
     var epsilon = 3;
     assert_approx_equals(w,  expected[0], epsilon, "testing width");
-    assert_approx_equals(ba, expected[1], epsilon, "testing getBaselines().alphabetic");
-    assert_approx_equals(bh, expected[2], epsilon, "testing getBaselines().hanging");
-    assert_approx_equals(bi, expected[3], epsilon, "testing getBaselines().ideographic");
+    assert_approx_equals(ba, expected[1], epsilon, "testing alphabeticBaseline");
+    assert_approx_equals(bh, expected[2], epsilon, "testing hangingBaseline");
+    assert_approx_equals(bi, expected[3], epsilon, "testing ideographicBaseline");
     assert_approx_equals(fa, expected[4], epsilon, "testing fontBoundingBoxAscent");
     assert_approx_equals(fd, expected[5], epsilon, "testing fontBoundingBoxDescent");
     assert_approx_equals(ea, expected[6], epsilon, "testing emHeightAscent");

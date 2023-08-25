@@ -1481,13 +1481,15 @@ interface TextMetrics
     getter actualBoundingBoxLeft
     getter actualBoundingBoxRight
     getter advances
+    getter alphabeticBaseline
     getter emHeightAscent
     getter emHeightDescent
     getter fontBoundingBoxAscent
     getter fontBoundingBoxDescent
+    getter hangingBaseline
+    getter ideographicBaseline
     getter width
     method constructor
-    method getBaselines
 interface TimestampTrigger
     attribute @@toStringTag
     getter timestamp

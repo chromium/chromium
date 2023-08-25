@@ -38,7 +38,9 @@ interface TextMetrics {
     readonly attribute double fontBoundingBoxDescent;
     readonly attribute double actualBoundingBoxAscent;
     readonly attribute double actualBoundingBoxDescent;
+    [RuntimeEnabled=TextMetricsBaselines] readonly attribute double hangingBaseline;
+    [RuntimeEnabled=TextMetricsBaselines] readonly attribute double alphabeticBaseline;
+    [RuntimeEnabled=TextMetricsBaselines] readonly attribute double ideographicBaseline;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightDescent;
-    [RuntimeEnabled=ExtendedTextMetrics] Baselines getBaselines();
 };
