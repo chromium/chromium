@@ -64,6 +64,9 @@ void PowerBookmarkBackend::Init(bool use_database) {
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PowerBookmarkBackend::GetSyncControllerDelegate() {
+  if (!bridge_ && bridge_->initialized()) {
+    return nullptr;
+  }
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
