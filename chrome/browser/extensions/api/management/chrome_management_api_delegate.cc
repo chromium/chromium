@@ -62,7 +62,6 @@
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
@@ -444,18 +443,6 @@ extensions::LaunchType ChromeManagementAPIDelegate::GetLaunchType(
     const extensions::ExtensionPrefs* prefs,
     const extensions::Extension* extension) const {
   return extensions::GetLaunchType(prefs, extension);
-}
-
-void ChromeManagementAPIDelegate::
-    GetPermissionWarningsByManifestFunctionDelegate(
-        extensions::ManagementGetPermissionWarningsByManifestFunction* function,
-        const std::string& manifest_str) const {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      manifest_str,
-      base::BindOnce(
-          &extensions::ManagementGetPermissionWarningsByManifestFunction::
-              OnParse,
-          function));
 }
 
 std::unique_ptr<extensions::InstallPromptDelegate>

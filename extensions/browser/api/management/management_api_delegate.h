@@ -25,7 +25,6 @@ class Extension;
 class ExtensionPrefs;
 class ManagementCreateAppShortcutFunction;
 class ManagementGenerateAppForLinkFunction;
-class ManagementGetPermissionWarningsByManifestFunction;
 class ManagementUninstallFunctionBase;
 
 // Manages the lifetime of the install prompt.
@@ -74,12 +73,6 @@ class ManagementAPIDelegate {
   // Forwards the call to launch_util::GetLaunchType in chrome.
   virtual LaunchType GetLaunchType(const ExtensionPrefs* prefs,
                                    const Extension* extension) const = 0;
-
-  // Parses the manifest and calls back the
-  // ManagementGetPermissionWarningsByManifestFunction.
-  virtual void GetPermissionWarningsByManifestFunctionDelegate(
-      ManagementGetPermissionWarningsByManifestFunction* function,
-      const std::string& manifest_str) const = 0;
 
   // Used to show a dialog prompt in chrome when management.setEnabled extension
   // function is called.

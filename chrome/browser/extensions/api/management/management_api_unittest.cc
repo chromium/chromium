@@ -865,9 +865,6 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
                            const Extension* extension) const override {
     return LaunchType::LAUNCH_TYPE_DEFAULT;
   }
-  void GetPermissionWarningsByManifestFunctionDelegate(
-      ManagementGetPermissionWarningsByManifestFunction* function,
-      const std::string& manifest_str) const override {}
   std::unique_ptr<InstallPromptDelegate> SetEnabledFunctionDelegate(
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
@@ -905,6 +902,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
   void SetLaunchType(content::BrowserContext* context,
                      const std::string& extension_id,
                      LaunchType launch_type) const override {}
+
   std::unique_ptr<AppForLinkDelegate> GenerateAppForLinkFunctionDelegate(
       ManagementGenerateAppForLinkFunction* function,
       content::BrowserContext* context,

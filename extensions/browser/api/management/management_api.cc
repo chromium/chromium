@@ -50,6 +50,7 @@
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -342,16 +343,10 @@ ManagementGetPermissionWarningsByManifestFunction::Run() {
       management::GetPermissionWarningsByManifest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
-                                              ->Get(browser_context())
-                                              ->GetDelegate();
-  if (!delegate) {
-    // TODO(lfg) add error string
-    return RespondNow(Error(kUnknownErrorDoNotUse));
-  }
-
-  delegate->GetPermissionWarningsByManifestFunctionDelegate(
-      this, params->manifest_str);
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      params->manifest_str,
+      base::BindOnce(
+          &ManagementGetPermissionWarningsByManifestFunction::OnParse, this));
 
   // Matched with a Release() in OnParse().
   AddRef();
