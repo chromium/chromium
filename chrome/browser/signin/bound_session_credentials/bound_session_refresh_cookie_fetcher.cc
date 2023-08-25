@@ -14,6 +14,7 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
     case Result::kServerPersistentError:
     case Result::kServerUnexepectedResponse:
     case Result::kChallengeRequiredUnexpectedFormat:
+    case Result::kChallengeRequiredLimitExceeded:
     case Result::kSignChallengeFailed:
       return true;
   }
@@ -38,6 +39,9 @@ std::ostream& operator<<(
     case BoundSessionRefreshCookieFetcher::Result::
         kChallengeRequiredUnexpectedFormat:
       return os << "Challenge required unexpected format.";
+    case BoundSessionRefreshCookieFetcher::Result::
+        kChallengeRequiredLimitExceeded:
+      return os << "Challenge required limit exceeded.";
     case BoundSessionRefreshCookieFetcher::Result::kSignChallengeFailed:
       return os << "Sign challenge failed on cookie rotation request.";
   }

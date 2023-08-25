@@ -21,7 +21,8 @@ class BoundSessionRefreshCookieFetcher {
     kServerPersistentError = 3,
     kServerUnexepectedResponse = 4,
     kChallengeRequiredUnexpectedFormat = 5,
-    kSignChallengeFailed = 6,
+    kChallengeRequiredLimitExceeded = 6,
+    kSignChallengeFailed = 7,
   };
 
   static bool IsPersistentError(Result result);

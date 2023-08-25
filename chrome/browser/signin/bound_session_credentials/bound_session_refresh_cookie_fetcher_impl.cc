@@ -30,6 +30,7 @@ constexpr char kRotationChallengeHeader[] = "Sec-Session-Google-Challenge";
 constexpr char kRotationChallengeResponseHeader[] =
     "Sec-Session-Google-Response";
 constexpr char kChallengeItemKey[] = "challenge";
+const size_t kMaxAssertionRequestsAllowed = 5;
 
 bool IsExpectedCookie(
     const GURL& url,
@@ -236,18 +237,18 @@ BoundSessionRefreshCookieFetcherImpl::GetChallengeIfBindingKeyAssertionRequired(
 
 void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(
     const std::string& challenge_header_value) {
-  if (has_assertion_been_already_requested_) {
-    // TODO(b/293838716): Handle expired challenges. We currently can't
-    // distinguish expired challenges.
-    ReportChallengeRequiredUnexpectedFormat();
+  if (assertion_requests_count_ >= kMaxAssertionRequestsAllowed) {
+    CompleteRequestAndReportRefreshResult(
+        Result::kChallengeRequiredLimitExceeded);
     return;
   }
 
   // Binding key assertion required.
-  has_assertion_been_already_requested_ = true;
+  assertion_requests_count_++;
   std::string challenge = ParseChallengeHeader(challenge_header_value);
   if (challenge.empty()) {
-    ReportChallengeRequiredUnexpectedFormat();
+    CompleteRequestAndReportRefreshResult(
+        Result::kChallengeRequiredUnexpectedFormat);
     return;
   }
   RefreshWithChallenge(challenge);
@@ -274,9 +275,9 @@ std::string BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
 }
 
 void BoundSessionRefreshCookieFetcherImpl::
-    ReportChallengeRequiredUnexpectedFormat() {
+    CompleteRequestAndReportRefreshResult(Result result) {
   cookie_refresh_completed_ = true;
-  result_ = Result::kChallengeRequiredUnexpectedFormat;
+  result_ = result;
   ReportRefreshResult();
 }
 
@@ -292,9 +293,7 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
 void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     std::string assertion) {
   if (assertion.empty()) {
-    result_ = Result::kSignChallengeFailed;
-    cookie_refresh_completed_ = true;
-    ReportRefreshResult();
+    CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
     return;
   }
   wait_for_network_callback_helper_->DelayNetworkCall(

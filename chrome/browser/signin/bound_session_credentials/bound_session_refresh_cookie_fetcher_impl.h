@@ -7,6 +7,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "base/functional/callback_forward.h"
@@ -69,7 +70,7 @@ class BoundSessionRefreshCookieFetcherImpl
       const scoped_refptr<net::HttpResponseHeaders>& headers) const;
   void HandleBindingKeyAssertionRequired(
       const std::string& challenge_header_value);
-  void ReportChallengeRequiredUnexpectedFormat();
+  void CompleteRequestAndReportRefreshResult(Result result);
   void RefreshWithChallenge(const std::string& challenge);
   void OnGenerateBindingKeyAssertion(std::string assertion);
 
@@ -97,7 +98,7 @@ class BoundSessionRefreshCookieFetcherImpl
   // Refresh request result.
   Result result_;
   bool cookie_refresh_completed_ = false;
-  bool has_assertion_been_already_requested_ = false;
+  size_t assertion_requests_count_ = 0;
 
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

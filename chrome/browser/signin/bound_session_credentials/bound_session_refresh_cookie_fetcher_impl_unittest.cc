@@ -433,20 +433,23 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
                               kChallengeRequiredUnexpectedFormat);
 }
 
-TEST_F(BoundSessionRefreshCookieFetcherImplTest, AssertionAlreadyRequested) {
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       AssertionRequestsLimitExceeded) {
   ASSERT_FALSE(wait_for_network_callback_helper_.AreNetworkCallsDelayed());
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
   size_t assertion_requests = 0;
-  while (assertion_requests < 2) {
+  const size_t max_assertion_requests_allowed = 5;
+  do {
     SimulateChallengeRequired(CreateChallengeHeaderValue(kChallenge));
     task_environment_.RunUntilIdle();
     assertion_requests++;
-    EXPECT_EQ(future.IsReady(), assertion_requests > 1);
-  }
+    ASSERT_EQ(future.IsReady(),
+              assertion_requests > max_assertion_requests_allowed);
+  } while (!future.IsReady());
   EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::
-                              kChallengeRequiredUnexpectedFormat);
+                              kChallengeRequiredLimitExceeded);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
