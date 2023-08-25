@@ -201,7 +201,7 @@ LocationBarView::LocationBarView(Browser* browser,
     }
     views::InstallPillHighlightPathGenerator(this);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
     geolocation_permission_observation_.Observe(
         device::GeolocationManager::GetInstance());
 #endif
@@ -1049,7 +1049,7 @@ LocationBarView::GetContentSettingBubbleModelDelegate() {
   return delegate_->GetContentSettingBubbleModelDelegate();
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 void LocationBarView::OnSystemPermissionUpdated(
     device::LocationSystemPermissionStatus new_status) {
   UpdateContentSettingsIcons();

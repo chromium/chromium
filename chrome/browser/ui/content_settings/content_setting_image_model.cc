@@ -63,7 +63,7 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
@@ -726,7 +726,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
           "ContentSettings.Geolocation.BlockedIconShown"));
       set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
       if (content_settings->geolocation_was_just_granted_on_site_level()) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
         if (IsGeolocationPermissionDetermined()) {
           // If the system permission is already denied then requesting the
           // system permission will not show a prompt. Show the bubble instead.
@@ -792,7 +792,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 }
 
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   return true;
 #else
   device::GeolocationManager* geolocation_manager =
@@ -806,7 +806,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
 }
 
 bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   return true;
 #else
 

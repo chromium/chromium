@@ -36,6 +36,9 @@ void TrackGeolocationRelinquished(const std::string& name);
 // switch.
 bool UsingCameraLEDFallback();
 
+// Opens the Privacy Controls section in the OS settings.
+void OpenPrivacyControlsInSettings();
+
 // Used to override the value of the LED Fallback value in tests.
 // Should not be nested.
 // TODO(b/289510726): remove when all cameras fully support the software

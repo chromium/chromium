@@ -3584,7 +3584,7 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
   return google_apis::GetAPIKey();
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 device::GeolocationManager*
 ChromeContentBrowserClient::GetGeolocationManager() {
   return device::GeolocationManager::GetInstance();
