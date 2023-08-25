@@ -6212,16 +6212,175 @@
             ]
         }
     ],
-    "FeedPerformanceStudy": [
+    "FeedPerformanceStudyV2": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Prestable_rs4_rr1_im0_rvip0_20230719",
                     "params": {
-                        "useIncrementalMount": "false"
+                        "rangeRatio": "1",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "Prestable_rs4_rr2_im0_rvip0_20230719",
+                    "params": {
+                        "rangeRatio": "2",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "Prestable_rs4_rr1_im0_rvip1_20230719",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "true"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "Prestable_rs2_rr2_im0_rvip0_20230726",
+                    "params": {
+                        "rangeRatio": "2",
+                        "rangeSize": "2",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs1_rr1_im0_rvip0_20230824",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "1",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs2_rr1_im0_rvip0_20230824",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "2",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs4_rr1_im0_rvip0_20230824",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs1_rr2_im0_rvip0_20230824",
+                    "params": {
+                        "rangeRatio": "2",
+                        "rangeSize": "1",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs2_rr2_im0_rvip0_20230824",
+                    "params": {
+                        "rangeRatio": "2",
+                        "rangeSize": "2",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs2_rr0.5_im0_rvip0_20230824",
+                    "params": {
+                        "rangeRatio": "0.5",
+                        "rangeSize": "2",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "false"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs2_rr0.5_im0_rvip1_20230824",
+                    "params": {
+                        "rangeRatio": "0.5",
+                        "rangeSize": "2",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "true"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "rs4_rr1_im0_rvip1_20230824",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "true"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "Prestable_enabled_20230824",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "true"
+                    },
+                    "enable_features": [
+                        "FeedPerformanceStudy"
+                    ]
+                },
+                {
+                    "name": "Stable_enabled_20230824",
+                    "params": {
+                        "rangeRatio": "1",
+                        "rangeSize": "4",
+                        "useIncrementalMount": "false",
+                        "useRecyclerViewItemPrefetch": "true"
                     },
                     "enable_features": [
                         "FeedPerformanceStudy"
