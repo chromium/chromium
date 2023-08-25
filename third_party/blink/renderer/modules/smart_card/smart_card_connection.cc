@@ -385,17 +385,18 @@ ScriptPromise SmartCardConnection::control(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (data.IsDetached() || data.IsNull()) {
-    exception_state.ThrowTypeError("Invalid data.");
-    return ScriptPromise();
-  }
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
 
   Vector<uint8_t> data_vector;
-  data_vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+
+  // Note that there are control codes which require no input data.
+  // Thus sending an empty data vector is fine.
+  if (!data.IsDetached() && !data.IsNull() && data.ByteLength() > 0u) {
+    data_vector.Append(data.Bytes(),
+                       static_cast<wtf_size_t>(data.ByteLength()));
+  }
 
   connection_->Control(
       control_code, data_vector,
