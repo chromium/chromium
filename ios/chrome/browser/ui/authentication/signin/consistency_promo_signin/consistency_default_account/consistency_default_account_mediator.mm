@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
@@ -151,11 +152,11 @@ NSString* GetPromoLabelString(
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   signin_metrics::AccessPoint _accessPoint;
+  syncer::SyncService* _syncService;
 }
 
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -168,6 +169,8 @@ NSString* GetPromoLabelString(
                                       (signin_metrics::AccessPoint)accessPoint {
   if (self = [super init]) {
     DCHECK(accountManagerService);
+    CHECK(syncService);
+
     _accountManagerService = accountManagerService;
     _syncService = syncService;
     _accessPoint = accessPoint;
@@ -180,16 +183,20 @@ NSString* GetPromoLabelString(
 
 - (void)dealloc {
   DCHECK(!self.accountManagerService);
+  DCHECK(!_syncService);
 }
 
 - (void)disconnect {
   self.accountManagerService = nullptr;
+  _syncService = nullptr;
   _accountManagerServiceObserver.reset();
 }
 
 #pragma mark - Properties
 
 - (void)setConsumer:(id<ConsistencyDefaultAccountConsumer>)consumer {
+  CHECK(_syncService);
+
   _consumer = consumer;
 
   syncer::UserSelectableTypeSet disabledTypes;
