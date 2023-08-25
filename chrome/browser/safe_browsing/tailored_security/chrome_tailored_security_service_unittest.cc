@@ -101,9 +101,21 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
  public:
   ChromeTailoredSecurityServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-  ~ChromeTailoredSecurityServiceTest() override = default;
+
+  ChromeTailoredSecurityServiceTest(const ChromeTailoredSecurityServiceTest&) =
+      delete;
+  ChromeTailoredSecurityServiceTest& operator=(
+      const ChromeTailoredSecurityServiceTest&) = delete;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kTailoredSecurityRetryForSyncUsers);
+    SetUpPrerequisites();
+  }
+
+  // Sets up the member variables for testing. Classes that extend this class
+  // will need to call `SetUpPrerequisites()` from their `SetUp()` method.
+  void SetUpPrerequisites() {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("primary_account",
                                                      GetTestingFactories());
@@ -234,6 +246,24 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeTailoredSecurityService>
       chrome_tailored_security_service_;
+};
+
+class ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest
+    : public ChromeTailoredSecurityServiceTest {
+ public:
+  ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest() = default;
+  ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest(
+      const ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest&) =
+      delete;
+  ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest& operator=(
+      const ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest&) =
+      delete;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kTailoredSecurityRetryForSyncUsers);
+    SetUpPrerequisites();
+  }
 };
 
 // Some of the test names are shorted using "Ts" for Tailored Security, "Ep"
@@ -442,30 +472,23 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenRetryDisabledOnSuccessDoesNotUpdateRetryStatePref) {
-  scoped_feature_list_.InitAndDisableFeature(
-      kTailoredSecurityRetryForSyncUsers);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    auto original_value =
-        prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState);
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              original_value);
-  }
+       WhenRetryEnabledOnSuccessStoresNoRetryNeeded) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            TailoredSecurityRetryState::NO_RETRY_NEEDED);
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenRetryEnabledOnSuccessStoresNoRetryNeeded) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityRetryForSyncUsers);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::NO_RETRY_NEEDED);
-  }
+TEST_F(ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest,
+       WhenRetryDisabledOnSuccessDoesNotUpdateRetryStatePref) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  auto original_value =
+      prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState);
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            original_value);
 }
 
 }  // namespace safe_browsing
