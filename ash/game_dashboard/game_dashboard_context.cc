@@ -5,11 +5,14 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
+#include "base/i18n/time_formatting.h"
+#include "base/timer/timer.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,6 +27,8 @@
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kCountUpTimerRefreshInterval = base::Seconds(1);
 
 // Number of pixels to add to the top and bottom of the main menu button so
 // that it's centered within the frame header.
@@ -149,7 +154,17 @@ bool GameDashboardContext::IsToolbarVisible() const {
 }
 
 void GameDashboardContext::OnRecordingStarted(bool is_recording_game_window) {
-  // TODO(b/273641154): Update the the main menu button to the recording state.
+  if (is_recording_game_window) {
+    // TODO(b/273641154): Update the the main menu button to the recording
+    // state.
+    CHECK(!recording_timer_.IsRunning());
+    DCHECK(recording_start_time_.is_null());
+    DCHECK(recording_duration_.empty());
+    recording_start_time_ = base::Time::Now();
+    OnUpdateRecordingTimer();
+    recording_timer_.Start(FROM_HERE, kCountUpTimerRefreshInterval, this,
+                           &GameDashboardContext::OnUpdateRecordingTimer);
+  }
   if (main_menu_view_) {
     main_menu_view_->OnRecordingStarted(is_recording_game_window);
   }
@@ -159,6 +174,10 @@ void GameDashboardContext::OnRecordingStarted(bool is_recording_game_window) {
 }
 
 void GameDashboardContext::OnRecordingEnded() {
+  // Resetting the timer will stop the timer.
+  recording_timer_.Stop();
+  recording_start_time_ = base::Time();
+  recording_duration_.clear();
   // TODO(b/273641154): Update the the main menu button to the default state.
   if (main_menu_view_) {
     main_menu_view_->OnRecordingEnded();
@@ -266,6 +285,30 @@ void GameDashboardContext::AnimateToolbarWidgetBoundsChange(
       .Once()
       .SetDuration(kToolbarBoundsChangeAnimationDuration)
       .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_0_80_DECEL_80);
+}
+
+void GameDashboardContext::OnUpdateRecordingTimer() {
+  DCHECK(!recording_start_time_.is_null());
+  const base::TimeDelta delta = base::Time::Now() - recording_start_time_;
+  std::u16string duration;
+  if (!base::TimeDurationFormatWithSeconds(
+          delta, base::DurationFormatWidth::DURATION_WIDTH_NUMERIC,
+          &duration)) {
+    VLOG(1) << "Error converting the duration to a string: " << duration;
+    return;
+  }
+  // Remove the leading `0:` for durations less than an hour.
+  if (delta < base::Hours(1)) {
+    base::ReplaceFirstSubstringAfterOffset(&duration, 0, u"0:", u"");
+  }
+
+  recording_duration_ = duration;
+
+  // TODO(b/273641154): Update the the main menu button with the recording
+  // duration.
+  if (main_menu_view_) {
+    main_menu_view_->UpdateRecordingDuration(duration);
+  }
 }
 
 }  // namespace ash

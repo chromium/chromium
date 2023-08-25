@@ -5,8 +5,14 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_TEST_API_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_TEST_API_H_
 
+#include <string>
+
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "base/memory/raw_ptr.h"
+
+namespace base {
+class RepeatingTimer;
+}  // namespace base
 
 namespace ui::test {
 class EventGenerator;
@@ -40,6 +46,8 @@ class GameDashboardContextTestApi {
   ~GameDashboardContextTestApi() = default;
 
   GameDashboardContext* context() { return context_; }
+  const base::RepeatingTimer& GetRecordingTimer() const;
+  const std::u16string& GetRecordingDuration() const;
 
   // Returns the main menu button widget and button.
   GameDashboardWidget* GetMainMenuButtonWidget();

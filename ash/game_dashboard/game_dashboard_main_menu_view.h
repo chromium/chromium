@@ -43,6 +43,10 @@ class ASH_EXPORT GameDashboardMainMenuView
   // `CaptureModeController` has ended a recording session or was aborted.
   void OnRecordingEnded();
 
+  // Updates the `record_game_tile_`'s sub-label with `duration`, showing the
+  // recording duration.
+  void UpdateRecordingDuration(const std::u16string& duration);
+
  private:
   friend class GameDashboardContextTestApi;
 

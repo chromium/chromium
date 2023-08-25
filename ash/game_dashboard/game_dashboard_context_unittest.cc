@@ -29,6 +29,7 @@
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "base/check.h"
+#include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -236,6 +237,14 @@ class GameDashboardContextTest : public GameDashboardTestBase {
       EXPECT_TRUE(record_game_button->GetEnabled());
       EXPECT_FALSE(record_game_button->toggled());
     }
+    const base::RepeatingTimer& recording_window_timer =
+        recording_window_test_api->GetRecordingTimer();
+    const base::RepeatingTimer& other_window_timer =
+        other_window_test_api->GetRecordingTimer();
+
+    // Verify the recording timer is not running in both windows.
+    EXPECT_FALSE(recording_window_timer.IsRunning());
+    EXPECT_FALSE(other_window_timer.IsRunning());
 
     // Activate the recording_window.
     auto* recording_window =
@@ -250,6 +259,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // Reopen the recording window's main menu, because clicking on the button
     // closed it.
     recording_window_test_api->OpenTheMainMenu();
+
+    // Verify the recording timer is only running in `recording_window`.
+    EXPECT_TRUE(recording_window_timer.IsRunning());
+    EXPECT_FALSE(other_window_timer.IsRunning());
 
     // Retrieve the record game buttons from both windows.
     auto* recording_window_record_game_tile =
@@ -296,6 +309,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_FALSE(recording_window_record_game_button->toggled());
     EXPECT_FALSE(other_window_record_game_tile->IsToggled());
     EXPECT_FALSE(other_window_record_game_button->toggled());
+
+    // Verify the recording timer is not running in both windows.
+    EXPECT_FALSE(recording_window_timer.IsRunning());
+    EXPECT_FALSE(other_window_timer.IsRunning());
 
     // Close the toolbar and main menu in both windows.
     for (auto* test_api : {recording_window_test_api, other_window_test_api}) {
@@ -528,6 +545,45 @@ TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
   RecordGameAndVerifyButtons(
       /*recording_window_test_api=*/&gfn_window_test_api,
       /*other_window_test_api=*/test_api_.get());
+}
+
+TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Start recording the game window.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  auto* record_game_button = test_api_->GetToolbarRecordGameButton();
+  ASSERT_TRUE(record_game_button);
+  LeftClickOn(record_game_button);
+
+  // Get timer and verify it's running.
+  const base::RepeatingTimer& timer = test_api_->GetRecordingTimer();
+  EXPECT_TRUE(timer.IsRunning());
+
+  // Verify initial time of 0 seconds.
+  EXPECT_EQ(u"00:00", test_api_->GetRecordingDuration());
+
+  // Advance clock by 1 minute, and verify overflow from seconds to minutes.
+  AdvanceClock(base::Minutes(1));
+  EXPECT_EQ(u"01:00", test_api_->GetRecordingDuration());
+
+  // Advance clock by 30 seconds.
+  AdvanceClock(base::Seconds(30));
+  EXPECT_EQ(u"01:30", test_api_->GetRecordingDuration());
+
+  // Advance clock by 50 minutes.
+  AdvanceClock(base::Minutes(50));
+  EXPECT_EQ(u"51:30", test_api_->GetRecordingDuration());
+
+  // Advance clock by 9 minutes, and verify overflow from minutes to hours.
+  AdvanceClock(base::Minutes(9));
+  EXPECT_EQ(u"1:00:30", test_api_->GetRecordingDuration());
+
+  // Advance clock by 23 hours, and verify hours doesn't overflow to days.
+  AdvanceClock(base::Hours(23));
+  EXPECT_EQ(u"24:00:30", test_api_->GetRecordingDuration());
 }
 
 // -----------------------------------------------------------------------------
@@ -1073,9 +1129,11 @@ class GameDashboardStartAndStopCaptureSessionTest
 // parameters.
 TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
   auto* capture_mode_controller = CaptureModeController::Get();
+  const base::RepeatingTimer& timer = test_api_->GetRecordingTimer();
 
   test_api_->OpenTheMainMenu();
   EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
+  EXPECT_FALSE(timer.IsRunning());
 
   if (should_start_from_main_menu_) {
     // Retrieve the record game tile from the main menu.
@@ -1098,6 +1156,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
   }
 
   EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
+  EXPECT_TRUE(timer.IsRunning());
 
   if (should_stop_from_main_menu_) {
     // Stop the video recording from the main menu.
@@ -1116,6 +1175,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
     LeftClickOn(test_api_->GetToolbarRecordGameButton());
   }
   EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
+  EXPECT_FALSE(timer.IsRunning());
   WaitForCaptureFileToBeSaved();
 }
 

@@ -4,6 +4,8 @@
 
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 
+#include <string>
+
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
@@ -12,6 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/unified/feature_tile.h"
+#include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
@@ -25,6 +28,16 @@ GameDashboardContextTestApi::GameDashboardContextTestApi(
     : context_(context), event_generator_(event_generator) {
   CHECK(context_);
   CHECK(event_generator_);
+}
+
+const base::RepeatingTimer& GameDashboardContextTestApi::GetRecordingTimer()
+    const {
+  return context_->recording_timer_;
+}
+
+const std::u16string& GameDashboardContextTestApi::GetRecordingDuration()
+    const {
+  return context_->recording_duration_;
 }
 
 GameDashboardWidget* GameDashboardContextTestApi::GetMainMenuButtonWidget() {

@@ -29,6 +29,11 @@ void GameDashboardTestBase::SetUp() {
   EXPECT_TRUE(features::IsGameDashboardEnabled());
 }
 
+void GameDashboardTestBase::AdvanceClock(base::TimeDelta delta) {
+  task_environment()->AdvanceClock(delta);
+  task_environment()->RunUntilIdle();
+}
+
 bool GameDashboardTestBase::IsControllerObservingWindow(
     aura::Window* window) const {
   return GameDashboardController::Get()->window_observations_.IsObservingSource(

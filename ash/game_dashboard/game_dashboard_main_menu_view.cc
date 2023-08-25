@@ -246,6 +246,12 @@ void GameDashboardMainMenuView::OnRecordingEnded() {
   UpdateRecordGameTile(/*is_recording_game_window=*/false);
 }
 
+void GameDashboardMainMenuView::UpdateRecordingDuration(
+    const std::u16string& duration) {
+  // TODO(b/295070122): Update `record_game_tile_`'s sub-label text to
+  // `duration`.
+}
+
 void GameDashboardMainMenuView::OnToolbarTilePressed() {
   toolbar_tile_->SetToggled(context_->ToggleToolbar());
 }

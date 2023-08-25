@@ -27,6 +27,8 @@ class GameDashboardTestBase : public AshTestBase {
   // AshTestBase:
   void SetUp() override;
 
+  void AdvanceClock(base::TimeDelta delta);
+
  protected:
   // Returns true if the `GameDashboardController` is observing the `window`.
   bool IsControllerObservingWindow(aura::Window* window) const;
