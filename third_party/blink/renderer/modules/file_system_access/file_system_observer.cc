@@ -31,10 +31,6 @@ FileSystemObserver* FileSystemObserver::Create(
     ExceptionState& exception_state) {
   auto* context = ExecutionContext::From(script_state);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemObserver)) {
-    return nullptr;
-  }
-
   SECURITY_CHECK(context->IsWindow() ||
                  context->IsDedicatedWorkerGlobalScope() ||
                  context->IsSharedWorkerGlobalScope());
@@ -71,8 +67,6 @@ FileSystemObserver::FileSystemObserver(
       callback_(callback),
       observer_receivers_(this, context),
       host_remote_(context) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kFileSystemObserver));
-
   host_remote_.Bind(std::move(host_remote),
                     execution_context_->GetTaskRunner(TaskType::kStorage));
 }

@@ -942,6 +942,8 @@ source_set("browser") {
     "file_system_access/file_system_access_access_handle_host_impl.h",
     "file_system_access/file_system_access_capacity_allocation_host_impl.cc",
     "file_system_access/file_system_access_capacity_allocation_host_impl.h",
+    "file_system_access/file_system_access_change_source.cc",
+    "file_system_access/file_system_access_change_source.h",
     "file_system_access/file_system_access_data_transfer_token_impl.cc",
     "file_system_access/file_system_access_data_transfer_token_impl.h",
     "file_system_access/file_system_access_directory_handle_impl.cc",
@@ -962,10 +964,14 @@ source_set("browser") {
     "file_system_access/file_system_access_manager_impl.h",
     "file_system_access/file_system_access_observer_host.cc",
     "file_system_access/file_system_access_observer_host.h",
+    "file_system_access/file_system_access_observer_observation.cc",
+    "file_system_access/file_system_access_observer_observation.h",
     "file_system_access/file_system_access_safe_move_helper.cc",
     "file_system_access/file_system_access_safe_move_helper.h",
     "file_system_access/file_system_access_transfer_token_impl.cc",
     "file_system_access/file_system_access_transfer_token_impl.h",
+    "file_system_access/file_system_access_watch_scope.cc",
+    "file_system_access/file_system_access_watch_scope.h",
     "file_system_access/file_system_access_watcher_manager.cc",
     "file_system_access/file_system_access_watcher_manager.h",
     "file_system_access/file_system_chooser.cc",
@@ -2554,6 +2560,18 @@ source_set("browser") {
       "child_process_launcher_helper_posix.h",
       "posix_file_descriptor_info_impl.cc",
       "posix_file_descriptor_info_impl.h",
+    ]
+  }
+
+  # Watching the local file system via the File System Access API is not
+  # supported on Android or Fuchsia. Local file system access is not supported
+  # on Android at all (see https://crbug.com/1011535), whereas
+  # `base::FilePatchWatcher` is not implemented on Fuchsia (see
+  # https://crbug.com/851641)
+  if (!is_fuchsia && !is_android) {
+    sources += [
+      "file_system_access/file_system_access_local_path_watcher.cc",
+      "file_system_access/file_system_access_local_path_watcher.h",
     ]
   }
 

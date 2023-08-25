@@ -56,6 +56,10 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
   const BindingContext& context() const { return context_; }
+  FileSystemAccessManagerImpl* manager() { return manager_; }
+  storage::FileSystemContext* file_system_context() {
+    return manager()->context();
+  }
 
   PermissionStatus GetReadPermissionStatus();
   PermissionStatus GetWritePermissionStatus();
@@ -113,11 +117,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       CallbackArgType callback_arg);
 
  protected:
-  FileSystemAccessManagerImpl* manager() { return manager_; }
-  storage::FileSystemContext* file_system_context() {
-    return manager()->context();
-  }
-
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);

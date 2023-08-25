@@ -5,14 +5,17 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_HOST_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_HOST_H_
 
+#include <memory>
+
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/sequence_checker.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom.h"
 
 namespace content {
+class FileSystemAccessObserverObservation;
 class FileSystemAccessWatcherManager;
 
 // Stores the state associated with each FileSystemAccessObserverHost mojo
@@ -48,9 +51,26 @@ class FileSystemAccessObserverHost
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token)
       override;
 
+  void RemoveObservation(FileSystemAccessObserverObservation* observation);
+
   const BindingContext& binding_context() const { return binding_context_; }
+  FileSystemAccessManagerImpl* manager() const { return manager_; }
+  FileSystemAccessWatcherManager* watcher_manager() const {
+    return watcher_manager_;
+  }
 
  private:
+  void DidResolveTransferTokenToObserve(
+      bool is_recursive,
+      ObserveCallback callback,
+      FileSystemAccessTransferTokenImpl* resolved_token);
+
+  void GotObservation(
+      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+      ObserveCallback callback,
+      std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation);
+
   void OnHostReceiverDisconnect();
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -61,10 +81,12 @@ class FileSystemAccessObserverHost
   const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_;
   const BindingContext binding_context_;
 
-  // Mojo pipes that send file change notifications back to the renderer.
-  // Each connection corresponds to a file system watch set up with `Observe()`.
-  mojo::RemoteSet<blink::mojom::FileSystemAccessObserver> observer_remotes_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Observations which maintain mojo pipes that send file change notifications
+  // back to the renderer. Each connection corresponds to a file system watch
+  // set up with `Observe()`.
+  base::flat_set<std::unique_ptr<FileSystemAccessObserverObservation>,
+                 base::UniquePtrComparator>
+      observations_;
 
   // Connection owned by a FileSystemObserver object. When the
   // FileSystemObserver is destroyed, this instance will remove itself from the

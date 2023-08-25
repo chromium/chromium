@@ -4,13 +4,20 @@
 
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
 
-#include "base/feature_list.h"
+#include <memory>
+
+#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_observer_observation.h"
+#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/public/browser/file_system_access_permission_context.h"
-#include "third_party/blink/public/common/features.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 namespace content {
 
@@ -29,9 +36,8 @@ FileSystemAccessObserverHost::FileSystemAccessObserverHost(
   CHECK(manager_);
   CHECK(watcher_manager_);
 
-  // TODO(https://crbug.com/1019297): Add this flag to chrome://flags.
-  CHECK(base::FeatureList::IsEnabled(blink::features::kFileSystemObserver));
-
+  // `base::Unretained` is safe here because this instance owns
+  // `host_receiver_`.
   host_receiver_.set_disconnect_handler(
       base::BindOnce(&FileSystemAccessObserverHost::OnHostReceiverDisconnect,
                      base::Unretained(this)));
@@ -48,16 +54,65 @@ void FileSystemAccessObserverHost::Observe(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(manager_);
 
-  mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> observer_remote;
-  mojo::PendingReceiver<blink::mojom::FileSystemAccessObserver>
-      observer_receiver = observer_remote.InitWithNewPipeAndPassReceiver();
+  manager_->ResolveTransferToken(
+      std::move(token),
+      base::BindOnce(
+          &FileSystemAccessObserverHost::DidResolveTransferTokenToObserve,
+          weak_factory_.GetWeakPtr(), is_recursive, std::move(callback)));
+}
 
-  // TODO(https://crbug.com/1019297): Actually watch the file path.
+void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
+    bool is_recursive,
+    ObserveCallback callback,
+    FileSystemAccessTransferTokenImpl* resolved_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  observer_remotes_.Add(std::move(observer_remote));
+  if (!resolved_token) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kInvalidArgument),
+        mojo::NullReceiver());
+    return;
+  }
 
-  std::move(callback).Run(file_system_access_error::Ok(),
-                          std::move(observer_receiver));
+  if (resolved_token->GetReadGrant()->GetStatus() !=
+      blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied),
+        mojo::NullReceiver());
+    return;
+  }
+
+  if (resolved_token->url().mount_type() !=
+      storage::FileSystemType::kFileSystemTypeLocal) {
+    // TODO(https://crbug.com/1019297): Support non-local file systems.
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kNotSupportedError),
+        mojo::NullReceiver());
+    return;
+  }
+
+  switch (resolved_token->type()) {
+    case FileSystemAccessPermissionContext::HandleType::kDirectory:
+      watcher_manager()->GetDirectoryObservation(
+          resolved_token->url(), is_recursive,
+          base::BindOnce(
+              &FileSystemAccessObserverHost::GotObservation,
+              weak_factory_.GetWeakPtr(),
+              resolved_token->CreateDirectoryHandle(binding_context()),
+              std::move(callback)));
+      break;
+    case FileSystemAccessPermissionContext::HandleType::kFile:
+      watcher_manager()->GetFileObservation(
+          resolved_token->url(),
+          base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
+                         weak_factory_.GetWeakPtr(),
+                         resolved_token->CreateFileHandle(binding_context()),
+                         std::move(callback)));
+      break;
+  }
 }
 
 void FileSystemAccessObserverHost::Unobserve(
@@ -69,9 +124,46 @@ void FileSystemAccessObserverHost::Unobserve(
   NOTIMPLEMENTED();
 }
 
+void FileSystemAccessObserverHost::GotObservation(
+    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+    ObserveCallback callback,
+    std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!observation) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kNotSupportedError),
+        mojo::NullReceiver());
+    return;
+  }
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> observer_remote;
+  mojo::PendingReceiver<blink::mojom::FileSystemAccessObserver>
+      observer_receiver = observer_remote.InitWithNewPipeAndPassReceiver();
+
+  auto observer_observation =
+      std::make_unique<FileSystemAccessObserverObservation>(
+          this, std::move(observation), std::move(observer_remote),
+          std::move(handle));
+  observations_.insert(std::move(observer_observation));
+
+  std::move(callback).Run(file_system_access_error::Ok(),
+                          std::move(observer_receiver));
+}
+
+void FileSystemAccessObserverHost::RemoveObservation(
+    FileSystemAccessObserverObservation* observation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t count_removed = observations_.erase(observation);
+  CHECK_EQ(count_removed, 1u);
+}
+
 void FileSystemAccessObserverHost::OnHostReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observer_remotes_.Clear();
+  observations_.clear();
   host_receiver_.reset();
 
   // Destroys `this`.
