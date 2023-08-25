@@ -971,12 +971,14 @@ TEST_F(ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest,
 }
 
 TEST_F(ChromeUsbDelegateSmartCardExtensionServiceWorkerFeatureEnabledTest,
-       AllowlistedSmartCardConnectorExtension) {
+       // TODO(crbug.com/1475901): Re-enable this test
+       DISABLED_AllowlistedSmartCardConnectorExtension) {
   TestAllowlistedSmartCardConnectorExtension(nullptr);
 }
 
 TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       NoPermissionDevice) {
+       // TODO(crbug.com/1475901): Re-enable this test
+       DISABLED_NoPermissionDevice) {
   TestNoPermissionDevice();
 }
 
@@ -996,7 +998,8 @@ TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
 }
 
 TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       OpenAndDisconnectDevice) {
+       // TODO(crbug.com/1475901): Re-enable this test
+       DISABLED_OpenAndDisconnectDevice) {
   TestOpenAndDisconnectDevice(/*web_contents=*/nullptr);
 }
 
