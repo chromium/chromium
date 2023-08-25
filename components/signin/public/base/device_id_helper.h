@@ -30,12 +30,6 @@ std::string RecreateSigninScopedDeviceId(PrefService* prefs);
 // Creates a new device ID value.
 std::string GenerateSigninScopedDeviceId();
 
-// Helper method. The device ID should generally be obtained through
-// GetSigninScopedDeviceId().
-// Returns the device id read from the kGoogleServicesSigninScopedDeviceId pref.
-// If the pref is empty, a new device ID is created and stored in the pref.
-std::string GetOrCreateScopedDeviceId(PrefService* prefs);
-
 #endif
 
 }  // namespace signin

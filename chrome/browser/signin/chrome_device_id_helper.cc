@@ -25,11 +25,6 @@
 
 std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSigninScopedDeviceId)) {
-    return std::string();
-  }
-
   // UserManager may not exist in unit_tests.
   if (!user_manager::UserManager::IsInitialized())
     return std::string();
