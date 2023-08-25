@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.js';
+
 (async function() {
   TestRunner.addResult(`Tests that computed styles are cached across synchronous requests.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -38,7 +40,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function step1(node) {
     var callsLeft = 2;
     nodeId = node.id;
-    TestRunner.addSniffer(ProtocolClient.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
+    TestRunner.addSniffer(ProtocolClient.InspectorBackend.SessionRouter.prototype, 'sendMessage', onBackendCall, true);
     TestRunner.cssModel.getComputedStyle(nodeId).then(styleCallback);
     TestRunner.cssModel.getComputedStyle(nodeId).then(styleCallback);
     function styleCallback() {

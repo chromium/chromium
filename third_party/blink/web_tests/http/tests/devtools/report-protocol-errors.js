@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -43,7 +44,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   var numberOfReports = 0;
 
-  ProtocolClient.InspectorBackend.reportProtocolError = function(error, message) {
+  ProtocolClient.InspectorBackend.InspectorBackend.reportProtocolError = function(error, message) {
     if (numberOfReports < messages.length) {
       TestRunner.addObject(trimErrorMessage(message), {'sessionId': 'skip'});
       TestRunner.addResult('-------------------------------------------------------');
