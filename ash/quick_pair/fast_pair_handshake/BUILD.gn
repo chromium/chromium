@@ -26,6 +26,8 @@ source_set("fast_pair_handshake") {
     "fast_pair_handshake_impl_new.h",
     "fast_pair_handshake_lookup.cc",
     "fast_pair_handshake_lookup.h",
+    "fast_pair_handshake_lookup_impl.cc",
+    "fast_pair_handshake_lookup_impl.h",
     "fast_pair_key_pair.cc",
     "fast_pair_key_pair.h",
   ]

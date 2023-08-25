@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -22,9 +24,6 @@ class BluetoothAdapter;
 namespace ash {
 namespace quick_pair {
 
-class Device;
-class FastPairHandshake;
-
 // This class creates, deletes and exposes FastPairHandshake instances.
 class FastPairHandshakeLookup {
  public:
@@ -38,41 +37,31 @@ class FastPairHandshakeLookup {
           OnCompleteCallback callback)>;
 
   static FastPairHandshakeLookup* GetInstance();
+
+  // TODO(b/265853116): Move this function to the impl as it will not be used
+  // in the refactored code.
   static void SetCreateFunctionForTesting(CreateFunction create_function);
 
-  FastPairHandshakeLookup(const FastPairHandshakeLookup&) = delete;
-  FastPairHandshakeLookup& operator=(const FastPairHandshakeLookup&) = delete;
-
   // Get an existing instance for |device|.
-  FastPairHandshake* Get(scoped_refptr<Device> device);
+  virtual FastPairHandshake* Get(scoped_refptr<Device> device) = 0;
 
   // Get an existing instance for |address|.
-  FastPairHandshake* Get(const std::string& address);
+  virtual FastPairHandshake* Get(const std::string& address) = 0;
 
   // Erases the FastPairHandshake instance for |device| if exists.
-  bool Erase(scoped_refptr<Device> device);
+  virtual bool Erase(scoped_refptr<Device> device) = 0;
 
   // Erases the FastPairHandshake instance for |address| if exists.
-  bool Erase(const std::string& address);
+  virtual bool Erase(const std::string& address) = 0;
 
   // Deletes all existing FastPairHandshake instances.
-  void Clear();
+  virtual void Clear() = 0;
 
   // Creates and returns a new instance for |device| if no instance already
   // exists. Returns the existing instance if there is one.
-  FastPairHandshake* Create(scoped_refptr<device::BluetoothAdapter> adapter,
-                            scoped_refptr<Device> device,
-                            OnCompleteCallback on_complete);
-
- protected:
-  FastPairHandshakeLookup();
-  virtual ~FastPairHandshakeLookup();
-
- private:
-  friend struct base::DefaultSingletonTraits<FastPairHandshakeLookup>;
-
-  base::flat_map<scoped_refptr<Device>, std::unique_ptr<FastPairHandshake>>
-      fast_pair_handshakes_;
+  virtual void Create(scoped_refptr<device::BluetoothAdapter> adapter,
+                      scoped_refptr<Device> device,
+                      OnCompleteCallback on_complete) = 0;
 };
 
 }  // namespace quick_pair
