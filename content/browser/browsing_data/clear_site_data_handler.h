@@ -13,7 +13,9 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/clear_site_data_utils.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
@@ -79,11 +81,12 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   static void HandleHeader(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       base::RepeatingCallback<WebContents*()> web_contents_getter,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& url,
       const std::string& header_value,
       int load_flags,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-      const absl::optional<blink::StorageKey>& storage_key,
+      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
+      const absl::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback);
 
@@ -99,11 +102,12 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   ClearSiteDataHandler(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       base::RepeatingCallback<WebContents*()> web_contents_getter,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& url,
       const std::string& header_value,
       int load_flags,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-      const absl::optional<blink::StorageKey>& storage_key,
+      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
+      const absl::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback,
       std::unique_ptr<ConsoleMessagesDelegate> delegate);
@@ -149,6 +153,10 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // Run the callback to resume loading. No clearing actions were conducted.
   void RunCallbackNotDeferred();
 
+  const StoragePartitionConfig& StoragePartitionConfigForTesting() const {
+    return storage_partition_config_;
+  }
+
   const GURL& GetURLForTesting();
 
   const absl::optional<net::CookiePartitionKey> CookiePartitionKeyForTesting()
@@ -168,6 +176,9 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // Required to clear the data.
   base::RepeatingCallback<BrowserContext*()> browser_context_getter_;
   base::RepeatingCallback<WebContents*()> web_contents_getter_;
+
+  // The config for the target storage partition which stores the data.
+  const StoragePartitionConfig storage_partition_config_;
 
   // Target URL whose data will be cleared.
   const GURL url_;

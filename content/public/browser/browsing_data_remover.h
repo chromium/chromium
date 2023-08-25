@@ -176,10 +176,9 @@ class BrowsingDataRemover {
 
   // Data types stored within a StoragePartition (i.e. not Profile-scoped).
   static constexpr DataType DATA_TYPE_ON_STORAGE_PARTITION =
-      DATA_TYPE_APP_CACHE_DEPRECATED | DATA_TYPE_FILE_SYSTEMS |
-      DATA_TYPE_INDEXED_DB | DATA_TYPE_LOCAL_STORAGE | DATA_TYPE_WEB_SQL |
-      DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
-      DATA_TYPE_BACKGROUND_FETCH | DATA_TYPE_COOKIES | DATA_TYPE_CACHE;
+      DATA_TYPE_DOM_STORAGE | DATA_TYPE_COOKIES |
+      DATA_TYPE_AVOID_CLOSING_CONNECTIONS | DATA_TYPE_CACHE |
+      DATA_TYPE_APP_CACHE_DEPRECATED | DATA_TYPE_PRIVACY_SANDBOX;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected

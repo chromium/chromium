@@ -116,6 +116,7 @@
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_notification_service.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -2400,8 +2401,8 @@ void StoragePartitionImpl::OnClearSiteData(
           : nullptr);
 
   ClearSiteDataHandler::HandleHeader(
-      browser_context_getter, web_contents_getter, url, header_value,
-      load_flags, cookie_partition_key, storage_key,
+      browser_context_getter, web_contents_getter, GetConfig(), url,
+      header_value, load_flags, cookie_partition_key, storage_key,
       partitioned_state_allowed_only, std::move(callback));
 }
 
