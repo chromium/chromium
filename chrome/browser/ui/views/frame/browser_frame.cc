@@ -153,8 +153,9 @@ void BrowserFrame::InitBrowserFrame() {
     }
   }
 
+  params.native_theme = SelectNativeTheme();
+
   Init(std::move(params));
-  SelectNativeTheme();
 
   if (!native_browser_frame_->UsesNativeSystemMenu()) {
     DCHECK(non_client_view());
@@ -251,7 +252,7 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // When the browser theme changes, the NativeTheme may also change.
   // In Incognito, the usage of dark or normal hinges on the browser theme.
   if (theme_change_type == BrowserThemeChangeType::kBrowserTheme)
-    SelectNativeTheme();
+    SetNativeTheme(SelectNativeTheme());
 
   if (!RegenerateFrameOnThemeChange(theme_change_type)) {
     // If RegenerateFrame() returns true, ThemeChanged() was implicitly called,
@@ -532,15 +533,14 @@ void BrowserFrame::OnTouchUiChanged() {
   GetRootView()->Layout();
 }
 
-void BrowserFrame::SelectNativeTheme() {
+ui::NativeTheme* BrowserFrame::SelectNativeTheme() const {
   // Select between regular and Linux toolkit themes.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   // Use the regular NativeTheme instance if running incognito mode, regardless
   // of system theme (gtk, qt etc).
   if (IsIncognitoBrowser()) {
-    SetNativeTheme(native_theme);
-    return;
+    return native_theme;
   }
 
 #if BUILDFLAG(IS_LINUX)
@@ -554,7 +554,7 @@ void BrowserFrame::SelectNativeTheme() {
     native_theme = linux_ui_theme->GetNativeTheme();
 #endif
 
-  SetNativeTheme(native_theme);
+  return native_theme;
 }
 
 bool BrowserFrame::RegenerateFrameOnThemeChange(

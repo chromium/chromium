@@ -425,6 +425,10 @@ void Widget::Init(InitParams params) {
         std::make_unique<SublevelManager>(this, params.sublevel);
   }
 
+  if (params.native_theme) {
+    native_theme_ = params.native_theme;
+  }
+
   internal::NativeWidgetPrivate* native_widget_raw_ptr =
       CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
   native_widget_ = native_widget_raw_ptr->GetWeakPtr();

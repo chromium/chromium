@@ -442,6 +442,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
 #endif
+
+    // Directly sets the NativeTheme used by the Widget. Providing the
+    // NativeTheme here vs setting afterwards potentially avoids lots of
+    // notifications of theme changes.
+    // A value of null results in the default theme being used.
+    raw_ptr<ui::NativeTheme> native_theme = nullptr;
   };
 
   // Represents a lock held on the widget's ShouldPaintAsActive() state. As

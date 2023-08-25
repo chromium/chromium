@@ -308,6 +308,48 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
   EXPECT_EQ(contents->GetClassName(), widget->GetName());
 }
 
+TEST_F(WidgetWithCustomParamsTest, InitWithNativeTheme) {
+  // Verify that `InitParams::native_theme` is applied during widget
+  // initialization.
+
+  class TestView : public View {
+   public:
+    ~TestView() override = default;
+
+    void OnThemeChanged() override {
+      View::OnThemeChanged();
+      auto* native_theme = GetNativeTheme();
+      if (native_theme && native_theme->user_color()) {
+        user_color_ = *native_theme->user_color();
+      }
+    }
+
+    SkColor user_color() const { return user_color_; }
+
+   private:
+    SkColor user_color_ = SK_ColorWHITE;
+  };
+
+  const SkColor test_color = SkColorSetARGB(1, 2, 3, 4);
+
+  WidgetDelegate delegate;
+  auto view = std::make_unique<TestView>();
+  auto* view_raw_ptr = view.get();
+  delegate.SetContentsView(std::move(view));
+
+  ui::TestNativeTheme test_native_theme;
+  test_native_theme.set_user_color(test_color);
+
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate;
+    params->native_theme = &test_native_theme;
+  }));
+
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+
+  EXPECT_EQ(view_raw_ptr->user_color(), test_color);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
   struct SkottieColors {
