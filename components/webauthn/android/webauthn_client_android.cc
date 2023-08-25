@@ -56,6 +56,17 @@ void WebAuthnClientAndroid::OnCredManUiClosed(
   }
 }
 
+void WebAuthnClientAndroid::CleanupCredManRequest(
+    content::RenderFrameHost* frame_host) {
+  if (webauthn::WebAuthnCredManDelegate* credman_delegate =
+          webauthn::WebAuthnCredManDelegateFactory::GetFactory(
+              content::WebContents::FromRenderFrameHost(frame_host))
+              ->GetRequestDelegate(frame_host)) {
+    credman_delegate->CleanUpConditionalRequest();
+  }
+  return;
+}
+
 void WebAuthnClientAndroid::OnPasswordCredentialReceived(
     content::RenderFrameHost* render_frame_host,
     std::u16string username,

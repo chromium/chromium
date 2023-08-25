@@ -210,6 +210,20 @@ void WebAuthnBrowserBridge::CleanupRequest(
   client->CleanupWebAuthnRequest(render_frame_host);
 }
 
+void WebAuthnBrowserBridge::CleanupCredManRequest(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jframe_host) const {
+  auto* client = WebAuthnClientAndroid::GetClient();
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+
+  if (!client || !render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    return;
+  }
+  client->CleanupCredManRequest(render_frame_host);
+}
+
 void WebAuthnBrowserBridge::Destroy(JNIEnv* env) {
   delete this;
 }

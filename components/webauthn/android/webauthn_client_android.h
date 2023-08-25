@@ -57,6 +57,10 @@ class WebAuthnClientAndroid {
   void OnCredManUiClosed(content::RenderFrameHost* render_frame_host,
                          bool success);
 
+  // Called when a conditional request that is stored in CredMan should be
+  // cleaned. Android U+ only.
+  void CleanupCredManRequest(content::RenderFrameHost* render_frame_host);
+
   // Called when a user selects a password from the CredMan UI. The provided
   // `username` and `password` can be filled in the password form in the
   // `render_frame_host`.

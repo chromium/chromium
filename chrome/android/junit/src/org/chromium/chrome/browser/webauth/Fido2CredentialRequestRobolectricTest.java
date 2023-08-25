@@ -163,7 +163,6 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
         FakeAndroidCredManCreateRequest credManRequest = mCredentialManager.getCreateRequest();
         assertThat(credManRequest).isNotNull();
-        ;
         assertThat(credManRequest.getOrigin())
                 .isEqualTo(Fido2CredentialRequest.convertOriginToString(mOrigin));
         assertThat(credManRequest.getType())
@@ -624,7 +623,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.cancelConditionalGetAssertion(mFrameHost);
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.ABORT_ERROR));
-        verify(mBrowserBridgeMock, times(1)).cleanupRequest(any());
+        verify(mBrowserBridgeMock, times(1)).cleanupCredManRequest(any());
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
     }
@@ -655,6 +654,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         assertThat(mCallback.getStatus()).isNull();
         verify(mBrowserBridgeMock, never()).cleanupRequest(any());
+        verify(mBrowserBridgeMock, never()).cleanupCredManRequest(any());
         verify(mBrowserBridgeMock, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());

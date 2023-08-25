@@ -101,6 +101,20 @@ public class WebAuthnBrowserBridge {
         WebAuthnBrowserBridgeJni.get().cleanupRequest(mNativeWebAuthnBrowserBridge, frameHost);
     }
 
+    /**
+     * Notifies the native code that an outstanding Android Credential Management
+     * prepareGetCredential request has been canceled.
+     *
+     * @param frameHost The RenderFrameHost for the frame that generated the cancellation.
+     */
+    public void cleanupCredManRequest(RenderFrameHost frameHost) {
+        // This should never be called without a bridge already having been created.
+        assert mNativeWebAuthnBrowserBridge != 0;
+
+        WebAuthnBrowserBridgeJni.get().cleanupCredManRequest(
+                mNativeWebAuthnBrowserBridge, frameHost);
+    }
+
     public void destroy() {
         if (mNativeWebAuthnBrowserBridge == 0) return;
         WebAuthnBrowserBridgeJni.get().destroy(mNativeWebAuthnBrowserBridge);
@@ -151,6 +165,7 @@ public class WebAuthnBrowserBridge {
         void onPasswordCredentialReceived(long nativeWebAuthnBrowserBridge,
                 RenderFrameHost frameHost, String username, String password);
         void cleanupRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
+        void cleanupCredManRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
         void destroy(long nativeWebAuthnBrowserBridge);
     }
 }

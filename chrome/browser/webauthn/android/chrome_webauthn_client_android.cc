@@ -32,16 +32,6 @@ void ChromeWebAuthnClientAndroid::OnWebAuthnRequestPending(
 
 void ChromeWebAuthnClientAndroid::CleanupWebAuthnRequest(
     content::RenderFrameHost* frame_host) {
-  if (webauthn::WebAuthnCredManDelegate::IsCredManEnabled()) {
-    if (webauthn::WebAuthnCredManDelegate* credman_delegate =
-            webauthn::WebAuthnCredManDelegateFactory::GetFactory(
-                content::WebContents::FromRenderFrameHost(frame_host))
-                ->GetRequestDelegate(frame_host)) {
-      credman_delegate->CleanUpConditionalRequest();
-    }
-    return;
-  }
-
   WebAuthnRequestDelegateAndroid* webauthn_request_delegate =
       WebAuthnRequestDelegateAndroid::GetRequestDelegate(
           content::WebContents::FromRenderFrameHost(frame_host));

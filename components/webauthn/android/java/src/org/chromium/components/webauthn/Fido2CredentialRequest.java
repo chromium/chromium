@@ -374,7 +374,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
                 break;
             case WAITING_FOR_SELECTION:
-                mBrowserBridge.cleanupRequest(frameHost);
+                if (isCredManEnabled()) {
+                    mBrowserBridge.cleanupCredManRequest(frameHost);
+                } else {
+                    mBrowserBridge.cleanupRequest(frameHost);
+                }
                 mConditionalUiState = ConditionalUiState.NONE;
                 returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
                 break;
@@ -1052,7 +1056,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 notifyBrowserOnCredManClosed(false);
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     mConditionalUiState = ConditionalUiState.NONE;
-                    mBrowserBridge.cleanupRequest(mFrameHost);
+                    mBrowserBridge.cleanupCredManRequest(mFrameHost);
                     returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
                     return;
                 }
@@ -1092,7 +1096,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     notifyBrowserOnCredManClosed(false);
                     mConditionalUiState = ConditionalUiState.NONE;
-                    mBrowserBridge.cleanupRequest(mFrameHost);
+                    mBrowserBridge.cleanupCredManRequest(mFrameHost);
                     returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
                     return;
                 }
@@ -1245,7 +1249,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     // The request was completed synchronously when the cancellation was received.
                     mConditionalUiState = ConditionalUiState.NONE;
-                    mBrowserBridge.cleanupRequest(mFrameHost);
+                    mBrowserBridge.cleanupCredManRequest(mFrameHost);
                     return;
                 }
                 assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
