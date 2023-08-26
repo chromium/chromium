@@ -174,21 +174,17 @@ HRESULT ServiceMain::Run(const base::CommandLine& command_line) {
 
 HRESULT ServiceMain::RunCOMServer() {
   base::SingleThreadTaskExecutor service_task_executor(
-      base::MessagePumpType::UI);
-
-  // Initialize COM for the current thread.
+      base::MessagePumpType::DEFAULT);
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
   if (!com_initializer.Succeeded()) {
     LOG(ERROR) << "Failed to initialize COM";
     return CO_E_INITIALIZATIONFAILED;
   }
-
   HRESULT hr = InitializeComSecurity();
   if (FAILED(hr)) {
     return hr;
   }
-
   return GetAppServerWinInstance()->Run();
 }
 
