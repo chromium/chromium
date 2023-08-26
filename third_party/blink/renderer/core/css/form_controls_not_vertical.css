@@ -7,12 +7,9 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-/* TODO(crbug.com/681917): This stylesheet is included only if the
-  FormControlsVerticalWritingModeSupport feature is disabled. This keeps
-  form controls from being rendered with a vertical writing mode in that
-  case. */
-input,
-textarea,
+/* TODO(crbug.com/681917): These form controls don't go vertical if
+   FormControlsVerticalWritingModeSupport is disabled. */
+input:not([type="email" i], [type="number" i], [type="password" i], [type="search" i], [type="tel" i], [type="text" i], [type="url" i]),
 select,
 meter,
 progress,

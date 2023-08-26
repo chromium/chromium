@@ -490,7 +490,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.PREFETCH_NEW_LIMITS,
                     "Enables new limits policy for SpeculationRules Prefetch."),
             Flag.baseFeature(BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_SUPPORT,
-                    "Enables support for CSS vertical writing mode on form controls"),
+                    "Enables support for CSS vertical writing mode on non-text-based form"
+                            + " controls."),
             Flag.baseFeature(BlinkFeatures.FIX_GESTURE_SCROLL_QUEUING_BUG,
                     "Queues gesture scrolls that do not hit a blocking handler, "
                             + "while handling events that hit a blocking handler instantly"
@@ -513,6 +514,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.NAVIGATION_UPDATES_CHILD_VIEWS_VISIBILITY,
                     "Enables notifying children of the top-most RenderWidgetHostView that they "
                             + "were hidden during a navigation."),
+            Flag.baseFeature(BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
+                    "Enables support for CSS vertical writing mode on text-based form controls."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

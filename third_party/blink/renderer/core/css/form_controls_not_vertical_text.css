@@ -1,0 +1,23 @@
+/*
+ * Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render elements with a `popup`
+ * content attribute (with HTMLPopupAttribute feature enabled).
+ */
+
+ @namespace "http://www.w3.org/1999/xhtml";
+
+ /* TODO(crbug.com/484651): These form controls don't go vertical if
+    FormControlsVerticalWritingModeSupportText is disabled. */
+ textarea,
+ input[type="email" i],
+ input[type="number" i],
+ input[type="password" i],
+ input[type="search" i],
+ input[type="tel" i],
+ input[type="text" i],
+ input[type="url" i] {
+   writing-mode: horizontal-tb !important;
+ }

@@ -128,6 +128,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   selectlist_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
+  form_controls_not_vertical_style_text_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
@@ -319,19 +320,32 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  // TODO(crbug.com/681917): The FormControlsVerticalWritingModeSupport
-  // flag enables vertical writing mode to be used on form controls. When
-  // it is *disabled*, we need to force horizontal writing mode.
+  // TODO(crbug.com/681917, crbug.com/484651): We enable vertical writing mode
+  // on form controls using features FormControlsVerticalWritingModeSupport
+  // and FormControlsVerticalWritingModeTextSupport. When it is *disabled*,
+  // we need to force horizontal writing mode.
+  const auto* input = DynamicTo<HTMLInputElement>(element);
   if (!RuntimeEnabledFeatures::
           FormControlsVerticalWritingModeSupportEnabled() &&
       !form_controls_not_vertical_style_sheet_ &&
       (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
-       IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element) ||
-       IsA<HTMLButtonElement>(element) || IsA<HTMLSelectElement>(element))) {
+       IsA<HTMLButtonElement>(element) || IsA<HTMLSelectElement>(element) ||
+       (input && !input->IsTextField()))) {
     form_controls_not_vertical_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(
             IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));
     AddRulesToDefaultStyleSheets(form_controls_not_vertical_style_sheet_,
+                                 NamespaceType::kHTML);
+    changed_default_style = true;
+  }
+  if (!RuntimeEnabledFeatures::
+          FormControlsVerticalWritingModeTextSupportEnabled() &&
+      !form_controls_not_vertical_style_text_sheet_ &&
+      (IsA<HTMLTextAreaElement>(element) || (input && input->IsTextField()))) {
+    form_controls_not_vertical_style_text_sheet_ =
+        ParseUASheet(UncompressResourceAsASCIIString(
+            IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS_TEXT));
+    AddRulesToDefaultStyleSheets(form_controls_not_vertical_style_text_sheet_,
                                  NamespaceType::kHTML);
     changed_default_style = true;
   }
@@ -450,6 +464,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
+  visitor->Trace(form_controls_not_vertical_style_text_sheet_);
 }
 
 }  // namespace blink
