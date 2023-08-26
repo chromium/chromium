@@ -12,6 +12,16 @@
     min-height: var(--cr-section-min-height);
   }
 
+  #pinContainer {
+    align-items: baseline;
+    display: flex;
+    height: 32px;
+  }
+
+  #pinLabel {
+    margin-inline-end: var(--cr-section-padding);
+  }
+
   .controls {
     align-items: center;
     display: flex;
@@ -32,9 +42,16 @@
 <div class="container">
   <span class="label">$i18n{chromeVoxBluetoothBrailleDisplaySelectLabel}</span>
   <template is="dom-if" if="[[inPinMode_]]">
-    <div class="container">
-      $i18n{chromeVoxBluetoothBrailleDisplayPincodeLabel}
-      <cr-input type="text" on-change="onPincodeChanged_"></cr-input>
+    <div id="pinContainer">
+      <div id="pinLabel" class="controls">
+        $i18n{chromeVoxBluetoothBrailleDisplayPincodeLabel}
+      </div>
+      <cr-input
+          id="pinCode"
+          aria-label="$i18n{chromeVoxBluetoothBrailleDisplayPincodeLabel}"
+          type="text"
+          on-change="onPincodeChanged_">
+      </cr-input>
     </div>
   </template>
   <template is="dom-if" if="[[!inPinMode_]]">

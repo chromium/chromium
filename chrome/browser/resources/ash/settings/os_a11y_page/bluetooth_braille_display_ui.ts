@@ -11,6 +11,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 
+import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -154,6 +155,11 @@ export class BluetoothBrailleDisplayUiElement extends
     this.pincodeTimeoutId_ = setTimeout(() => {
       this.inPinMode_ = false;
     }, PINCODE_TIMEOUT_MS);
+
+    // Focus pincode input (after it gets added).
+    afterNextRender(this, () => {
+      this.shadowRoot!.querySelector<CrInputElement>('#pinCode')!.focus();
+    });
   }
 
   private async updateControls_() {
