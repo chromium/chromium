@@ -65,7 +65,8 @@ static constexpr auto kAllPreventedReasonsSet =
 // Enumeration of steps in the Welcome Tour. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class Step {
-  kDialog = 0,
+  kMinValue = 0,
+  kDialog = kMinValue,
   kExploreApp = 1,
   kExploreAppWindow = 2,
   kHomeButton = 3,
@@ -125,6 +126,9 @@ ASH_EXPORT void RecordTourPrevented(PreventedReason reason);
 
 // Returns a string representation of the given `interaction`.
 ASH_EXPORT std::string ToString(Interaction interaction);
+
+// Returns a string representation of the given `step`.
+ASH_EXPORT std::string ToString(Step step);
 
 }  // namespace ash::welcome_tour_metrics
 

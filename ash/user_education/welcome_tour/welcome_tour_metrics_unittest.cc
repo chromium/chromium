@@ -30,14 +30,15 @@ void ClearPref(const std::string& pref_name) {
 
 }  // namespace
 
-// WelcomeTourMetricsTest ------------------------------------------------------
+// WelcomeTourInteractionMetricsTest -------------------------------------------
 
-// Base class for tests that verify metrics are properly submitted.
-class WelcomeTourMetricsTest
+// Base class for tests that verify Welcome Tour Interaction metrics are
+// properly submitted.
+class WelcomeTourInteractionMetricsTest
     : public UserEducationAshTestBase,
       public ::testing::WithParamInterface<absl::optional<PreventedReason>> {
  public:
-  WelcomeTourMetricsTest() {
+  WelcomeTourInteractionMetricsTest() {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         features::kWelcomeTour,
         {{"is-counterfactual", IsCounterfactual() ? "true" : "false"}});
@@ -86,7 +87,7 @@ class WelcomeTourMetricsTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    WelcomeTourMetricsTest,
+    WelcomeTourInteractionMetricsTest,
     ::testing::Values(
         absl::nullopt,
         absl::make_optional(PreventedReason::kCounterfactualExperimentArm),
@@ -96,7 +97,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Verifies that, when an `Interaction` is recorded for the first time, the
 // appropriate histogram is submitted.
-TEST_P(WelcomeTourMetricsTest, RecordInteraction) {
+TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   SimulateNewUserFirstLogin("user@test");
   ClearPref("ash.welcome_tour.prevented.first_reason");
   ClearPref("ash.welcome_tour.prevented.first_time");
@@ -220,6 +221,66 @@ TEST_F(WelcomeTourMetricsEnumTest, AllPreventedReasons) {
     }
 
     EXPECT_EQ(kAllPreventedReasonsSet.Has(reason), should_exist_in_all_set);
+  }
+}
+
+// WelcomeTourMetricsTest ------------------------------------------------------
+
+// Base class for tests that verify Welcome Tour metrics are properly submitted.
+class WelcomeTourMetricsTest : public testing::Test {
+ public:
+  WelcomeTourMetricsTest() : scoped_feature_list_(features::kWelcomeTour) {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests -----------------------------------------------------------------------
+
+TEST_F(WelcomeTourMetricsTest, RecordStepAborted) {
+  static constexpr char kStepAbortedMetricName[] =
+      "Ash.WelcomeTour.Step.Aborted";
+
+  for (auto step :
+       base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All()) {
+    base::HistogramTester histogram_tester;
+
+    histogram_tester.ExpectTotalCount(kStepAbortedMetricName, 0);
+    RecordStepAborted(step);
+    histogram_tester.ExpectBucketCount(kStepAbortedMetricName, step, 1);
+    histogram_tester.ExpectTotalCount(kStepAbortedMetricName, 1);
+  }
+}
+
+TEST_F(WelcomeTourMetricsTest, RecordStepDuration) {
+  base::HistogramTester histogram_tester;
+  for (auto step :
+       base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All()) {
+    const auto step_duration_metric_name =
+        base::StrCat({"Ash.WelcomeTour.Step.Duration.", ToString(step)});
+
+    const auto test_step_length = base::Seconds(10);
+    histogram_tester.ExpectTotalCount(step_duration_metric_name, 0);
+    histogram_tester.ExpectTimeBucketCount(step_duration_metric_name,
+                                           test_step_length, 0);
+    RecordStepDuration(step, test_step_length);
+    histogram_tester.ExpectTotalCount(step_duration_metric_name, 1);
+    histogram_tester.ExpectTimeBucketCount(step_duration_metric_name,
+                                           test_step_length, 1);
+  }
+}
+
+TEST_F(WelcomeTourMetricsTest, RecordStepShown) {
+  static constexpr char kStepShownMetricName[] = "Ash.WelcomeTour.Step.Shown";
+
+  for (auto step :
+       base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All()) {
+    base::HistogramTester histogram_tester;
+
+    histogram_tester.ExpectTotalCount(kStepShownMetricName, 0);
+    RecordStepShown(step);
+    histogram_tester.ExpectBucketCount(kStepShownMetricName, step, 1);
+    histogram_tester.ExpectTotalCount(kStepShownMetricName, 1);
   }
 }
 

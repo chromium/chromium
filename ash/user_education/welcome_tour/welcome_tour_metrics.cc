@@ -24,30 +24,6 @@ PrefService* GetLastActiveUserPrefService() {
   return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 }
 
-// These strings are persisted to logs. These string values should never be
-// changed or reused. Any values added to `Step` must be added here.
-std::string ToString(Step step) {
-  switch (step) {
-    case Step::kDialog:
-      return "Dialog";
-    case Step::kExploreApp:
-      return "ExploreApp";
-    case Step::kExploreAppWindow:
-      return "ExploreAppWindow";
-    case Step::kHomeButton:
-      return "HomeButton";
-    case Step::kSearch:
-      return "Search";
-    case Step::kSettingsApp:
-      return "SettingsApp";
-    case Step::kShelf:
-      return "Shelf";
-    case Step::kStatusArea:
-      return "StatusArea";
-  }
-  NOTREACHED_NORETURN();
-}
-
 }  // namespace
 
 void RecordInteraction(Interaction interaction) {
@@ -158,6 +134,30 @@ std::string ToString(Interaction interaction) {
       return "Search";
     case Interaction::kSettingsApp:
       return "SettingsApp";
+  }
+  NOTREACHED_NORETURN();
+}
+
+// These strings are persisted to logs. These string values should never be
+// changed or reused. Any values added to `Step` must be added here.
+std::string ToString(Step step) {
+  switch (step) {
+    case Step::kDialog:
+      return "Dialog";
+    case Step::kExploreApp:
+      return "ExploreApp";
+    case Step::kExploreAppWindow:
+      return "ExploreAppWindow";
+    case Step::kHomeButton:
+      return "HomeButton";
+    case Step::kSearch:
+      return "Search";
+    case Step::kSettingsApp:
+      return "SettingsApp";
+    case Step::kShelf:
+      return "Shelf";
+    case Step::kStatusArea:
+      return "StatusArea";
   }
   NOTREACHED_NORETURN();
 }
