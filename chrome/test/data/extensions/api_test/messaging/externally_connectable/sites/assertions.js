@@ -262,6 +262,19 @@ window.assertions = {
     }
   },
 
+  canUseSendMessagePromise: async function(extensionId, isApp) {
+    try {
+      const response = await chrome.runtime.sendMessage(extensionId, kMessage);
+      checkResponse(response, kMessage, isApp);
+      return results.OK;
+    } catch (error) {
+      if (error instanceof ResultError) {
+        return error.result;
+      }
+      throw error;
+    }
+  },
+
   trySendMessage: function(extensionId) {
     chrome.runtime.sendMessage(extensionId, kMessage, function(response) {
       // The result is unimportant. All that matters is the attempt.

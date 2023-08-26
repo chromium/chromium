@@ -336,6 +336,18 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
     return static_cast<Result>(result);
   }
 
+  Result CanUseSendMessagePromise(const Extension* extension) {
+    content::RenderFrameHost* frame = browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame();
+    std::string command =
+        content::JsReplace("assertions.canUseSendMessagePromise($1, $2)",
+                           extension->id(), extension->is_platform_app());
+    int result = content::EvalJs(frame, command).ExtractInt();
+    return static_cast<Result>(result);
+  }
+
   testing::AssertionResult AreAnyNonWebApisDefinedForMainFrame() {
     return AreAnyNonWebApisDefinedForFrame(browser()
                                                ->tab_strip_model()
@@ -654,6 +666,18 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(not_connectable.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
+}
+
+// Tests that an externally connectable web page context can use the promise
+// based form of sendMessage.
+IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
+                       SendMessagePromiseSignatureExposed) {
+  // Install the web connectable extension.
+  scoped_refptr<const Extension> chromium_connectable =
+      LoadChromiumConnectableExtension();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
+  EXPECT_EQ(OK, CanUseSendMessagePromise(chromium_connectable.get()));
 }
 
 // See http://crbug.com/297866

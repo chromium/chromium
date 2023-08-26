@@ -214,8 +214,16 @@ bool IsAPIFeatureAvailable(v8::Local<v8::Context> context,
 bool ArePromisesAllowed(v8::Local<v8::Context> context) {
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
   const Extension* extension = script_context->extension();
-  return (extension && extension->manifest_version() >= 3) ||
-         script_context->context_type() == Feature::WEBUI_CONTEXT;
+  if (extension && extension->manifest_version() >= 3) {
+    return true;
+  }
+  if (script_context->context_type() == Feature::WEBUI_CONTEXT) {
+    return true;
+  }
+  if (script_context->context_type() == Feature::WEB_PAGE_CONTEXT) {
+    return true;
+  }
+  return false;
 }
 
 // Instantiates the binding object for the given |name|. |name| must specify a
