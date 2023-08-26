@@ -19,6 +19,7 @@ class WebContents;
 namespace autofill {
 
 class PromoCodeLabelButton;
+class PromoCodeLabelView;
 
 // This class implements the Desktop bubble that displays any eligible offers or
 // rewards linked to the current page domain. This can include card-linked
@@ -74,6 +75,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   raw_ptr<OfferNotificationBubbleController> controller_;
 
   raw_ptr<PromoCodeLabelButton> promo_code_label_button_ = nullptr;
+
+  raw_ptr<PromoCodeLabelView> promo_code_label_view_ = nullptr;
 
   // TODO(crbug.com/1334806): Replace tests with Pixel tests.
   raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;

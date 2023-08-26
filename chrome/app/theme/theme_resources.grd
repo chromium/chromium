@@ -52,6 +52,7 @@
       </if>
       <if expr="toolkit_views">
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS" file="common/autofill_offers.png" />
+        <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS_CHROME_REFRESH_2023" file="common/autofill_offers_chrome_refresh_2023.png" />
       </if>
       <if expr="chromeos_ash">
         <structure type="chrome_scaled_image" name="IDR_AVATAR_HOLDER" file="cros/avatar_holder.png" />

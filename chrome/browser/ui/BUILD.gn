@@ -4668,6 +4668,8 @@ static_library("ui") {
       "views/autofill/payments/payments_view_util.h",
       "views/autofill/payments/promo_code_label_button.cc",
       "views/autofill/payments/promo_code_label_button.h",
+      "views/autofill/payments/promo_code_label_view.cc",
+      "views/autofill/payments/promo_code_label_view.h",
       "views/autofill/payments/save_card_bubble_views.cc",
       "views/autofill/payments/save_card_bubble_views.h",
       "views/autofill/payments/save_card_failure_bubble_views.cc",

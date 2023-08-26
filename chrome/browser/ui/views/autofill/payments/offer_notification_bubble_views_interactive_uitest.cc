@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
+#include "chrome/browser/ui/views/autofill/payments/promo_code_label_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -32,9 +33,11 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -188,7 +191,13 @@ INSTANTIATE_TEST_SUITE_P(
             "FreeListingCoupon_on_navigation",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
             absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kShowDiscountOnNavigation, {}}})}),
+                {{commerce::kShowDiscountOnNavigation, {}}})},
+        OfferNotificationBubbleViewsInteractiveUiTestData{
+            "FreeListingCoupon_on_navigation_chrome_refresh_style",
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{commerce::kShowDiscountOnNavigation, {}},
+                 {::features::kChromeRefresh2023, {}}})}),
     GetTestName);
 INSTANTIATE_TEST_SUITE_P(
     GPayPromoCode,
@@ -522,17 +531,26 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_NORMAL);
   std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED);
-  auto* promo_code_label_button =
-      GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
-  EXPECT_EQ(normal_button_tooltip, promo_code_label_button->GetTooltipText());
-  EXPECT_EQ(promo_code_label_button->GetText() + u" " + normal_button_tooltip,
-            promo_code_label_button->GetAccessibleName());
+  views::LabelButton* copy_promo_code_button;
+
+  if (::features::IsChromeRefresh2023()) {
+    copy_promo_code_button =
+        GetOfferNotificationBubbleViews()
+            ->promo_code_label_view_->GetCopyButtonForTesting();
+  } else {
+    copy_promo_code_button =
+        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
+  }
+
+  EXPECT_EQ(normal_button_tooltip, copy_promo_code_button->GetTooltipText());
+  EXPECT_EQ(copy_promo_code_button->GetText() + u" " + normal_button_tooltip,
+            copy_promo_code_button->GetAccessibleName());
 
   GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
 
-  EXPECT_EQ(clicked_button_tooltip, promo_code_label_button->GetTooltipText());
-  EXPECT_EQ(promo_code_label_button->GetText() + u" " + clicked_button_tooltip,
-            promo_code_label_button->GetAccessibleName());
+  EXPECT_EQ(clicked_button_tooltip, copy_promo_code_button->GetTooltipText());
+  EXPECT_EQ(copy_promo_code_button->GetText() + u" " + clicked_button_tooltip,
+            copy_promo_code_button->GetAccessibleName());
 }
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
@@ -561,9 +579,21 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   std::u16string test_promo_code =
       base::ASCIIToUTF16(GetDefaultTestPromoCode());
   EXPECT_EQ(clipboard_text, test_promo_code);
-  EXPECT_EQ(
-      GetOfferNotificationBubbleViews()->promo_code_label_button_->GetText(),
-      test_promo_code);
+
+  views::LabelButton* copy_promo_code_button;
+
+  if (::features::IsChromeRefresh2023()) {
+    copy_promo_code_button =
+        GetOfferNotificationBubbleViews()
+            ->promo_code_label_view_->GetCopyButtonForTesting();
+    EXPECT_EQ(copy_promo_code_button->GetText(),
+              l10n_util::GetStringUTF16(IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT));
+  } else {
+    copy_promo_code_button =
+        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
+    EXPECT_EQ(copy_promo_code_button->GetText(), test_promo_code);
+  }
+
   histogram_tester.ExpectBucketCount(
       "Autofill.OfferNotificationBubblePromoCodeButtonClicked." +
           GetSubhistogramNameForOfferType(),

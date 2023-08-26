@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -119,7 +120,12 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewPixelTestConfig{
             "FreeListingOffer_on_navigation",
             absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kShowDiscountOnNavigation, {}}})}),
+                {{commerce::kShowDiscountOnNavigation, {}}})},
+        OfferNotificationBubbleViewPixelTestConfig{
+            "FreeListingOffer_on_navigation_chrome_refresh_style",
+            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{commerce::kShowDiscountOnNavigation, {}},
+                 {::features::kChromeRefresh2023, {}}})}),
     GetTestName);
 
 // TODO(crbug.com/1473417): Disabled because this is flaky on the bots, but not

@@ -870,6 +870,9 @@
     <message name="IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_VALUE_PROP_TEXT" desc="The first line of the GPay promo code notification bubble, consisting of the value prop text and a see details link">
       <ph name="VALUE_PROP">$1<ex>5% off on shoes. Up to $50.</ex></ph> <ph name="DETAILS">$2<ex>See Details</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_PROMO_CODE_OFFERS_USE_THIS_CODE_TEXT" desc="Text used in the promo code notification bubble to inform the user they can use the displayed promo code during checkout.">
+      Use this code at checkout
+    </message>
   </if>
 
   <!-- Autofill Payments OTP verification dialog -->
