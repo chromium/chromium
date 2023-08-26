@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
@@ -399,11 +400,11 @@ TEST_F(IDBTransactionTest, ValueSizeTest) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   bool got_error = false;
-  auto callback = base::BindOnce(
+  auto callback = WTF::BindOnce(
       [](bool* got_error, mojom::blink::IDBTransactionPutResultPtr result) {
         *got_error = result->is_error_result();
       },
-      &got_error);
+      WTF::Unretained(&got_error));
 
   V8TestingScope scope;
   MockIDBDatabase database_backend;
@@ -449,11 +450,11 @@ TEST_F(IDBTransactionTest, KeyAndValueSizeTest) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   bool got_error = false;
-  auto callback = base::BindOnce(
+  auto callback = WTF::BindOnce(
       [](bool* got_error, mojom::blink::IDBTransactionPutResultPtr result) {
         *got_error = result->is_error_result();
       },
-      &got_error);
+      WTF::Unretained(&got_error));
 
   V8TestingScope scope;
   MockIDBDatabase database_backend;

@@ -60,11 +60,11 @@ class MediaStreamComponent;
 //   // Blink client implementation
 //   void FooClientImpl::doMagic(std::unique_ptr<FooCallbacks> callbacks) {
 //     auto scoped_callbacks = make_scoped_web_callbacks(
-//         std::move(callbacks), base::BindOnce(&OnCallbacksDropped));
+//         std::move(callbacks), WTF::BindOnce(&OnCallbacksDropped));
 //
 //     // Call to some lower-level service which may never run the callback we
 //     // give it.
-//     foo_service_->DoMagic(base::BindOnce(&RespondWithSuccess,
+//     foo_service_->DoMagic(WTF::BindOnce(&RespondWithSuccess,
 //                                          std::move(scoped_callbacks)));
 //   }
 //
