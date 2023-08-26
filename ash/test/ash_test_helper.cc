@@ -429,6 +429,10 @@ void AshTestHelper::SetUp(InitParams init_params) {
   AccelerometerReader::GetInstance()->SetECLidAngleDriverStatusForTesting(
       ECLidAngleDriverStatus::NOT_SUPPORTED);
 
+  if (TabletMode::IsBoardTypeMarkedAsTabletCapable()) {
+    shell->tablet_mode_controller()->OnDeviceListsComplete();
+  }
+
   // Call `StabilizeUIForPixelTest()` after the user session is activated (if
   // any) in the test setup.
   if (pixel_test_helper_) {

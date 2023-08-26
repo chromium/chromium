@@ -47,8 +47,10 @@ class AppListFeatureUsageMetricsTest : public NoSessionAshTestBase {
   void SimulateTabletModeSupport() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kAshEnableTabletMode);
-    Shell::Get()->tablet_mode_controller()->OnECLidAngleDriverStatusChanged(
+    auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+    tablet_mode_controller->OnECLidAngleDriverStatusChanged(
         /*is_supported=*/true);
+    tablet_mode_controller->OnDeviceListsComplete();
   }
 
   void FastForwardBy(base::TimeDelta delta) {
