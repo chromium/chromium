@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
 <translation id="2783010256799387990">पास झाले</translation>
 <translation id="2787435249130282949">कीबोर्ड उजळ</translation>
-<translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="28232023175184696">इंटरनेटशी कनेक्ट करू शकत नाही. पुन्हा प्रयत्न करण्यासाठी क्लिक करा.</translation>
 <translation id="2859243502336719778">महत्त्वाचे अपडेट</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">क्लाउड फ्लो स्क्रीन सेव्हर</translation>
 <translation id="2926057806159140518">तुमचे वापरकर्ता नाव आणि पासवर्ड एंटर करा किंवा तुमचा QR कोड स्कॅन करा</translation>
 <translation id="2940811910881150316">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लिड पुन्हा उघडा.</translation>
+<translation id="2941112035454246133">निम्न</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="3017079585324758401">बॅकग्राउंड</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">आवाज कमी करा</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट करा</translation>
+<translation id="574392208103952083">मध्यम</translation>
 <translation id="5757187557809630523">पुढील ट्रॅक</translation>
 <translation id="5760715441271661976">पोर्टलची स्थिती</translation>
 <translation id="576835345334454681">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">आर्ट गॅलरी अल्बम</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
-<translation id="5866840822086176774">खूप मजबूत</translation>
 <translation id="5876385649737594562">पर्याय निवडण्यासाठी सुरू करा</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाते सेटिंग्ज मध्ये जा</translation>
-<translation id="6456394469623773452">फाइन</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायचे का?}other{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायची का?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
@@ -931,12 +930,12 @@
 <translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>
 <translation id="8291967909914612644">होम पुरवठादार देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
-<translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8302368968391049045">HTTPS फायरवॉल</translation>
 <translation id="8312330582793120272">मीडिया प्ले करा</translation>
 <translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
 <translation id="8329018942023753850">Calculator ॲप</translation>
 <translation id="8336739000755212683">डिव्हाइस खाते इमेज बदला</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> किंवा <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8351855506390808906">कीमॅपिंग टच पॉइंट</translation>
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>

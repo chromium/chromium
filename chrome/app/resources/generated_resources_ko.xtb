@@ -1419,7 +1419,6 @@
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 절차를 진행하는 동안 시스템이 재부팅됩니다.</translation>
-<translation id="2095479026080141189"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK" />하는 이유 알아보기</translation>
 <translation id="2095774564753225041">지원되는 파일 형식</translation>
 <translation id="2096716221239095980">모든 데이터 삭제</translation>
 <translation id="2097616539631531348">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다.</translation>
@@ -3313,7 +3312,6 @@
 <translation id="3624567683873126087">기기를 잠금 해제하고 Google 계정에 로그인합니다.</translation>
 <translation id="3624583033347146597">서드 파티 쿠키 환경설정 선택하기</translation>
 <translation id="3625481642044239431">잘못된 파일이 선택되었습니다. 다시 시도해 보세요.</translation>
-<translation id="3626032419324745085">추가한 사이트는 항상 활성 상태로 유지되며 이러한 사이트에서 메모리가 확보되지 않습니다. <ph name="BEGIN_LINK" />사이트 제외에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">Chromebook을 충전하려면 호환되는 Dell 배터리를 사용하세요.</translation>
 <translation id="3627320433825461852">1분 미만 남음</translation>
 <translation id="3627588569887975815">시크릿 창에서 링크 열기(&amp;G)</translation>
@@ -4662,6 +4660,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4708892882822652439">탭 오디오도 허용</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">모든 창을 닫으면 삭제</translation>
 <translation id="4715631922189108923">사용자 이름 수정</translation>
 <translation id="47158868804223727">그룹 이름을 클릭하여 펼치거나 접습니다.</translation>
@@ -7551,7 +7550,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="711840821796638741">관리 북마크 표시</translation>
 <translation id="711985611146095797">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN이 연결되지 않으면 Chrome 브라우저 및 Android 트래픽이 차단됩니다</translation>
-<translation id="7121126743816027786">Chrome 프로필에서</translation>
 <translation id="7121438501124788993">개발자 모드</translation>
 <translation id="7121728544325372695">스마트 대시</translation>
 <translation id="7123030151043029868">여러 파일 자동 다운로드가 허용됨</translation>

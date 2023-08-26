@@ -3245,7 +3245,6 @@
 <translation id="3624567683873126087">解锁设备并登录 Google 账号</translation>
 <translation id="3624583033347146597">请选择您的第三方 Cookie 偏好设置</translation>
 <translation id="3625481642044239431">所选的文件无效。请重试。</translation>
-<translation id="3626032419324745085">您添加的网站将始终保持活跃状态，且系统不会从它们中释放内存。<ph name="BEGIN_LINK" />详细了解网站排除<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">要为此 Chromebook 充电，请使用兼容的戴尔电池。</translation>
 <translation id="3627320433825461852">还剩不到 1 分钟</translation>
 <translation id="3627588569887975815">在隐身窗口中打开链接(&amp;G)</translation>
@@ -4574,6 +4573,7 @@
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">还允许分享标签页中的音频</translation>
 <translation id="4711638718396952945">恢复设置</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">关闭所有窗口时删除</translation>
 <translation id="4715631922189108923">修改用户名</translation>
 <translation id="47158868804223727">点击相应的分组名称以展开或收起该分组</translation>
@@ -7435,7 +7435,6 @@
 <translation id="711840821796638741">显示受管理的书签</translation>
 <translation id="711985611146095797">您可在此页面中管理您已登录的 Google 账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非已连接 VPN，否则 Chrome 浏览器和 Android 流量将被屏蔽</translation>
-<translation id="7121126743816027786">来自您的 Chrome 个人资料</translation>
 <translation id="7121438501124788993">开发者模式</translation>
 <translation id="7121728544325372695">智能破折号</translation>
 <translation id="7123030151043029868">允许自动下载多个文件</translation>

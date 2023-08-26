@@ -91,8 +91,6 @@
 <translation id="1430915738399379752">In</translation>
 <translation id="1449835205994625556">Ẩn mật khẩu</translation>
 <translation id="1450170672351507823">Tính năng Bảo vệ thông thường đang bật. Để tăng cường khả năng bảo mật, hãy sử dụng chế độ Bảo vệ nâng cao.</translation>
-<translation id="1469381646033328562">Tài khoản của bạn thuộc quyền quản lý của cha mẹ.
-<ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Trang web này đang cố gắng tải một hồ sơ cấu hình xuống.</translation>
 <translation id="1491277525950327607">Nhấn đúp để chuyển đổi cài đặt</translation>
 <translation id="1492417797159476138">Bạn đã lưu tên người dùng này cho trang web này</translation>
@@ -448,7 +446,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3533436815740441613">Thẻ mới</translation>
 <translation id="3540141921715814660">Thêm vào Dấu trang</translation>
 <translation id="3551320343578183772">Đóng Thẻ</translation>
-<translation id="3564513311876185114">Thanh trình đơn sắp xếp thông minh</translation>
 <translation id="3565207542107370586">Xoá dữ liệu duyệt web…</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
 <translation id="3577555362230509265">Sử dụng Chrome trong các ứng dụng khác.</translation>
@@ -656,6 +653,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4840495572919996524">Dấu trang, lịch sử, mật khẩu và các dữ liệu khác sẽ không còn đồng bộ hóa với Tài khoản Google của bạn nữa.</translation>
 <translation id="4844899002472726590">Xem và chỉnh sửa những chủ đề bạn quan tâm</translation>
 <translation id="4848999860252535517">Xoá mật khẩu dùng cho <ph name="WEBSITE" />?</translation>
+<translation id="4850886885716139402">Xem</translation>
 <translation id="4854345657858711387">Đặt mật mã</translation>
 <translation id="4856498338299082007">Trong Tài khoản Google của bạn</translation>
 <translation id="4858786880085262208">Nâng cấp lên HTTPS (khi có thể). Các trang web an toàn có thể nhúng nội dung không an toàn.</translation>

@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
 <translation id="2783010256799387990">GESLAAG</translation>
 <translation id="2787435249130282949">sleutelbord helderder</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="28232023175184696">Kan nie aan die internet koppel nie. Klik om weer te probeer.</translation>
 <translation id="2859243502336719778">Kritieke opdatering</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Wolkvloeisluimerskerm</translation>
 <translation id="2926057806159140518">Voer jou gebruikernaam en wagwoord in of skandeer jou QR-kode</translation>
 <translation id="2940811910881150316">Kan nie toestel toets nie. Maak die deksel weer oop om te toets.</translation>
+<translation id="2941112035454246133">Laag</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3017079585324758401">Agtergrond</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">volume sagter</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Dateer <ph name="DEVICE_NAME" /> op</translation>
+<translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">volgende snit</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
 <translation id="576835345334454681">Verhoog skermhelderheid</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Kunsgalery-album</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
-<translation id="5866840822086176774">Baie sterk</translation>
 <translation id="5876385649737594562">Skakel aan om opsies te kies</translation>
 <translation id="588258955323874662">Volskerm</translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Swak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gaan na rekeninginstellings</translation>
-<translation id="6456394469623773452">Goed</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Herskandeer bladsy?}=1{Herskandeer bladsy {PAGE_NUMBER}?}other{Herskandeer bladsy {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">EW</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Koppel asseblief aan 'n netwerk en herlaai die bladsy om muurpapier te bekyk.</translation>
 <translation id="8291967909914612644">Tuisverskafferland</translation>
 <translation id="8294431847097064396">Bron</translation>
-<translation id="8297006494302853456">Swak</translation>
 <translation id="8302368968391049045">HTTPS-brandmuur</translation>
 <translation id="8312330582793120272">speel media</translation>
 <translation id="8318753676953949627">Geen prente nie</translation>

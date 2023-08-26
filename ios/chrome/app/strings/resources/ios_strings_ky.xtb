@@ -91,8 +91,6 @@
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1449835205994625556">Сырсөздү жашыруу</translation>
 <translation id="1450170672351507823">Стандарттуу коргоо күйүк. Анын ордуна Жакшыртылган коргоону колдонуңуз.</translation>
-<translation id="1469381646033328562">Аккаунтуңду ата-энең тескейт.
-<ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
 <translation id="1492417797159476138">Бул сайт үчүн ушул колдонуучунун атын сактап койгонсуз</translation>
@@ -448,7 +446,6 @@
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
 <translation id="3540141921715814660">Кыстармаларга кошуу</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
-<translation id="3564513311876185114">Акылдуу меню тилкеси</translation>
 <translation id="3565207542107370586">Серепчиден көрүлгөн нерселерди өчүрүү…</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
 <translation id="3577555362230509265">Chrome'ду башка колдонмолордо пайдаланыңыз.</translation>
@@ -656,6 +653,7 @@
 <translation id="4840495572919996524">Кыстармаларыңыз, таржымалыңыз, сырсөздөрүңүз жана башкалар мындан ары Google аккаунтуңузга шайкештирилбейт.</translation>
 <translation id="4844899002472726590">Кызыктуу темаларды көрүп, түзөтүү</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> вебсайтынын сырсөзү жок кылынсынбы?</translation>
+<translation id="4850886885716139402">Көрүнүш</translation>
 <translation id="4854345657858711387">Өткөрүүчү кодду коюу</translation>
 <translation id="4856498338299082007">Google аккаунтуңузда</translation>
 <translation id="4858786880085262208">Мүмкүн болгондо HTTPS кеңейтүүсүнө жаңыртыңыз. Коопсуз сайттар кооптуу контентти жалгаштырышы мүмкүн.</translation>

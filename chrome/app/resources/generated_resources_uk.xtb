@@ -1421,7 +1421,6 @@
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Примітка<ph name="END_BOLD" />. Під час процедури система перезавантажиться.</translation>
-<translation id="2095479026080141189">Дізнатися, чому <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK" /></translation>
 <translation id="2095774564753225041">Підтримувані типи файлів</translation>
 <translation id="2096716221239095980">Видалити всі дані</translation>
 <translation id="2097616539631531348">Коли ця вкладка була неактивною, функція заощадження пам’яті звільнила оперативну пам’ять для інших завдань.</translation>
@@ -1831,6 +1830,7 @@
 <translation id="2412015533711271895">Хтось із батьків або опікун має дозволити використовувати це розширення</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Відновити пошук за запитом "<ph name="MODULE_TITLE" />"</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2416435988630956212">Функціональні клавіші клавіатури</translation>
 <translation id="2418307627282545839">Зберігає яскраві та прозорі кольори</translation>
@@ -1971,6 +1971,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (вибрано)</translation>
 <translation id="2513396635448525189">Зображення облікового запису</translation>
+<translation id="251425554130284360">Ви бачите відвідані сторінки й рекомендовані пошукові запити, які допоможуть вам легко повернутися до останніх дій.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="2514326558286966059">Розблоковуйте пристрій швидше за допомогою відбитка пальця</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Підтвердьте ім’я користувача</translation>
@@ -2406,6 +2410,7 @@
 <translation id="2861402191395139055">Підписки Passpoint</translation>
 <translation id="2861941300086904918">Менеджер безпеки Native Client</translation>
 <translation id="2862815659905780618">Вилучити середовище для розробки Linux</translation>
+<translation id="2862986593239703553">ця картка</translation>
 <translation id="2864601841139725659">Налаштуйте зображення профілю</translation>
 <translation id="2865057607286263192">Щоб переглянути діакритичні знаки й спеціальні символи, натисніть і утримуйте клавіші клавіатури. Це налаштування вимикає повторне введення символу, коли утримується будь-яка клавіша з буквою алфавіту. Воно доступне лише для англійської мови (США).</translation>
 <translation id="2865919525181940183">Знімок екрана з відкритими програмами</translation>
@@ -3308,7 +3313,6 @@
 <translation id="3624567683873126087">Розблоковуйте пристрій і входьте в обліковий запис Google</translation>
 <translation id="3624583033347146597">Виберіть параметри для сторонніх файлів cookie</translation>
 <translation id="3625481642044239431">Вибрано недійсний файл. Повторіть спробу.</translation>
-<translation id="3626032419324745085">Додані вами сайти завжди залишатимуться активними й пам’ять для них не звільнятиметься. <ph name="BEGIN_LINK" />Докладніше про виключення для сайтів<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">Щоб заряджати цей комп'ютер Chromebook, використовуйте сумісний акумулятор Dell.</translation>
 <translation id="3627320433825461852">Залишилося менше 1 хв.</translation>
 <translation id="3627588569887975815">Відкрити посилання в аноні&amp;мному вікні</translation>
@@ -3493,6 +3497,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Обмінюватися даними з пристроєм USB}one{Обмінюватися даними з # пристроєм USB}few{Обмінюватися даними з # пристроями USB}many{Обмінюватися даними з # пристроями USB}other{Обмінюватися даними з # пристрою USB}}</translation>
 <translation id="3764753550716962406">Дозволити Google використовувати ваш кошик, щоб шукати доступні знижки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> надсилаються на пристрій <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> надсилаються на пристрій <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">Цей тип картки</translation>
 <translation id="3765246971671567135">Не вдалося прочитати політику демо-режиму офлайн.</translation>
 <translation id="3765696567014520261">Сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="3766687283066842296">Докладніше про функцію "Керування телефоном"</translation>
@@ -3876,6 +3881,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{# контакт недоступний. Додайте електронну адресу його облікового запису Google у список контактів, щоб спільно користуватися функцією "Передавання поблизу".}one{# контакт недоступний. Додайте електронні адреси їхніх облікових записів Google у список контактів, щоб спільно користуватися функцією "Передавання поблизу".}few{# контакти недоступні. Додайте електронні адреси їхніх облікових записів Google у список контактів, щоб спільно користуватися функцією "Передавання поблизу".}many{# контактів недоступні. Додайте електронні адреси їхніх облікових записів Google у список контактів, щоб спільно користуватися функцією "Передавання поблизу".}other{# контакта недоступні. Додайте електронні адреси їхніх облікових записів Google у список контактів, щоб спільно користуватися функцією "Передавання поблизу".}}</translation>
 <translation id="4050225813016893843">Спосіб автентифікації</translation>
 <translation id="4050534976465737778">Переконайтеся, що обидва пристрої розблоковані, розташовані поруч і на них увімкнено Bluetooth. Якщо ви хочете надіслати файли на комп'ютер Chromebook, якого немає у ваших контактах, відкрийте на ньому панель стану і ввімкніть "Видимість поблизу". <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="4051177682900543628">клавіша пошуку + стрілка вправо</translation>
 <translation id="4052120076834320548">Дуже малий</translation>
 <translation id="4052913941260326985">Створити &amp;QR-код</translation>
 <translation id="4054070260844648638">Пристрій видимий усім</translation>
@@ -4191,6 +4197,7 @@
 <translation id="4330387663455830245">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Налаштуйте батьківський контроль</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 із шифруванням RSA</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> більше не відображатиметься</translation>
 <translation id="4339203724549370495">Видалити додаток</translation>
 <translation id="4340125850502689798">Недійсне ім'я користувача</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> хоче обмінюватися даними з додатком <ph name="EXTENSION_NAME" /></translation>
@@ -4656,6 +4663,7 @@
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Також дозволити аудіо на вкладці</translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Видаляти, коли закриваються всі вікна</translation>
 <translation id="4715631922189108923">Змінити ім’я користувача</translation>
 <translation id="47158868804223727">Натисніть назву групи, щоб розгорнути чи згорнути її</translation>
@@ -5138,6 +5146,7 @@
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5125751979347152379">Недійсна URL-адреса.</translation>
 <translation id="5125967981703109366">Про цю картку</translation>
+<translation id="512642543295077915">клавіша пошуку + backspace</translation>
 <translation id="5126611267288187364">Переглянути зміни</translation>
 <translation id="5127620150973591153">Ідентифікатор безпечного з'єднання: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Синхронізацію вимкнено</translation>
@@ -5244,6 +5253,7 @@
 <translation id="5213891612754844763">Показати налаштування проксі</translation>
 <translation id="5214639857958972833">Створено закладку "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Вибрати країну</translation>
+<translation id="5220011581825921581">клавіша пошуку + стрілка вгору</translation>
 <translation id="5222403284441421673">Незахищене завантаження заблоковано</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5225324770654022472">Показувати ярлики додатків</translation>
@@ -5740,6 +5750,7 @@
 <translation id="5627832140542566187">Орієнтація дисплея</translation>
 <translation id="562935524653278697">Адміністратор вимкнув синхронізацію закладок, історії, паролів та інших налаштувань.</translation>
 <translation id="5631017369956619646">Використання ЦП</translation>
+<translation id="5631272057151918206">Буде звільнено <ph name="OFFLINE_STORAGE_SIZE" /> пам’яті, що використовується для файлів, збережених офлайн. Деякі файли все ще будуть доступні офлайн. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Потрібен дозвіл. Натисніть Ctrl + стрілку вперед, щоб відповісти</translation>
 <translation id="5632221585574759616">Докладніше про дозволи для розширень</translation>
 <translation id="5632566673632479864">Обліковий запис <ph name="EMAIL" /> більше не можна використовувати як основний. Оскільки цей обліковий запис зареєстровано в домені <ph name="DOMAIN" />, з цього пристрою буде видалено ваші закладки, історію, паролі й інші налаштування.</translation>
@@ -6623,6 +6634,7 @@
 <translation id="6368276408895187373">Увімкнено – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">Корпоративна реєстрація</translation>
 <translation id="6370021412472292592">Не вдалося завантажити маніфест.</translation>
+<translation id="6370551072524410110">клавіша пошуку + Shift + backspace</translation>
 <translation id="637135143619858508">Велика</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Повторити спробу</translation>
@@ -7544,7 +7556,6 @@
 <translation id="711840821796638741">Показати закладки, якими керує адміністратор</translation>
 <translation id="711985611146095797">На цій сторінці можна керувати обліковими записами Google, у які ви ввійшли. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Без підключення до VPN веб-переглядач Chrome і трафік Android буде заблоковано</translation>
-<translation id="7121126743816027786">З вашого профілю Chrome</translation>
 <translation id="7121438501124788993">Режим розробника</translation>
 <translation id="7121728544325372695">Розумні тире</translation>
 <translation id="7123030151043029868">Дозволено автоматично завантажувати кілька файлів</translation>
@@ -8472,6 +8483,7 @@
 <translation id="7870730066603611552">Після налаштування перевірте параметри синхронізації</translation>
 <translation id="7870790288828963061">Новіші версії додатків-терміналів не знайдено. Помилка оновлення. Витягніть носій USB.</translation>
 <translation id="7871109039747854576">Використовувати клавіші <ph name="COMMA" /> і <ph name="PERIOD" />, щоб переходити між варіантами в списку</translation>
+<translation id="7871277686245037315">клавіша пошуку + стрілка вліво</translation>
 <translation id="7871691770940645922">Віртуальний дисплей Брайля</translation>
 <translation id="787268756490971083">Вимкнено</translation>
 <translation id="7872758299142009420">Забагато вбудованих груп: <ph name="ERROR_LINE" /></translation>
@@ -9275,6 +9287,7 @@
 <translation id="851991974800416566">Використовуйте надійний пароль</translation>
 <translation id="8523493869875972733">Залишити зміни</translation>
 <translation id="8523849605371521713">Додано політикою</translation>
+<translation id="8524594273111932386">клавіша пошуку + стрілка вниз</translation>
 <translation id="8524783101666974011">Збережіть картки в обліковому записі Google</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8526813720153458066">SSH</translation>

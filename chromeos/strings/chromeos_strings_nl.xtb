@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
 <translation id="2783010256799387990">GESLAAGD</translation>
 <translation id="2787435249130282949">toetsenbord helderder</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Kan geen verbinding maken met internet. Klik om het opnieuw te proberen.</translation>
 <translation id="2859243502336719778">Kritieke update</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Screensaver Wolkenstroom</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
 <translation id="2940811910881150316">Kan apparaat niet testen. Open de klep opnieuw om te testen.</translation>
+<translation id="2941112035454246133">Laag</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3017079585324758401">Achtergrond</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">volume omlaag</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> updaten</translation>
+<translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5757187557809630523">volgend nummer</translation>
 <translation id="5760715441271661976">Status van portal</translation>
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Kunstgalerie-album</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
-<translation id="5866840822086176774">Zeer sterk</translation>
 <translation id="5876385649737594562">Aanzetten om opties te selecteren</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zwak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Naar Accountinstellingen gaan</translation>
-<translation id="6456394469623773452">Goed</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pagina opnieuw scannen?}=1{Pagina {PAGE_NUMBER} opnieuw scannen?}other{Pagina {PAGE_NUMBER} opnieuw scannen?}}</translation>
 <translation id="6472207088655375767">Eenmalig wachtwoord</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Maak verbinding met een netwerk en laad de pagina opnieuw om de achtergrond te bekijken.</translation>
 <translation id="8291967909914612644">Land thuisprovider</translation>
 <translation id="8294431847097064396">Bron</translation>
-<translation id="8297006494302853456">Zwak</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8312330582793120272">media afspelen</translation>
 <translation id="8318753676953949627">Geen afbeeldingen</translation>

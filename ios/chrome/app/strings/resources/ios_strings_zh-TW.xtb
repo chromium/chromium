@@ -436,7 +436,6 @@
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3540141921715814660">加入書籤</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
-<translation id="3564513311876185114">智慧排序選單列</translation>
 <translation id="3565207542107370586">清除瀏覽資料…</translation>
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
 <translation id="3577555362230509265">在其他應用程式中使用 Chrome。</translation>
@@ -641,6 +640,7 @@
 <translation id="4840495572919996524">你的書籤、歷史記錄、密碼等資料將停止同步到你的 Google 帳戶。</translation>
 <translation id="4844899002472726590">查看及編輯你感興趣的主題</translation>
 <translation id="4848999860252535517">要刪除 <ph name="WEBSITE" /> 的密碼嗎？</translation>
+<translation id="4850886885716139402">檢視</translation>
 <translation id="4854345657858711387">請設定螢幕解鎖密碼</translation>
 <translation id="4856498338299082007">在你的 Google 帳戶中</translation>
 <translation id="4858786880085262208">可能的話，升級為 HTTPS。即使是安全的網站，仍有可能嵌入不安全的內容。</translation>

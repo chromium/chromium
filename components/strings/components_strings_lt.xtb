@@ -893,6 +893,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2882949212241984732">Perlenkimas viduryje su dviem atvartais</translation>
 <translation id="2893773853358652045">Ketvirtas ritinėlis</translation>
 <translation id="2900528713135656174">Sukurti įvykį</translation>
+<translation id="2902312830803030883">Daugiau veiksmų</translation>
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="290376772003165898">Puslapis parašytas ne <ph name="LANGUAGE" />?</translation>
 <translation id="2905107382358353958">Įspėjimas apie naują mokėjimo nustatymą</translation>
@@ -1019,7 +1020,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3162559335345991374">Naudojant šį „Wi-Fi“ tinklą gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
 <translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Trečiosios šalies slapukai, nėra leidžiamų svetainių}=1{Trečiosios šalies slapukai, leidžiama 1 svetainė}one{Trečiosios šalies slapukai, leidžiama # svetainė}few{Trečiosios šalies slapukai, leidžiamos # svetainės}many{Trečiosios šalies slapukai, leidžiama # svetainės}other{Trečiosios šalies slapukai, leidžiama # svetainių}}</translation>
 <translation id="3168744840365648658">Radijo įranga</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Atradimas</translation>
 <translation id="3171703252520926121">Nekilnojamojo turto paslaugos</translation>
 <translation id="3175081911749765310">Žin. pasl.</translation>
 <translation id="3176929007561373547">Patikrinkite tarpinio serverio nustatymus arba susisiekite su tinklo
@@ -1570,6 +1571,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4275830172053184480">Iš naujo paleisti įrenginį</translation>
 <translation id="4276974990916607331">Ne, ačiū</translation>
 <translation id="4277028893293644418">Iš naujo nustatyti slaptažodį</translation>
+<translation id="4277529130885813215">Naudoti kitą įrenginį</translation>
 <translation id="4277937682389409325">Vietinis adresas</translation>
 <translation id="4278390842282768270">Leidžiama</translation>
 <translation id="4281998142035485137">{0,plural, =1{Atidaryti konfidencialų failą?}one{Atidaryti konfidencialius failus?}few{Atidaryti konfidencialius failus?}many{Atidaryti konfidencialius failus?}other{Atidaryti konfidencialius failus?}}</translation>
@@ -2550,6 +2552,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6355392890578844978">Šios naršyklės netvarko įmonė ar kita organizacija. Veiklą šiame įrenginyje galima tvarkyti ne naršyklėje „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">Ką tai reiškia?</translation>
 <translation id="6361757823711327522">B7</translation>
+<translation id="6363786367719063276">Žr. žurnalus</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tikrinama tarpinio serverio, užkardos ir saugios DNS konfigūracija<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dvi sankabėlės kairėje</translation>
 <translation id="6367196786591004737">Ištrinti įrašą</translation>

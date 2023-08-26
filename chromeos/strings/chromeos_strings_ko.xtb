@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2783010256799387990">통과</translation>
 <translation id="2787435249130282949">키보드 더 밝게</translation>
-<translation id="2789486458103222910">확인</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="28232023175184696">인터넷에 연결할 수 없습니다. 다시 시도하려면 클릭하세요.</translation>
 <translation id="2859243502336719778">중요 업데이트</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">구름 흐름 화면 보호기</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
 <translation id="2940811910881150316">기기를 테스트할 수 없습니다. 테스트하려면 덮개를 다시 엽니다.</translation>
+<translation id="2941112035454246133">낮음</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">볼륨 작게</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
+<translation id="574392208103952083">보통</translation>
 <translation id="5757187557809630523">다음 트랙입니다</translation>
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="576835345334454681">디스플레이 밝기 높이기</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">아트 갤러리 앨범</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
-<translation id="5866840822086176774">매우 강함</translation>
 <translation id="5876385649737594562">옵션을 선택하려면 사용 설정하세요.</translation>
 <translation id="588258955323874662">전체화면</translation>
 <translation id="5895138241574237353">다시 시작</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">계정 설정으로 이동</translation>
-<translation id="6456394469623773452">좋음</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{페이지를 다시 스캔하시겠습니까?}=1{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}other{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">배경화면을 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="8291967909914612644">홈 공급자 국가</translation>
 <translation id="8294431847097064396">출처</translation>
-<translation id="8297006494302853456">약함</translation>
 <translation id="8302368968391049045">HTTPS 방화벽</translation>
 <translation id="8312330582793120272">미디어를 재생합니다</translation>
 <translation id="8318753676953949627">이미지 없음</translation>

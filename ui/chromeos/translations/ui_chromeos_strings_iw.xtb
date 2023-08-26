@@ -1040,6 +1040,7 @@
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
+<translation id="9083722265619106011">{0,plural, =1{אזהרה אחת.}one{<ph name="COUNT" /> אזהרות.}two{<ph name="COUNT" /> אזהרות.}other{<ph name="COUNT" /> אזהרות.}}</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>

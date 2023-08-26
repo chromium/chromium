@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Přepnout na zobrazení seznamu</translation>
 <translation id="2377590462528165447">Počet složek sdílených s Linuxem: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2379576081295865700">Kontrola úložného prostoru… Nalezena 1 položka</translation>
 <translation id="2383454254762599978">Přesunout do koše</translation>
 <translation id="2387458720915042159">Typ připojení k proxy serveru</translation>
 <translation id="2389832672041313158">barmština/myanmarština</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">Motýli</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6170470584681422115">Sendvič</translation>
+<translation id="6177854567773392726">Kontrola úložného prostoru… Nalezen tento počet položek: <ph name="ITEMS_FOUND" /></translation>
 <translation id="6181912134988520389">Udělit nástroji <ph name="VM_NAME" /> oprávnění k přístupu k souborům na Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="6187719147498869044">maďarština</translation>
 <translation id="6198252989419008588">Změnit kód PIN</translation>

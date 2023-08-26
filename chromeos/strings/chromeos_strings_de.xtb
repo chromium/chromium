@@ -133,6 +133,7 @@
 <translation id="1881188606372070653">Auf der Seite <ph name="BEGIN_LINK1" />Rechtliche Hinweise<ph name="END_LINK1" /> kannst du Inhaltsänderungen aus rechtlichen Gründen beantragen. Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Informationen, um unter Einhaltung der <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und der <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> von Google technische Probleme zu beheben und unsere Dienste zu optimieren.</translation>
 <translation id="1885577615937958993">Medien vorspulen</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
+<translation id="1897672602657312171">Eine Tastenkombination ohne Suchtaste kann einen Konflikt mit der Tastenkombination einer App verursachen. Gib diese Tastenkombination noch einmal ein, um sie weiter zu verwenden, oder gib eine neue Tastenkombination mit der Suchtaste ein.</translation>
 <translation id="1904932688895783618">Hier findest du hilfreiches Infomaterial:</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
@@ -235,7 +236,6 @@
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2787435249130282949">Tastatur heller</translation>
-<translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Keine Verbindung zum Internet. Zum Wiederholen klicken.</translation>
 <translation id="2859243502336719778">Wichtiges Update</translation>
@@ -247,6 +247,7 @@
 <translation id="2880569433548999039">Cloud Flow-Bildschirmschoner</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
 <translation id="2940811910881150316">Gerät kann nicht getestet werden. Klappe das Gerät zum Testen wieder auf.</translation>
+<translation id="2941112035454246133">Niedrig</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
@@ -602,6 +603,7 @@
 <translation id="5703716265115423771">Lautstärke verringern</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
+<translation id="574392208103952083">Mittel</translation>
 <translation id="5757187557809630523">nächster Titel</translation>
 <translation id="5760715441271661976">Portal-Status</translation>
 <translation id="576835345334454681">Displayhelligkeit erhöhen</translation>
@@ -616,7 +618,6 @@
 <translation id="5859603669299126575">Kunstgalerie-Album</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
-<translation id="5866840822086176774">Sehr stark</translation>
 <translation id="5876385649737594562">Aktivieren, um Optionen auszuwählen</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -700,7 +701,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
-<translation id="6456394469623773452">In Ordnung</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Seite neu scannen?}=1{Seite {PAGE_NUMBER} neu scannen?}other{Seite {PAGE_NUMBER} neu scannen?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
@@ -918,7 +918,6 @@
 <translation id="8286154143153872371">Stelle bitte eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Hintergrund anzusehen.</translation>
 <translation id="8291967909914612644">Land des Homepageanbieters</translation>
 <translation id="8294431847097064396">Quelle</translation>
-<translation id="8297006494302853456">Schwach</translation>
 <translation id="8302368968391049045">HTTPS-Firewall</translation>
 <translation id="8312330582793120272">Medien abspielen</translation>
 <translation id="8318753676953949627">Keine Bilder vorhanden</translation>

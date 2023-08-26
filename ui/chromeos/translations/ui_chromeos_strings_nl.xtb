@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Overschakelen naar lijstweergave</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Linux</translation>
+<translation id="2379576081295865700">Opslagruimte checken… 1 item gevonden</translation>
 <translation id="2383454254762599978">Naar de prullenbak verplaatsen</translation>
 <translation id="2387458720915042159">Proxyverbindingstype</translation>
 <translation id="2389832672041313158">Birmaans/Myanmar</translation>
@@ -220,7 +221,7 @@
 <translation id="2781645665747935084">Belgisch</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2802583107108007218">Meer informatie over deze beperkingen</translation>
-<translation id="2803375539583399270">Pincode opgeven</translation>
+<translation id="2803375539583399270">Pincode invoeren</translation>
 <translation id="2819519502129272135">Bestandssynchronisatie staat uit</translation>
 <translation id="2820957248982571256">Scannen…</translation>
 <translation id="2830077785865012357">Chinees (Zhuyin)</translation>
@@ -397,7 +398,7 @@
 <translation id="4277536868133419688">Het filter <ph name="FILTER_NAME" /> staat aan.</translation>
 <translation id="4290535918735525311">1 map gedeeld met Linux</translation>
 <translation id="4299729908419173967">Braziliaans</translation>
-<translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode opgeven om verbinding te maken met dit mobiele netwerk</translation>
+<translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode invoeren om verbinding te maken met dit mobiele netwerk</translation>
 <translation id="4303531889494116116">Dit netwerk is bezig. Probeer het later opnieuw.</translation>
 <translation id="4309915981827077375">Algemene informatie</translation>
 <translation id="432252891123397018">Roemeens met standaard toetsenbord</translation>
@@ -601,7 +602,7 @@
 <translation id="5625294776298156701">Tamil met Tamil99-toetsenbord</translation>
 <translation id="5633226425545095130">Als je dit item verplaatst, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
 <translation id="5649768706273821470">Luisteren</translation>
-<translation id="5669691691057771421">Nieuwe pincode opgeven</translation>
+<translation id="5669691691057771421">Nieuwe pincode invoeren</translation>
 <translation id="5678784840044122290">De Linux-app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan een archiveringsschijf of virtuele schijf niet deactiveren<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">Vlinders</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Opslagruimte checken… <ph name="ITEMS_FOUND" /> items gevonden</translation>
 <translation id="6181912134988520389">Geef <ph name="VM_NAME" /> toegang tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="6187719147498869044">Hongaars</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>

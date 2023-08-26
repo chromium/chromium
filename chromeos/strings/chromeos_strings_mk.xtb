@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
 <translation id="2783010256799387990">УСПЕШЕН</translation>
 <translation id="2787435249130282949">посветла тастатура</translation>
-<translation id="2789486458103222910">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="28232023175184696">Не може да се поврзе на интернет. Кликнете за повторен обид.</translation>
 <translation id="2859243502336719778">Важно ажурирање</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Штедач на екран Cloud Flow</translation>
 <translation id="2926057806159140518">Внесете корисничко име и лозинка или скенирајте ваш QR-код</translation>
 <translation id="2940811910881150316">Не можете да го тестирате уредот. Отворете го капакот повторно за да тестирате.</translation>
+<translation id="2941112035454246133">Низок</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017079585324758401">Заднина</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">намали звук</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ажурирајте: <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Медиум</translation>
 <translation id="5757187557809630523">следна песна</translation>
 <translation id="5760715441271661976">Состојба на порталот</translation>
 <translation id="576835345334454681">Осветленоста на екранот се зголеми</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Албум од уметничката галерија</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
-<translation id="5866840822086176774">Многу силен</translation>
 <translation id="5876385649737594562">Вклучете за да изберете опции</translation>
 <translation id="588258955323874662">Цел екран</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
-<translation id="6456394469623773452">Добар</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се скенира страницата пак?}=1{Да се скенира страницата {PAGE_NUMBER} пак?}one{Да се скенира страницата {PAGE_NUMBER} пак?}other{Да се скенира страницата {PAGE_NUMBER} пак?}}</translation>
 <translation id="6472207088655375767">ОТП</translation>
 <translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже тапетот.</translation>
 <translation id="8291967909914612644">Земја на оператор на почетна страница</translation>
 <translation id="8294431847097064396">Извор</translation>
-<translation id="8297006494302853456">Слаб</translation>
 <translation id="8302368968391049045">Заштитен ѕид со HTTPS</translation>
 <translation id="8312330582793120272">пуштање аудиовизуелни содржини</translation>
 <translation id="8318753676953949627">Нема слики</translation>

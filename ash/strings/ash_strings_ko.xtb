@@ -840,7 +840,6 @@
 <translation id="4477892968187500306">이 기기에는 Google에서 확인하지 않은 앱이 설치되어 있을 수 있습니다.</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
-<translation id="4505050298327493054">활성 데스크입니다.</translation>
 <translation id="450584155212756404">개발자 채널</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4516212064498225455">현재 데스크: <ph name="CURRENT_DESK_NAME" />, 검색 키 + 스페이스바를 사용하여 모든 데스크 메뉴를 엽니다</translation>
@@ -1186,7 +1185,6 @@
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">노란색</translation>
-<translation id="5909862606227538307">비활성 데스크입니다.</translation>
 <translation id="5911231045062997865">Lacros 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>

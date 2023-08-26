@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2787435249130282949">teclado con más brillo</translation>
-<translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="28232023175184696">No es posible conectarse a Internet. Haz clic aquí para volver a intentarlo.</translation>
 <translation id="2859243502336719778">Actualización importante</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Salvapantallas Flujo de nube</translation>
 <translation id="2926057806159140518">Escribe tu nombre de usuario y tu contraseña o escanea tu código QR</translation>
 <translation id="2940811910881150316">No se puede probar el dispositivo. Vuelve a abrir la tapa para hacer la prueba.</translation>
+<translation id="2941112035454246133">Baja</translation>
 <translation id="3008341117444806826">RENOVAR</translation>
 <translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
 <translation id="3017079585324758401">Fondo</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">bajar el volumen</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Media</translation>
 <translation id="5757187557809630523">siguiente pista</translation>
 <translation id="5760715441271661976">Estado de portal</translation>
 <translation id="576835345334454681">Aumentar el brillo de la pantalla</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Álbum de galería de arte</translation>
 <translation id="5860033963881614850">Desactivada</translation>
 <translation id="5860491529813859533">Activar</translation>
-<translation id="5866840822086176774">Óptima</translation>
 <translation id="5876385649737594562">Actívalo para seleccionar opciones</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>
-<translation id="6456394469623773452">Aceptable</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{¿Volver a escanear la página?}=1{¿Volver a escanear la página {PAGE_NUMBER}?}other{¿Volver a escanear la página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>
 <translation id="8291967909914612644">País del proveedor inicial</translation>
 <translation id="8294431847097064396">Origen</translation>
-<translation id="8297006494302853456">Débil</translation>
 <translation id="8302368968391049045">Cortafuegos de HTTPS</translation>
 <translation id="8312330582793120272">reproducir contenido multimedia</translation>
 <translation id="8318753676953949627">Sin imágenes</translation>

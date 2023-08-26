@@ -133,6 +133,7 @@
 <translation id="1881188606372070653">‏אפשר לעבור אל <ph name="BEGIN_LINK1" />דף העזרה המשפטית<ph name="END_LINK1" /> כדי לבקש שינויים בתוכן מסיבות משפטיות. פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו נשתמש במידע שיתקבל ממך כדי לטפל בבעיות טכניות ולשפר את השירותים שלנו, בכפוף ל<ph name="BEGIN_LINK2" />מדיניות הפרטיות<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />לתנאים ולהגבלות<ph name="END_LINK3" /> שלנו.</translation>
 <translation id="1885577615937958993">הרצת המדיה קדימה</translation>
 <translation id="1887850431809612466">שכתוב חומרה</translation>
+<translation id="1897672602657312171">מקשי קיצור בלי מקש החיפוש עלולים להתנגש עם מקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את מקש החיפוש.</translation>
 <translation id="1904932688895783618">הנה עוד כמה מקורות מידע שימושיים:</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
@@ -235,7 +236,6 @@
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
 <translation id="2783010256799387990">ציון 'עובר'</translation>
 <translation id="2787435249130282949">איך להגביר את בהירות המקלדת</translation>
-<translation id="2789486458103222910">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
 <translation id="2859243502336719778">עדכון קריטי</translation>
@@ -247,6 +247,7 @@
 <translation id="2880569433548999039">שומר המסך של תנועת העננים</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
+<translation id="2941112035454246133">נמוכה</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3017079585324758401">רקע</translation>
@@ -602,6 +603,7 @@
 <translation id="5703716265115423771">הפחתת עוצמת הקול</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">בינוני</translation>
 <translation id="5757187557809630523">הטראק הבא</translation>
 <translation id="5760715441271661976">מצב הפורטל</translation>
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
@@ -616,7 +618,6 @@
 <translation id="5859603669299126575">אלבום של גלריית אומנות</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
-<translation id="5866840822086176774">חזק מאוד</translation>
 <translation id="5876385649737594562">צריך להפעיל כדי לבחור אפשרויות</translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -700,7 +701,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
-<translation id="6456394469623773452">טוב</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
@@ -918,7 +918,6 @@
 <translation id="8286154143153872371">כדי לצפות בטפט, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="8291967909914612644">המדינה של הספק הביתי</translation>
 <translation id="8294431847097064396">מקור</translation>
-<translation id="8297006494302853456">חלש</translation>
 <translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
 <translation id="8312330582793120272">הפעלת המדיה</translation>
 <translation id="8318753676953949627">אין תמונות</translation>

@@ -236,7 +236,6 @@
 <translation id="2751739896257479635">EAP 阶段 2 身份验证</translation>
 <translation id="2783010256799387990">通过</translation>
 <translation id="2787435249130282949">调亮键盘</translation>
-<translation id="2789486458103222910">确定</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
 <translation id="2859243502336719778">重要更新</translation>
@@ -248,6 +247,7 @@
 <translation id="2880569433548999039">“云朵的动态变化”屏保</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="2940811910881150316">无法测试设备。重新打开设备的盖子即可进行测试。</translation>
+<translation id="2941112035454246133">低</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -603,6 +603,7 @@
 <translation id="5703716265115423771">调低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
+<translation id="574392208103952083">中等</translation>
 <translation id="5757187557809630523">下一首</translation>
 <translation id="5760715441271661976">门户状态</translation>
 <translation id="576835345334454681">调高显示屏亮度</translation>
@@ -617,7 +618,6 @@
 <translation id="5859603669299126575">画廊中的影集</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
-<translation id="5866840822086176774">非常强</translation>
 <translation id="5876385649737594562">开启后才能选择所需选项</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -701,7 +701,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
-<translation id="6456394469623773452">良好</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{重新扫描页面？}=1{重新扫描第 {PAGE_NUMBER} 页？}other{重新扫描第 {PAGE_NUMBER} 页？}}</translation>
 <translation id="6472207088655375767">动态密码</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
@@ -919,7 +918,6 @@
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>
 <translation id="8291967909914612644">家用移动网络提供商所属国家/地区</translation>
 <translation id="8294431847097064396">来源</translation>
-<translation id="8297006494302853456">弱</translation>
 <translation id="8302368968391049045">HTTPS 防火墙</translation>
 <translation id="8312330582793120272">播放媒体内容</translation>
 <translation id="8318753676953949627">无图片</translation>

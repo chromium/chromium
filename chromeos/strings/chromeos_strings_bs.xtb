@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP faza 2 autentifikacije</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
 <translation id="2787435249130282949">svjetlija tastatura</translation>
-<translation id="2789486458103222910">Uredu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Nije moguće povezivanje na internet. Kliknite da pokušate ponovo.</translation>
 <translation id="2859243502336719778">Kritično ažuriranje</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Čuvar ekrana s oblacima</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
 <translation id="2940811910881150316">Nije moguće testirati uređaj. Ponovo otvorite poklopac da testirate.</translation>
+<translation id="2941112035454246133">Niska</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite folder za pohranjivanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">dugme za stišavanje zvuka</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ažuriranje aplikacije <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Srednje</translation>
 <translation id="5757187557809630523">sljedeća numera</translation>
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="576835345334454681">Pojačavanje osvjetljenja ekrana</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Album umjetničke galerije</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
-<translation id="5866840822086176774">Veoma jaka</translation>
 <translation id="5876385649737594562">Uključite da odaberete opcije</translation>
 <translation id="588258955323874662">Cijeli ekran</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odlazak u postavke računa</translation>
-<translation id="6456394469623773452">Dobro</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
@@ -931,12 +930,12 @@
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da vidite pozadinsku sliku.</translation>
 <translation id="8291967909914612644">Zemlja domaćeg mobilnog operatera</translation>
 <translation id="8294431847097064396">Izvor</translation>
-<translation id="8297006494302853456">Slabo</translation>
 <translation id="8302368968391049045">HTTPs zaštitni zid</translation>
 <translation id="8312330582793120272">reproduciranje medija</translation>
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8329018942023753850">aplikacija kalkulator</translation>
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ili <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8351855506390808906">Tačka dodira za mapiranje tipki</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">তালিকা দৃশ্যে যান</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" />টি ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
+<translation id="2379576081295865700">স্টোরেজের জায়গা চেক করা হচ্ছে… ১টি আইটেম খুঁজে পাওয়া গেছে</translation>
 <translation id="2383454254762599978">ট্র্যাশে সরান</translation>
 <translation id="2387458720915042159">প্রক্সি কানেকশনের ধরণ</translation>
 <translation id="2389832672041313158">বার্মিজ/মায়ানমার</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">প্রজাপতি</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
+<translation id="6177854567773392726">স্টোরেজের জায়গা চেক করা হচ্ছে… <ph name="ITEMS_FOUND" />টি আইটেম খুঁজে পাওয়া গেছে</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" />কে আপনার Google Drive-এ থাকা ফাইল অ্যাক্সেস করার অনুমতি দিন। আপনার অন্যান্য ডিভাইসে পরিবর্তনগুলি সিঙ্ক হয়ে যাবে।</translation>
 <translation id="6187719147498869044">হাঙ্গেরিয়ান</translation>
 <translation id="6198252989419008588">পিন পরিবর্তন করুন</translation>

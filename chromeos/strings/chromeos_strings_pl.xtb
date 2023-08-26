@@ -232,12 +232,12 @@
 <translation id="2712812801627182647">Klucz uwierzytelniania TLS</translation>
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2717139507051041123">Włącz ciemny tryb kolorów</translation>
+<translation id="2728460467788544679">Wyczyść całą historię drukowania</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Udostępniane</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
 <translation id="2783010256799387990">ZALICZONY</translation>
 <translation id="2787435249130282949">klawiatura jaśniejsza</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="28232023175184696">Nie udało się połączyć z internetem. Kliknij, by spróbować jeszcze raz.</translation>
 <translation id="2859243502336719778">Krytyczna aktualizacja</translation>
@@ -249,6 +249,7 @@
 <translation id="2880569433548999039">Wygaszacz ekranu Chmury</translation>
 <translation id="2926057806159140518">Wpisz nazwę użytkownika i hasło lub zeskanuj kod QR</translation>
 <translation id="2940811910881150316">Nie udało się przetestować urządzenia. Aby uruchomić test, ponownie otwórz pokrywę.</translation>
+<translation id="2941112035454246133">Niski</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="3017079585324758401">Tło</translation>
@@ -608,6 +609,7 @@
 <translation id="5703716265115423771">zmniejsz głośność</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Średni</translation>
 <translation id="5757187557809630523">następny utwór</translation>
 <translation id="5760715441271661976">Stan portalu</translation>
 <translation id="576835345334454681">Zwiększ jasność wyświetlacza</translation>
@@ -623,7 +625,6 @@
 <translation id="5859603669299126575">Album Galeria sztuki</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
-<translation id="5866840822086176774">Bardzo silny</translation>
 <translation id="5876385649737594562">Włącz, aby wybrać opcje</translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -707,7 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Słaba (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otwórz ustawienia konta</translation>
-<translation id="6456394469623773452">Dobry</translation>
+<translation id="6461047516875166066">Powiedz coś więcej</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Przeskanować ponownie stronę?}=1{Przeskanować ponownie stronę {PAGE_NUMBER}?}few{Przeskanować ponownie stronę {PAGE_NUMBER}?}many{Przeskanować ponownie stronę {PAGE_NUMBER}?}other{Przeskanować ponownie stronę {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
@@ -931,12 +932,12 @@
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>
 <translation id="8294431847097064396">Źródło</translation>
-<translation id="8297006494302853456">Słaby</translation>
 <translation id="8302368968391049045">Zapora sieciowa HTTPS</translation>
 <translation id="8312330582793120272">odtwórz multimedia</translation>
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8329018942023753850">aplikacja Kalkulator</translation>
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> lub <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8351855506390808906">Mapowanie punktu styku</translation>
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>

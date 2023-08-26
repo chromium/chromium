@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
 <translation id="2783010256799387990">STÓÐST</translation>
 <translation id="2787435249130282949">ljósara lyklaborð</translation>
-<translation id="2789486458103222910">Í lagi</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="28232023175184696">Ekki er hægt að tengjast netinu. Smelltu til að reyna aftur.</translation>
 <translation id="2859243502336719778">Mikilvæg uppfærsla</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Skjávari skýjaflæðis</translation>
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
 <translation id="2940811910881150316">Ekki hægt að prófa tæki. Opnaðu lokið aftur til að prófa.</translation>
+<translation id="2941112035454246133">Lítill</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3017079585324758401">Bakgrunnur</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">lækka hljóð</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Uppfæra <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Miðlungs</translation>
 <translation id="5757187557809630523">næsta lag</translation>
 <translation id="5760715441271661976">Vefgáttarstaða</translation>
 <translation id="576835345334454681">Auka birtustig skjás</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Albúm listasafns</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
-<translation id="5866840822086176774">Mjög mikill</translation>
 <translation id="5876385649737594562">Kveiktu til að velja valkosti</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lítill (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Fara í reikningsstillingar</translation>
-<translation id="6456394469623773452">Í lagi</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skanna aftur síðu?}=1{Skanna aftur síðu {PAGE_NUMBER}?}one{Skanna aftur síðu {PAGE_NUMBER}?}other{Skanna aftur síðu {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Einnota aðgangsorð</translation>
 <translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Tengstu neti og endurhladdu síðuna til að sjá veggfóður.</translation>
 <translation id="8291967909914612644">Land heimaveitu</translation>
 <translation id="8294431847097064396">Uppruni</translation>
-<translation id="8297006494302853456">Veikt</translation>
 <translation id="8302368968391049045">HTTPS-eldveggur</translation>
 <translation id="8312330582793120272">spila efni</translation>
 <translation id="8318753676953949627">Engar myndir</translation>

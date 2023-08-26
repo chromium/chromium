@@ -232,12 +232,12 @@
 <translation id="2712812801627182647">Allwedd ddilysu TLS</translation>
 <translation id="2713444072780614174">Gwyn</translation>
 <translation id="2717139507051041123">Galluogi'r modd lliw tywyll</translation>
+<translation id="2728460467788544679">Clirio'r holl hanes argraffu</translation>
 <translation id="2740531572673183784">Iawn</translation>
 <translation id="2744221223678373668">Cafodd ei rannu â'r defnyddiwr eisoes</translation>
 <translation id="2751739896257479635">Dilysiad Cam 2 EAP</translation>
 <translation id="2783010256799387990">PASIWYD</translation>
 <translation id="2787435249130282949">bysellfwrdd mwy disglair</translation>
-<translation id="2789486458103222910">Iawn</translation>
 <translation id="2805756323405976993">Apiau</translation>
 <translation id="28232023175184696">Methu â chysylltu â'r we. Cliciwch i roi cynnig arall arni.</translation>
 <translation id="2859243502336719778">Diweddariad critigol</translation>
@@ -249,6 +249,7 @@
 <translation id="2880569433548999039">Arbedwr sgrîn llif cwmwl</translation>
 <translation id="2926057806159140518">Rhowch eich enw defnyddiwr a'ch cyfrinair neu sganiwch eich Cod QR</translation>
 <translation id="2940811910881150316">Methu â phrofi'r ddyfais. Ailagorwch y caead i brofi.</translation>
+<translation id="2941112035454246133">Isel</translation>
 <translation id="3008341117444806826">AIL-LWYTHO</translation>
 <translation id="3009958530611748826">Dewiswch ffolder i gadw iddi</translation>
 <translation id="3017079585324758401">Cefndir</translation>
@@ -608,6 +609,7 @@
 <translation id="5703716265115423771">lleihau'r sain</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> o <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Diweddaru <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Canolig</translation>
 <translation id="5757187557809630523">trac nesaf</translation>
 <translation id="5760715441271661976">Cyflwr y Porth</translation>
 <translation id="576835345334454681">Disgleirdeb y sgrîn i fyny</translation>
@@ -623,7 +625,6 @@
 <translation id="5859603669299126575">Albwm oriel gelf</translation>
 <translation id="5860033963881614850">Diffodd</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
-<translation id="5866840822086176774">Cryf iawn</translation>
 <translation id="5876385649737594562">Trowch ymlaen i ddewis opsiynau</translation>
 <translation id="588258955323874662">Sgrîn lawn</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
@@ -707,7 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gwan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Mynd i'r gosodiadau cyfrif</translation>
-<translation id="6456394469623773452">Iawn</translation>
+<translation id="6461047516875166066">Dwi eisiau clywed rhagor</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ail-sganio'r dudalen?}=1{Ail-sganio tudalen {PAGE_NUMBER}?}two{Ail-sganio tudalen {PAGE_NUMBER}?}few{Ail-sganio tudalen {PAGE_NUMBER}?}many{Ail-sganio tudalen {PAGE_NUMBER}?}other{Ail-sganio tudalen {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Rheolir gan <ph name="MANAGER" /></translation>
@@ -931,12 +932,12 @@
 <translation id="8286154143153872371">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld y papur wal.</translation>
 <translation id="8291967909914612644">Gwlad darparwr cartref</translation>
 <translation id="8294431847097064396">Ffynhonnell</translation>
-<translation id="8297006494302853456">Gwan</translation>
 <translation id="8302368968391049045">Wal Dân HTTPS</translation>
 <translation id="8312330582793120272">chwarae cyfryngau</translation>
 <translation id="8318753676953949627">Dim Delweddau</translation>
 <translation id="8329018942023753850">ap cyfrifiannell</translation>
 <translation id="8336739000755212683">Newid llun cyfrif y ddyfais</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> neu <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Ffeiliau i'w hargraffu</translation>
 <translation id="8351855506390808906">Pwynt cyffwrdd mapio allweddi</translation>
 <translation id="8352772353338965963">Ychwanegu cyfrif at fewngofnodi o sawl cyfrif. Gellir cael mynediad at bob cyfrif sydd wedi'i fewngofnodi heb gyfrinair, felly dim ond gyda chyfrifon dibynadwy y dylid defnyddio'r nodwedd hon.</translation>

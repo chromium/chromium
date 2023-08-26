@@ -236,7 +236,6 @@
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible de se connecter à Internet. Cliquez pour réessayer.</translation>
 <translation id="2859243502336719778">Mise à jour critique</translation>
@@ -248,6 +247,7 @@
 <translation id="2880569433548999039">Écran de veille Cloud Flow</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrir le couvercle pour tester.</translation>
+<translation id="2941112035454246133">Faible</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
@@ -603,6 +603,7 @@
 <translation id="5703716265115423771">diminuer le volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Moyenne</translation>
 <translation id="5757187557809630523">chanson suivante</translation>
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="576835345334454681">Augmenter la luminosité de l'écran</translation>
@@ -617,7 +618,6 @@
 <translation id="5859603669299126575">Album de galerie d'art</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
-<translation id="5866840822086176774">Très fort</translation>
 <translation id="5876385649737594562">Activez pour sélectionner les options</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -701,7 +701,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
-<translation id="6456394469623773452">Acceptable</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Numériser de nouveau la page?}=1{Numériser de nouveau la page {PAGE_NUMBER}?}one{Numériser de nouveau la page {PAGE_NUMBER}?}other{Numériser de nouveau les pages {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
@@ -919,7 +918,6 @@
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>
 <translation id="8294431847097064396">Source</translation>
-<translation id="8297006494302853456">Faible</translation>
 <translation id="8302368968391049045">Pare-feu HTTPS</translation>
 <translation id="8312330582793120272">lire le contenu multimédia</translation>
 <translation id="8318753676953949627">Aucune image</translation>

@@ -91,8 +91,6 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1449835205994625556">Нууц үгийг нуух</translation>
 <translation id="1450170672351507823">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
-<translation id="1469381646033328562">Таны бүртгэлийг танай эцэг эх удирддаг.
-<ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Энэ вебсайт тохируулгын профайлыг татаж авахаар оролдож байна.</translation>
 <translation id="1491277525950327607">Асаах/унтраах тохиргоог хийхийн тулд хоёр удаа товшино уу</translation>
 <translation id="1492417797159476138">Та энэ сайтад аль хэдийн энэ хэрэглэгчийн нэрийг хадгалсан байна</translation>
@@ -448,7 +446,6 @@
 <translation id="3533436815740441613">Шинэ таб</translation>
 <translation id="3540141921715814660">Хавчуургaд нэмэх</translation>
 <translation id="3551320343578183772">Цонхыг хаах</translation>
-<translation id="3564513311876185114">Ухаалаг захиалгын цэсийн талбар</translation>
 <translation id="3565207542107370586">Интернэтээр үзсэн өгөгдлийг арилгах…</translation>
 <translation id="3575234738189584619">Lens-р хайх</translation>
 <translation id="3577555362230509265">Бусад аппад Chrome-г ашиглана уу.</translation>
@@ -656,6 +653,7 @@
 <translation id="4840495572919996524">Таны хавчуурга, түүх, нууц үг болон бусад зүйлийг таны Google Бүртгэлд цаашид синк хийхгүй.</translation>
 <translation id="4844899002472726590">Таны сонирхдог сэдвийг харах болон засах</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" />-н нууц үгийг устгах уу?</translation>
+<translation id="4850886885716139402">Харах</translation>
 <translation id="4854345657858711387">Нууц код тохируулах</translation>
 <translation id="4856498338299082007">Таны Google Бүртгэлд</translation>
 <translation id="4858786880085262208">Боломжтой үед HTTPS руу сайжруулна уу. Аюулгүй сайтууд аюултай контент оруулж магадгүй.</translation>

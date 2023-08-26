@@ -1406,7 +1406,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
       <ph name="BR" />
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> il sistema verrà riavviato durante la procedura.</translation>
-<translation id="2095479026080141189">Scopri perché <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK" /></translation>
 <translation id="2095774564753225041">Tipi di file supportati</translation>
 <translation id="2096716221239095980">Elimina tutti i dati</translation>
 <translation id="2097616539631531348">Mentre questa scheda non era attiva, la funzionalità Risparmio memoria ha liberato memoria per altre attività.</translation>
@@ -3296,7 +3295,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3624567683873126087">Sblocca il dispositivo e accedi all'Account Google</translation>
 <translation id="3624583033347146597">Scegli le preferenze relative ai cookie di terze parti</translation>
 <translation id="3625481642044239431">File non valido selezionato. Riprova.</translation>
-<translation id="3626032419324745085">I siti che aggiungi saranno sempre attivi e non verrà eliminata memoria per questi siti. <ph name="BEGIN_LINK" />Scopri di più sull'esclusione di siti<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">Per ricaricare questo Chromebook devi usare una batteria Dell compatibile.</translation>
 <translation id="3627320433825461852">Meno di un minuto rimanente</translation>
 <translation id="3627588569887975815">Apri link in finestra di navigazione in inco&amp;gnito</translation>
@@ -4646,6 +4644,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Consenti anche audio scheda</translation>
 <translation id="4711638718396952945">Ripristina impostazioni</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Elimina alla chiusura di tutte le finestre</translation>
 <translation id="4715631922189108923">Modifica nome utente</translation>
 <translation id="47158868804223727">Fai clic sul nome del gruppo per espanderlo o comprimerlo</translation>
@@ -7532,7 +7531,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="711840821796638741">Mostra Preferiti gestiti</translation>
 <translation id="711985611146095797">Questa pagina ti consente di gestire gli Account Google a cui hai eseguito l'accesso. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Il browser Chrome e il traffico Android verranno bloccati a meno che non venga effettuata la connessiona e una VPN</translation>
-<translation id="7121126743816027786">Del tuo profilo Chrome</translation>
 <translation id="7121438501124788993">Modalità sviluppatore</translation>
 <translation id="7121728544325372695">Trattini smart</translation>
 <translation id="7123030151043029868">Possono scaricare automaticamente più file</translation>

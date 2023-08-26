@@ -232,12 +232,12 @@
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2717139507051041123">I-enable ang dark color mode</translation>
+<translation id="2728460467788544679">I-clear ang lahat ng history ng pag-print</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Nakabahagi</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
 <translation id="2783010256799387990">NAKAPASA</translation>
 <translation id="2787435249130282949">mas maliwanag na keyboard</translation>
-<translation id="2789486458103222910">Okay</translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="28232023175184696">Hindi makakonekta sa internet. I-click para subukan ulit.</translation>
 <translation id="2859243502336719778">Mahalagang update</translation>
@@ -249,6 +249,7 @@
 <translation id="2880569433548999039">Screen saver na paggalaw ng ulap</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
 <translation id="2940811910881150316">Hindi masuri ang device. Buksang ulit ang takip para suriin.</translation>
+<translation id="2941112035454246133">Mababa</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -608,6 +609,7 @@
 <translation id="5703716265115423771">hinaan ang volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">I-update ang <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Katamtaman</translation>
 <translation id="5757187557809630523">susunod na track</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="576835345334454681">Taasan ang liwanag ng display</translation>
@@ -623,7 +625,6 @@
 <translation id="5859603669299126575">Album sa art gallery</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
-<translation id="5866840822086176774">Napakalakas</translation>
 <translation id="5876385649737594562">I-on para pumili ng mga opsyon</translation>
 <translation id="588258955323874662">Fullscreen</translation>
 <translation id="5895138241574237353">I-restart</translation>
@@ -707,7 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Mabagal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pumunta sa mga setting ng account</translation>
-<translation id="6456394469623773452">Maayos</translation>
+<translation id="6461047516875166066">Bigyan pa ako ng impormasyon</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{I-scan ulit ang page?}=1{I-scan ulit ang page {PAGE_NUMBER}?}one{I-scan ulit ang page {PAGE_NUMBER}?}other{I-scan ulit ang page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
@@ -931,7 +932,6 @@
 <translation id="8286154143153872371">Kumonekta sa network at i-reload ang page para makita ang wallpaper.</translation>
 <translation id="8291967909914612644">Bansa ng home provider</translation>
 <translation id="8294431847097064396">Pinagmulan</translation>
-<translation id="8297006494302853456">Mahina</translation>
 <translation id="8302368968391049045">Firewall ng HTTPS</translation>
 <translation id="8312330582793120272">mag-play ng media</translation>
 <translation id="8318753676953949627">Walang Larawan</translation>

@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
 <translation id="2787435249130282949">ստեղնաշարի լուսավորության ավելացում</translation>
-<translation id="2789486458103222910">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="28232023175184696">Չհաջողվեց միանալ ինտերնետին։ Սեղմեք՝ նորից փորձելու համար:</translation>
 <translation id="2859243502336719778">Կարևոր թարմացում</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">«Ամպերի հոսք» էկրանապահ</translation>
 <translation id="2926057806159140518">Մուտքագրեք ձեր անունը և գաղտնաբառը կամ սկանավորեք QR կոդը</translation>
 <translation id="2940811910881150316">Հնարավոր չէ փորձարկել սարքը։ Փորձարկելու համար կրկին բացեք կափարիչը։</translation>
+<translation id="2941112035454246133">Ցածր</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
 <translation id="3017079585324758401">Ֆոն</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">իջեցնել ձայնը</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
+<translation id="574392208103952083">Միջին</translation>
 <translation id="5757187557809630523">հաջորդ կատարումը</translation>
 <translation id="5760715441271661976">Պորտալի վիճակը</translation>
 <translation id="576835345334454681">Էկրանի պայծառության ավելացում</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Ցուցասրահի ալբոմ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
-<translation id="5866840822086176774">Շատ ուժեղ</translation>
 <translation id="5876385649737594562">Միացրեք՝ պարամետրեր ընտրելու համար</translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Թույլ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Անցնել հաշվի կարգավորումներ</translation>
-<translation id="6456394469623773452">Լավ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Նորից սկանավորե՞լ էջը}=1{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}one{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}other{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Ադմինիստրատոր՝ <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ պաստառը դիտելու համար։</translation>
 <translation id="8291967909914612644">Տան ծառայությունների մատակարարի երկիրը</translation>
 <translation id="8294431847097064396">Աղբյուր</translation>
-<translation id="8297006494302853456">Թույլ</translation>
 <translation id="8302368968391049045">HTTPS հրապատ</translation>
 <translation id="8312330582793120272">նվագարկել մեդիաֆայլը</translation>
 <translation id="8318753676953949627">Պատկերներ չկան</translation>

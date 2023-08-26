@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
 <translation id="2783010256799387990">SIKERES ELLENŐRZÉS</translation>
 <translation id="2787435249130282949">billentyűzet világosabb</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="28232023175184696">Nem lehet csatlakozni az internethez. Kattintson az újrapróbálkozáshoz.</translation>
 <translation id="2859243502336719778">Kritikus frissítés</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Szálló felhők képernyővédő</translation>
 <translation id="2926057806159140518">Adja meg felhasználónevét és jelszavát, vagy olvassa be QR-kódját.</translation>
 <translation id="2940811910881150316">Az eszköz tesztelése nem sikerült. Nyissa fel újra a fedelet a teszteléshez.</translation>
+<translation id="2941112035454246133">Alacsony</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3017079585324758401">Háttér</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">hangerő csökkentése</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109">A(z) <ph name="DEVICE_NAME" /> frissítése</translation>
+<translation id="574392208103952083">Közepes</translation>
 <translation id="5757187557809630523">következő szám</translation>
 <translation id="5760715441271661976">Portál állapota</translation>
 <translation id="576835345334454681">Kijelző fényerejének növelése</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Művészeti album</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
-<translation id="5866840822086176774">Nagyon erős</translation>
 <translation id="5876385649737594562">Kapcsolja be a beállítások kiválasztásához</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gyenge (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ugrás a fiókbeállításokhoz</translation>
-<translation id="6456394469623773452">Jó</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Beolvassa újra az oldalt?}=1{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}other{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}}</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>
 <translation id="8294431847097064396">Forrás</translation>
-<translation id="8297006494302853456">Gyenge</translation>
 <translation id="8302368968391049045">HTTPS-tűzfal</translation>
 <translation id="8312330582793120272">médiafájl lejátszása</translation>
 <translation id="8318753676953949627">Nincsenek képek</translation>

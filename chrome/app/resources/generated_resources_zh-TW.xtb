@@ -3253,7 +3253,6 @@
 <translation id="3624567683873126087">解鎖裝置並登入 Google 帳戶</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
 <translation id="3625481642044239431">選取的檔案無效，請再試一次。</translation>
-<translation id="3626032419324745085">你新增的網站一律會維持作用中狀態，不會釋出記憶體。<ph name="BEGIN_LINK" />進一步瞭解網站排除規則<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">如要為這部 Chromebook 充電，請使用相容的 Dell 電池。</translation>
 <translation id="3627320433825461852">剩下不到 1 分鐘</translation>
 <translation id="3627588569887975815">在無痕式視窗中開啟連結(&amp;G)</translation>
@@ -4584,6 +4583,7 @@
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">一併允許分頁音訊</translation>
 <translation id="4711638718396952945">還原設定</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
 <translation id="4715631922189108923">編輯使用者名稱</translation>
 <translation id="47158868804223727">按一下以展開或收合群組名稱</translation>
@@ -7444,7 +7444,6 @@
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711985611146095797">你可以在這個頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非連上 VPN，否則系統將封鎖 Chrome 瀏覽器和 Android 流量</translation>
-<translation id="7121126743816027786">來自 Chrome 設定檔</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
 <translation id="7121728544325372695">智慧型破折號</translation>
 <translation id="7123030151043029868">可以自動下載多個檔案</translation>

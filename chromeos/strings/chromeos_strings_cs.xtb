@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Ověření EAP Phase 2</translation>
 <translation id="2783010256799387990">V POŘÁDKU</translation>
 <translation id="2787435249130282949">jasnější klávesnice</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
 <translation id="2859243502336719778">Kritická aktualizace</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Spořič obrazovky s plynoucími oblaky</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
 <translation id="2940811910881150316">Zařízení nelze otestovat. Znovu otevřete víko.</translation>
+<translation id="2941112035454246133">Nízká</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">snížit hlasitost</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Aktualizovat <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Střední</translation>
 <translation id="5757187557809630523">další skladba</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="576835345334454681">Zvýšit jas displeje</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Album galerie umění</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
-<translation id="5866840822086176774">Velmi silný</translation>
 <translation id="5876385649737594562">Pokud chcete vybrat možnosti, zapněte tuto funkci</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5895138241574237353">Restartovat</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabý (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Přejít na nastavení účtu</translation>
-<translation id="6456394469623773452">Průměrný</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku?}=1{Znovu naskenovat stránku {PAGE_NUMBER}?}few{Znovu naskenovat stránku {PAGE_NUMBER}?}many{Znovu naskenovat stránku {PAGE_NUMBER}?}other{Znovu naskenovat stránku {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Jednorázové heslo</translation>
 <translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Pokud chcete zobrazit tapetu, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="8291967909914612644">Země domácího poskytovatele</translation>
 <translation id="8294431847097064396">Zdroj</translation>
-<translation id="8297006494302853456">Slabý</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">přehrát médium</translation>
 <translation id="8318753676953949627">Žádné obrázky</translation>

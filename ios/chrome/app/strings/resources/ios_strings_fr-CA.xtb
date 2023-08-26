@@ -438,7 +438,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3540141921715814660">Ajouter aux favoris</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
-<translation id="3564513311876185114">Barre de menu du tri intelligent</translation>
 <translation id="3565207542107370586">Effacer les données de navigation…</translation>
 <translation id="3575234738189584619">Rechercher avec Lentille</translation>
 <translation id="3577555362230509265">Utilisez Chrome dans d'autres applications.</translation>
@@ -643,6 +642,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="4844899002472726590">Affichez et modifiez les sujets qui vous intéressent</translation>
 <translation id="4848999860252535517">Supprimer le mot de passe pour <ph name="WEBSITE" />?</translation>
+<translation id="4850886885716139402">Affichage</translation>
 <translation id="4854345657858711387">Définir un mot de passe</translation>
 <translation id="4856498338299082007">Dans votre compte Google</translation>
 <translation id="4858786880085262208">Utiliser la version HTTPS lorsque c'est possible. Les sites sécurisés peuvent intégrer du contenu non sécurisé.</translation>

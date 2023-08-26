@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
 <translation id="2783010256799387990">SLUTFÖRT</translation>
 <translation id="2787435249130282949">ljusare tangentbord</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="28232023175184696">Det gick inte att ansluta till internet. Klicka om du vill försöka igen.</translation>
 <translation id="2859243502336719778">Viktig uppdatering</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Skärmsläckare med moln</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
 <translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
+<translation id="2941112035454246133">Låg</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3017079585324758401">Bakgrund</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">sänk volymen</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Uppdatera <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Medelstark</translation>
 <translation id="5757187557809630523">nästa spår</translation>
 <translation id="5760715441271661976">Portalläge</translation>
 <translation id="576835345334454681">Tangenten som ökar skärmens ljusstyrka</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Konstgallerialbum</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
-<translation id="5866840822086176774">Mycket stark</translation>
 <translation id="5876385649737594562">Aktivera för att välja alternativ</translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">Öppen VPN</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>
-<translation id="6456394469623773452">Okej</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vill du skanna om sidan?}=1{Vill du skanna om sidan {PAGE_NUMBER}?}other{Vill du skanna om sidan {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Engångslösenord</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
@@ -931,12 +930,12 @@
 <translation id="8286154143153872371">Anslut till ett nätverk och läs in sidan igen för att se bakgrunden.</translation>
 <translation id="8291967909914612644">Hemleverantörens land</translation>
 <translation id="8294431847097064396">Källa</translation>
-<translation id="8297006494302853456">Svag</translation>
 <translation id="8302368968391049045">HTTPS-brandvägg</translation>
 <translation id="8312330582793120272">spela upp media</translation>
 <translation id="8318753676953949627">Inga bilder</translation>
 <translation id="8329018942023753850">appen kalkylator</translation>
 <translation id="8336739000755212683">Ändra kontobilden på enheten</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> eller <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8351855506390808906">Tangentmappning: pekyta</translation>
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>

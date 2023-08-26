@@ -821,7 +821,6 @@
 <translation id="4477892968187500306">На устройстве могут быть приложения, не проверенные Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Отключенные устройства</translation>
-<translation id="4505050298327493054">Активный рабочий стол.</translation>
 <translation id="450584155212756404">Версия для разработчиков</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4516212064498225455">Текущий рабочий стол: <ph name="CURRENT_DESK_NAME" />. Чтобы открыть меню всех рабочих столов, нажмите Поиск + Пробел.</translation>
@@ -1161,7 +1160,6 @@
 <translation id="589817443623831496">Точечное сканирование</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Желтый</translation>
-<translation id="5909862606227538307">Рабочий стол неактивен.</translation>
 <translation id="5911231045062997865">Окна Lacros пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
@@ -1474,6 +1472,7 @@
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
 <translation id="7316261577130609484">Добавить задачу</translation>
+<translation id="7330397557116570022">Чтобы использовать голосовой ввод, перейдите к текстовому полю</translation>
 <translation id="7331646370422660166">Alt + Стрелка вниз</translation>
 <translation id="7340731148882810149">Меню автоматического нажатия</translation>
 <translation id="7346909386216857016">ОК</translation>

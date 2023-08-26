@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Download mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Switch to list view</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folders shared with Linux</translation>
+<translation id="2379576081295865700">Checking storage space… one item found</translation>
 <translation id="2383454254762599978">Move to bin</translation>
 <translation id="2387458720915042159">Proxy connection type</translation>
 <translation id="2389832672041313158">Burmese/Myanmar</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Butterflies</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Checking storage space… <ph name="ITEMS_FOUND" /> items found</translation>
 <translation id="6181912134988520389">Give <ph name="VM_NAME" /> permission to access files in your Google Drive. Changes will sync to your other devices.</translation>
 <translation id="6187719147498869044">Hungarian</translation>
 <translation id="6198252989419008588">Change PIN</translation>

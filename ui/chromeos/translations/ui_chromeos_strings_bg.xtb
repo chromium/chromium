@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Превключване към списъчен изглед</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Linux</translation>
+<translation id="2379576081295865700">Мястото в хранилището се проверява… Намерен е 1 елемент</translation>
 <translation id="2383454254762599978">Преместване в кошчето</translation>
 <translation id="2387458720915042159">Тип на връзката през прокси сървър</translation>
 <translation id="2389832672041313158">Бирмански</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Пеперуди</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170470584681422115">Сандвич</translation>
+<translation id="6177854567773392726">Мястото в хранилището се проверява… Намерени са <ph name="ITEMS_FOUND" /> елемента</translation>
 <translation id="6181912134988520389">Разрешете на <ph name="VM_NAME" /> да осъществява достъп до файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
 <translation id="6187719147498869044">Унгарски</translation>
 <translation id="6198252989419008588">Промяна на ПИН</translation>

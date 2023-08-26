@@ -91,8 +91,6 @@
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1449835205994625556">পাসওয়ার্ড লুকান</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
-<translation id="1469381646033328562">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
-<ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
 <translation id="1491277525950327607">সেটিং টগল করতে দুবার আলতো চাপুন</translation>
 <translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
@@ -448,7 +446,6 @@
 <translation id="3533436815740441613">নতুন ট্যাব খুলুন</translation>
 <translation id="3540141921715814660">বুকমার্কে যোগ করুন</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
-<translation id="3564513311876185114">স্মার্ট অর্ডার মেনু বার</translation>
 <translation id="3565207542107370586">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3577555362230509265">অন্যান্য অ্যাপের জন্য Chrome ব্যবহার করুন।</translation>
@@ -656,6 +653,7 @@
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
 <translation id="4844899002472726590">আপনার পছন্দের বিষয়গুলি দেখুন ও এডিট করুন</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" />-এর পাসওয়ার্ড মুছে দেবেন?</translation>
+<translation id="4850886885716139402">দেখুন</translation>
 <translation id="4854345657858711387">একটি পাসকোড সেট করুন</translation>
 <translation id="4856498338299082007">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="4858786880085262208">সম্ভব হলে HTTPS-এ আপগ্রেড করুন। নিরাপদ সাইট এমন কন্টেন্ট এম্বেড করতে পারে যা নিরাপদ নয়।</translation>

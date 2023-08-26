@@ -64,6 +64,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1217633719248931900">Mynd i'r ap</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Ap Play Store</translation>
 <translation id="1225748608451425081">Mae eich Chromebook wedi'i gloi oherwydd problem hysbys. Byddwch yn gallu mewngofnodi ar ôl: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">desg anweithredol</translation>
 <translation id="1229194443904279055">Stopio dewis</translation>
 <translation id="1235458158152011030">Rhwydweithiau hysbys</translation>
 <translation id="1239161794459865856">Mae <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
@@ -557,6 +558,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3386978599540877378">y chwyddwydr sgrîn lawn</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Troi Arddweud ymlaen?</translation>
+<translation id="3394432020929931914">, wedi'i ehangu</translation>
 <translation id="3400357268283240774">Gosodiadau ychwanegol</translation>
 <translation id="3405101454990027959">Trowch fynediad meicroffon ymlaen</translation>
 <translation id="3408735331120433841">Rydych yn castio'ch sgrîn ar hyn o bryd.</translation>
@@ -781,6 +783,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="425364040945105958">Dim SIM</translation>
 <translation id="4261870227682513959">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd</translation>
+<translation id="4264977415328155183">, wedi'i grebachu</translation>
 <translation id="4269883910223712419">Gall gweinyddwr y ddyfais hon:</translation>
 <translation id="4274537685965975248">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i lawr wedi newid. I ddefnyddio'r fysell End, pwysywch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth dde.</translation>
 <translation id="4275283744500212192">Agor yr opsiynau cynllun ffenestr</translation>
@@ -840,7 +843,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4477892968187500306">Gall y ddyfais hon gynnwys apiau nad ydynt wedi'u dilysu gan Google.</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4481530544597605423">Dyfeisiau heb eu paru</translation>
-<translation id="4505050298327493054">Desg weithredol.</translation>
 <translation id="450584155212756404">Sianel Datblygwr</translation>
 <translation id="4513946894732546136">Adborth</translation>
 <translation id="4516212064498225455">Desg Bresennol: <ph name="CURRENT_DESK_NAME" />, defnyddiwch Search+Space i agor y ddewislen pob desg.</translation>
@@ -1009,6 +1011,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> o ddigwyddiadau</translation>
 <translation id="5198715732953550718">Mae <ph name="MOVED_APP_NAME" /> wedi'i gyfuno â <ph name="IN_PLACE_APP" /> i greu ffolder newydd.</translation>
+<translation id="5203299837691351876">desg weithredol</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 hysbysiad arall}zero{# hysbysiad arall}two{# hysbysiad arall}few{# hysbysiad arall}many{# hysbysiad arall}other{# hysbysiad arall}}</translation>
 <translation id="5207949376430453814">Amlygu caret testun</translation>
@@ -1186,7 +1189,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="589817443623831496">Sganio pwynt</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Melyn</translation>
-<translation id="5909862606227538307">Desg anweithredol.</translation>
 <translation id="5911231045062997865">Nid yw ffenestri Lacros yn cael eu cefnogi ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
@@ -1408,6 +1410,7 @@ Gosodiad newydd</translation>
 <translation id="6819327813400217281">Mae'r camera wedi'i snapio i'r gornel chwith isaf</translation>
 <translation id="6820676911989879663">Cael seibiant!</translation>
 <translation id="6827049576281411231">Cau'r panel digwyddiadau</translation>
+<translation id="6831561626108366035">Ewch i'r botwm <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Ffeil beryglus</translation>
 <translation id="6852052252232534364">Cliciwch i weithredu</translation>
 <translation id="6855029042976311970">Newydd ei golygu</translation>
@@ -1444,6 +1447,7 @@ Gosodiad newydd</translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
 <translation id="698231206551913481">Bydd yr holl ffeiliau a data lleol sy'n gysylltiedig â'r defnyddiwr hwn yn cael eu dileu'n barhaol unwaith y bydd y defnyddiwr hwn wedi'i dynnu.</translation>
 <translation id="6985306450422696113">Mae <ph name="USED_MEMORY" /> o gof ar gael allan o gyfanswm o <ph name="TOTAL_MEMORY" /></translation>
+<translation id="6989752354829085073">Ewch ar daith gyflym i ddysgu sut i lywio'ch Chromebook. Gallwch gychwyn arni mewn 6 cam.</translation>
 <translation id="7004910047186208204">Cysylltu â data symudol</translation>
 <translation id="7005239792648594238">Agorwch ap i gychwyn arni</translation>
 <translation id="7007983414944123363">Ni ellid dilysu eich PIN neu gyfrinair. Rhowch gynnig arall arni.</translation>
@@ -1482,6 +1486,8 @@ Gosodiad newydd</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
 <translation id="7144942256906679589">Statws y batri</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
@@ -1567,6 +1573,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7557816257942363084">Mae <ph name="APP_NAME" /> yn defnyddio'ch meicroffon ar hyn o bryd</translation>
 <translation id="7561982940498449837">Cau'r ddewislen</translation>
 <translation id="7564874036684306347">Gall symud ffenestri i fwrdd gwaith arall arwain at ymddygiad annisgwyl. Gellir rhannu hysbysiadau, ffenestri a deialogau dilynol rhwng byrddau gwaith.</translation>
+<translation id="7567950130372125778">Helo. Mae Chromebook ychydig yn wahanol.</translation>
 <translation id="7569509451529460200">Mae Braille a ChromeVox wedi'u galluogi</translation>
 <translation id="7571361473021531288">Batri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ar ôl</translation>
 <translation id="7573585051776738856">Mae'r ffenestr weithredol wedi'i docio ar y dde.</translation>

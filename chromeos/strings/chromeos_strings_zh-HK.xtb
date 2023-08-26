@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
 <translation id="2783010256799387990">已通過</translation>
 <translation id="2787435249130282949">調亮鍵盤</translation>
-<translation id="2789486458103222910">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="28232023175184696">連接唔到互聯網。㩒一下就可以試多次。</translation>
 <translation id="2859243502336719778">重大更新</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">雲朵動態螢幕保護程式</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼，或掃瞄 QR 碼</translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋以進行測試。</translation>
+<translation id="2941112035454246133">低</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">更新 <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">中</translation>
 <translation id="5757187557809630523">下一首歌</translation>
 <translation id="5760715441271661976">入口網站狀態</translation>
 <translation id="576835345334454681">顯示屏校光亮度</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">藝術圖庫中的相簿</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
-<translation id="5866840822086176774">非常強</translation>
 <translation id="5876385649737594562">開啟即可選取選項</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">去帳戶設定</translation>
-<translation id="6456394469623773452">良好</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃瞄頁面嗎？}=1{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}other{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}}</translation>
 <translation id="6472207088655375767">一次性密碼</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">如要查看桌布，請連線至網絡，然後重新整理頁面。</translation>
 <translation id="8291967909914612644">家庭網絡供應商的國家/地區</translation>
 <translation id="8294431847097064396">來源</translation>
-<translation id="8297006494302853456">弱</translation>
 <translation id="8302368968391049045">HTTPS 防火牆</translation>
 <translation id="8312330582793120272">播媒體</translation>
 <translation id="8318753676953949627">沒有圖片</translation>

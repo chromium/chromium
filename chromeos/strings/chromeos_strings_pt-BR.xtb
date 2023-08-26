@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Autenticação EAP Fase 2</translation>
 <translation id="2783010256799387990">APROVADO</translation>
 <translation id="2787435249130282949">teclado mais claro</translation>
-<translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Não é possível se conectar à Internet. Clique para tentar novamente.</translation>
 <translation id="2859243502336719778">Atualização crítica</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Protetor de tela Fluxo das nuvens</translation>
 <translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o código QR</translation>
 <translation id="2940811910881150316">Não foi possível testar o dispositivo. Abra a tampa novamente para testar.</translation>
+<translation id="2941112035454246133">Baixa</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="3017079585324758401">Plano de fundo</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">diminuir o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atualizar o <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Médio</translation>
 <translation id="5757187557809630523">próxima faixa</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="576835345334454681">Aumentar o brilho da tela</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Álbum da galeria de arte</translation>
 <translation id="5860033963881614850">Desativada</translation>
 <translation id="5860491529813859533">Ativar</translation>
-<translation id="5866840822086176774">Muito forte</translation>
 <translation id="5876385649737594562">Ative para selecionar opções</translation>
 <translation id="588258955323874662">Tela inteira</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
-<translation id="6456394469623773452">Bom</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Digitalizar a página novamente?}=1{Digitalizar a página {PAGE_NUMBER} novamente?}one{Digitalizar a página {PAGE_NUMBER} novamente?}other{Digitalizar a página {PAGE_NUMBER} novamente?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Conecte-se a uma rede e atualize a página para ver o plano de fundo.</translation>
 <translation id="8291967909914612644">País do provedor doméstico</translation>
 <translation id="8294431847097064396">Origem</translation>
-<translation id="8297006494302853456">Fraco</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">reproduzir mídia</translation>
 <translation id="8318753676953949627">Sem imagens</translation>

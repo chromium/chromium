@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
 <translation id="2783010256799387990">KEÇDİ</translation>
 <translation id="2787435249130282949">daha parlaq klaviatura</translation>
-<translation id="2789486458103222910">Oldu</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="28232023175184696">İnternetə qoşulmaq olmur. Yenidən cəhd etmək üçün klikləyin.</translation>
 <translation id="2859243502336719778">Önəmli güncəlləmə</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">"Bulud axını" ekran qoruyucusu</translation>
 <translation id="2926057806159140518">İstifadəçi adınızı və parolunuzu daxil edin və ya QR kodunuzu skan edin</translation>
 <translation id="2940811910881150316">Cihazı test etmək mümkün deyil. Test etmək üçün qapağı yenidən açın.</translation>
+<translation id="2941112035454246133">Aşağı</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
 <translation id="3009958530611748826">Yadda saxlamaq üçün qovluq seçin</translation>
 <translation id="3017079585324758401">Arxa fon</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">həcmi azaldın</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
+<translation id="574392208103952083">Orta</translation>
 <translation id="5757187557809630523">növbəti trek</translation>
 <translation id="5760715441271661976">Portal Vəziyyəti</translation>
 <translation id="576835345334454681">Displey parlaqlığını artırın</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">İncəsənət qalereyası albomu</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
-<translation id="5866840822086176774">Çox güclü</translation>
 <translation id="5876385649737594562">Seçim etmək üçün aktiv edin</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zəif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hesab ayarlarına keçin</translation>
-<translation id="6456394469623773452">Yaxşı</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Səhifə yenidən skanlansın?}=1{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}other{{PAGE_NUMBER} saylı səhifə yenidən skanlansın?}}</translation>
 <translation id="6472207088655375767">Birdəfəlik parol (OTP)</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tərəfindən idarə edilir</translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Divar kağızı görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="8291967909914612644">Əsas səhifə provayder ölkəsi</translation>
 <translation id="8294431847097064396">Mənbə</translation>
-<translation id="8297006494302853456">Zəif</translation>
 <translation id="8302368968391049045">HTTPS Qoruyucu divarı</translation>
 <translation id="8312330582793120272">media oxudun</translation>
 <translation id="8318753676953949627">Heç bir şəkil yoxdur</translation>

@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Pengesahan Fasa 2 EAP</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2787435249130282949">semakin cerah papan kekunci</translation>
-<translation id="2789486458103222910">Okey</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="28232023175184696">Tidak dapat menyambung kepada Internet. Klik untuk mencuba lagi.</translation>
 <translation id="2859243502336719778">Kemaskinian kritikal</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Penyelamat skrin aliran awan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
 <translation id="2940811910881150316">Tidak dapat menguji peranti. Buka semula penutup untuk menguji.</translation>
+<translation id="2941112035454246133">Rendah</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">kurangkan kelantangan</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Kemas kini <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Sederhana</translation>
 <translation id="5757187557809630523">lagu seterusnya</translation>
 <translation id="5760715441271661976">Keadaan Portal</translation>
 <translation id="576835345334454681">Tingkatkan kecerahan paparan</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Album galeri seni</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
-<translation id="5866840822086176774">Sangat kuat</translation>
 <translation id="5876385649737594562">Hidupkan untuk membuat pilihan</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pergi ke tetapan akaun</translation>
-<translation id="6456394469623773452">Halus</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Imbas semula halaman?}=1{Imbas semula halaman {PAGE_NUMBER}?}other{Imbas semula halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
@@ -931,12 +930,12 @@
 <translation id="8286154143153872371">Sila sambung kepada rangkaian dan muatkan semula halaman untuk melihat kertas dinding.</translation>
 <translation id="8291967909914612644">Negara pembekal tempatan</translation>
 <translation id="8294431847097064396">Sumber</translation>
-<translation id="8297006494302853456">Lemah</translation>
 <translation id="8302368968391049045">Tembok Api HTTPS</translation>
 <translation id="8312330582793120272">mainkan media</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
 <translation id="8329018942023753850">apl kalkulator</translation>
 <translation id="8336739000755212683">Tukar imej akaun peranti</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> atau <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="8351855506390808906">Titik sentuhan pemetaan kunci</translation>
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>

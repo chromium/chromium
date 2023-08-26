@@ -232,12 +232,12 @@
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2717139507051041123">Enable dark colour mode</translation>
+<translation id="2728460467788544679">Clear all print history</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Shared</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
 <translation id="2783010256799387990">PASSED</translation>
 <translation id="2787435249130282949">keyboard brighter</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
 <translation id="2859243502336719778">Critical update</translation>
@@ -249,6 +249,7 @@
 <translation id="2880569433548999039">Cloud flow screen saver</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
 <translation id="2940811910881150316">Can’t test device. Reopen the lid to test.</translation>
+<translation id="2941112035454246133">Low</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -608,6 +609,7 @@
 <translation id="5703716265115423771">volume down</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">next track</translation>
 <translation id="5760715441271661976">Portal state</translation>
 <translation id="576835345334454681">Display brightness up</translation>
@@ -623,7 +625,6 @@
 <translation id="5859603669299126575">Art gallery album</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
-<translation id="5866840822086176774">Very strong</translation>
 <translation id="5876385649737594562">Turn on to select options</translation>
 <translation id="588258955323874662">Full screen</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -707,7 +708,7 @@
 <translation id="6423239382391657905">Open VPN</translation>
 <translation id="6439505561246192797">Weak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Go to account settings</translation>
-<translation id="6456394469623773452">Fine</translation>
+<translation id="6461047516875166066">Tell me more</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{Rescan page {PAGE_NUMBER}?}other{Rescan page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
@@ -931,7 +932,6 @@
 <translation id="8286154143153872371">Please connect to a network and reload the page to view wallpaper.</translation>
 <translation id="8291967909914612644">Home provider country</translation>
 <translation id="8294431847097064396">Source</translation>
-<translation id="8297006494302853456">Weak</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8312330582793120272">play media</translation>
 <translation id="8318753676953949627">No images</translation>

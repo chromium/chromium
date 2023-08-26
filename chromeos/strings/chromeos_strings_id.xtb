@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2787435249130282949">keyboard lebih terang</translation>
-<translation id="2789486458103222910">Oke</translation>
 <translation id="2805756323405976993">Aplikasi</translation>
 <translation id="28232023175184696">Tidak dapat terhubung ke internet. Klik untuk mencoba lagi.</translation>
 <translation id="2859243502336719778">Update penting</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Screensaver Aliran awan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
 <translation id="2940811910881150316">Tidak dapat menguji perangkat. Buka kembali penutup untuk menguji.</translation>
+<translation id="2941112035454246133">Rendah</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">menurunkan volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Sedang</translation>
 <translation id="5757187557809630523">lagu berikutnya</translation>
 <translation id="5760715441271661976">Status Portal</translation>
 <translation id="576835345334454681">Tingkatkan kecerahan layar</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Album galeri seni</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
-<translation id="5866840822086176774">Sangat kuat</translation>
 <translation id="5876385649737594562">Aktifkan untuk memilih opsi</translation>
 <translation id="588258955323874662">Layar Penuh</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
-<translation id="6456394469623773452">Lancar</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pindai ulang halaman?}=1{Pindai ulang halaman {PAGE_NUMBER}?}other{Pindai ulang halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Hubungkan ke jaringan dan muat ulang halaman untuk melihat wallpaper.</translation>
 <translation id="8291967909914612644">Negara penyedia rumah</translation>
 <translation id="8294431847097064396">Sumber</translation>
-<translation id="8297006494302853456">Lemah</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">putar media</translation>
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>

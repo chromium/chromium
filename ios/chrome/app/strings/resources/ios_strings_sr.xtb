@@ -91,8 +91,6 @@
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1449835205994625556">Сакријте лозинку</translation>
 <translation id="1450170672351507823">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
-<translation id="1469381646033328562">Налогом управља родитељ.
-<ph name="BEGIN_LINK" />Сазнај више<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Овај веб-сајт покушава да преузме профил конфигурације.</translation>
 <translation id="1491277525950327607">Двапут додирните да бисте укључили/искључили подешавање</translation>
 <translation id="1492417797159476138">Већ сте сачували ово корисничко име за овај сајт</translation>
@@ -205,6 +203,7 @@
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="2178545675770638239">Изаберите лозинку</translation>
 <translation id="2195124168004379331">Прегледач делује добро</translation>
+<translation id="2213327331203157297">Да бисте онемогућили режим закључавања у Chrome-у, искључите га на iPhone-у.</translation>
 <translation id="2218443599109088993">Умањите</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2239626343334228536">Бришу се подаци прегледања...</translation>
@@ -448,7 +447,6 @@
 <translation id="3533436815740441613">Нова картица</translation>
 <translation id="3540141921715814660">Додај у обележиваче</translation>
 <translation id="3551320343578183772">Затвори картицу</translation>
-<translation id="3564513311876185114">Трака менија паметног распрореда</translation>
 <translation id="3565207542107370586">Обриши податке прегледања…</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3577555362230509265">Користите Chrome у другим апликацијама.</translation>
@@ -656,6 +654,7 @@
 <translation id="4840495572919996524">Обележивачи, историја, лозинке и други подаци више се неће синхронизовати са Google налогом.</translation>
 <translation id="4844899002472726590">Прегледајте и мењајте теме које вас интересују</translation>
 <translation id="4848999860252535517">Желите да избришете лозинку за <ph name="WEBSITE" />?</translation>
+<translation id="4850886885716139402">Приказ</translation>
 <translation id="4854345657858711387">Подесите шифру</translation>
 <translation id="4856498338299082007">На Google налогу</translation>
 <translation id="4858786880085262208">Надоградите на HTTPS када је то могуће. Безбедни сајтови могу да уграде садржај који није безбедан.</translation>
@@ -1362,6 +1361,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8843129975935593190">Ваша организација ограничава садржај који можете да синхронизујете.</translation>
 <translation id="8849001918648564819">Скривено</translation>
 <translation id="8855242995793521265">Не успорава приметно прегледач или уређај.</translation>
+<translation id="8855781063981781621">Да бисте онемогућили режим закључавања у Chrome-у, искључите га на iPad-у.</translation>
 <translation id="8863431381414769983">Добијајте упутства и локалне информације од Google мапа</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
 <translation id="8870413625673593573">Недавно затворено</translation>

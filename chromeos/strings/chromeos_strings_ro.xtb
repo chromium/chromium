@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Autentificare EAP din a doua fază</translation>
 <translation id="2783010256799387990">REUȘIT</translation>
 <translation id="2787435249130282949">tastatură mai luminoasă</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="28232023175184696">Nu ne putem conecta la internet. Dă clic pentru a încerca din nou.</translation>
 <translation id="2859243502336719778">Actualizare esențială</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Screensaver cu Cloud Flow</translation>
 <translation id="2926057806159140518">Introdu numele de utilizator și parola sau scanează codul QR</translation>
 <translation id="2940811910881150316">Nu se poate testa dispozitivul. Redeschide capacul pentru testare.</translation>
+<translation id="2941112035454246133">Redusă</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3017079585324758401">Fundal</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">reduce volumul</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizează <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Mediu</translation>
 <translation id="5757187557809630523">melodia următoare</translation>
 <translation id="5760715441271661976">Starea portalului</translation>
 <translation id="576835345334454681">Creșterea luminozității ecranului</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Albumul galeriei de imagini</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
-<translation id="5866840822086176774">Foarte puternic</translation>
 <translation id="5876385649737594562">Activează modul pentru a selecta opțiuni</translation>
 <translation id="588258955323874662">Ecran complet</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabă (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accesează setările contului</translation>
-<translation id="6456394469623773452">Bun</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scanezi din nou pagina?}=1{Scanezi din nou pagina {PAGE_NUMBER}?}few{Scanezi din nou pagina {PAGE_NUMBER}?}other{Scanezi din nou pagina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat de <ph name="MANAGER" /></translation>
@@ -931,12 +930,12 @@
 <translation id="8286154143153872371">Conectează-te la o rețea și reîncarcă pagina pentru a vedea imaginea de fundal.</translation>
 <translation id="8291967909914612644">Țara furnizorului local</translation>
 <translation id="8294431847097064396">Sursă</translation>
-<translation id="8297006494302853456">Slab</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">redă conținutul media</translation>
 <translation id="8318753676953949627">Nicio imagine</translation>
 <translation id="8329018942023753850">aplicația calculator</translation>
 <translation id="8336739000755212683">Schimbă imaginea contului de pe dispozitiv</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> sau <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8351855506390808906">Punct de contact pentru maparea tastelor</translation>
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>

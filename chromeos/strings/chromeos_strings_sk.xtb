@@ -232,12 +232,12 @@
 <translation id="2712812801627182647">Overovací kľúč TLS</translation>
 <translation id="2713444072780614174">Biela</translation>
 <translation id="2717139507051041123">Povoliť tmavý farebný režim</translation>
+<translation id="2728460467788544679">Vymazať celú históriu tlače</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Zdieľané</translation>
 <translation id="2751739896257479635">Overenie totožnosti EAP – 2. fáza:</translation>
 <translation id="2783010256799387990">ÚSPEŠNÉ</translation>
 <translation id="2787435249130282949">jasnejšia klávesnica</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="28232023175184696">Nedá sa pripojiť k internetu. Kliknutím to skúste znova.</translation>
 <translation id="2859243502336719778">Kľúčová aktualizácia</translation>
@@ -249,6 +249,7 @@
 <translation id="2880569433548999039">Šetrič obrazovky s plynúcimi oblakmi</translation>
 <translation id="2926057806159140518">Zadajte používateľské meno a heslo alebo naskenujte QR kód</translation>
 <translation id="2940811910881150316">Zariadenie sa nedá testovať. Ak chcete testovať, znova otvorte kryt.</translation>
+<translation id="2941112035454246133">Nízka</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3017079585324758401">Pozadie</translation>
@@ -608,6 +609,7 @@
 <translation id="5703716265115423771">zníženie hlasitosti</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Aktualizovať zariadenie <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Stredné</translation>
 <translation id="5757187557809630523">ďalšia stopa</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="576835345334454681">Zvýšenie jasu obrazovky</translation>
@@ -623,7 +625,6 @@
 <translation id="5859603669299126575">Album umeleckej galérie</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
-<translation id="5866840822086176774">Veľmi silné</translation>
 <translation id="5876385649737594562">Zapnite toto nastavenie a vyberte možnosti</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
@@ -707,7 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabé (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Prejsť do nastavení účtu</translation>
-<translation id="6456394469623773452">Dobré</translation>
+<translation id="6461047516875166066">Chcem vedieť viac</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Chcete stranu naskenovať znova?}=1{Chcete {PAGE_NUMBER} stranu naskenovať znova?}few{Chcete {PAGE_NUMBER} strany naskenovať znova?}many{Chcete {PAGE_NUMBER} strany naskenovať znova?}other{Chcete {PAGE_NUMBER} strán naskenovať znova?}}</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
@@ -931,12 +932,12 @@
 <translation id="8286154143153872371">Pripojte sa k sieti a opätovným načítaním stránky zobrazte tapetu.</translation>
 <translation id="8291967909914612644">Krajina poskytovateľa domácej siete</translation>
 <translation id="8294431847097064396">Zdroj</translation>
-<translation id="8297006494302853456">Slabé</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8312330582793120272">prehratie médií</translation>
 <translation id="8318753676953949627">Žiadne obrázky</translation>
 <translation id="8329018942023753850">aplikácia Kalkulačka</translation>
 <translation id="8336739000755212683">Zmeniť obrázok účtu zariadenia</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> alebo <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8351855506390808906">Priradený dotykový bod</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>

@@ -91,8 +91,6 @@
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1449835205994625556">Versteek wagwoord</translation>
 <translation id="1450170672351507823">Standaardbeskerming is aan. Gebruik verbeterde beskerming vir selfs nog meer sekuriteit.</translation>
-<translation id="1469381646033328562">Jou rekening word deur jou ouer bestuur.
-<ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Hierdie webwerf probeer tans om 'n opstellingprofiel af te laai.</translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
@@ -448,7 +446,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3533436815740441613">Nuwe oortjie</translation>
 <translation id="3540141921715814660">Voeg by Boekmerke</translation>
 <translation id="3551320343578183772">Maak oortjie toe</translation>
-<translation id="3564513311876185114">Slimrangskikingkieslysbalk</translation>
 <translation id="3565207542107370586">Maak blaaierdata skoon …</translation>
 <translation id="3575234738189584619">Soek met Lens</translation>
 <translation id="3577555362230509265">Gebruik Chrome in ander apps.</translation>
@@ -656,6 +653,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4840495572919996524">Jou boekmerke, geskiedenis, wagwoorde en meer sal nie meer met jou Google-rekening gesinkroniseer word nie.</translation>
 <translation id="4844899002472726590">Sien en wysig die onderwerpe waarin jy belangstel</translation>
 <translation id="4848999860252535517">Vee wagwoord vir <ph name="WEBSITE" /> uit?</translation>
+<translation id="4850886885716139402">Bekyk</translation>
 <translation id="4854345657858711387">Stel 'n wagkode</translation>
 <translation id="4856498338299082007">In jou Google-rekening</translation>
 <translation id="4858786880085262208">Gradeer waar moontlik op na HTTPS. Veilige webwerwe kan dalk inhoud inbed wat nie veilig is nie.</translation>

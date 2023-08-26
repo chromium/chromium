@@ -893,6 +893,7 @@
 <translation id="2882949212241984732">ഡബിൾ-ഗേറ്റ് മടക്ക്</translation>
 <translation id="2893773853358652045">നാലാമത്തെ റോൾ</translation>
 <translation id="2900528713135656174">ഇവന്റ് സൃഷ്‌ടിക്കുക</translation>
+<translation id="2902312830803030883">കൂടുതൽ‍ പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="2903493209154104877">വിലാസങ്ങള്‍‌</translation>
 <translation id="290376772003165898">പേജ് <ph name="LANGUAGE" /> ഭാഷയിലല്ലേ?</translation>
 <translation id="2905107382358353958">പുതിയ പേയ്‌മെന്റ് ക്രമീകരണത്തെക്കുറിച്ചുള്ള മുന്നറിയിപ്പ്</translation>
@@ -1244,6 +1245,7 @@
 <translation id="36224234498066874">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="362276910939193118">മുഴുവന്‍ ചരിത്രവും കാണിക്കുക</translation>
 <translation id="3624292976554877583">ലേബലുകൾ (തിളക്കമില്ലാത്തത്)</translation>
+<translation id="3625929652356389713">'ചിത്രത്തിനുള്ളിൽ ചിത്രം' വിൻഡോകൾ സ്വയമേവ തുറക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3628905806504633297">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് കൈമാറാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് കൈമാറാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>
 <translation id="3630155396527302611">ഇതിനെ നെറ്റ്‌വർക്ക് ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള ഒരു പ്രോഗ്രാമായി നിലവിൽ ലിസ്റ്റ് ചെയ്‌തിട്ടുണ്ടെങ്കിൽ,
       അതിനെ ലിസ്റ്റിൽ നിന്ന് നീക്കംചെയ്‌ത്, വീണ്ടും ചേർക്കാൻ ശ്രമിക്കുക.</translation>
@@ -1377,6 +1379,7 @@
 <translation id="388632593194507180">നിരീക്ഷണം കണ്ടെത്തി</translation>
 <translation id="3886948180919384617">സ്റ്റാക്കർ 3</translation>
 <translation id="3890664840433101773">ഇമെയില്‍‌ ചേര്‍‌ക്കുക</translation>
+<translation id="3893306401511601929">സ്വയമേവയുള്ള 'ചിത്രത്തിനുള്ളിൽ ചിത്രം' നിയന്ത്രണം</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3901925938762663762">കാർഡ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="390391808978419508">തുറക്കുന്നത് ടൈംഔട്ട് ആയി</translation>
@@ -1568,6 +1571,7 @@
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4276974990916607331">വേണ്ട</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="4277529130885813215">മറ്റൊരു ഉപകരണം ഉപയോഗിക്കുക</translation>
 <translation id="4277937682389409325">പ്രാദേശിക വിലാസം</translation>
 <translation id="4278390842282768270">അനുവദനീയം</translation>
 <translation id="4281998142035485137">{0,plural, =1{രഹസ്യാത്മക ഫയൽ തുറക്കണോ?}other{രഹസ്യാത്മക ഫയലുകൾ തുറക്കണോ?}}</translation>
@@ -2155,6 +2159,7 @@
 <translation id="5512812358367123529">ഓഫീസ് ഫർണിച്ചർ</translation>
 <translation id="5513528801833998679">ഉപകരണത്തിലെ സൈൻ ഇൻ ചെയ്യൽ ഉപയോഗിക്കുക</translation>
 <translation id="5515388687005870733">55 x 85 മി.മീ</translation>
+<translation id="5516095341424241911">നിങ്ങളുടെ പേയ്‌മെന്റ് വിവരങ്ങൾ സുരക്ഷിതമായി സൂക്ഷിക്കാൻ Google-ന്റെ സുരക്ഷാ സാങ്കേതികവിദ്യ ഉപയോഗിക്കുന്നു</translation>
 <translation id="5518670652865028077">കലയും വിനോദവും</translation>
 <translation id="5519516356611866228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സഹിതം</translation>
 <translation id="5519696598216267194">പേപ്പർ (പ്രീപഞ്ച് ചെയ്തത്)</translation>
@@ -2221,6 +2226,7 @@
 <translation id="5633259641094592098">കൾട്ട്, ഇൻഡി സിനിമകൾ</translation>
 <translation id="563371367637259496">മൊബൈല്‍</translation>
 <translation id="5635237618724097525">സ്‌മാർട്ട് ഫോണുകൾ</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">സ്‌റ്റീരിയോ സിസ്‌റ്റങ്ങളും ഘടകങ്ങളും</translation>
 <translation id="5644090287519800334">സൈഡ് 1 ചിത്രം X ഷിഫ്റ്റ്</translation>
 <translation id="5645132789250840550">പ്ലാസ്റ്റിക് (സെമി ഗ്ലോസ്)</translation>
@@ -2548,6 +2554,7 @@
 <translation id="6355392890578844978">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">ഇത് അര്‍ത്ഥമാക്കുന്നതെന്താണ്?</translation>
 <translation id="6361757823711327522">B7</translation>
+<translation id="6363786367719063276">ലോഗുകൾ കാണുക</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />പ്രോക്‌സിയും ഫയർവാളും സുരക്ഷിത DNS കോൺഫിഗറേഷനും പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ഇടതുവശത്ത് ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="6367196786591004737">എൻട്രി ഇല്ലാതാക്കുക</translation>
@@ -3768,6 +3775,7 @@
 <translation id="885730110891505394">Google-മായി പങ്കിടുന്നു</translation>
 <translation id="8858065207712248076">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് പുനഃസജ്ജീകരിക്കാൻ Chrome ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
 <translation id="885906927438988819">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ, <ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">അടുത്ത പ്രാവശ്യം വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ കാർഡ് ഉപകരണത്തിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="8864939224504814334">സ്യൂട്ടുകളും ബിസിനസ് വസ്‌ത്രവും</translation>
 <translation id="8866132857352163524">സൗണ്ട്ട്രാക്കുകൾ</translation>
 <translation id="8866481888320382733">നയ ക്രമീകരണങ്ങൾ പാഴ്‌സ് ചെയ്യുന്നതിൽ പിശക്</translation>
@@ -3945,6 +3953,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />എന്തൊക്കെ ഡാറ്റ ഉപയോഗിക്കുന്നു:<ph name="END_BOLD" /> ഈ ഉപകരണത്തിൽ Chrome ഉപയോഗിച്ച് നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളുടെ ലിസ്റ്റായ, അടുത്തിടെയുള്ള ബ്രൗസിംഗ് ചരിത്രത്തെ അടിസ്ഥാനമാക്കിയുള്ളതാണ് നിങ്ങളുടെ പരസ്യ വിഷയങ്ങൾ.</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="940053046584497293">യാത്രയും ഗതാഗതവും</translation>
+<translation id="944540589955480312">നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചിട്ടുള്ള പാസ്‌വേഡുകളും പാസ്‌കീകളും ഉപയോഗിക്കുക</translation>
 <translation id="945855313015696284">ചുവടെയുള്ള വിവരം പരിശോധിച്ച്, അസാധുവായ കാര്‍ഡുകളുണ്ടെങ്കിൽ അവ ഇല്ലാതാക്കുക</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-ൽ പുതിയൊരു സൈറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="949314938206378263">നിങ്ങൾ ഈ സൈറ്റ് സന്ദർശിക്കാൻ ആവശ്യപ്പെട്ടു. നിങ്ങളുടെ രക്ഷിതാവിന് Family Link-ൽ മറുപടി നൽകാം.</translation>
@@ -3981,5 +3990,6 @@
     &lt;li&gt;മറ്റൊരു നെറ്റ്‍വര്‍ക്കിലേക്ക് കണക്റ്റ് ചെയ്യുന്നത് പരീക്ഷിക്കുക&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">സ്വയമേവയുള്ള 'ചിത്രത്തിനുള്ളിൽ ചിത്രം' നിയന്ത്രണം</translation>
 <translation id="997986563973421916">Google Pay-യിൽ നിന്ന്</translation>
 </translationbundle>

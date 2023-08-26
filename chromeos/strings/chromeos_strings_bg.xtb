@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Удостоверяване във фаза 2 през EAP</translation>
 <translation id="2783010256799387990">УСПЕШНО</translation>
 <translation id="2787435249130282949">по-ярка клавиатура</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="28232023175184696">Няма връзка с интернет. Кликнете, за да опитате отново.</translation>
 <translation id="2859243502336719778">Критична актуализация</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Скрийнсейвър с облаци</translation>
 <translation id="2926057806159140518">Въведете потребителското име и паролата си или сканирайте QR кода си</translation>
 <translation id="2940811910881150316">Устройството не може да бъде тествано. За целта отворете капака.</translation>
+<translation id="2941112035454246133">Нисък</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">намаляване на силата на звука</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Актуализиране на <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Среден</translation>
 <translation id="5757187557809630523">следващ запис</translation>
 <translation id="5760715441271661976">Състояние на портала</translation>
 <translation id="576835345334454681">Увеличаване на яркостта на дисплея</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Албум от художествената галерия</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
-<translation id="5866840822086176774">Много силен</translation>
 <translation id="5876385649737594562">Включете, за да изберете опции</translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаба (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Към настройките на профила</translation>
-<translation id="6456394469623773452">Добър</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се сканира ли повторно страницата?}=1{Да се сканира ли повторно страница {PAGE_NUMBER}?}other{Да се сканира ли повторно страница {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Моля, свържете се с мрежа и презаредете страницата, за да прегледате тапета.</translation>
 <translation id="8291967909914612644">Държава на собствения доставчик</translation>
 <translation id="8294431847097064396">Източник</translation>
-<translation id="8297006494302853456">Слаб</translation>
 <translation id="8302368968391049045">Защитна стена за HTTPS</translation>
 <translation id="8312330582793120272">пускане на мултимедията</translation>
 <translation id="8318753676953949627">Няма изображения</translation>

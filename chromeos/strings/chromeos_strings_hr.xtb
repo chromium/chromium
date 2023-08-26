@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">2. faza autentifikacije za EAP</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
 <translation id="2787435249130282949">svjetlija tipkovnica</translation>
-<translation id="2789486458103222910">U redu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Povezivanje s internetom nije uspjelo. Kliknite da biste pokušali ponovo.</translation>
 <translation id="2859243502336719778">Kritično ažuriranje</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Čuvar zaslona s oblakom</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
 <translation id="2940811910881150316">Testiranje uređaja nije uspjelo. Ponovo otvorite poklopac da biste testirali.</translation>
+<translation id="2941112035454246133">Nizak</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">smanjivanje glasnoće</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ažurirajte <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Srednje</translation>
 <translation id="5757187557809630523">sljedeća pjesma</translation>
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="576835345334454681">Pojačavanje svjetline zaslona</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Album umjetničke galerije</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
-<translation id="5866840822086176774">Vrlo jak</translation>
 <translation id="5876385649737594562">Uključite da biste odabrali opcije</translation>
 <translation id="588258955323874662">Puni zaslon</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Idi na postavke računa</translation>
-<translation id="6456394469623773452">Solidan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite li ponovo skenirati stranicu?}=1{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}one{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}few{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}other{Želite li ponovo skenirati stranicu {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
@@ -931,12 +930,12 @@
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali pozadinu.</translation>
 <translation id="8291967909914612644">Zemlja davatelja usluge kućne mreže</translation>
 <translation id="8294431847097064396">Izvor</translation>
-<translation id="8297006494302853456">Slab</translation>
 <translation id="8302368968391049045">Vatrozid za HTTPS</translation>
 <translation id="8312330582793120272">reprodukcija medijskih sadržaja</translation>
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8329018942023753850">aplikacija kalkulator</translation>
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ili <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="8351855506390808906">Točka dodira za mapiranje tipki</translation>
 <translation id="8352772353338965963">Dodajte račun na višestruku prijavu. Svim računima na koje ste prijavljeni može se pristupiti bez zaporke, pa bi se ta značajka trebala upotrebljavati samo s pouzdanim računima.</translation>

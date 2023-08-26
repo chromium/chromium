@@ -3268,7 +3268,6 @@
 <translation id="3624567683873126087">ஃபோனை அன்லாக் செய்து, Google கணக்கில் உள்நுழை</translation>
 <translation id="3624583033347146597">மூன்றாம் தரப்புக் குக்கீக்கான விருப்பத்தேர்வுகளைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="3625481642044239431">தவறான ஃபைலைத் தேர்ந்தெடுத்துள்ளீர்கள். மீண்டும் முயலவும்.</translation>
-<translation id="3626032419324745085">நீங்கள் சேர்க்கும் தளங்கள் எப்போதும் செயலில் இருக்கும். மேலும் அவற்றுக்கான நினைவகம் காலியாக்கப்படாது. <ph name="BEGIN_LINK" />தளத்தைத் தவிர்த்தல் பற்றி மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">இந்த Chromebookகை சார்ஜ் செய்ய இதற்கு இணக்கமான Dell பேட்டரியைப் பயன்படுத்தவும்.</translation>
 <translation id="3627320433825461852">1 நிமிடத்திற்கும் குறைவாக உள்ளது</translation>
 <translation id="3627588569887975815">மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>
@@ -4601,6 +4600,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
 <translation id="4708892882822652439">பிரிவின் ஆடியோவையும் அனுமதி</translation>
 <translation id="4711638718396952945">அமைப்புகளை மீட்டெடு</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">சாளரங்கள் அனைத்தையும் மூடும்போது நீக்கு</translation>
 <translation id="4715631922189108923">பயனர்பெயரைத் திருத்தலாம்</translation>
 <translation id="47158868804223727">விரிவாக்கவோ சுருக்கவோ குழுவின் பெயரைக் கிளிக் செய்யவும்</translation>
@@ -7466,7 +7466,6 @@
 <translation id="711840821796638741">நிர்வகிக்கப்பட்ட புக்மார்க்குகளைக் காட்டு</translation>
 <translation id="711985611146095797">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை இந்தப் பக்கத்தில் நிர்வகிக்கலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN இணைக்கப்படும் வரை Chrome உலாவியும் Android டிராஃபிக்கும் தடுக்கப்படும்</translation>
-<translation id="7121126743816027786">உங்கள் Chrome சுயவிவரத்தில் உள்ளது</translation>
 <translation id="7121438501124788993">டெவெலப்பர் பயன்முறை</translation>
 <translation id="7121728544325372695">ஸ்மார்ட் டேஷ்கள்</translation>
 <translation id="7123030151043029868">பல ஃபைல்களைத் தானாகவே பதிவிறக்க அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>

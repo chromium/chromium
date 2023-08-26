@@ -1418,7 +1418,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="BR" />
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Эскертүү:<ph name="END_BOLD" /> Мүчүлүштүктөрдү оңдоо учурунда тутум кайра өчүрүлүп-күйгүзүлөт.</translation>
-<translation id="2095479026080141189"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK" />. Себебин билип алыңыз</translation>
 <translation id="2095774564753225041">Колдоого алынган файлдардын түрлөрү</translation>
 <translation id="2096716221239095980">Бардык нерселерди өчүрүү</translation>
 <translation id="2097616539631531348">Бул өтмөк жигерсиз болуп турганда, Кубатты үнөмдөгүч эстутумда орун ээлеп турган башка тапшырмаларды өчүрдү.</translation>
@@ -3311,7 +3310,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3624567683873126087">Түзмөктүн кулпусун ачып, Google аккаунтуна кириңиз</translation>
 <translation id="3624583033347146597">Үчүнчү тараптын cookie файлынын параметрлерин тандаңыз</translation>
 <translation id="3625481642044239431">Туура эмес файл тандалды. Кайталап көрүңүз.</translation>
-<translation id="3626032419324745085">Сиз кошкон сайттар ар дайым активдүү бойдон калып, эстутумдан өчүрүлбөйт. <ph name="BEGIN_LINK" />Cайттарды чыгаруу тууралуу кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3626296069957678981">Бул Chromebook'тун батареясын кубаттоо үчүн шайкеш келген Dell батареясын колдонуңуз.</translation>
 <translation id="3627320433825461852">1 мүнөткө жетпеген убакыт калды</translation>
 <translation id="3627588569887975815">Шилтемени жашы&amp;руун терезеде ачуу</translation>
@@ -4662,6 +4660,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> чыгуу</translation>
 <translation id="4708892882822652439">Өтмөктөгү аудиого да уруксат берүү</translation>
 <translation id="4711638718396952945">Параметрлерди калыбына келтирүү</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Бардык терезелер жабылганда жок кылынсын</translation>
 <translation id="4715631922189108923">Колдонуучунун атын түзөтүү</translation>
 <translation id="47158868804223727">Топту жайып көрсөтүү же жыйыштыруу үчүн анын аталышын басыңыз</translation>
@@ -7550,7 +7549,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="711840821796638741">Башкарылган кыстармаларды көрсөтүү</translation>
 <translation id="711985611146095797">Бул барак системага кирген Google аккаунттарыңызды башкаруу мүмкүнчүлүгүн берет. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN туташтырылбаса, Chrome серепчиси жана Android трафиги бөгөттөлөт</translation>
-<translation id="7121126743816027786">Chrome профилиңизден</translation>
 <translation id="7121438501124788993">Иштеп чыгуучу режими</translation>
 <translation id="7121728544325372695">Акылдуу тирелер</translation>
 <translation id="7123030151043029868">Бир нече файлды автоматтык түрдө жүктөп ала алат</translation>

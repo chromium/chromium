@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">EAP 2 tapatybės nustatymo etapas</translation>
 <translation id="2783010256799387990">PAVYKO</translation>
 <translation id="2787435249130282949">klaviatūra šviesesnė</translation>
-<translation id="2789486458103222910">Gerai</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="28232023175184696">Nepavyko prisijungti prie interneto. Spustelėkite, jei norite bandyti dar kartą.</translation>
 <translation id="2859243502336719778">Kritinis naujinys</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Debesies srauto ekrano užsklanda</translation>
 <translation id="2926057806159140518">Įveskite naudotojo vardą ir slaptažodį arba nuskaitykite QR kodą</translation>
 <translation id="2940811910881150316">Nepavyko išbandyti įrenginio. Jei norite išbandyti, iš naujo atidarykite dangtelį.</translation>
+<translation id="2941112035454246133">Žema</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3017079585324758401">Fonas</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">garsumo mažinimas</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> iš <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atnaujinti „<ph name="DEVICE_NAME" />“</translation>
+<translation id="574392208103952083">Vidutinis</translation>
 <translation id="5757187557809630523">kitas takelis</translation>
 <translation id="5760715441271661976">Portalo būsena</translation>
 <translation id="576835345334454681">Padidinti ekrano šviesumą</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Meno galerijos albumas</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5860491529813859533">Įjungti</translation>
-<translation id="5866840822086176774">Labai stiprus</translation>
 <translation id="5876385649737594562">Įjunkite ir pasirinkite parinktis</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6439505561246192797">Silpnas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Eiti į paskyros nustatymus</translation>
-<translation id="6456394469623773452">Geras</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
-<translation id="8297006494302853456">Silpnas</translation>
 <translation id="8302368968391049045">HTTPS užkarda</translation>
 <translation id="8312330582793120272">leisti mediją</translation>
 <translation id="8318753676953949627">Vaizdų nėra</translation>

@@ -91,8 +91,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1449835205994625556">Wachtwoord verbergen</translation>
 <translation id="1450170672351507823">Standaardbeveiliging staat aan. Gebruik verbeterde beveiliging voor nog meer bescherming.</translation>
-<translation id="1469381646033328562">Je account wordt beheerd door je ouder.
-<ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="149095475893949513">Deze website probeert een configuratieprofiel te downloaden.</translation>
 <translation id="1491277525950327607">Dubbeltik om de instelling aan of uit te zetten</translation>
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
@@ -448,7 +446,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3533436815740441613">Nieuw tabblad</translation>
 <translation id="3540141921715814660">Toevoegen aan bookmarks</translation>
 <translation id="3551320343578183772">Tabblad sluiten</translation>
-<translation id="3564513311876185114">Menubalk slim ordenen</translation>
 <translation id="3565207542107370586">Browsegegevens wissen…</translation>
 <translation id="3575234738189584619">Zoeken met Lens</translation>
 <translation id="3577555362230509265">Gebruik Chrome in andere apps.</translation>
@@ -656,6 +653,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4840495572919996524">Je bookmarks, geschiedenis, wachtwoorden en meer worden niet meer gesynchroniseerd met je Google-account.</translation>
 <translation id="4844899002472726590">De onderwerpen bekijken en bewerken waarin je bent geïnteresseerd</translation>
 <translation id="4848999860252535517">Wachtwoord voor <ph name="WEBSITE" /> verwijderen?</translation>
+<translation id="4850886885716139402">Weergave</translation>
 <translation id="4854345657858711387">Een toegangscode instellen</translation>
 <translation id="4856498338299082007">In je Google-account</translation>
 <translation id="4858786880085262208">Upgrade naar HTTPS als dat mogelijk is. Beveiligde sites hebben misschien ingesloten content die niet beveiligd is.</translation>

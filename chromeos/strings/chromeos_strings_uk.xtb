@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">2-га фаза автентифікації EAP</translation>
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2787435249130282949">світліша клавіатура</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="28232023175184696">Не вдається підключитися до мережі. Натисніть, щоб повторити спробу.</translation>
 <translation id="2859243502336719778">Критичне оновлення</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Заставка "Плин хмар"</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
 <translation id="2940811910881150316">Не вдалося перевірити клавіатуру. Відкрийте кришку й повторіть спробу.</translation>
+<translation id="2941112035454246133">Низький</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">зменшити гучність</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Середній</translation>
 <translation id="5757187557809630523">наступна композиція</translation>
 <translation id="5760715441271661976">Стан порталу</translation>
 <translation id="576835345334454681">Збільшити яскравість екрана</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Альбом із мистецької галереї</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
-<translation id="5866840822086176774">Дуже потужний</translation>
 <translation id="5876385649737594562">Увімкніть, щоб вибрати параметри</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабкий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти до налаштувань облікового запису</translation>
-<translation id="6456394469623773452">Оптимальний</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Сканувати сторінку ще раз?}=1{Сканувати сторінку {PAGE_NUMBER} ще раз?}one{Сканувати сторінку {PAGE_NUMBER} ще раз?}few{Сканувати сторінку {PAGE_NUMBER} ще раз?}many{Сканувати сторінку {PAGE_NUMBER} ще раз?}other{Сканувати сторінку {PAGE_NUMBER} ще раз?}}</translation>
 <translation id="6472207088655375767">Одноразовий пароль</translation>
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Щоб переглянути фоновий малюнок, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="8291967909914612644">Країна локального постачальника</translation>
 <translation id="8294431847097064396">Джерело</translation>
-<translation id="8297006494302853456">Слабкий</translation>
 <translation id="8302368968391049045">Брандмауер HTTPS</translation>
 <translation id="8312330582793120272">відтворити медіаконтент</translation>
 <translation id="8318753676953949627">Немає зображень</translation>

@@ -237,7 +237,6 @@
 <translation id="2751739896257479635">Autenticació de fase 2 d'EAP</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2787435249130282949">teclat més brillant</translation>
-<translation id="2789486458103222910">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
 <translation id="2859243502336719778">Actualització crítica</translation>
@@ -249,6 +248,7 @@
 <translation id="2880569433548999039">Estalvi de pantalla Moviment de núvols</translation>
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
 <translation id="2940811910881150316">No es pot provar el dispositiu. Torna a obrir la tapa per fer la prova.</translation>
+<translation id="2941112035454246133">Baixa</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017079585324758401">Fons</translation>
@@ -608,6 +608,7 @@
 <translation id="5703716265115423771">abaixa el volum</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualitza <ph name="DEVICE_NAME" /></translation>
+<translation id="574392208103952083">Mitja</translation>
 <translation id="5757187557809630523">pista següent</translation>
 <translation id="5760715441271661976">Estat del portal</translation>
 <translation id="576835345334454681">Augmenta la brillantor de la pantalla</translation>
@@ -623,7 +624,6 @@
 <translation id="5859603669299126575">Àlbum de la galeria d'art</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
-<translation id="5866840822086176774">Molt forta</translation>
 <translation id="5876385649737594562">Activa per seleccionar les opcions</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -707,7 +707,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ves a la configuració del compte</translation>
-<translation id="6456394469623773452">Bona</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vols tornar a escanejar la pàgina?}=1{Vols tornar a escanejar la pàgina {PAGE_NUMBER}?}other{Vols tornar a escanejar les pàgines {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
@@ -931,7 +930,6 @@
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>
 <translation id="8291967909914612644">País del proveïdor domèstic</translation>
 <translation id="8294431847097064396">Font</translation>
-<translation id="8297006494302853456">Feble</translation>
 <translation id="8302368968391049045">Tallafoc HTTPS</translation>
 <translation id="8312330582793120272">reprodueix el contingut multimèdia</translation>
 <translation id="8318753676953949627">Cap imatge</translation>

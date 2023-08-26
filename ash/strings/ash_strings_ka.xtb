@@ -64,6 +64,7 @@
 <translation id="1217633719248931900">აპზე გადასვლა</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store აპი</translation>
 <translation id="1225748608451425081">თქვენი Chromebook დაბლოკილია ცნობილი პრობლემის გამო. შესვლას შეძლებთ გარკვეული დროის შემდეგ: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">არააქტიური სამუშაო მაგიდა</translation>
 <translation id="1229194443904279055">არჩევის შეწყვეტა</translation>
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> დაკავშირებულია.</translation>
@@ -840,7 +841,6 @@
 <translation id="4477892968187500306">ამ მოწყობილობაზე შეიძლება იყოს Google-ის მიერ შეუმოწმებელი აპები.</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4481530544597605423">დაწყვილებაგაუქმებული მოწყობილობები</translation>
-<translation id="4505050298327493054">აქტიური სამუშაო მაგიდა.</translation>
 <translation id="450584155212756404">შემუშავების არხი</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
 <translation id="4516212064498225455">ამჟამინდელი სამუშაო მაგიდა: <ph name="CURRENT_DESK_NAME" />, ყველა სამუშაო მაგიდის მენიუს გასახსნელად გამოიყენეთ კლავიშთა კომბინაცია Search+შორისი.</translation>
@@ -1009,6 +1009,7 @@
 <translation id="5197255632782567636">ინტერნეტი</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> მოვლენა</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> დაჯგუფდა <ph name="IN_PLACE_APP" />-თან ახალი საქაღალდის შესაქმნელად.</translation>
+<translation id="5203299837691351876">აქტიური სამუშაო მაგიდა</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 სხვა შეტყობინება}other{# სხვა შეტყობინება}}</translation>
 <translation id="5207949376430453814">ტექსტის კურსორის გამოყოფა</translation>
@@ -1186,7 +1187,6 @@
 <translation id="589817443623831496">წერტილოვანი სკანირება</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
-<translation id="5909862606227538307">არააქტიური სამუშაო მაგიდა.</translation>
 <translation id="5911231045062997865">Lacros ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
@@ -1408,6 +1408,7 @@
 <translation id="6819327813400217281">კამერა მიზიდულია ქვედა მარცხენა კუთხეში</translation>
 <translation id="6820676911989879663">შეისვენეთ!</translation>
 <translation id="6827049576281411231">მოვლენების პანელის დახურვა</translation>
+<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />-ზე გადასვლის ღილაკი.</translation>
 <translation id="6836499262298959512">სახიფათო ფაილი</translation>
 <translation id="6852052252232534364">დააწკაპუნეთ გასააქტიურებლად</translation>
 <translation id="6855029042976311970">ამ წამს რედაქტირებული</translation>
@@ -1444,6 +1445,7 @@
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="698231206551913481">ამ მომხმარებლის ამოშლის შემდეგ, მასთან დაკავშირებული ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშლება.</translation>
 <translation id="6985306450422696113">ხელმისაწვდომია <ph name="TOTAL_MEMORY" /> მეხსიერების <ph name="USED_MEMORY" /></translation>
+<translation id="6989752354829085073">გაიარეთ სწრაფი ტური, Chromebook-ის შესახებ რომ შეიტყოთ. მოამზადეთ ის 6 ნაბიჯის გავლით.</translation>
 <translation id="7004910047186208204">დაუკავშირდით მობილურ ინტერნეტს</translation>
 <translation id="7005239792648594238">დასაწყებად გახსენით აპი</translation>
 <translation id="7007983414944123363">თქვენი PIN-კოდის ან პაროლის დადასტურება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
@@ -1504,6 +1506,7 @@
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="7313193732017069507">კამერის გაფართოება</translation>
 <translation id="7316261577130609484">ახალი ამოცანის დამატება</translation>
+<translation id="7330397557116570022">კარნახის გამოსაყენებლად გადადით ტექსტურ ველზე</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
 <translation id="7340731148882810149">ავტომატური დაწკაპუნებების მენიუ</translation>
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
@@ -1566,6 +1569,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
+<translation id="7567950130372125778">გამარჯობა! Chromebook ოდნავ განსხვავდება.</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
 <translation id="7571361473021531288">ბატარეა <ph name="BATTERY_PERCENTAGE" />%-ზეა | დარჩენილია <ph name="TIME" /></translation>
 <translation id="7573585051776738856">აქტიური ფანჯარა ჩამაგრებულია მარჯვნივ.</translation>

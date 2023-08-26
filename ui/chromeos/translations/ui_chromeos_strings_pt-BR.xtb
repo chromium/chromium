@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Download do perfil móvel. Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Mudar para a visualização de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> pastas compartilhadas com o Linux</translation>
+<translation id="2379576081295865700">Verificando o espaço de armazenamento: 1 item encontrado</translation>
 <translation id="2383454254762599978">Mover para a lixeira</translation>
 <translation id="2387458720915042159">Tipo de conexão proxy</translation>
 <translation id="2389832672041313158">Birmanês (Mianmar)</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Borboletas</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
+<translation id="6177854567773392726">Verificando o espaço de armazenamento: <ph name="ITEMS_FOUND" /> itens encontrados</translation>
 <translation id="6181912134988520389">Conceda permissão à <ph name="VM_NAME" /> para acessar arquivos no seu Google Drive. As modificações serão sincronizadas com seus outros dispositivos.</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
