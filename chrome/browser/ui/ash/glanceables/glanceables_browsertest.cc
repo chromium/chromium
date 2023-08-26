@@ -25,6 +25,7 @@
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/test/ash_test_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -184,6 +185,9 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
+    base::AddFeatureIdTagToTestResult(
+        "screenplay-ace3b729-5402-40cd-b2bf-d488bc95b7e2");
 
     base::Time date;
     ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
