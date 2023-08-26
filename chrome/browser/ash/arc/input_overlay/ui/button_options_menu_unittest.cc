@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/lottie/resource.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
@@ -86,14 +85,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     return false;
   }
 
- private:
-  void SetUp() override {
-    ui::ResourceBundle::SetLottieParsingFunctions(
-        &lottie::ParseLottieAsStillImage,
-        &lottie::ParseLottieAsThemedStillImage);
-
-    OverlayViewTestBase::SetUp();
-  }
 };
 
 TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {

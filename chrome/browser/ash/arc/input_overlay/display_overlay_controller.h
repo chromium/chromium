@@ -59,9 +59,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetDisplayModeAlpha(DisplayMode mode);
   void SetDisplayMode(DisplayMode mode);
 
-  // Turn on/off the `flag` for current registered window.
-  void TurnFlag(ash::ArcGameControlsFlag flag, bool turn_on);
-
   // Get the bounds of `menu_entry_` in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
@@ -149,9 +146,11 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class ButtonLabelList;
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
+  friend class DisplayOverlayControllerAlphaTest;
   friend class EditingList;
   friend class EditLabelTest;
   friend class EducationalView;
+  friend class GameControlsTestBase;
   friend class InputMappingView;
   friend class InputMenuView;
   friend class MenuEntryView;

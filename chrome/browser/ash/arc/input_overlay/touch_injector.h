@@ -122,6 +122,9 @@ class TouchInjector : public ui::EventRewriter {
   // Returns the smallest unused ID (> kMaxDefaultActionID) for adding a new
   // action.
   int GetNextNewActionID();
+  // Returns the active actions size. Default actions are marked deleted and
+  // still in `actions_`.
+  size_t GetActiveActionsSize();
   // Add a new action of type `action_type` from UI without input binding and
   // with default position binding at the center.
   void AddNewAction(ActionType action_type);
@@ -186,8 +189,9 @@ class TouchInjector : public ui::EventRewriter {
 
  private:
   friend class ArcInputOverlayManagerTest;
-  friend class TouchInjectorTest;
   friend class ButtonOptionsMenuTest;
+  friend class DisplayOverlayControllerTest;
+  friend class TouchInjectorTest;
 
   struct TouchPointInfo {
     // ID managed by input overlay.

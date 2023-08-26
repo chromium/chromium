@@ -90,7 +90,7 @@ class ArcInputOverlayManager : public KeyedService,
 
  private:
   friend class ArcInputOverlayManagerTest;
-  friend class OverlayViewTestBase;
+  friend class GameControlsTestBase;
   friend class TestArcInputOverlayManager;
 
   class InputMethodObserver;

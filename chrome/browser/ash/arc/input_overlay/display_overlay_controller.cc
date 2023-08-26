@@ -460,50 +460,59 @@ void DisplayOverlayController::SetDisplayModeAlpha(DisplayMode mode) {
 }
 
 void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
-  ash::ArcGameControlsFlag flags =
-      touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey);
-
-  // If GIO is empty or disabled in the view mode , it doesn't create any
-  // widgets to save resources.
-  if (!ash::game_dashboard_utils::IsFlagSet(flags,
-                                            ash::ArcGameControlsFlag::kEdit) &&
-      (!ash::game_dashboard_utils::IsFlagSet(
-           flags, ash::ArcGameControlsFlag::kEnabled) ||
-       ash::game_dashboard_utils::IsFlagSet(
-           flags, ash::ArcGameControlsFlag::kEmpty))) {
-    return;
-  }
-
-  AddInputMappingWidget();
-  auto* input_mapping_view =
-      static_cast<InputMappingView*>(input_mapping_widget_->GetContentsView());
-  input_mapping_view->SetDisplayMode(mode);
-  auto* input_mapping_window = input_mapping_widget_->GetNativeWindow();
   switch (mode) {
-    case DisplayMode::kView:
-      input_mapping_window->SetEventTargetingPolicy(
-          aura::EventTargetingPolicy::kNone);
+    case DisplayMode::kNone:
+      RemoveAllWidgets();
+      break;
+
+    case DisplayMode::kView: {
+      if (GetActiveActionsSize() == 0u) {
+        // If there is no active action in `kView` mode, it doesn't create
+        // `input_mapping_widget_` to save resources. When
+        // switching from `kEdit` mode, destroy `input_mapping_widget_` for no
+        // active actions.
+        RemoveInputMappingWidget();
+      } else {
+        AddInputMappingWidget();
+        if (touch_injector_->input_mapping_visible()) {
+          input_mapping_widget_->Show();
+        }
+
+        auto* input_mapping_view = static_cast<InputMappingView*>(
+            input_mapping_widget_->GetContentsView());
+        input_mapping_view->SetDisplayMode(mode);
+        auto* input_mapping_window = input_mapping_widget_->GetNativeWindow();
+        input_mapping_window->SetEventTargetingPolicy(
+            aura::EventTargetingPolicy::kNone);
+      }
       RemoveButtonOptionsMenuWidget();
       RemoveEditingListWidget();
-      break;
-    case DisplayMode::kEdit:
+    } break;
+
+    case DisplayMode::kEdit: {
+      if (GetActiveActionsSize() == 0u) {
+        // Because`input_mapping_widget_` was not created in `kView` mode,
+        // create `input_mapping_widget_` in `kEdit` mode for adding new
+        // actions.
+        AddInputMappingWidget();
+      }
+
+      // No matter if the mapping hint is hidden, `input_mapping_widget_` needs
+      // to show up in `kEdit` mode.
+      input_mapping_widget_->Show();
+
+      auto* input_mapping_view = static_cast<InputMappingView*>(
+          input_mapping_widget_->GetContentsView());
+      input_mapping_view->SetDisplayMode(mode);
+      auto* input_mapping_window = input_mapping_widget_->GetNativeWindow();
       input_mapping_window->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
       AddEditingListWidget();
-      break;
+    } break;
+
     default:
       break;
   }
-}
-
-void DisplayOverlayController::TurnFlag(ash::ArcGameControlsFlag flag,
-                                        bool turn_on) {
-  auto* window = touch_injector_->window();
-  const ash::ArcGameControlsFlag flags =
-      window->GetProperty(ash::kArcGameControlsFlagsKey);
-  window->SetProperty(
-      ash::kArcGameControlsFlagsKey,
-      ash::game_dashboard_utils::UpdateFlag(flags, flag, turn_on));
 }
 
 absl::optional<gfx::Rect>
@@ -620,13 +629,7 @@ void DisplayOverlayController::ChangeActionName(Action* action, int index) {
 }
 
 size_t DisplayOverlayController::GetActiveActionsSize() {
-  size_t active_size = 0;
-  for (auto& action : touch_injector_->actions()) {
-    if (!action->IsDeleted()) {
-      active_size++;
-    }
-  }
-  return active_size;
+  return touch_injector_->GetActiveActionsSize();
 }
 
 void DisplayOverlayController::AddTouchInjectorObserver(
@@ -907,7 +910,9 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
       bool is_edit_mode = ash::game_dashboard_utils::IsFlagSet(
           touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey),
           ash::ArcGameControlsFlag::kEdit);
-      SetDisplayMode(is_edit_mode ? DisplayMode::kEdit : DisplayMode::kView);
+      SetDisplayMode(
+          is_enabled ? (is_edit_mode ? DisplayMode::kEdit : DisplayMode::kView)
+                     : DisplayMode::kNone);
 
       bool is_showing_menu = ash::game_dashboard_utils::IsFlagSet(
           flags, ash::ArcGameControlsFlag::kMenu);
@@ -1095,9 +1100,6 @@ void DisplayOverlayController::AddInputMappingWidget() {
   window->parent()->StackChildAtBottom(window);
 
   UpdateInputMappingWidgetBounds();
-  if (touch_injector_->input_mapping_visible()) {
-    input_mapping_widget_->Show();
-  }
 }
 
 void DisplayOverlayController::RemoveInputMappingWidget() {
@@ -1127,7 +1129,9 @@ void DisplayOverlayController::RemoveEditingListWidget() {
     editing_list_widget_->Close();
     editing_list_widget_.reset();
 
-    TurnFlag(ash::ArcGameControlsFlag::kEdit, /*turn_on=*/false);
+    UpdateFlagAndProperty(touch_injector_->window(),
+                          ash::ArcGameControlsFlag::kEdit,
+                          /*turn_on=*/false);
     UpdateEventRewriteCapability();
   }
 }
@@ -1139,6 +1143,8 @@ void DisplayOverlayController::UpdateEventRewriteCapability() {
   touch_injector_->set_can_rewrite_event(
       ash::game_dashboard_utils::IsFlagSet(
           flags, ash::ArcGameControlsFlag::kEnabled) &&
+      !ash::game_dashboard_utils::IsFlagSet(flags,
+                                            ash::ArcGameControlsFlag::kEmpty) &&
       !ash::game_dashboard_utils::IsFlagSet(flags,
                                             ash::ArcGameControlsFlag::kMenu) &&
       !ash::game_dashboard_utils::IsFlagSet(

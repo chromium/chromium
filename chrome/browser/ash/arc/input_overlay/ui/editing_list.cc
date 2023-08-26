@@ -116,7 +116,7 @@ void EditingList::Init() {
 
 bool EditingList::HasControls() const {
   DCHECK(controller_);
-  return controller_->GetActiveActionsSize() != 0;
+  return controller_->GetActiveActionsSize() != 0u;
 }
 
 void EditingList::AddHeader(views::View* container) {
@@ -222,7 +222,6 @@ void EditingList::OnActionAdded(Action& action) {
   if (controller_->GetActiveActionsSize() == 1u) {
     // Clear the zero-state.
     scroll_content_->RemoveAllChildViews();
-    controller_->TurnFlag(ash::ArcGameControlsFlag::kEmpty, /*turn_on=*/false);
   }
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));
@@ -243,7 +242,6 @@ void EditingList::OnActionRemoved(const Action& action) {
   // Set to zero-state if it is empty.
   if (controller_->GetActiveActionsSize() == 0u) {
     AddZeroStateContent();
-    controller_->TurnFlag(ash::ArcGameControlsFlag::kEmpty, /*turn_on=*/true);
   }
 
   controller_->UpdateEditingListWidgetBounds();

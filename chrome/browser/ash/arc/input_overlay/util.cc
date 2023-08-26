@@ -7,9 +7,12 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_utils.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "ui/aura/window.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
@@ -106,6 +109,19 @@ bool IsReservedDomCode(ui::DomCode code) {
       return true;
     default:
       return false;
+  }
+}
+
+void UpdateFlagAndProperty(aura::Window* window,
+                           ash::ArcGameControlsFlag flag,
+                           bool turn_on) {
+  const ash::ArcGameControlsFlag flags =
+      window->GetProperty(ash::kArcGameControlsFlagsKey);
+
+  if (ash::game_dashboard_utils::IsFlagSet(flags, flag) != turn_on) {
+    window->SetProperty(
+        ash::kArcGameControlsFlagsKey,
+        ash::game_dashboard_utils::UpdateFlag(flags, flag, turn_on));
   }
 }
 

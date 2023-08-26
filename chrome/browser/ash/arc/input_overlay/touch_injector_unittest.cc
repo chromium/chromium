@@ -325,6 +325,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
   CheckActions(injector_.get(), /*expect_size=*/2u,
                /*expect_types=*/{ActionType::TAP, ActionType::TAP},
                /*expect_ids=*/{0, 1});
+  EXPECT_EQ(2u, injector_->GetActiveActionsSize());
 
   // Step 1: Add a new action move.
   injector_->AddNewAction(ActionType::MOVE);
@@ -332,6 +333,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
       injector_.get(), /*expect_size=*/3u,
       /*expect_types=*/{ActionType::TAP, ActionType::TAP, ActionType::MOVE},
       /*expect_ids=*/{0, 1, kMaxDefaultActionID + 1});
+  EXPECT_EQ(3u, injector_->GetActiveActionsSize());
 
   // Step 2: Add a new action tap.
   injector_->AddNewAction(ActionType::TAP);
@@ -340,6 +342,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
       /*expect_types=*/
       {ActionType::TAP, ActionType::TAP, ActionType::MOVE, ActionType::TAP},
       /*expect_ids=*/{0, 1, kMaxDefaultActionID + 1, kMaxDefaultActionID + 2});
+  EXPECT_EQ(4u, injector_->GetActiveActionsSize());
 
   // Step 3: Remove the action added at step 1.
   injector_->RemoveAction(injector_->actions()[2].get());
@@ -347,6 +350,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
       injector_.get(), /*expect_size=*/3u,
       /*expect_types=*/{ActionType::TAP, ActionType::TAP, ActionType::TAP},
       /*expect_ids=*/{0, 1, kMaxDefaultActionID + 2});
+  EXPECT_EQ(3u, injector_->GetActiveActionsSize());
 
   // Step 4: Add a new action tap.
   injector_->AddNewAction(ActionType::TAP);
@@ -356,6 +360,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
       /*expect_types=*/
       {ActionType::TAP, ActionType::TAP, ActionType::TAP, ActionType::TAP},
       /*expect_ids=*/{0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1});
+  EXPECT_EQ(4u, injector_->GetActiveActionsSize());
 
   // Step 5: Remove a default action.
   EXPECT_FALSE(injector_->actions()[0]->IsDeleted());
@@ -367,6 +372,8 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
       /*expect_types=*/
       {ActionType::TAP, ActionType::TAP, ActionType::TAP, ActionType::TAP},
       /*expect_ids=*/{0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1});
+  // The deleted default action is still in the list.
+  EXPECT_EQ(3u, injector_->GetActiveActionsSize());
   EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
   EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
 
@@ -382,6 +389,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
                /*expect_ids=*/
                {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
                 kMaxDefaultActionID + 3, kMaxDefaultActionID + 4});
+  EXPECT_EQ(5u, injector_->GetActiveActionsSize());
   EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
   EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
   // Remove the first action.
@@ -393,6 +401,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
                /*expect_ids=*/
                {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
                 kMaxDefaultActionID + 4});
+  EXPECT_EQ(4u, injector_->GetActiveActionsSize());
   EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
   EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
   // Add a new action.
@@ -404,6 +413,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
                /*expect_ids=*/
                {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
                 kMaxDefaultActionID + 4, kMaxDefaultActionID + 3});
+  EXPECT_EQ(5u, injector_->GetActiveActionsSize());
   EXPECT_TRUE(injector_->actions()[0]->IsDeleted());
   EXPECT_FALSE(injector_->actions()[1]->IsDeleted());
 
@@ -424,6 +434,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
                /*expect_ids=*/
                {0, 1, kMaxDefaultActionID + 2, kMaxDefaultActionID + 1,
                 kMaxDefaultActionID + 4, kMaxDefaultActionID + 3});
+  EXPECT_EQ(5u, injector_->GetActiveActionsSize());
   EXPECT_TRUE(injector->actions()[0]->IsDeleted());
   EXPECT_FALSE(injector->actions()[1]->IsDeleted());
 }

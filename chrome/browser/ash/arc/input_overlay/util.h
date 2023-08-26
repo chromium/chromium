@@ -8,9 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace views {
 class View;
 }  // namespace views
@@ -43,6 +49,11 @@ void ResetFocusTo(views::View* view);
 
 // Return true if `code` is not allowed to bind.
 bool IsReservedDomCode(ui::DomCode code);
+
+// Turn `flag` on or off for `window` property `ash::kArcGameControlsFlagsKey`.
+void UpdateFlagAndProperty(aura::Window* window,
+                           ash::ArcGameControlsFlag flag,
+                           bool turn_on);
 
 // TODO(b/253646354): This will be removed when removing the flag.
 bool IsBeta();
