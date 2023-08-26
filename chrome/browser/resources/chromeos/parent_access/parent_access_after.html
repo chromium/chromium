@@ -1,5 +1,6 @@
 <style include="cros-color-overrides">
-  .action-button {
+  #action-button,
+  #action-button-jelly {
     margin-inline-start: 8px;
   }
 
@@ -12,7 +13,8 @@
     padding: 26px 24px 20px;
   }
 
-  #after-screen-buttons {
+  #after-screen-buttons,
+  #after-screen-buttons-jelly {
     display: flex;
     /* Allows the button that appears first visually to be last in tab order */
     flex-direction: row-reverse; 
@@ -22,6 +24,16 @@
 
   .google-logo {
     width: 100px;
+  }
+
+  /* Hide pre-existing buttons and show Jelly buttons if Jelly is enabled. */
+  /* TODO (b/297564545): Clean up Jelly flag logic after Jelly is enabled. */
+  :host-context(body.jelly-enabled) #after-screen-buttons {
+    display: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #after-screen-buttons-jelly {
+    display: none;
   }
 </style>
 
@@ -33,12 +45,27 @@
       </img>
       <div id="after-screen-body" aria-live="polite"></div>
       <div id="after-screen-buttons">
-        <cr-button class="action-button" on-click="onParentApproved_">
+        <cr-button class="action-button" id="action-button"
+          on-click="onParentApproved_">
           $i18n{approveButtonText}
         </cr-button>
         <cr-button class="decline-button" on-click="onParentDeclined_">
           $i18n{denyButtonText}
         </cr-button>
+      </div>
+      <div id="after-screen-buttons-jelly">
+        <cros-button
+          button-style="primary"
+          label="$i18n{approveButtonText}"
+          id="action-button-jelly"
+          on-click="onParentApproved_">
+        </cros-button>
+        <cros-button
+          button-style="secondary"
+          label="$i18n{denyButtonText}"
+          id="deny-button"
+          on-click="onParentDeclined_">
+        </cros-button>
       </div>
     </div>
   </span>

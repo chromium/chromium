@@ -42,6 +42,15 @@ export const ParentAccessEvent = {
   ON_SCREEN_SWITCHED: 'on-screen-switched',
 };
 
+/**
+ * Returns true if the Parent Access Jelly feature flag is enabled.
+ * @return {boolean}
+ */
+export function isParentAccessJellyEnabled() {
+  return loadTimeData.valueExists('isParentAccessJellyEnabled') &&
+      loadTimeData.getBoolean('isParentAccessJellyEnabled');
+}
+
 class ParentAccessApp extends PolymerElement {
   static get is() {
     return 'parent-access-app';
@@ -60,18 +69,6 @@ class ParentAccessApp extends PolymerElement {
       currentScreen_: {
         type: Screens,
       },
-      /**
-       * Returns true if the Parent Access Jelly feature flag is enabled.
-       * @private
-       */
-      isParentAccessJellyEnabled: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isParentAccessJellyEnabled') &&
-              loadTimeData.getBoolean('isParentAccessJellyEnabled');
-        },
-      },
     };
   }
 
@@ -79,7 +76,8 @@ class ParentAccessApp extends PolymerElement {
   ready() {
     super.ready();
 
-    if (this.isParentAccessJellyEnabled) {
+    // TODO (b/297564545): Clean up Jelly flag logic after Jelly is enabled.
+    if (isParentAccessJellyEnabled()) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = 'chrome://theme/colors.css?sets=legacy,sys';

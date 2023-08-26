@@ -1,5 +1,6 @@
 <style include="cros-color-overrides">
-  .action-button {
+  #action-button,
+  #action-button-jelly {
     margin-inline-start: 8px;
   }
 
@@ -12,7 +13,8 @@
     padding: 26px 24px 20px;
   }
 
-  #disabled-screen-buttons {
+  #disabled-screen-buttons,
+  #disabled-screen-buttons-jelly {
     display: flex;
     /* Allows the button that appears first visually to be last in tab order */
     flex-direction: row-reverse;
@@ -23,6 +25,16 @@
   #illustration {
     height: 96px;
     width: 96px;
+  }
+
+  /* Hide pre-existing buttons and show Jelly buttons if Jelly is enabled. */
+  /* TODO (b/297564545): Clean up Jelly flag logic after Jelly is enabled. */
+  :host-context(body.jelly-enabled) #disabled-screen-buttons {
+    display: none;
+  }
+
+  :host-context(body:not(.jelly-enabled)) #disabled-screen-buttons-jelly {
+    display: none;
   }
 </style>
 
@@ -36,9 +48,18 @@
       </picture>
       <div id="disabled-screen-content"></div>
       <div id="disabled-screen-buttons">
-        <cr-button class="action-button" on-click="onDisabledScreenClosed_">
+        <cr-button class="action-button" id="action-button"
+          on-click="onDisabledScreenClosed_">
           $i18n{okButtonText}
         </cr-button>
+      </div>
+      <div id="disabled-screen-buttons-jelly">
+        <cros-button
+          button-style="primary"
+          label="$i18n{okButtonText}"
+          id="action-button-jelly"
+          on-click="onDisabledScreenClosed_">
+        </cros-button>
       </div>
     </div>
   </span>
