@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
+
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/focus_mode/focus_mode_tray.h"
+#include "ash/system/status_area_widget.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -55,6 +60,8 @@ void FocusModeController::ToggleFocusMode() {
   if (in_focus_session_) {
     timer_.Stop();
 
+    SetFocusTrayVisibility(false);
+
     // Restore previous DND state.
     message_center->SetQuietMode(previous_do_not_disturb_state_);
   } else {
@@ -66,6 +73,8 @@ void FocusModeController::ToggleFocusMode() {
     end_time_ = base::Time::Now() + session_duration_;
     timer_.Start(FROM_HERE, base::Seconds(1), this,
                  &FocusModeController::OnTimerTick, base::TimeTicks::Now());
+
+    SetFocusTrayVisibility(true);
   }
 
   in_focus_session_ = !in_focus_session_;
@@ -83,6 +92,15 @@ void FocusModeController::OnTimerTick() {
 
   for (auto& observer : observers_) {
     observer.OnTimerTick();
+  }
+}
+
+void FocusModeController::SetFocusTrayVisibility(bool visible) {
+  for (auto* root_window : Shell::GetAllRootWindows()) {
+    if (auto* status_area_widget = RootWindowController::ForWindow(root_window)
+                                       ->GetStatusAreaWidget()) {
+      status_area_widget->focus_mode_tray()->SetVisiblePreferred(visible);
+    }
   }
 }
 

@@ -50,6 +50,9 @@ class ASH_EXPORT FocusModeController {
  private:
   void OnTimerTick();
 
+  // Sets the visibility of the focus tray on the shelf.
+  void SetFocusTrayVisibility(bool visible);
+
   // This is the expected duration of a Focus Mode session once it starts.
   // Currently defaults to `kDefaultSessionDuration` in the constructor, but in
   // the future will depend on previous session data or user input.

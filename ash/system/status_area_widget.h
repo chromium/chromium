@@ -26,6 +26,7 @@ namespace ash {
 class DateTray;
 class DictationButtonTray;
 class EcheTray;
+class FocusModeTray;
 class HoldingSpaceTray;
 class ImeMenuTray;
 class LogoutButtonTray;
@@ -142,6 +143,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   StopRecordingButtonTray* stop_recording_button_tray() {
     return stop_recording_button_tray_;
   }
+  FocusModeTray* focus_mode_tray() { return focus_mode_tray_; }
   ProjectorAnnotationTray* projector_annotation_tray() {
     return projector_annotation_tray_;
   }
@@ -305,6 +307,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
       video_conference_tray_ = nullptr;
   raw_ptr<StopRecordingButtonTray, DanglingUntriaged | ExperimentalAsh>
       stop_recording_button_tray_ = nullptr;
+  raw_ptr<FocusModeTray, DanglingUntriaged | ExperimentalAsh> focus_mode_tray_ =
+      nullptr;
   raw_ptr<ProjectorAnnotationTray, DanglingUntriaged | ExperimentalAsh>
       projector_annotation_tray_ = nullptr;
   raw_ptr<VirtualKeyboardTray, DanglingUntriaged | ExperimentalAsh>

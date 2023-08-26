@@ -23,6 +23,7 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"
@@ -86,6 +87,10 @@ void StatusAreaWidget::Initialize() {
   // Create the child views, left to right.
   overflow_button_tray_ =
       AddTrayButton(std::make_unique<StatusAreaOverflowButtonTray>(shelf_));
+  if (features::IsFocusModeEnabled()) {
+    // TODO(b/297445628): Get approval for order of focus mode tray in shelf.
+    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
+  }
   if (features::IsVideoConferenceEnabled()) {
     video_conference_tray_ =
         AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
@@ -298,6 +303,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
       case TrayBackgroundViewCatalogName::kWmMode:
       case TrayBackgroundViewCatalogName::kVideoConferenceTray:
+      case TrayBackgroundViewCatalogName::kFocusMode:
         if (!tray_button->GetVisible()) {
           continue;
         }
