@@ -363,6 +363,13 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // The `Sec-CH-UA-Form-Factor` header field provides information on the
       // form factor of the user agent device.
       "sec-ch-ua-form-factor",
+      // The `Sec-CH-Prefers-Reduced-Transparency` header field is modeled after
+      // the prefers-reduced-transparency user preference media feature. It
+      // reflects the user’s desire that the page minimizes the amount of
+      // transparency it uses. This is currently pulled from operating system
+      // preferences, although there may be internal UI in the future.
+      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-transparency
+      "sec-ch-prefers-reduced-transparency",
   });
 
   // Check if the name of the header to send is safe.

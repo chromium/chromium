@@ -291,6 +291,11 @@ TEST_F(CorsTest, SafelistedSecCHPrefersReducedMotion) {
                                      "\"Prefers-Reduced-Motion!\""));
 }
 
+TEST_F(CorsTest, SafelistedSecCHPrefersReducedTransparency) {
+  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-Prefers-Reduced-Transparency",
+                                     "\"Prefers-Reduced-Transparency!\""));
+}
+
 TEST_F(CorsTest, SafelistedSecCHUAFormFactor) {
   EXPECT_TRUE(
       IsCorsSafelistedHeader("Sec-CH-UA-Form-Factor", "\"Form Factor!\""));

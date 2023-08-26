@@ -670,7 +670,7 @@ TEST_F(NavigationURLLoaderImplTest, OnAcceptCHFrameReceivedUKM) {
     // If you're here because the test is failing when you added a new client
     // hint be sure to increment the number below and add your new hint to the
     // enum WebClientHintsType in tools/metrics/histograms/enums.xml.
-    ASSERT_EQ(ukm_entries.size(), 30u);
+    ASSERT_EQ(ukm_entries.size(), 31u);
     for (int64_t i = 0; i <= static_cast<int64_t>(
                                  network::mojom::WebClientHintsType::kMaxValue);
          ++i) {

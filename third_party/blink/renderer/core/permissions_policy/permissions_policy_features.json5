@@ -121,6 +121,10 @@
       permissions_policy_name: "ch-prefers-reduced-motion",
     },
     {
+      name: "ClientHintPrefersReducedTransparency",
+      permissions_policy_name: "ch-prefers-reduced-transparency",
+    },
+    {
       name: "ClientHintRTT",
       permissions_policy_name: "ch-rtt",
     },

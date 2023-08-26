@@ -133,6 +133,9 @@ class EmulationHandler : public DevToolsDomainHandler,
   // If |prefers_reduced_motion_| is "reduce", it is used to override the
   // "prefers-reduced-motion" client hint header, when present.
   std::string prefers_reduced_motion_;
+  // If |prefers_reduced_transparency_| is "reduce", it is used to override the
+  // "prefers-reduced-transparency" client hint header, when present.
+  std::string prefers_reduced_transparency_;
 
   RenderFrameHostImpl* host_;
 

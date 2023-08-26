@@ -138,6 +138,8 @@ bool BaseFetchContext::CalculateIfAdSubresource(
          (filter && filter->IsAdResource(url, request.GetRequestContext()));
 }
 
+// TODO(https://crbug.com/1469830) Refactor the strings into some sort of
+// context object
 void BaseFetchContext::AddClientHintsIfNecessary(
     const ClientHintsPreferences& hints_preferences,
     const url::Origin& resource_origin,
@@ -147,6 +149,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     const absl::optional<ClientHintImageInfo>& image_info,
     const absl::optional<WTF::AtomicString>& prefers_color_scheme,
     const absl::optional<WTF::AtomicString>& prefers_reduced_motion,
+    const absl::optional<WTF::AtomicString>& prefers_reduced_transparency,
     ResourceRequest& request) {
   // If the feature is enabled, then client hints are allowed only on secure
   // URLs.
@@ -409,6 +412,14 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       prefers_reduced_motion) {
     SetHttpHeader(WebClientHintsType::kPrefersReducedMotion,
                   prefers_reduced_motion.value(), request);
+  }
+
+  if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kPrefersReducedTransparency,
+                           hints_preferences) &&
+      prefers_reduced_transparency) {
+    SetHttpHeader(WebClientHintsType::kPrefersReducedTransparency,
+                  prefers_reduced_transparency.value(), request);
   }
 }
 

@@ -222,6 +222,9 @@ enum PermissionsPolicyFeature {
   // Client Hint for form factor
   kClientHintUAFormFactor = 111,
 
+  // Client hint for prefers-reduced-transparency
+  kClientHintPrefersReducedTransparency = 112,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

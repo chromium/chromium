@@ -13,6 +13,7 @@ ch-dpr
 ch-ect
 ch-prefers-color-scheme
 ch-prefers-reduced-motion
+ch-prefers-reduced-transparency
 ch-rtt
 ch-save-data
 ch-ua

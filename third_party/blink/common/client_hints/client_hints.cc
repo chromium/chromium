@@ -73,6 +73,8 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintPrefersReducedMotion},
       {network::mojom::WebClientHintsType::kUAFormFactor,
        mojom::PermissionsPolicyFeature::kClientHintUAFormFactor},
+      {network::mojom::WebClientHintsType::kPrefersReducedTransparency,
+       mojom::PermissionsPolicyFeature::kClientHintPrefersReducedTransparency},
   };
 }
 

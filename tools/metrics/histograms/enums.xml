@@ -43986,6 +43986,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4632" label="CSSRelativeColor"/>
   <int value="4633" label="XPathMissingVariableParsed"/>
   <int value="4634" label="XPathMissingVariableEvaluated"/>
+  <int value="4635" label="ClientHintsPrefersReducedTransparency"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -44117,6 +44118,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="109" label="PrivateAggregation"/>
   <int value="110" label="PrivateStateTokenIssuance"/>
   <int value="111" label="ClientHintUAFormFactor"/>
+  <int value="112" label="ClientHintPrefersReducedTransparency"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

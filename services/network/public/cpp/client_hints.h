@@ -32,6 +32,12 @@ extern const char kPrefersReducedMotionNoPreference[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kPrefersReducedMotionReduce[];
 
+// The "Sec-CH-Prefers-Reduced-Transparency" header values.
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrefersReducedTransparencyNoPreference[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrefersReducedTransparencyReduce[];
+
 // Mapping from WebEffectiveConnectionType to the header value. This value is
 // sent to the origins and is returned by the JavaScript API. The ordering
 // should match the ordering in //net/nqe/effective_connection_type.h and

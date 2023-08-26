@@ -106,10 +106,10 @@ using ::testing::Key;
 using ::testing::Not;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 20u;
+constexpr unsigned expected_client_hints_number = 21u;
 constexpr unsigned expected_default_third_party_client_hints_number = 3u;
-constexpr unsigned expected_requested_third_party_client_hints_number = 23u;
-constexpr unsigned expected_pre_merge_third_party_client_hints_number = 15u;
+constexpr unsigned expected_requested_third_party_client_hints_number = 24u;
+constexpr unsigned expected_pre_merge_third_party_client_hints_number = 16u;
 
 // All of the status codes from HttpResponseHeaders::IsRedirectResponseCode.
 const net::HttpStatusCode kRedirectStatusCodes[] = {
@@ -423,7 +423,8 @@ const std::vector<network::mojom::WebClientHintsType> kStandardHTTPHeaderHints(
      network::mojom::WebClientHintsType::kViewportHeight,
      network::mojom::WebClientHintsType::kUAFullVersionList,
      network::mojom::WebClientHintsType::kUAWoW64,
-     network::mojom::WebClientHintsType::kUAFormFactor});
+     network::mojom::WebClientHintsType::kUAFormFactor,
+     network::mojom::WebClientHintsType::kPrefersReducedTransparency});
 
 const std::vector<network::mojom::WebClientHintsType>
     kStandardAcceptCHMetaHints(
@@ -487,7 +488,8 @@ const std::vector<network::mojom::WebClientHintsType>
          network::mojom::WebClientHintsType::kViewportHeight,
          network::mojom::WebClientHintsType::kUAFullVersionList,
          network::mojom::WebClientHintsType::kUAWoW64,
-         network::mojom::WebClientHintsType::kUAFormFactor});
+         network::mojom::WebClientHintsType::kUAFormFactor,
+         network::mojom::WebClientHintsType::kPrefersReducedTransparency});
 
 const std::vector<network::mojom::WebClientHintsType>
     kExtendedDelegateCHMetaHints(
@@ -511,7 +513,8 @@ const std::vector<network::mojom::WebClientHintsType>
          network::mojom::WebClientHintsType::kUAFullVersionList,
          network::mojom::WebClientHintsType::kUAWoW64,
          network::mojom::WebClientHintsType::kPrefersReducedMotion,
-         network::mojom::WebClientHintsType::kUAFormFactor});
+         network::mojom::WebClientHintsType::kUAFormFactor,
+         network::mojom::WebClientHintsType::kPrefersReducedTransparency});
 }  // namespace
 
 class ClientHintsBrowserTest : public policy::PolicyTest {
@@ -649,7 +652,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     // represented in the various header counts.
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
-        "ClientHintsFormFactor",
+        "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency",
         "");
     return feature_list;
   }
@@ -1243,6 +1246,14 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       // "UserAgentDeprecation" Origin Trial token. Need to add `Sec-CH-UA-Full`
       // corresponding tests.
       if (header == "sec-ch-ua-full") {
+        continue;
+      }
+
+      // Skip over `Sec-CH-Prefers-Reduced-Transparency` when its feature is
+      // disabled
+      if (header == "sec-ch-prefers-reduced-transparency" &&
+          !base::FeatureList::IsEnabled(
+              blink::features::kClientHintsPrefersReducedTransparency)) {
         continue;
       }
 
@@ -3321,7 +3332,9 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,ClientHintsFormFactor", "");
+        "UserAgentClientHint,ClientHintsFormFactor,"
+        "ClientHintsPrefersReducedTransparency",
+        "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
@@ -4016,9 +4029,15 @@ class ClientHintsBrowserTestWithEmulatedMedia
     : public DevToolsProtocolTestBase {
  public:
   ClientHintsBrowserTestWithEmulatedMedia()
+      : ClientHintsBrowserTestWithEmulatedMedia(
+            "UserAgentClientHint,AcceptCHFrame,"
+            "ClientHintsPrefersReducedTransparency",
+            "") {}
+
+  ClientHintsBrowserTestWithEmulatedMedia(const std::string& enable_features,
+                                          const std::string& disable_features)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitFromCommandLine(
-        "UserAgentClientHint,AcceptCHFrame", "");
+    scoped_feature_list_.InitFromCommandLine(enable_features, disable_features);
 
     https_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/client_hints");
@@ -4046,6 +4065,11 @@ class ClientHintsBrowserTestWithEmulatedMedia
       prefers_reduced_motion_observed_ =
           request.headers.at("sec-ch-prefers-reduced-motion");
     }
+    if (base::Contains(request.headers,
+                       "sec-ch-prefers-reduced-transparency")) {
+      prefers_reduced_transparency_observed_ =
+          request.headers.at("sec-ch-prefers-reduced-transparency");
+    }
   }
 
   const GURL& test_url() const { return test_url_; }
@@ -4058,6 +4082,10 @@ class ClientHintsBrowserTestWithEmulatedMedia
     return prefers_reduced_motion_observed_;
   }
 
+  const std::string& prefers_reduced_transparency_observed() const {
+    return prefers_reduced_transparency_observed_;
+  }
+
   void EmulateMedia(base::StringPiece string) {
     base::Value features = base::test::ParseJson(string);
     DCHECK(features.is_list());
@@ -4066,12 +4094,13 @@ class ClientHintsBrowserTestWithEmulatedMedia
     SendCommandSync("Emulation.setEmulatedMedia", std::move(params));
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   GURL test_url_;
   std::string prefers_color_scheme_observed_;
   std::string prefers_reduced_motion_observed_;
+  std::string prefers_reduced_transparency_observed_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
@@ -4105,10 +4134,27 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
+                       PrefersReducedTransparency) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
+  Attach();
+
+  EmulateMedia(
+      R"([{"name": "prefers-reduced-transparency", "value": "reduce"}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "reduce");
+
+  EmulateMedia(R"([{"name": "prefers-reduced-transparency", "value": ""}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "no-preference");
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
                        MultipleMediaFeatures) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_color_scheme_observed(), "");
   EXPECT_EQ(prefers_reduced_motion_observed(), "");
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
   Attach();
 
   EmulateMedia(
@@ -4117,11 +4163,21 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_color_scheme_observed(), "light");
   EXPECT_EQ(prefers_reduced_motion_observed(), "reduce");
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "no-preference");
+
+  EmulateMedia(
+      R"([{"name": "prefers-color-scheme", "value": "light"},
+          {"name": "prefers-reduced-transparency", "value": "reduce"}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_color_scheme_observed(), "light");
+  EXPECT_EQ(prefers_reduced_motion_observed(), "no-preference");
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "reduce");
 
   EmulateMedia(R"([{"name": "prefers-color-scheme", "value": "dark"}])");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_color_scheme_observed(), "dark");
   EXPECT_EQ(prefers_reduced_motion_observed(), "no-preference");
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "no-preference");
 }
 
 // Base class for the User-Agent reduction browser tests.  Common functionality
@@ -4905,4 +4961,29 @@ IN_PROC_BROWSER_TEST_F(RedirectUaReductionBrowserTest, NormalRedirectRequest) {
       /*expected_ua_reduced=*/
       base::FeatureList::IsEnabled(
           blink::features::kReduceUserAgentMinorVersion));
+}
+
+class PrefersReducedTransparencyExplicitlyDisabledBrowserTest
+    : public ClientHintsBrowserTestWithEmulatedMedia {
+ public:
+  PrefersReducedTransparencyExplicitlyDisabledBrowserTest()
+      : ClientHintsBrowserTestWithEmulatedMedia(
+            "",
+            "ClientHintsPrefersReducedTransparency") {}
+};
+
+IN_PROC_BROWSER_TEST_F(PrefersReducedTransparencyExplicitlyDisabledBrowserTest,
+                       PrefersReducedTransparencyDisabled) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
+  Attach();
+
+  EmulateMedia(
+      R"([{"name": "prefers-reduced-transparency", "value": "reduce"}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
+
+  EmulateMedia(R"([{"name": "prefers-reduced-transparency", "value": ""}])");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
 }

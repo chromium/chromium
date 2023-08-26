@@ -109,6 +109,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const absl::optional<ClientHintImageInfo>& image_info,
       const absl::optional<WTF::AtomicString>& prefers_color_scheme,
       const absl::optional<WTF::AtomicString>& prefers_reduced_motion,
+      const absl::optional<WTF::AtomicString>& prefers_reduced_transparency,
       ResourceRequest& request);
 
  protected:

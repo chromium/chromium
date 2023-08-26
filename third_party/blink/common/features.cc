@@ -474,6 +474,11 @@ BASE_FEATURE(kClientHintsFormFactor,
              "ClientHintsFormFactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable `sec-ch-prefers-reduced-transparency` client hint.
+BASE_FEATURE(kClientHintsPrefersReducedTransparency,
+             "ClientHintsPrefersReducedTransparency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable `sec-ch-width` client hint.
 BASE_FEATURE(kClientHintsResourceWidth,
              "ClientHintsResourceWidth",

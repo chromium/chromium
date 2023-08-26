@@ -501,6 +501,21 @@ void AddPrefersReducedMotionHeader(net::HttpRequestHeaders* headers,
                         : network::kPrefersReducedMotionNoPreference);
 }
 
+void AddPrefersReducedTransparencyHeader(net::HttpRequestHeaders* headers,
+                                         FrameTreeNode* frame_tree_node) {
+  if (!frame_tree_node) {
+    return;
+  }
+  bool prefers_reduced_transparency =
+      WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host())
+          ->GetOrCreateWebPreferences()
+          .prefers_reduced_transparency;
+  SetHeaderToString(headers, WebClientHintsType::kPrefersReducedTransparency,
+                    prefers_reduced_transparency
+                        ? network::kPrefersReducedTransparencyReduce
+                        : network::kPrefersReducedTransparencyNoPreference);
+}
+
 bool IsValidURLForClientHints(const url::Origin& origin) {
   return network::IsOriginPotentiallyTrustworthy(origin);
 }
@@ -898,6 +913,11 @@ void AddRequestClientHintsHeaders(
     AddPrefersReducedMotionHeader(headers, frame_tree_node);
   }
 
+  if (ShouldAddClientHint(data,
+                          WebClientHintsType::kPrefersReducedTransparency)) {
+    AddPrefersReducedTransparencyHeader(headers, frame_tree_node);
+  }
+
   if (ShouldAddClientHint(data, WebClientHintsType::kSaveData))
     AddSaveDataHeader(headers, context);
 
@@ -906,7 +926,7 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kUAFormFactor ==
+      network::mojom::WebClientHintsType::kPrefersReducedTransparency ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

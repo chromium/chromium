@@ -59,6 +59,9 @@ enum WebClientHintsType {
   kPrefersReducedMotion = 28,
   // The form factor of the user-agent device.
   kUAFormFactor = 29,
+  // Indicates the client wants to minimize the amount of transparency
+  // it uses if set to 'reduce'.
+  kPrefersReducedTransparency = 30,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

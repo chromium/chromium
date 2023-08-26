@@ -102,6 +102,7 @@ public class ClientHintsTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=UserAgentClientHint",
+            "enable-features=ClientHintsPrefersReducedTransparency",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testAllClientHints() throws Throwable {
@@ -145,6 +146,7 @@ public class ClientHintsTest {
                 "save-data",
                 "sec-ch-prefers-reduced-motion",
                 "sec-ch-ua-form-factor",
+                "sec-ch-prefers-reduced-transparency",
                 // Add client hints above. The final row should have a trailing comma for cleaner
                 // diffs.
         };
@@ -209,6 +211,8 @@ public class ClientHintsTest {
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("save-data"));
         Assert.assertNotEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-prefers-reduced-motion"));
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-form-factor"));
+        Assert.assertNotEquals(
+                "HEADER_NOT_FOUND", jsonObject.getString("sec-ch-prefers-reduced-transparency"));
 
         // Cleanup after test.
         clearCookies();

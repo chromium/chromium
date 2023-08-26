@@ -130,6 +130,7 @@ Response EmulationHandler::Disable() {
     SetFocusEmulationEnabled(false);
   prefers_color_scheme_ = "";
   prefers_reduced_motion_ = "";
+  prefers_reduced_transparency_ = "";
   return Response::Success();
 }
 
@@ -553,15 +554,22 @@ Response EmulationHandler::SetEmulatedMedia(
 
   prefers_color_scheme_ = "";
   prefers_reduced_motion_ = "";
+  prefers_reduced_transparency_ = "";
   if (features.has_value()) {
     for (auto const& mediaFeature : features.value()) {
       auto const& name = mediaFeature->GetName();
       auto const& value = mediaFeature->GetValue();
       if (name == "prefers-color-scheme") {
-        prefers_color_scheme_ =
-            (value == "light" || value == "dark") ? value : "";
+        prefers_color_scheme_ = (value == network::kPrefersColorSchemeLight ||
+                                 value == network::kPrefersColorSchemeDark)
+                                    ? value
+                                    : "";
       } else if (name == "prefers-reduced-motion") {
-        prefers_reduced_motion_ = (value == "reduce") ? value : "";
+        prefers_reduced_motion_ =
+            (value == network::kPrefersReducedMotionReduce) ? value : "";
+      } else if (name == "prefers-reduced-transparency") {
+        prefers_reduced_transparency_ =
+            (value == network::kPrefersReducedTransparencyReduce) ? value : "";
       }
     }
   }
@@ -682,6 +690,15 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
     if (headers->HasHeader(prefers_reduced_motion_client_hint_name)) {
       headers->SetHeader(prefers_reduced_motion_client_hint_name,
                          prefers_reduced_motion_);
+    }
+  }
+  if (!prefers_reduced_transparency_.empty()) {
+    const auto& prefers_reduced_transparency_client_hint_name =
+        network::GetClientHintToNameMap().at(
+            network::mojom::WebClientHintsType::kPrefersReducedTransparency);
+    if (headers->HasHeader(prefers_reduced_transparency_client_hint_name)) {
+      headers->SetHeader(prefers_reduced_transparency_client_hint_name,
+                         prefers_reduced_transparency_);
     }
   }
 }

@@ -29,6 +29,6 @@ TEST(ClientHintsTest, FindClientHintsToRemoveNoLegacy) {
           "sec-ch-viewport-height", "sec-ch-device-memory", "sec-ch-dpr",
           "sec-ch-width", "sec-ch-viewport-width",
           "sec-ch-ua-full-version-list", "sec-ch-ua-wow64",
-          "sec-ch-ua-form-factor"));
+          "sec-ch-ua-form-factor", "sec-ch-prefers-reduced-transparency"));
 }
 }  // namespace blink

@@ -19,7 +19,8 @@ class ClientHintsPreferencesTest : public testing::Test {
   ClientHintsPreferencesTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kUserAgentClientHint},
+        {blink::features::kUserAgentClientHint,
+         blink::features::kClientHintsPrefersReducedTransparency},
         /*disabled_features=*/{});
   }
 
@@ -46,41 +47,43 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     bool expectation_ua_full_version;
     bool expectation_prefers_color_scheme;
     bool expectation_prefers_reduced_motion;
+    bool expectation_prefers_reduced_transparency;
   } cases[] = {
       {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth, "
        "sec-ch-viewportWidth",
        true, true, true, true, false, false, false, false, false, false, false,
-       false, false, false, false, false},
+       false, false, false, false, false, false},
       {"WiDtH, sEc-ch-WiDtH, dPr, sec-cH-dPr, viewport-width, "
        "sec-ch-viewport-width, rtt, downlink, ect, "
-       "sec-ch-prefers-color-scheme, sec-ch-prefers-reduced-motion",
+       "sec-ch-prefers-color-scheme, sec-ch-prefers-reduced-motion, "
+       "sec-ch-prefers-reduced-transparency",
        true, true, true, true, true, true, true, true, true, false, false,
-       false, false, false, true, true},
+       false, false, false, true, true, true},
       {"WiDtH, dPr, viewport-width, rtt, downlink, effective-connection-type",
        true, false, true, false, true, false, true, true, false, false, false,
-       false, false, false, false, false},
+       false, false, false, false, false, false},
       {"sec-ch-WIDTH, DPR, VIWEPROT-Width", false, true, true, false, false,
        false, false, false, false, false, false, false, false, false, false,
-       false},
+       false, false},
       {"sec-ch-VIewporT-Width, wutwut, width", true, false, false, false, false,
        true, false, false, false, false, false, false, false, false, false,
-       false},
+       false, false},
       {"dprw", false, false, false, false, false, false, false, false, false,
-       false, false, false, false, false, false, false},
+       false, false, false, false, false, false, false, false},
       {"DPRW", false, false, false, false, false, false, false, false, false,
-       false, false, false, false, false, false, false},
+       false, false, false, false, false, false, false, false},
       {"sec-ch-ua", false, false, false, false, false, false, false, false,
-       false, true, false, false, false, false, false, false},
+       false, true, false, false, false, false, false, false, false},
       {"sec-ch-ua-arch", false, false, false, false, false, false, false, false,
-       false, false, true, false, false, false, false, false},
+       false, false, true, false, false, false, false, false, false},
       {"sec-ch-ua-platform", false, false, false, false, false, false, false,
-       false, false, false, false, true, false, false, false, false},
+       false, false, false, false, true, false, false, false, false, false},
       {"sec-ch-ua-model", false, false, false, false, false, false, false,
-       false, false, false, false, false, true, false, false, false},
+       false, false, false, false, false, true, false, false, false, false},
       {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
        "sec-ch-ua-full-version",
        false, false, false, false, false, false, false, false, false, true,
-       true, true, true, true, false, false},
+       true, true, true, true, false, false, false},
   };
 
   for (const auto& test_case : cases) {
@@ -137,6 +140,10 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     EXPECT_EQ(test_case.expectation_prefers_reduced_motion,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kPrefersReducedMotion));
+    EXPECT_EQ(
+        test_case.expectation_prefers_reduced_transparency,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 
     // Calling UpdateFromMetaCH with an invalid header should
     // have no impact on client hint preferences.
@@ -231,6 +238,8 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kPrefersColorScheme));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersReducedMotion));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 
   // Calling UpdateFromMetaCH with an invalid header should
   // have no impact on client hint preferences.
@@ -259,6 +268,8 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kPrefersColorScheme));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersReducedMotion));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 
   // Calling UpdateFromMetaCH with "width" header should
   // replace add width to preferences
@@ -288,6 +299,8 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kPrefersColorScheme));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersReducedMotion));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 
   // Calling UpdateFromMetaCH with empty header should not
   // change anything.
@@ -316,6 +329,8 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kPrefersColorScheme));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersReducedMotion));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 }
 
 TEST_F(ClientHintsPreferencesTest, Insecure) {
@@ -363,32 +378,154 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     bool expect_ua_full_version;
     bool expect_prefers_color_scheme;
     bool expect_prefers_reduced_motion;
+    bool expect_prefers_reduced_transparency;
   } test_cases[] = {
       {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth, "
        "sec-ch-viewportWidth, sec-ch-prefers-color-scheme, "
-       "sec-ch-prefers-reduced-motion",
-       false, false, true, true, true, true, false, false, false, false, false,
-       false, false, false, false, false, true, true},
-      {"width, dpr, viewportWidth", false, false, true, false, true, false,
-       false, false, false, false, false, false, false, false, false, false,
-       false, false},
-      {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth", false, false,
-       true, true, true, true, false, false, false, false, false, false, false,
-       false, false, false, false, false},
-      {"width, sec-ch-dpr, viewportWidth", false, false, true, false, false,
-       true, false, false, false, false, false, false, false, false, false,
-       false, false, false},
-      {"sec-ch-width, dpr, rtt, downlink, ect", false, false, false, true, true,
-       false, false, false, true, true, true, false, false, false, false, false,
-       false, false},
-      {"device-memory", true, false, false, false, false, false, false, false,
-       false, false, false, false, false, false, false, false, false, false},
-      {"sec-ch-dpr rtt", false, false, false, false, false, false, false, false,
-       false, false, false, false, false, false, false, false, false, false},
+       "sec-ch-prefers-reduced-motion, sec-ch-prefers-reduced-transparency",
+       false,
+       false,
+       true,
+       true,
+       true,
+       true,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       true,
+       true,
+       true},
+      {"width, dpr, viewportWidth",
+       false,
+       false,
+       true,
+       false,
+       true,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false},
+      {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth",
+       false,
+       false,
+       true,
+       true,
+       true,
+       true,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false},
+      {"width, sec-ch-dpr, viewportWidth",
+       false,
+       false,
+       true,
+       false,
+       false,
+       true,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false},
+      {"sec-ch-width, dpr, rtt, downlink, ect",
+       false,
+       false,
+       false,
+       true,
+       true,
+       false,
+       false,
+       false,
+       true,
+       true,
+       true,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false},
+      {"device-memory", true,  false, false, false, false, false,
+       false,           false, false, false, false, false, false,
+       false,           false, false, false, false, false},
+      {"sec-ch-dpr rtt",
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false},
       {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
        "sec-ch-ua-full-version",
-       false, false, false, false, false, false, false, false, false, false,
-       false, true, true, true, true, true, false, false},
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       true,
+       true,
+       true,
+       true,
+       true,
+       false,
+       false,
+       false},
   };
 
   for (const auto& test : test_cases) {
@@ -428,6 +565,8 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
         network::mojom::WebClientHintsType::kPrefersColorScheme));
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kPrefersReducedMotion));
+    EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kPrefersReducedTransparency));
 
     const KURL kurl(String::FromUTF8("https://www.google.com/"));
     preferences.UpdateFromMetaCH(test.accept_ch_header_value, kurl, nullptr,
@@ -489,6 +628,10 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     EXPECT_EQ(test.expect_prefers_reduced_motion,
               enabled_types.IsEnabled(
                   network::mojom::WebClientHintsType::kPrefersReducedMotion));
+    EXPECT_EQ(
+        test.expect_prefers_reduced_transparency,
+        enabled_types.IsEnabled(
+            network::mojom::WebClientHintsType::kPrefersReducedTransparency));
   }
 }
 

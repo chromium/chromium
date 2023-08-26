@@ -87,6 +87,9 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       break;
     case WebClientHintsType::kPrefersReducedMotion:
       break;
+    case WebClientHintsType::kPrefersReducedTransparency:
+      return !base::FeatureList::IsEnabled(
+          features::kClientHintsPrefersReducedTransparency);
     default:
       break;
   }

@@ -3972,6 +3972,7 @@ enum WebFeature {
   kCSSRelativeColor = 4632,
   kXPathMissingVariableParsed = 4633,
   kXPathMissingVariableEvaluated = 4634,
+  kClientHintsPrefersReducedTransparency = 4635,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
