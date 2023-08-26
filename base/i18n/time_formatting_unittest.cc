@@ -285,17 +285,31 @@ TEST(TimeFormattingTest, TimeFormatWithPattern) {
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
 
   i18n::SetICUDefaultLocale("en_US");
-  EXPECT_EQ(u"Apr 30, 2011", TimeFormatWithPattern(time, "yMMMd"));
+  EXPECT_EQ(u"Apr 30, 2011", LocalizedTimeFormatWithPattern(time, "yMMMd"));
   EXPECT_EQ(u"April 30 at 3:42:07\u202fPM",
-            TimeFormatWithPattern(time, "MMMMdjmmss"));
+            LocalizedTimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(
+      "Sat! 30 Apr 2011 at 15.42+07",
+      UnlocalizedTimeFormatWithPattern(time, "E! dd MMM y 'at' HH.mm+ss"));
+  EXPECT_EQ("Sat! 30 Apr 2011 at 22.42+07",
+            UnlocalizedTimeFormatWithPattern(time, "E! dd MMM y 'at' HH.mm+ss",
+                                             icu::TimeZone::getGMT()));
 
   i18n::SetICUDefaultLocale("en_GB");
-  EXPECT_EQ(u"30 Apr 2011", TimeFormatWithPattern(time, "yMMMd"));
-  EXPECT_EQ(u"30 April at 15:42:07", TimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(u"30 Apr 2011", LocalizedTimeFormatWithPattern(time, "yMMMd"));
+  EXPECT_EQ(u"30 April at 15:42:07",
+            LocalizedTimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(
+      "Sat! 30 Apr 2011 at 15.42+07",
+      UnlocalizedTimeFormatWithPattern(time, "E! dd MMM y 'at' HH.mm+ss"));
 
   i18n::SetICUDefaultLocale("ja_JP");
-  EXPECT_EQ(u"2011年4月30日", TimeFormatWithPattern(time, "yMMMd"));
-  EXPECT_EQ(u"4月30日 15:42:07", TimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(u"2011年4月30日", LocalizedTimeFormatWithPattern(time, "yMMMd"));
+  EXPECT_EQ(u"4月30日 15:42:07",
+            LocalizedTimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(
+      "Sat! 30 Apr 2011 at 15.42+07",
+      UnlocalizedTimeFormatWithPattern(time, "E! dd MMM y 'at' HH.mm+ss"));
 }
 
 TEST(TimeFormattingTest, TimeDurationFormat) {

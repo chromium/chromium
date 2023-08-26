@@ -113,8 +113,8 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
 
 ASH_EXPORT bool IsTheSameMonth(const base::Time& date_a,
                                const base::Time& date_b) {
-  return base::TimeFormatWithPattern(date_a, "MM YYYY") ==
-         base::TimeFormatWithPattern(date_b, "MM YYYY");
+  return base::UnlocalizedTimeFormatWithPattern(date_a, "MM YYYY") ==
+         base::UnlocalizedTimeFormatWithPattern(date_b, "MM YYYY");
 }
 
 base::Time GetTimeFromString(const char* start_time) {

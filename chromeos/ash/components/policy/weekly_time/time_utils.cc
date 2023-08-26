@@ -20,10 +20,6 @@
 
 namespace policy {
 namespace weekly_time_utils {
-namespace {
-constexpr base::TimeDelta kWeek = base::Days(7);
-const char kFormatWeekdayHourMinute[] = "EEEE jj:mm a";
-}  // namespace
 
 bool GetOffsetFromTimezoneToGmt(const std::string& timezone,
                                 base::Clock* clock,
@@ -94,7 +90,7 @@ std::u16string WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
   // |day_of_week| and |milliseconds_|.
   base::Time offset_time =
       now + now_weekly_time.GetDurationTo(result.ConvertToTimezone(0));
-  return base::TimeFormatWithPattern(offset_time, kFormatWeekdayHourMinute);
+  return base::LocalizedTimeFormatWithPattern(offset_time, "EEEE jj:mm a");
 }
 
 std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
@@ -131,7 +127,7 @@ absl::optional<base::Time> GetNextEventTime(
 
   // Weekly intervals repeat every week, therefore the maximum duration till
   // next weekly interval is one week.
-  base::TimeDelta till_next_event = kWeek;
+  base::TimeDelta till_next_event = base::Days(7);
   for (const auto& interval : weekly_time_intervals) {
     if (weekly_time != interval.start())
       till_next_event = std::min(till_next_event,

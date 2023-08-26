@@ -83,29 +83,23 @@ constexpr auto kSavedDeskNameInsets = gfx::Insets::VH(0, 2);
 constexpr int kFadeDurationMs = 100;
 
 std::u16string GetTimeStr(base::Time timestamp) {
-  std::u16string date, time, time_str;
-
-  // Returns empty if `timestamp` is out of relative date range, which is
-  // yesterday and today as of now. Please see `ui/base/l10n/time_format.h` for
-  // more details.
-  date = ui::TimeFormat::RelativeDate(timestamp, nullptr);
-  if (date.empty()) {
-    // Syntax `yMMMdjmm` is used by the File App if it's not a relative date.
-    // Please note, this might be slightly different for different locales.
-    // Examples:
-    //  `en-US` - `Jan 1, 2022, 10:30 AM`
-    //  `zh-CN` - `2022年1月1日 10:30`
-    time_str = base::TimeFormatWithPattern(timestamp, "yMMMdjmm");
-  } else {
-    // If it's a relative date, just append `jmm` to it.
-    // Please note, this might be slightly different for different locales.
-    // Examples:
-    //  `en-US` - `Today 10:30 AM`
-    //  `zh-CN` - `今天 10:30`
-    time_str = date + u" " + base::TimeFormatWithPattern(timestamp, "jmm");
-  }
-
-  return time_str;
+  // `ui::TimeFormat::RelativeDate()` returns an empty string if `timestamp` is
+  // out of relative date range, which is yesterday and today as of now.
+  const std::u16string date = ui::TimeFormat::RelativeDate(timestamp, nullptr);
+  return date.empty()
+             // Syntax `yMMMdjmm` is used by the File App if it's not a relative
+             // date. Please note, this might be slightly different for
+             // different locales. Examples:
+             //  `en-US` - `Jan 1, 2022, 10:30 AM`
+             //  `zh-CN` - `2022年1月1日 10:30`
+             ? base::LocalizedTimeFormatWithPattern(timestamp, "yMMMdjmm")
+             // If it's a relative date, just append `jmm` to it.
+             // Please note, this might be slightly different for different
+             // locales. Examples:
+             //  `en-US` - `Today 10:30 AM`
+             //  `zh-CN` - `今天 10:30`
+             : (date + u" " +
+                base::LocalizedTimeFormatWithPattern(timestamp, "jmm"));
 }
 
 }  // namespace

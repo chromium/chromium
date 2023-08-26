@@ -727,7 +727,7 @@ std::u16string DocumentProvider::GenerateLastModifiedString(
       return base::TimeFormatTimeOfDay(modified_time);
     }
     // Same year but not the same day: use abbreviated month/day ("Jan 1").
-    return base::TimeFormatWithPattern(modified_time, "MMMd");
+    return base::LocalizedTimeFormatWithPattern(modified_time, "MMMd");
   }
 
   // No shorthand; display full MM/DD/YYYY.

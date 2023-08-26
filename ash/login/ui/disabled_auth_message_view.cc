@@ -26,9 +26,6 @@
 namespace ash {
 namespace {
 
-// Date time format containing only the day of the week, for example: "Tuesday".
-constexpr char kDayOfWeekOnlyTimeFormat[] = "EEEE";
-
 constexpr int kVerticalBorderDp = 16;
 constexpr int kHorizontalBorderDp = 16;
 constexpr int kChildrenSpacingDp = 4;
@@ -76,7 +73,7 @@ LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
   } else {
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_COME_BACK_DAY_OF_WEEK_MESSAGE,
-        base::TimeFormatWithPattern(unlock_time, kDayOfWeekOnlyTimeFormat),
+        base::LocalizedTimeFormatWithPattern(unlock_time, "EEEE"),
         time_to_display);
   }
   message.icon = ui::ImageModel::FromVectorIcon(

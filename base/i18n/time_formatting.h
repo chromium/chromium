@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Basic time formatting methods.  These methods use the current locale
-// formatting for displaying the time.
+// Basic time formatting methods.  Most methods format based on the current
+// locale. *TimeFormatWithPattern() are special; see comments there.
 
 #ifndef BASE_I18N_TIME_FORMATTING_H_
 #define BASE_I18N_TIME_FORMATTING_H_
@@ -13,10 +13,11 @@
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/icu/source/common/unicode/uversion.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "third_party/icu/source/i18n/unicode/timezone.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+U_NAMESPACE_BEGIN
+class TimeZone;
+U_NAMESPACE_END
 
 namespace base {
 
@@ -102,12 +103,40 @@ BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDateAndTime(const Time& time);
 // "Monday, March 6, 2008".
 BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDate(const Time& time);
 
-// Formats a time using a skeleton to produce a format for different locales
-// when an unusual time format is needed, e.g. "Feb. 2, 18:00".
+// Formats a time using a pattern to produce output for different locales when
+// an unusual time format is needed, e.g. "Feb. 2, 18:00". See
+// https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
+// for pattern details.
 //
-// See http://userguide.icu-project.org/formatparse/datetime for details.
-BASE_I18N_EXPORT std::u16string TimeFormatWithPattern(const Time& time,
-                                                      const char* pattern);
+// Use this version when you want to display the resulting string to the user.
+//
+// This localizes more than you might expect: it does not simply translate days
+// of the week, etc., and then feed them into the provided pattern. The pattern
+// will also be run through a pattern localizer that will add spacing,
+// delimiters, etc. appropriate for the current locale. If you don't want this,
+// look at `UnlocalizedTimeFormatWithPattern()` below. If you want translation
+// but don't want to adjust the pattern as well, talk to base/ OWNERS about your
+// use case.
+BASE_I18N_EXPORT std::u16string LocalizedTimeFormatWithPattern(
+    const Time& time,
+    const char* pattern);
+
+// Formats a time using a pattern to produce en-US-like output, e.g. "Feb. 2,
+// 18:00". See
+// https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
+// for pattern details. `time_zone` can be set to a desired time zone (e.g.
+// icu::TimeZone::getGMT()); if left as null, the local time zone will be used.
+//
+// Use this version when you want to control the output format precisely, e.g.
+// for logging or to format a string for consumption by some server.
+//
+// This always outputs in US English and does not change the provided pattern at
+// all before formatting. It returns a `std::string` instead of a
+// `std::u16string` under the assumption that it will not be used in UI.
+BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
+    const Time& time,
+    const char* pattern,
+    const icu::TimeZone* time_zone = nullptr);
 
 // Formats a time duration of hours and minutes into various formats, e.g.,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See

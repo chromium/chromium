@@ -256,12 +256,12 @@ class BatteryIconView : public BatteryInfoViewBase {
 std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
   // month (e.g., "2", "10").
-  return base::TimeFormatWithPattern(time, "LLLd");
+  return base::LocalizedTimeFormatWithPattern(time, "LLLd");
 }
 
 std::u16string FormatDayOfWeek(const base::Time& time) {
   // Use 'short' day of week format (e.g., "Wed").
-  return base::TimeFormatWithPattern(time, "EEE");
+  return base::LocalizedTimeFormatWithPattern(time, "EEE");
 }
 
 // Returns whether SmartChargingUI should be used.

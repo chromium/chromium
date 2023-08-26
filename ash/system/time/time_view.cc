@@ -79,7 +79,7 @@ const int kVerticalClockMinutesTopOffset = -2;
 std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
   // month (e.g., "2", "10").
-  return base::TimeFormatWithPattern(time, "LLLd");
+  return base::LocalizedTimeFormatWithPattern(time, "LLLd");
 }
 
 // Returns the time to show by the time view.

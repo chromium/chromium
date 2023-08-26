@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
@@ -22,15 +23,15 @@
 #include "third_party/icu/source/i18n/unicode/fmtable.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
 namespace {
 
-std::u16string TimeFormat(const icu::DateFormat* formatter, const Time& time) {
-  DCHECK(formatter);
+std::u16string TimeFormat(const icu::DateFormat& formatter, const Time& time) {
   icu::UnicodeString date_string;
 
-  formatter->format(static_cast<UDate>(time.ToDoubleT() * 1000), date_string);
+  formatter.format(static_cast<UDate>(time.ToDoubleT() * 1000), date_string);
   return i18n::UnicodeStringToString16(date_string);
 }
 
@@ -53,21 +54,27 @@ std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
   return i18n::UnicodeStringToString16(time_string);
 }
 
-icu::SimpleDateFormat CreateSimpleDateFormatter(const char* pattern) {
-  // Generate a locale-dependent format pattern. The generator will take
-  // care of locale-dependent formatting issues like which separator to
-  // use (some locales use '.' instead of ':'), and where to put the am/pm
-  // marker.
+icu::SimpleDateFormat CreateSimpleDateFormatter(
+    const char* pattern,
+    bool generate_pattern = true,
+    const icu::Locale& locale = icu::Locale::getDefault()) {
   UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(
-      icu::DateTimePatternGenerator::createInstance(status));
-  DCHECK(U_SUCCESS(status));
-  icu::UnicodeString generated_pattern =
-      generator->getBestPattern(icu::UnicodeString(pattern), status);
-  DCHECK(U_SUCCESS(status));
+  icu::UnicodeString generated_pattern(pattern);
 
-  // Then, format the time using the generated pattern.
-  icu::SimpleDateFormat formatter(generated_pattern, status);
+  if (generate_pattern) {
+    // Generate a locale-dependent format pattern. The generator will take
+    // care of locale-dependent formatting issues like which separator to
+    // use (some locales use '.' instead of ':'), and where to put the am/pm
+    // marker.
+    std::unique_ptr<icu::DateTimePatternGenerator> generator(
+        icu::DateTimePatternGenerator::createInstance(status));
+    DCHECK(U_SUCCESS(status));
+    generated_pattern = generator->getBestPattern(generated_pattern, status);
+    DCHECK(U_SUCCESS(status));
+  }
+
+  // Then, format the time using the desired pattern.
+  icu::SimpleDateFormat formatter(generated_pattern, locale, status);
   DCHECK(U_SUCCESS(status));
 
   return formatter;
@@ -102,7 +109,7 @@ std::u16string TimeFormatTimeOfDay(const Time& time) {
   // Chrome's application locale.
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createTimeInstance(icu::DateFormat::kShort));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
 std::u16string TimeFormatTimeOfDayWithMilliseconds(const Time& time) {
@@ -123,35 +130,33 @@ std::u16string TimeFormatTimeOfDayWithHourClockType(const Time& time,
   const char* base_pattern = (type == k12HourClock ? "ahm" : "Hm");
   icu::SimpleDateFormat formatter = CreateSimpleDateFormatter(base_pattern);
 
-  if (ampm == kKeepAmPm) {
-    return TimeFormat(&formatter, time);
-  }
-  return TimeFormatWithoutAmPm(&formatter, time);
+  return (ampm == kKeepAmPm) ? TimeFormat(formatter, time)
+                             : TimeFormatWithoutAmPm(&formatter, time);
 }
 
 std::u16string TimeFormatShortDate(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateInstance(icu::DateFormat::kMedium));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
 std::u16string TimeFormatShortDateNumeric(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateInstance(icu::DateFormat::kShort));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
 std::u16string TimeFormatShortDateAndTime(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateTimeInstance(icu::DateFormat::kShort));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
 std::u16string TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateTimeInstance(icu::DateFormat::kShort,
                                               icu::DateFormat::kLong));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -161,31 +166,42 @@ std::u16string TimeFormatMonthAndYearForTimeZone(
   icu::SimpleDateFormat formatter =
       CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
   formatter.setTimeZone(*time_zone);
-  return TimeFormat(&formatter, time);
+  return TimeFormat(formatter, time);
 }
 #endif
 
 std::u16string TimeFormatMonthAndYear(const Time& time) {
-  icu::SimpleDateFormat formatter =
-      CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
-  return TimeFormat(&formatter, time);
+  return TimeFormat(
+      CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH)),
+      time);
 }
 
 std::u16string TimeFormatFriendlyDateAndTime(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateTimeInstance(icu::DateFormat::kFull));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
 std::u16string TimeFormatFriendlyDate(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateInstance(icu::DateFormat::kFull));
-  return TimeFormat(formatter.get(), time);
+  return TimeFormat(*formatter, time);
 }
 
-std::u16string TimeFormatWithPattern(const Time& time, const char* pattern) {
-  icu::SimpleDateFormat formatter = CreateSimpleDateFormatter(pattern);
-  return TimeFormat(&formatter, time);
+std::u16string LocalizedTimeFormatWithPattern(const Time& time,
+                                              const char* pattern) {
+  return TimeFormat(CreateSimpleDateFormatter(pattern), time);
+}
+
+std::string UnlocalizedTimeFormatWithPattern(const Time& time,
+                                             const char* pattern,
+                                             const icu::TimeZone* time_zone) {
+  icu::SimpleDateFormat formatter =
+      CreateSimpleDateFormatter(pattern, false, icu::Locale("en_US"));
+  if (time_zone) {
+    formatter.setTimeZone(*time_zone);
+  }
+  return base::UTF16ToUTF8(TimeFormat(formatter, time));
 }
 
 bool TimeDurationFormat(TimeDelta time,
