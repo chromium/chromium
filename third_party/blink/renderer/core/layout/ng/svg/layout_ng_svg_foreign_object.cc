@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -151,7 +152,18 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   builder.SetAvailableSize(zoomed_size);
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);
-  NGBlockNode(this).Layout(builder.ToConstraintSpace());
+  const auto* result = NGBlockNode(this).Layout(builder.ToConstraintSpace());
+
+  if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
+    // Any propagated sticky-descendants may have invalid sticky-constraints.
+    // Clear them now.
+    if (const auto* sticky_descendants =
+            result->PhysicalFragment().PropagatedStickyDescendants()) {
+      for (const auto& sticky_descendant : *sticky_descendants) {
+        sticky_descendant->SetStickyConstraints(nullptr);
+      }
+    }
+  }
 
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
   const bool bounds_changed =
