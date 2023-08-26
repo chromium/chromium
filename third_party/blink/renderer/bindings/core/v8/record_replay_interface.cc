@@ -1859,30 +1859,37 @@ function getNodeBoundingClientRects(nodeRrpId) {
  * @see https://static.replay.io/protocol/tot/DOM/#type-BoxModel
  */
 function DOM_getBoxModel({ node: nodeRrpId }) {
-  const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
-  /**
-   * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel
-   */
-  const cdpModel = fromJsGetBoxModel(nodeId);
+  const nodeObj = getPlainObjectByRrpId(nodeRrpId);
 
   const model = {
     node: nodeRrpId
   };
 
-  if (cdpModel) {
-    const {
-      content, padding, border, margin,
-      // width, height, shapeOutside
-    } = cdpModel;
-    Object.assign(
-      model,
-      {
-        content,
-        padding,
-        border,
-        margin
-      }
-    );
+  if (!isBlinkInstanceOf(nodeObj, Element)) {
+    // Handle invalid input (this is how we do this in Gecko)
+    model.content = [];
+  } else {
+    const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
+    /**
+     * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel
+     */
+    const cdpModel = fromJsGetBoxModel(nodeId);
+
+    if (cdpModel) {
+      const {
+        content, padding, border, margin,
+        // width, height, shapeOutside
+      } = cdpModel;
+      Object.assign(
+        model,
+        {
+          content,
+          padding,
+          border,
+          margin
+        }
+      );
+    }
   }
 
   return { model };
