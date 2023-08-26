@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_dark_mode.h"
+#include "android_webview/browser/aw_user_agent_metadata.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
@@ -49,6 +50,21 @@ using blink::web_pref::WebPreferences;
 namespace android_webview {
 
 namespace {
+
+// Metrics on the count of difference cases when we populate the user-agent
+// metadata. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class UserAgentMetadataAvailableType {
+  kSystemDefault = 0,
+  kSystemDefaultLowEntropyOnly = 1,
+  kUserOverrides = 2,
+  kMaxValue = kUserOverrides,
+};
+
+void LogUserAgentMetadataAvailableType(UserAgentMetadataAvailableType type) {
+  base::UmaHistogramEnumeration(
+      "Android.WebView.UserAgentClientHintsMetadata.AvailableType", type);
+}
 
 void PopulateFixedWebPreferences(WebPreferences* web_prefs) {
   web_prefs->shrinks_standalone_images_to_fit = false;
@@ -204,6 +220,8 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
   ScopedJavaLocalRef<jstring> str =
       Java_AwSettings_getUserAgentLocked(env, obj);
   bool ua_overidden = !!str;
+  bool ua_metadata_overridden =
+      Java_AwSettings_getHasUserAgentMetadataOverridesLocked(env, obj);
 
   if (ua_overidden) {
     std::string ua_string_override =
@@ -220,19 +238,36 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
           blink::UserAgentMetadata();
     }
 
-    // If the override user-agent is not empty and contains the default
-    // user-agent, then we propagate the default user-agent client hints.
-    const bool propagate_uach_metadata =
-        base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint) &&
-        !ua_string_override.empty() &&
-        base::Contains(ua_string_override, ua_default);
-    if (propagate_uach_metadata) {
-      override_ua_with_metadata.ua_metadata_override =
-          AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
+    if (base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint)) {
+      // Generate user-agent client hints in the following three cases:
+      // 1. If user provide the user-agent metadata overrides, we use the
+      // override data to populate the user-agent client hints.
+      // 2. Otherwise, if override user-agent contains default user-agent, we
+      // use system default user-agent metadata to populate the user-agent
+      // client hints.
+      // 3. Finally, if the above two cases don't match, we only populate system
+      // default low-entropy client hints.
+      if (ua_metadata_overridden) {
+        ScopedJavaLocalRef<jobject> java_ua_metadata =
+            Java_AwSettings_getUserAgentMetadataLocked(env, obj);
+        override_ua_with_metadata.ua_metadata_override =
+            FromJavaAwUserAgentMetadata(env, java_ua_metadata);
+        LogUserAgentMetadataAvailableType(
+            UserAgentMetadataAvailableType::kUserOverrides);
+      } else if (base::Contains(ua_string_override, ua_default)) {
+        override_ua_with_metadata.ua_metadata_override =
+            AwClientHintsControllerDelegate::
+                GetUserAgentMetadataOverrideBrand();
+        LogUserAgentMetadataAvailableType(
+            UserAgentMetadataAvailableType::kSystemDefault);
+      } else {
+        override_ua_with_metadata.ua_metadata_override =
+            AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
+                /*only_low_entropy_ch=*/true);
+        LogUserAgentMetadataAvailableType(
+            UserAgentMetadataAvailableType::kSystemDefaultLowEntropyOnly);
+      }
     }
-    base::UmaHistogramBoolean(
-        "Android.WebView.UserAgentClientHintsMetadata.Available",
-        propagate_uach_metadata);
 
     // Set overridden user-agent and default client hints metadata if applied.
     web_contents()->SetUserAgentOverride(override_ua_with_metadata, true);
@@ -661,6 +696,13 @@ static jlong JNI_AwSettings_Init(JNIEnv* env,
 static ScopedJavaLocalRef<jstring> JNI_AwSettings_GetDefaultUserAgent(
     JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(env, GetUserAgent());
+}
+
+static ScopedJavaLocalRef<jobject> JNI_AwSettings_GetDefaultUserAgentMetadata(
+    JNIEnv* env) {
+  return ToJavaAwUserAgentMetadata(
+      env,
+      AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand());
 }
 
 }  // namespace android_webview

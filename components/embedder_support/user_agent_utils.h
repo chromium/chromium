@@ -51,12 +51,17 @@ std::string GetUserAgent(
 // Returns UserAgentMetadata per the default policy. This override is currently
 // used in fuchsia and headless_shell, where the enterprise policy is not
 // relevant.
-blink::UserAgentMetadata GetUserAgentMetadata();
+// `only_low_entropy_ch` indicates whether only populate the low entropy client
+// hints, the default is false.
+blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch = false);
 
 // Return UserAgentMetadata, potentially overridden by policy.
 // Note that this override is likely to be removed once an enterprise
 // escape hatch is no longer needed. See https://crbug.com/1261908.
-blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* local_state);
+// `only_low_entropy_ch` indicates whether only populate the low entropy client
+// hints.
+blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* local_state,
+                                              bool only_low_entropy_ch = false);
 
 // Return UserAgentBrandList based on the expected output version type.
 blink::UserAgentBrandList GenerateBrandVersionList(

@@ -1976,14 +1976,21 @@ public class AwSettingsTest {
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
-                + "?url=" + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Mobile&User-Agent");
+        String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html") + "?url="
+                + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Platform&User-Agent");
         mActivityTestRule.loadUrlSync(
                 awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
         AwActivityTestRule.pollInstrumentationThread(
                 () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
-        Assert.assertEquals(
-                "?0 " + customUserAgentString, mActivityTestRule.getTitleOnUiThread(awContents));
+
+        String actualTitleContent = mActivityTestRule.getTitleOnUiThread(awContents);
+        // Here we can't directly validate the exact value for the client hints: Sec-CH-UA and
+        // Sec-CH-UA-Platform since they change over release version. Try best to validate the value
+        // ends with platform string and user-agent string.
+        Assert.assertTrue(actualTitleContent.endsWith(
+                /*sec-ch-ua-platform=*/"\"Android\" " + /*user-agent=*/customUserAgentString));
+        // Sec-ch-ua value has brand AndroidWebview.
+        Assert.assertTrue(actualTitleContent.indexOf("\"Android WebView\";v=\"") != -1);
     }
 
     @Test

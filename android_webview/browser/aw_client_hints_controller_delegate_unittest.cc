@@ -132,6 +132,19 @@ TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
                           &blink::UserAgentBrandVersion::brand,
                           testing::Eq(kAndroidWebViewProductName))));
   }
+
+  // Verify only generate low-entropy client hints.
+  metadata = AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
+      /*only_low_entropy_ch=*/true);
+  EXPECT_THAT(metadata.brand_version_list,
+              testing::Contains(
+                  testing::Field(&blink::UserAgentBrandVersion::brand,
+                                 testing::Eq(kAndroidWebViewProductName))));
+  EXPECT_EQ("Android", metadata.platform);
+
+  // No high entropy client hints.
+  EXPECT_TRUE(metadata.full_version.empty());
+  EXPECT_TRUE(metadata.brand_full_version_list.empty());
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, PersistClientHints) {

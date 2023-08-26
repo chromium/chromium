@@ -108859,6 +108859,12 @@ Full version information for the fingerprint enum values:
   <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
 </enum>
 
+<enum name="UserAgentMetadataAvailableType">
+  <int value="0" label="System default user-agent client hints"/>
+  <int value="1" label="System default low entropy user-agent client hints"/>
+  <int value="2" label="User overridden user-agent client hints"/>
+</enum>
+
 <enum name="UserAgentOverride">
   <int value="0" label="Override does not contain original"/>
   <int value="1" label="Override contains original string and is not a suffix"/>

@@ -39,11 +39,12 @@ AwClientHintsControllerDelegate::AwClientHintsControllerDelegate(
 AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() = default;
 
 blink::UserAgentMetadata
-AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand() {
+AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
+    bool only_low_entropy_ch) {
   // embedder_support::GetUserAgentMetadata() can accept a browser local_state
   // PrefService argument, but doesn't need one. Either way, it shouldn't be the
   // context_pref_service_ that this class holds.
-  auto metadata = embedder_support::GetUserAgentMetadata();
+  auto metadata = embedder_support::GetUserAgentMetadata(only_low_entropy_ch);
   std::string major_version = version_info::GetMajorVersionNumber();
 
   // Use the major version number as a greasing seed
@@ -59,10 +60,16 @@ AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand() {
       major_version_number, kAndroidWebViewProductName, major_version,
       absl::nullopt, absl::nullopt, enable_updated_grease_by_policy,
       blink::UserAgentBrandVersionType::kMajorVersion);
-  metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
-      major_version_number, kAndroidWebViewProductName, metadata.full_version,
-      absl::nullopt, absl::nullopt, enable_updated_grease_by_policy,
-      blink::UserAgentBrandVersionType::kFullVersion);
+
+  if (!only_low_entropy_ch) {
+    metadata.brand_full_version_list =
+        embedder_support::GenerateBrandVersionList(
+            major_version_number, kAndroidWebViewProductName,
+            metadata.full_version, absl::nullopt, absl::nullopt,
+            enable_updated_grease_by_policy,
+            blink::UserAgentBrandVersionType::kFullVersion);
+  }
+
   return metadata;
 }
 

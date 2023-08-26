@@ -437,11 +437,12 @@ std::string GetPlatformForUAMetadata() {
 #endif
 }
 
-blink::UserAgentMetadata GetUserAgentMetadata() {
-  return GetUserAgentMetadata(nullptr);
+blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch) {
+  return GetUserAgentMetadata(nullptr, only_low_entropy_ch);
 }
 
-blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
+blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
+                                              bool only_low_entropy_ch) {
   blink::UserAgentMetadata metadata;
 
   bool enable_updated_grease_by_policy = true;
@@ -473,6 +474,10 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
     return base::FeatureList::IsEnabled(blink::features::kUACHOverrideBlank)
                ? blink::UserAgentMetadata()
                : metadata;
+  }
+
+  if (only_low_entropy_ch) {
+    return metadata;
   }
 
   // High entropy client hints.

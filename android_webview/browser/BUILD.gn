@@ -105,6 +105,8 @@ source_set("browser") {
     "aw_speech_recognition_manager_delegate.h",
     "aw_ssl_host_state_delegate.cc",
     "aw_ssl_host_state_delegate.h",
+    "aw_user_agent_metadata.cc",
+    "aw_user_agent_metadata.h",
     "aw_web_contents_delegate.cc",
     "aw_web_contents_delegate.h",
     "aw_web_contents_view_delegate.cc",

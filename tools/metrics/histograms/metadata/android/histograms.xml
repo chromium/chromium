@@ -5541,16 +5541,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.UserAgentClientHintsMetadata.Available"
-    enum="BooleanAvailable" expires_after="2024-02-01">
+<histogram name="Android.WebView.UserAgentClientHintsMetadata.AvailableType"
+    enum="UserAgentMetadataAvailableType" expires_after="2024-05-01">
   <owner>victortan@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records when we propagate user-agent client hints metadata if the
-    kUserAgentClientHint is enabled and the overridden user-agent contains the
-    default user-agent. This is recorded every time webview updates the
-    user-agent for the request.
+    Records when we propagate user-agent client hints metadata in different
+    cases. This give us an idea to understand better how the user-agent metadata
+    overrides and user-agent overrides work. This is recorded every time webview
+    updates the user-agent or user-agent medatadata for the request.
   </summary>
 </histogram>
 

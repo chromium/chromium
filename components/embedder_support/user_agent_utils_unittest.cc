@@ -768,6 +768,16 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.bitness, content::GetCpuBitness());
   EXPECT_EQ(metadata.wow64, content::IsWoW64());
   EXPECT_EQ(metadata.form_factor, metadata.mobile ? "Mobile" : "");
+
+  // Verify only populate low-entropy client hints.
+  metadata = GetUserAgentMetadata(true);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   chromium_brand_version));
+  EXPECT_TRUE(
+      ContainsBrandVersion(metadata.brand_version_list, product_brand_version));
+  // High entropy should be empty.
+  EXPECT_TRUE(metadata.brand_full_version_list.empty());
+  EXPECT_TRUE(metadata.full_version.empty());
 }
 
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListUnbranded) {
