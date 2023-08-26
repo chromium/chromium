@@ -249,6 +249,16 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
     return;
   }
 
+  // TODO(https://crbug.com/1473742): `page_` can somehow be null.
+  if (!page_) {
+    std::move(callback).Run(
+        /*success=*/false, /*error_message=*/
+        "Internal error: page does not exist.",
+        /*result_config=*/absl::nullopt);
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   // This function is invoked from `document_service_`. Thus both `page_` and
   // `document_service_` should be valid.
   DCHECK(page_);
