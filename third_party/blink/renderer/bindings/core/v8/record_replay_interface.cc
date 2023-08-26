@@ -112,7 +112,7 @@ const {
   fromJsIsBlinkObject,
   fromJsGetNodeId,
   fromJsGetBoxModel,
-  fromJsGetMatchedStylesForNode,
+  fromJsGetMatchedStylesForElement,
   fromJsCssGetStylesheetByCpdId,
   fromJsCollectEventListeners,
   fromJsDomPerformSearch,
@@ -2236,14 +2236,22 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
   let rules = gCssRulesByNodeRrpId.get(nodeRrpId);
   const data = {};
 
-  if (!rules && isBlinkInstanceOf(nodeObj, Element)) {
+  if (!rules && isBlinkInstanceOf(nodeObj, Node)) {
     const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
 
-    // NOTE: CSS domain commands are not accessible via `sendMessage`, so we have to get the data indirectly.
+    // NOTE: CDP CSS domain commands are not enabled, so we have to get the data indirectly.
     // const cdpMatchedStyles = sendMessage('CSS.getMatchedStylesForNode', { nodeId });
-    const cdpMatchedStyles = fromJsGetMatchedStylesForNode(nodeId);
-    rules = convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles);
+    if (isBlinkInstanceOf(nodeObj, Element)) {
+      const cdpMatchedStyles = fromJsGetMatchedStylesForElement(nodeId) || { };
+      rules = convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles);
+    } else {
+      rules = [];
+    }
     gCssRulesByNodeRrpId.set(nodeRrpId, rules);
+  } else {
+    // The target is not a node.
+    log(`[RuntimeWarning] CSS.getAppliedRules called with non-node: ${nodeRrpId} ${isBlinkObject(nodeObj)} ${nodeObj?.constructor?.name} ${nodeObj?.constructor}.`);
+    rules = [];
   }
 
   return { rules, data };
@@ -4483,7 +4491,7 @@ static void fromJsGetBoxModel(
 }
 
 
-static void fromJsGetMatchedStylesForNode(
+static void fromJsGetMatchedStylesForElement(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsNumber() &&
         "[RuntimeError] must be called with a single number");
@@ -4845,8 +4853,8 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
   // jsPreviewBlinkObjectForObjectId);
   SetFunctionProperty(isolate, args, "fromJsGetNodeId", fromJsGetNodeId);
   SetFunctionProperty(isolate, args, "fromJsGetBoxModel", fromJsGetBoxModel);
-  SetFunctionProperty(isolate, args, "fromJsGetMatchedStylesForNode",
-                      fromJsGetMatchedStylesForNode);
+  SetFunctionProperty(isolate, args, "fromJsGetMatchedStylesForElement",
+                      fromJsGetMatchedStylesForElement);
   SetFunctionProperty(isolate, args, "fromJsCssGetStylesheetByCpdId",
                       fromJsCssGetStylesheetByCpdId);
   SetFunctionProperty(isolate, args, "fromJsCollectEventListeners",
