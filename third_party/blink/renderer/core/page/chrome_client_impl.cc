@@ -396,6 +396,8 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            const String& source_id,
                                            const String& stack_trace) {
   if (!message.IsNull()) {
+    mojo::internal::AutoRecordReplayAssertBufferAllocations rraba(
+        "RUN-2387-2541");
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
         stack_trace);
