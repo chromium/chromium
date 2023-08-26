@@ -52,33 +52,9 @@ constexpr char kTasksManagementPage[] =
 
 namespace ash {
 
-TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate)
+TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
+                                 ui::ListModel<GlanceablesTaskList>* task_list)
     : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {
-  if (Shell::Get()->glanceables_v2_controller()->GetTasksClient()) {
-    Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTaskLists(
-        base::BindOnce(&TasksBubbleView::InitViews,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-TasksBubbleView::~TasksBubbleView() = default;
-
-void TasksBubbleView::OnViewFocused(views::View* view) {
-  CHECK_EQ(view, task_list_combo_box_view_);
-
-  AnnounceListStateOnComboBoxAccessibility();
-}
-
-void TasksBubbleView::CancelUpdates() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
-  // TODO(b:277268122): Implement empty tasks glanceable state.
-  if (task_list->item_count() == 0) {
-    return;
-  }
-
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager
@@ -167,6 +143,18 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
 
   SelectedTasksListChanged();
+}
+
+TasksBubbleView::~TasksBubbleView() = default;
+
+void TasksBubbleView::OnViewFocused(views::View* view) {
+  CHECK_EQ(view, task_list_combo_box_view_);
+
+  AnnounceListStateOnComboBoxAccessibility();
+}
+
+void TasksBubbleView::CancelUpdates() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void TasksBubbleView::ActionButtonPressed() {

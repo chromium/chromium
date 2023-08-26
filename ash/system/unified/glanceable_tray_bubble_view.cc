@@ -9,6 +9,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/tasks/glanceables_tasks_client.h"
+#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -23,6 +25,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/models/list_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/scroll_view.h"
@@ -147,21 +150,24 @@ void GlanceableTrayBubbleView::InitializeContents() {
           session_manager::SessionState::ACTIVE &&
       session_controller->GetUserSession(0)->user_info.has_gaia_account;
 
-  if (should_show_non_calendar_glanceables && !tasks_bubble_view_) {
-    tasks_bubble_view_ = child_glanceable_container->AddChildView(
-        std::make_unique<TasksBubbleView>(detailed_view_delegate_.get()));
+  scroll_view_->SetContents(std::move(child_glanceable_container));
+
+  auto* const tasks_client =
+      Shell::Get()->glanceables_v2_controller()->GetTasksClient();
+  if (should_show_non_calendar_glanceables && tasks_client) {
+    CHECK(!tasks_bubble_view_);
+    tasks_client->GetTaskLists(
+        base::BindOnce(&GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (!calendar_view_) {
     calendar_view_ =
-        child_glanceable_container->AddChildView(std::make_unique<CalendarView>(
+        scroll_view_->contents()->AddChildView(std::make_unique<CalendarView>(
             detailed_view_delegate_.get(), /*for_glanceables_container=*/true));
     // TODO(b:277268122): Update with glanceable spec.
     calendar_view_->SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, 400));
   }
-
-  scroll_view_->SetContents(std::move(child_glanceable_container));
-
   int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
   ChangeAnchorAlignment(shelf_->alignment());
@@ -228,6 +234,19 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
       scroll_contents->children().begin();
   *view = scroll_contents->AddChildViewAt(
       std::make_unique<T>(detailed_view_delegate_.get()), calendar_view_index);
+}
+
+void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
+    ui::ListModel<GlanceablesTaskList>* task_lists) {
+  if (task_lists->item_count() == 0) {
+    return;
+  }
+  // Add tasks bubble before everything.
+  auto* const scroll_contents = scroll_view_->contents();
+  tasks_bubble_view_ = scroll_contents->AddChildViewAt(
+      std::make_unique<TasksBubbleView>(detailed_view_delegate_.get(),
+                                        task_lists),
+      0);
 }
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {

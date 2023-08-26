@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
@@ -84,8 +85,9 @@ class TasksBubbleViewTest : public AshTestBase {
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
-    view_ = widget_->SetContentsView(
-        std::make_unique<TasksBubbleView>(&detailed_view_delegate_));
+    view_ = widget_->SetContentsView(std::make_unique<TasksBubbleView>(
+        &detailed_view_delegate_,
+        fake_glanceables_tasks_client_->task_lists()));
   }
 
   void TearDown() override {

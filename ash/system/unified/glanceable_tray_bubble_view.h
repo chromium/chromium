@@ -9,11 +9,17 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/weak_ptr.h"
 
+namespace ui {
+template <class ItemType>
+class ListModel;
+}
+
 namespace ash {
 class CalendarView;
 class ClassroomBubbleStudentView;
 class ClassroomBubbleTeacherView;
 class DetailedViewDelegate;
+struct GlanceablesTaskList;
 class TasksBubbleView;
 class Shelf;
 
@@ -53,6 +59,8 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   template <typename T>
   void AddClassroomBubbleViewIfNeeded(raw_ptr<T, ExperimentalAsh>* view,
                                       bool is_role_active);
+  void AddTaskBubbleViewIfNeeded(
+      ui::ListModel<GlanceablesTaskList>* task_lists);
 
   void OnGlanceablesContainerPreferredSizeChanged();
   void OnGlanceablesContainerHeightChanged(int height_delta);

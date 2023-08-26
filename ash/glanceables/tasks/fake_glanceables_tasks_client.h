@@ -56,6 +56,8 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
 
   void set_paused(bool paused) { paused_ = paused; }
 
+  ui::ListModel<GlanceablesTaskList>* task_lists() { return task_lists_.get(); }
+
  private:
   void PopulateTasks(base::Time tasks_due_time);
   void PopulateTaskLists(base::Time tasks_due_time);

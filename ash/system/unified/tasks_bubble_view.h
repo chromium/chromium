@@ -73,7 +73,8 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
  public:
   METADATA_HEADER(TasksBubbleView);
 
-  explicit TasksBubbleView(DetailedViewDelegate* delegate);
+  TasksBubbleView(DetailedViewDelegate* delegate,
+                  ui::ListModel<GlanceablesTaskList>* task_list);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;
@@ -86,9 +87,6 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
   void CancelUpdates();
 
  private:
-  // Setup child views.
-  void InitViews(ui::ListModel<GlanceablesTaskList>* task_list);
-
   // Handles press behavior for the "See all" button in `list_footer_view_` and
   // `add_new_task_button_`.
   void ActionButtonPressed();
