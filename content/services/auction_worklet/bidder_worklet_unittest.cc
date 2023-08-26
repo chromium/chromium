@@ -2431,8 +2431,8 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
   const std::string kGenerateBidBody =
-      R"({ad: "trustedBiddingSignalsUrl" in interestGroup ?
-            interestGroup.trustedBiddingSignalsUrl : "missing",
+      R"({ad: "trustedBiddingSignalsURL" in interestGroup ?
+            interestGroup.trustedBiddingSignalsURL : "missing",
         bid:1,
         render:"https://response.test/"})";
 

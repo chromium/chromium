@@ -106,7 +106,7 @@ void JoinInterestGroup(const content::ToRenderFrameHost& adapter,
               name: 'cars',
               owner: $1,
               biddingLogicURL: $2,
-              trustedBiddingSignalsUrl: $3,
+              trustedBiddingSignalsURL: $3,
               trustedBiddingSignalsKeys: ['key1'],
               userBiddingSignals: {some: 'json', data: {here: [1, 2, 3]}},
               ads: [{

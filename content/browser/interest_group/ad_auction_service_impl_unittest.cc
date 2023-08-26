@@ -1275,7 +1275,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                        "*": ["interest-group-counts", "latencyStats"]},
 "biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
 "biddingWasmHelperUrl":"%s/interest_group/new_bidding_wasm_helper_url.wasm",
-"trustedBiddingSignalsUrl":
+"trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "updateURL": "%s/interest_group/new_daily_update_partial.json",
@@ -1547,7 +1547,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
 TEST_F(AdAuctionServiceImplTest, UpdateGroupWithNoAds) {
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"trustedBiddingSignalsUrl":
+"trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"]
 })",
@@ -5090,7 +5090,7 @@ function scoreAd(
 TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterAuctionNoAds) {
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"trustedBiddingSignalsUrl":
+"trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"]
 })",

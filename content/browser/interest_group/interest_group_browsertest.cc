@@ -768,7 +768,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       }
     }
     if (group.trusted_bidding_signals_url) {
-      dict.Set("trustedBiddingSignalsUrl",
+      dict.Set("trustedBiddingSignalsURL",
                group.trusted_bidding_signals_url->spec());
     }
     if (group.user_bidding_signals) {
@@ -3482,7 +3482,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          trustedBiddingSignalsUrl: 'https://invalid^&',
+          trustedBiddingSignalsURL: 'https://invalid^&',
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -7714,7 +7714,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
     biddingLogicURL: $1,
     ads: [{renderUrl: $1}],
     enableBiddingSignalsPrioritization: true,
-    trustedBiddingSignalsUrl: $1
+    trustedBiddingSignalsURL: $1
   };
 
   const config = {
@@ -11424,7 +11424,7 @@ function validateAuctionConfig(auctionConfig) {
         {
           name: 'cars',
           owner: $1,
-          trustedBiddingSignalsUrl: $2,
+          trustedBiddingSignalsURL: $2,
           trustedBiddingSignalsKeys: ['key1'],
           biddingLogicURL: $3,
           userBiddingSignals: 1,
@@ -12027,7 +12027,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
 "biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
-"trustedBiddingSignalsUrl":
+"trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "executionMode": "group-by-origin",
@@ -12115,7 +12115,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
 "biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
-"trustedBiddingSignalsUrl":
+"trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "executionMode": "groupByOrigin",
@@ -12206,7 +12206,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
 "biddingLogicURL": "%s/interest_group/new_bidding_logic.js",
-"trustedBiddingSignalsUrl":
+"trustedBiddingSignalsURL":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "executionMode": "groupByOrigin",
