@@ -37,12 +37,41 @@ bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
          DCLayerOverlayType::kDCompVisualContent;
 }
 
+// Unconditionally get a IDCompositionVisual2 as a IDCompositionVisual3.
+//
+// |IDCompositionVisual3| should be available since Windows 8.1, but we noticed
+// crashes due to unconditionally casting to the interface on the earliest
+// versions of Windows 10. This should only be used for features that are
+// conditionally run above those versions of Windows.
+//
+// See: https://crbug.com/1455666
+Microsoft::WRL::ComPtr<IDCompositionVisual3> CheckedCastToVisual3(
+    const Microsoft::WRL::ComPtr<IDCompositionVisual2>& visual2) {
+  Microsoft::WRL::ComPtr<IDCompositionVisual3> visual3;
+  HRESULT hr = visual2.As(&visual3);
+  CHECK_EQ(hr, S_OK);
+  CHECK(visual3);
+  return visual3;
+}
+
 D2D_MATRIX_3X2_F TransformToD2D_MATRIX_3X2_F(const gfx::Transform& transform) {
-  DCHECK(transform.IsFlat());
-  // D2D_MATRIX_3x2_F is row-major.
+  DCHECK(transform.Is2dTransform());
+  // See |TransformToD2D_MATRIX_4X4_F| for notes.
   return D2D1::Matrix3x2F(transform.rc(0, 0), transform.rc(1, 0),
                           transform.rc(0, 1), transform.rc(1, 1),
                           transform.rc(0, 3), transform.rc(1, 3));
+}
+
+D2D_MATRIX_4X4_F TransformToD2D_MATRIX_4X4_F(const gfx::Transform& transform) {
+  // D2D matrices are stored with the translation portion in the last row,
+  // whereas Skia matrices are stored with the translation in the last column.
+  // We need to transpose the matrix during the conversion to account for this
+  // difference.
+  const gfx::Transform& t = transform;
+  return D2D1::Matrix4x4F(t.rc(0, 0), t.rc(1, 0), t.rc(2, 0), t.rc(3, 0),
+                          t.rc(0, 1), t.rc(1, 1), t.rc(2, 1), t.rc(3, 1),
+                          t.rc(0, 2), t.rc(1, 2), t.rc(2, 2), t.rc(3, 2),
+                          t.rc(0, 3), t.rc(1, 3), t.rc(2, 3), t.rc(3, 3));
 }
 
 // The size the surfaces in the pool. Used in |VisualSubtree::Update| to
@@ -571,20 +600,8 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
   }
 
   if (opacity_changed) {
-    // |IDCompositionVisual3| should be available since Windows 8.1, but we
-    // noticed crashes due to unconditionally casting to the interface on very
-    // early versions of Windows 10. Here, we only attempt the cast when the
-    // opacity changes, which should only happen for features that we don't
-    // intend to run unconditionally. If this cast fails, we may need to exclude
-    // some Windows versions from these features.
-    // See: https://crbug.com/1455666
-    Microsoft::WRL::ComPtr<IDCompositionVisual3> clip_visual_opacity;
-    hr = clip_visual_.As(&clip_visual_opacity);
-    CHECK_EQ(hr, S_OK);
-    CHECK(clip_visual_opacity);
-
     if (opacity_ != 1) {
-      hr = clip_visual_opacity->SetOpacity(opacity_);
+      hr = CheckedCastToVisual3(clip_visual_)->SetOpacity(opacity_);
       CHECK_EQ(hr, S_OK);
 
       // Let all of this subtree's visuals blend as one, instead of
@@ -592,7 +609,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
       hr = clip_visual_->SetOpacityMode(DCOMPOSITION_OPACITY_MODE_LAYER);
       CHECK_EQ(hr, S_OK);
     } else {
-      hr = clip_visual_opacity->SetOpacity(1.0);
+      hr = CheckedCastToVisual3(clip_visual_)->SetOpacity(1.0);
       CHECK_EQ(hr, S_OK);
       hr = clip_visual_->SetOpacityMode(DCOMPOSITION_OPACITY_MODE_MULTIPLY);
       CHECK_EQ(hr, S_OK);
@@ -661,11 +678,18 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
   }
 
   if (quad_to_root_transform_changed) {
-    const D2D_MATRIX_3X2_F matrix =
-        TransformToD2D_MATRIX_3X2_F(quad_to_root_transform_);
-    hr = Microsoft::WRL::ComPtr<IDCompositionVisual>(transform_visual_)
-             ->SetTransform(matrix);
-    CHECK_EQ(hr, S_OK);
+    if (quad_to_root_transform_.Is2dTransform()) {
+      const D2D_MATRIX_3X2_F matrix =
+          TransformToD2D_MATRIX_3X2_F(quad_to_root_transform_);
+      hr = Microsoft::WRL::ComPtr<IDCompositionVisual>(transform_visual_)
+               ->SetTransform(matrix);
+      CHECK_EQ(hr, S_OK);
+    } else {
+      const D2D_MATRIX_4X4_F matrix =
+          TransformToD2D_MATRIX_4X4_F(quad_to_root_transform_);
+      hr = CheckedCastToVisual3(transform_visual_)->SetTransform(matrix);
+      CHECK_EQ(hr, S_OK);
+    }
   }
 
   if (nearest_neighbor_filter_changed) {
@@ -751,12 +775,9 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
           background_color_visual_->SetContent(background_color_surface_.Get());
       CHECK_EQ(hr, S_OK);
 
-      Microsoft::WRL::ComPtr<IDCompositionVisual3>
-          background_color_visual_opacity;
-      hr = background_color_visual_.As(&background_color_visual_opacity);
+      hr = CheckedCastToVisual3(background_color_visual_)
+               ->SetOpacity(background_color.fA);
       CHECK_EQ(hr, S_OK);
-      CHECK(background_color_visual_opacity);
-      background_color_visual_opacity->SetOpacity(background_color.fA);
     }
   }
 

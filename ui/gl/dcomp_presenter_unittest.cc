@@ -1772,6 +1772,31 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
   PresentAndCheckScreenshot();
 }
 
+// Check that a complex transform (i.e. non-flat) works.
+TEST_F(DCompPresenterSkiaGoldTest, Transform3D) {
+  InitializeTest(gfx::Size(100, 100));
+
+  InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
+
+  auto overlay = std::make_unique<DCLayerOverlayParams>();
+
+  overlay->quad_rect = gfx::Rect(120, 75);
+
+  overlay->background_color = SkColors::kGreen;
+
+  overlay->z_order = 1;
+
+  overlay->transform.Translate(50, 50);
+  overlay->transform.ApplyPerspectiveDepth(100);
+  overlay->transform.RotateAboutYAxis(45);
+  overlay->transform.RotateAboutXAxis(30);
+  overlay->transform.Translate(-25, -25);
+
+  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+
+  PresentAndCheckScreenshot();
+}
+
 // This kind of transform is uncommon, but should be supported when rotations
 // are supported.
 TEST_F(DCompPresenterSkiaGoldTest, TransformShear) {
