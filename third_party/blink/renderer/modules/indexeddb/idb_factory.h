@@ -59,6 +59,7 @@ class MODULES_EXPORT IDBFactory final
     : public ScriptWrappable,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(IDBFactory, Dispose);
 
  public:
   explicit IDBFactory(ExecutionContext* context);
@@ -93,6 +94,8 @@ class MODULES_EXPORT IDBFactory final
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
+
+  void Dispose();
 
   void Trace(Visitor*) const override;
 

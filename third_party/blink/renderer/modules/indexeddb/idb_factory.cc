@@ -226,6 +226,10 @@ void IDBFactory::ContextDestroyed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+void IDBFactory::Dispose() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void IDBFactory::GetDatabaseInfoForDevToolsHelper(
     mojom::blink::IDBFactory::GetDatabaseInfoCallback callback) {
   if (!allowed_.value()) {
