@@ -376,7 +376,6 @@ crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fboinvali
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
-crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fragdepth.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
 
 # D3D11 / AMD RX 5500 XT / Passthrough command decoder
@@ -521,20 +520,12 @@ crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/can
 # driver on 10.13.6 specifically, and are still flaky. Unfortunately when the
 # tests fail, they fail three times in a row, so we must mark them failing
 # rather than flaky.
-crbug.com/870856 [ mac amd-0x679e angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 crbug.com/870856 [ mac amd-0x67ef angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 
-crbug.com/1230781 [ amd-0x679e angle-opengl mac ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
-crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_00.html [ Failure ]
-crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_01.html [ Failure ]
-crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_00.html [ Failure ]
-crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_01.html [ Failure ]
-crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_00.html [ Failure ]
-crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/texsubimage3d_pbo_3d_01.html [ Failure ]
 crbug.com/1278935 [ ventura amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_00.html [ Failure ]
 crbug.com/1278935 [ ventura amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_01.html [ Failure ]
 crbug.com/1278935 [ ventura amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_3d_00.html [ Failure ]
@@ -760,18 +751,7 @@ crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough 
 crbug.com/angleproject/7904 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
 crbug.com/1471990 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/buffers/uniform-buffers.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/array-as-return-value.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/matrix-row-major.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 
-crbug.com/1464417 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 
 ##############################
 # Lacros-like Linux Failures #
@@ -841,7 +821,6 @@ crbug.com/1448570 [ android-pixel-4 angle-disabled no-passthrough ] conformance/
 crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
 crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
-crbug.com/1450357 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/texture-bias.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
