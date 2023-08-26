@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -39,7 +41,12 @@ constexpr int kButtonSizeDip = 32;
 
 }  // namespace
 
-EditorMenuTextfieldView::EditorMenuTextfieldView() = default;
+EditorMenuTextfieldView::EditorMenuTextfieldView(
+    EditorMenuViewDelegate* delegate)
+    : delegate_(delegate) {
+  CHECK(delegate_);
+}
+
 EditorMenuTextfieldView::~EditorMenuTextfieldView() = default;
 
 void EditorMenuTextfieldView::AddedToWidget() {
@@ -87,14 +94,21 @@ void EditorMenuTextfieldView::InitLayout() {
   button_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   button_container->SetPreferredSize(gfx::Size(kButtonSizeDip, kButtonSizeDip));
 
-  arrow_button_ =
-      button_container->AddChildView(std::make_unique<views::ImageButton>());
+  arrow_button_ = button_container->AddChildView(
+      std::make_unique<views::ImageButton>(base::BindRepeating(
+          &EditorMenuTextfieldView::OnTextfieldArrowButtonPressed,
+          weak_factory_.GetWeakPtr())));
   arrow_button_->SetAccessibleName(kContainerTitle);
   arrow_button_->SetTooltipText(kContainerTitle);
   arrow_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kProductIcon));
   arrow_button_->SetVisible(false);
+}
+
+void EditorMenuTextfieldView::OnTextfieldArrowButtonPressed() {
+  CHECK(delegate_);
+  delegate_->OnTextfieldArrowButtonPressed(textfield_->GetText());
 }
 
 BEGIN_METADATA(EditorMenuTextfieldView, views::View)

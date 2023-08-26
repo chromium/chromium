@@ -39,7 +39,7 @@ void EditorMenuControllerImpl::MaybeShowEditorMenu(
   }
 
   // TODO(b/295059934): Call EditorMediator API to get the parameters.
-  editor_menu_widget_ = EditorMenuView::CreateWidget(anchor_bounds);
+  editor_menu_widget_ = EditorMenuView::CreateWidget(anchor_bounds, this);
   editor_menu_widget_->ShowInactive();
 }
 
@@ -59,5 +59,18 @@ void EditorMenuControllerImpl::UpdateAnchorBounds(
   // TODO(b/295060733): The main view.
   // TODO(b/295061567): The consent view.
 }
+
+void EditorMenuControllerImpl::OnSettingsButtonPressed() {}
+
+void EditorMenuControllerImpl::OnChipButtonPressed(int button_id,
+                                                   const std::u16string& text) {
+}
+
+void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
+    const std::u16string& text) {}
+
+void EditorMenuControllerImpl::OnPromoCardDismissButtonPressed() {}
+
+void EditorMenuControllerImpl::OnPromoCardTellMeMoreButtonPressed() {}
 
 }  // namespace chromeos::editor_menu

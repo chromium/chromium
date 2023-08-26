@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -21,6 +22,8 @@ class ImageButton;
 
 namespace chromeos::editor_menu {
 
+class EditorMenuViewDelegate;
+
 // EditorMenuTextfieldView consists of a Textfield and an icon. The Textfiled is
 // for inputting text. The icon is a right arrow indicate to send.
 class EditorMenuTextfieldView : public views::View,
@@ -28,7 +31,7 @@ class EditorMenuTextfieldView : public views::View,
  public:
   METADATA_HEADER(EditorMenuTextfieldView);
 
-  EditorMenuTextfieldView();
+  explicit EditorMenuTextfieldView(EditorMenuViewDelegate* delegate);
   EditorMenuTextfieldView(const EditorMenuTextfieldView&) = delete;
   EditorMenuTextfieldView& operator=(const EditorMenuTextfieldView&) = delete;
   ~EditorMenuTextfieldView() override;
@@ -50,9 +53,15 @@ class EditorMenuTextfieldView : public views::View,
 
  private:
   void InitLayout();
+  void OnTextfieldArrowButtonPressed();
+
+  // `delegate_` outlives `this`.
+  raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
 
   raw_ptr<views::Textfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> arrow_button_ = nullptr;
+
+  base::WeakPtrFactory<EditorMenuTextfieldView> weak_factory_{this};
 };
 
 }  // namespace chromeos::editor_menu

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -22,6 +23,7 @@ namespace chromeos::editor_menu {
 
 class EditorMenuChipView;
 class EditorMenuTextfieldView;
+class EditorMenuViewDelegate;
 class PreTargetHandler;
 
 // A bubble style view to show Editor Menu.
@@ -29,7 +31,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
  public:
   METADATA_HEADER(EditorMenuView);
 
-  explicit EditorMenuView(const gfx::Rect& anchor_view_bounds);
+  EditorMenuView(const gfx::Rect& anchor_view_bounds,
+                 EditorMenuViewDelegate* delegate);
 
   EditorMenuView(const EditorMenuView&) = delete;
   EditorMenuView& operator=(const EditorMenuView&) = delete;
@@ -37,7 +40,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   ~EditorMenuView() override;
 
   static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds);
+      const gfx::Rect& anchor_view_bounds,
+      EditorMenuViewDelegate* delegate);
 
   // views::View:
   void AddedToWidget() override;
@@ -57,7 +61,13 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   void AddChipsContainer();
   void AddTextfield();
 
+  void OnSettingsButtonPressed();
+  void OnChipButtonPressed(int button_id);
+
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
+
+  // `delegate_` outlives `this`.
+  raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
 
   // Containing title, badge, and icons.
   raw_ptr<views::View> title_container_ = nullptr;
@@ -71,6 +81,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  base::WeakPtrFactory<EditorMenuView> weak_factory_{this};
 };
 
 }  // namespace chromeos::editor_menu

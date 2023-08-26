@@ -47,6 +47,7 @@ source_set("views") {
     "editor_menu_textfield_view.h",
     "editor_menu_view.cc",
     "editor_menu_view.h",
+    "editor_menu_view_delegate.h",
   ]
 
   deps = [

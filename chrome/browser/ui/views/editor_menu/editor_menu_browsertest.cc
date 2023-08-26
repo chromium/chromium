@@ -78,6 +78,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 
   // View is positioned above the anchor.
   EXPECT_EQ(bounds.bottom() + kMarginDip, kAnchorBounds.y());
+  GetEditorMenuView()->GetWidget()->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
@@ -93,4 +94,5 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 
   // View is positioned below the anchor.
   EXPECT_EQ(bounds.y() - kMarginDip, kAnchorBoundsTop.bottom());
+  GetEditorMenuView()->GetWidget()->Close();
 }

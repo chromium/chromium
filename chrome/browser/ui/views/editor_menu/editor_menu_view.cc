@@ -8,10 +8,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -72,9 +74,12 @@ constexpr std::array<std::u16string_view, 6> kChipLables = {
 
 }  // namespace
 
-EditorMenuView::EditorMenuView(const gfx::Rect& anchor_view_bounds)
+EditorMenuView::EditorMenuView(const gfx::Rect& anchor_view_bounds,
+                               EditorMenuViewDelegate* delegate)
     : pre_target_handler_(
-          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)) {
+          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)),
+      delegate_(delegate) {
+  CHECK(delegate_);
   InitLayout();
 }
 
@@ -82,7 +87,8 @@ EditorMenuView::~EditorMenuView() = default;
 
 // static
 views::UniqueWidgetPtr EditorMenuView::CreateWidget(
-    const gfx::Rect& anchor_view_bounds) {
+    const gfx::Rect& anchor_view_bounds,
+    EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
@@ -94,7 +100,7 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
   EditorMenuView* editor_menu_view = widget->SetContentsView(
-      std::make_unique<EditorMenuView>(anchor_view_bounds));
+      std::make_unique<EditorMenuView>(anchor_view_bounds, delegate));
   editor_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -195,7 +201,9 @@ void EditorMenuView::AddTitleContainer() {
       gfx::Size(kSettingsButtonSizeDip, kSettingsButtonSizeDip));
 
   settings_button_ =
-      button_container->AddChildView(std::make_unique<views::ImageButton>());
+      button_container->AddChildView(std::make_unique<views::ImageButton>(
+          base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
+                              weak_factory_.GetWeakPtr())));
   settings_button_->SetTooltipText(kSettingsTooltipString);
   settings_button_->SetImageModel(
       views::Button::STATE_NORMAL,
@@ -220,9 +228,12 @@ void EditorMenuView::AddChipsContainer() {
   // paddings.
   int running_width = 0;
   views::View* row = nullptr;
+  int index = 0;
   for (const auto& label : kChipLables) {
     auto chip = std::make_unique<EditorMenuChipView>(
-        base::RepeatingClosure(), label.data(), &vector_icons::kProductIcon);
+        base::BindRepeating(&EditorMenuView::OnChipButtonPressed,
+                            weak_factory_.GetWeakPtr(), index++),
+        label.data(), &vector_icons::kProductIcon);
 
     int chip_width = chip->GetPreferredSize().width();
     if (running_width == 0) {
@@ -251,12 +262,23 @@ void EditorMenuView::AddChipsContainer() {
 }
 
 void EditorMenuView::AddTextfield() {
-  textfield_ = AddChildView(std::make_unique<EditorMenuTextfieldView>());
+  textfield_ =
+      AddChildView(std::make_unique<EditorMenuTextfieldView>(delegate_));
   textfield_->SetProperty(views::kMarginsKey, kTextfieldContainerInsets);
 
   int width = kContainerMinWidthDip - kTextfieldContainerInsets.width();
   int height = textfield_->GetHeightForWidth(width);
   textfield_->SetPreferredSize(gfx::Size(width, height));
+}
+
+void EditorMenuView::OnSettingsButtonPressed() {
+  CHECK(delegate_);
+  delegate_->OnSettingsButtonPressed();
+}
+
+void EditorMenuView::OnChipButtonPressed(int button_id) {
+  CHECK(delegate_);
+  delegate_->OnChipButtonPressed(button_id, textfield_->textfield()->GetText());
 }
 
 BEGIN_METADATA(EditorMenuView, views::View)
