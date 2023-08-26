@@ -43,10 +43,12 @@ class BookmarkSearchBoxRowViewBinder {
             Callback<Boolean> onToggle =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK);
             shoppingChip.setOnClickListener((View v) -> {
-                boolean newState = !shoppingChip.isSelected();
-                shoppingChip.setSelected(newState);
-                onToggle.onResult(newState);
+                onToggle.onResult(
+                        !model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
             });
+        } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED) {
+            shoppingChip.setSelected(
+                    model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES) {
             final @DrawableRes int res =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES);

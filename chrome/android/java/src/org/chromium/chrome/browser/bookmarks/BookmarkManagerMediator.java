@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrde
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
@@ -357,6 +358,8 @@ class BookmarkManagerMediator
     private boolean mIsSelectionEnabled;
     // Track if we're the source of bookmark model reordering so the event can be ignored.
     private boolean mIsBookmarkModelReorderingInProgress;
+    // Whether the shopping feature is available and there are price-tracked bookmarks.
+    private boolean mShoppingFilterAvailable;
 
     BookmarkManagerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener, SelectableListLayout<BookmarkId> selectableListLayout,
@@ -431,6 +434,9 @@ class BookmarkManagerMediator
     void onBookmarkModelLoaded() {
         mDragStateDelegate.onBookmarkDelegateInitialized(this);
 
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            updateShoppingFilterVisible();
+        }
         // TODO(https://crbug.com/1413463): This logic is here to keep the same execution order
         // from when it was in the original adapter. It doesn't conceptually make sense to be here,
         // and should happen earlier.
@@ -905,6 +911,9 @@ class BookmarkManagerMediator
             // Don't replace if it already exists. The text box is stateful.
             if (getCurrentSearchBoxIndex() < 0) {
                 updateOrAdd(index, buildSearchBoxRow());
+            } else {
+                // Update the filter visibility if the search box is already built.
+                updateSearchBoxShoppingFilterVisibility(getSearchBoxPropertyModel());
             }
             index++;
         }
@@ -1121,8 +1130,6 @@ class BookmarkManagerMediator
     }
 
     private ListItem buildSearchBoxRow() {
-        // TODO(https://crbug.com/1444122): Check if there are any bookmarks with shopping meta.
-        boolean hasAnyShopping = true;
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                         .with(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
@@ -1131,8 +1138,6 @@ class BookmarkManagerMediator
                                 this::onClearSearchTextRunnable)
                         .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
                                 this::onSearchBoxFocusChange)
-                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
-                                hasAnyShopping)
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
                                 R.drawable.notifications_active)
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
@@ -1140,6 +1145,7 @@ class BookmarkManagerMediator
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
                                 this::onShoppingFilterToggle)
                         .build();
+        updateSearchBoxShoppingFilterVisibility(propertyModel);
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
 
@@ -1326,6 +1332,9 @@ class BookmarkManagerMediator
             ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
                     model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR);
             shoppingAccessoryCoordinator.setPriceTrackingEnabled(enabled);
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                updateShoppingFilterVisible();
+            }
         };
 
         PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModel,
@@ -1391,6 +1400,8 @@ class BookmarkManagerMediator
         final @NonNull Set<PowerBookmarkType> powerFilter = isFiltering
                 ? Collections.singleton(PowerBookmarkType.SHOPPING)
                 : Collections.emptySet();
+        getSearchBoxPropertyModel().set(
+                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, isFiltering);
         onSearchChange(getCurrentSearchText(), powerFilter);
     }
 
@@ -1438,6 +1449,43 @@ class BookmarkManagerMediator
     @SuppressWarnings("AssertionSideEffect")
     private void assertIsAndroidImprovedBookmarksEnabled() {
         assert BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
+    }
+
+    // The shopping filter should only be visible if the shopping feature is enabled and
+    // there's at least one price-tracked bookmark available.
+    // TODO(crbug.com/1476104): Make this method private when price-tracking utils are mocked
+    // properly.
+    @VisibleForTesting
+    void updateShoppingFilterVisible() {
+        boolean eligible = ShoppingFeatures.isShoppingListEligible();
+        if (!eligible) {
+            updateFilterAvailability(false);
+            return;
+        }
+
+        mShoppingService.getAllPriceTrackedBookmarks(
+                (bookmarks) -> { updateFilterAvailability(!bookmarks.isEmpty()); });
+    }
+
+    private void updateFilterAvailability(boolean shoppingFilterAvailable) {
+        mShoppingFilterAvailable = shoppingFilterAvailable;
+        PropertyModel searchBoxPropertyModel = getSearchBoxPropertyModel();
+        // If the search box has already been built the it needs updating.
+        if (searchBoxPropertyModel != null) {
+            updateSearchBoxShoppingFilterVisibility(searchBoxPropertyModel);
+        }
+    }
+
+    private void updateSearchBoxShoppingFilterVisibility(PropertyModel searchBoxPropertyModel) {
+        // We purposefully hide the shopping filter in reading list even though search is
+        // global to avoid confusing users.
+        boolean filterVisible = mShoppingFilterAvailable
+                && !Objects.equals(mBookmarkModel.getReadingListFolder(), getCurrentFolderId());
+        searchBoxPropertyModel.set(
+                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, filterVisible);
+        if (!filterVisible && getCurrentSearchPowerFilter().contains(PowerBookmarkType.SHOPPING)) {
+            onShoppingFilterToggle(false);
+        }
     }
 
     // Testing methods.

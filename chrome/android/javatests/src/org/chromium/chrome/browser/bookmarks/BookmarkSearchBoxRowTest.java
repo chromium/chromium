@@ -183,10 +183,12 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    public void testShoppingChipToggle() {
+    public void testShoppingChipToggleCallback() {
+        setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, false);
         onView(withId(R.id.shopping_filter_chip)).perform(click());
         verify(mToggleCallback).onResult(true);
 
+        setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, true);
         onView(withId(R.id.shopping_filter_chip)).perform(click());
         verify(mToggleCallback).onResult(false);
     }

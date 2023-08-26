@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -121,6 +122,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
@@ -219,6 +221,8 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkId mReadingListFolderId =
             new BookmarkId(/*id=*/9, BookmarkType.READING_LIST);
     private final BookmarkId mReadingListId = new BookmarkId(/*id=*/10, BookmarkType.READING_LIST);
+    private final BookmarkId mPriceTrackedBookmarkId =
+            new BookmarkId(/*id=*/11, BookmarkType.NORMAL);
 
     private final BookmarkItem mDesktopFolderItem = new BookmarkItem(
             mDesktopFolderId, "Bookmarks bar", null, true, mRootFolderId, true, false, 0, false, 0);
@@ -240,6 +244,10 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId,
             JUnitTestGURLs.EXAMPLE_URL, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
             mReadingListFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mPriceTrackedBookmarkItem = new BookmarkItem(mPriceTrackedBookmarkId,
+            "Price tracked bookmark", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
+            mMobileFolderId, true, false, 0, false, 0);
+
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     private BookmarkUiPrefs mBookmarkUiPrefs =
@@ -278,6 +286,9 @@ public class BookmarkManagerMediatorTest {
             doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
             doReturn(mMobileFolderId).when(mBookmarkModel).getMobileFolderId();
             doReturn(mMobileFolderItem).when(mBookmarkModel).getBookmarkById(mMobileFolderId);
+            doReturn(Arrays.asList(mPriceTrackedBookmarkItem))
+                    .when(mBookmarkModel)
+                    .getChildIds(mMobileFolderId);
             doReturn(mOtherFolderId).when(mBookmarkModel).getOtherFolderId();
             doReturn(mOtherFolderItem).when(mBookmarkModel).getBookmarkById(mOtherFolderId);
             doReturn(mReadingListFolderId).when(mBookmarkModel).getReadingListFolder();
@@ -359,12 +370,16 @@ public class BookmarkManagerMediatorTest {
                     .when(mBookmarkImageFetcher)
                     .fetchFaviconForBookmark(any(), any());
 
-            // Setup price tracking utils JNI.
+            // Setup price tracking utils.
             mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mPriceTrackingUtilsJniMock);
             doCallback(3, (Callback<Boolean> callback) -> callback.onResult(true))
                     .when(mPriceTrackingUtilsJniMock)
                     .setPriceTrackingStateForBookmark(
                             any(), anyLong(), anyBoolean(), any(), anyBoolean());
+            doCallback(0, (Callback<List<BookmarkId>> callback) -> {
+                callback.onResult(Arrays.asList(mPriceTrackedBookmarkId));
+            }).when(mShoppingService).getAllPriceTrackedBookmarks(any());
+            ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
             mDragReorderableRecyclerViewAdapter =
                     spy(new DragReorderableRecyclerViewAdapter(mActivity, mModelList));
@@ -1432,5 +1447,74 @@ public class BookmarkManagerMediatorTest {
         // Should have gone back to mFolderId1.
         assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
         verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_priceTrackingFilterVisible() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId3);
+
+        assertEquals(1, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_priceTrackingFilterGoneInReadingList() {
+        finishLoading();
+
+        mMediator.openFolder(mReadingListFolderId);
+
+        assertEquals(4, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertFalse(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_priceTrackingFilterGoneWithoutBookmarks() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId3);
+
+        assertEquals(1, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+
+        // The price-tracked filter shouldn't be visible without any price-tracked bookmarks.
+        doCallback(0, (Callback<List<BookmarkId>> callback) -> {
+            callback.onResult(Arrays.asList());
+        }).when(mShoppingService).getAllPriceTrackedBookmarks(any());
+
+        mMediator.updateShoppingFilterVisible();
+        assertEquals(1, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        model = mModelList.get(0).model;
+        assertFalse(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_priceTrackingFilterGoneWithEligibility() {
+        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        finishLoading();
+
+        mMediator.openFolder(mFolderId3);
+
+        assertEquals(1, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertFalse(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
     }
 }
