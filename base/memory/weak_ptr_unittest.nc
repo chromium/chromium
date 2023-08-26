@@ -129,7 +129,7 @@ void WontCompile() {
   WeakPtr<Unrelated> ptr = AsWeakPtr(&f);
 }
 
-#elif defined(NCTEST_AMBIGUOUS_ANCESTORS)  // [r"fatal error: no matching function for call to 'AsWeakPtrImpl'"]
+#elif defined(NCTEST_AMBIGUOUS_ANCESTORS)  // [r"fatal error: no viable constructor or deduction guide for deduction of template arguments of 'ExtractSinglyInheritedBase'"]
 
 void WontCompile() {
   MultiplyDerivedProducer f;
