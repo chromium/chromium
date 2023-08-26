@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -114,10 +115,10 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   // This test is for a bug that only happens when there is no RFH swap on
   // same-site navigations, so we should disable same-site proactive
   // BrowsingInstance for |initial_rfh| before continiung.
-  // Note: this will not disable RenderDocument.
-  // TODO(crbug.com/936696): Skip this test when main-frame RenderDocument is
-  // enabled.
   DisableProactiveBrowsingInstanceSwapFor(initial_rfh);
+  if (ShouldCreateNewHostForAllFrames()) {
+    GTEST_SKIP();
+  }
   // Verify expected main world origin in a steady state - after a commit it
   // should be the same as the last committed origin.
   EXPECT_EQ(url::Origin::Create(initial_url),
@@ -259,6 +260,9 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
   // This test is targetted at the case an RFH is reused between navigations.
   RenderFrameHost* initial_rfh = main_rfh();
   DisableProactiveBrowsingInstanceSwapFor(main_rfh());
+  if (ShouldCreateNewHostForAllFrames()) {
+    GTEST_SKIP();
+  }
 
   // Check values for the initial commit.
   EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());

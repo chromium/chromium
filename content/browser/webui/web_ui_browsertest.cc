@@ -25,6 +25,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -327,7 +328,18 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   // Verify that after a reload, the test handler has been disallowed.
-  EXPECT_FALSE(test_handler->IsJavascriptAllowed());
+  if (!ShouldCreateNewHostForAllFrames()) {
+    EXPECT_FALSE(test_handler->IsJavascriptAllowed());
+  } else {
+    // If the RenderFrameHost and WebUI objects changed after navigation, the
+    // `TestWebUIMessageHandler` will point to a stale WebUI and we can't check
+    // the `IsJavascriptAllowed()` value there. So use a new handler here and
+    // check the value on the new handler instead.
+    WebUIMessageHandler* test_handler2 = new TestWebUIMessageHandler;
+    web_contents->GetWebUI()->AddMessageHandler(
+        base::WrapUnique(test_handler2));
+    EXPECT_FALSE(test_handler2->IsJavascriptAllowed());
+  }
 }
 
 // A WebUI message that should require a user gesture is ignored if there is no

@@ -2352,6 +2352,77 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ClearResourceCache) {
   ASSERT_EQ(num_script_requests_from_renderer, 2u);
 }
 
+// Tests that RenderProcessHost reuse works correctly even if the site URL of a
+// URL changes.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kModifiedSiteUrl("custom-scheme://custom");
+
+  // At first, trying to get a RenderProcessHost with the
+  // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
+  BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_NE(root->current_frame_host()->GetProcess(),
+            site_instance->GetProcess());
+
+  // Have the main frame navigate to the first url. Getting a RenderProcessHost
+  // with the REUSE_PENDING_OR_COMMITTED_SITE policy should now return the
+  // process of the main RFH.
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+  site_instance =
+      SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
+  EXPECT_EQ(root->current_frame_host()->GetProcess(),
+            site_instance->GetProcess());
+
+  // Install the custom ContentBrowserClient. Site URLs are now modified.
+  // Getting a RenderProcessHost with the REUSE_PENDING_OR_COMMITTED_SITE policy
+  // should no longer return the process of the main RFH, as the RFH is
+  // registered with the normal site URL.
+  {
+    EffectiveURLContentBrowserTestContentBrowserClient modified_client(
+        kUrl, kModifiedSiteUrl,
+        /* requires_dedicated_process */ false);
+    site_instance =
+        SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
+    EXPECT_NE(root->current_frame_host()->GetProcess(),
+              site_instance->GetProcess());
+
+    // Reload. Getting a RenderProcessHost with the
+    // REUSE_PENDING_OR_COMMITTED_SITE policy should now return the process of
+    // the main RFH, as it is now registered with the modified site URL.
+    shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    site_instance =
+        SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
+    EXPECT_EQ(root->current_frame_host()->GetProcess(),
+              site_instance->GetProcess());
+  }
+
+  // Remove the custom ContentBrowserClient. Site URLs are back to normal.
+  // Getting a RenderProcessHost with the REUSE_PENDING_OR_COMMITTED_SITE policy
+  // should no longer return the process of the main RFH, as it is registered
+  // with the modified site URL.
+  site_instance =
+      SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
+  EXPECT_NE(root->current_frame_host()->GetProcess(),
+            site_instance->GetProcess());
+
+  // Reload. Getting a RenderProcessHost with the
+  // REUSE_PENDING_OR_COMMITTED_SITE policy should now return the process of the
+  // main RFH, as it is now registered with the regular site URL.
+  shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  site_instance =
+      SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
+  EXPECT_EQ(root->current_frame_host()->GetProcess(),
+            site_instance->GetProcess());
+}
+
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 class FakeStableVideoDecoderFactoryService
     : public media::stable::mojom::StableVideoDecoderFactory {

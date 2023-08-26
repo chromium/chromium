@@ -751,8 +751,6 @@ TEST_F(WebContentsImplTest, NavigateTwoTabsCrossSite) {
 // navigation. The test verifies that the override is honored.
 TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   TestRenderFrameHost* orig_rfh = main_test_rfh();
-  int orig_rvh_delete_count = 0;
-  orig_rfh->GetRenderViewHost()->set_delete_counter(&orig_rvh_delete_count);
   SiteInstanceImpl* orig_instance = contents()->GetSiteInstance();
 
   // Navigate to an URL that will not assign a new SiteInstance.
@@ -771,7 +769,8 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   EXPECT_EQ(GURL(), contents()->GetSiteInstance()->GetSiteURL());
   EXPECT_FALSE(orig_instance->HasSite());
 
-  // Navigate to new site (should keep same site instance).
+  // Navigate to new site (should keep same site instance, but might change
+  // RenderFrameHosts).
   const GURL url("http://www.google.com");
   auto navigation1 =
       NavigationSimulator::CreateBrowserInitiated(url, contents());
@@ -779,7 +778,8 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(native_url, contents()->GetLastCommittedURL());
   EXPECT_EQ(url, contents()->GetVisibleURL());
-  EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
+  EXPECT_EQ(ShouldCreateNewHostForAllFrames(),
+            !!contents()->GetSpeculativePrimaryMainFrame());
   navigation1->Commit();
 
   // The first entry's SiteInstance should be reset to a new, related one. This
@@ -800,10 +800,10 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
                                               ->root_node()
                                               ->frame_entry->site_instance();
   EXPECT_EQ(curr_entry_instance, orig_instance);
-  // Keep the number of active frames in orig_rfh's SiteInstanceGroup
-  // non-zero so that orig_rfh doesn't get deleted when it gets
+  // Keep the number of active frames in the current RFH's SiteInstanceGroup
+  // non-zero so that the RFH doesn't get deleted when it gets
   // swapped out.
-  orig_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
+  main_test_rfh()->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   if (AreDefaultSiteInstancesEnabled()) {
@@ -826,10 +826,6 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   EXPECT_EQ(url2, contents()->GetVisibleURL());
   TestRenderFrameHost* pending_rfh =
       contents()->GetSpeculativePrimaryMainFrame();
-  int pending_rvh_delete_count = 0;
-  pending_rfh->GetRenderViewHost()->set_delete_counter(
-      &pending_rvh_delete_count);
-
   // DidNavigate from the pending page.
   navigation2->Commit();
   SiteInstance* new_instance = contents()->GetSiteInstance();
@@ -840,12 +836,6 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   EXPECT_EQ(url2, contents()->GetVisibleURL());
   EXPECT_NE(new_instance, orig_instance);
   EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
-  EXPECT_EQ(orig_rvh_delete_count, 0);
-
-  // Close contents and ensure RVHs are deleted.
-  DeleteContents();
-  EXPECT_EQ(orig_rvh_delete_count, 1);
-  EXPECT_EQ(pending_rvh_delete_count, 1);
 }
 
 // Regression test for http://crbug.com/386542 - variation of
@@ -1192,7 +1182,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   SiteInstance* instance3 = contents()->GetSiteInstance();
 
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  if (will_change_site_instance) {
+  if (will_change_site_instance || ShouldCreateNewHostForAllFrames()) {
     // If same-site ProactivelySwapBrowsingInstance or main-frame RenderDocument
     // is enabled, the RFH should change.
     EXPECT_NE(google_rfh, main_test_rfh());
@@ -1215,7 +1205,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   // Go back within the site.
   auto back_navigation1 = NavigationSimulator::CreateHistoryNavigation(
       -1, contents(), false /* is_renderer_initiated */);
-  back_navigation1->ReadyToCommit();
+  back_navigation1->Start();
   if (will_change_site_instance) {
     EXPECT_TRUE(contents()->CrossProcessNavigationPending());
   } else {
@@ -1306,10 +1296,11 @@ TEST_F(WebContentsImplTest, CrossSiteNotPreemptedDuringBeforeUnload) {
   // create a speculative RFH that will be overwritten when the cross-site
   // navigation starts, finishing the same-site navigation, so the scenario in
   // this test cannot be tested. We should disable same-site proactive
-  // BrowsingInstance for |orig_rfh| before continuing.
-  // Note: this will not disable RenderDocument.
-  // TODO(crbug.com/936696): Skip this test when main-frame RenderDocument is
-  // enabled.
+  // BrowsingInstance for |orig_rfh| before continuing, and skip this test if
+  // RenderDocument is enabled.
+  if (ShouldCreateNewHostForAllFrames()) {
+    GTEST_SKIP();
+  }
   DisableProactiveBrowsingInstanceSwapFor(orig_rfh);
   auto same_site_navigation = NavigationSimulator::CreateRendererInitiated(
       kSameSiteUrl, main_test_rfh());
@@ -1389,8 +1380,6 @@ TEST_F(WebContentsImplTest, NavigationEntryContentState) {
 // state after opening a new window to about:blank.  Prevents regression for
 // bugs b/1116137 and http://crbug.com/111975.
 TEST_F(WebContentsImplTest, NavigationEntryContentStateNewWindow) {
-  TestRenderFrameHost* orig_rfh = main_test_rfh();
-
   // Navigate to about:blank.
   const GURL url(url::kAboutBlankURL);
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url);
@@ -1409,7 +1398,6 @@ TEST_F(WebContentsImplTest, NavigationEntryContentStateNewWindow) {
   const GURL new_url("http://www.google.com");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), new_url);
 
-  EXPECT_EQ(orig_rfh, main_test_rfh());
   NavigationEntryImpl* entry_impl2 = NavigationEntryImpl::FromNavigationEntry(
       controller().GetLastCommittedEntry());
   EXPECT_EQ(site_instance_id, entry_impl2->site_instance()->GetId());

@@ -1882,7 +1882,7 @@ TEST_F(NavigationControllerTest,
   // Before it can commit, start loading a different page...
   auto navigation2 =
       NavigationSimulator::CreateBrowserInitiated(url2, contents());
-  navigation2->ReadyToCommit();
+  navigation2->Start();
   int entry_id2 = controller.GetPendingEntry()->GetUniqueID();
   EXPECT_NE(entry_id1, entry_id2);
 
