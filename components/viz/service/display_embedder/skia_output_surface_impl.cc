@@ -18,7 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_checker.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -135,25 +135,19 @@ gpu::ContextUrl& GetActiveUrl() {
 
 scoped_refptr<gpu::raster::GraphiteCacheController>
 GetOrCreateGraphiteCacheController(skgpu::graphite::Recorder* recorder) {
-#if DCHECK_IS_ON()
-  static base::ThreadChecker thread_checker;
-#endif
-  // This method is called on viz thread only.
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker);
-
-  // All SkiaOutputSurfaceImpl instances share one cache controller, and the
-  // controller will be released when all SkiaOutputSurfaceImpl instances are
-  // released, so we use WeakPtr here.
-  static base::WeakPtr<gpu::raster::GraphiteCacheController>
-      weak_controller_ptr;
-  if (weak_controller_ptr) {
-    return base::WrapRefCounted(weak_controller_ptr.get());
+  // All SkiaOutputSurfaceImpl instances on a thread share one cache controller,
+  // and the controller will be released when all SkiaOutputSurfaceImpl
+  // instances are released, so we use a sequence local WeakPtr here.
+  static base::SequenceLocalStorageSlot<
+      base::WeakPtr<gpu::raster::GraphiteCacheController>>
+      sls_weak_controller;
+  auto& weak_controller = sls_weak_controller.GetOrCreateValue();
+  if (weak_controller) {
+    return base::WrapRefCounted(weak_controller.get());
   }
-
-  auto controller = base::MakeRefCounted<gpu::raster::GraphiteCacheController>(
-      /*context=*/nullptr, recorder);
-  weak_controller_ptr = controller->GetWeakPtr();
-
+  auto controller =
+      base::MakeRefCounted<gpu::raster::GraphiteCacheController>(recorder);
+  weak_controller = controller->AsWeakPtr();
   return controller;
 }
 
@@ -1173,12 +1167,13 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
   capabilities_ = impl_on_gpu_->capabilities();
   is_displayed_as_overlay_ = impl_on_gpu_->IsDisplayedAsOverlay();
 
-  gr_context_type_ = dependency_->GetSharedContextState()->gr_context_type();
-  if (auto* gr_context = dependency_->GetSharedContextState()->gr_context()) {
+  auto shared_context_state = dependency_->GetSharedContextState();
+  gr_context_type_ = shared_context_state->gr_context_type();
+  if (auto* gr_context = shared_context_state->gr_context()) {
     gr_context_thread_safe_ = gr_context->threadSafeProxy();
   }
-  graphite_recorder_ =
-      dependency_->GetSharedContextState()->viz_compositor_graphite_recorder();
+  graphite_recorder_ = shared_context_state->viz_compositor_graphite_recorder();
+
   *result = true;
 }
 

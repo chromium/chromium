@@ -16,22 +16,29 @@ constexpr base::TimeDelta kCleanupDelay = base::Seconds(5);
 }
 
 GraphiteCacheController::GraphiteCacheController(
-    skgpu::graphite::Context* context,
-    skgpu::graphite::Recorder* recorder)
-    : context_(context), recorder_(recorder) {
-  timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, kCleanupDelay,
-      base::BindRepeating(&GraphiteCacheController::PerformCleanup,
-                          GetWeakPtr()));
+    skgpu::graphite::Recorder* recorder,
+    skgpu::graphite::Context* context)
+    : recorder_(recorder),
+      context_(context),
+      timer_(std::make_unique<base::RetainingOneShotTimer>(
+          FROM_HERE,
+          kCleanupDelay,
+          base::BindRepeating(&GraphiteCacheController::PerformCleanup,
+                              AsWeakPtr()))) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-GraphiteCacheController::~GraphiteCacheController() = default;
+GraphiteCacheController::~GraphiteCacheController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void GraphiteCacheController::ScheduleCleanup() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_->Reset();
 }
 
 void GraphiteCacheController::PerformCleanup() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (context_) {
     // TODO(crbug.com/1472451): cleanup resources in context_;
   }

@@ -7,9 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/sequence_checker.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace base {
@@ -23,22 +24,22 @@ class Recorder;
 
 namespace gpu::raster {
 
+// GraphiteCacheController is not thread-safe; it can be created on any thread,
+// but it must be destroyed on the same thread that ScheduleCleanup is called.
 class GPU_GLES2_EXPORT GraphiteCacheController
-    : public base::RefCounted<GraphiteCacheController> {
+    : public base::RefCounted<GraphiteCacheController>,
+      public base::SupportsWeakPtr<GraphiteCacheController> {
  public:
-  // |context| and |recorder| are optional, GraphiteCacheController only purge
-  // resource in non-null |context| and |recorder|.
-  GraphiteCacheController(skgpu::graphite::Context* context,
-                          skgpu::graphite::Recorder* recorder);
+  // |recorder| and |context| are optional, GraphiteCacheController only purges
+  // resources in non-null |recorder| and |context|.
+  explicit GraphiteCacheController(skgpu::graphite::Recorder* recorder,
+                                   skgpu::graphite::Context* context = nullptr);
+
   GraphiteCacheController(const GraphiteCacheController&) = delete;
   GraphiteCacheController& operator=(const GraphiteCacheController&) = delete;
 
-  base::WeakPtr<GraphiteCacheController> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  // Schedule cleanup for the graphite cache, the cleanup will be performed
-  // until ScheduleCleanup() is called for a while.
+  // Schedule cleanup for the graphite cache; the cleanup will be performed
+  // after ScheduleCleanup() is not called for a while after going idle.
   void ScheduleCleanup();
 
  private:
@@ -47,11 +48,11 @@ class GPU_GLES2_EXPORT GraphiteCacheController
 
   void PerformCleanup();
 
-  const raw_ptr<skgpu::graphite::Context> context_;
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
+  const raw_ptr<skgpu::graphite::Context> context_;
   std::unique_ptr<base::RetainingOneShotTimer> timer_;
 
-  base::WeakPtrFactory<GraphiteCacheController> weak_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace gpu::raster
