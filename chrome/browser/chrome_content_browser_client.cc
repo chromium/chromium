@@ -484,6 +484,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #endif
@@ -2517,6 +2518,13 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     content::BrowserContext* browser_context,
     const GURL& lock_url) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kWebKioskEnableIwaApis) &&
+      chromeos::IsWebKioskSession()) {
+    return true;
+  }
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {

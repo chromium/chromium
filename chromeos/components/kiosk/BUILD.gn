@@ -17,7 +17,10 @@ static_library("kiosk") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
+    deps += [
+      "//chromeos/ash/components/login/login_state:login_state",
+      "//components/user_manager",
+    ]
   }
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/startup" ]
