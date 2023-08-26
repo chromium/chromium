@@ -1884,8 +1884,6 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(crbug.com/1472846): WiX tools are only available on `src-internal`.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(IntegrationTestDeviceManagement, MsiInstallUpgrade) {
   constexpr char kMsiAppId[] = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}";
   constexpr char kMsiCrx[] = "TestSystemMsiInstaller.msi.crx3";
@@ -1946,7 +1944,6 @@ TEST_F(IntegrationTestDeviceManagement, MsiInstallUpgrade) {
   ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdInitialVersion));
   ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdUpdatedVersion));
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // !defined(COMPONENT_BUILD)
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
