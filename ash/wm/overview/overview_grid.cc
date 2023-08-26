@@ -567,6 +567,10 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
     // If this is the first scroll update, position minimized windows
     // and hide the headers of non-minimized windows.
     if (first_scroll) {
+      // TODO(sammiequon): This should use
+      // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
+      // windows behave like minimized windows in overview, even if continuous
+      // scroll and tucked windows will not be supported together.
       if (WindowState::Get(window)->IsMinimized()) {
         window_item->SetBounds(rect, OVERVIEW_ANIMATION_NONE);
       } else {
@@ -1223,7 +1227,8 @@ void OverviewGrid::CalculateWindowListAnimationStates(
     }
   }
 
-  // TODO(sammiequon): Investigate the bounds used here.
+  // TODO(sammiequon): Investigate the bounds used here and if we need to
+  // consider tucked windows.
   gfx::Rect grid_bounds = GetGridEffectiveBounds();
   for (size_t i = 0; i < items.size(); ++i) {
     const bool minimized =
@@ -1250,7 +1255,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
         // translation applied to it, so use |bounds()| and
         // |ConvertRectToScreen()| to get the true target bounds.
         src_bounds_temp = items[i]->GetWindow()->bounds();
-        ::wm::ConvertRectToScreen(items[i]->root_window(), &src_bounds_temp);
+        wm::ConvertRectToScreen(items[i]->root_window(), &src_bounds_temp);
       }
       src_bounds_temp.Intersect(grid_bounds);
     }
@@ -1426,7 +1431,7 @@ void OverviewGrid::StartNudge(OverviewItemBase* item) {
 }
 
 void OverviewGrid::UpdateNudge(OverviewItemBase* item, double value) {
-  for (const auto& data : nudge_data_) {
+  for (const OverviewNudgeData& data : nudge_data_) {
     DCHECK_LT(data.index, window_list_.size());
 
     OverviewItemBase* nudged_item = window_list_[data.index].get();

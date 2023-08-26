@@ -50,7 +50,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
     return backdrop_controller_.get();
   }
 
-  bool is_fullscreen() { return is_fullscreen_; }
+  bool is_fullscreen() const { return is_fullscreen_; }
 
   // aura::LayoutManager:
   void OnWindowResized() override;

@@ -7,7 +7,8 @@
 
 namespace ash {
 
-// Used for histograms. See OverviewStartAction at
+// Used for histograms. Current values should not be renumbered or removed.
+// Please keep in sync with "OverviewStartAction" in
 // tools/metrics/histograms/enums.xml.
 enum class OverviewStartAction {
   kSplitView,
@@ -26,7 +27,8 @@ enum class OverviewStartAction {
 };
 void RecordOverviewStartAction(OverviewStartAction type);
 
-// Used for histograms. See OverviewEndAction at
+// Used for histograms. Current values should not be renumbered or removed.
+// Please keep in sync with "OverviewEndAction" in
 // tools/metrics/histograms/enums.xml.
 enum class OverviewEndAction {
   kSplitView,

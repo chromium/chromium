@@ -330,9 +330,9 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
       },
       weak_ptr_factory_.GetWeakPtr(), new_animation_type));
 
-  // For non minimized windows, we simply apply the transform and update the
-  // header.
-  if (!transform_window_.IsMinimized()) {
+  // For non minimized or tucked windows, we simply apply the transform and
+  // update the header.
+  if (!transform_window_.IsMinimizedOrTucked()) {
     UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
                                        : new_animation_type);
     SetItemBounds(target_bounds, new_animation_type, is_first_update);
@@ -449,7 +449,7 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   overview_item_view_->OnOverviewItemWindowRestoring();
   transform_window_.RestoreWindow(reset_transform, animate);
 
-  if (!transform_window_.IsMinimized()) {
+  if (!transform_window_.IsMinimizedOrTucked()) {
     return;
   }
 
@@ -537,7 +537,8 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   if (features::IsContinuousOverviewScrollAnimationEnabled() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     show_rounded_corners_for_start_animation =
-        transform_window_.IsMinimized() || !continuous_scroll_in_progress;
+        transform_window_.IsMinimizedOrTucked() ||
+        !continuous_scroll_in_progress;
   } else {
     show_rounded_corners_for_start_animation =
         !overview_controller->IsInStartAnimation();
@@ -545,7 +546,7 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
 
   const bool should_show_rounded_corners =
       !is_shutting_down && show_rounded_corners_for_start_animation;
-  if (transform_window_.IsMinimized()) {
+  if (transform_window_.IsMinimizedOrTucked()) {
     overview_item_view_->UpdatePreviewRoundedCorners(
         should_show_rounded_corners);
   } else {
@@ -561,7 +562,8 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   if (features::IsContinuousOverviewScrollAnimationEnabled()) {
     should_show_shadow_for_rounded_corners =
         !continuous_scroll_in_progress ||
-        (continuous_scroll_in_progress && !transform_window_.IsMinimized());
+        (continuous_scroll_in_progress &&
+         !transform_window_.IsMinimizedOrTucked());
   } else {
     should_show_shadow_for_rounded_corners = should_show_rounded_corners;
   }
@@ -649,9 +651,9 @@ void OverviewItem::PrepareForOverview() {
 
 void OverviewItem::OnStartingAnimationComplete() {
   DCHECK(item_widget_);
-  if (transform_window_.IsMinimized()) {
-    // Fade the title in if minimized. The rest of `item_widget_` should
-    // already be shown.
+  if (transform_window_.IsMinimizedOrTucked()) {
+    // Fade the title in if minimized or tucked. The rest of `item_widget_`
+    // should already be shown.
     overview_item_view_->SetHeaderVisibility(
         OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
   } else {
@@ -991,10 +993,10 @@ void OverviewItem::OnMovingItemToAnotherDesk() {
 
 void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
   DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
-  const bool is_minimized = transform_window_.IsMinimized();
+  const bool minimized_or_tucked = transform_window_.IsMinimizedOrTucked();
 
   // With Jellyroll, header is visible while dragging.
-  if (is_minimized || chromeos::features::IsJellyrollEnabled()) {
+  if (minimized_or_tucked || chromeos::features::IsJellyrollEnabled()) {
     if (!item_mirror_for_dragging_) {
       item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
           item_widget_->GetNativeWindow(), is_touch_dragging);
@@ -1002,9 +1004,9 @@ void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
     item_mirror_for_dragging_->Update();
   }
 
-  // Minimized windows don't need to mirror the source as its already in
-  // `item_widget_`.
-  if (is_minimized) {
+  // Minimized or tucked windows don't need to mirror the source as its already
+  // in `item_widget_`.
+  if (minimized_or_tucked) {
     return;
   }
 
@@ -1066,7 +1068,7 @@ void OverviewItem::AnimateAndCloseItem(bool up) {
   if (cannot_snap_widget_) {
     animate_window(cannot_snap_widget_->GetNativeWindow(), transform, false);
   }
-  if (!transform_window_.IsMinimized()) {
+  if (!transform_window_.IsMinimizedOrTucked()) {
     animate_window(GetWindow(), transform, false);
   }
   animate_window(item_widget_->GetNativeWindow(), transform, true);
@@ -1121,7 +1123,7 @@ void OverviewItem::CreateItemWidget() {
           this,
           base::BindRepeating(&OverviewItem::CloseButtonPressed,
                               base::Unretained(this)),
-          GetWindow(), transform_window_.IsMinimized()));
+          GetWindow(), transform_window_.IsMinimizedOrTucked()));
   item_widget_->Show();
   item_widget_->SetOpacity(
       overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
@@ -1240,10 +1242,11 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
     return;
   }
 
-  const bool minimized = transform_window_.IsMinimized();
-  overview_item_view_->SetShowPreview(minimized);
-  if (!minimized)
+  const bool minimized_or_tucked = transform_window_.IsMinimizedOrTucked();
+  overview_item_view_->SetShowPreview(minimized_or_tucked);
+  if (!minimized_or_tucked) {
     EnsureVisible();
+  }
 
   // Ensures the item widget is visible. |item_widget_| opacity is set to 0.f
   // and shown at either |SetBounds| or |OnStartingAnimationComplete| based on
@@ -1646,7 +1649,7 @@ void OverviewItem::HandleGestureEndEvent() {
 
 aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {
   aura::Window::Windows windows = {item_widget_->GetNativeWindow()};
-  if (!transform_window_.IsMinimized()) {
+  if (!transform_window_.IsMinimizedOrTucked()) {
     for (auto* window : GetTransientTreeIterator(GetWindow()))
       windows.push_back(window);
   }

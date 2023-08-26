@@ -482,9 +482,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // overview view means an overview item is currently being dragged vertically
   // and may be closed when released, and the remaining windows will move
   // towards their positions once the item is closed.
-  // TODO(conniekxu|sammiequon): Rename this as nudge has a different name in
-  // cros system UI.
-  struct NudgeData {
+  struct OverviewNudgeData {
     size_t index;
     gfx::RectF src;
     gfx::RectF dst;
@@ -626,7 +624,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Collection of the items which should be nudged. This should only be
   // non-empty if a nudge is in progress.
-  std::vector<NudgeData> nudge_data_;
+  std::vector<OverviewNudgeData> nudge_data_;
 
   // Measures the animation smoothness of overview animation.
   std::unique_ptr<MetricsTracker> metrics_tracker_;
@@ -673,6 +671,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // continuous scroll starts, store the calculated rects here. For each scroll
   // update, use this list to prevent unnecessary recalculations. For a scroll
   // end, clear the list.
+  // TODO(https://b/295063288): Cache target transforms instead, it will be more
+  // precise and performant.
   std::vector<gfx::RectF> cached_rects_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};

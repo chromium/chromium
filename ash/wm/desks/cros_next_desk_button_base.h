@@ -17,8 +17,8 @@ class DeskBarViewBase;
 // The base class of buttons (default desk button, new desk button and library
 // button) on desks bar. It's guaranteed this button always lives under a desk
 // bar view.
-// TODO(conniekxu): Remove `DeskButtonBase`, replace it with this class and
-// rename this class by removing the prefix CrOSNext.
+// TODO(https://b/291622042): Remove `DeskButtonBase`, replace it with this
+// class and rename this class by removing the prefix CrOSNext.
 class CrOSNextDeskButtonBase : public views::LabelButton,
                                public OverviewHighlightableView {
  public:
