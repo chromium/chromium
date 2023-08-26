@@ -41,7 +41,7 @@ TEST(DeviceIdHelper, RecreateSigninScopedDeviceId) {
             prefs.GetString(prefs::kGoogleServicesSigninScopedDeviceId));
 }
 
-TEST(DeviceIdHelper, GetOrCreateScopedDeviceId) {
+TEST(DeviceIdHelper, GetSigninScopedDeviceId) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   prefs.registry()->RegisterStringPref(
       prefs::kGoogleServicesSigninScopedDeviceId, std::string());
@@ -49,12 +49,12 @@ TEST(DeviceIdHelper, GetOrCreateScopedDeviceId) {
   ASSERT_TRUE(
       prefs.GetString(prefs::kGoogleServicesSigninScopedDeviceId).empty());
 
-  std::string device_id_1 = GetOrCreateScopedDeviceId(&prefs);
+  std::string device_id_1 = GetSigninScopedDeviceId(&prefs);
   EXPECT_FALSE(device_id_1.empty());
   EXPECT_EQ(device_id_1,
             prefs.GetString(prefs::kGoogleServicesSigninScopedDeviceId));
 
-  std::string device_id_2 = GetOrCreateScopedDeviceId(&prefs);
+  std::string device_id_2 = GetSigninScopedDeviceId(&prefs);
   EXPECT_EQ(device_id_1, device_id_2);
   EXPECT_EQ(device_id_2,
             prefs.GetString(prefs::kGoogleServicesSigninScopedDeviceId));

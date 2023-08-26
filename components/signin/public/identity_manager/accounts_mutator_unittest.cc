@@ -636,14 +636,14 @@ TEST_F(AccountsMutatorTest, MoveAccount) {
   auto* other_accounts_mutator =
       other_identity_test_env.identity_manager()->GetAccountsMutator();
 
-  std::string device_id_1 = GetOrCreateScopedDeviceId(pref_service());
+  std::string device_id_1 = GetSigninScopedDeviceId(pref_service());
   EXPECT_FALSE(device_id_1.empty());
 
   accounts_mutator()->MoveAccount(other_accounts_mutator,
                                   account_info.account_id);
   EXPECT_EQ(0U, identity_manager()->GetAccountsWithRefreshTokens().size());
 
-  std::string device_id_2 = GetOrCreateScopedDeviceId(pref_service());
+  std::string device_id_2 = GetSigninScopedDeviceId(pref_service());
   EXPECT_FALSE(device_id_2.empty());
   // |device_id_1| and |device_id_2| should be different as the device ID is
   // recreated in MoveAccount().
