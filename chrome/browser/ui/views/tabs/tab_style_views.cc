@@ -1166,6 +1166,7 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
     if (path_type != TabStyle::PathType::kInteriorClip &&
         path_type != TabStyle::PathType::kHitTest) {
       tab_height -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
+      tab_height -= GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) * scale;
     }
 
     int left = aligned_bounds.x() + extension_corner_radius;
