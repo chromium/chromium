@@ -155,6 +155,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1836891464494477513">{count,plural, =1{Bukmark Google hisobingizga saqlandi, {email}}other{Bukmarklar Google hisobingizga saqlandi, {email}}}</translation>
 <translation id="1870148520156231997">Parolni ochish</translation>
 <translation id="1872096359983322073">Fonar</translation>
+<translation id="1882901927376062252">{count,plural, =1{Bukmark Google hisobingizga ({email}) saqlandi}other{{count} ta bukmark Google hisobingizga ({email}) saqlandi}}</translation>
 <translation id="1883255238294161206">Ro‘yxatni yig‘ish</translation>
 <translation id="1894023287452300670">Narxni shu yerdan kuzating</translation>
 <translation id="189531189292803889">iPad yaqinda asliga qaytarilgani uchun undagi asosiy brauzer oʻzgargan boʻlishi mumkin.</translation>
@@ -692,6 +693,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5083464117946352670">Fayl hajmi aniqlanmadi</translation>
 <translation id="5090832849094901128">Bu parol olib tashlangani bilan <ph name="WEBSITE" /> hisobingiz oʻchib ketmaydi.</translation>
 <translation id="5094827893301452931">Tvit joylandi.</translation>
+<translation id="5100848274708256363">Oilaviy guruhga kiring</translation>
 <translation id="5109892411553231226">Toʻlov usullarini boshqarish</translation>
 <translation id="5118713593561876160">Qiziqishlar</translation>
 <translation id="5118764316110575523">Oʻchiq</translation>
@@ -994,6 +996,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6642362222295953972">Oldin ochilgan varaqqa oʻtish</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Oxirgi tekshiruv: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Jildni o‘zgartirish</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6668619169535738264">Bukmarkni tahrirlash</translation>
@@ -1107,6 +1110,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7351537303876921605">Quyi menyudagi Yaratish havolasini bosing</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7353432112255316844">Bu siz ekaningizni isbotlang</translation>
+<translation id="7380220816562673297">Hozircha parollarni faqat yaqinlarga ulashish mumkin. <ph name="BEGIN_LINK" />Oilaviy guruh yarating<ph name="END_LINK" /> va unga yana 6 kishigacha taklif qilib, barcha Google mahsulot va obunalaridan birga foydalaning.</translation>
 <translation id="7383797227493018512">Mutolaa ro‘yxati</translation>
 <translation id="7398893703713203428">Havola yaratish</translation>
 <translation id="7399802613464275309">Xavfsizlik tekshiruvi</translation>
@@ -1430,6 +1434,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="9223358826628549784">Ishdan chiqish hisoboti yuborildi.</translation>
 <translation id="941747855997058526">Parolni tanlang...</translation>
 <translation id="948048872540558976">Yangi varaq ochish</translation>
+<translation id="952218985181984374">{count,plural, =1{Bukmark saqlandi}other{{count} ta bukmark saqlandi}}</translation>
 <translation id="952704832371081537">Bekor qilish</translation>
 <translation id="953008885340860025">Chrome hisobidan chiqarildi</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> tasmasiga obuna boʻlgansiz</translation>

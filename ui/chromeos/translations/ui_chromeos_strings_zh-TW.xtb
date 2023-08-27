@@ -95,6 +95,7 @@
 <translation id="174937106936716857">檔案總數</translation>
 <translation id="1755345808328621801">這個檔案是專為使用 Windows 軟體的個人電腦所設計，與搭載 Chrome OS 的裝置不相容。請前往 Chrome 線上應用程式商店尋找適合的替代應用程式。</translation>
 <translation id="1757915090001272240">橫向拉丁文</translation>
+<translation id="1761091787730831947">與 <ph name="VM_NAME" /> 共用</translation>
 <translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資訊</translation>
 <translation id="180035236176489073">你必須連上網路才能存取這些檔案。</translation>
@@ -212,6 +213,7 @@
 <translation id="2718540689505416944">透過 Linux 安裝應用程式</translation>
 <translation id="2719020180254996569">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，詳細資料</translation>
 <translation id="2724954091494693138">土耳其文搭配 F 鍵盤</translation>
+<translation id="2732288874651063549">管理 <ph name="VM_NAME" /> 共用設定</translation>
 <translation id="2732839045120506979">越南文 (VNI)</translation>
 <translation id="2735623501230989521">授權 Parallels Desktop 存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="2764206540577097904">你的個人 Google Workspace 儲存空間已用盡。</translation>
@@ -306,6 +308,7 @@
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3511705761158917664">正在準備進行同步處理 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
+<translation id="3523225005467146490">已與 <ph name="VM_NAME" /> 共用 1 個資料夾</translation>
 <translation id="3524311639100184459">注意：這些是暫存檔案，系統可能會自動將其刪除，以釋出磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3548125359243647069">PIN 碼輸入錯誤次數太多。</translation>
@@ -664,6 +667,7 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6177854567773392726">正在檢查儲存空間… 目前找到 <ph name="ITEMS_FOUND" /> 個項目</translation>
+<translation id="6181912134988520389">授權 <ph name="VM_NAME" /> 存取你的 Google 雲端硬碟檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="6187719147498869044">匈牙利文</translation>
 <translation id="6198252989419008588">變更 PIN 碼</translation>
 <translation id="6199801702437275229">正在等待空間資訊...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">瑞典文</translation>
 <translation id="6990081529015358884">沒有可用的空間</translation>
 <translation id="6993826899923627728">這些項目位於垃圾桶中</translation>
+<translation id="6996593023542748157">與 <ph name="VM_NAME" /> 共用資料夾</translation>
 <translation id="7008426324576352165">貴機構需要更多儲存空間才能完成上傳。</translation>
 <translation id="7009985720488544166">根據系統管理員政策，你無法移動這 <ph name="COUNT" /> 個檔案</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -953,6 +958,7 @@
 <translation id="8335837413233998004">白俄羅斯文</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">已存在名稱相同的檔案或目錄。</translation>
+<translation id="83651606385705612">授權 <ph name="VM_NAME" /> 存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8372852072747894550">希臘文</translation>
 <translation id="8386903983509584791">掃描完成</translation>
@@ -962,6 +968,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網路，連線中</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8429998526804961548">已與 <ph name="VM_NAME" /> 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
 <translation id="8431909052837336408">變更 SIM 卡的 PIN 碼</translation>
 <translation id="8437209419043462667">美式配置</translation>
 <translation id="8452135315243592079">找不到 SIM 卡</translation>

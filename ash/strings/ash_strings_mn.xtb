@@ -557,6 +557,7 @@
 <translation id="3386978599540877378">бүтэн дэлгэцийн томруулагч</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Дуу хоолойгоор бичихийг асаах уу?</translation>
+<translation id="3394432020929931914">, дэлгэсэн</translation>
 <translation id="3400357268283240774">Нэмэлт тохиргоо</translation>
 <translation id="3405101454990027959">Микрофоны хандалтыг асаах</translation>
 <translation id="3408735331120433841">Та одоогоор дэлгэцээ дамжуулж байна.</translation>
@@ -782,6 +783,7 @@
 <translation id="4250229828105606438">Дэлгэцийн агшин</translation>
 <translation id="425364040945105958">SIM алга</translation>
 <translation id="4261870227682513959">Мэдэгдлийн тохиргоог харуулна уу. Мэдэгдлийг унтраасан байна</translation>
+<translation id="4264977415328155183">, хураасан</translation>
 <translation id="4269883910223712419">Энэ төхөөрөмжийн админ дараах зүйлсийг хийх боломжтой:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. End товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Баруун сумыг дарна уу.</translation>
 <translation id="4275283744500212192">Цонхны бүдүүвчийн сонголтыг нээх</translation>
@@ -1481,6 +1483,8 @@
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144942256906679589">Батарейн төлөв</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-д хуучин хэмэжээнд нь буцааж оруулах</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7188494361780961876">Цэсийг дэлгэцийн зүүн дээд булан руу зөөсөн.</translation>

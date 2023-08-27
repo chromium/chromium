@@ -1246,6 +1246,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="36224234498066874">Vee blaaierdata uit …</translation>
 <translation id="362276910939193118">Wys hele geskiedenis</translation>
 <translation id="3624292976554877583">Etikette (mat)</translation>
+<translation id="3625929652356389713">Kan vra om prent-in-prent-vensters outomaties oop te maak</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe oordra nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe oordra nie}}</translation>
 <translation id="3630155396527302611">As dit reeds gelys is as 'n program wat by die netwerk mag ingaan, probeer
       om dit van die lys af te verwyder en dit weer by te voeg.</translation>
@@ -1379,6 +1380,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="388632593194507180">Monitering is bespeur</translation>
 <translation id="3886948180919384617">Stapelaar 3</translation>
 <translation id="3890664840433101773">Voeg e-posadres by</translation>
+<translation id="3893306401511601929">Outomatiese prent-in-prent</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3901925938762663762">Die kaart het verval</translation>
 <translation id="390391808978419508">Oopmaak het uitgetel</translation>
@@ -2158,6 +2160,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5512812358367123529">Kantoormeubels</translation>
 <translation id="5513528801833998679">Gebruik toestelaanmelding</translation>
 <translation id="5515388687005870733">55x85 mm</translation>
+<translation id="5516095341424241911">Gebruik Google se sekuriteittegnologie om jou betaalinligting veilig te hou</translation>
 <translation id="5518670652865028077">Kuns en vermaak</translation>
 <translation id="5519516356611866228">Met jou veranderinge</translation>
 <translation id="5519696598216267194">Papier (vooraf gepons)</translation>
@@ -3987,5 +3990,6 @@ Bykomende besonderhede:
     &lt;li&gt;Probeer om aan 'n ander netwerk te koppel&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">outomatiese prent-in-prent</translation>
 <translation id="997986563973421916">Van Google Pay af</translation>
 </translationbundle>

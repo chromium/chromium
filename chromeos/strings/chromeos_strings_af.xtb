@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS-stawingsleutel</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2717139507051041123">Aktiveer donkerkleurmodus</translation>
+<translation id="2728460467788544679">Vee alle drukgeskiedenis uit</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Gedeelde</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Swak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gaan na rekeninginstellings</translation>
+<translation id="6461047516875166066">Vertel my meer</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Herskandeer bladsy?}=1{Herskandeer bladsy {PAGE_NUMBER}?}other{Herskandeer bladsy {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">EW</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>

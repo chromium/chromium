@@ -557,6 +557,7 @@
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium 作業系統</translation>
 <translation id="3389599499324569679">要開啟「語音聽寫」功能嗎？</translation>
+<translation id="3394432020929931914">，展開咗</translation>
 <translation id="3400357268283240774">其他設定</translation>
 <translation id="3405101454990027959">開啟麥克風存取權</translation>
 <translation id="3408735331120433841">您目前正在投放螢幕畫面。</translation>
@@ -781,6 +782,7 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="425364040945105958">沒有 SIM 卡</translation>
 <translation id="4261870227682513959">顯示通知設定。通知已關閉</translation>
+<translation id="4264977415328155183">，收合咗</translation>
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
@@ -1478,6 +1480,8 @@
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="7144942256906679589">電池狀態</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />，
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解像度</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7188494361780961876">已經將選單移去螢幕左上角。</translation>

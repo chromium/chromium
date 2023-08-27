@@ -204,6 +204,7 @@
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
 <translation id="1155545602507378023">نه، فقط این دستگاه</translation>
 <translation id="1155816283571436363">درحال اتصال به تلفن</translation>
+<translation id="1156684356635483618">چاپگرها و اسکنرها</translation>
 <translation id="1157952955648710254">‏بستن پانل کناری «جستجوی Google»</translation>
 <translation id="1158080958325422608">تبدیل به حروف بزرگ</translation>
 <translation id="1158238185437008462">دیدن خاطرات</translation>
@@ -3219,6 +3220,7 @@
 <translation id="3551320343578183772">بستن برگه</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">هنگام «خروج» پاک شد</translation>
+<translation id="3553487194781590058">سایت‌ها اجازه نداشته باشند وقتی به برگه دیگری می‌روید، پنجره «تصویر در تصویر» باز کنند</translation>
 <translation id="3554493885489666172">دستگاهتان توسط <ph name="PROFILE_NAME" /> مدیریت می‌شود. سرپرستان می‌توانند به داده‌های موجود در همه نمایه‌های این دستگاه دسترسی داشته باشند.</translation>
 <translation id="3555812735919707620">حذف برنامه افزودنی</translation>
 <translation id="3556000484321257665">موتور جستجو به <ph name="URL" /> تغییر کرد.</translation>
@@ -4017,6 +4019,7 @@
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4176864026061939326">این دستگاه مدیریت می‌شود. سرپرست دستگاه برای حساب <ph name="USER_EMAIL_ADDRESS" /> به نمایه جدیدی نیاز دارد</translation>
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
+<translation id="4177668342649553942">باز کردن <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
 <translation id="4178220097446335546">‏برای فراموش کردن این اشتراک و شبکه‌های مرتبط با آن، به صفحه اشتراک Passpoint بروید و اشتراک را حذف کنید.</translation>
 <translation id="4180788401304023883">‏مجوز CA "<ph name="CERTIFICATE_NAME" />" حذف شود؟</translation>
 <translation id="4181602000363099176">۲۰ برابر</translation>
@@ -5381,6 +5384,7 @@
 <translation id="5327912693242073631">ویژگی‌هایی که به اعلان نیاز دارند کار نخواهند کرد</translation>
 <translation id="532943162177641444">برای تنظیم نقطه اتصال تلفن همراهی که می‌توان از آن برای این دستگاه استفاده کرد، روی اعلان در <ph name="PHONE_NAME" /> خود ضربه بزنید.</translation>
 <translation id="5329858601952122676">&amp;حذف</translation>
+<translation id="5330592967519769658">اجازه دارد وقتی به برگه دیگری می‌روید، پنجره «تصویر در تصویر» باز کند</translation>
 <translation id="5331069282670671859">گواهینامه‌ای در این دسته ندارید</translation>
 <translation id="5331568967879689647">‏برنامه سیستم ChromeOS</translation>
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
@@ -5422,6 +5426,7 @@
 <translation id="536638840841140142">هیچ‌کدام</translation>
 <translation id="5368246151595623328">«<ph name="NETWORK_NAME" />» از <ph name="DEVICE_NAME" /> ذخیره شد</translation>
 <translation id="5368255566854433132">ایجاد گذرواژه <ph name="DEVICE_TYPE" /></translation>
+<translation id="5368441245151140827">این افزونه نمی‌تواند اطلاعات سایت را بخواند و تغییر دهد یا در پس‌زمینه اجرا شود</translation>
 <translation id="5368720394188453070">تلفنتان قفل است. برای وارد شدن قفل آن را باز کنید.</translation>
 <translation id="5368779022775404937">به سیستم <ph name="REALM" /> وارد شوید</translation>
 <translation id="536882527576164740">{0,plural, =1{حالت ناشناس}one{حالت ناشناس (#)}other{حالت ناشناس (#)}}</translation>
@@ -5556,6 +5561,7 @@
 <translation id="5473099001878321374">‏با ادامه دادن، موافقت می‌کنید این دستگاه همچنین می‌تواند به‌طور خودکار به‌روزرسانی‌ها و برنامه‌ها را از Google، شرکت مخابراتی فرزندتان، و سازنده این دستگاه بارگیری (احتمالاً بااستفاده از داده شبکه تلفن همراه) و نصب کند. برخی‌از این برنامه‌ها ممکن است خریدهای درون‌برنامه پیشنهاد دهند.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{پین باید حداقل یک نویسه داشته باشد}one{پین باید حداقل # نویسه داشته باشد}other{پین باید حداقل # نویسه داشته باشد}}</translation>
 <translation id="5474859849784484111">‏<ph name="MANAGER" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).</translation>
+<translation id="5478520208448702555">سایت‌ها ممکن است وقتی به برگه دیگری می‌روید، پنجره «تصویر در تصویر» باز کنند</translation>
 <translation id="5481273127572794904">اجازه ندارد چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="5481941284378890518">افزودن چاپگرهای اطراف</translation>
 <translation id="5484462543003267273">مدیریت خانواده</translation>
@@ -5834,6 +5840,7 @@
 <translation id="5707185214361380026">بارگیری برنامه افزودنی از اینجا ناموفق بود:</translation>
 <translation id="5708171344853220004">‏نام اصلی Microsoft</translation>
 <translation id="5709557627224531708">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
+<translation id="5710122160114032242">اجازه ندارند وقتی به برگه دیگری می‌روید، پنجره «تصویر در تصویر» باز کنند</translation>
 <translation id="5711010025974903573">گزارش‌های سرویس</translation>
 <translation id="5711983031544731014">قفل باز نشد. گذرواژه‌تان را وارد کنید.</translation>
 <translation id="5712153969432126546">‏سایت‌ها گاهی‌اوقات فایل‌های PDF (ازجمله سند، قرارداد، و فرم) منتشر می‌کنند</translation>
@@ -5850,6 +5857,7 @@
 <translation id="5723508132121499792">بدون برنامه‌های در حال اجرا در پس‌زمینه</translation>
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
 <translation id="5727728807527375859">ممکن است افزونه‌ها برنامه‌ها، و طرح‌های زمینه به رایانهٔ شما صدمه بزنند. آیا مطمئنید می‌خواهید ادامه دهید؟</translation>
+<translation id="5728290366864286776">این افزونه ممکن است اطلاعات سایت را بخواند و تغییر دهد یا در پس‌زمینه اجرا شود</translation>
 <translation id="5728450728039149624">‏گزینه‌های قفل صفحه Smart Lock</translation>
 <translation id="572914206753951782">‏مطمئن شوید که Chromebook از آخرین نسخه استفاده می‌کند. سپس، Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
 <translation id="5729712731028706266">&amp;نما</translation>
@@ -8459,6 +8467,7 @@
 <translation id="7853747251428735">‏ابزارهای بیشتر (‎&amp;L)</translation>
 <translation id="7853999103056713222">از گذرواژه ایمن‌تری استفاده کنید</translation>
 <translation id="7855678561139483478">انتقال برگه به پنجره جدید</translation>
+<translation id="7855729579456690716">سایت‌ها می‌توانند وقتی به برگه دیگری می‌روید، پنجره «تصویر در تصویر» باز کنند</translation>
 <translation id="7857004848504343806">‏رایانه شما دارای پودمان امنیتی است که برای پیاده‌سازی بسیاری از ویژگی‌های امنیتی ضروری در ChromeOS Flex استفاده می‌شود. برای کسب اطلاعات بیشتر، از «مرکز راهنمایی Chromebook» بازدید کنید: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">پیشنهادهای نوشتار</translation>
 <translation id="7857949311770343000">این صفحه برگه جدیدی است که منتظرش بودید؟</translation>
@@ -9633,6 +9642,7 @@
 <translation id="8808686172382650546">گربه</translation>
 <translation id="8809147117840417135">سبز دودی روشن</translation>
 <translation id="8811862054141704416">‏دسترسی به میکروفون Crostini</translation>
+<translation id="8811923271770626905">این افزونه ممکن است در پس‌زمینه اجرا شود</translation>
 <translation id="8812593354822910461">داده‌های محصول مرور (<ph name="URL" />) را نیز پاک می‌کند که این کار شما را از سیستم <ph name="DOMAIN" /> خارج خواهد کرد. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039">ورود به سیستم <ph name="USERNAME" /> امکان‌پذیر نیست</translation>
 <translation id="8813872945700551674">از یکی از والدین بخواهید «<ph name="EXTENSION_NAME" />» را تأیید کند</translation>

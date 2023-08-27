@@ -2225,6 +2225,7 @@
 <translation id="5633259641094592098">Тахин шүтэгдсэн, инди кино</translation>
 <translation id="563371367637259496">Мобайл</translation>
 <translation id="5635237618724097525">Ухаалаг утас</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео систем болон бүрэлдэхүүн хэсгүүд</translation>
 <translation id="5644090287519800334">Хуудасны нүүрэн тал дээр X тэнхлэгийн дагуу зураг шилжүүлэх</translation>
 <translation id="5645132789250840550">Хуванцар (хагас гялгар)</translation>
@@ -3774,6 +3775,7 @@
 <translation id="885730110891505394">Google-тэй хуваалцаж байна</translation>
 <translation id="8858065207712248076">Хэрэв та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-н нууц үгийг бусад сайтад дахин ашигласан бол Chrome-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="885906927438988819">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Windows-н сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">Дараагийн удаа төлбөрөө илүү хурдан төлөхийн тулд картаа төхөөрөмждөө хадгална уу</translation>
 <translation id="8864939224504814334">Хослол болон албан хэргийн хувцас</translation>
 <translation id="8866132857352163524">Киноны дуу</translation>
 <translation id="8866481888320382733">Өгүүлбэр зүйн алдааны тохиргоо</translation>
@@ -3951,6 +3953,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Ямар өгөгдлийг ашигладаг вэ?:<ph name="END_BOLD" /> Таны зарын сэдвүүд таны саяхны хөтчийн түүх буюу энэ төхөөрөмжид Chrome-г ашиглан зочилсон сайтуудын жагсаалтад тулгуурладаг.</translation>
 <translation id="939736085109172342">Шинэ хавтас</translation>
 <translation id="940053046584497293">Аялал, тээвэр</translation>
+<translation id="944540589955480312">Google Бүртгэлдээ хадгалсан нууц үг болон нэвтрэх түлхүүрүүдийг ашиглах</translation>
 <translation id="945855313015696284">Доорх мэдээллийг шалгаад хүчингүй бүх картыг устгана уу</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Сайтад шинэ сайт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="949314938206378263">Та энэ сайтад зочлохыг хүссэн. Таны эцэг эх Family Link-д хариу бичих боломжтой.</translation>

@@ -2227,6 +2227,7 @@
 <translation id="5633259641094592098">საკულტო და ინდი ფილმები</translation>
 <translation id="563371367637259496">მობილური</translation>
 <translation id="5635237618724097525">სმარტფონები</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">სტერეოსისტემები და კომპონენტები</translation>
 <translation id="5644090287519800334">მხარე 1 — სურათის წანაცვლება X ღერძზე</translation>
 <translation id="5645132789250840550">პლასტმასა (ნახევარპრიალა)</translation>
@@ -3777,6 +3778,7 @@
 <translation id="885730110891505394">Google-თან გაზიარება</translation>
 <translation id="8858065207712248076">Chrome გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="885906927438988819">თუ სწორად არის აკრეფილი, <ph name="BEGIN_LINK" />ცადეთ Windows-ის ქსელის დიაგნოსტიკა<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">შემდგომი გადახდების დასაჩქარებლად შეინახეთ თქვენი ბარათი თქვენს მოწყობილობაზე</translation>
 <translation id="8864939224504814334">კოსტიუმები და ბიზნესჩაცმულობა</translation>
 <translation id="8866132857352163524">საუნდტრეკები</translation>
 <translation id="8866481888320382733">წესის პარამეტრების ანალიზის დროს შეცდომა მოხდა</translation>
@@ -3954,6 +3956,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />გამოყენებული მონაცემების ტიპები:<ph name="END_BOLD" /> თქვენი სარეკლამო თემები ეფუძნება თქვენ მიერ ვების დათვალიერების ბოლოდროინდელ ისტორიას, ანუ თქვენ მიერ ამ მოწყობილობაზე Chrome-ის მეშვეობით მონახულებული საიტების სიას.</translation>
 <translation id="939736085109172342">ახალი საქაღალდე</translation>
 <translation id="940053046584497293">მოგზაურობა და ტრანსპორტი</translation>
+<translation id="944540589955480312">თქვენს Google ანგარიშში შენახული პაროლებისა და წვდომის გასაღებების გამოყენება</translation>
 <translation id="945855313015696284">გაეცანით ქვემოთ მოცემულ ინფორმაციას და წაშალეთ არასწორი ბარათები</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-ში ახალი საიტის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="949314938206378263">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობელს გამოხმაურება შეუძლია Family Link-იდან.</translation>

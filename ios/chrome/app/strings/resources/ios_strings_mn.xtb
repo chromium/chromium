@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2178545675770638239">Нууц үг сонгоно уу</translation>
 <translation id="2195124168004379331">Таны хөтөч сайн харагдаж байна</translation>
+<translation id="2213327331203157297">Chrome-д Түгжих горимыг идэвхгүй болгохын тулд үүнийг iPhone-доо унтраана уу.</translation>
 <translation id="2218443599109088993">Жижигрүүлэх</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
 <translation id="2239626343334228536">Хөтчийн өгөгдлийг устгаж байна...</translation>
@@ -1360,6 +1361,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8843129975935593190">Танай байгууллага таны юу синк хийж болохыг хязгаарлана.</translation>
 <translation id="8849001918648564819">Нуусан</translation>
 <translation id="8855242995793521265">Таны хөтөч эсвэл төхөөрөмжийг мэдэгдэхүйц хэмжээгээр удаашруулахгүй.</translation>
+<translation id="8855781063981781621">Chrome-д Түгжих горимыг идэвхгүй болгохын тулд үүнийг iPad-даа унтраана уу.</translation>
 <translation id="8863431381414769983">Google Газрын зургаас чиглэл болон орон нутгийн мэдээлэл авна уу</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} таб}other{{count} таб}}</translation>
 <translation id="8870413625673593573">Саяхан хаагдсан</translation>

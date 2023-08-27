@@ -1256,6 +1256,7 @@
 <translation id="1974043046396539880">CRL 發佈點</translation>
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1974159333077206889">所有喇叭都播放相同音效</translation>
+<translation id="1974216844776165821">Chrome 已將密碼儲存至此裝置，不過你亦可改為將密碼儲存至 Google 帳戶。然後，當你登入後，你亦可在查看所有儲存在 Google 帳戶中的密碼和密鑰。</translation>
 <translation id="1974821797477522211">連線至網絡</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
@@ -1477,6 +1478,7 @@
 <translation id="2143915448548023856">顯示設定</translation>
 <translation id="2144536955299248197">憑證檢視者：<ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux 的 Android 應用程式開發</translation>
+<translation id="2144873026585036769">要使用你的 Google 帳戶儲存和填入密碼和密鑰嗎？</translation>
 <translation id="2146263598007866206">網站可能會自動同時下載相關檔案，以便節省時間</translation>
 <translation id="2147151613919729065">如要清除訪客模式記錄，請關閉所有訪客視窗。</translation>
 <translation id="2147218225094845757">隱藏側面板</translation>
@@ -1612,6 +1614,7 @@
 <translation id="2252017960592955005">檢視保護 (Beta 版本)</translation>
 <translation id="2253318212986772520">無法擷取「<ph name="PRINTER_NAME" />」的 PPD。</translation>
 <translation id="2253927598983295051">選擇要與「<ph name="APP_NAME" />」分享的內容</translation>
+<translation id="2254263139042585032">顯示 Google 帳戶中的密碼和密鑰</translation>
 <translation id="2255077166240162850">此裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
@@ -2401,6 +2404,7 @@
 <translation id="2850672011315104382">標點符號樣式</translation>
 <translation id="2852385257476173980">在您瀏覽網絡同時，系統可能會於此處顯示您瀏覽的網站清單</translation>
 <translation id="285241945869362924">自動建立音訊和影片字幕。音訊和字幕絕不會外洩。</translation>
+<translation id="2853415089995957805">Chrome 會預先載入你可能瀏覽的頁面，以便在你瀏覽時更快載入</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
@@ -3650,6 +3654,7 @@
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的裝置的「咫尺共享」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
+<translation id="3880513902716032002">系統會預先載入你瀏覽的部分網頁</translation>
 <translation id="3883482240657453056">取得 <ph name="MERCHANT_NAME_1" /> 和 <ph name="MERCHANT_NAME_2" /> 的折扣</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新由您的管理員管理</translation>
@@ -3920,6 +3925,7 @@
 <translation id="4093955363990068916">本機檔案：</translation>
 <translation id="4094647278880271855">您使用的環境變數 (<ph name="BAD_VAR" />) 目前不受支援，有可能會影響穩定性和安全性。</translation>
 <translation id="4095264805865317199">開啟流動網絡啟用使用者介面</translation>
+<translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快</translation>
 <translation id="4095507791297118304">主要顯示屏</translation>
 <translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
 <translation id="4096797685681362305">上星期看過</translation>
@@ -4280,6 +4286,7 @@
 <translation id="4403266582403435904">隨時輕鬆還原資料或轉用裝置。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
 <translation id="4404136731284211429">重新掃瞄</translation>
+<translation id="4404619268534288383">儲存及同步分頁群組</translation>
 <translation id="4404843640767531781">您的家長已封鎖「<ph name="APP_NAME" />」。請要求家長授權使用此應用程式。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -5485,6 +5492,7 @@
 <translation id="5417353542809767994">快速使用安全度高的密碼</translation>
 <translation id="541737483547792035">放大畫面</translation>
 <translation id="5419405654816502573">Voice Match</translation>
+<translation id="5420061891386124792">啟用儲存及恢復分頁群組的功能。如要儲存分頁群組，請在群組上按一下右鍵；如要恢復分頁群組，請使用書籤列。</translation>
 <translation id="5420274697768050645">需要使用密碼解鎖裝置以提升安全性</translation>
 <translation id="5420438158931847627">決定文字和圖片的銳利度</translation>
 <translation id="5420935737933866496">複製連結(&amp;L)</translation>
@@ -6709,6 +6717,7 @@
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438475350605608554">您已在其他分頁中匯入密碼</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
+<translation id="6440291723980579689">網頁只會在開啟後載入</translation>
 <translation id="6441377161852435370">將分頁新增至閱讀清單</translation>
 <translation id="6442187272350399447">太棒了</translation>
 <translation id="6442445294758185945">無法下載更新。請稍後再試。</translation>
@@ -7754,6 +7763,7 @@
 <translation id="730515362922783851">與區域網絡或互聯網中的任何裝置交換數據</translation>
 <translation id="7306521477691455105">開啟「設定」即可將 <ph name="USB_DEVICE_NAME" /> 連接至 <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">已暫停</translation>
+<translation id="7307647374092371434">登入後，你亦可在此裝置上查看儲存在 Google 帳戶中的密碼和密鑰</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7310598146671372464">無法登入。伺服器不支援特定的 Kerberos 加密類型。請聯絡您的管理員。</translation>
 <translation id="7311005168897771689">在離線狀態下存取「Google 雲端硬碟」檔案</translation>

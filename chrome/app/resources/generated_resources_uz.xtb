@@ -1235,6 +1235,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Tayyorlanmoqda</translation>
 <translation id="1969654639948595766">WebRTC matnli jurnallari (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1972313920920745320">Siz kiritgan saytlar doim faol qoladi va ularning xotirasi boʻshatilmaydi. <ph name="BEGIN_LINK" />Muayyan saytlarning faol qolishi haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Sahifalar joriy tashrifi asosida oldindan yuklanadi va tezroq ochiladi</translation>
 <translation id="197288927597451399">Saqlash</translation>
 <translation id="1973313062201924554"><ph name="APP_NAME" /> ilovasiga bergan ruxsatlaringiz bu ilova uchun ham amal qiladi.</translation>
@@ -2436,6 +2437,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2889043468805635730">Hech qanday muammo topilmadi</translation>
 <translation id="2889064240420137087">Havolani ochish...</translation>
 <translation id="2890206081124517553">Ish stoli fon rasmi barcha qurilmalarda eslab qolinsin</translation>
+<translation id="2891464434568738544">Roʻyxatda hech qaysi sayt mavjud emas. Roʻyxatga kiritishdan avval saytni oching.</translation>
 <translation id="2891566119238851894">Yon panelda qidiruvni oching. Yon panelda qidiruv yopiq.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> ilovasiga qurilma orqali kirilsinmi?</translation>
 <translation id="2893013536106749396">Qiziqishingiz asosida xabar olishni istagan kartochkalarni tanlang</translation>
@@ -5617,6 +5619,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5522156646677899028">Bu kengaytmada havfsizlikka ta’sir qiladigan jiddiy zaiflik aniqlandi.</translation>
 <translation id="5522403133543437426">Qidiruv tizimidan manzillar qatorida foydalanish mumkin.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Kengaytma administrator tomonidan oʻrnatildi}other{# ta kengaytma administrator tomonidan oʻrnatildi}}</translation>
+<translation id="5523532775593636291">Siz kiritgan saytlar doim faol qoladi va ularning xotirasi boʻshatilmaydi</translation>
 <translation id="5523558474028191231">Nomi kamida <ph name="MAX_CHARACTER_COUNT" /> ta harf, raqam yoki maxsus belgilardan iborat boʻlsin</translation>
 <translation id="5526701598901867718">Barchasi (himoyasizroq)</translation>
 <translation id="5526745900034778153">Sinxronizatsiyani qaytarish uchun hisobingizga kiring</translation>
@@ -6957,6 +6960,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6644513150317163574">URL manzil yaroqsiz. SSO protokoli orqali kirishda server host nomi sifatida belgilanishi kerak.</translation>
 <translation id="6644846457769259194">Qurilmangiz yangilanmoqda (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Tezkor ulanish funksiyasini faolsizlantirish</translation>
+<translation id="6646696210740573446">Himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Agar sayt parolingizni oʻgʻirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome URL manzillar va sahifa elementlarini ham Googlega yuborishi mumkin.</translation>
 <translation id="6647228709620733774">Netscape sertifikat markazining fikr-mulohaza URL manzili</translation>
 <translation id="6647690760956378579">Tabiiy ovozni oldindan tinglash</translation>
 <translation id="6648911618876616409">Jiddiy yangilanish o‘rnatish uchun tayyor. Boshlash uchun hisobingizga kiring.</translation>
@@ -9149,6 +9153,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="84098433273647700">Siz oʻrnatgan joriy mavzu.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Ruxsat berildi: <ph name="PERMISSION" /> va yana <ph name="COUNT" /> ta</translation>
+<translation id="8413795581997394485">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Sayt ochilganda Chrome himoyalangan URL parchasini IP manzilni yashiruvchi maxfiy server orqali Googlega yuboradi. Saytda shubhali harakatlar aniqlansa, toʻliq URL manzillar va sahifa kontentidan parcha ham yuboriladi.</translation>
 <translation id="8413956290606243087">ChromeOS tizimidagi ichki oʻrnatilgan ekrandan oʻqish vositasi – ChromeVox faollashtirilsinmi?</translation>
 <translation id="8414249071344507766">Xotiralar ikki kun chiqmaydi</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytiga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hisobi bilan kirish</translation>

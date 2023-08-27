@@ -1044,6 +1044,7 @@
 <translation id="6433501201775827830">เลือกเครื่องมือค้นหา</translation>
 <translation id="6434309073475700221">ทิ้ง</translation>
 <translation id="6437478888915024427">ข้อมูลหน้าเว็บ</translation>
+<translation id="6440291723980579689">หน้าเว็บจะโหลดหลังจากที่เปิดแล้วเท่านั้น</translation>
 <translation id="6441734959916820584">ชื่อยาวเกินไป</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# ภาพ}other{# ภาพ}}</translation>
 <translation id="6447558397796644647">ไม่พบบุ๊กมาร์กดังกล่าว โปรดตรวจสอบตัวสะกดหรือเพิ่มบุ๊กมาร์กใหม่</translation>

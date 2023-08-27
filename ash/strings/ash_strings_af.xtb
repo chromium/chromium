@@ -64,6 +64,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1217633719248931900">Gaan na program</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Winkel-program</translation>
 <translation id="1225748608451425081">Jou Chromebook is gesluit weens 'n bekende probleem. Jy sal kan aanmeld ná: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">onaktiewe lessenaar</translation>
 <translation id="1229194443904279055">Hou op kies</translation>
 <translation id="1235458158152011030">Bekende netwerke</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is gekoppel.</translation>
@@ -1009,6 +1010,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> geleenthede</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is met <ph name="IN_PLACE_APP" /> gekombineer om 'n nuwe vouer te skep.</translation>
+<translation id="5203299837691351876">aktiewe lessenaar</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ander kennisgewing}other{# ander kennisgewings}}</translation>
 <translation id="5207949376430453814">Lig tekskaret uit</translation>
@@ -1407,6 +1409,7 @@ Nuwe installasie</translation>
 <translation id="6819327813400217281">Kamera is geglip na hoek onder links</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>
 <translation id="6827049576281411231">Maak geleentheidpaneel toe</translation>
+<translation id="6831561626108366035">Gaan na <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />-knoppie.</translation>
 <translation id="6836499262298959512">Gevaarlike lêer</translation>
 <translation id="6852052252232534364">Klik om te aktiveer</translation>
 <translation id="6855029042976311970">Sopas gewysig</translation>
@@ -1443,6 +1446,7 @@ Nuwe installasie</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="698231206551913481">Alle lêers en plaaslike data wat met hierdie gebruiker geassosieer word, sal permanent uitgevee word sodra hierdie gebruiker verwyder word.</translation>
 <translation id="6985306450422696113"><ph name="USED_MEMORY" /> geheue beskikbaar uit totale <ph name="TOTAL_MEMORY" /></translation>
+<translation id="6989752354829085073">Neem ’n vinnige toer om uit te vind hoe om verskillende goed op jou Chromebook te doen. Kom met 6 stappe aan die gang.</translation>
 <translation id="7004910047186208204">Koppel aan mobiele data</translation>
 <translation id="7005239792648594238">Maak ’n program oop om te begin</translation>
 <translation id="7007983414944123363">Jou PIN of wagwoord kon nie geverifieer word nie. Probeer weer.</translation>
@@ -1566,6 +1570,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruik tans jou mikrofoon</translation>
 <translation id="7561982940498449837">Maak kieslys toe</translation>
 <translation id="7564874036684306347">Om vensters na 'n ander werkskerm te skuif, kan lei tot onverwagte gedrag. Opeenvolgende kennisgewings, vensters en dialoë kan tussen werkskerms verdeel word.</translation>
+<translation id="7567950130372125778">Hallo daar. Chromebook is ’n bietjie anders.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox is geaktiveer</translation>
 <translation id="7571361473021531288">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> oor</translation>
 <translation id="7573585051776738856">Aktiewe venster is aan die regterkant gedok.</translation>

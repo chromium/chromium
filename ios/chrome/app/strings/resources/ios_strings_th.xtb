@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
 <translation id="2178545675770638239">เลือกรหัสผ่าน</translation>
 <translation id="2195124168004379331">เบราว์เซอร์ของคุณปลอดภัยแล้ว</translation>
+<translation id="2213327331203157297">หากต้องการปิดใช้โหมดปิดล็อกใน Chrome ให้ปิดโหมดนี้ใน iPhone ของคุณ</translation>
 <translation id="2218443599109088993">ซูมออก</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
 <translation id="2239626343334228536">กำลังล้างข้อมูลการท่องเว็บ...</translation>
@@ -1360,6 +1361,7 @@
 <translation id="8843129975935593190">องค์กรของคุณจำกัดสิ่งที่คุณสามารถซิงค์</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8855242995793521265">ไม่ทำให้เบราว์เซอร์หรืออุปกรณ์ของคุณทำงานช้าลงอย่างเห็นได้ชัด</translation>
+<translation id="8855781063981781621">หากต้องการปิดใช้โหมดปิดล็อกใน Chrome ให้ปิดโหมดนี้ใน iPad ของคุณ</translation>
 <translation id="8863431381414769983">ขอเส้นทางและข้อมูลในพื้นที่จาก Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} แท็บ}other{{count} แท็บ}}</translation>
 <translation id="8870413625673593573">เพิ่งปิด</translation>

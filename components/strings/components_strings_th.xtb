@@ -1245,6 +1245,7 @@
 <translation id="36224234498066874">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="362276910939193118">แสดงประวัติการเข้าชมทั้งหมด</translation>
 <translation id="3624292976554877583">ป้าย (ด้าน)</translation>
+<translation id="3625929652356389713">สามารถขอเปิดหน้าต่างการแสดงภาพซ้อนภาพโดยอัตโนมัติได้</translation>
 <translation id="3628905806504633297">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้โอนไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้โอนไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">หากโปรแกรมอยู่ในรายการที่ได้รับอนุญาตให้เข้าถึงเครือข่ายอยู่แล้ว
       ลองนำโปรแกรมออกจากรายการและเพิ่มกลับเข้าไปใหม่</translation>
@@ -1378,6 +1379,7 @@
 <translation id="388632593194507180">ตรวจพบการตรวจสอบ</translation>
 <translation id="3886948180919384617">สแต็กเกอร์ 3</translation>
 <translation id="3890664840433101773">เพิ่มอีเมล</translation>
+<translation id="3893306401511601929">การแสดงภาพซ้อนภาพอัตโนมัติ</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
 <translation id="390391808978419508">การเปิดหมดเวลาแล้ว</translation>
@@ -2157,6 +2159,7 @@
 <translation id="5512812358367123529">เฟอร์นิเจอร์สำนักงาน</translation>
 <translation id="5513528801833998679">ใช้การลงชื่อเข้าใช้อุปกรณ์</translation>
 <translation id="5515388687005870733">55 x 85 มม.</translation>
+<translation id="5516095341424241911">ใช้เทคโนโลยีการรักษาความปลอดภัยของ Google เพื่อรักษาข้อมูลการชําระเงินของคุณให้ปลอดภัย</translation>
 <translation id="5518670652865028077">ศิลปะและความบันเทิง</translation>
 <translation id="5519516356611866228">แบบมีการเปลี่ยนแปลงที่ทำ</translation>
 <translation id="5519696598216267194">กระดาษ (เจาะล่วงหน้า)</translation>
@@ -2223,6 +2226,7 @@
 <translation id="5633259641094592098">ภาพยนตร์ลัทธิและนอกกระแส</translation>
 <translation id="563371367637259496">มือถือ</translation>
 <translation id="5635237618724097525">สมาร์ทโฟน</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">เครื่องเล่นและอุปกรณ์สเตอริโอ</translation>
 <translation id="5644090287519800334">เปลี่ยนตำแหน่งรูปภาพด้าน 1 ตามแกน X</translation>
 <translation id="5645132789250840550">พลาสติก (กึ่งเงา)</translation>
@@ -3774,6 +3778,7 @@
 <translation id="885730110891505394">การแชร์กับ Google</translation>
 <translation id="8858065207712248076">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="885906927438988819">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
+<translation id="8863218129525348270">โปรดบันทึกบัตรไว้ในอุปกรณ์เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="8864939224504814334">ชุทสูทและเครื่องแต่งกายสำหรับธุรกิจ</translation>
 <translation id="8866132857352163524">ซาวด์แทร็ก</translation>
 <translation id="8866481888320382733">ข้อผิดพลาดในการแยกวิเคราะห์การตั้งค่านโยบาย</translation>
@@ -3951,6 +3956,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ข้อมูลที่ใช้:<ph name="END_BOLD" /> หัวข้อโฆษณาจะอิงตามประวัติการท่องเว็บล่าสุด ซึ่งเป็นรายการเว็บไซต์ที่คุณเคยเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940053046584497293">การเดินทางและการคมนาคมขนส่ง</translation>
+<translation id="944540589955480312">ใช้รหัสผ่านและพาสคีย์ที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="945855313015696284">ตรวจสอบข้อมูลด้านล่างและลบบัตรที่ไม่ถูกต้อง</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="949314938206378263">คุณขอเข้าชมเว็บไซต์นี้ ผู้ปกครองจะตอบกลับได้ใน Family Link</translation>
@@ -3987,5 +3993,6 @@
     &lt;li&gt;ลองเชื่อมต่อกับเครือข่ายอื่น&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">การแสดงภาพซ้อนภาพอัตโนมัติ</translation>
 <translation id="997986563973421916">จาก Google Pay</translation>
 </translationbundle>

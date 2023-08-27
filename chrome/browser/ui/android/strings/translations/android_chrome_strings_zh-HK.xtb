@@ -1044,6 +1044,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6433501201775827830">選取您的搜尋引擎</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6437478888915024427">網頁資訊</translation>
+<translation id="6440291723980579689">網頁只會在開啟後載入</translation>
 <translation id="6441734959916820584">此名稱過長</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# 張圖片}other{# 張圖片}}</translation>
 <translation id="6447558397796644647">找不到該書籤。請檢查拼字或新增書籤。</translation>

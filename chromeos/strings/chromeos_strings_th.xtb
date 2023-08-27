@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">คีย์การตรวจสอบสิทธิ์ TLS</translation>
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2717139507051041123">เปิดใช้โหมดสีมืด</translation>
+<translation id="2728460467788544679">ล้างประวัติการพิมพ์ทั้งหมด</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2744221223678373668">ที่แชร์</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">เปิด VPN</translation>
 <translation id="6439505561246192797">อ่อน (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ไปที่การตั้งค่าบัญชี</translation>
+<translation id="6461047516875166066">ต้องการข้อมูลเพิ่มเติม</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้งไหม}=1{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}other{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
 <translation id="8329018942023753850">แอปเครื่องคิดเลข</translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> หรือ <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8351855506390808906">จุดสัมผัสการแมปคีย์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
