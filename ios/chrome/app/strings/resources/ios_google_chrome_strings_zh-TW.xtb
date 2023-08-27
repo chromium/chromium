@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中。</translation>
+<translation id="1180362651362502943">請繼續使用 Google 帳戶中的 Chrome 資料。</translation>
 <translation id="1282031177488366470">協助改善 Chrome 的功能與效能</translation>
 <translation id="1352919863522755794">Google 密碼管理工具無法檢查你的密碼，請確認網際網路連線狀態。</translation>
+<translation id="1407843355326180937">登入這個網站和 Chrome，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="1462727070346936664">登入以充分運用 Chrome 的各項功能。</translation>
 <translation id="1479202195792305274">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼。</translation>
 <translation id="1491435845014430217">開啟「關閉 Chrome 時鎖定無痕分頁」。</translation>
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="1511320244449497906">你已透過 <ph name="DOMAIN" /> 的受管理帳戶登入並正在同步資料，其系統管理員現在可以設定針對該帳戶且可變更 Chrome 行為的使用者政策。</translation>
+<translation id="1526327845902180576">開啟時：
+<ph name="BEGIN_INDENT" /> • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
+
+注意事項：
+<ph name="BEGIN_INDENT" /> • 系統會將 Chrome 使用資訊傳送給 Google，但不會用於辨識你的身分。
+
+  • Chrome 當機時，有關當機的詳細資料可能會包含一些個人資訊。
+
+  • 如果你將歷史記錄同步至 Google 帳戶，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
 <translation id="1733654336159102143">在你離開 Chrome 或切換到其他應用程式時，鎖定無痕模式。</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕分頁</translation>
 <translation id="3827545470516145620">這部裝置即將啟用標準安全防護機制</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用你的相機</translation>
+<translation id="3901001113120561395">充分運用 Chrome 的各項功能。</translation>
 <translation id="3980220367029651214">您設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將您的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">貴機構要求你在 Chrome 保持登出狀態。</translation>
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">登入這個網站和 Chrome。</translation>
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼，請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼。<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">為協助改善應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">部分 Chrome 資料尚未儲存至你的 Google 帳戶。
+
+        請稍待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除這類資料。</translation>
 <translation id="484033449593719797">Chrome Beta 版不支援這項功能</translation>
 <translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">讓 Chrome 更臻完美</translation>
 <translation id="5119391094379141756">選取「Chrome」</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chrome。</translation>
+<translation id="5190139289262548459">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
 <translation id="5389212809648216794">另一個應用程式正在使用你的相機，因此 Google Chrome 無法使用</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5439191312780166229">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
+<translation id="6815466750807582739">系統將不會加密付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
+
+只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
 <translation id="8808828119384186784">Chrome 設定</translation>
+<translation id="8856877214925961642">通關密語加密的資料不包括付款方式和地址。
+
+如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="8897749957032330183">密碼會儲存至這部裝置的 Google 密碼管理工具。</translation>
 <translation id="8969290730818637510">開啟時：
