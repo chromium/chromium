@@ -26,6 +26,7 @@ static_library("core") {
     "//base",
     "//chrome/browser/ui/side_panel:side_panel_enums",
     "//chrome/common:constants",
+    "//chrome/common/companion/visual_search:flags",
     "//components/prefs",
     "//components/unified_consent",
     "//content/public/browser",
@@ -34,9 +35,6 @@ static_library("core") {
     "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
-  if (!is_android) {
-    deps += [ "//chrome/browser/companion/visual_search:flags" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -57,8 +55,8 @@ source_set("unit_tests") {
       "proto",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/companion/visual_search:flags",
       "//chrome/browser/ui/side_panel:side_panel_enums",
+      "//chrome/common/companion/visual_search:flags",
       "//chrome/test:test_support",
       "//components/prefs",
       "//components/ukm:test_support",

@@ -16,6 +16,7 @@ source_set("visual_search") {
   deps = [
     "//base",
     "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_search:flags",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/renderer",
     "//skia",
@@ -42,6 +43,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_search:flags",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
@@ -65,6 +67,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/common",
     "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_search:flags",
     "//chrome/test:test_support",
     "//skia",
     "//testing/gmock",

@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/browser/companion/visual_search/visual_search_classifier_host.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -42,11 +42,13 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/companion/visual_search/features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
@@ -533,6 +535,13 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
           companion::visual_search::features::kVisualSearchSuggestions,
           /*params*/ {}));
     }
+
+    if (enable_feature_visual_search_agent_) {
+      enabled_features.emplace_back(base::test::FeatureRefAndParams(
+          companion::visual_search::features::kVisualSearchSuggestionsAgent,
+          /*params*/ {}));
+    }
+
     enabled_features.emplace_back(
         companion::features::internal::
             kCompanionEnabledByObservingExpsNavigations,
@@ -564,6 +573,13 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         base::BindLambdaForTesting(
             [&](const char* histogram_name, uint64_t name_hash,
                 base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  void WaitForAgentClassification() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
   }
 
@@ -622,6 +638,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   bool enable_feature_side_panel_companion_ = true;
   bool enable_feature_visual_search_ = true;
   bool enable_feature_lens_standalone_ = true;
+  bool enable_feature_visual_search_agent_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -979,6 +996,11 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), vss_url_server_.GetURL(kHost, kRelativeVisualSearchUrl)));
 
+  // We need to add artificial delay to give the renderer agent time to
+  // do its own classification. This is needed in the test because agent
+  // classification triggering is enabled by default in test setup.
+  WaitForAgentClassification();
+
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   WaitForCompanionToBeLoaded();
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
@@ -1017,6 +1039,43 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   side_panel_coordinator()->Close();
   // TODO(b/289113873) - Update iFrame to show UI and verify image bytes.
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenPageWithVisualSearchAgentEnabled) {
+  // base::HistogramTester histogram_tester;
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::
+              OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .SetModelMetadata(model_metadata())
+              .Build());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), vss_url_server_.GetURL(kHost, kRelativeVisualSearchUrl)));
+  base::RunLoop().RunUntilIdle();
+
+  // TODO(b/289113873) - Fix model flakiness for all platforms.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::File model_file(model_file_path(),
+                        base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (base::PathExists(model_file_path()) && model_file.IsValid()) {
+    WaitForHistogram("Companion.VisualQuery.Service.GetModelRequestSuccess");
+    // We need to wait a bit more for classification to occur.
+    WaitForAgentClassification();
+
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    base::RunLoop().RunUntilIdle();
+
+    histogram_tester_->ExpectBucketCount(
+        "Companion.VisualQuery.Agent.DomImageCount", 1, 2);
+
+    histogram_tester_->ExpectBucketCount(
+        "Companion.VisualQuery.Agent.ClassificationDone", 1, 2);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {

@@ -218,9 +218,12 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/companion/visual_search/visual_search_suggestions_service_factory.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
+#include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_search/features.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -827,6 +830,20 @@ void BindScreen2xMainContentExtractor(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+void BindVisualSuggestionsModelProvider(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<
+        companion::visual_search::mojom::VisualSuggestionsModelProvider>
+        receiver) {
+  companion::visual_search::VisualSearchSuggestionsServiceFactory::
+      GetForProfile(Profile::FromBrowserContext(
+                        frame_host->GetProcess()->GetBrowserContext()))
+          ->BindModelReceiver(std::move(receiver));
+}
+#endif
+
 void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
@@ -976,6 +993,12 @@ void PopulateChromeFrameBinders(
     // primary main frame at a later time (eg. a prerendered page).
     map->Add<blink::mojom::SubAppsService>(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
+  }
+
+  if (companion::visual_search::features::
+          IsVisualSearchSuggestionsAgentEnabled()) {
+    map->Add<companion::visual_search::mojom::VisualSuggestionsModelProvider>(
+        base::BindRepeating(&BindVisualSuggestionsModelProvider));
   }
 #endif
 

@@ -12,24 +12,16 @@ source_set("visual_search") {
     "visual_search_suggestions_service.h",
   ]
   deps = [
-    ":flags",
     "//base",
     "//chrome/browser/companion/core",
     "//chrome/browser/profiles:profile",
     "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_search:flags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser:browser",
     "//third_party/blink/public/common:headers",
   ]
-}
-
-source_set("flags") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -44,9 +36,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/companion/core",
-    "//chrome/browser/companion/visual_search:flags",
     "//chrome/common",
     "//chrome/common/companion:mojo_bindings",
+    "//chrome/common/companion/visual_search:flags",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -65,8 +57,8 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/companion/core",
-    "//chrome/browser/companion/visual_search:flags",
     "//chrome/common",
+    "//chrome/common/companion/visual_search:flags",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
