@@ -8,6 +8,9 @@ In 2023Q3, we started to move source of Git dependencies from DEPS files to Git
 submodules. While we do our best to hide complexities of submodules, some will
 be exposed.
 
+IMPORTANT NOTE: Due to a bug in fsmonitor, we encourage you to disable it until
+the underlying bug is fixed. More details in https://crbug.com/1475405.
+
 [TOC]
 
 ## A quick introduction to Git submoduldes
@@ -139,9 +142,12 @@ restore --staged <path to submodule>`.
 We will need to create either a commit that sets it back to old value, or amend
 the commit that added it. You can try to run `gclient sync` to bring the commit
 back to what is expected. If that doesn't work, you can use `gclient setdep -r
-<path>@{old hash}`, run `gclient gitmodules` to sync all submodules commits back
+<path>@<old hash>`, run `gclient gitmodules` to sync all submodules commits back
 to what is in DEPS, or check detailed instructions in [Managing
 dependencies](dependencies.md).
+
+NOTE: setdep for chromium/src is always prefixed with src/. For example, if you
+are updating v8, the command would be `gclient setdep -r src/v8@<hash>.
 
 ## FAQ
 
@@ -152,7 +158,26 @@ massive switch, it's easier to transition to Git submodules this way. Moreover,
 unwanted Git submodule updates can be detected and developers can be warned.
 
 ### How do I manually roll Git submodule?
+
 See the [dependencies](dependencies.md) page.
+
+### I got a conflict on a submodule, how do I resolve it?
+
+First, you will need to determine what is the right commit hash. If you
+accidentally committed a gitlink, which got in the meantime updated, you most
+likely want to restore the original updated gitlink. You can run `gclient
+gitmodules`, which will take care of all unmerged submodule paths, and set it to
+match DEPS file.
+
+If you prefer to manually resolve it, under git status, you will see "Unmerged
+paths". If those are submodules, you want to restore them by running the
+following command:
+
+```
+git restore --staging <affected path>
+```
+
+If you want to keep your gitlink, then run `git add <affected path>`.
 
 ### How can I provide feedback?
 

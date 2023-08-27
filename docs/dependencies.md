@@ -9,6 +9,17 @@ gclient supports two dependency types: git and [cipd](cipd_and_3pp.md).
 
 [TOC]
 
+## Adding dependencies
+
+Add your entry in DEPS file. Then, run `gclient gitmodules` to generate
+git submodules (it will contain .gitmodule change, and gitlink). Edit OWNERS
+file and add gitlink path. For example, if new dependency is "src/foo/bar.git",
+its gitlink path is "foo/bar". You can confirm that by running `git status`.
+
+Then, run `git add DEPS OWNERS` to stage those files for commit, followed by
+`git commit`. Your change is now ready to be sent for a review using `git cl
+upload`.
+
 ## Rolling dependencies
 
 ### Using gclient
