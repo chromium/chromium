@@ -274,6 +274,9 @@ class BackForwardCacheMetrics
   static bool IsCrossDocumentMainFrameHistoryNavigation(
       NavigationRequest* navigation);
 
+  // Returns the debug string for `page_stored_result_`.
+  std::string GetPageStoredResultString();
+
  private:
   friend class base::RefCounted<BackForwardCacheMetrics>;
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest, WindowOpen);
