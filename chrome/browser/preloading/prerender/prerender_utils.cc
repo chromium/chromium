@@ -14,10 +14,15 @@ BASE_FEATURE(kHidePrefetchParameter,
              "HidePrefetchParameter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If you add a new type of prerender trigger, please refer to the internal
+// document go/update-prerender-new-trigger-metrics to make sure that metrics
+// include the newly added trigger type.
+// LINT.IfChange
 const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 const char kBookmarkBarMetricSuffix[] = "BookmarkBar";
 const char kNewTabPageMetricSuffix[] = "NewTabPage";
+// LINT.ThenChange()
 
 bool IsDirectUrlInputPrerenderEnabled() {
   return base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2);
