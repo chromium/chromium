@@ -149701,7 +149701,7 @@
         ]
        ],
        "clip-path-transition-custom-timing-function.html": [
-        "47b0cd6e751fe8c2282ce8c44746fa01d0340b30",
+        "f8bf6e08fe887af8de59af686b818aa00784a994",
         [
          null,
          [
@@ -149710,7 +149710,23 @@
            "=="
           ]
          ],
-         {}
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              4
+             ],
+             [
+              0,
+              628
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ],
        "clip-path-transition.html": [
