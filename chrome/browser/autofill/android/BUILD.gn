@@ -148,7 +148,10 @@ android_library("test_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.autofill"
 
-  sources = [ "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java" ]
+  sources = [
+    "javatest/src/org/chromium/chrome/browser/autofill/editors/AddressEditorRenderTest.java",
+    "javatest/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewTest.java",
+  ]
 
   deps = [
     ":java",
@@ -170,6 +173,7 @@ android_library("test_java") {
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
@@ -185,6 +189,8 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/editors/TextFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsTest.java",
   ]
 
@@ -210,6 +216,7 @@ robolectric_library("junit") {
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",

@@ -18,8 +18,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Drop
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
@@ -72,12 +73,10 @@ public class EditorDialogViewBinder {
             view.setAllowDelete(model.get(ALLOW_DELETE));
         } else if (propertyKey == DELETE_RUNNABLE) {
             view.setDeleteRunnable(model.get(DELETE_RUNNABLE));
+        } else if (propertyKey == VALIDATE_ON_SHOW) {
+            view.setValidateOnShow(model.get(VALIDATE_ON_SHOW));
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
-        } else if (propertyKey == FORM_VALID) {
-            if (!model.get(FORM_VALID)) {
-                view.findAndScrollToInvalidField();
-            }
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -90,6 +89,10 @@ public class EditorDialogViewBinder {
             view.setValidator(model.get(VALIDATOR));
         } else if (key == ERROR_MESSAGE) {
             view.setErrorMessage(model.get(ERROR_MESSAGE));
+        } else if (key == FOCUSED) {
+            if (model.get(FOCUSED)) {
+                view.scrollToAndFocus();
+            }
         } else if (key == VALUE) {
             view.setValue(model.get(VALUE));
         } else if (key == TEXT_FIELD_TYPE) {
@@ -115,6 +118,10 @@ public class EditorDialogViewBinder {
             view.setValidator(model.get(VALIDATOR));
         } else if (key == ERROR_MESSAGE) {
             view.setErrorMessage(model.get(ERROR_MESSAGE));
+        } else if (key == FOCUSED) {
+            if (model.get(FOCUSED)) {
+                view.scrollToAndFocus();
+            }
         } else if (key == VALUE) {
             view.setValue(model.get(VALUE));
         } else if (key == DROPDOWN_KEY_VALUE_LIST || key == DROPDOWN_HINT) {

@@ -6,8 +6,12 @@ package org.chromium.chrome.browser.autofill.editors;
 
 /** The interface for editor fields that handle validation, display errors, and can be updated. */
 interface FieldView {
-    /** @return True if this field is valid. */
-    boolean isValid();
+    /**
+     * Validates the field.
+     *
+     * @return True if this field is valid.
+     */
+    boolean validate();
 
     /** @return True if this field is required. */
     boolean isRequired();

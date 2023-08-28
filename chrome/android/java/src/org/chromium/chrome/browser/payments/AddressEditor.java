@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Drop
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
@@ -26,7 +25,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.scrollToFieldWithErrorMessage;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.validateForm;
 
 import android.app.ProgressDialog;
@@ -268,34 +269,26 @@ public class AddressEditor
         // that's being edited.
         mPhoneField.set(VALUE, mProfile.getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER));
 
-        mEditorModel = new PropertyModel.Builder(ALL_KEYS)
-                               .with(EDITOR_TITLE, editTitle)
-                               .with(SHOW_REQUIRED_INDICATOR, true)
-                               .with(EDITOR_FIELDS, new ListModel())
-                               .with(DONE_RUNNABLE, this::onDone)
-                               .with(CANCEL_RUNNABLE, this::onCancel)
-                               .with(FORM_VALID, true)
-                               .with(ALLOW_DELETE, false)
-                               .build();
+        mEditorModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(EDITOR_TITLE, editTitle)
+                        .with(SHOW_REQUIRED_INDICATOR, true)
+                        .with(EDITOR_FIELDS, new ListModel())
+                        .with(DONE_RUNNABLE, this::onDone)
+                        .with(CANCEL_RUNNABLE, this::onCancel)
+                        .with(ALLOW_DELETE, false)
+                        // Form validation must be performed only for non-empty address profiles.
+                        .with(VALIDATE_ON_SHOW, !mAddressNew)
+                        .build();
         mEditorMCP = PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
 
         loadAdminAreasForCountry(mCountryField.get(VALUE));
-        boolean formValid = mAddressErrors == null;
-        if (!mAddressNew) {
-            // Form validation must be performed only for non-empty address profiles.
-            formValid |= validateForm(mEditorModel);
-        }
-        mEditorModel.set(FORM_VALID, formValid);
     }
 
     private void onDone() {
         if (!validateForm(mEditorModel)) {
-            // Note: triggering editor error messages and focused field update using temporary
-            // property.
-            // TODO(crbug.com/1435314): remove this temporary logic.
-            mEditorModel.set(FORM_VALID, true);
-            mEditorModel.set(FORM_VALID, false);
+            scrollToFieldWithErrorMessage(mEditorModel);
             return;
         }
         mEditorModel.set(VISIBLE, false);

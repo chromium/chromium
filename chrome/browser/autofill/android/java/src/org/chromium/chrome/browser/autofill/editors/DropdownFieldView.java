@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors;
 
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownKeyByValue;
@@ -94,7 +95,11 @@ class DropdownFieldView implements FieldView {
                     }
                     mSelectedIndex = position;
                     setDropdownKey(mFieldModel, key);
-                    mFieldModel.set(ERROR_MESSAGE, null);
+
+                    if (mValidator != null) {
+                        mValidator.onUserEditedField();
+                        mValidator.validate(mFieldModel);
+                    }
                 }
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
@@ -160,11 +165,11 @@ class DropdownFieldView implements FieldView {
 
     void setErrorMessage(@Nullable String errorMessage) {
         View view = mDropdown.getSelectedView();
-        if (view == null || !(view instanceof TextView)) {
-            return;
-        }
         if (errorMessage == null) {
-            ((TextView) view).setError(null);
+            // {@link Spinner#getSelectedView()} is null in JUnit tests.
+            if (view != null && view instanceof TextView) {
+                ((TextView) view).setError(null);
+            }
             mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
             mErrorLabel.setText(null);
             mErrorLabel.setVisibility(View.GONE);
@@ -174,10 +179,16 @@ class DropdownFieldView implements FieldView {
         Drawable drawable = TraceEventVectorDrawableCompat.create(
                 mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ((TextView) view).setError(errorMessage, drawable);
+        if (view != null && view instanceof TextView) {
+            ((TextView) view).setError(errorMessage, drawable);
+        }
         mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
         mErrorLabel.setText(errorMessage);
         mErrorLabel.setVisibility(View.VISIBLE);
+
+        if (sObserverForTest != null) {
+            sObserverForTest.onEditorValidationError();
+        }
     }
 
     void setValidator(@Nullable EditorFieldValidator validator) {
@@ -210,8 +221,15 @@ class DropdownFieldView implements FieldView {
         return mDropdown;
     }
 
+    public TextView getErrorLabelForTests() {
+        return mErrorLabel;
+    }
+
     @Override
-    public boolean isValid() {
+    public boolean validate() {
+        if (mValidator != null) {
+            mValidator.validate(mFieldModel);
+        }
         return mFieldModel.get(ERROR_MESSAGE) == null;
     }
 
@@ -222,13 +240,13 @@ class DropdownFieldView implements FieldView {
 
     @Override
     public void scrollToAndFocus() {
-        if (mValidator != null) {
-            mValidator.validate(mFieldModel);
-        }
         requestFocusAndHideKeyboard();
     }
 
     private void requestFocusAndHideKeyboard() {
+        // Clear 'focused' bit because dropdown is not focusable. (crbug.com/1474419)
+        mFieldModel.set(FOCUSED, false);
+
         KeyboardVisibilityDelegate.getInstance().hideKeyboard(mDropdown);
         ViewGroup parent = (ViewGroup) mDropdown.getParent();
         if (parent != null) parent.requestChildFocus(mDropdown, mDropdown);

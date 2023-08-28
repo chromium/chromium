@@ -80,20 +80,16 @@ public class EditorProperties {
     public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
             new ReadableObjectPropertyKey<>("delete_callback");
 
+    public static final WritableBooleanPropertyKey VALIDATE_ON_SHOW =
+            new WritableBooleanPropertyKey("validate_on_show");
+
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
-    /**
-     * This property is temporary way to trigger field error message update process.
-     * It also triggers field focus update.
-     * TODO(crbug.com/1435314): remove this property once fields are updated through MCP.
-     */
-    public static final WritableBooleanPropertyKey FORM_VALID =
-            new WritableBooleanPropertyKey("form_valid");
 
     public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
             FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
             SHOW_REQUIRED_INDICATOR, EDITOR_FIELDS, DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE,
-            DELETE_RUNNABLE, VISIBLE, FORM_VALID};
+            DELETE_RUNNABLE, VALIDATE_ON_SHOW, VISIBLE};
 
     private EditorProperties() {}
 
@@ -147,12 +143,14 @@ public class EditorProperties {
         // TODO(crbug.com/1435314): make this field read-only.
         public static final WritableBooleanPropertyKey IS_REQUIRED =
                 new WritableBooleanPropertyKey("is_required");
+        public static final WritableBooleanPropertyKey FOCUSED =
+                new WritableBooleanPropertyKey("focused");
         // TODO(crbug.com/1435314): make this field read-only.
         public static final WritableObjectPropertyKey<String> VALUE =
                 new WritableObjectPropertyKey<>("value");
 
         public static final PropertyKey[] FIELD_ALL_KEYS = {
-                LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, VALUE};
+                LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, FOCUSED, VALUE};
     }
 
     /**
@@ -244,5 +242,30 @@ public class EditorProperties {
             isValid &= item.model.get(FieldProperties.ERROR_MESSAGE) == null;
         }
         return isValid;
+    }
+
+    public static void scrollToFieldWithErrorMessage(PropertyModel editorModel) {
+        // Check if a field with an error is already focused.
+        ListModel<FieldItem> fields = editorModel.get(EditorProperties.EDITOR_FIELDS);
+        for (FieldItem item : fields) {
+            if (item.model.get(FieldProperties.FOCUSED)
+                    && item.model.get(FieldProperties.ERROR_MESSAGE) != null) {
+                // Hack: Although the field is focused, it may be off screen. Toggle FOCUSED in
+                // order to scroll the field into view.
+                item.model.set(FieldProperties.FOCUSED, false);
+                item.model.set(FieldProperties.FOCUSED, true);
+                return;
+            }
+        }
+
+        // Focus first field with an error.
+        for (FieldItem item : fields) {
+            if (item.model.get(FieldProperties.ERROR_MESSAGE) != null) {
+                item.model.set(FieldProperties.FOCUSED, true);
+                break;
+            }
+            // The field (ex {@link TextFieldView}) is responsible for clearing FOCUSED property
+            // when the field loses focus.
+        }
     }
 }

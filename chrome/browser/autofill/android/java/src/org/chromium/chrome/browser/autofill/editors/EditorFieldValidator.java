@@ -83,6 +83,10 @@ public class EditorFieldValidator {
         mInvalidErrorMessage = invalidErrorMessage;
     }
 
+    public void onUserEditedField() {
+        mInitialErrorMessage = null;
+    }
+
     /**
      * Called to check the validity of the field value.
      *
@@ -92,7 +96,6 @@ public class EditorFieldValidator {
     public void validate(PropertyModel fieldModel) {
         if (!TextUtils.isEmpty(mInitialErrorMessage)) {
             fieldModel.set(ERROR_MESSAGE, mInitialErrorMessage);
-            mInitialErrorMessage = null;
             return;
         }
         if (fieldModel.get(IS_REQUIRED)) {

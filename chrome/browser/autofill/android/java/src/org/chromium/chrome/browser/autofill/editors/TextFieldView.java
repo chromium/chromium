@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors;
 
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
@@ -75,6 +76,8 @@ class TextFieldView extends FrameLayout implements FieldView {
     private EditorFieldValidator mValidator;
     @Nullable
     private TextWatcher mTextFormatter;
+    private boolean mInFocusChange;
+    private boolean mInValueChange;
 
     public TextFieldView(Context context, final PropertyModel fieldModel) {
         super(context);
@@ -115,12 +118,15 @@ class TextFieldView extends FrameLayout implements FieldView {
         mInput.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
+                mInFocusChange = true;
+                mEditorFieldModel.set(FOCUSED, hasFocus);
+                mInFocusChange = false;
+
+                if (!hasFocus && mValidator != null) {
                     // Validate the field when the user de-focuses it.
-                    // Show no errors until the user has already tried to edit the field once.
-                    if (mValidator != null) {
-                        mValidator.validate(mEditorFieldModel);
-                    }
+                    // We do not validate the form initially when all of the fields are empty to
+                    // avoid showing error messages in all of the fields.
+                    mValidator.validate(mEditorFieldModel);
                 }
             }
         });
@@ -130,7 +136,6 @@ class TextFieldView extends FrameLayout implements FieldView {
             @Override
             public void afterTextChanged(Editable s) {
                 fieldModel.set(VALUE, s.toString());
-                mEditorFieldModel.set(ERROR_MESSAGE, null);
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
                 }
@@ -138,7 +143,13 @@ class TextFieldView extends FrameLayout implements FieldView {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mInput.hasFocus()) {
+                if (mInput.hasFocus() && !mInValueChange) {
+                    if (mValidator != null) {
+                        mValidator.onUserEditedField();
+                    }
+
+                    // Hide the error message and wait till the user finishes editing the field
+                    // to re-show the error label.
                     mEditorFieldModel.set(ERROR_MESSAGE, null);
                 }
             }
@@ -160,6 +171,9 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     void setErrorMessage(@Nullable String errorMessage) {
         mInputLayout.setError(errorMessage);
+        if (sObserverForTest != null && errorMessage != null) {
+            sObserverForTest.onEditorValidationError();
+        }
     }
 
     void setValue(@Nullable String value) {
@@ -167,10 +181,15 @@ class TextFieldView extends FrameLayout implements FieldView {
         if (mInput.getText().toString().equals(value)) {
             return;
         }
+        // {@link mTextFormatter#afterTextChanged()} can trigger a nested {@link setValue()}
+        // call.
+        boolean inNestedValueChange = mInValueChange;
+        mInValueChange = true;
         mInput.setText(value);
         if (mTextFormatter != null) {
             mTextFormatter.afterTextChanged(mInput.getText());
         }
+        mInValueChange = inNestedValueChange;
     }
 
     void setTextInputType(int textInputType) {
@@ -223,13 +242,22 @@ class TextFieldView extends FrameLayout implements FieldView {
         }
     }
 
-    /** @return The AutoCompleteTextView this field associates*/
+    /**
+     * @return The AutoCompleteTextView this field associates
+     */
     public AutoCompleteTextView getEditText() {
         return mInput;
     }
 
+    public TextInputLayout getInputLayoutForTesting() {
+        return mInputLayout;
+    }
+
     @Override
-    public boolean isValid() {
+    public boolean validate() {
+        if (mValidator != null) {
+            mValidator.validate(mEditorFieldModel);
+        }
         return mInputLayout.getError() == null;
     }
 
@@ -240,6 +268,8 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     @Override
     public void scrollToAndFocus() {
+        if (mInFocusChange) return;
+
         ViewGroup parent = (ViewGroup) getParent();
         if (parent != null) parent.requestChildFocus(this, this);
         requestFocus();

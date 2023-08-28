@@ -55,7 +55,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -112,6 +111,8 @@ public class EditorDialogView
     private Runnable mDeleteRunnable;
     private Runnable mDoneRunnable;
     private Runnable mCancelRunnable;
+
+    private boolean mValidateOnShow;
 
     /**
      * Builds the editor dialog.
@@ -230,32 +231,15 @@ public class EditorDialogView
         mCancelRunnable = cancelRunnable;
     }
 
+    public void setValidateOnShow(boolean validateOnShow) {
+        mValidateOnShow = validateOnShow;
+    }
+
     public void setVisible(boolean visible) {
         if (visible) {
             showDialog();
         } else {
             animateOutDialog();
-        }
-    }
-
-    public void findAndScrollToInvalidField() {
-        // Make sure that focus is on an invalid field.
-        @Nullable
-        FieldView focusedField = getTextFieldView(getCurrentFocus());
-        if (focusedField != null && !focusedField.isValid()) {
-            // The focused field is invalid, but it may be scrolled off screen. Scroll to it.
-            focusedField.scrollToAndFocus();
-        } else {
-            // Some fields are invalid, but none of the are focused. Scroll to the first invalid
-            // field and focus it.
-            Optional<FieldView> invalidField =
-                    mFieldViews.stream().filter(view -> !view.isValid()).findAny();
-            assert invalidField.isPresent();
-            invalidField.get().scrollToAndFocus();
-        }
-
-        if (sObserverForTest != null) {
-            sObserverForTest.onEditorValidationError();
         }
     }
 
@@ -575,13 +559,17 @@ public class EditorDialogView
 
     private void initFocus() {
         mHandler.post(() -> {
+            List<FieldView> invalidViews = new ArrayList<>();
+            if (mValidateOnShow) {
+                invalidViews = mFieldViews.stream()
+                                       .filter(view -> !view.validate())
+                                       .collect(Collectors.toList());
+            }
+
             // If TalkBack is enabled, we want to keep the focus at the top
             // because the user would not learn about the elements that are
             // above the focused field.
             if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-                List<FieldView> invalidViews = mFieldViews.stream()
-                                                       .filter(view -> !view.isValid())
-                                                       .collect(Collectors.toList());
                 if (!invalidViews.isEmpty()) {
                     // Immediately focus the first invalid field to make it faster to edit.
                     invalidViews.get(0).scrollToAndFocus();
