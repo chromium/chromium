@@ -50,14 +50,8 @@ export class ShoppingInsightsAppElement extends PolymerElement {
   private shoppingApi_: ShoppingListApiProxy =
       ShoppingListApiProxyImpl.getInstance();
 
-  override async connectedCallback() {
-    super.connectedCallback();
-
-    // Push showInsightsSidePanelUI() callback to the event queue to allow
-    // deferred rendering to take place.
-    listenOnce(this.$.insightsContainer, 'dom-change', () => {
-      setTimeout(() => this.shoppingApi_.showInsightsSidePanelUi(), 0);
-    });
+  override async ready() {
+    super.ready();
 
     const {productInfo} = await this.shoppingApi_.getProductInfoForCurrentUrl();
     this.productInfo = productInfo;
@@ -69,6 +63,16 @@ export class ShoppingInsightsAppElement extends PolymerElement {
     const {eligible} = await this.shoppingApi_.isShoppingListEligible();
     this.isProductTrackable_ =
         eligible && (priceInsightsInfo.clusterId !== BigInt(0));
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    // Push showInsightsSidePanelUI() callback to the event queue to allow
+    // deferred rendering to take place.
+    listenOnce(this.$.insightsContainer, 'dom-change', () => {
+      setTimeout(() => this.shoppingApi_.showInsightsSidePanelUi(), 0);
+    });
   }
 
   private getRangeDescription_(info: PriceInsightsInfo): string {
