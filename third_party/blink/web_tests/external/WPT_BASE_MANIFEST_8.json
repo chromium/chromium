@@ -279648,6 +279648,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "c043b78456a1825b39fc9b7432b46923be6961fd",
+     []
+    ],
+    "mtime.json": [
+     "0e4fe20c221d79814f0f1bc7e78959fc09bc1da0",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -290591,6 +290601,10 @@
        "bdb218a86ace687def99fb699ba2e9b0ff373e9d",
        []
       ],
+      "border-right-color-069.xht.ini": [
+       "f7b7a26c688b0ef6b30f49cf864c3cbf81dfafe9",
+       []
+      ],
       "border-right-color-070-ref.xht": [
        "f0ed168b38131f3422032380115266ee2346546d",
        []
@@ -295739,6 +295753,10 @@
       ],
       "absolute-replaced-width-052.xht.ini": [
        "50e0e0a2f0f8fdd664c62ff36df782cbf668fb4e",
+       []
+      ],
+      "absolute-replaced-width-057.xht.ini": [
+       "09117d14199c7e1d2f6dd438d72b3cc78a9926f2",
        []
       ],
       "absolute-replaced-width-064.xht.ini": [
@@ -301274,6 +301292,10 @@
      ],
      "background-clip-color-repaint-ref.html": [
       "81e95173e8ac9117215d1a1e4911c94cff586cdb",
+      []
+     ],
+     "background-clip-color.html.ini": [
+      "6c25c0a357e79fbe820bcc7223ddfe4992ece25e",
       []
      ],
      "background-clip-content-box-001.html.ini": [
@@ -340575,6 +340597,10 @@
        "72a24c7a5955dc2dce3cf747f72f482500545550",
        []
       ],
+      "contain-intrinsic-size-014.html.ini": [
+       "0dfb00597be4dbe3404141437ff07c94b95edb80",
+       []
+      ],
       "contain-intrinsic-size-015-ref.html": [
        "76abf0c14bcfe9b1c4d837abc2b23dc37bc6085b",
        []
@@ -346393,6 +346419,10 @@
       ]
      },
      "white-space": {
+      "break-spaces-003.html.ini": [
+       "e77a860b1daa05510d8c4691d7e36d4984e403b7",
+       []
+      ],
       "break-spaces-005.html.ini": [
        "20b287f9059693cd389b0b9e6e37a58a90d89618",
        []
@@ -346410,7 +346440,7 @@
        []
       ],
       "break-spaces-before-first-char-002.html.ini": [
-       "68117171f32c48ee9cc3fe6c3ee420e0cb809eb0",
+       "c559fad8294a2e7aa9de1108c9dc8a172fd34e00",
        []
       ],
       "break-spaces-before-first-char-003.html.ini": [
@@ -346435,6 +346465,10 @@
       ],
       "break-spaces-before-first-char-016.html.ini": [
        "599c68fed109a7c95ee5664a5162e3a25d16ba58",
+       []
+      ],
+      "break-spaces-before-first-ideographic-char-003.html.ini": [
+       "d00f48e9517fde4ecabd8de6c19e45530d42d3ea",
        []
       ],
       "break-spaces-before-first-ideographic-char-004.html.ini": [
@@ -347435,6 +347469,10 @@
       ],
       "trailing-ideographic-space-015.html.ini": [
        "211740a4d860d83989c347c1176a9b18fb0a9aad",
+       []
+      ],
+      "trailing-ideographic-space-017.html.ini": [
+       "2b5a3dba8e5abf07d07d7b6cfb2a7c3842c4255d",
        []
       ],
       "trailing-ideographic-space-019.html.ini": [
@@ -351104,7 +351142,7 @@
        []
       ],
       "cssbox-initial.html.ini": [
-       "26f2dbd8c314f5675f09abe6b1ee0067f6a78a74",
+       "b7145a6a8b8eed4d664e80f1d8277e92311334b2",
        []
       ],
       "cssbox-stroke-box.html.ini": [
@@ -353688,7 +353726,7 @@
        []
       ],
       "kind-of-widget-fallback-button-background-position-001.html.ini": [
-       "428acbb04152630a8f4996e9d5c4ad6ecc8dc383",
+       "9c71776f3ec38e48320e712fe63535431dbd5889",
        []
       ],
       "kind-of-widget-fallback-button-background-size-001.html.ini": [
@@ -353700,7 +353738,7 @@
        []
       ],
       "kind-of-widget-fallback-button-border-block-end-style-001.html.ini": [
-       "7007334330b80ca0e399e48346e9b3710505e212",
+       "12ab09bc93fcb2f564f91dddddf5752539467117",
        []
       ],
       "kind-of-widget-fallback-button-border-block-end-width-001.html.ini": [
@@ -353792,7 +353830,7 @@
        []
       ],
       "kind-of-widget-fallback-button-border-right-style-001.html.ini": [
-       "17d3c480a27d3eb4b85e41f3d99e1234f8f75482",
+       "c3b64a9209d1864aa68d60f5a2038750d0657188",
        []
       ],
       "kind-of-widget-fallback-button-border-right-width-001.html.ini": [
@@ -353817,6 +353855,10 @@
       ],
       "kind-of-widget-fallback-button-border-top-width-001.html.ini": [
        "2c421b908c3789c82bd830b7546a4b24eb6ccdee",
+       []
+      ],
+      "kind-of-widget-fallback-checkbox-input-background-attachment-001.html.ini": [
+       "c0c52c498fa309a672a2bf9ac0e259228607e382",
        []
       ],
       "kind-of-widget-fallback-checkbox-input-background-clip-001.html.ini": [
@@ -354616,7 +354658,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-text-border-image-width-001.html.ini": [
-       "aee72b9df16cb2e8d30bd7af471b19e359547d2d",
+       "56dd7799f29558937a69144fc9da26e4455ac860",
        []
       ],
       "kind-of-widget-fallback-input-search-text-border-inline-end-style-001.html.ini": [
@@ -354788,7 +354830,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-color-001.html.ini": [
-       "2f24b9fa0ec7c0b41abd1664ec3928c51f442358",
+       "351031d334c40a140de7c0f50172dd41bd9da10e",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-style-001.html.ini": [
@@ -354824,7 +354866,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-right-color-001.html.ini": [
-       "75815b0eb181af95e45df1c35cb9354c74fd3d80",
+       "e097a5238d4abf8000584f8c320d8bcbcd47c958",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-right-style-001.html.ini": [
@@ -355356,7 +355398,7 @@
        []
       ],
       "kind-of-widget-fallback-textarea-border-left-color-001.html.ini": [
-       "e1cbccf08ff311e3c63c07c3b47dcaa856a8a7ac",
+       "a42890dde6adf79ddaa960ee50271b7501a2abea",
        []
       ],
       "kind-of-widget-fallback-textarea-border-left-style-001.html.ini": [
@@ -358694,6 +358736,10 @@
      ],
      "abs-pos-non-replaced-vlr-169.xht.ini": [
       "b00fd6710733493bd1126f66d5966583d447eb55",
+      []
+     ],
+     "abs-pos-non-replaced-vlr-175.xht.ini": [
+      "5c111268cc0cdd8274b6622082fb3f088c33f113",
       []
      ],
      "abs-pos-non-replaced-vlr-187.xht.ini": [
@@ -363017,7 +363063,7 @@
       ]
      },
      "scroll-behavior-default-css.html.ini": [
-      "4c8764df5190da109d491262a201fcd983676670",
+      "dcaad165ef021c517237b2290d5f0156c6419c45",
       []
      ],
      "scroll-behavior-element.html.ini": [
@@ -363037,11 +363083,11 @@
       []
      ],
      "scroll-behavior-smooth-positions.html.ini": [
-      "c60ae2044ce8a271eb8fcc8f7ae8f8d1599615ed",
+      "2a3e2242e09331b8f234fb66fc8ab021d8a0d4f2",
       []
      ],
      "scroll-behavior-subframe-root.html.ini": [
-      "199d2317fb91bd91100c4dd8af58e48d37926494",
+      "413a5a5a15f7a730d736aad4f5bfcbc1d67d7c9a",
       []
      ],
      "scroll-behavior-subframe-window.html.ini": [
@@ -366629,6 +366675,10 @@
        "0d17f9d2379b27df8311b95ba0bc976fc3e17b9d",
        []
       ],
+      "lang-006.html.ini": [
+       "c488bfa4af8cb32f658d59e98b009cf168e03eb5",
+       []
+      ],
       "lang-007.html.ini": [
        "6d4b6e19bf29fba66e273e89bb6d6590e692e76a",
        []
@@ -366690,16 +366740,8 @@
       "703cc99bb863b7a1bb79dd6a7a218308892c66ca",
       []
      ],
-     "user-invalid-expected.txt": [
-      "e8c555ee90d7463f4add11c4ddbd5ca6f489e7fe",
-      []
-     ],
      "user-invalid.html.ini": [
       "d22c1e2280b4d6869685bceee4d3abed1b8ef5c5",
-      []
-     ],
-     "user-valid-expected.txt": [
-      "74293762dcc0bc08b5c73971706a17ea001747fc",
       []
      ],
      "user-valid.html.ini": [
@@ -370493,6 +370535,10 @@
      "b15556ad392042a9893eb8ecab99530f0ebb3fbe",
      []
     ],
+    "observe-background-image.html.ini": [
+     "ccd8c3f3dcdd56be2b850df49e00481b9b871f15",
+     []
+    ],
     "observe-elementtiming.html.ini": [
      "d64e642ce72c20b21a6f2966ec9a4f9ca5951f4a",
      []
@@ -372196,7 +372242,7 @@
      []
     ],
     "keyup.html.ini": [
-     "ba0be2eac0ccb3d00454e0c12dcfb9b5ce1bdffa",
+     "4c4531305df1a9c7692b10552f5ee1eb7ce7029d",
      []
     ],
     "mouseenter.html.ini": [
@@ -405982,7 +406028,7 @@
      []
     ],
     "MediaRecorder-canvas-media-source.https.html.ini": [
-     "ffe69327b3b5b05fafdc239c84115f878cd29420",
+     "2bf7a8362c1da9f6ae16e3485e5bc3296e8d235e",
      []
     ],
     "MediaRecorder-creation.https.html.ini": [
@@ -427480,11 +427526,11 @@
      []
     ],
     "RTCDataChannel-binaryType.window-expected.txt": [
-     "c9bf0c90775919645f47d2085a90837c06e4c6ef",
+     "0e03da8c61c09aeb36ffe26aa721a8ef258f3d63",
      []
     ],
     "RTCDataChannel-binaryType.window.js.ini": [
-     "856e6ad13b6ee993ec4426df997ccb02d1767f44",
+     "8e3c6edf115e52aff72b7cbb8d55f4527645782b",
      []
     ],
     "RTCDataChannel-bufferedAmount-expected.txt": [
@@ -680357,7 +680403,7 @@
      ]
     ],
     "RTCDataChannel-binaryType.window.js": [
-     "c63281bd51b0a01de27785c1e14792a6b51e0625",
+     "f641f51976215f45d1177a53bdc17571ae7c707f",
      [
       "webrtc/RTCDataChannel-binaryType.window.html",
       {}

@@ -1,20 +1,13 @@
 This is a testharness.js-based test.
+FAIL Default binaryType value assert_equals: dc.binaryType should be 'blob' expected "blob" but got "arraybuffer"
 FAIL Setting binaryType to 'blob' should succeed Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet
 PASS Setting binaryType to 'arraybuffer' should succeed
-FAIL Setting invalid binaryType 'jellyfish' should throw SyntaxError assert_throws_dom: function "() => {
-      dc.binaryType = binaryType;
-    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : jellyfish" that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
-FAIL Setting invalid binaryType 'arraybuffer ' should throw SyntaxError assert_throws_dom: function "() => {
-      dc.binaryType = binaryType;
-    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : arraybuffer " that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
-FAIL Setting invalid binaryType '' should throw SyntaxError assert_throws_dom: function "() => {
-      dc.binaryType = binaryType;
-    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : " that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
-FAIL Setting invalid binaryType 'null' should throw SyntaxError assert_throws_dom: function "() => {
-      dc.binaryType = binaryType;
-    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : null" that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
-FAIL Setting invalid binaryType 'undefined' should throw SyntaxError assert_throws_dom: function "() => {
-      dc.binaryType = binaryType;
-    }" threw object "TypeMismatchError: Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : undefined" that is not a DOMException SyntaxError: property "code" is equal to 17, expected 12
+FAIL Setting binaryType to 'jellyfish' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : jellyfish
+FAIL Setting binaryType to 'arraybuffer ' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : arraybuffer
+FAIL Setting binaryType to '' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type :
+FAIL Setting binaryType to 'null' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : null
+FAIL Setting binaryType to 'undefined' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : undefined
+FAIL Setting binaryType to '234' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : 234
+FAIL Setting binaryType to '54' should be ignored Failed to set the 'binaryType' property on 'RTCDataChannel': Unknown binary type : 54
 Harness: the test ran to completion.
 
