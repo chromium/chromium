@@ -916,7 +916,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // (0.00001f).
   static gfx::Rect ConvertRectToTarget(const View* source,
                                        const View* target,
-                                       gfx::Rect& rect);
+                                       const gfx::Rect& rect);
 
   // Converts a point from a View's coordinate system to that of its Widget.
   static void ConvertPointToWidget(const View* src, gfx::Point* point);
