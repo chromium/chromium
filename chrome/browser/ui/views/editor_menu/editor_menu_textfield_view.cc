@@ -69,6 +69,17 @@ void EditorMenuTextfieldView::ContentsChanged(
   arrow_button_->SetVisible(!new_contents.empty());
 }
 
+bool EditorMenuTextfieldView::HandleKeyEvent(views::Textfield* sender,
+                                             const ui::KeyEvent& key_event) {
+  if (key_event.key_code() != ui::VKEY_RETURN ||
+      key_event.type() != ui::ET_KEY_PRESSED) {
+    return false;
+  }
+
+  OnTextfieldArrowButtonPressed();
+  return true;
+}
+
 void EditorMenuTextfieldView::InitLayout() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated),

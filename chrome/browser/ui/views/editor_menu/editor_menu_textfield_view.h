@@ -50,6 +50,8 @@ class EditorMenuTextfieldView : public views::View,
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override;
 
  private:
   void InitLayout();
