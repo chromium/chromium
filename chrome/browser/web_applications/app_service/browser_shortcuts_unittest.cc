@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/web_applications/app_service/browser_shortcuts.h"
 
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -30,7 +32,8 @@ const char kUrl[] = "https://example.com/";
 
 namespace web_app {
 
-class BrowserShortcutsTest : public testing::Test {
+class BrowserShortcutsTest : public testing::Test,
+                             public apps::ShortcutRegistryCache::Observer {
  public:
   // testing::Test implementation.
   void SetUp() override {
@@ -81,16 +84,43 @@ class BrowserShortcutsTest : public testing::Test {
         run_loop.QuitClosure());
     apps::AppServiceTest app_service_test;
     app_service_test.SetUp(profile());
+    shortcut_registry_cache_observation_.Observe(
+        apps::AppServiceProxyFactory::GetForProfile(profile())
+            ->ShortcutRegistryCache());
     run_loop.Run();
   }
 
   Profile* profile() { return profile_.get(); }
 
+  void SetOnShortcutRemovedCallback(
+      base::OnceCallback<void(apps::ShortcutId)> callback) {
+    on_shortcut_removed_callback_ = std::move(callback);
+  }
+
  private:
+  void OnShortcutUpdated(const apps::ShortcutUpdate& update) override {}
+
+  void OnShortcutRemoved(const apps::ShortcutId& id) override {
+    if (on_shortcut_removed_callback_) {
+      std::move(on_shortcut_removed_callback_).Run(id);
+    }
+  }
+
+  void OnShortcutRegistryCacheWillBeDestroyed(
+      apps::ShortcutRegistryCache* cache) override {
+    shortcut_registry_cache_observation_.Reset();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::OnceCallback<void(apps::ShortcutId)> on_shortcut_removed_callback_;
+
+  base::ScopedObservation<apps::ShortcutRegistryCache,
+                          apps::ShortcutRegistryCache::Observer>
+      shortcut_registry_cache_observation_{this};
 };
 
 TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
@@ -197,7 +227,7 @@ TEST_F(BrowserShortcutsTest, LaunchShortcut) {
   EXPECT_EQ(setting, LaunchWebAppWindowSetting::kUseLaunchParams);
 }
 
-TEST_F(BrowserShortcutsTest, RemoveShortcut) {
+TEST_F(BrowserShortcutsTest, ShortcutRemoved) {
   InitializeBrowserShortcutPublisher();
   apps::ShortcutRegistryCache* cache =
       apps::AppServiceProxyFactory::GetForProfile(profile())
@@ -217,6 +247,33 @@ TEST_F(BrowserShortcutsTest, RemoveShortcut) {
 
   EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
   EXPECT_FALSE(cache->HasShortcut(expected_shortcut_id));
+}
+
+TEST_F(BrowserShortcutsTest, RemoveShortcut) {
+  const std::string kShortcutName = "Shortcut";
+
+  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  apps::ShortcutId shortcut_id =
+      apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+  InitializeBrowserShortcutPublisher();
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  std::vector<apps::AppPtr> deltas;
+  deltas.push_back(apps::AppPublisher::MakeApp(
+      apps::AppType::kChromeApp, app_constants::kChromeAppId,
+      apps::Readiness::kReady, "Chrome", apps::InstallReason::kUser,
+      apps::InstallSource::kSystem));
+  proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kChromeApp,
+                                   /* should_notify_initialized */ true);
+
+  base::test::TestFuture<apps::ShortcutId> future;
+
+  SetOnShortcutRemovedCallback(future.GetCallback());
+  proxy->RemoveShortcut(shortcut_id, apps::UninstallSource::kUnknown, nullptr);
+
+  apps::ShortcutId removed_shortcut_id = future.Get();
+  EXPECT_EQ(removed_shortcut_id, shortcut_id);
 }
 
 }  // namespace web_app

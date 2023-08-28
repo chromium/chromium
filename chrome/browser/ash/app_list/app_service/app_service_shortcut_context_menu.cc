@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_context_menu.h"
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
@@ -64,6 +65,10 @@ void AppServiceShortcutContextMenu::GetMenuModel(
                        static_cast<ash::CommandId>(ash::CommandId::TOGGLE_PIN),
                        IDS_APP_LIST_CONTEXT_MENU_PIN);
 
+  AddContextMenuOption(menu_model.get(),
+                       static_cast<ash::CommandId>(ash::UNINSTALL),
+                       IDS_APP_LIST_REMOVE_SHORTCUT);
+
   std::move(callback).Run(std::move(menu_model));
 }
 
@@ -72,6 +77,10 @@ void AppServiceShortcutContextMenu::ExecuteCommand(int command_id,
   switch (command_id) {
     case ash::LAUNCH_NEW:
       delegate()->ExecuteLaunchCommand(event_flags);
+      break;
+    case ash::UNINSTALL:
+      proxy_->RemoveShortcut(shortcut_id_, apps::UninstallSource::kAppList,
+                             controller()->GetAppListWindow());
       break;
     default:
       AppContextMenu::ExecuteCommand(command_id, event_flags);

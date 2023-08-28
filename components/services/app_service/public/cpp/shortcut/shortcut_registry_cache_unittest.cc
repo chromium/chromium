@@ -170,4 +170,32 @@ TEST_F(ShortcutRegistryCacheTest, Observer) {
   EXPECT_TRUE(OnShortcutRemovedCalled());
 }
 
+TEST_F(ShortcutRegistryCacheTest, GetHostAppId) {
+  std::string host_app_id = "host_app_id";
+  std::string local_id = "local_id";
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+
+  ASSERT_FALSE(cache().HasShortcut(shortcut_id));
+  EXPECT_EQ(cache().GetShortcutHostAppId(shortcut_id), "");
+
+  cache().UpdateShortcut(std::move(shortcut));
+  ASSERT_TRUE(cache().HasShortcut(shortcut_id));
+  EXPECT_EQ(cache().GetShortcutHostAppId(shortcut_id), "host_app_id");
+}
+
+TEST_F(ShortcutRegistryCacheTest, GetLocalId) {
+  std::string host_app_id = "host_app_id";
+  std::string local_id = "local_id";
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+
+  ASSERT_FALSE(cache().HasShortcut(shortcut_id));
+  EXPECT_EQ(cache().GetShortcutLocalId(shortcut_id), "");
+
+  cache().UpdateShortcut(std::move(shortcut));
+  ASSERT_TRUE(cache().HasShortcut(shortcut_id));
+  EXPECT_EQ(cache().GetShortcutLocalId(shortcut_id), "local_id");
+}
+
 }  // namespace apps

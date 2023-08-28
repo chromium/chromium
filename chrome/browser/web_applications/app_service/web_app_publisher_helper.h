@@ -142,11 +142,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   static bool IsSupportedWebAppPermissionType(
       ContentSettingsType permission_type);
 
-  // Converts |uninstall_source| to a |WebappUninstallSource|.
-  static webapps::WebappUninstallSource
-  ConvertUninstallSourceToWebAppUninstallSource(
-      apps::UninstallSource uninstall_source);
-
   // Must be called before profile keyed services are destroyed.
   void Shutdown();
 

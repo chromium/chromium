@@ -121,7 +121,6 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
   EXPECT_TRUE(dict_item);
 
   // Verify that shortcut item is uploaded to sync data.
-
   auto is_shortcut = [&shortcut_id](const syncer::SyncChange& sync_change) {
     return sync_change.sync_data().GetSpecifics().app_list().item_id() ==
            shortcut_id.value();
@@ -235,6 +234,42 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
             menu_model->GetIconAt(tootle_pin_command_index.value())
                 .GetVectorIcon()
                 .vector_icon());
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kNone,
+                            future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  auto uninstall_command_index =
+      menu_model->GetIndexOfCommandId(ash::UNINSTALL);
+  ASSERT_TRUE(uninstall_command_index);
+  EXPECT_EQ(uninstall_command_index.value(), 2u);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_REMOVE_SHORTCUT),
+            menu_model->GetLabelAt(uninstall_command_index.value()));
+  EXPECT_EQ(&views::kUninstallIcon,
+            menu_model->GetIconAt(uninstall_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  menu_model->ActivatedAt(uninstall_command_index.value());
+  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
+  item = model_updater->FindItem(shortcut_id.value());
+  EXPECT_FALSE(item);
 }
 
 }  // namespace apps

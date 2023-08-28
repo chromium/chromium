@@ -183,6 +183,13 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // will be used. See `display::Screen` for details.
   void LaunchShortcut(const ShortcutId& id, int64_t display_id);
 
+  // Removes the shortcut for the given `id`. If `parent_window` is specified,
+  // the remove dialog will be created as a modal dialog anchored at
+  // `parent_window`. Otherwise, the browser window will be used as the anchor.
+  void RemoveShortcut(const ShortcutId& id,
+                      UninstallSource uninstall_source,
+                      gfx::NativeWindow parent_window);
+
  private:
   // For access to Initialize.
   friend class AppServiceProxyFactory;

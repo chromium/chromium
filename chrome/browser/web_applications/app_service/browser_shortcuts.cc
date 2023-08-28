@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -110,6 +111,29 @@ void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
                                                    base::DoNothing());
 }
 
+void BrowserShortcuts::RemoveShortcut(const std::string& host_app_id,
+                                      const std::string& local_shortcut_id,
+                                      apps::UninstallSource uninstall_source) {
+  if (!IsShortcut(local_shortcut_id)) {
+    return;
+  }
+
+  const WebApp* web_app =
+      provider_->registrar_unsafe().GetAppById(local_shortcut_id);
+  if (!web_app) {
+    return;
+  }
+
+  auto origin = url::Origin::Create(web_app->start_url());
+
+  CHECK(
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
+  webapps::WebappUninstallSource webapp_uninstall_source =
+      ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
+  provider_->scheduler().UninstallWebApp(
+      web_app->app_id(), webapp_uninstall_source, base::DoNothing());
+}
+
 void BrowserShortcuts::OnWebAppInstalled(const AppId& app_id) {
   MaybePublishBrowserShortcut(app_id);
 }
@@ -128,7 +152,7 @@ void BrowserShortcuts::OnWebAppUninstalled(
   if (!IsShortcut(app_id)) {
     return;
   }
-  apps::ShortcutPublisher::RemoveShortcut(
+  apps::ShortcutPublisher::ShortcutRemoved(
       apps::GenerateShortcutId(app_constants::kChromeAppId, app_id));
 }
 

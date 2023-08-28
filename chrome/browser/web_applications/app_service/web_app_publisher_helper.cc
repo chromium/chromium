@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -439,8 +440,7 @@ void UninstallImpl(WebAppProvider* provider,
 
   if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
     webapps::WebappUninstallSource webapp_uninstall_source =
-        WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
-            uninstall_source);
+        ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
     web_app_ui_manager->PresentUserUninstallDialog(
         app_id, webapp_uninstall_source, parent_window, base::DoNothing());
   }
@@ -524,24 +524,6 @@ apps::AppType WebAppPublisherHelper::GetWebAppType() {
 bool WebAppPublisherHelper::IsSupportedWebAppPermissionType(
     ContentSettingsType permission_type) {
   return base::Contains(kSupportedPermissionTypes, permission_type);
-}
-
-// static
-webapps::WebappUninstallSource
-WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
-    apps::UninstallSource uninstall_source) {
-  switch (uninstall_source) {
-    case apps::UninstallSource::kAppList:
-      return webapps::WebappUninstallSource::kAppList;
-    case apps::UninstallSource::kAppManagement:
-      return webapps::WebappUninstallSource::kAppManagement;
-    case apps::UninstallSource::kShelf:
-      return webapps::WebappUninstallSource::kShelf;
-    case apps::UninstallSource::kMigration:
-      return webapps::WebappUninstallSource::kMigration;
-    case apps::UninstallSource::kUnknown:
-      return webapps::WebappUninstallSource::kUnknown;
-  }
 }
 
 void WebAppPublisherHelper::Shutdown() {

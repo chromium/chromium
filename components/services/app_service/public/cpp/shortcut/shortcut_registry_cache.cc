@@ -87,4 +87,24 @@ std::vector<ShortcutView> ShortcutRegistryCache::GetAllShortcuts() {
   return shortcuts;
 }
 
+// Returns the host app id for shortcut represented by 'id'.
+std::string ShortcutRegistryCache::GetShortcutHostAppId(const ShortcutId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ShortcutView shortcut = GetShortcut(id);
+  if (!shortcut) {
+    return "";
+  }
+  return shortcut->host_app_id;
+}
+
+// Returns the local id for shortcut represented by 'id'.
+std::string ShortcutRegistryCache::GetShortcutLocalId(const ShortcutId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ShortcutView shortcut = GetShortcut(id);
+  if (!shortcut) {
+    return "";
+  }
+  return shortcut->local_id;
+}
+
 }  // namespace apps

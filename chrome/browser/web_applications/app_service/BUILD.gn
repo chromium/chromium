@@ -6,6 +6,8 @@ import("//chrome/common/features.gni")
 
 source_set("app_service") {
   sources = [
+    "publisher_helper.cc",
+    "publisher_helper.h",
     "web_app_publisher_helper.cc",
     "web_app_publisher_helper.h",
   ]

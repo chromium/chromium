@@ -40,6 +40,13 @@ class ShortcutPublisher {
                               const std::string& local_shortcut_id,
                               int64_t display_id) = 0;
 
+  // Removes the shortcut identified by `local_shortcut_id` in the app
+  // identified by 'host_app_id`. This request will be sent to shortcut
+  // publisher to remove shortcut from the platform published it.
+  virtual void RemoveShortcut(const std::string& host_app_id,
+                              const std::string& local_shortcut_id,
+                              UninstallSource uninstall_source) = 0;
+
  protected:
   // Publish one `delta` to AppServiceProxy. Should be called whenever the
   // shortcut represented by `delta` undergoes some state change to inform
@@ -47,8 +54,9 @@ class ShortcutPublisher {
   // been called before the first call to this method.
   void PublishShortcut(ShortcutPtr delta);
 
-  // Remove shortcut represented by shortcut id `id`.
-  void RemoveShortcut(const ShortcutId& id);
+  // Calls when shortcut represented by shortcut id `id` has been removed from
+  // the shortcut publisher, and needs to be removed from ShortcutRegistryCache.
+  void ShortcutRemoved(const ShortcutId& id);
 
   AppServiceProxy* proxy() { return proxy_; }
 

@@ -442,23 +442,36 @@ apps::ShortcutRegistryCache* AppServiceProxyAsh::ShortcutRegistryCache() {
 
 void AppServiceProxyAsh::LaunchShortcut(const ShortcutId& id,
                                         int64_t display_id) {
-  ShortcutView shortcut = ShortcutRegistryCache()->GetShortcut(id);
-  if (!shortcut) {
-    return;
-  }
-  AppType app_type = AppRegistryCache().GetAppType(shortcut->host_app_id);
+  std::string host_app_id = ShortcutRegistryCache()->GetShortcutHostAppId(id);
+  std::string local_id = ShortcutRegistryCache()->GetShortcutLocalId(id);
+
+  AppType app_type = AppRegistryCache().GetAppType(host_app_id);
 
   auto* shortcut_publisher = GetShortcutPublisher(app_type);
   if (!shortcut_publisher) {
     return;
   }
-  shortcut_publisher->LaunchShortcut(shortcut->host_app_id, shortcut->local_id,
-                                     display_id);
+  shortcut_publisher->LaunchShortcut(host_app_id, local_id, display_id);
 
   // TODO(crbug.com/1412708): Add new launch source for shortcut and record
   // metrics.
   // TODO(crbug.com/1412708): Add callback to make launch async to support
   // Lacros.
+}
+
+void AppServiceProxyAsh::RemoveShortcut(const ShortcutId& id,
+                                        UninstallSource uninstall_source,
+                                        gfx::NativeWindow parent_window) {
+  std::string host_app_id = ShortcutRegistryCache()->GetShortcutHostAppId(id);
+  std::string local_id = ShortcutRegistryCache()->GetShortcutLocalId(id);
+  AppType app_type = AppRegistryCache().GetAppType(host_app_id);
+
+  auto* shortcut_publisher = GetShortcutPublisher(app_type);
+  if (!shortcut_publisher) {
+    return;
+  }
+  shortcut_publisher->RemoveShortcut(host_app_id, local_id, uninstall_source);
+  // TODO(crbug.com/1412708): Add remove confirmation dialog.
 }
 
 void AppServiceProxyAsh::Shutdown() {

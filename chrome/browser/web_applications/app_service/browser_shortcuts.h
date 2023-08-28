@@ -51,6 +51,9 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   void LaunchShortcut(const std::string& host_app_id,
                       const std::string& local_id,
                       int64_t display_id) override;
+  void RemoveShortcut(const std::string& host_app_id,
+                      const std::string& local_shortcut_id,
+                      apps::UninstallSource uninstall_source) override;
 
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
