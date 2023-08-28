@@ -338,6 +338,12 @@ void HTMLFormElement::PrepareForSubmission(
     }
   }
 
+  for (ListedElement* element : ListedElements()) {
+    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+      form_control->SetInteractedSinceLastFormSubmit(true);
+    }
+  }
+
   bool should_submit;
   {
     base::AutoReset<bool> submit_event_handler_scope(&in_user_js_submit_event_,

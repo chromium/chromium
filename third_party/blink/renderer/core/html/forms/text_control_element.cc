@@ -285,6 +285,7 @@ void TextControlElement::DispatchFormControlChangeEvent() {
       !EqualIgnoringNullity(value_before_first_user_edit_, Value())) {
     ClearValueBeforeFirstUserEdit();
     DispatchChangeEvent();
+    SetInteractedSinceLastFormSubmit(true);
   } else {
     ClearValueBeforeFirstUserEdit();
   }

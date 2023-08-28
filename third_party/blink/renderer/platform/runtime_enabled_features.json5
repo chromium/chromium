@@ -3807,6 +3807,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5132477781245952
+      name: "UserValidUserInvalid",
+      status: "experimental",
+    },
+    {
       name: "V8IdleTasks",
       base_feature: "none",
       public: true,

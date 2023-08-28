@@ -402,6 +402,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
+    case kPseudoUserInvalid:
+    case kPseudoUserValid:
     case kPseudoValid:
     case kPseudoVertical:
     case kPseudoVideoPersistent:
@@ -544,6 +546,8 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-text", CSSSelector::kPseudoTargetText},
+    {"user-invalid", CSSSelector::kPseudoUserInvalid},
+    {"user-valid", CSSSelector::kPseudoUserValid},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
     {"view-transition", CSSSelector::kPseudoViewTransition},
@@ -661,6 +665,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if (IsTransitionPseudoElement(
           GetPseudoId(static_cast<CSSSelector::PseudoType>(match->type))) &&
       !RuntimeEnabledFeatures::ViewTransitionEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if ((match->type == CSSSelector::kPseudoUserInvalid ||
+       match->type == CSSSelector::kPseudoUserValid) &&
+      !RuntimeEnabledFeatures::UserValidUserInvalidEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -868,6 +878,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
+    case kPseudoUserInvalid:
+    case kPseudoUserValid:
     case kPseudoValid:
     case kPseudoVertical:
     case kPseudoVisited:

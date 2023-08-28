@@ -119,6 +119,8 @@ const std::string Converter::kPseudoLookupTable[] = {
     "single-button",
     "start",
     "target",
+    "user-invalid",
+    "user-valid",
     "valid",
     "vertical",
     "visited",

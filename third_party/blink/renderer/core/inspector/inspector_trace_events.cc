@@ -323,6 +323,8 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoRequired)
     DEFINE_STRING_MAPPING(PseudoReadOnly)
     DEFINE_STRING_MAPPING(PseudoReadWrite)
+    DEFINE_STRING_MAPPING(PseudoUserInvalid)
+    DEFINE_STRING_MAPPING(PseudoUserValid)
     DEFINE_STRING_MAPPING(PseudoValid)
     DEFINE_STRING_MAPPING(PseudoInvalid)
     DEFINE_STRING_MAPPING(PseudoIndeterminate)
