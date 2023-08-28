@@ -38,6 +38,7 @@ import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
@@ -65,6 +66,7 @@ import org.chromium.ui.base.ResourceBundle;
  * We hold on to most static objects used by WebView here.
  * This class is shared between the webkit glue layer and the support library glue layer.
  */
+@Lifetime.Singleton
 public class WebViewChromiumAwInit {
     private static final String TAG = "WebViewChromiumAwInit";
 

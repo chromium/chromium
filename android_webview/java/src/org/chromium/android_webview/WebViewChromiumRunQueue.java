@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  * Queue used for running tasks, initiated through WebView APIs, on the UI thread.
  * The queue won't start running tasks until WebView has been initialized properly.
  */
+@Lifetime.Singleton
 public class WebViewChromiumRunQueue {
     private final Queue<Runnable> mQueue;
     private final ChromiumHasStartedCallable mChromiumHasStartedCallable;

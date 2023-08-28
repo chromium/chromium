@@ -10,6 +10,7 @@ import android.webkit.WebStorage;
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
 import org.chromium.android_webview.AwQuotaManagerBridge;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -22,6 +23,7 @@ import java.util.Map;
  * chromium internal implementation.
  */
 @SuppressWarnings("deprecation")
+@Lifetime.Profile
 final class WebStorageAdapter extends WebStorage {
     private final WebViewChromiumFactoryProvider mFactory;
     private final AwQuotaManagerBridge mQuotaManagerBridge;
