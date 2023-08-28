@@ -56,6 +56,8 @@ namespace userScripts {
 
   callback GetScriptsCallback = void(RegisteredUserScript[] scripts);
 
+  callback UnregisterCallback = void();
+
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
@@ -65,12 +67,21 @@ namespace userScripts {
                                             optional RegisterCallback callback);
 
     // Returns all dynamically-registered user scripts for this extension.
-    // |filter|: If filter is specified, this method returns only the scripts
-    // that match it.
+    // |filter|: If specified, this method returns only the user scripts that
+    // match it.
     // |callback|: Called once scripts have been fully registered or if an error
     // occurs.
     [supportsPromises] static void getScripts(
         optional UserScriptFilter filter,
         GetScriptsCallback callback);
+
+    // Unregisters all dynamically-registered user scripts for this extension.
+    // |filter|: If specified, this method unregisters only the user scripts
+    // that match it.
+    // |callback|: Called once scripts have been fully unregistered or if an
+    // error ocurs
+    [supportsPromises] static void unregister(
+        optional UserScriptFilter filter,
+        UnregisterCallback callback);
   };
 };

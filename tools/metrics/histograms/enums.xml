@@ -37635,6 +37635,7 @@ Called by update_extension_histograms.py.-->
   <int value="1821" label="ACCESSIBILITY_PRIVATE_SHOWTOAST"/>
   <int value="1822" label="USERSCRIPTS_GETSCRIPTS"/>
   <int value="1823" label="FILEMANAGERPRIVATE_GETDEVICECONNECTIONSTATE"/>
+  <int value="1824" label="USERSCRIPTS_UNREGISTER"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -16,8 +16,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/common/extensions/api/scripting.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
@@ -38,7 +36,6 @@
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
-#include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -53,7 +50,6 @@ constexpr char kDuplicateFileSpecifiedError[] =
     "Duplicate file specified: '*'.";
 constexpr char kExactlyOneOfCssAndFilesError[] =
     "Exactly one of 'css' and 'files' must be specified.";
-constexpr char kNonExistentScriptIdError[] = "Nonexistent script ID '*'";
 
 // Note: CSS always injects as soon as possible, so we default to
 // document_start. Because of tab loading, there's no guarantee this will
@@ -1090,49 +1086,28 @@ ScriptingUnregisterContentScriptsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<api::scripting::ContentScriptFilter>& filter = params->filter;
-  ExtensionUserScriptLoader* loader =
-      ExtensionSystem::Get(browser_context())
-          ->user_script_manager()
-          ->GetUserScriptLoaderForExtension(extension()->id());
-
-  // TODO(crbug.com/1300657): Only clear all scripts if `filter` did not specify
-  // the list of scripts ids to remove.
-  if (!filter || !filter->ids || filter->ids->empty()) {
-    loader->ClearDynamicScripts(
-        UserScript::Source::kDynamicContentScript,
-        base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
-                           OnContentScriptsUnregistered,
-                       this));
-    return RespondLater();
+  absl::optional<std::vector<std::string>> ids = absl::nullopt;
+  // TODO(crbug.com/1300657): `ids` should have an empty list when filter ids is
+  // empty, instead of a nullopt. Otherwise, we are incorrectly removing all
+  // content scripts when ids is empty.
+  if (filter && filter->ids && !filter->ids->empty()) {
+    ids = std::move(filter->ids);
   }
 
-  std::set<std::string> ids_to_remove;
-  std::set<std::string> existing_script_ids =
-      loader->GetDynamicScriptIDs(UserScript::Source::kDynamicContentScript);
   std::string error;
-
-  for (const auto& provided_id : *filter->ids) {
-    if (!scripting::IsScriptIdValid(provided_id, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-
-    // Add the dynamic content script prefix to `provided_id` before checking
-    // against `existing_script_ids`.
-    std::string id_with_prefix = scripting::AddPrefixToDynamicScriptId(
-        provided_id, UserScript::Source::kDynamicContentScript);
-    if (!base::Contains(existing_script_ids, id_with_prefix)) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          kNonExistentScriptIdError, provided_id.c_str())));
-    }
-
-    ids_to_remove.insert(id_with_prefix);
-  }
-
-  loader->RemoveDynamicScripts(
-      std::move(ids_to_remove),
+  bool removal_triggered = scripting::RemoveScripts(
+      ids, UserScript::Source::kDynamicContentScript, browser_context(),
+      extension()->id(),
       base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
                          OnContentScriptsUnregistered,
-                     this));
+                     this),
+      &error);
+
+  if (!removal_triggered) {
+    CHECK(!error.empty());
+    return RespondNow(Error(std::move(error)));
+  }
+
   return RespondLater();
 }
 

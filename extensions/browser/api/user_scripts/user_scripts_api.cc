@@ -284,4 +284,41 @@ ExtensionFunction::ResponseAction UserScriptsGetScriptsFunction::Run() {
       api::user_scripts::GetScripts::Results::Create(registered_user_scripts)));
 }
 
+ExtensionFunction::ResponseAction UserScriptsUnregisterFunction::Run() {
+  absl::optional<api::user_scripts::Unregister::Params> params(
+      api::user_scripts::Unregister::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  absl::optional<api::user_scripts::UserScriptFilter>& filter = params->filter;
+  absl::optional<std::vector<std::string>> ids = absl::nullopt;
+  if (filter && filter->ids) {
+    ids = filter->ids;
+  }
+
+  std::string error;
+  bool removal_triggered = scripting::RemoveScripts(
+      ids, UserScript::Source::kDynamicUserScript, browser_context(),
+      extension()->id(),
+      base::BindOnce(&UserScriptsUnregisterFunction::OnUserScriptsUnregistered,
+                     this),
+      &error);
+
+  if (!removal_triggered) {
+    CHECK(!error.empty());
+    return RespondNow(Error(std::move(error)));
+  }
+
+  return RespondLater();
+}
+
+void UserScriptsUnregisterFunction::OnUserScriptsUnregistered(
+    const absl::optional<std::string>& error) {
+  if (error.has_value()) {
+    Respond(Error(std::move(*error)));
+  } else {
+    Respond(NoArguments());
+  }
+}
+
 }  // namespace extensions

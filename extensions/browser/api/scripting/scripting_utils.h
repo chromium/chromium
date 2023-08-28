@@ -61,6 +61,19 @@ std::set<std::string> CreateDynamicScriptIds(
   return new_script_ids;
 }
 
+// Removes all scripts with `ids` of `extension_id`. If `ids` has no value,
+// clears all scripts with `source` and `extension_id`. If any of the `ids`
+// provided is invalid, populates `error` and returns false. Otherwise, returns
+// true and removes the script from the UserScriptLoader invoking
+// `remove_callback` on completion.
+bool RemoveScripts(
+    const absl::optional<std::vector<std::string>>& ids,
+    UserScript::Source source,
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    ExtensionUserScriptLoader::DynamicScriptsModifiedCallback remove_callback,
+    std::string* error);
+
 // Returns the set of URL patterns from persistent dynamic content scripts.
 // Patterns are stored in prefs so UserScriptListener can access them
 // synchronously as the persistent scripts themselves are stored in a
