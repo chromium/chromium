@@ -83,6 +83,14 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                       type=int,
                       help=('How many parallel jobs to run. By default, runs '
                             'all work in parallel.'))
+  parser.add_argument('--disable-batching',
+                      dest='use_batching',
+                      action='store_false',
+                      default=True,
+                      help=('Disables the use of batching when running '
+                            'queries. Batching allows for more queries to be '
+                            'run in parallel, but increases query overhead by '
+                            'a variable amount.'))
   internal_group = parser.add_mutually_exclusive_group()
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',

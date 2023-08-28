@@ -567,6 +567,28 @@ class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):
       self._querier._RunBigQueryCommandsForJsonOutput([''], {})
     self.assertEqual(self._popen_mock.call_count, queries.MAX_QUERY_TRIES)
 
+  def testBatching(self) -> None:
+    """Tests that batching preferences are properly forwarded."""
+    query_output = [{'foo': 'bar'}]
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        stdout=json.dumps(query_output))
+
+    self._querier._RunBigQueryCommandsForJsonOutput([''], {})
+    self._popen_mock.assert_called_once()
+    args, _ = unittest_utils.GetArgsForMockCall(self._popen_mock.call_args_list,
+                                                0)
+    cmd = args[0]
+    self.assertIn('--batch', cmd)
+
+    self._querier = unittest_utils.CreateGenericQuerier(use_batching=False)
+    self._popen_mock.reset_mock()
+    self._querier._RunBigQueryCommandsForJsonOutput([''], {})
+    self._popen_mock.assert_called_once()
+    args, _ = unittest_utils.GetArgsForMockCall(self._popen_mock.call_args_list,
+                                                0)
+    cmd = args[0]
+    self.assertNotIn('--batch', cmd)
+
 
 class GenerateBigQueryCommandUnittest(unittest.TestCase):
   def testNoParametersSpecified(self) -> None:

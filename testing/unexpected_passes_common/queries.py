@@ -61,8 +61,13 @@ QueryParameters = Dict[str, Dict[str, Any]]
 class BigQueryQuerier(object):
   """Class to handle all BigQuery queries for a script invocation."""
 
-  def __init__(self, suite: Optional[str], project: str, num_samples: int,
-               large_query_mode: bool, num_jobs: Optional[int]):
+  def __init__(self,
+               suite: Optional[str],
+               project: str,
+               num_samples: int,
+               large_query_mode: bool,
+               num_jobs: Optional[int],
+               use_batching: bool = True):
     """
     Args:
       suite: A string containing the name of the suite that is being queried
@@ -78,12 +83,17 @@ class BigQueryQuerier(object):
           the ORDER BY clause.
       num_jobs: An integer specifying how many jobs to run in parallel. If None,
           all jobs will be run in parallel at the same time.
+      use_batching: Whether to use batching when running queries. Batching
+          allows a much greater amount of parallelism due to avoiding usage
+          limits, but also adds a variable amount of overhead since there need
+          to be free resources.
     """
     self._suite = suite
     self._project = project
     self._num_samples = num_samples or DEFAULT_NUM_SAMPLES
     self._large_query_mode = large_query_mode
     self._num_jobs = num_jobs
+    self._use_batching = use_batching
 
     assert self._num_samples > 0
     assert (self._num_jobs is None or self._num_jobs > 0)
@@ -449,7 +459,9 @@ class BigQueryQuerier(object):
         cleanup()
       raise RuntimeError('Hit branch that should  be unreachable')
 
-    bq_cmd = GenerateBigQueryCommand(self._project, parameters)
+    bq_cmd = GenerateBigQueryCommand(self._project,
+                                     parameters,
+                                     batch=self._use_batching)
     stdouts = run_cmd(bq_cmd, 0)
     combined_json = []
     for result in [json.loads(s) for s in stdouts]:
