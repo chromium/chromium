@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/test/test_future.h"
@@ -28,6 +29,9 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -178,4 +182,18 @@ AppId AddDummyIsolatedAppToRegistry(
   provider->install_manager().NotifyWebAppInstalled(app_id);
   return app_id;
 }
+
+// TODO(cmfcmf): Move more test utils into this `test` namespace
+namespace test {
+
+std::string BitmapAsPng(const SkBitmap& bitmap) {
+  SkDynamicMemoryWStream stream;
+  EXPECT_TRUE(SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}));
+  sk_sp<SkData> icon_skdata = stream.detachAsData();
+  return std::string(static_cast<const char*>(icon_skdata->data()),
+                     icon_skdata->size());
+}
+
+}  // namespace test
+
 }  // namespace web_app

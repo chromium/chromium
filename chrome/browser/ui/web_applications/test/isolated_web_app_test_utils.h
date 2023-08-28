@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -138,6 +140,8 @@ MATCHER_P2(PendingUpdateInfoIs, location, version, "") {
                 version))),
       arg, result_listener);
 }
+
+std::string BitmapAsPng(const SkBitmap& bitmap);
 
 }  // namespace test
 

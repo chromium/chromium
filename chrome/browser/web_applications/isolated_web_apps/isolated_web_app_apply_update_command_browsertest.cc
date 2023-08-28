@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
-#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -27,9 +26,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace web_app {
 namespace {
@@ -38,16 +34,6 @@ using base::test::HasValue;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsTrue;
-
-std::string GetTestIconInString() {
-  SkBitmap icon_bitmap = CreateSquareIcon(256, SK_ColorGREEN);
-  SkDynamicMemoryWStream stream;
-  EXPECT_THAT(SkPngEncoder::Encode(&stream, icon_bitmap.pixmap(), {}),
-              IsTrue());
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
-  return std::string(static_cast<const char*>(icon_skdata->data()),
-                     icon_skdata->size());
-}
 
 // TODO(cmfcmf): Consider also adding tests for dev mode proxy.
 class IsolatedWebAppApplyUpdateCommandBrowserTest
