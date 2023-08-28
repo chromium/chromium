@@ -102,15 +102,6 @@ class SiteSettingsHandler
   // CookiesTreeModel::Observer:
   // TODO(https://crbug.com/835712): Listen for backend data changes and notify
   // WebUI
-  void TreeNodesAdded(ui::TreeModel* model,
-                      ui::TreeModelNode* parent,
-                      size_t start,
-                      size_t count) override;
-  void TreeNodesRemoved(ui::TreeModel* model,
-                        ui::TreeModelNode* parent,
-                        size_t start,
-                        size_t count) override;
-  void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override;
   void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override;
 
   // content_settings::Observer:

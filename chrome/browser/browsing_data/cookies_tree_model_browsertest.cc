@@ -73,17 +73,6 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
     run_loop->Quit();
   }
 
-  void TreeNodesAdded(ui::TreeModel* model,
-                      ui::TreeModelNode* parent,
-                      size_t start,
-                      size_t count) override {}
-  void TreeNodesRemoved(ui::TreeModel* model,
-                        ui::TreeModelNode* parent,
-                        size_t start,
-                        size_t count) override {}
-  void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override {
-  }
-
  private:
   std::unique_ptr<base::RunLoop> run_loop;
 };

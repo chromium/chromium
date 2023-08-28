@@ -2272,19 +2272,6 @@ void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
 }
 
-void SiteSettingsHandler::TreeNodesAdded(ui::TreeModel* model,
-                                         ui::TreeModelNode* parent,
-                                         size_t start,
-                                         size_t count) {}
-
-void SiteSettingsHandler::TreeNodesRemoved(ui::TreeModel* model,
-                                           ui::TreeModelNode* parent,
-                                           size_t start,
-                                           size_t count) {}
-
-void SiteSettingsHandler::TreeNodeChanged(ui::TreeModel* model,
-                                          ui::TreeModelNode* node) {}
-
 void SiteSettingsHandler::TreeModelEndBatchDeprecated(CookiesTreeModel* model) {
   ModelBuilt();
 }
