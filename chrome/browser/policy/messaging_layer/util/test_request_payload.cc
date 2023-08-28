@@ -145,6 +145,56 @@ std::string NoAttachConfigurationFileMatcher::Name() const {
   return "no-attach-configuration-file-matcher";
 }
 
+bool ClientAutomatedTestMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  const auto client_automated_test = arg.FindBool("clientAutomatedTest");
+  if (!client_automated_test) {
+    *listener << "No key named \"clientAutomatedTest\" in the argument or "
+                 "the value is not of bool type.";
+    return false;
+  }
+  if (!client_automated_test.value()) {
+    *listener << "The value of \"clientAutomatedTest\" is false.";
+    return false;
+  }
+  return true;
+}
+
+void ClientAutomatedTestMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid clientAutomatedTest field.";
+}
+
+void ClientAutomatedTestMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "has an invalid clientAutomatedTest field.";
+}
+
+std::string ClientAutomatedTestMatcher::Name() const {
+  return "client-automated-test-matcher";
+}
+
+bool NoClientAutomatedTestMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  if (arg.Find("clientAutomatedTest") != nullptr) {
+    *listener << "Found \"clientAutomatedTest\" in the argument.";
+    return false;
+  }
+  return true;
+}
+
+void NoClientAutomatedTestMatcher::DescribeTo(std::ostream* os) const {
+  *os << "expectedly has no clientAutomatedTest field.";
+}
+
+void NoClientAutomatedTestMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "unexpectedly has an clientAutomatedTest field.";
+}
+
+std::string NoClientAutomatedTestMatcher::Name() const {
+  return "no-client-automated-test-matcher";
+}
+
 void CompressionInformationMatcher::DescribeTo(std::ostream* os) const {
   *os << "has a valid compression information field.";
 }

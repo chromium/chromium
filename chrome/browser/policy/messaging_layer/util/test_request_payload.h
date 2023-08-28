@@ -82,6 +82,26 @@ class NoAttachConfigurationFileMatcher
   std::string Name() const override;
 };
 
+// clientAutomatedTest must be of bool type and true.
+class ClientAutomatedTestMatcher : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
+// clientAutomatedTest must be absent.
+class NoClientAutomatedTestMatcher : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
 // encryptedRecord must be a list. This matcher is recommended to be applies
 // before verifying the details of any record (e.g., via |RecordMatcher|) to
 // generate more readable error messages.
@@ -263,6 +283,22 @@ class RequestValidityMatcherBuilder {
   }
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
+  // contains a matcher that is suited for verifying a client automated test
+  // request. If client_automated_test is false the matcher will ensure the
+  // request does not include the field clientAutomatedTest.
+  static RequestValidityMatcherBuilder<T>
+  CreateClientAutomatedTestRequestUpload(bool client_automated_test) {
+    auto builder = RequestValidityMatcherBuilder<T>::CreateEmpty();
+    builder.AppendMatcher(RequestIdMatcher());
+    if (client_automated_test) {
+      builder.AppendMatcher(ClientAutomatedTestMatcher());
+    } else {
+      builder.AppendMatcher(NoClientAutomatedTestMatcher());
+    }
+    return builder;
+  }
+
+  // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying a single record.
   static RequestValidityMatcherBuilder<T> CreateRecord() {
     return std::move(RequestValidityMatcherBuilder<T>::CreateEmpty()
@@ -382,6 +418,17 @@ Matcher<T> IsConfigurationFileRequestUploadRequestValid(
     bool need_config_file = false) {
   return RequestValidityMatcherBuilder<T>::CreateConfigurationFileRequestUpload(
              need_config_file)
+      .Build();
+}
+
+// Match a configuration file request upload request that is valid. If
+// client_automated_test is false, this matcher will ensure the request does not
+// request a configuration file.
+template <class T = base::Value::Dict>
+Matcher<T> IsClientAutomatedTestRequestUploadRequestValid(
+    bool client_automated_test = false) {
+  return RequestValidityMatcherBuilder<
+             T>::CreateClientAutomatedTestRequestUpload(client_automated_test)
       .Build();
 }
 

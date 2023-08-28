@@ -353,6 +353,24 @@ TEST_P(RecordUploadRequestBuilderTest, ConfigFileRequestExperimentDisabled) {
               IsConfigurationFileRequestUploadRequestValid(false));
 }
 
+TEST_P(RecordUploadRequestBuilderTest, ClientAutomatedTestExperimentEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kClientAutomatedTest);
+  UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
+
+  EXPECT_THAT(builder.Build().value(),
+              IsClientAutomatedTestRequestUploadRequestValid(true));
+}
+
+TEST_P(RecordUploadRequestBuilderTest, ClientAutomatedTestExperimentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kClientAutomatedTest);
+  UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
+
+  EXPECT_THAT(builder.Build().value(),
+              IsClientAutomatedTestRequestUploadRequestValid(false));
+}
+
 INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
                          RecordUploadRequestBuilderTest,
                          testing::Bool());

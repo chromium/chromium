@@ -25,6 +25,7 @@ namespace {
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 constexpr char kAttachConfigurationFile[] = "attachConfigurationFile";
+constexpr char kClientAutomatedTestPath[] = "clientAutomatedTest";
 
 // EncryptedRecordDictionaryBuilder strings
 constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
@@ -49,6 +50,12 @@ BASE_FEATURE(kShouldRequestConfigurationFile,
              "ShouldRequestConfigurationFile",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature used in the tast tests to let the server know that the events are
+// coming from an automated client test. Only used in tast tests.
+BASE_FEATURE(kClientAutomatedTest,
+             "ClientAutomatedTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
     bool attach_encryption_settings) {
   result_.emplace();
@@ -61,6 +68,11 @@ UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
   // something to be blocked at that point.s
   if (base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
     result_->Set(GetAttachConfigurationFilePath(), true);
+  }
+
+  // This feature signals the server that this is an automated client test.
+  if (base::FeatureList::IsEnabled(kClientAutomatedTest)) {
+    result_->Set(GetClientAutomatedTestPath(), true);
   }
 }
 
@@ -141,6 +153,12 @@ UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
 std::string_view
 UploadEncryptedReportingRequestBuilder::GetAttachConfigurationFilePath() {
   return kAttachConfigurationFile;
+}
+
+// static
+std::string_view
+UploadEncryptedReportingRequestBuilder::GetClientAutomatedTestPath() {
+  return kClientAutomatedTestPath;
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(

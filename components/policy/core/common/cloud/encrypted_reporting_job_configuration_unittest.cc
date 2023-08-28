@@ -66,6 +66,9 @@ constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 // Configuration file request key
 constexpr char kAttachConfigurationFileKey[] = "attachConfigurationFile";
 
+// Client automated test key
+constexpr char kClientAutomatedTestKey[] = "attachConfigurationFile";
+
 // Keys for EncryptedRecord
 constexpr char kEncryptedWrappedRecordKey[] = "encryptedWrappedRecord";
 constexpr char kSequenceInformationKey[] = "sequenceInformation";
@@ -100,12 +103,16 @@ uint64_t GetNextSequenceId() {
 class RequestPayloadBuilder {
  public:
   explicit RequestPayloadBuilder(bool attach_encryption_settings = false,
-                                 bool attach_configuration_file = false) {
+                                 bool attach_configuration_file = false,
+                                 bool client_automated_test = false) {
     if (attach_encryption_settings) {
       payload_.Set(kAttachEncryptionSettingsKey, true);
     }
     if (attach_configuration_file) {
       payload_.Set(kAttachConfigurationFileKey, true);
+    }
+    if (client_automated_test) {
+      payload_.Set(kClientAutomatedTestKey, true);
     }
     payload_.Set(kEncryptedRecordListKey, base::Value::List());
   }
@@ -293,6 +300,14 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
         payload->GetDict().FindBool(kAttachEncryptionSettingsKey);
     return attach_encryption_settings.has_value() &&
            attach_encryption_settings.value();
+  }
+
+  bool GetClientAutomatedTest(
+      EncryptedReportingJobConfiguration* configuration) {
+    base::Value* const payload = GetPayload(configuration);
+    const auto client_automated_test =
+        payload->GetDict().FindBool(kClientAutomatedTestKey);
+    return client_automated_test.has_value() && client_automated_test.value();
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
@@ -601,6 +616,84 @@ TEST_F(
   EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
 }
 
+TEST_F(EncryptedReportingJobConfigurationTest, AllowsClientAutomatedTestAlone) {
+  RequestPayloadBuilder builder{/*attach_encryption_settings=*/false,
+                                /*attach_configuration_file=*/false,
+                                /*client_automated_test=*/true};
+  StrictMock<MockCompleteCb> completion_cb;
+  EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
+  EncryptedReportingJobConfiguration configuration(
+      shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
+      kServerUrl, builder.Build(), &client_,
+      base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
+
+  base::Value::List* record_list = nullptr;
+  GetRecordList(&configuration, &record_list);
+
+  EXPECT_TRUE(record_list->empty());
+
+  EXPECT_TRUE(GetClientAutomatedTest(&configuration));
+}
+
+TEST_F(
+    EncryptedReportingJobConfigurationTest,
+    AllowsAttachConfigurationFileEncryptionSettingsAndClientAutomatedTestWithoutRecords) {
+  RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
+                                /*attach_configuration_file=*/true,
+                                /*client_automated_test=*/true};
+  StrictMock<MockCompleteCb> completion_cb;
+  EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
+  EncryptedReportingJobConfiguration configuration(
+      shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
+      kServerUrl, builder.Build(), &client_,
+      base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
+
+  base::Value::List* record_list = nullptr;
+  GetRecordList(&configuration, &record_list);
+
+  EXPECT_TRUE(record_list->empty());
+
+  EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
+  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(GetClientAutomatedTest(&configuration));
+}
+
+TEST_F(
+    EncryptedReportingJobConfigurationTest,
+    CorrectlyAddsMultipleRecordsWithAttachConfigurationFileAttachEncryptionKeyAndClientAutomatedTest) {
+  const std::vector<std::string> kEncryptedWrappedRecords{
+      "T", "E", "S", "T", "_", "I", "N", "F", "O"};
+  base::Value::List records;
+  RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
+                                /*attach_configuration_file=*/true,
+                                /*client_automated_test=*/true};
+  for (auto value : kEncryptedWrappedRecords) {
+    records.Append(GenerateSingleRecord(value));
+    builder.AddRecord(records.back());
+  }
+
+  StrictMock<MockCompleteCb> completion_cb;
+  EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
+  EncryptedReportingJobConfiguration configuration(
+      shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
+      kServerUrl, builder.Build(), &client_,
+      base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
+
+  base::Value::List* record_list = nullptr;
+  GetRecordList(&configuration, &record_list);
+
+  EXPECT_EQ(record_list->size(), records.size());
+
+  size_t counter = 0;
+  for (const auto& record : records) {
+    EXPECT_EQ((*record_list)[counter++], record);
+  }
+
+  EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
+  EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
+  EXPECT_TRUE(GetClientAutomatedTest(&configuration));
+}
+
 // Ensures that the context can be updated.
 TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
   StrictMock<MockCompleteCb> completion_cb;
@@ -868,6 +961,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
   request.Set(kEncryptedRecordListKey, base::Value::List());
   request.Set(kAttachConfigurationFileKey, true);
   request.Set(kAttachEncryptionSettingsKey, true);
+  request.Set(kClientAutomatedTestKey, true);
   request.Set(kDeviceKey, base::Value::Dict());
   request.Set(kBrowserKey, base::Value::Dict());
   request.Set(kInvalidKey, base::Value::Dict());
@@ -885,6 +979,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
   EXPECT_TRUE(payload->GetDict().FindList(kEncryptedRecordListKey));
   EXPECT_TRUE(payload->GetDict().FindBool(kAttachEncryptionSettingsKey));
   EXPECT_TRUE(payload->GetDict().FindBool(kAttachConfigurationFileKey));
+  EXPECT_TRUE(payload->GetDict().FindBool(kClientAutomatedTestKey));
   EXPECT_TRUE(payload->GetDict().FindDict(kDeviceKey));
   EXPECT_TRUE(payload->GetDict().FindDict(kBrowserKey));
   EXPECT_FALSE(payload->GetDict().FindDict(kInvalidKey));

@@ -67,6 +67,11 @@ namespace reporting {
 //   // optional field, corresponding to the configuration file that the
 //   // server provides to the client.
 //   "attachConfigurationFile": true
+//   // optional field, only used by the client tast tests to signal to the
+//   // server that this is an automated test from the lab. In production, this
+//   // should always be absent. Even if it is erroneously present in production
+//   // code, server ignores it.
+//   "clientAutomatedTest": true
 // }
 //
 // This payload is added to the common payload of all reporting jobs, which
@@ -87,6 +92,7 @@ namespace reporting {
 // in record.proto.
 
 BASE_DECLARE_FEATURE(kShouldRequestConfigurationFile);
+BASE_DECLARE_FEATURE(kClientAutomatedTest);
 
 class UploadEncryptedReportingRequestBuilder {
  public:
@@ -120,6 +126,7 @@ class UploadEncryptedReportingRequestBuilder {
   static std::string_view GetEncryptedRecordListPath();
   static std::string_view GetAttachEncryptionSettingsPath();
   static std::string_view GetAttachConfigurationFilePath();
+  static std::string_view GetClientAutomatedTestPath();
 
   absl::optional<base::Value::Dict> result_;
 };
