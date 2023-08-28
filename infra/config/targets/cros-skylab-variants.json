@@ -201,15 +201,15 @@
     "enabled": true,
     "identifier": "JACUZZI_CQ_PUBLIC_LKGM"
   },
-  "CROS_KEVIN64_PUBLIC_LKGM": {
+  "CROS_TROGDOR_PUBLIC_LKGM": {
     "skylab": {
-      "cros_board": "kevin",
+      "cros_board": "trogdor",
       "cros_chrome_version": "118.0.5956.0",
-      "cros_img": "kevin64-public/R118-15585.0.0",
+      "cros_img": "trogdor-public/R118-15585.0.0",
       "bucket": "chromiumos-image-archive"
     },
     "enabled": true,
-    "identifier": "KEVIN64_PUBLIC_LKGM"
+    "identifier": "TROGDOR_PUBLIC_LKGM"
   },
   "CROS_KEVIN_PUBLIC_LKGM": {
     "skylab": {

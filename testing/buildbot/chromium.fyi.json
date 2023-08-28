@@ -40543,9 +40543,9 @@
       },
       {
         "bucket": "chromiumos-image-archive",
-        "cros_board": "kevin",
-        "cros_img": "kevin64-public/R118-15585.0.0",
-        "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor-public/R118-15585.0.0",
+        "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40556,7 +40556,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "KEVIN64_PUBLIC_LKGM"
+        "variant_id": "TROGDOR_PUBLIC_LKGM"
       }
     ]
   },
@@ -40603,9 +40603,9 @@
       },
       {
         "bucket": "chromiumos-image-archive",
-        "cros_board": "kevin",
-        "cros_img": "kevin64-public/R118-15585.0.0",
-        "name": "lacros_all_tast_tests KEVIN64_PUBLIC_LKGM",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor-public/R118-15585.0.0",
+        "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40616,7 +40616,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "KEVIN64_PUBLIC_LKGM"
+        "variant_id": "TROGDOR_PUBLIC_LKGM"
       }
     ]
   },

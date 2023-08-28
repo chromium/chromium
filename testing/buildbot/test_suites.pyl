@@ -7735,7 +7735,7 @@
     'lacros_arm64_generic_rel_skylab': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_KEVIN64_PUBLIC_LKGM',
+          'CROS_TROGDOR_PUBLIC_LKGM',
         ]
       },
     },
@@ -7745,7 +7745,7 @@
         'variants': [
           'CROS_JACUZZI_PUBLIC_LKGM',
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
-          'CROS_KEVIN64_PUBLIC_LKGM',
+          'CROS_TROGDOR_PUBLIC_LKGM',
         ]
       },
     },
@@ -7767,7 +7767,7 @@
       'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_PUBLIC_LKGM',
-          'CROS_KEVIN64_PUBLIC_LKGM',
+          'CROS_TROGDOR_PUBLIC_LKGM',
         ]
       },
     },
