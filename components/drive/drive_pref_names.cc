@@ -10,7 +10,7 @@ namespace drive::prefs {
 // The pref prefix should remain as "gdata" for backward compatibility.
 const char kDisableDrive[] = "gdata.disabled";
 
-// A boolean pref to disable Drive over cellular connections.
+// A boolean pref to disable Drive over cellular or metered connections.
 // The pref prefix should remain as "gdata" for backward compatibility.
 const char kDisableDriveOverCellular[] = "gdata.cellular.disabled";
 
