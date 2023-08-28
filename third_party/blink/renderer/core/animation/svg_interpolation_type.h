@@ -39,7 +39,7 @@ class CORE_EXPORT SVGInterpolationType : public InterpolationType {
       const InterpolationEnvironment&) const override;
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             InterpolationEnvironment&) const override;
+             InterpolationEnvironment&) const final;
 };
 
 }  // namespace blink

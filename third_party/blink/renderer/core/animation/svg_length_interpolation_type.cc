@@ -5,16 +5,8 @@
 #include "third_party/blink/renderer/core/animation/svg_length_interpolation_type.h"
 
 #include <memory>
-#include <utility>
 
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
-#include "third_party/blink/renderer/core/animation/string_keyframe.h"
-#include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
-#include "third_party/blink/renderer/core/css/css_math_function_value.h"
-#include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -36,29 +28,13 @@ InterpolationValue SVGLengthInterpolationType::MaybeConvertSVGLength(
 
 SVGLength* SVGLengthInterpolationType::ResolveInterpolableSVGLength(
     const InterpolableValue& interpolable_value,
-    const SVGLengthContext& length_context,
     SVGLengthMode unit_mode,
     bool negative_values_forbidden) {
   const InterpolableLength& length = To<InterpolableLength>(interpolable_value);
   const CSSPrimitiveValue* primitive_value = length.CreateCSSValue(
       negative_values_forbidden ? Length::ValueRange::kNonNegative
                                 : Length::ValueRange::kAll);
-
-  // We optimise for the common case where only one unit type is involved.
-  if (primitive_value->IsNumericLiteralValue())
-    return MakeGarbageCollected<SVGLength>(*primitive_value, unit_mode);
-
-  // SVGLength does not support calc expressions, so we convert to canonical
-  // units.
-  // TODO(crbug.com/991672): This code path uses |primitive_value| as a
-  // temporary object to calculate the pixel values. Try to avoid that.
-  const auto unit_type = CSSPrimitiveValue::UnitType::kUserUnits;
-  const double value = length_context.ResolveValue(
-      To<CSSMathFunctionValue>(*primitive_value), unit_mode);
-  auto* result =
-      MakeGarbageCollected<SVGLength>(unit_mode);  // defaults to the length 0
-  result->NewValueSpecifiedUnits(unit_type, value);
-  return result;
+  return MakeGarbageCollected<SVGLength>(*primitive_value, unit_mode);
 }
 
 InterpolationValue SVGLengthInterpolationType::MaybeConvertNeutral(
@@ -78,21 +54,8 @@ InterpolationValue SVGLengthInterpolationType::MaybeConvertSVGValue(
 SVGPropertyBase* SVGLengthInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  NOTREACHED();
-  // This function is no longer called, because apply has been overridden.
-  return nullptr;
-}
-
-void SVGLengthInterpolationType::Apply(
-    const InterpolableValue& interpolable_value,
-    const NonInterpolableValue* non_interpolable_value,
-    InterpolationEnvironment& environment) const {
-  auto& element = To<SVGInterpolationEnvironment>(environment).SvgElement();
-  SVGLengthContext length_context(&element);
-  element.SetWebAnimatedAttribute(
-      Attribute(),
-      ResolveInterpolableSVGLength(interpolable_value, length_context,
-                                   unit_mode_, negative_values_forbidden_));
+  return ResolveInterpolableSVGLength(interpolable_value, unit_mode_,
+                                      negative_values_forbidden_);
 }
 
 }  // namespace blink
