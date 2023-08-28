@@ -4781,6 +4781,8 @@ crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html
 # Sheriff 2021-04-09
 crbug.com/1197528 pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
 
+crbug.com/1473620 [ Fuchsia ] pointer-lock/pointerlockelement-null-when-pending.html [ Failure Pass ]
+
 crbug.com/1195295 fast/events/touch/multi-touch-timestamp.html [ Failure Pass ]
 
 crbug.com/1196745 [ Mac10.15 ] editing/selection/editable-links.html [ Crash Failure Pass Timeout ]
