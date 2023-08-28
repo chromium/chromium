@@ -51,7 +51,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   ReadAnythingCoordinator& operator=(const ReadAnythingCoordinator&) = delete;
   ~ReadAnythingCoordinator() override;
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void CreateAndRegisterSidePanelEntry(SidePanelRegistry* registry);
   ReadAnythingController* GetController();
   ReadAnythingModel* GetModel();
 
@@ -63,6 +63,10 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
   friend class ReadAnythingCoordinatorTest;
+
+  void CreateAndRegisterEntriesForExistingWebContents(
+      TabStripModel* tab_strip_model);
+  void DeregisterEntriesForExistingWebContents(TabStripModel* tab_strip_model);
 
   // Used during construction to initialize the model with saved user prefs.
   void InitModelWithUserPrefs();
