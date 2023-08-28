@@ -118,7 +118,7 @@ TEST_F(TabbedPaneAccessibilityMacTest, AttributesMatchAppKit) {
   // versions of Cocoa by exposing the role description of "tab" even in older
   // versions of macOS. Doing so causes a mismatch between native Cocoa and our
   // tabs.
-  if (base::mac::IsAtLeastOS12()) {
+  if (base::mac::MacOSMajorVersion() >= 12) {
     EXPECT_NSEQ(
         GetLegacyA11yAttributeValue(cocoa_tabs[0],
                                     NSAccessibilityRoleDescriptionAttribute),

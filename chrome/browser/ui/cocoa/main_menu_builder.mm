@@ -273,7 +273,7 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                 Item(IDS_ENTER_FULLSCREEN_MAC)
                     .action(@selector(toggleFullScreen:))
                     .is_alternate()
-                    .remove_if(base::mac::IsAtMostOS11())
+                    .remove_if(base::mac::MacOSMajorVersion() <= 11)
                     .key_equivalent(@"f", NSEventModifierFlagCommand |
                                               NSEventModifierFlagControl),
                 Item(IDS_TEXT_DEFAULT_MAC).command_id(IDC_ZOOM_NORMAL),

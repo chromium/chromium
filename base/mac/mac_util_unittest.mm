@@ -145,85 +145,41 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
   }
 }
 
-TEST_F(MacUtilTest, IsOSEllipsis) {
+TEST_F(MacUtilTest, MacOSVersion) {
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
 
-  // The patterns here are:
-  // - FALSE/FALSE/TRUE (it is not the earlier version, it is not "at most" the
-  //   earlier version, it is "at least" the earlier version)
-  // - TRUE/TRUE/TRUE (it is the same version, it is "at most" the same version,
-  //   it is "at least" the same version)
-  // - FALSE/TRUE/FALSE (it is not the later version, it is "at most" the later
-  //   version, it is not "at least" the later version)
-
-#define TEST_FOR_PAST_OS(V)      \
-  EXPECT_FALSE(IsOS##V());       \
-  EXPECT_FALSE(IsAtMostOS##V()); \
-  EXPECT_TRUE(IsAtLeastOS##V());
-
-#define TEST_FOR_SAME_OS(V)     \
-  EXPECT_TRUE(IsOS##V());       \
-  EXPECT_TRUE(IsAtMostOS##V()); \
-  EXPECT_TRUE(IsAtLeastOS##V());
-
-#define TEST_FOR_FUTURE_OS(V)   \
-  EXPECT_FALSE(IsOS##V());      \
-  EXPECT_TRUE(IsAtMostOS##V()); \
-  EXPECT_FALSE(IsAtLeastOS##V());
-
-  if (major == 10) {
-    if (minor == 15) {
-      EXPECT_TRUE(IsOS10_15());
-
-      TEST_FOR_FUTURE_OS(11);
-      TEST_FOR_FUTURE_OS(12);
-      TEST_FOR_FUTURE_OS(13);
-      TEST_FOR_FUTURE_OS(14);
-    } else {
-      // macOS 10.15 was the end of the line.
-      FAIL() << "Unexpected 10.x macOS.";
-    }
-  } else if (major == 11) {
-    EXPECT_FALSE(IsOS10_15());
-
-    TEST_FOR_SAME_OS(11);
-    TEST_FOR_FUTURE_OS(12);
-    TEST_FOR_FUTURE_OS(13);
-    TEST_FOR_FUTURE_OS(14);
-  } else if (major == 12) {
-    EXPECT_FALSE(IsOS10_15());
-
-    TEST_FOR_PAST_OS(11);
-    TEST_FOR_SAME_OS(12);
-    TEST_FOR_FUTURE_OS(13);
-    TEST_FOR_FUTURE_OS(14);
-  } else if (major == 13) {
-    EXPECT_FALSE(IsOS10_15());
-
-    TEST_FOR_PAST_OS(11);
-    TEST_FOR_PAST_OS(12);
-    TEST_FOR_SAME_OS(13);
-    TEST_FOR_FUTURE_OS(14);
-  } else if (major == 14) {
-    EXPECT_FALSE(IsOS10_15());
-
-    TEST_FOR_PAST_OS(11);
-    TEST_FOR_PAST_OS(12);
-    TEST_FOR_PAST_OS(13);
-    TEST_FOR_SAME_OS(14);
-  } else {
-    // The spooky future.
-    FAIL() << "Time to update the OS macros!";
-  }
+  EXPECT_EQ(major * 1'00'00 + minor * 1'00 + bugfix, MacOSVersion());
+  EXPECT_EQ(major, MacOSMajorVersion());
 }
 
-#undef TEST_FOR_PAST_10_OS
-#undef TEST_FOR_PAST_OS
-#undef TEST_FOR_SAME_10_OS
-#undef TEST_FOR_SAME_OS
-#undef TEST_FOR_FUTURE_10_OS
-#undef TEST_FOR_FUTURE_OS
+TEST_F(MacUtilTest, ParseOSProductVersion) {
+  // Various strings in shapes that would be expected to be returned from the
+  // API that would need to be parsed.
+  EXPECT_EQ(10'06'02, ParseOSProductVersionForTesting("10.6.2"));
+  EXPECT_EQ(10'15'00, ParseOSProductVersionForTesting("10.15"));
+  EXPECT_EQ(13'05'01, ParseOSProductVersionForTesting("13.5.1"));
+  EXPECT_EQ(14'00'00, ParseOSProductVersionForTesting("14.0"));
+
+  // Various strings in shapes that would not be expected, but that should parse
+  // without CHECKing.
+  EXPECT_EQ(13'04'01, ParseOSProductVersionForTesting("13.4.1 (c)"));
+  EXPECT_EQ(14'00'00, ParseOSProductVersionForTesting("14.0.0"));
+  EXPECT_EQ(18'00'00, ParseOSProductVersionForTesting("18"));
+  EXPECT_EQ(18'03'04, ParseOSProductVersionForTesting("18.3.4.3.2.5"));
+
+  // Various strings in shapes that are so unexpected that they should not
+  // parse.
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("Mac OS X 10.0"),
+                            "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting(""), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("  "), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("."), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("10.a.5"), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("१०.१५.७"), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("7.6.1"), "");
+  EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("10.16"), "");
+}
 
 TEST_F(MacUtilTest, ParseModelIdentifier) {
   std::string model;

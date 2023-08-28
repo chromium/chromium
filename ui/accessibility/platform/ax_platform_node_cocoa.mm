@@ -1819,7 +1819,7 @@ void CollectAncestorRoles(
   // AXCustomContent is only supported by VoiceOver since macOS 11. In
   // macOS 11 or later we expose the aria description in AXCustomContent,
   // before then we expose the description in AXHelp.
-  if (base::mac::IsAtLeastOS11() &&
+  if (base::mac::MacOSMajorVersion() >= 11 &&
       [[self descriptionIfFromAriaDescription] length]) {
     return nil;
   }

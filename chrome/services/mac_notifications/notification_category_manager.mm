@@ -183,8 +183,9 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
                    options:UNNotificationActionOptionNone];
 
   // macOS 11 shows a close button in the top-left corner.
-  if (!base::mac::IsAtLeastOS11())
+  if (base::mac::MacOSMajorVersion() < 11) {
     [buttons_array addObject:close_button];
+  }
 
   // We only support up to two user action buttons.
   DCHECK_LE(buttons.size(), 2u);
@@ -206,7 +207,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   // be set as [button, Close] so that close is on top. If there are more than 2
   // buttons or we're on macOS 11, the buttons end up in an overflow menu which
   // shows them the correct way around.
-  if (!base::mac::IsAtLeastOS11() && buttons_array.count == 2) {
+  if (base::mac::MacOSMajorVersion() < 11 && buttons_array.count == 2) {
     // Remove the close button and move it to the end of the array.
     [buttons_array removeObject:close_button];
     [buttons_array addObject:close_button];
@@ -225,7 +226,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   // both alerts and banners, and modifies its content so that it is consistent
   // with the rest of the notification buttons. Otherwise, the text inside the
   // close button will come from the Apple API.
-  if (!base::mac::IsAtLeastOS11() &&
+  if (base::mac::MacOSMajorVersion() < 11 &&
       [category respondsToSelector:@selector(alternateAction)]) {
     [buttons_array removeObject:close_button];
     [category setValue:buttons_array forKey:@"actions"];

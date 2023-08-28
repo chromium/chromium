@@ -108,7 +108,7 @@ void AddActionButtons(
   // A default close button label is provided by the platform but we explicitly
   // override it in case the user decides to not use the OS language in Chrome.
   // macOS 11 already shows a close button in the top-left corner.
-  if (!base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() < 11) {
     [notification setOtherButtonTitle:l10n_util::GetNSString(
                                           IDS_NOTIFICATION_BUTTON_CLOSE)];
   }
@@ -149,7 +149,7 @@ void AddActionButtons(
   // will always show "Options" via this API. Setting actionButtonTitle just
   // appends another button into the overflow menu. Only the new UNNotification
   // API allows overriding this title on macOS 11.
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     [notification setValue:@NO forKey:@"_hasActionButton"];
   } else {
     [notification setActionButtonTitle:l10n_util::GetNSString(

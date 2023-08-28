@@ -381,7 +381,7 @@ FilePath::StringType AXInspectTestHelper::GetVersionSpecificExpectedFileSuffix(
   // When running tests in a platform specific test directory (such as
   // content/test/data/accessibility/mac/) the expectation_type_ == content.
   if ((expectation_type_ == "mac" || expectation_type_ == "content") &&
-      !base::mac::IsAtLeastOS11()) {
+      base::mac::MacOSMajorVersion() < 11) {
     FilePath::StringType suffix;
     if (!expectations_qualifier.empty()) {
       suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;

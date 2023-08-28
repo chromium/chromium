@@ -123,8 +123,8 @@ void LogResultAndInvokeCallback(const base::FilePath& app_bundle_path,
   // find a running application matching the app we were trying to launch.
   // Only do this if `options.create_new_instance` is false though, as
   // otherwise we wouldn't know which instance to return.
-  if (IsAtLeastOS11() && IsAtMostOS12() && !create_new_instance && !app &&
-      ShouldScanRunningAppsForError(error)) {
+  if ((MacOSMajorVersion() == 11 || MacOSMajorVersion() == 12) &&
+      !create_new_instance && !app && ShouldScanRunningAppsForError(error)) {
     NSArray<NSRunningApplication*>* all_apps =
         NSWorkspace.sharedWorkspace.runningApplications;
     for (NSRunningApplication* running_app in all_apps) {

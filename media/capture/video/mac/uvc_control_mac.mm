@@ -366,7 +366,8 @@ static ScopedIOUSBInterfaceInterface OpenVideoClassSpecificControlInterface(
     VLOG(1) << "Unable to open control interface";
 
     // Temporary additional debug logging for crbug.com/1270335
-    VLOG_IF(1, base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)
+    VLOG_IF(1, base::mac::MacOSMajorVersion() >= 12 &&
+                   ret == kIOReturnExclusiveAccess)
         << "Camera USBInterfaceOpen failed with "
         << "kIOReturnExclusiveAccess";
     return ScopedIOUSBInterfaceInterface();

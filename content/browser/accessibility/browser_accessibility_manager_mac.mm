@@ -598,34 +598,39 @@ bool BrowserAccessibilityManagerMac::IsChromeNewTabPage() {
 
 bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
   // If it's not the top-level document, we shouldn't fire AXLoadComplete.
-  if (!IsRootFrameManager())
+  if (!IsRootFrameManager()) {
     return false;
+  }
 
   // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
   // webpage and read content, despite the "Automatically speak the webpage"
   // checkbox in Voiceover utility being unchecked. The checkbox is
   // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
   // support the default behavior.
-  if (base::mac::IsOS10_15())
+  if (base::mac::MacOSMajorVersion() < 11) {
     return false;
+  }
 
   // Voiceover moves focus to the web content when it receives an
   // AXLoadComplete event. On Chrome's new tab page, focus should stay
   // in the omnibox, so we purposefully do not fire the AXLoadComplete
   // event in this case.
-  if (IsChromeNewTabPage())
+  if (IsChromeNewTabPage()) {
     return false;
+  }
 
   // We also check that the window is focused because VoiceOver responds
   // to this notification by changing focus and possibly reading the entire
   // page contents, sometimes even when the window is minimized or another
   // Chrome window is active/focused.
   id window = GetWindow();
-  if (!window)
+  if (!window) {
     return false;
+  }
 
-  if ([NSApp isActive])
+  if ([NSApp isActive]) {
     return window == [NSApp accessibilityFocusedWindow];
+  }
 
   // TODO(accessibility): We need a solution to the problem described below.
   // If the window is NSAccessibilityRemoteUIElement, there are some challenges:
@@ -652,8 +657,9 @@ bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
   // This may be due to the issues described above, or the fact that one
   // cannot ascend the accessibility tree all the way to the parent window
   // from within the app shim content.
-  if ([window isKindOfClass:[NSAccessibilityRemoteUIElement class]])
+  if ([window isKindOfClass:[NSAccessibilityRemoteUIElement class]]) {
     return true;
+  }
 
   return false;
 }

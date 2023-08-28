@@ -12,9 +12,9 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "base/system/sys_info.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -76,23 +76,17 @@ bool IsBrowserProcess() {
   return *sharedInstance;
 }
 
-+ (BOOL)manualOcclusionDetectionSupportedForVersion:(int32_t)major
-                                                   :(int32_t)minor {
-  if (major != 13) {
-    return YES;
++ (BOOL)manualOcclusionDetectionSupportedForPackedVersion:(int)version {
+  if (version >= 13'00'00 && version < 13'03'00) {
+    return NO;
   }
 
-  return minor >= 3;
+  return YES;
 }
 
 + (BOOL)manualOcclusionDetectionSupportedForCurrentMacOSVersion {
-  int32_t major_version;
-  int32_t minor_version;
-  int32_t bugfix_version;
-  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
-                                               &bugfix_version);
-  return [self manualOcclusionDetectionSupportedForVersion:
-                                             major_version:minor_version];
+  return [self manualOcclusionDetectionSupportedForPackedVersion:
+                   base::mac::MacOSVersion()];
 }
 
 + (void)resetSharedInstanceForTesting {

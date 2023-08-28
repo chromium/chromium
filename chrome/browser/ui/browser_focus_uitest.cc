@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocusFindInPage) {
   // TODO(https://crbug.com/1446127): Re-enable when child widget focus manager
   // relationship is fixed.
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/1446127";
   }
 #endif

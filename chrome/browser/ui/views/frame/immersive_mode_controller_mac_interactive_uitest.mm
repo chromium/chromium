@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
   // Only on macOS 13 and higher will the contentView no longer live in the
   // window.
-  if (base::mac::IsAtLeastOS13()) {
+  if (base::mac::MacOSMajorVersion() >= 13) {
     EXPECT_NE([overlay_widget_window contentView], overlay_widget_content_view);
   }
 

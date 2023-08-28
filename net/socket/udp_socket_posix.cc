@@ -552,7 +552,7 @@ int UDPSocketPosix::SetDoNotFragment() {
 
 // setsockopt(IP_DONTFRAG) is supported on macOS from Big Sur
 #elif BUILDFLAG(IS_MAC)
-  if (!base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() < 11) {
     return ERR_NOT_IMPLEMENTED;
   }
   int val = 1;

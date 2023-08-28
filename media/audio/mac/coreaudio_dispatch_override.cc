@@ -151,8 +151,9 @@ dispatch_queue_t GetGlobalQueueOverride(long identifier, unsigned long flags) {
 
 bool InitializeCoreAudioDispatchOverride() {
   // Apple reports this issue is fixed in 11+.
-  if (base::mac::IsAtLeastOS11())
+  if (base::mac::MacOSMajorVersion() >= 11) {
     return true;
+  }
 
   if (g_dispatch_override_installed)
     return true;

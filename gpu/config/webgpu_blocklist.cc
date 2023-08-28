@@ -44,8 +44,9 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
 #if BUILDFLAG(USE_DAWN)
 #if BUILDFLAG(IS_MAC)
   constexpr uint32_t kAMDVendorID = 0x1002;
-  // Blocklisted due to crbug.com/tint/1094
-  if (!base::mac::IsAtLeastOS13() && properties.vendorID == kAMDVendorID &&
+  // Blocklisted due to https://crbug.com/tint/1094
+  if (base::mac::MacOSMajorVersion() < 13 &&
+      properties.vendorID == kAMDVendorID &&
       properties.backendType == WGPUBackendType_Metal) {
     return true;
   }

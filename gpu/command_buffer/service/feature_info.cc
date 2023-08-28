@@ -208,7 +208,8 @@ FeatureInfo::FeatureInfo(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
 #elif BUILDFLAG(IS_MAC)
-  feature_flags_.chromium_image_ycbcr_p010 = base::mac::IsAtLeastOS11();
+  feature_flags_.chromium_image_ycbcr_p010 =
+      base::mac::MacOSMajorVersion() >= 11;
 #endif
 }
 
@@ -1291,7 +1292,7 @@ void FeatureInfo::InitializeFeatures() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     feature_flags_.gpu_memory_buffer_formats.Put(
         gfx::BufferFormat::YUVA_420_TRIPLANAR);
   }

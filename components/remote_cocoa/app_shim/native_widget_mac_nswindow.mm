@@ -564,7 +564,7 @@ struct ChildWindowOrderingCommand {
 }
 
 - (void)miniaturize:(id)sender {
-  static const BOOL isMacOS13OrHigher = base::mac::IsAtLeastOS13();
+  static const BOOL isMacOS13OrHigher = base::mac::MacOSMajorVersion() >= 13;
   // On macOS 13, the miniaturize operation appears to no longer be "atomic"
   // because of non-blocking roundtrip IPC with the Dock. We want to note here
   // that miniaturization is in progress. The process completes when we
@@ -591,7 +591,7 @@ struct ChildWindowOrderingCommand {
   // _miniaturizationInProgress is NO, the miniaturization process was
   // cancelled by a call to -makeKeyAndOrderFront:. In that case, we don't want
   // to proceed with miniaturization.
-  static const BOOL isMacOS13OrHigher = base::mac::IsAtLeastOS13();
+  static const BOOL isMacOS13OrHigher = base::mac::MacOSMajorVersion() >= 13;
   if (isMacOS13OrHigher && !_miniaturizationInProgress) {
     return;
   }
@@ -685,7 +685,7 @@ struct ChildWindowOrderingCommand {
   // https://sector7.computest.nl/post/2022-08-process-injection-breaking-all-macos-security-layers-with-a-single-vulnerability/
   // for more details.
   NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc]
-      initRequiringSecureCoding:base::mac::IsAtLeastOS12()];
+      initRequiringSecureCoding:base::mac::MacOSMajorVersion() >= 12];
   encoder.delegate = self;
   [self encodeRestorableStateWithCoder:encoder];
   [encoder finishEncoding];

@@ -69,7 +69,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
   EXPECT_NSEQ(category_id, [category identifier]);
 
   // Test contents of the category
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     EXPECT_EQ("Settings",
               base::SysNSStringToUTF8([[[category actions] lastObject] title]));
     EXPECT_EQ(
@@ -119,7 +119,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
   EXPECT_NSEQ(category_id, [category identifier]);
 
   // Test contents of the category
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     EXPECT_EQ("Button1",
               base::SysNSStringToUTF8([[category actions][0] title]));
     EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
@@ -181,7 +181,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationTwoButtons) {
   UNNotificationAction* action_2 = nullptr;
 
   // Test contents of the category
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     ASSERT_EQ(3ul, [[category actions] count]);
     action_1 = [category actions][0];
     action_2 = [category actions][1];
@@ -243,7 +243,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionNoButtons) {
   EXPECT_NSEQ(category_id, [category identifier]);
 
   // Test contents of the category
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     EXPECT_EQ(0ul, [[category actions] count]);
   } else if ([category respondsToSelector:@selector(alternateAction)]) {
     EXPECT_EQ("Close", base::SysNSStringToUTF8(
@@ -276,7 +276,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionTwoButtons) {
   EXPECT_NSEQ(category_id, [category identifier]);
 
   // Test contents of the category
-  if (base::mac::IsAtLeastOS11()) {
+  if (base::mac::MacOSMajorVersion() >= 11) {
     EXPECT_EQ("Button1",
               base::SysNSStringToUTF8([[category actions][0] title]));
     EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),

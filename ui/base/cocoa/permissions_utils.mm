@@ -78,7 +78,7 @@ bool TryPromptUserForScreenCapture() {
 }
 
 void WarmScreenCapture() {
-  if (base::mac::IsAtLeastOS14()) {
+  if (base::mac::MacOSMajorVersion() >= 14) {
     // Starting in macOS 14, a "your screen is being captured" chip shows in the
     // menu bar while an app is capturing the screen, and if it's a one-time
     // image capture, it shows for ten seconds. Doing the warmup below would

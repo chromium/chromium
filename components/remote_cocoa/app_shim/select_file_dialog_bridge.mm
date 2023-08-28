@@ -69,8 +69,9 @@ NSView* CreateAccessoryView() {
                                        IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC)];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.textColor = NSColor.secondaryLabelColor;
-  if (base::mac::IsAtLeastOS11())
+  if (base::mac::MacOSMajorVersion() >= 11) {
     label.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
+  }
 
   // The popup.
   NSPopUpButton* popup = [[NSPopUpButton alloc] initWithFrame:NSZeroRect
@@ -115,10 +116,11 @@ NSView* CreateAccessoryView() {
 
   // Horizontal and vertical baseline between the label and popup.
   CGFloat labelPopupPadding;
-  if (base::mac::IsAtLeastOS11())
+  if (base::mac::MacOSMajorVersion() >= 11) {
     labelPopupPadding = 8;
-  else
+  } else {
     labelPopupPadding = 5;
+  }
   [constraints addObject:[popup.leadingAnchor
                              constraintEqualToAnchor:label.trailingAnchor
                                             constant:labelPopupPadding]];

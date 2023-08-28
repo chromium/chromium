@@ -449,7 +449,7 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
 
 gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets() const {
   const int kCaptionButtonInset =
-      base::mac::IsOS10_15()
+      base::mac::MacOSMajorVersion() < 11
           ? kCaptionButtonsInsetsCatalinaOrOlder
           : (kCaptionButtonsWidth + (kCaptionButtonsLeadingPadding * 2) -
              TabStyle::Get()->GetBottomCornerRadius());

@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 
@@ -61,90 +62,17 @@ BASE_EXPORT bool WasLaunchedAsHiddenLoginItem();
 // an error, or true otherwise.
 BASE_EXPORT bool RemoveQuarantineAttribute(const FilePath& file_path);
 
-namespace internal {
-
-// Returns the system's macOS major and minor version numbers combined into an
-// integer value. For example, for macOS Sierra this returns 1012, and for macOS
-// Big Sur it returns 1100. Note that the accuracy returned by this function is
-// as granular as the major version number of Darwin.
-BASE_EXPORT int MacOSVersion();
-
-}  // namespace internal
-
-// Run-time OS version checks. Prefer @available in Objective-C files. If that
-// is not possible, use these functions instead of
-// base::SysInfo::OperatingSystemVersionNumbers. Prefer the "AtLeast" and
-// "AtMost" variants to those that check for a specific version, unless you know
-// for sure that you need to check for a specific version.
-
-#define DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
-  inline bool IsOS10_##V() {                                              \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                                   \
-    return internal::MacOSVersion() == 1000 + V;                          \
-  }
-
-#define DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
-  inline bool IsOS##V() {                                             \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                               \
-    return internal::MacOSVersion() == V * 100;                       \
-  }
-
-#define DEFINE_IS_OS_FUNCS(V, DEPLOYMENT_TARGET_TEST)           \
-  DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, DEPLOYMENT_TARGET_TEST) \
-  inline bool IsAtLeastOS##V() {                                \
-    DEPLOYMENT_TARGET_TEST(>=, V, true)                         \
-    return internal::MacOSVersion() >= V * 100;                 \
-  }                                                             \
-  inline bool IsAtMostOS##V() {                                 \
-    DEPLOYMENT_TARGET_TEST(>, V, false)                         \
-    return internal::MacOSVersion() <= V * 100;                 \
-  }
-
-#define OLD_TEST_DEPLOYMENT_TARGET(OP, V, RET)                  \
-  if (MAC_OS_X_VERSION_MIN_REQUIRED OP MAC_OS_X_VERSION_10_##V) \
-    return RET;
-#define TEST_DEPLOYMENT_TARGET(OP, V, RET)                     \
-  if (MAC_OS_X_VERSION_MIN_REQUIRED OP MAC_OS_VERSION_##V##_0) \
-    return RET;
-#define IGNORE_DEPLOYMENT_TARGET(OP, V, RET)
-
-// Notes:
-// - When bumping the minimum version of the macOS required by Chromium, remove
-//   lines from below corresponding to versions of the macOS no longer
-//   supported. Ensure that the minimum supported version uses the
-//   DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED macro. When macOS 11.0 is the
-//   minimum required version, remove all the OLD versions of the macros.
-// - When bumping the minimum version of the macOS SDK required to build
-//   Chromium, remove the #ifdef that switches between
-//   TEST_DEPLOYMENT_TARGET and IGNORE_DEPLOYMENT_TARGET.
-
-// Versions of macOS supported at runtime but whose SDK is not supported for
-// building.
-DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED(15, OLD_TEST_DEPLOYMENT_TARGET)
-DEFINE_IS_OS_FUNCS(11, TEST_DEPLOYMENT_TARGET)
-DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
-
-// Versions of macOS supported at runtime and whose SDK is supported for
-// building.
-#ifdef MAC_OS_VERSION_13_0
-DEFINE_IS_OS_FUNCS(13, TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_IS_OS_FUNCS(13, IGNORE_DEPLOYMENT_TARGET)
-#endif
-
-#ifdef MAC_OS_VERSION_14_0
-DEFINE_IS_OS_FUNCS(14, TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_IS_OS_FUNCS(14, IGNORE_DEPLOYMENT_TARGET)
-#endif
-
-#undef DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED
-#undef DEFINE_OLD_IS_OS_FUNCS
-#undef DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED
-#undef DEFINE_IS_OS_FUNCS
-#undef OLD_TEST_DEPLOYMENT_TARGET
-#undef TEST_DEPLOYMENT_TARGET
-#undef IGNORE_DEPLOYMENT_TARGET
+// The following two functions return the version of the macOS currently
+// running. MacOSVersion() returns the full trio of version numbers, packed into
+// one int (e.g. macOS 12.6.5 returns 12'06'05), and MacOSMajorVersion() returns
+// only the major version number (e.g. macOS 12.6.5 returns 12). Use for runtime
+// OS version checking. Prefer to use @available in Objective-C files. Note that
+// this does not include any Rapid Security Response (RSR) suffixes (the "(a)"
+// at the end of version numbers.)
+BASE_EXPORT __attribute__((const)) int MacOSVersion();
+inline __attribute__((const)) int MacOSMajorVersion() {
+  return MacOSVersion() / 1'00'00;
+}
 
 enum class CPUType {
   kIntel,
@@ -224,6 +152,12 @@ enum class SystemSettingsPane {
 // exist on the release of macOS that is running, the parent pane will open
 // instead.
 BASE_EXPORT void OpenSystemSettingsPane(SystemSettingsPane pane);
+
+// ------- For testing --------
+
+// An implementation detail of `MacOSVersion()` above, exposed for testing.
+BASE_EXPORT int ParseOSProductVersionForTesting(
+    const std::string_view& version);
 
 }  // namespace base::mac
 
