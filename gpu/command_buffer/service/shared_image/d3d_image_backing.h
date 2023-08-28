@@ -17,11 +17,11 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/d3d_shared_fence.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_egl_image.h"
 
@@ -220,7 +220,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // Common state tracking for both D3D11 and Dawn access.
   bool ValidateBeginAccess(bool write_access) const;
   void BeginAccessCommon(bool write_access);
-  void EndAccessCommon(scoped_refptr<D3DSharedFence> fence);
+  void EndAccessCommon(scoped_refptr<gfx::D3DSharedFence> fence);
 
   // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
   // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be
@@ -228,7 +228,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // no-op. Similarly, |wait_dawn_device| can be provided to skip over waits on
   // fences previously signaled on the same Dawn device which are cached in
   // |dawn_signaled_fence_map_|.
-  std::vector<scoped_refptr<D3DSharedFence>> GetPendingWaitFences(
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> GetPendingWaitFences(
       const Microsoft::WRL::ComPtr<ID3D11Device>& wait_d3d11_device,
       const wgpu::Device& wait_dawn_device,
       bool write_access);
@@ -289,17 +289,17 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   // Fences for previous reads. These will be waited on by the subsequent write,
   // but not by reads.
-  base::flat_set<scoped_refptr<D3DSharedFence>> read_fences_;
+  base::flat_set<scoped_refptr<gfx::D3DSharedFence>> read_fences_;
 
   // Fence for the previous write. These will be waited on by subsequent reads
   // and/or write.
-  scoped_refptr<D3DSharedFence> write_fence_;
+  scoped_refptr<gfx::D3DSharedFence> write_fence_;
 
   // Fences used for signaling after D3D11 access. Lazily created as needed.
   // TODO(sunnyps): This doesn't need to be per D3DImageBacking. Find a better
   // place for this so that they can be shared by all backings.
   base::flat_map<Microsoft::WRL::ComPtr<ID3D11Device>,
-                 scoped_refptr<D3DSharedFence>>
+                 scoped_refptr<gfx::D3DSharedFence>>
       d3d11_signaled_fence_map_;
 
 #if BUILDFLAG(USE_DAWN)
@@ -310,7 +310,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   // Signaled fence imported from Dawn at EndAccess. This can be reused if
   // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
-  base::flat_map<WGPUDevice, scoped_refptr<D3DSharedFence>>
+  base::flat_map<WGPUDevice, scoped_refptr<gfx::D3DSharedFence>>
       dawn_signaled_fence_map_;
 #endif  // BUILDFLAG(USE_DAWN)
 };

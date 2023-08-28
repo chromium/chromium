@@ -689,7 +689,7 @@ D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
       manager, this, tracker, device, d3d11_texture_);
 }
 
-std::vector<scoped_refptr<D3DSharedFence>>
+std::vector<scoped_refptr<gfx::D3DSharedFence>>
 D3DImageBacking::GetPendingWaitFences(
     const Microsoft::WRL::ComPtr<ID3D11Device>& wait_d3d11_device,
     const wgpu::Device& wait_dawn_device,
@@ -706,7 +706,7 @@ D3DImageBacking::GetPendingWaitFences(
   auto& texture_device_fence = d3d11_signaled_fence_map_[texture_d3d11_device_];
   if (wait_d3d11_device != texture_d3d11_device_ && !texture_device_fence) {
     texture_device_fence =
-        D3DSharedFence::CreateForD3D11(texture_d3d11_device_);
+        gfx::D3DSharedFence::CreateForD3D11(texture_d3d11_device_);
     if (!texture_device_fence) {
       LOG(ERROR) << "Failed to retrieve D3D11 signal fence";
       return {};
@@ -724,11 +724,11 @@ D3DImageBacking::GetPendingWaitFences(
     write_fence_ = texture_device_fence;
   }
 
-  const D3DSharedFence* dawn_signaled_fence =
+  const gfx::D3DSharedFence* dawn_signaled_fence =
       wait_dawn_device ? dawn_signaled_fence_map_[wait_dawn_device.Get()].get()
                        : nullptr;
 
-  auto should_wait_on_fence = [&](D3DSharedFence* wait_fence) -> bool {
+  auto should_wait_on_fence = [&](gfx::D3DSharedFence* wait_fence) -> bool {
     // Skip the wait if it's for the fence last signaled by the Dawn device, or
     // for D3D11 if the fence was issued for the same device since D3D11 uses a
     // single immediate context for issuing commands on a device.
@@ -738,7 +738,7 @@ D3DImageBacking::GetPendingWaitFences(
             wait_d3d11_device != wait_fence->GetD3D11Device());
   };
 
-  std::vector<scoped_refptr<D3DSharedFence>> wait_fences;
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences;
   // Always wait for previous write for both read-only or read-write access.
   // Skip the wait if it's for the fence last signaled by the Dawn device, or
   // for D3D11 if the fence was issued for the same device since D3D11 has a
@@ -794,7 +794,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(const wgpu::Device& device,
   descriptor.usage = static_cast<WGPUTextureUsage>(wgpu_usage);
 
   // Defer clearing fences until later to handle Dawn failure to import texture.
-  std::vector<scoped_refptr<D3DSharedFence>> wait_fences =
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences =
       GetPendingWaitFences(dawn_d3d11_device, device, write_access);
   for (auto& wait_fence : wait_fences) {
     descriptor.waitFences.push_back(ExternalImageDXGIFenceDescriptor{
@@ -833,14 +833,14 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
       ExternalImageDXGIFenceDescriptor descriptor;
       external_image->EndAccess(texture.Get(), &descriptor);
 
-      scoped_refptr<D3DSharedFence> signaled_fence;
+      scoped_refptr<gfx::D3DSharedFence> signaled_fence;
       if (descriptor.fenceHandle != nullptr) {
         auto& cached_fence = dawn_signaled_fence_map_[device.Get()];
         // Try to reuse the last signaled fence if it's the same fence.
         if (!cached_fence ||
             !cached_fence->IsSameFenceAsHandle(descriptor.fenceHandle)) {
           cached_fence =
-              D3DSharedFence::CreateFromHandle(descriptor.fenceHandle);
+              gfx::D3DSharedFence::CreateFromHandle(descriptor.fenceHandle);
           DCHECK(cached_fence);
         }
         cached_fence->Update(descriptor.fenceValue);
@@ -878,7 +878,7 @@ bool D3DImageBacking::BeginAccessD3D11(
   CHECK((read_fences_.empty() && !write_fence_) || dxgi_shared_handle_state_);
 
   // Defer clearing fences until later to handle D3D11 failure to synchronize.
-  std::vector<scoped_refptr<D3DSharedFence>> wait_fences =
+  std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences =
       GetPendingWaitFences(d3d11_device, /*dawn_device=*/nullptr, write_access);
   for (auto& wait_fence : wait_fences) {
     if (!wait_fence->WaitD3D11(d3d11_device)) {
@@ -910,10 +910,10 @@ void D3DImageBacking::EndAccessD3D11(
   // from another device in GetPendingWaitFences().
   auto& d3d11_signal_fence = d3d11_signaled_fence_map_[d3d11_device];
   if (!is_texture_device && !d3d11_signal_fence) {
-    d3d11_signal_fence = D3DSharedFence::CreateForD3D11(d3d11_device);
+    d3d11_signal_fence = gfx::D3DSharedFence::CreateForD3D11(d3d11_device);
   }
 
-  scoped_refptr<D3DSharedFence> signaled_fence;
+  scoped_refptr<gfx::D3DSharedFence> signaled_fence;
   if (d3d11_signal_fence && d3d11_signal_fence->IncrementAndSignalD3D11()) {
     signaled_fence = d3d11_signal_fence;
   }
@@ -950,7 +950,7 @@ void D3DImageBacking::BeginAccessCommon(bool write_access) {
 }
 
 void D3DImageBacking::EndAccessCommon(
-    scoped_refptr<D3DSharedFence> signaled_fence) {
+    scoped_refptr<gfx::D3DSharedFence> signaled_fence) {
   if (in_write_access_) {
     DCHECK(!write_fence_);
     DCHECK(read_fences_.empty());

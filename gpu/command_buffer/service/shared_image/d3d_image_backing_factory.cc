@@ -359,7 +359,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     }
   } else {
     desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
-                     (D3DSharedFence::IsSupported(d3d11_device_.Get())
+                     (gfx::D3DSharedFence::IsSupported(d3d11_device_.Get())
                           ? D3D11_RESOURCE_MISC_SHARED
                           : D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
   }

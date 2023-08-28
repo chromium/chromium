@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/d3d_shared_fence.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 
 #include "base/logging.h"
 #include "base/notreached.h"
 
-namespace gpu {
+namespace gfx {
+
 namespace {
 Microsoft::WRL::ComPtr<ID3D11DeviceContext4> GetDeviceContext4(
     ID3D11Device* d3d11_device) {
@@ -114,12 +115,14 @@ bool D3DSharedFence::IsSameFenceAsHandle(HANDLE shared_handle) const {
     PFN_COMPARE_OBJECT_HANDLES fn =
         reinterpret_cast<PFN_COMPARE_OBJECT_HANDLES>(
             ::GetProcAddress(kernelbase_module, "CompareObjectHandles"));
-    if (!fn)
+    if (!fn) {
       DVLOG(1) << "CompareObjectHandles not found";
+    }
     return fn;
   }();
-  if (compare_object_handles_fn)
+  if (compare_object_handles_fn) {
     return compare_object_handles_fn(shared_handle_.Get(), shared_handle);
+  }
   // CompareObjectHandles isn't available before Windows 10 but we shouldn't be
   // using fences in that case either.
   NOTREACHED();
@@ -127,15 +130,17 @@ bool D3DSharedFence::IsSameFenceAsHandle(HANDLE shared_handle) const {
 }
 
 void D3DSharedFence::Update(uint64_t fence_value) {
-  if (fence_value > fence_value_)
+  if (fence_value > fence_value_) {
     fence_value_ = fence_value;
+  }
 }
 
 bool D3DSharedFence::WaitD3D11(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   // Skip wait if passed in device is the same as signaling device.
-  if (d3d11_device == d3d11_device_)
+  if (d3d11_device == d3d11_device_) {
     return true;
+  }
 
   auto it = d3d11_wait_fence_map_.Get(d3d11_device);
   if (it == d3d11_wait_fence_map_.end()) {
@@ -157,8 +162,9 @@ bool D3DSharedFence::WaitD3D11(
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext4> context4 =
       GetDeviceContext4(d3d11_device.Get());
-  if (!context4)
+  if (!context4) {
     return false;
+  }
 
   const Microsoft::WRL::ComPtr<ID3D11Fence>& fence = it->second;
   HRESULT hr = context4->Wait(fence.Get(), fence_value_);
@@ -175,8 +181,9 @@ bool D3DSharedFence::IncrementAndSignalD3D11() {
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext4> context4 =
       GetDeviceContext4(d3d11_device_.Get());
-  if (!context4)
+  if (!context4) {
     return false;
+  }
 
   HRESULT hr = context4->Signal(d3d11_signal_fence_.Get(), fence_value_ + 1);
   if (FAILED(hr)) {
@@ -187,4 +194,4 @@ bool D3DSharedFence::IncrementAndSignalD3D11() {
   return true;
 }
 
-}  // namespace gpu
+}  // namespace gfx

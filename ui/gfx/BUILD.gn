@@ -206,6 +206,8 @@ component("gfx") {
       "system_fonts_win.h",
       "win/crash_id_helper.cc",
       "win/crash_id_helper.h",
+      "win/d3d_shared_fence.cc",
+      "win/d3d_shared_fence.h",
       "win/direct_write.cc",
       "win/direct_write.h",
       "win/hwnd_util.cc",

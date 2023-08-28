@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_SHARED_FENCE_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_SHARED_FENCE_H_
+#ifndef UI_GFX_WIN_D3D_SHARED_FENCE_H_
+#define UI_GFX_WIN_D3D_SHARED_FENCE_H_
 
 #include <d3d11.h>
 #include <d3d11_4.h>
@@ -12,16 +12,15 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
-#include "gpu/gpu_gles2_export.h"
+#include "ui/gfx/gfx_export.h"
 
-namespace gpu {
+namespace gfx {
 
 // A ref-counted wrapper around D3D11Fence and its shared handle. Fences are
 // opened for each D3D11 device the fence is waited on. Ref-counting is used so
 // that the same fence object can be referred to in multiple places e.g. as the
 // signaling fence or in list of fences to wait for next access.
-class GPU_GLES2_EXPORT D3DSharedFence
-    : public base::RefCounted<D3DSharedFence> {
+class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
  public:
   // Create a new ID3D11Fence with initial value 0 on given |d3d11_device|. The
   // provided device is considered the owning device for the fence, and is the
@@ -91,6 +90,6 @@ class GPU_GLES2_EXPORT D3DSharedFence
       d3d11_wait_fence_map_;
 };
 
-}  // namespace gpu
+}  // namespace gfx
 
 #endif
