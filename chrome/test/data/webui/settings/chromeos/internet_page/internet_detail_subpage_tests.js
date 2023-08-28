@@ -421,6 +421,28 @@ suite('InternetDetailPage', function() {
       });
     });
 
+    test('Hidden toggle hidden for non-WiFi networks', function() {
+      init();
+      mojoApi_.resetForTest();
+      for (const networkType
+               of [NetworkType.kCellular, NetworkType.kEthernet,
+                   NetworkType.kTether, NetworkType.kVPN]) {
+        mojoApi_.setNetworkTypeEnabledState(networkType, true);
+        const networkTypeString = OncMojo.getNetworkTypeString(networkType);
+        const networkGuid = 'network_guid_' + networkTypeString;
+        const networkName = 'network_name_' + networkTypeString;
+        const network = getManagedProperties(networkType, networkName);
+
+        mojoApi_.setManagedPropertiesForTest(network);
+
+        internetDetailPage.init(networkGuid, networkTypeString, networkName);
+        return flushAsync().then(() => {
+          const hiddenToggle = getHiddenToggle();
+          assertFalse(!!hiddenToggle);
+        });
+      }
+    });
+
     test('Proxy Unshared', function() {
       init();
       mojoApi_.resetForTest();
