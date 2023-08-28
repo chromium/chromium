@@ -6,16 +6,15 @@
 
 #import "base/feature_list.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/photos/photos_service.h"
 #import "ios/chrome/browser/photos/photos_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "url/gurl.h"
 
-bool IsSaveToPhotosAvailableForImageUrl(const GURL& image_url,
-                                        ChromeBrowserState* browser_state) {
+bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {
   CHECK(browser_state);
 
   // Check flag.
@@ -36,10 +35,10 @@ bool IsSaveToPhotosAvailableForImageUrl(const GURL& image_url,
   }
 
   // Check user is signed in.
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  if (!authentication_service || !authentication_service->HasPrimaryIdentity(
-                                     signin::ConsentLevel::kSignin)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state);
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
   }
 

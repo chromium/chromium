@@ -20,6 +20,7 @@ extern NSString* const kGoogleIconSymbol;
 extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kChromeSymbol;
 extern NSString* const kGoogleMapsSymbol;
+extern NSString* const kGooglePhotosSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kPrivacySymbol;
 extern NSString* const kSyncDisabledSymbol;

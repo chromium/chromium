@@ -10,6 +10,7 @@ NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kChromeSymbol = @"chrome_symbol";
 NSString* const kGoogleMapsSymbol = @"google_maps";
+NSString* const kGooglePhotosSymbol = @"google_photos";
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 NSString* const kPrivacySymbol = @"checkerboard_shield";
 NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";

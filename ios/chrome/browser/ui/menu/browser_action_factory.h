@@ -16,6 +16,10 @@
 class Browser;
 class GURL;
 
+namespace web {
+class WebState;
+}
+
 // Factory providing methods to create UIActions that depends on the provided
 // browser with consistent titles, images and metrics structure. When using any
 // action from this class, an histogram will be recorded on
@@ -69,6 +73,11 @@ class GURL;
 
 // Creates a UIAction instance for searching with Lens.
 - (UIAction*)actionToSearchWithLensWithEntryPoint:(LensEntrypoint)entryPoint;
+
+// Creates a UIAction instance for saving an image to Photos.
+- (UIAction*)actionToSaveToPhotosWithImageURL:(const GURL&)url
+                                     referrer:(const web::Referrer&)referrer
+                                     webState:(web::WebState*)webState;
 
 // Creates a UIAction instance for opening a new tab.
 - (UIAction*)actionToOpenNewTab;

@@ -6,11 +6,9 @@
 #define IOS_CHROME_BROWSER_PHOTOS_PHOTOS_AVAILABILITY_H_
 
 class ChromeBrowserState;
-class GURL;
 
 // Returns whether the Save to Photos entry point can be presented for a given
-// image URL and browser state.
-bool IsSaveToPhotosAvailableForImageUrl(const GURL& image_url,
-                                        ChromeBrowserState* browser_state);
+// browser state.
+bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state);
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_AVAILABILITY_H_

@@ -55772,6 +55772,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="39" label="Pin Tab"/>
   <int value="40" label="Unpin Tab"/>
   <int value="41" label="Lens Camera Search"/>
+  <int value="42" label="Save Image in Google Photos"/>
 </enum>
 
 <enum name="IOSMenuScenario">

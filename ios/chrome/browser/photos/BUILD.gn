@@ -39,6 +39,7 @@ source_set("photos_availability") {
     ":photos",
     ":photos_service_factory",
     "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",

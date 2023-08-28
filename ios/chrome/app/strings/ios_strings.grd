@@ -768,7 +768,7 @@ See your search engine’s instructions for deleting your search history, if app
         Open in New Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
-        Save Image
+        Save in Photos
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS" desc="The iOS context menu item for closing all the tabs in the grid. [iOS only]">
         Close All Tabs
@@ -4598,6 +4598,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_TOOLS_MENU_RECENT_TABS" desc="The iOS menu item for opening the panel showing the recently closed tabs and the tabs from other devices." meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Recent Tabs
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_SAVE_IMAGE_TO_PHOTOS" desc="The iOS menu item for saving images to Google Photos.">
+        Save in Google Photos
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL" desc="The title of the button on the overflow menu customization screen for users to cancel customization." meaning="[In Title case] [iOS only]">
         Cancel
