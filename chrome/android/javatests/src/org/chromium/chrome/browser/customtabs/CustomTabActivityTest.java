@@ -94,6 +94,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -105,6 +106,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.AppHooks;
@@ -115,6 +117,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.TabsOpenedFromExternalAppTest;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -160,6 +163,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
@@ -2480,6 +2484,86 @@ public class CustomTabActivityTest {
         Assert.assertFalse(tab.canGoForward());
 
         CriteriaHelper.pollUiThread(() -> !dialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testBackPressNavigationFailure_WithRecover() {
+        Context context = getInstrumentation().getTargetContext().getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        final Tab tab = getActivity().getActivityTab();
+        BackPressManager.TAB_HISTORY_RECOVER.setForTesting(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+
+        BackPressHandler navigationHandler =
+                getActivity()
+                        .getBackPressManagerForTesting()
+                        .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
+        ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
+                (ObservableSupplierImpl<Boolean>) (navigationHandler
+                                                           .getHandleBackPressChangedSupplier());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.BackPress.Failure",
+                        BackPressManager.getHistogramValueForTesting(
+                                BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            handleBackPressChangedSupplier.set(false);
+            try {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
+            } catch (AssertionError ignored) {
+                if (!ignored.getMessage().contains("-1")) throw ignored;
+            }
+        });
+
+        histogramWatcher.assertExpected("Failure should be recorded");
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("Tab should be navigated when tab handler fails",
+                    ChromeTabUtils.getUrlStringOnUiThread(getActivity().getActivityTab()),
+                    is(mTestPage));
+        });
+        BackPressManager.TAB_HISTORY_RECOVER.setForTesting(false);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testBackPressNavigationFailure_WithoutRecover() {
+        Context context = getInstrumentation().getTargetContext().getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        final Tab tab = getActivity().getActivityTab();
+        BackPressManager.TAB_HISTORY_RECOVER.setForTesting(false);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+
+        BackPressHandler navigationHandler =
+                getActivity()
+                        .getBackPressManagerForTesting()
+                        .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
+        ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
+                (ObservableSupplierImpl<Boolean>) (navigationHandler
+                                                           .getHandleBackPressChangedSupplier());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            handleBackPressChangedSupplier.set(false);
+            try {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
+            } catch (AssertionError ignored) {
+                if (!ignored.getMessage().contains("-1")) throw ignored;
+            }
+        });
+
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("Tab should not be navigated when tab handler fails without recover",
+                    ChromeTabUtils.getUrlStringOnUiThread(getActivity().getActivityTab()),
+                    is(mTestPage2));
+        });
     }
 
     @Test
