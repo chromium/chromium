@@ -116,6 +116,7 @@
 #include <string_view>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -132,6 +133,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -395,7 +398,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 [[nodiscard]] AssertionResult ClassifyFieldsOfSite(
     base::Value::Dict& site,
     LanguageCode page_language,
-    ResultAnalyzer& result_analyzer) {
+    ResultAnalyzer& result_analyzer,
+    LogManager* log_manager) {
   const std::string* site_url = site.FindString("site_url");
   if (!site_url) {
     return AssertionFailure() << "Missing attribute 'site_url' in" << site;
@@ -416,7 +420,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     }
     FormStructure form_structure(form_data);
     form_structure.set_current_page_language(page_language);
-    form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+    form_structure.DetermineHeuristicTypes(nullptr, log_manager);
     result_analyzer.AnalyzeClassification(form_structure, form.GetDict());
   }
   return AssertionSuccess();
@@ -425,9 +429,21 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 class HeuristicClassificationTests
     : public testing::Test,
       public testing::WithParamInterface<base::FilePath> {
+ public:
+  void SetUp() override;
+
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  LogRouter log_router_;
+  std::unique_ptr<LogManager> log_manager_;
 };
+
+void HeuristicClassificationTests::SetUp() {
+  if (base::FeatureList::IsEnabled(features::test::kAutofillLogToTerminal)) {
+    log_router_.LogToTerminal();
+  }
+  log_manager_ = LogManager::Create(&log_router_, base::NullCallback());
+}
 
 TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -492,8 +508,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ResultAnalyzer result_analyzer(std::move(fields_in_scope));
   for (base::Value& site : *sites) {
     ASSERT_TRUE(site.is_dict());
-    ASSERT_TRUE(
-        ClassifyFieldsOfSite(site.GetDict(), page_language, result_analyzer));
+    ASSERT_TRUE(ClassifyFieldsOfSite(site.GetDict(), page_language,
+                                     result_analyzer, log_manager_.get()));
   }
 
   // Update statistics
