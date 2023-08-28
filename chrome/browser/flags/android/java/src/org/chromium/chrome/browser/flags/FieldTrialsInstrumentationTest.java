@@ -14,6 +14,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -167,6 +168,6 @@ public final class FieldTrialsInstrumentationTest {
     @Test
     @SmallTest
     public void testGetLastUpdateFromNativeTimeMillis() {
-        Assert.assertNotEquals(0, CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis());
+        Assert.assertNotEquals(0, ChromeCachedFlags.getLastCachedMinimalBrowserFlagsTimeMillis());
     }
 }

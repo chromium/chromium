@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.flags;
 import android.text.TextUtils;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
@@ -162,7 +163,7 @@ public class ChromeCachedFlags {
      * won't be tagged with their corresponding field trial experiments.
      */
     public void cacheMinimalBrowserFlags() {
-        CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
+        cacheMinimalBrowserFlagsTimeFromNativeTime();
         CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
         CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
@@ -218,6 +219,15 @@ public class ChromeCachedFlags {
         }
 
         return sReachedCodeProfilerTrialGroup;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void cacheMinimalBrowserFlagsTimeFromNativeTime() {
+        CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
+    }
+
+    public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
+        return CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis();
     }
 
     @CalledByNative

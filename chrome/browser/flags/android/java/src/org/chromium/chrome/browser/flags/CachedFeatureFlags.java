@@ -65,6 +65,7 @@ public class CachedFeatureFlags {
         }
     }
 
+    // TODO(crbug.com/1442347): Switch downstream usages to call ChromeCachedFlags and inline this.
     public static void cacheMinimalBrowserFlagsTimeFromNativeTime() {
         SharedPreferencesManager.getInstance().writeLong(
                 ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
@@ -73,6 +74,8 @@ public class CachedFeatureFlags {
 
     /**
      * Returns the time (in millis) the minimal browser flags were cached.
+     *
+     * TODO(crbug.com/1442347): Switch downstream usages to call ChromeCachedFlags and inline this.
      */
     public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
         return SharedPreferencesManager.getInstance().readLong(
