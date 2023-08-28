@@ -4228,6 +4228,25 @@
             ]
         }
     ],
+    "CrOSHibernate": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled12Hrs_20230828",
+                    "params": {
+                        "HibernateAfterTimeHours": "12"
+                    },
+                    "enable_features": [
+                        "CrOSSuspendToDisk",
+                        "CrOSSuspendToDiskAllowS4"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSHugepageRemapAndLockInZygoteStudy": [
         {
             "platforms": [
