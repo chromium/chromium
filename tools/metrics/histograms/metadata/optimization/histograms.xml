@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.EntityAnnotatorNativeLibrary.InitiatedSuccessfully"
-    enum="BooleanSuccess" expires_after="2023-10-08">
+    enum="BooleanSuccess" expires_after="M121">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
