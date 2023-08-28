@@ -781,15 +781,14 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
   if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
     CHECK_EQ(running_prerender_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
 
-    for (auto iter = pending_prerenders_.begin();
-         iter != pending_prerenders_.end();) {
-      int host_id = *iter;
+    while (!pending_prerenders_.empty()) {
+      int host_id = pending_prerenders_.front();
 
       // Skip a cancelled request.
       auto found = prerender_host_by_frame_tree_node_id_.find(host_id);
       if (found == prerender_host_by_frame_tree_node_id_.end()) {
         // Remove the cancelled request from the pending queue.
-        iter = pending_prerenders_.erase(iter);
+        pending_prerenders_.pop_front();
         continue;
       }
       PrerenderHost* prerender_host = found->second.get();
@@ -805,7 +804,7 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
       }
 
       // Found the request to run.
-      pending_prerenders_.erase(iter);
+      pending_prerenders_.pop_front();
       frame_tree_node_id = host_id;
       break;
     }
