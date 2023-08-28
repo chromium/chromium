@@ -68,6 +68,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // VideoDecoderMixin implementation, specific part.
   void ApplyResolutionChange() override;
   size_t GetMaxOutputFramePoolSize() const override;
+  bool NeedsTranscryption() override;
 
   // V4L2VideoDecoderBackend::Client implementation
   void OnBackendError() override;
@@ -193,6 +194,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;
   scoped_refptr<V4L2Queue> output_queue_;
+
+  // We need to use a CdmContextRef to ensure the lifetime of the CdmContext
+  // backing it while we are alive. This also indicates secure playback mode.
+  std::unique_ptr<CdmContextRef> cdm_context_ref_;
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 

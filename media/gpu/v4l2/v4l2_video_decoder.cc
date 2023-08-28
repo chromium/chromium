@@ -32,6 +32,13 @@
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// gn check does not account for BUILDFLAG(), so including this header will
+// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// for more information.
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace media {
 
 namespace {
@@ -129,7 +136,12 @@ V4L2VideoDecoder::GetSupportedConfigs() {
   if (configs.empty())
     return absl::nullopt;
 
-  return ConvertFromSupportedProfiles(configs, false);
+  return ConvertFromSupportedProfiles(configs,
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+                                      true /* allow_encrypted */);
+#else
+                                      false /* allow_encrypted */);
+#endif
 }
 
 V4L2VideoDecoder::V4L2VideoDecoder(
@@ -204,10 +216,30 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
       return;
   }
 
-  if (cdm_context || config.is_encrypted()) {
-    VLOGF(1) << "V4L2 decoder does not support encrypted stream";
+  cdm_context_ref_ = nullptr;
+
+  if (config.is_encrypted()) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    VLOGF(1) << "Encrypted content is not supported";
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
+#else
+    if (!cdm_context || !cdm_context->GetChromeOsCdmContext()) {
+      VLOGF(1) << "Cannot support encrypted stream w/out ChromeOsCdmContext";
+      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+      return;
+    }
+    if (config.codec() != VideoCodec::kH264 &&
+        config.codec() != VideoCodec::kVP9 &&
+        config.codec() != VideoCodec::kAV1 &&
+        config.codec() != VideoCodec::kHEVC) {
+      VLOGF(1) << GetCodecName(config.codec())
+               << " is not supported for encrypted content";
+      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+      return;
+    }
+    cdm_context_ref_ = cdm_context->GetChromeOsCdmContext()->GetCdmContextRef();
+#endif
   }
 
   // Stop and reset the queues if we're currently decoding but want to
@@ -496,7 +528,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
           /*output_size=*/absl::nullopt, num_codec_reference_frames,
-          /*use+protected=*/false, /*need_aux_frame_pool=*/false,
+          /*use_protected=*/!!cdm_context_ref_, /*need_aux_frame_pool=*/false,
           absl::nullopt);
   if (!status_or_output_format.has_value()) {
     VLOGF(1) << "Failed to pick an output format.";
@@ -777,6 +809,10 @@ size_t V4L2VideoDecoder::GetMaxOutputFramePoolSize() const {
   // Venus. We should not exceed this limit for the frame pool that the decoder
   // writes into.
   return VIDEO_MAX_FRAME;
+}
+
+bool V4L2VideoDecoder::NeedsTranscryption() {
+  return !!cdm_context_ref_;
 }
 
 CroStatus V4L2VideoDecoder::ContinueChangeResolution(

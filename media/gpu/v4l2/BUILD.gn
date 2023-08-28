@@ -120,6 +120,7 @@ source_set("v4l2") {
     ]
 
     deps += [
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
       "//components/chromeos_camera:jpeg_encode_accelerator",
       "//components/chromeos_camera:mjpeg_decode_accelerator",
       "//media/gpu:video_frame_mapper_common",
