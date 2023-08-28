@@ -84,7 +84,11 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_per_buyer_signals_header_ad_slot,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot,
       const std::string& seller_signals_json,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       bool bid_is_kanon,
@@ -116,7 +120,11 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
       const absl::optional<blink::AdCurrency>& per_buyer_currency,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
-      const absl::optional<GURL>& direct_from_seller_auction_signals) override;
+      const absl::optional<std::string>&
+          direct_from_seller_per_buyer_signals_header_ad_slot,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot) override;
 
   // Waits for GenerateBid() to be invoked.
   void WaitForGenerateBid();
@@ -243,7 +251,11 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_seller_signals_header_ad_slot,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot,
       auction_worklet::mojom::ComponentAuctionOtherSellerPtr
           browser_signals_other_seller,
       const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
@@ -260,7 +272,11 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_seller_signals_header_ad_slot,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot,
       auction_worklet::mojom::ComponentAuctionOtherSellerPtr
           browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,

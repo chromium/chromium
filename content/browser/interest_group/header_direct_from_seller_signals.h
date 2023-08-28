@@ -71,17 +71,17 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
                            CompletionCallback callback);
 
   // Results of the `sellerSignals` JSON dictionary field.
-  const absl::optional<std::string>& seller_signals() {
+  const absl::optional<std::string>& seller_signals() const {
     return seller_signals_;
   }
 
   // Results of the `auctionSignals` JSON dictionary field.
-  const absl::optional<std::string>& auction_signals() {
+  const absl::optional<std::string>& auction_signals() const {
     return auction_signals_;
   }
 
   // Results of the `perBuyerSignals` JSON dictionary field.
-  const base::flat_map<url::Origin, std::string>& per_buyer_signals() {
+  const base::flat_map<url::Origin, std::string>& per_buyer_signals() const {
     return per_buyer_signals_;
   }
 

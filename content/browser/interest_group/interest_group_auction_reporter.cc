@@ -456,8 +456,12 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       seller_info->auction_config->non_shared_params,
       InterestGroupAuction::GetDirectFromSellerSellerSignals(
           seller_info->subresource_url_builder.get()),
+      InterestGroupAuction::GetDirectFromSellerSellerSignalsHeaderAdSlot(
+          *seller_info->direct_from_seller_signals_header_ad_slot),
       InterestGroupAuction::GetDirectFromSellerAuctionSignals(
           seller_info->subresource_url_builder.get()),
+      InterestGroupAuction::GetDirectFromSellerAuctionSignalsHeaderAdSlot(
+          *seller_info->direct_from_seller_signals_header_ad_slot),
       std::move(other_seller),
       winning_bid_info_.storage_interest_group->interest_group.owner,
       /*browser_signal_buyer_and_seller_reporting_id=*/
@@ -718,8 +722,13 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
           seller_info.subresource_url_builder.get(),
           winning_bid_info_.storage_interest_group->interest_group.owner),
+      InterestGroupAuction::GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
+          *seller_info.direct_from_seller_signals_header_ad_slot,
+          winning_bid_info_.storage_interest_group->interest_group.owner),
       InterestGroupAuction::GetDirectFromSellerAuctionSignals(
           seller_info.subresource_url_builder.get()),
+      InterestGroupAuction::GetDirectFromSellerAuctionSignalsHeaderAdSlot(
+          *seller_info.direct_from_seller_signals_header_ad_slot),
       signals_for_winner, kanon_mode_, bid_is_kanon_,
       winning_bid_info_.render_url,
       RoundStochasticallyToKBits(winning_bid_info_.bid,

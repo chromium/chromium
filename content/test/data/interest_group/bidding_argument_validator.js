@@ -170,13 +170,15 @@ function validatePerBuyerSignals(perBuyerSignals) {
 function validateDirectFromSellerSignals(directFromSellerSignals) {
   const perBuyerSignalsJSON =
       JSON.stringify(directFromSellerSignals.perBuyerSignals);
-  if (perBuyerSignalsJSON !== '{"json":"for","buyer":[1]}') {
+  if (perBuyerSignalsJSON !== '{"json":"for","buyer":[1]}' &&
+      perBuyerSignalsJSON !== '{"buyer":[1],"json":"for"}') {
     throw 'Wrong directFromSellerSignals.perBuyerSignals ' +
         perBuyerSignalsJSON;
   }
   const auctionSignalsJSON =
       JSON.stringify(directFromSellerSignals.auctionSignals);
-  if (auctionSignalsJSON !== '{"json":"for","all":["parties"]}') {
+  if (auctionSignalsJSON !== '{"json":"for","all":["parties"]}' &&
+      auctionSignalsJSON !== '{"all":["parties"],"json":"for"}') {
     throw 'Wrong directFromSellerSignals.auctionSignals ' +
         auctionSignalsJSON;
   }
