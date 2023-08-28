@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -160,6 +162,11 @@ class IndexedDBConnectionCoordinator::OpenRequest
   OpenRequest& operator=(const OpenRequest&) = delete;
 
   void Perform(bool has_connections) override {
+    // Since `state_` is checked after the call to `Perform()`, temporarily make
+    // `tasks_available_callback_` a no-op.
+    base::AutoReset suspend_callback(&tasks_available_callback_,
+                                     base::DoNothing());
+
     // If the metadata is in an uninitialized state, that means one of two
     // things:
     //
@@ -205,6 +212,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
   }
 
   void ContinueOpening(bool has_connections) {
+    base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     const int64_t old_version = db_->metadata().version;
     int64_t& new_version = pending_->version;
 
@@ -300,8 +308,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
   }
 
   // Initiate the upgrade. The bulk of the work actually happens in
-  // IndexedDBConnectionCoordinator::VersionChangeOperation in order to kick the
-  // transaction into the correct state.
+  // VersionChangeOperation in order to kick the transaction into the correct
+  // state.
   void StartUpgrade() {
     DCHECK(state_ == RequestState::kPendingLocks);
 
@@ -433,6 +441,11 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   DeleteRequest& operator=(const DeleteRequest&) = delete;
 
   void Perform(bool has_connections) override {
+    // Since `state_` is checked after the call to `Perform()`, temporarily make
+    // `tasks_available_callback_` a no-op.
+    base::AutoReset suspend_callback(&tasks_available_callback_,
+                                     base::DoNothing());
+
     if (db_->metadata().id == kInvalidDatabaseId) {
       ContinueAfterAcquiringLocks(base::BindOnce(
           &IndexedDBConnectionCoordinator::DeleteRequest::InitDatabase,
@@ -443,6 +456,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   }
 
   void InitDatabase(bool has_connections) {
+    base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     saved_leveldb_status_ = db_->OpenInternal();
     if (!saved_leveldb_status_.ok()) {
       IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
@@ -512,13 +526,13 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     if (!weak_ptr)
       return;
 
+    base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     if (!saved_leveldb_status_.ok()) {
       // TODO(jsbell): Consider including sanitized leveldb status message.
       IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                    "Internal error deleting database.");
       factory_client_->OnError(error);
       state_ = RequestState::kError;
-      tasks_available_callback_.Run();
       return;
     }
 
@@ -534,7 +548,6 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     factory_client_->OnDeleteSuccess(old_version);
 
     state_ = RequestState::kDone;
-    tasks_available_callback_.Run();
   }
 
   void CreateAndBindTransaction() override { NOTREACHED(); }
