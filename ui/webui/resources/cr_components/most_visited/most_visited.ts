@@ -811,11 +811,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
 
-    // TODO(https://crbug.com/1462832): add prerender cancellation timer upon
-    // TileExit.
     if (this.preloadingTimer_) {
       clearTimeout(this.preloadingTimer_);
     }
+
+    this.pageHandler_.cancelPrerender();
   }
 
   private onUndoClick_() {

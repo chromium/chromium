@@ -48,6 +48,7 @@ namespace {
 // Following definitions are equal to content::PrerenderFinalStatus.
 constexpr int kFinalStatusActivated = 0;
 constexpr int kFinalStatusInvalidSchemeNavigation = 6;
+constexpr int kFinalStatusTriggerDestroyed = 16;
 constexpr int kFinalStatusCrossSiteNavigationInMainFrameNavigation = 64;
 
 }  // namespace
@@ -640,6 +641,31 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
         << content::test::ActualVsExpectedUkmEntryToString(
                attempt_ukm_entries[0], expected_entry);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
+                       PrerenderTriggeredCanceled) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL(chrome::kChromeUINewTabURL)));
+  GURL prerender_url = ssl_server()->GetURL("/simple.html");
+
+  PrerenderManager::CreateForWebContents(GetActiveWebContents());
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+
+  base::WeakPtr<content::PrerenderHandle> prerender_handle =
+      prerender_manager->StartPrerenderNewTabPage(prerender_url, GetParam());
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  prerender_manager->StopPrerenderNewTabPage(prerender_handle);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_NewTabPage",
+      kFinalStatusTriggerDestroyed, 1);
 }
 
 }  // namespace

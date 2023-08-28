@@ -414,6 +414,17 @@ PrerenderManager::StartPrerenderNewTabPage(
              : nullptr;
 }
 
+void PrerenderManager::StopPrerenderNewTabPage(
+    base::WeakPtr<content::PrerenderHandle> prerender_handle) {
+  if (!prerender_handle) {
+    return;
+  }
+  CHECK(new_tab_page_prerender_handle_);
+  CHECK_EQ(prerender_handle.get(),
+           new_tab_page_prerender_handle_->GetWeakPtr().get());
+  new_tab_page_prerender_handle_.reset();
+}
+
 void PrerenderManager::StopPrerenderBookmark(
     base::WeakPtr<content::PrerenderHandle> prerender_handle) {
   if (!prerender_handle) {

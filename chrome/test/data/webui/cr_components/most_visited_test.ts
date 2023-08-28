@@ -1250,4 +1250,28 @@ suite('Prerendering', () => {
     // Make sure Prerendering has been triggered
     await handler.whenCalled('prerenderMostVisitedTile');
   });
+
+  test('prerender cancelation', async () => {
+    // Arrange.
+    await addTiles(1);
+
+    // // Act.
+    const tileLink = queryTiles()[0]!.querySelector('a')!;
+    // Prevent triggering a navigation, which would break the test.
+    tileLink.href = '#';
+    // simulate a mousedown event.
+    const mouseEnterEvent = document.createEvent('MouseEvents');
+    mouseEnterEvent.initEvent('mouseenter', true, true);
+    tileLink.dispatchEvent(mouseEnterEvent);
+
+    // Make sure Prerendering has been triggered
+    await handler.whenCalled('prerenderMostVisitedTile');
+
+    const mouseExitEvent = document.createEvent('MouseEvents');
+    mouseExitEvent.initEvent('mouseleave', true, true);
+    tileLink.dispatchEvent(mouseExitEvent);
+
+    // Make sure Prerendering has been canceled.
+    await handler.whenCalled('cancelPrerender');
+  });
 });

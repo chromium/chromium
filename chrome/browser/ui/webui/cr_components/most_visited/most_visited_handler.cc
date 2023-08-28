@@ -203,10 +203,18 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
   if (base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2)) {
     PrerenderManager::CreateForWebContents(web_contents_);
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents_);
-    prerender_manager->StartPrerenderNewTabPage(
+    prerender_handle_ = prerender_manager->StartPrerenderNewTabPage(
         tile->url, is_hover_trigger
                        ? chrome_preloading_predictor::kMouseHoverOnNewTabPage
                        : chrome_preloading_predictor::kPointerDownOnNewTabPage);
+  }
+}
+
+void MostVisitedHandler::CancelPrerender() {
+  if (base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2)) {
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents_);
+    prerender_manager->StopPrerenderNewTabPage(prerender_handle_);
+    prerender_handle_ = nullptr;
   }
 }
 
