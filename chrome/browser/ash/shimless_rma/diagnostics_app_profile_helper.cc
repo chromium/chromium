@@ -13,6 +13,7 @@
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -24,13 +25,18 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/service_worker_context.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/verifier_formats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace context {
 class BrowserContext;
@@ -39,6 +45,11 @@ class BrowserContext;
 namespace ash::shimless_rma {
 
 namespace {
+
+// Polling interval and the timeout to wait for the extension being ready.
+constexpr base::TimeDelta kExtensionReadyPollingInterval =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kExtensionReadyPollingTimeout = base::Seconds(3);
 
 extensions::ExtensionService* GetExtensionService(
     content::BrowserContext* context) {
@@ -128,9 +139,6 @@ void OnIsolatedWebAppInstalled(
     return;
   }
 
-  GetExtensionService(state->context)
-      ->EnableExtension(state->extension_id.value());
-
   ReportSuccess(std::move(state));
 }
 
@@ -160,6 +168,54 @@ void InstallIsolatedWebApp(
       /*expected_version=*/absl::nullopt, /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr,
       base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
+}
+
+void CheckExtensionIsReady(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
+    GURL script_url,
+    blink::StorageKey storage_key,
+    base::Time start_time);
+
+void OnCheckExtensionIsReadyResponse(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
+    GURL script_url,
+    blink::StorageKey storage_key,
+    base::Time start_time,
+    content::ServiceWorkerCapability capability) {
+  if (capability == content::ServiceWorkerCapability::NO_SERVICE_WORKER) {
+    // The service worker could still be registering, or the extension is failed
+    // to be activated.
+    if (base::Time::Now() - start_time <= kExtensionReadyPollingTimeout) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&CheckExtensionIsReady, std::move(state), script_url,
+                         storage_key, start_time),
+          kExtensionReadyPollingInterval);
+      return;
+    }
+    ReportError(std::move(state),
+                "Can't activate the extension. Extension's service worker is "
+                "not registered.");
+    return;
+  }
+
+  InstallIsolatedWebApp(std::move(state));
+}
+
+void CheckExtensionIsReady(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
+    GURL script_url,
+    blink::StorageKey storage_key,
+    base::Time start_time) {
+  content::ServiceWorkerContext* service_worker_context =
+      extensions::util::GetServiceWorkerContextForExtensionId(
+          state->extension_id.value(), state->context);
+  // Extensions register a service worker. Diagnostics app IWAs need to be
+  // started after the service worker is up to communicate with the extensions.
+  service_worker_context->CheckHasServiceWorker(
+      script_url, storage_key,
+      base::BindOnce(&OnCheckExtensionIsReadyResponse, std::move(state),
+                     script_url, storage_key, start_time));
 }
 
 void OnExtensionInstalled(
@@ -194,7 +250,17 @@ void OnExtensionInstalled(
     }
   }
 
-  InstallIsolatedWebApp(std::move(state));
+  GetExtensionService(state->context)->EnableExtension(extension->id());
+
+  GURL script_url = extension->GetResourceURL(
+      extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CheckExtensionIsReady, std::move(state), script_url,
+                     blink::StorageKey::CreateFirstParty(
+                         url::Origin::Create(extension->url())),
+                     base::Time::Now()),
+      kExtensionReadyPollingInterval);
 }
 
 void InstallExtension(
@@ -226,6 +292,12 @@ void OnProfileLoaded(std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
                 "Failed to load shimless diagnostics app profile.");
     return;
   }
+  // Extensions and IWAs should be installed to the original profile.
+  if (profile->IsOffTheRecord()) {
+    profile = profile->GetOriginalProfile();
+  }
+  profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
+
   state->context = profile;
   auto* system = extensions::ExtensionSystem::Get(state->context);
   CHECK(system);
