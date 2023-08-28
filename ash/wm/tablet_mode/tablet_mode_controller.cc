@@ -419,8 +419,6 @@ TabletModeController::TabletModeController()
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
   power_manager_client->AddObserver(this);
-  power_manager_client->GetSwitchStates(base::BindOnce(
-      &TabletModeController::OnGetSwitchStates, weak_factory_.GetWeakPtr()));
 }
 
 TabletModeController::~TabletModeController() {
@@ -684,6 +682,14 @@ void TabletModeController::OnAccelerometerUpdated(
   }
 
   StartTrackingTabletUsageMetricsIfApplicable();
+}
+
+void TabletModeController::PowerManagerBecameAvailable(bool available) {
+  if (!available) {
+    return;
+  }
+  chromeos::PowerManagerClient::Get()->GetSwitchStates(base::BindOnce(
+      &TabletModeController::OnGetSwitchStates, weak_factory_.GetWeakPtr()));
 }
 
 void TabletModeController::LidEventReceived(

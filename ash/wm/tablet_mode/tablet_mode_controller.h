@@ -158,6 +158,7 @@ class ASH_EXPORT TabletModeController
   void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // chromeos::PowerManagerClient::Observer:
+  void PowerManagerBecameAvailable(bool available) override;
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks time) override;
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
