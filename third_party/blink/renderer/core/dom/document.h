@@ -1955,8 +1955,10 @@ class CORE_EXPORT Document : public ContainerNode,
     Document& document_;
   };
 
-  bool IsDirAttributeDirty() { return dir_attribute_dirty_; }
-  void SetDirAttributeDirty() { dir_attribute_dirty_ = true; }
+  // Does an element in this document have an HTML dir attribute (or its
+  // implicit equivalent)?
+  bool HasDirAttribute() const { return has_dir_attribute_; }
+  void SetHasDirAttribute() { has_dir_attribute_ = true; }
 
   ResizeObserver& EnsureResizeObserver();
 
@@ -2658,7 +2660,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool had_find_in_page_render_subtree_active_match_ = false;
   bool had_find_in_page_beforematch_expanded_hidden_matchable_ = false;
 
-  bool dir_attribute_dirty_ = false;
+  bool has_dir_attribute_ = false;
 
   // True if the developer supplied a media query indicating that
   // the site has support for reduced motion.

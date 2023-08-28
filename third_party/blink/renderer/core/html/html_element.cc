@@ -2425,7 +2425,7 @@ static inline bool ElementAffectsDirectionality(const Node* node) {
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
 
-  if (GetDocument().IsDirAttributeDirty()) {
+  if (GetDocument().HasDirAttribute()) {
     AdjustDirectionalityIfNeededAfterChildrenChanged(change);
 
     if (change.IsChildInsertion() && !SelfOrAncestorHasDirAutoAttribute()) {
@@ -3123,7 +3123,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
       !IsValidDirAttribute(params.new_value))
     return;
 
-  GetDocument().SetDirAttributeDirty();
+  GetDocument().SetHasDirAttribute();
 
   bool is_old_auto = SelfOrAncestorHasDirAutoAttribute();
   bool is_new_auto = HasDirectionAuto();
@@ -3320,7 +3320,7 @@ void HTMLElement::FinishParsingChildren() {
 void HTMLElement::ParserDidSetAttributes() {
   Element::ParserDidSetAttributes();
 
-  if (GetDocument().IsDirAttributeDirty() && !HasDirectionAuto() &&
+  if (GetDocument().HasDirAttribute() && !HasDirectionAuto() &&
       !ElementAffectsDirectionality(this)) {
     bool needs_slot_assignment_recalc = false;
     auto* parent =
