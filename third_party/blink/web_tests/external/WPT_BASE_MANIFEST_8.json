@@ -208628,7 +208628,7 @@
       ]
      ],
      "transform-input-009.html": [
-      "cde6397c77ac42fd1573a9f51763345a3fbbae85",
+      "0295be5ded43872d164f76fbd8ac474c6430251d",
       [
        null,
        [
@@ -208637,23 +208637,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            129
-           ],
-           [
-            0,
-            1340
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "transform-input-010.html": [
@@ -351339,7 +351323,7 @@
       []
      ],
      "transform-input-009-ref.html": [
-      "90d048b91414bdd1d84cd1448e996f1cf1e6701e",
+      "b363509c9114692173cab87ef5a058cf142295f5",
       []
      ],
      "transform-input-010-ref.html": [
