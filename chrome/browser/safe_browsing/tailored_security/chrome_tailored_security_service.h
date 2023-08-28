@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_CHROME_TAILORED_SECURITY_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
@@ -35,6 +37,18 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
 #endif
 {
  public:
+  // The amount of time to wait after construction before checking if a retry is
+  // needed.
+  static constexpr const base::TimeDelta kRetryAttemptStartupDelay =
+      base::Minutes(2);
+  // The amount of time to wait between retry attempts.
+  static constexpr const base::TimeDelta kRetryNextAttemptDelay = base::Days(1);
+  // Length of time that the retry mechanism will wait before running. This
+  // delay is used for the case where the tailored security service can't tell
+  // if it succeeded in the past.
+  static constexpr const base::TimeDelta kWaitingPeriodInterval =
+      base::Days(90);
+
   explicit ChromeTailoredSecurityService(Profile* profile);
   ~ChromeTailoredSecurityService() override;
 
@@ -78,9 +92,12 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
   TailoredSecurityDesktopDialogManager dialog_manager_;
 #endif
 
+  void MaybeRetryForSyncUsers();
   void SaveRetryState(TailoredSecurityRetryState result);
+  bool ShouldRetryForSyncUsers();
 
   raw_ptr<Profile> profile_;
+  base::OneShotTimer retry_timer_;
 };
 
 }  // namespace safe_browsing

@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -68,6 +69,11 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
                               profile->GetPrefs()),
       profile_(profile) {
   AddObserver(this);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
+    retry_timer_.Start(FROM_HERE, kRetryAttemptStartupDelay, this,
+                       &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
+  }
 }
 
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
@@ -248,6 +254,60 @@ void ChromeTailoredSecurityService::SaveRetryState(
     profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
                                      state);
   }
+}
+
+void ChromeTailoredSecurityService::MaybeRetryForSyncUsers() {
+  if (ShouldRetryForSyncUsers()) {
+    TailoredSecurityTimestampUpdateCallback();
+  }
+}
+
+bool ChromeTailoredSecurityService::ShouldRetryForSyncUsers() {
+  PrefService* prefs = profile_->GetPrefs();
+  if (prefs->GetTime(prefs::kAccountTailoredSecurityUpdateTimestamp) ==
+      base::Time()) {
+    // Do nothing because we can still rely on the user setting the tailored
+    // security bit on their account settings in the future.
+    return false;
+  }
+  if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
+      safe_browsing::NO_RETRY_NEEDED) {
+    return false;
+  }
+  if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
+      safe_browsing::RETRY_NEEDED) {
+    if (base::Time::Now() >=
+        prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp)) {
+      // Set the next attempt time to a future point in time so that if this
+      // retry attempt fails, enough time passes before retrying again.
+      prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                     base::Time::Now() + kRetryNextAttemptDelay);
+      return true;
+    }
+    return false;
+  }
+  if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
+      safe_browsing::UNSET) {
+    // The stateful version of `ChromeTailoredSecurityService` has not run yet,
+    // and we don't know if a previous version of the service showed the dialog
+    // to the user in the past, so we need to ensure that we wait long enough
+    // before retrying.
+    if (prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp) ==
+        base::Time()) {
+      prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                     base::Time::Now() + kWaitingPeriodInterval);
+      return false;
+    }
+    if (base::Time::Now() >=
+        prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp)) {
+      // Set the next attempt time to a future point in time so that if this
+      // retry attempt fails, enough time passes before retrying again.
+      prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                     base::Time::Now() + kRetryNextAttemptDelay);
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace safe_browsing

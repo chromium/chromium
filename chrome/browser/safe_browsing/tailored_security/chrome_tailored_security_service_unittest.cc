@@ -89,9 +89,26 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
                                                        previous_update);
   }
 
+  // Sets the value that is expected to be returned by the remote server.
+  void SetTailoredSecurityServiceValue(bool tailored_security_bit_value) {
+    tailored_security_service_value_ = tailored_security_bit_value;
+  }
+
+  bool GetTailoredSecurityServiceValue() {
+    return tailored_security_service_value_;
+  }
+
+  // Overridden to skip calling the remote server. It supplies the value that
+  // was most recently set through `SetTailoredSecurityServiceValue`.
+  void TailoredSecurityTimestampUpdateCallback() override {
+    MaybeNotifySyncUser(tailored_security_service_value_, base::Time::Now());
+  }
+
  private:
   bool previous_show_enable_dialog_value_ = false;
   int times_display_desktop_dialog_called_ = 0;
+  // Represents the value that we want the remote service to provide.
+  bool tailored_security_service_value_ = true;
 };
 }  // namespace
 
@@ -122,8 +139,9 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     GetIdentityTestEnv()->SetTestURLLoaderFactory(&test_url_loader_factory_);
-    // TODO(crbug.com/1466447): `ConsentLevel::kSync` is deprecated and should
-    // be removed. See `ConsentLevel::kSync` documentation for details.
+    // TODO(crbug.com/1466447): `ConsentLevel::kSync` is deprecated and
+    // should be removed. See `ConsentLevel::kSync` documentation for
+    // details.
     GetIdentityTestEnv()->MakePrimaryAccountAvailable(
         "test@foo.com", signin::ConsentLevel::kSync);
     prefs_ = profile_->GetTestingPrefService();
@@ -225,13 +243,29 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     profile_manager_.DeleteTestingProfile("primary_account");
   }
 
+  void SetAccountTailoredSecurityTimestamp(base::Time time) {
+    // Changing prefs::kAccountTailoredSecurityUpdateTimestamp triggers the
+    // preference observer, so here we prevent the preference observer method
+    // from doing anything by having the server bit value match the safe
+    // browsing level in preferences.
+    bool original_tailored_security_service_value =
+        tailored_security_service()->GetTailoredSecurityServiceValue();
+
+    tailored_security_service()->SetTailoredSecurityServiceValue(
+        IsEnhancedProtectionEnabled(*prefs()));
+    prefs()->SetTime(prefs::kAccountTailoredSecurityUpdateTimestamp, time);
+    tailored_security_service()->SetTailoredSecurityServiceValue(
+        original_tailored_security_service_value);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   // Must be declared before anything that may make use of the
   // directory so as to ensure files are closed before cleanup.
   base::ScopedTempDir temp_dir_;
-  content::BrowserTaskEnvironment task_environment_;
   // This is required to create browser tabs in the tests.
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
@@ -480,8 +514,217 @@ TEST_F(ChromeTailoredSecurityServiceTest,
             TailoredSecurityRetryState::NO_RETRY_NEEDED);
 }
 
+TEST_F(ChromeTailoredSecurityServiceTest, RunsRetryLogicAfterStartupDelay) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  // Setup the state so that a dialog will be displayed because that is what we
+  // will use to check if the startup task ran at the correct time.
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                   base::Time::Now());
+
+  // The logic should run after the startup delay, so check that it does not run
+  // before that.
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay -
+      base::Seconds(1));
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+  // Startup delay has passed, so verify that the retry ran.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // We're checking if the dialog was displayed as a proxy to checking if the
+  // logic ran because we don't have a direct way of checking this.
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed + 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityUpdateTimeNotSetDoesNotRetry) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  SetAccountTailoredSecurityTimestamp(base::Time());
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  // Verify that notification was not shown.
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryNeededButNotEnoughTimeHasPassedDoesNotRetry) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+
+  // set next sync flow to after when the retry check will happen.
+  prefs()->SetTime(
+      prefs::kTailoredSecurityNextSyncFlowTimestamp,
+      base::Time::Now() +
+          ChromeTailoredSecurityService::kRetryAttemptStartupDelay +
+          base::Seconds(1));
+
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryNeededAndEnoughTimeHasPassedRetries) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+  prefs()->SetTime(
+      prefs::kTailoredSecurityNextSyncFlowTimestamp,
+      base::Time::Now() +
+          ChromeTailoredSecurityService::kRetryAttemptStartupDelay -
+          base::Seconds(1));
+
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  // Verify that notification was shown.
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed + 1);
+}
+
+TEST_F(
+    ChromeTailoredSecurityServiceTest,
+    WhenRetryNeededAndEnoughTimeHasPassedUpdatesNextSyncFlowTimestampByNextAttemptDelay) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+
+  prefs()->SetTime(
+      prefs::kTailoredSecurityNextSyncFlowTimestamp,
+      base::Time::Now() +
+          ChromeTailoredSecurityService::kRetryAttemptStartupDelay -
+          base::Seconds(1));
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
+            base::Time::Now() +
+                ChromeTailoredSecurityService::kRetryNextAttemptDelay);
+}
+
+TEST_F(
+    ChromeTailoredSecurityServiceTest,
+    WhenRetryNotSetAndNextSyncFlowNotSetSetsNextSyncFlowToWaitingIntervalFromNow) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::UNSET);
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp, base::Time());
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+  EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
+            base::Time::Now() +
+                ChromeTailoredSecurityService::kWaitingPeriodInterval);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryNotSetAndNextSyncFlowHasPassedRunsRetry) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::UNSET);
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                   base::Time::Now());
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+  // Verify that notification was shown.
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed + 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryNotSetAndNextSyncFlowHasPassedSetsNextSyncFlowToTomorrow) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::UNSET);
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
+                   base::Time::Now());
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  // Next sync flow time should be tomorrow.
+  EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
+            base::Time::Now() +
+                ChromeTailoredSecurityService::kRetryNextAttemptDelay);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, WhenNoRetryNeededDoesNotRetry) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::NO_RETRY_NEEDED);
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  // Verify that notification was not shown.
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+}
+
 TEST_F(ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest,
-       WhenRetryDisabledOnSuccessDoesNotUpdateRetryStatePref) {
+       OnSuccessDoesNotUpdateRetryStatePref) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
   auto original_value =
       prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState);
@@ -489,6 +732,25 @@ TEST_F(ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest,
                                                    base::Time::Now());
   EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
             original_value);
+}
+
+TEST_F(ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest,
+       WhenRetryForSyncUsersIsDisabledDoesNotRunRetryLogicAfterStartupDelay) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::RETRY_NEEDED);
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
 }
 
 }  // namespace safe_browsing
