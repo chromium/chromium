@@ -12,10 +12,12 @@
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/common/storage_type.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -347,6 +349,16 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   }
 
   [super tearDown];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector
+            (testPromoInTabsFromOtherDevicesListensToSignin)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  return config;
 }
 
 // Tests entering and leaving the tab grid.
@@ -2519,6 +2531,31 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kTableViewActivityIndicatorHeaderFooterViewId)];
+}
+
+// Regression test for crbug.com/1474793. Tests the sign-in promo in "tabs from
+// other devices" reacts accordingly if the user signs in via a different
+// surface. More specifically: on tap the promo shouldn't offer the sign-in
+// sheet but only the history opt-in.
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testPromoInTabsFromOtherDevicesListensToSignin {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+                     grey_accessibilityElement(), nil)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_HISTORY_SYNC_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that closing a tab works successfully in incognito search results.

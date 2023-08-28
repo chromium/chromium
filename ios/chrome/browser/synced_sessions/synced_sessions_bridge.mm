@@ -5,56 +5,23 @@
 #import "ios/chrome/browser/synced_sessions/synced_sessions_bridge.h"
 
 #import "base/functional/bind.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_sessions/session_sync_service.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/session_sync_service_factory.h"
 
 namespace synced_sessions {
 
-#pragma mark - SyncedSessionsObserverBridge
-
 SyncedSessionsObserverBridge::SyncedSessionsObserverBridge(
     id<SyncedSessionsObserver> owner,
-    signin::IdentityManager* identity_manager,
     sync_sessions::SessionSyncService* sync_service)
-    : owner_(owner), identity_manager_(identity_manager) {
-  identity_manager_observation_.Observe(identity_manager_);
-
-  // base::Unretained() is safe below because the subscription itself is a class
-  // member field and handles destruction well.
-  foreign_session_updated_subscription_ =
-      sync_service->SubscribeToForeignSessionsChanged(base::BindRepeating(
-          &SyncedSessionsObserverBridge::OnForeignSessionChanged,
-          base::Unretained(this)));
-}
-
-SyncedSessionsObserverBridge::~SyncedSessionsObserverBridge() {}
-
-#pragma mark - signin::IdentityManager::Observer
-
-void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  // TODO(crbug.com/1466884): Migrate away from ConsentLevel::kSync once
-  // SessionsSyncUserState is modernized. Note also that, meanwhile, this
-  // particular codepath is likely unnecessary, as these events should also be
-  // reported via SyncedSessionsObserverBridge::OnForeignSessionChanged().
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      // Ignored.
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      // Update the session Sync state if consent is given or removed.
-      [owner_ reloadSessions];
-      break;
-  }
-}
-
-#pragma mark - Signin and syncing status
+    : owner_(owner),
+      // base::Unretained() is safe below because the subscription itself is a
+      // class member field and handles destruction well.
+      foreign_session_updated_subscription_(
+          sync_service->SubscribeToForeignSessionsChanged(base::BindRepeating(
+              &SyncedSessionsObserverBridge::OnForeignSessionChanged,
+              base::Unretained(this)))) {}
 
 void SyncedSessionsObserverBridge::OnForeignSessionChanged() {
-  [owner_ reloadSessions];
+  [owner_ onForeignSessionsChanged];
 }
 
 }  // namespace synced_sessions

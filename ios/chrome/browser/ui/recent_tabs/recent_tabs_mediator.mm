@@ -10,6 +10,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "components/sessions/core/tab_restore_service.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -87,10 +89,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }  // namespace
 
 @interface RecentTabsMediator () <SyncedSessionsObserver,
+                                  IdentityManagerObserverBridgeDelegate,
                                   WebStateListObserving> {
   std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   std::unique_ptr<recent_tabs::ClosedTabsObserverBridge> _closedTabsObserver;
   SessionsSyncUserState _userState;
   // The list of web state list currently processing batch operations (e.g.
@@ -145,7 +150,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   if (!_syncedSessionsObserver) {
     _syncedSessionsObserver =
         std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
-            self, self.identityManager, self.sessionSyncService);
+            self, self.sessionSyncService);
+  }
+  if (!_identityManagerObserver) {
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            self.identityManager, self);
   }
   if (!_closedTabsObserver) {
     _closedTabsObserver =
@@ -160,6 +170,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 - (void)disconnect {
   _registrar.reset();
   _syncedSessionsObserver.reset();
+  _identityManagerObserver.reset();
 
   if (_closedTabsObserver) {
     if (self.restoreService) {
@@ -180,12 +191,27 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 #pragma mark - SyncedSessionsObserver
 
-- (void)reloadSessions {
+- (void)onForeignSessionsChanged {
   [self refreshSessionsView];
 }
 
-- (void)onSyncStateChanged {
-  [self refreshSessionsView];
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      // Sign-in could happen without onForeignSessionsChanged (e.g. if
+      // kReplaceSyncPromosWithSignInPromos is enabled and the user signed-in
+      // without opting in to history sync; maybe also if sync ran into an
+      // encryption error). The sign-in promo must still be updated in that
+      // case, so handle it here.
+      [self refreshSessionsView];
+      break;
+  }
 }
 
 #pragma mark - ClosedTabsObserving
