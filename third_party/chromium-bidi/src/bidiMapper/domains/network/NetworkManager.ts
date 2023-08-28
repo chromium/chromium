@@ -49,8 +49,6 @@ export class NetworkManager {
   ): NetworkManager {
     const networkManager = new NetworkManager(cdpTarget, networkStorage);
 
-    // XXX: This will work if a single page is open but what if we open 2 pages?
-    // Investigate further.
     cdpTarget.cdpClient
       .browserClient()
       .on(
