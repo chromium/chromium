@@ -158,6 +158,7 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
       const std::vector<InputDevice>& devices) override {}
   void DispatchDeviceListsComplete() override {}
   void DispatchStylusStateChanged(StylusState stylus_state) override {}
+  void DispatchAnyKeysPressedUpdated(bool any) override {}
 
   void DispatchGamepadEvent(const GamepadEvent& event) override {}
 

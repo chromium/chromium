@@ -107,6 +107,9 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchStylusStateChanged(StylusState stylus_state) override {
     event_factory_evdev_->DispatchStylusStateChanged(stylus_state);
   }
+  void DispatchAnyKeysPressedUpdated(bool any) override {
+    event_factory_evdev_->DispatchAnyKeysPressedUpdated(any);
+  }
 
   void DispatchGamepadEvent(const GamepadEvent& event) override {
     event_factory_evdev_->DispatchGamepadEvent(event);

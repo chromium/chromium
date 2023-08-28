@@ -183,6 +183,8 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual void GetGesturePropertiesService(
       mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
           receiver) = 0;
+
+  virtual bool AreAnyKeysPressed() = 0;
 };
 
 // Create an input controller that does nothing.

@@ -128,6 +128,7 @@ class WaylandInputController : public InputController {
     // TODO(b:205702807) Implement after adding to wayland protocol
     NOTIMPLEMENTED_LOG_ONCE();
   }
+  bool AreAnyKeysPressed() override { return false; }
 
  private:
   const raw_ptr<WaylandConnection> connection_;

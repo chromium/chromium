@@ -10,6 +10,7 @@
 #include <bitset>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -32,9 +33,11 @@ enum class DomCode;
 class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
     : public EventAutoRepeatHandler::Delegate {
  public:
-  KeyboardEvdev(EventModifiers* modifiers,
-                KeyboardLayoutEngine* keyboard_layout_engine,
-                const EventDispatchCallback& callback);
+  KeyboardEvdev(
+      EventModifiers* modifiers,
+      KeyboardLayoutEngine* keyboard_layout_engine,
+      const EventDispatchCallback& callback,
+      base::RepeatingCallback<void(bool)> any_keys_are_pressed_callback);
 
   KeyboardEvdev(const KeyboardEvdev&) = delete;
   KeyboardEvdev& operator=(const KeyboardEvdev&) = delete;
@@ -97,6 +100,8 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
 
   // Callback for dispatching events.
   const EventDispatchCallback callback_;
+
+  const base::RepeatingCallback<void(bool)> any_keys_are_pressed_callback_;
 
   // Shared modifier state.
   const raw_ptr<EventModifiers> modifiers_;

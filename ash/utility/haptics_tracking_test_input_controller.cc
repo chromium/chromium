@@ -219,6 +219,10 @@ void HapticsTrackingTestInputController::GetGesturePropertiesService(
     mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
         receiver) {}
 
+bool HapticsTrackingTestInputController::AreAnyKeysPressed() {
+  return false;
+}
+
 int HapticsTrackingTestInputController::GetSentHapticCount(
     ui::HapticTouchpadEffect effect,
     ui::HapticTouchpadEffectStrength strength) const {

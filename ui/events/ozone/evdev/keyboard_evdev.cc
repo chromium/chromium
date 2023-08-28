@@ -18,10 +18,13 @@
 
 namespace ui {
 
-KeyboardEvdev::KeyboardEvdev(EventModifiers* modifiers,
-                             KeyboardLayoutEngine* keyboard_layout_engine,
-                             const EventDispatchCallback& callback)
+KeyboardEvdev::KeyboardEvdev(
+    EventModifiers* modifiers,
+    KeyboardLayoutEngine* keyboard_layout_engine,
+    const EventDispatchCallback& callback,
+    base::RepeatingCallback<void(bool)> any_keys_are_pressed_callback)
     : callback_(callback),
+      any_keys_are_pressed_callback_(any_keys_are_pressed_callback),
       modifiers_(modifiers),
       keyboard_layout_engine_(keyboard_layout_engine),
       auto_repeat_handler_(this) {}
@@ -45,6 +48,7 @@ void KeyboardEvdev::OnKeyChange(unsigned int key,
     return;  // Key already released.
 
   key_state_.set(key, down);
+  any_keys_are_pressed_callback_.Run(key_state_.any());
   auto_repeat_handler_.UpdateKeyRepeat(key, scan_code, down,
                                        suppress_auto_repeat, device_id);
   DispatchKey(key, scan_code, down, is_repeat, timestamp, device_id, flags);

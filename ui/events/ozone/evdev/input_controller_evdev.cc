@@ -72,6 +72,9 @@ void InputControllerEvdev::SetInputDeviceFactory(
 void InputControllerEvdev::set_has_mouse(bool has_mouse) {
   has_mouse_ = has_mouse;
 }
+void InputControllerEvdev::set_any_keys_pressed(bool any) {
+  any_keys_are_pressed_ = any;
+}
 
 void InputControllerEvdev::set_has_pointing_stick(bool has_pointing_stick) {
   has_pointing_stick_ = has_pointing_stick;
@@ -447,6 +450,10 @@ void InputControllerEvdev::OnInputDeviceRemoved(int device_id) {
     pointing_stick_button_map_->RemoveDeviceFromSettings(device_id);
   }
   ScheduleUpdateDeviceSettings();
+}
+
+bool InputControllerEvdev::AreAnyKeysPressed() {
+  return any_keys_are_pressed_;
 }
 
 }  // namespace ui

@@ -2354,6 +2354,12 @@ BASE_FEATURE(kShortcutCustomizationJelly,
              "ShortcutCustomizationJelly",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, system shortcuts will utilize state machiens instead of
+// keeping track of entire history of keys pressed.
+BASE_FEATURE(kShortcutStateMachines,
+             "ShortcutStateMachines",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables a toggle to enable Bluetooth debug logs.
 BASE_FEATURE(kShowBluetoothDebugLogToggle,
              "ShowBluetoothDebugLogToggle",
