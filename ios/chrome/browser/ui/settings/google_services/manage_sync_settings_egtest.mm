@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,9 +35,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
           isRunningTest:@selector(testSignoutWhileManageSyncSettingsOpened)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self isRunningTest:@selector
-            (testShowingUnifiedAccountSettings_SyncToSigninEnabled)]) {
+  } else {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -61,7 +60,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 }
 
 // Tests that unified account settings row is showing, and the Sync row is not
-// showing when kReplaceSyncPromosWithSignInPromos enabled.
+// showing when kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testShowingUnifiedAccountSettings_SyncToSigninEnabled {
   [super setUp];
 
@@ -97,6 +96,107 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Verify the account settings row is showing.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_notNil()];
+
+  [super tearDown];
+}
+
+// Tests sign out from the unified account settings page when
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testSignOutFromUnifiedAccountSettings_SyncToSigninEnabled {
+  [super setUp];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Scroll to the bottom to view the signout button.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+      performAction:grey_tap()];
+
+  // The tap checks the existence of the snackbar and also closes it.
+  NSString* snackbarLabel = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify the "manage sync" view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify the account settings row is not showing in the settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  [super tearDown];
+}
+
+// Tests sign out from the manage accounts on device page when
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testSignOutFromManageAccountsSettings_SyncToSigninEnabled {
+  [super setUp];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Scroll to the bottom to view the "manage accounts" button.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "manage accounts on This Device" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM))]
+      performAction:grey_tap()];
+
+  // The "manage accounts" view should be shown, tap on "Sign Out" button on
+  // that page.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE))]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify the "manage accounts" view is popped.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsAccountsTableViewId)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify the "manage sync" view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify the account settings row is showing in the settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_notVisible()];
 
   [super tearDown];
 }
