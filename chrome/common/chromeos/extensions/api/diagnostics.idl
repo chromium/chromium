@@ -200,6 +200,27 @@ namespace os.diagnostics {
     DOMString? message;
   };
 
+  enum ExceptionReason {
+    unknown,
+    // Any other exceptions that we don't expect to happen. Clients should
+    // simply report the error.
+    unexpected,
+    // Raises this if clients try to run an unsupported feature. Note that
+    // clients should use methods which return `SupportStatus` for
+    // support status check.
+    unsupported,
+    // The PWA was closed and thus stopped the routine execution.
+    pwa_closed
+  };
+
+  dictionary ExceptionInfo {
+    DOMString? uuid;
+    ExceptionReason reason;
+    // A human readable message for debugging. Don't rely on the content because
+    // it could change anytime.
+    DOMString? debugMessage;
+  };
+
   enum MemtesterTestItemEnum {
     // The memtester test is not recognized.
     unknown,
@@ -360,6 +381,10 @@ namespace os.diagnostics {
 
     // Informs the extension that a memory routine finished.
     static void onMemoryRoutineFinished(MemoryRoutineFinishedInfo finishedInfo);
+
+    // Informs the extension that an exception occured. The error passed in
+    // `ExceptionInfo` is non-recoverable.
+    static void onRoutineException(ExceptionInfo exceptionInfo);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

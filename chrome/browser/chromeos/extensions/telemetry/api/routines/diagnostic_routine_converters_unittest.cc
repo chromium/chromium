@@ -128,6 +128,19 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
                            cx_diag::MemtesterTestItemEnum::kCompareSub));
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, ExceptionReason) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryExtensionException::Reason::kUnmappedEnumField),
+      cx_diag::ExceptionReason::kUnknown);
+  EXPECT_EQ(Convert(crosapi::TelemetryExtensionException::Reason::
+                        kMojoDisconnectWithoutReason),
+            cx_diag::ExceptionReason::kUnknown);
+  EXPECT_EQ(Convert(crosapi::TelemetryExtensionException::Reason::kUnexpected),
+            cx_diag::ExceptionReason::kUnexpected);
+  EXPECT_EQ(Convert(crosapi::TelemetryExtensionException::Reason::kUnsupported),
+            cx_diag::ExceptionReason::kUnsupported);
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
   EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
                         kUnmappedEnumField),
@@ -145,7 +158,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterTestItemEnum) {
   EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
                         kUnmappedEnumField),
-            cx_diag::MemtesterTestItemEnum::kNone);
+            cx_diag::MemtesterTestItemEnum::kUnknown);
   EXPECT_EQ(
       Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown),
       cx_diag::MemtesterTestItemEnum::kUnknown);

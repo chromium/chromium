@@ -75,6 +75,22 @@ cx_diag::MemoryRoutineFinishedInfo UncheckedConvertPtr(
 
 }  // namespace unchecked
 
+cx_diag::ExceptionReason Convert(
+    crosapi::TelemetryExtensionException::Reason input) {
+  switch (input) {
+    case crosapi::TelemetryExtensionException::Reason::kUnmappedEnumField:
+      return cx_diag::ExceptionReason::kUnknown;
+    case crosapi::TelemetryExtensionException::Reason::
+        kMojoDisconnectWithoutReason:
+      return cx_diag::ExceptionReason::kUnknown;
+    case crosapi::TelemetryExtensionException::Reason::kUnexpected:
+      return cx_diag::ExceptionReason::kUnexpected;
+    case crosapi::TelemetryExtensionException::Reason::kUnsupported:
+      return cx_diag::ExceptionReason::kUnsupported;
+  }
+  NOTREACHED();
+}
+
 cx_diag::RoutineWaitingReason Convert(
     crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason input) {
   switch (input) {
@@ -95,7 +111,7 @@ cx_diag::MemtesterTestItemEnum Convert(
     crosapi::TelemetryDiagnosticMemtesterTestItemEnum input) {
   switch (input) {
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnmappedEnumField:
-      return cx_diag::MemtesterTestItemEnum::kNone;
+      return cx_diag::MemtesterTestItemEnum::kUnknown;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown:
       return cx_diag::MemtesterTestItemEnum::kUnknown;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kStuckAddress:

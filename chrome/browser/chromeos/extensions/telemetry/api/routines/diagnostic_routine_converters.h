@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 
 // This file contains helper functions used by the routine API to convert its
 // types to/from telemetry service types.
@@ -45,6 +46,9 @@ api::os_diagnostics::MemoryRoutineFinishedInfo UncheckedConvertPtr(
     bool has_passed);
 
 }  // namespace unchecked
+
+api::os_diagnostics::ExceptionReason Convert(
+    crosapi::mojom::TelemetryExtensionException::Reason input);
 
 api::os_diagnostics::RoutineWaitingReason Convert(
     crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason input);

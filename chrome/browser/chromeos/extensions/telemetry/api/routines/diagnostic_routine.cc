@@ -4,30 +4,67 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
 
+#include <cstdint>
+#include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_observation.h"
+#include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
+namespace {
+
+namespace crosapi = ::crosapi::mojom;
+namespace cx_diag = api::os_diagnostics;
+
+}  // namespace
+
 DiagnosticRoutine::DiagnosticRoutine(
-    mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineControl>
+    mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineControl>
         control_remote,
-    mojo::PendingReceiver<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
+    mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineObserver>
         observer_receiver,
     RoutineInfo info)
     : routine_control_(std::move(control_remote)),
       observation_(info.extension_id,
                    info.uuid,
                    info.browser_context,
-                   std::move(observer_receiver)) {}
+                   std::move(observer_receiver)),
+      info_(info) {
+  routine_control_.set_disconnect_with_reason_handler(
+      base::BindOnce(&DiagnosticRoutine::OnRoutineControlDisconnect,
+                     weak_factory.GetWeakPtr()));
+}
 
 DiagnosticRoutine::~DiagnosticRoutine() = default;
 
-mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineControl>&
+void DiagnosticRoutine::OnRoutineControlDisconnect(uint32_t error_code,
+                                                   const std::string& message) {
+  cx_diag::ExceptionInfo exception;
+  exception.uuid = info_.uuid.AsLowercaseString();
+  exception.reason = converters::routines::Convert(
+      static_cast<crosapi::TelemetryExtensionException::Reason>(error_code));
+  exception.debug_message = message;
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION,
+      cx_diag::OnRoutineException::kEventName,
+      base::Value::List().Append(exception.ToValue()), info_.browser_context);
+
+  extensions::EventRouter::Get(info_.browser_context)
+      ->DispatchEventToExtension(info_.extension_id, std::move(event));
+}
+
+mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl>&
 DiagnosticRoutine::GetRemote() {
   return routine_control_;
 }
