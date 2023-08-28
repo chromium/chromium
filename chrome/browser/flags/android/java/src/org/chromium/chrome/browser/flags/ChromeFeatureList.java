@@ -176,6 +176,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT =
             "CCTBrandTransparencyMemoryImprovement";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
+    public static final String CCT_DEPRECATED_APIs = "CCTDeprecatedAPIs";
     public static final String CCT_FEATURE_USAGE = "CCTFeatureUsage";
     public static final String CCT_INCOGNITO = "CCTIncognito";
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =

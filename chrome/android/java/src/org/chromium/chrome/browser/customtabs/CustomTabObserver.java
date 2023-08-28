@@ -70,8 +70,8 @@ public class CustomTabObserver extends EmptyTabObserver {
         mOpenedByChrome = intentDataProvider.isOpenedByChrome();
         mCustomTabsConnection = mOpenedByChrome ? null : connection;
         mSession = intentDataProvider.getSession();
-        if (!mOpenedByChrome
-                && mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)) {
+        if (!mOpenedByChrome && mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)
+                && !mCustomTabsConnection.isCCTAPIDeprecated("bitmap")) {
             float desiredWidth = appContext.getResources().getDimensionPixelSize(
                     R.dimen.custom_tabs_screenshot_width);
             float desiredHeight = appContext.getResources().getDimensionPixelSize(
@@ -219,11 +219,15 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (TextUtils.isEmpty(title)) return;
         String urlString = tab.getUrl().getSpec();
 
-        ShareImageFileUtils.captureScreenshotForContents(tab.getWebContents(), mContentBitmapWidth,
-                mContentBitmapHeight, (Uri snapshotPath) -> {
-                    if (snapshotPath == null) return;
-                    mCustomTabsConnection.sendNavigationInfo(
-                            mSession, urlString, title, snapshotPath);
-                });
+        if (mCustomTabsConnection.isCCTAPIDeprecated("bitmap")) {
+            mCustomTabsConnection.sendNavigationInfo(mSession, urlString, title, null);
+        } else {
+            ShareImageFileUtils.captureScreenshotForContents(tab.getWebContents(),
+                    mContentBitmapWidth, mContentBitmapHeight, (Uri snapshotPath) -> {
+                        if (snapshotPath == null) return;
+                        mCustomTabsConnection.sendNavigationInfo(
+                                mSession, urlString, title, snapshotPath);
+                    });
+        }
     }
 }

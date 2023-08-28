@@ -1164,10 +1164,6 @@ public class CustomTabsConnection {
     public void sendNavigationInfo(
             CustomTabsSessionToken session, String url, String title, Uri snapshotPath) {}
 
-    // TODO(yfriedman): Remove when internal code is deleted.
-    public void sendNavigationInfo(
-            CustomTabsSessionToken session, String url, String title, Bitmap snapshotPath) {}
-
     /**
      * Called when the bottom bar for the custom tab has been hidden or shown completely by user
      * scroll.
@@ -1818,6 +1814,10 @@ public class CustomTabsConnection {
 
     protected void notifyClientOfTextFragmentLookupCompletionReportApp(
             CustomTabsSessionToken session, String stateKey, ArrayList<String> foundTextFragments) {
+    }
+
+    protected boolean isCCTAPIDeprecated(String featureParamName) {
+        return false;
     }
 
     public static void setInstanceForTesting(CustomTabsConnection connection) {
