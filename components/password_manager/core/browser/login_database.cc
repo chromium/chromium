@@ -57,6 +57,10 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_IOS)
+#import <Security/Security.h>
+#endif  // BUILDFLAG(IS_IOS)
+
 using signin::GaiaIdHash;
 
 namespace password_manager {
@@ -837,8 +841,15 @@ bool MigrateDatabase(unsigned current_version,
       int id = get_passwords_statement.ColumnInt(0);
       // First get decrypted password value using old method.
       std::u16string plaintext_password;
-      if (!GetTextFromKeychainIdentifier(
-              get_passwords_statement.ColumnString(1), &plaintext_password)) {
+      OSStatus retrieval_status = GetTextFromKeychainIdentifier(
+          get_passwords_statement.ColumnString(1), &plaintext_password);
+      if (retrieval_status != errSecSuccess) {
+        base::UmaHistogramSparse(
+            base::StrCat(
+                {"PasswordManager.MigrationToOSCrypt.",
+                 is_account_store.value() ? "AccountStore" : "ProfileStore",
+                 ".KeychainRetrievalError"}),
+            static_cast<int>(retrieval_status));
         std::move(record_completion_metrics)
             .Run(MigrationToOSCrypt::kFailedToDecryptFromKeychain);
         return false;
@@ -1219,8 +1230,8 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
       !form.keychain_identifier.empty() && form.password_value.empty();
   if (has_encrypted_password) {
     std::u16string plaintext_password;
-    if (!GetTextFromKeychainIdentifier(form.keychain_identifier,
-                                       &plaintext_password)) {
+    if (GetTextFromKeychainIdentifier(form.keychain_identifier,
+                                      &plaintext_password) != errSecSuccess) {
       if (error) {
         *error = AddCredentialError::kEncryptionServiceFailure;
       }

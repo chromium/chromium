@@ -19,6 +19,10 @@
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_IOS)
+#import <Security/Security.h>
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace password_manager {
 namespace {
 
@@ -38,7 +42,8 @@ std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
     // OSCrypt. To avoid migration we have to keep using keychain for password
     // notes.
     // TODO(crbug.com/1474909): Migrate to OSCrypt.
-    if (!GetTextFromKeychainIdentifier(encrypted_value, &decrypted_value)) {
+    if (GetTextFromKeychainIdentifier(encrypted_value, &decrypted_value) !=
+        errSecSuccess) {
       continue;
     }
 #else

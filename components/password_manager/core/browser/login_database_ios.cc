@@ -23,6 +23,13 @@
 
 using base::apple::ScopedCFTypeRef;
 
+namespace {
+// Retrieval from keychain may fail unexpectedly. e.g. if the keychain
+// identifier that Chrome has is incorrect. This constant is not among error
+// codes that can be returned by the keychain.
+constexpr int kUnknownRetrievalError = -1;
+}  // namespace
+
 namespace password_manager {
 
 // On iOS, the LoginDatabase uses Keychain API to store passwords. The
@@ -87,17 +94,17 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
   return true;
 }
 
-bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
-                                   std::u16string* plain_text) {
+OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
+                                       std::u16string* plain_text) {
   if (keychain_identifier.size() == 0) {
     *plain_text = std::u16string();
-    return true;
+    return errSecSuccess;
   }
 
   ScopedCFTypeRef<CFStringRef> item_ref(
       base::SysUTF8ToCFStringRef(keychain_identifier));
   if (item_ref == nil) {
-    return false;
+    return kUnknownRetrievalError;
   }
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
@@ -112,7 +119,7 @@ bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
   OSStatus status = SecItemCopyMatching(query, data_cftype.InitializeInto());
   if (status != errSecSuccess) {
     OSSTATUS_LOG(INFO, status) << "Failed to retrieve password from keychain";
-    return false;
+    return status;
   }
 
   CFDataRef data = base::apple::CFCast<CFDataRef>(data_cftype);
@@ -123,7 +130,7 @@ bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
   *plain_text = base::UTF8ToUTF16(
       std::string(static_cast<char*>(static_cast<void*>(buffer.get())),
                   static_cast<size_t>(size)));
-  return true;
+  return errSecSuccess;
 }
 
 void DeleteEncryptedPasswordFromKeychain(

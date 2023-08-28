@@ -387,9 +387,9 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
                               std::string* keychain_identifier);
 
 // Retrieves |plain_text| from keychain using |keychain_identifier|. Returns
-// true or false to indicate success/failure.
-bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
-                                   std::u16string* plain_text);
+// the status of the operation.
+OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
+                                       std::u16string* plain_text);
 
 // Removes the keychain item corresponding to the look-up key
 // |keychain_identifier|. It's stored as the encrypted password value.
