@@ -237,7 +237,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
                      weak_factory_.GetWeakPtr(), sync_token, mailbox),
       FROM_HERE));
 
-  std::move(create_video_frame_cb).Run(video_frame_texture);
+  std::move(create_video_frame_cb).Run(video_frame_texture, mailbox);
 }
 
 void DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction(

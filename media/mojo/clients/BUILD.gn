@@ -137,4 +137,14 @@ source_set("unit_tests") {
       "//ui/gl",
     ]
   }
+
+  if (is_win) {
+    sources += [ "win/media_foundation_renderer_client_unittest.cc" ]
+
+    deps += [
+      "//content/public/renderer",
+      "//content/renderer:renderer",
+      "//media",
+    ]
+  }
 }

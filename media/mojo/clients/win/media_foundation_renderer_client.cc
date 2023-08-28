@@ -213,6 +213,7 @@ void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && dcomp_video_frame_ &&
       !IsFrameServerMode()) {
     dcomp_video_frame_.reset();
+    dcomp_frame_observer_subscription_.reset();
     auto black_frame = media::VideoFrame::CreateBlackFrame(natural_size_);
     sink_->PaintSingleFrame(black_frame, true);
   }
@@ -341,13 +342,8 @@ void MediaFoundationRendererClient::InitializeFramePool(
     dcomp_texture_wrapper_->CreateVideoFrame(
         pool_info->texture_size, std::move(frame_info->texture_handle),
         base::BindOnce(
-            [](base::flat_map<base::UnguessableToken,
-                              scoped_refptr<VideoFrame>>& video_frame_pool,
-               const base::UnguessableToken& token,
-               scoped_refptr<VideoFrame> video_frame) {
-              video_frame_pool.insert({token, std::move(video_frame)});
-            },
-            std::ref(video_frame_pool_), frame_info->token));
+            &MediaFoundationRendererClient::OnFramePoolVideoFrameCreated,
+            weak_factory_.GetWeakPtr(), frame_info->token));
   }
 }
 
@@ -358,14 +354,15 @@ void MediaFoundationRendererClient::OnFrameAvailable(
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
-  auto video_frame = video_frame_pool_.find(frame_token);
+  auto frame_pool_entry = video_frame_pool_.find(frame_token);
   // It is possible to become unsynced when we are reinitializing the frame
   // pool so we are just checking to make sure the frame has been acquired.
-  if (video_frame == video_frame_pool_.end()) {
+  if (frame_pool_entry == video_frame_pool_.end()) {
     return;
   }
 
-  scoped_refptr<VideoFrame> texture_pool_video_frame = video_frame->second;
+  auto* video_frame_pair = &(frame_pool_entry->second);
+  scoped_refptr<VideoFrame> texture_pool_video_frame = video_frame_pair->first;
 
   texture_pool_video_frame->set_timestamp(timestamp);
 
@@ -556,18 +553,33 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
   if (cdm_context_) {
     video_frame->metadata().protected_video = true;
     video_frame->metadata().hw_protected = true;
+    dcomp_frame_observer_subscription_.reset();
   } else {
     DCHECK(SupportMediaFoundationClearPlayback());
     // This video frame is for clear content: setup observation of the mailbox
     // overlay state changes.
     video_frame->metadata().wants_promotion_hint = true;
-    ObserveMailboxForOverlayState(mailbox);
+    dcomp_frame_observer_subscription_ = ObserveMailboxForOverlayState(mailbox);
   }
 
-  dcomp_video_frame_ = video_frame;
+  dcomp_video_frame_ = std::move(video_frame);
   if (!IsFrameServerMode()) {
     sink_->PaintSingleFrame(dcomp_video_frame_, true);
   }
+}
+
+void MediaFoundationRendererClient::OnFramePoolVideoFrameCreated(
+    const base::UnguessableToken& token,
+    scoped_refptr<VideoFrame> video_frame,
+    const gpu::Mailbox& mailbox) {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(has_video_);
+  std::unique_ptr<OverlayStateObserverSubscription> observer_subscription =
+      ObserveMailboxForOverlayState(mailbox);
+  video_frame_pool_.insert(
+      {token, std::make_pair(std::move(video_frame),
+                             std::move(observer_subscription))});
 }
 
 void MediaFoundationRendererClient::OnCdmAttached(bool success) {
@@ -593,14 +605,16 @@ void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
   is_playing_ = is_playing;
 }
 
-void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
+std::unique_ptr<OverlayStateObserverSubscription>
+MediaFoundationRendererClient::ObserveMailboxForOverlayState(
     const gpu::Mailbox& mailbox) {
+  std::unique_ptr<OverlayStateObserverSubscription> observer_subscription;
+
   // If the rendering strategy is dynamic then setup an OverlayStateObserver to
   // respond to promotion changes. If the rendering strategy is Direct
   // Composition or Frame Server then we do not need to listen & respond to
   // overlay state changes.
   if (rendering_strategy_ == MediaFoundationClearRenderingStrategy::kDynamic) {
-    mailbox_ = mailbox;
     // 'observe_overlay_state_cb_' creates a content::OverlayStateObserver to
     // subscribe to overlay state information for the given 'mailbox' from the
     // Viz layer in the GPU process. We hold an OverlayStateObserverSubscription
@@ -608,12 +622,14 @@ void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
     // OverlayStateObserverSubscription is destroyed the OnOverlayStateChanged
     // callback will no longer be invoked, so base::Unretained(this) is safe to
     // use.
-    observer_subscription_ = observe_overlay_state_cb_.Run(
+    observer_subscription = observe_overlay_state_cb_.Run(
         mailbox, base::BindRepeating(
                      &MediaFoundationRendererClient::OnOverlayStateChanged,
                      base::Unretained(this), mailbox));
-    DCHECK(observer_subscription_);
+    DCHECK(observer_subscription);
   }
+
+  return observer_subscription;
 }
 
 void MediaFoundationRendererClient::OnOverlayStateChanged(

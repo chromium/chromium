@@ -29,6 +29,7 @@ target(link_target_type, "renderer") {
     "//content/public/renderer:renderer_sources",
     "//content/renderer:audio_decoder_fuzzer",
     "//content/renderer:content_security_policy_util_fuzzer",
+    "//media/mojo/clients:unit_tests",
   ]
 
   sources = [

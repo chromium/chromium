@@ -122,8 +122,9 @@ class MediaFoundationRendererClient
                         const gfx::Size& size,
                         base::TimeDelta timestamp) override;
 
- private:
   bool IsFrameServerMode() const;
+
+ private:
   void OnConnectionError();
   void OnRemoteRendererInitialized(PipelineStatus status);
   void OnOutputRectChange(gfx::Rect output_rect);
@@ -135,9 +136,13 @@ class MediaFoundationRendererClient
   void OnDCOMPSurfaceHandleSet(bool success);
   void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame,
                            const gpu::Mailbox& mailbox);
+  void OnFramePoolVideoFrameCreated(const base::UnguessableToken& token,
+                                    scoped_refptr<VideoFrame> video_frame,
+                                    const gpu::Mailbox& mailbox);
   void OnCdmAttached(bool success);
   void SignalMediaPlayingStateChange(bool is_playing);
-  void ObserveMailboxForOverlayState(const gpu::Mailbox& mailbox);
+  std::unique_ptr<OverlayStateObserverSubscription>
+  ObserveMailboxForOverlayState(const gpu::Mailbox& mailbox);
   void OnOverlayStateChanged(const gpu::Mailbox& mailbox, bool promoted);
   void UpdateRenderMode();
   void OnPaintComplete(const base::UnguessableToken& token);
@@ -150,12 +155,6 @@ class MediaFoundationRendererClient
   std::unique_ptr<MojoRenderer> mojo_renderer_;
   mojo::PendingRemote<RendererExtension> pending_renderer_extension_;
   std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
-  // The 'observer_subscription_' is used to manage the lifetime of our current
-  // observed mailbox, when a mailbox associated with a new video frame of
-  // interest is available the existing observer_subscription_ is freed
-  // allowing the underlying content::OverlayStateObserver object to be cleaned
-  // up.
-  std::unique_ptr<OverlayStateObserverSubscription> observer_subscription_;
   ObserveOverlayStateCB observe_overlay_state_cb_;
   raw_ptr<VideoRendererSink> sink_ = nullptr;
 
@@ -172,8 +171,14 @@ class MediaFoundationRendererClient
   bool has_frame_read_back_signal_ = false;
   bool promoted_to_overlay_signal_ = false;
   scoped_refptr<VideoFrame> dcomp_video_frame_;
+  // The `dcomp_frame_observer_subscription_` is used to manage the lifetime of
+  // the mailbox associated with `dcomp_video_frame_`, when a mailbox for a new
+  // dcomp video frame of interest is available the existing
+  // `observer_subscription_` is freed allowing the underlying
+  // `content::OverlayStateObserver` object to be cleaned up.
+  std::unique_ptr<OverlayStateObserverSubscription>
+      dcomp_frame_observer_subscription_;
   scoped_refptr<VideoFrame> next_video_frame_;
-  gpu::Mailbox mailbox_;
 
   // Rendering mode the Media Engine will use.
   MediaFoundationRenderingMode rendering_mode_ =
@@ -194,7 +199,9 @@ class MediaFoundationRendererClient
   // MediaFoundationRendererClient need to have a mechanism, provided by the MF
   // CDM process, to identify which texture is ready to be sent to the video
   // sink.
-  base::flat_map<base::UnguessableToken, scoped_refptr<VideoFrame>>
+  base::flat_map<base::UnguessableToken,
+                 std::pair<scoped_refptr<VideoFrame>,
+                           std::unique_ptr<OverlayStateObserverSubscription>>>
       video_frame_pool_;
   // Used to receive calls from the MF_CMD LPAC Utility Process.
   mojo::PendingReceiver<ClientExtension> pending_client_extension_receiver_;

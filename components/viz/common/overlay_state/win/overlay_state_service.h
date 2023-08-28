@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_COMMON_OVERLAY_STATE_WIN_OVERLAY_STATE_SERVICE_H_
 #define COMPONENTS_VIZ_COMMON_OVERLAY_STATE_WIN_OVERLAY_STATE_SERVICE_H_
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/overlay_state/win/overlay_state_aggregator.h"
@@ -75,7 +77,7 @@ class VIZ_COMMON_EXPORT OverlayStateService {
   };
 
   bool initialized_ = false;
-  base::flat_map<gpu::Mailbox, MailboxState*> mailboxes_;
+  base::flat_map<gpu::Mailbox, std::unique_ptr<MailboxState>> mailboxes_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

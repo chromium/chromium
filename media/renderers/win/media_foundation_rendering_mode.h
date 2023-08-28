@@ -5,6 +5,8 @@
 #ifndef MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_RENDERING_MODE_H_
 #define MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_RENDERING_MODE_H_
 
+#include "media/base/media_export.h"
+
 #include <ostream>
 
 namespace media {
@@ -16,8 +18,9 @@ enum class MediaFoundationRenderingMode : int32_t {
   kMaxValue = 1,
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         const MediaFoundationRenderingMode& render_mode);
+MEDIA_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    const MediaFoundationRenderingMode& render_mode);
 
 }  // namespace media
 
