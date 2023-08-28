@@ -5,12 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- package name must be unique -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.android.test_{{ library_name }}">
+    package="sdk.optional.{{library_name}}">
     <application>
-      <uses-library android:name="android.test.{{ library_name }}"
-                    android:required="false" />
+      <uses-library android:name="{{library_name}}" android:required="false" />
     </application>
 </manifest>

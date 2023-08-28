@@ -1202,6 +1202,7 @@ if (enable_java_templates && is_android) {
     _invoker_deps_minus_assetres = filter_exclude(_invoker_deps, _assetres_deps)
     _lib_deps =
         filter_include(_invoker_deps_minus_assetres, java_library_patterns)
+    _other_deps = _invoker_deps_minus_assetres - _lib_deps
 
     _expanded_lib_deps = []
     foreach(_lib_dep, _lib_deps) {
@@ -1220,7 +1221,8 @@ if (enable_java_templates && is_android) {
           deps += [ "${_lib_dep}__${_group_name}" ]
         }
         if (_group_name == "assetres") {
-          deps += _assetres_deps
+          # _other_deps are necessary when generating mergeable_android_manifests.
+          deps += _assetres_deps + _other_deps
         }
       }
     }
