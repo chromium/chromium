@@ -26,6 +26,8 @@ source_set("connectivity") {
     "//url",
   ]
   sources = [
+    "account_transfer_client_data.cc",
+    "account_transfer_client_data.h",
     "connection.cc",
     "connection.h",
     "fast_pair_advertiser.cc",
@@ -90,6 +92,7 @@ source_set("unit_tests") {
     "//url",
   ]
   sources = [
+    "account_transfer_client_data_unittest.cc",
     "connection_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "handshake_helpers_unittest.cc",

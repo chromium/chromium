@@ -143,6 +143,8 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
 void Connection::RequestAccountTransferAssertion(
     const Base64UrlString& challenge,
     RequestAccountTransferAssertionCallback callback) {
+  client_data_ = std::make_unique<AccountTransferClientData>(challenge);
+
   auto parse_assertion_response =
       base::BindOnce(&Connection::OnRequestAccountTransferAssertionResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
@@ -151,7 +153,7 @@ void Connection::RequestAccountTransferAssertion(
       base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(base::BindOnce(
           &Connection::SendMessageAndReadResponse,
           weak_ptr_factory_.GetWeakPtr(),
-          requests::BuildAssertionRequestMessage(challenge),
+          requests::BuildAssertionRequestMessage(client_data_->CreateHash()),
           QuickStartResponseType::kAssertion,
           std::move(parse_assertion_response), kDefaultRoundTripTimeout));
 

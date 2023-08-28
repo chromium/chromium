@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/account_transfer_client_data.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -206,6 +207,7 @@ class Connection
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
   std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
   std::unique_ptr<base::ElapsedTimer> handshake_elapsed_timer_;
+  std::unique_ptr<AccountTransferClientData> client_data_;
 
   // Separate WeakPtrFactory for use with |OnResponseReceived()| to allow for
   // canceling the response.

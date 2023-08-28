@@ -139,6 +139,10 @@ class ConnectionTest : public testing::Test {
     return connection_->response_timeout_timer_.IsRunning();
   }
 
+  AccountTransferClientData* GetClientData() {
+    return connection_->client_data_.get();
+  }
+
   void CallParseBootstrapConfigurationsResponse(
       base::OnceClosure callback,
       std::string cryptauth_device_id) {
@@ -388,6 +392,8 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
       kChallenge_, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
                                   base::Unretained(this)));
 
+  EXPECT_EQ(GetClientData()->GetChallengeBase64URLString(), kChallenge_);
+
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
   QuickStartMessage::ReadResult read_result =
@@ -456,7 +462,8 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   absl::optional<std::vector<uint8_t>> get_assertion_command =
       base::Base64Decode(get_assertion_message_payload);
   EXPECT_TRUE(get_assertion_command);
-  cbor::Value request = requests::GenerateGetAssertionRequest(kChallenge_);
+  cbor::Value request = requests::GenerateGetAssertionRequest(
+      AccountTransferClientData(kChallenge_).CreateHash());
   std::vector<uint8_t> cbor_encoded_request =
       requests::CBOREncodeGetAssertionRequest(std::move(request));
   EXPECT_EQ(*get_assertion_command, cbor_encoded_request);
