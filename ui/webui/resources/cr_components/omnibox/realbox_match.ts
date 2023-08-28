@@ -216,14 +216,13 @@ export class RealboxMatchElement extends PolymerElement {
       return;
     }
 
-    this.dispatchEvent(new CustomEvent('match-click', {
-      bubbles: true,
-      composed: true,
-      detail: {index: this.matchIndex, event: e},
-    }));
-
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+
+    this.pageHandler_.openAutocompleteMatch(
+        this.matchIndex, this.match.destinationUrl,
+        /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
+        e.metaKey, e.shiftKey);
   }
 
   private onMatchFocusin_() {
