@@ -993,4 +993,70 @@ TEST_P(GlanceablesDateTrayTest, AssignmentListFetchedWhileBubbleClosing) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
+TEST_P(GlanceablesDateTrayTest,
+       ScrollWholeGlanceableToVisibleWhenFocusMovesIn) {
+  UpdateDisplay("1000x512");
+
+  LeftClickOn(GetDateTray());
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
+
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+
+  auto* const scroll_view = views::AsViewClass<views::ScrollView>(
+      GetGlanceableTrayBubble()->GetBubbleView()->children().at(0));
+  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  glanceables_classroom_client()->RespondToPendingIsStudentRoleEnabledCallbacks(
+      true);
+  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  auto* student_view = GetGlanceableTrayBubble()->GetClassroomStudentView();
+  ASSERT_TRUE(student_view);
+
+  auto* calendar_view = GetGlanceableTrayBubble()->GetCalendarView();
+  ASSERT_TRUE(calendar_view);
+
+  ASSERT_TRUE(glanceables_classroom_client()
+                  ->RespondToNextPendingStudentAssignmentsCallback(
+                      CreateAssignmentsForStudents(/*count=*/3)));
+
+  // The display is not large enough to accommodate all glanceables - verify
+  // that calendar view is visible by default.
+  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
+      student_view->GetBoundsInScreen()));
+  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
+      calendar_view->GetBoundsInScreen()));
+
+  // Focus the student assignment selector, and verify the whole student
+  // glanceable becomes visible.
+  views::Combobox* assignment_selector =
+      views::AsViewClass<views::Combobox>(student_view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+  assignment_selector->RequestFocus();
+  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
+      student_view->GetBoundsInScreen()));
+  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
+      calendar_view->GetBoundsInScreen()));
+
+  // Scroll the glanceable container so student glanceable partially moves out
+  // of the view port. Verify that moving focus to the next element within the
+  // glanceable does not cause the whole glanceable to appear.
+  scroll_view->ScrollByOffset(gfx::PointF(0, 20));
+  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
+  ASSERT_FALSE(scroll_view->GetBoundsInScreen().Contains(
+      student_view->GetBoundsInScreen()));
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  ASSERT_FALSE(assignment_selector->HasFocus());
+
+  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
+      student_view->GetBoundsInScreen()));
+  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
+      calendar_view->GetBoundsInScreen()));
+}
+
 }  // namespace ash

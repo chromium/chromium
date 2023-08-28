@@ -29,6 +29,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -37,7 +38,8 @@ namespace {
 // The view that parents glanceable bubbles. It's a flex layout view that
 // propagates child preferred size changes to the tray bubble view and the
 // container bounds changes to the bubble view.
-class ContainerView : public views::FlexLayoutView {
+class ContainerView : public views::FlexLayoutView,
+                      public views::FocusChangeListener {
  public:
   using HeightChangeCallback = base::RepeatingCallback<void(int height_delta)>;
   ContainerView(const base::RepeatingClosure& preferred_size_change_callback,
@@ -86,7 +88,38 @@ class ContainerView : public views::FlexLayoutView {
     }
   }
 
+  void AddedToWidget() override {
+    GetFocusManager()->AddFocusChangeListener(this);
+  }
+
+  void RemovedFromWidget() override {
+    GetFocusManager()->RemoveFocusChangeListener(this);
+  }
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* focused_before,
+                         views::View* focused_now) override {
+    views::View* container_for_new_focus = GetChildThatContains(focused_now);
+    // It the focus is moving into a glanceable container, try scrolling the
+    // whole container into the viewport.
+    if (container_for_new_focus &&
+        container_for_new_focus != GetChildThatContains(focused_before)) {
+      container_for_new_focus->ScrollViewToVisible();
+    }
+  }
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override {}
+
  private:
+  views::View* GetChildThatContains(views::View* view) {
+    for (auto* child : children()) {
+      if (child->Contains(view)) {
+        return child;
+      }
+    }
+    return nullptr;
+  }
+
   base::RepeatingClosure preferred_size_change_callback_;
   HeightChangeCallback height_change_callback_;
 };
