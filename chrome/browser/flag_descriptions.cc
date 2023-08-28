@@ -5214,6 +5214,13 @@ const char kAdaptiveChargingName[] = "Enable adaptive charging feature";
 const char kAdaptiveChargingDescription[] =
     "Show settings to enable/disable adaptive charging feature.";
 
+const char kAdvancedDocumentScanApiName[] =
+    "Enable advanced chrome.documentScan APIs";
+const char kAdvancedDocumentScanApiDescription[] =
+    "Enable chrome.documentScan functions that provide full-featured access "
+    "to SANE scanners.  Also enable AsynchronousScannerDiscovery to get the "
+    "full enhanced functionality.";
+
 const char kAllowCrossDeviceFeatureSuiteName[] =
     "Allow the use of Cross-Device features";
 const char kAllowCrossDeviceFeatureSuiteDescription[] =

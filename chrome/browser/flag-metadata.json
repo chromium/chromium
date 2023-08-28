@@ -79,6 +79,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "advanced-documentscan-api",
+    "owners": [ "bmgordon", "project-bolton@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "advanced-peripherals-support",
     "owners": [ "aishwaryarj@google.com", "zheliooo@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120

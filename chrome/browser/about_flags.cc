@@ -10882,6 +10882,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMantaService)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"advanced-documentscan-api",
+     flag_descriptions::kAdvancedDocumentScanApiName,
+     flag_descriptions::kAdvancedDocumentScanApiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAdvancedDocumentScanAPI)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
