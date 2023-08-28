@@ -1748,6 +1748,7 @@
 <translation id="2411666601450687801">इस डिवाइस पर वर्चुअल मशीन की अनुमति नहीं है</translation>
 <translation id="2412015533711271895">आपको माता-पिता या अभिभावक से अनुमति लेनी होगी, ताकि आप इस एक्सटेंशन का इस्तेमाल कर सकें</translation>
 <translation id="2412753904894530585">केर्बेरोस</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> के लिए ब्राउज़ करना फिर से शुरू करें</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2416435988630956212">कीबोर्ड के फ़ंक्शन बटन</translation>
 <translation id="2418307627282545839">ब्राइट और आंखों को सुकून देने वाली डिसप्ले थीम</translation>
@@ -1884,6 +1885,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (चुनी गई)</translation>
 <translation id="2513396635448525189">लॉगिन इमेज बदलें</translation>
+<translation id="251425554130284360">अपनी सबसे हाल की गतिविधि को आसानी से वापस पाने के लिए, आपको अपने विज़िट किए गए पेज और सुझाई गई खोजें दिखेंगी.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        इससे जुड़ी सेटिंग को, कार्ड मेन्यू में जाकर मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प देखे जा सकते हैं.</translation>
 <translation id="2514326558286966059">अपने फ़िंगरप्रिंट का इस्तेमाल करके, तेज़ी से अनलॉक करें</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">अपने उपयोगकर्ता नाम की पुष्टि करें</translation>
@@ -2188,7 +2193,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 ऐसा ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं है}one{# ऐसा ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं है}other{# ऐसे ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं हैं}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> के लिए डिवाइस का नाम बदलें</translation>
 <translation id="2777251078198759550">यह कंटेनर मिटाएं</translation>
-<translation id="2777525873368474674">इमेज का लिंक पेस्ट करें</translation>
+<translation id="2777525873368474674">इमेज का लिंक चिपकाएं</translation>
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">इस साइट पर एक्सटेंशन को अनुमति दी गई है</translation>
@@ -2292,6 +2297,7 @@
 <translation id="2861402191395139055">पासपॉइंट की सदस्यताएं</translation>
 <translation id="2861941300086904918">नेटिव क्लाइंट सुरक्षा मैनेजर</translation>
 <translation id="2862815659905780618">Linux डेवलपमेंट एनवायरमेंट हटाएं</translation>
+<translation id="2862986593239703553">यह कार्ड</translation>
 <translation id="2864601841139725659">अपना प्रोफ़ाइल चित्र सेट करें</translation>
 <translation id="2865057607286263192">उच्चारण के चिह्न और खास वर्णों को देखने के लिए, कीबोर्ड के बटन दबाकर रखें. ऐसा करने से, कीबोर्ड के बटन दबाकर रखने की सुविधा बंद हो जाती है. यह सुविधा सिर्फ़ अंग्रेज़ी (यूएस) में उपलब्ध है.</translation>
 <translation id="2865919525181940183">इस समय, स्क्रीन पर मौजूद प्रोग्राम का स्क्रीनशॉट</translation>
@@ -3314,6 +3320,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{किसी USB डिवाइस से संचार करें}one{# USB डिवाइस से संचार करें}other{# USB डिवाइस से संचार करें}}</translation>
 <translation id="3764753550716962406">Google को उपलब्ध छूट के बारे में पता लगाने के लिए, अपना कार्ट इस्तेमाल करने दें?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> पर <ph name="ATTACHMENTS" /> भेजा जा रहा है}one{<ph name="DEVICE_NAME" /> पर <ph name="ATTACHMENTS" /> भेजा जा रहा है}other{<ph name="DEVICE_NAME" /> पर <ph name="ATTACHMENTS" /> भेजे जा रहे हैं}}</translation>
+<translation id="3765055238058255342">इस तरह का कार्ड</translation>
 <translation id="3765246971671567135">ऑफ़लाइन डेमो मोड नीति पढ़ी नहीं जा सकी.</translation>
 <translation id="3765696567014520261">अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए साइटें, कुकी का इस्तेमाल नहीं कर सकतीं. जैसे, दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए. शायद कुछ साइटों पर ये सुविधाएं काम न करें</translation>
 <translation id="3766687283066842296">फ़ोन हब के बारे में ज़्यादा जानें</translation>
@@ -3975,6 +3982,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> का कभी अनुवाद ना करें</translation>
 <translation id="4332976768901252016">माता-पिता के नियंत्रण सेट अप करें</translation>
 <translation id="4333854382783149454">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-1</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" /> को हमेशा के लिए हटा दिया गया है</translation>
 <translation id="4336434711095810371">सारा डेटा मिटाएं</translation>
 <translation id="4339203724549370495">ऐप्लिकेशन अनइंस्टॉल करें</translation>
 <translation id="4340125850502689798">यह उपयोगकर्ता नाम गलत/अमान्य है</translation>
