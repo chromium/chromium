@@ -781,18 +781,19 @@ void ElementRuleCollector::CollectMatchingRules(
               ? attribute_name.LowerASCII()
               : attribute_name;
       for (const auto bundle : match_request.AllRuleSets()) {
-        if (bundle.rule_set->HasAnyAttrRules()) {
-          base::span<const RuleData> list =
-              bundle.rule_set->AttrRules(lower_name);
-          if (!list.empty() &&
-              !bundle.rule_set->CanIgnoreEntireList(
-                  list, lower_name, attributes[attr_idx].Value())) {
-            CollectMatchingRulesForList(bundle.rule_set->AttrRules(lower_name),
-                                        match_request, bundle.rule_set,
-
-                                        bundle.style_sheet_index, checker);
-          }
+        if (!bundle.rule_set->HasAnyAttrRules()) {
+          continue;
         }
+        base::span<const RuleData> list =
+            bundle.rule_set->AttrRules(lower_name);
+        if (list.empty() ||
+            bundle.rule_set->CanIgnoreEntireList(
+                list, lower_name, attributes[attr_idx].Value())) {
+          continue;
+        }
+        CollectMatchingRulesForList(bundle.rule_set->AttrRules(lower_name),
+                                    match_request, bundle.rule_set,
+                                    bundle.style_sheet_index, checker);
       }
 
       const AttributeCollection collection = element.AttributesWithoutUpdate();
