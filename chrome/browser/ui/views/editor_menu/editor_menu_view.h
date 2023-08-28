@@ -64,6 +64,8 @@ class EditorMenuView : public views::View, public views::WidgetObserver {
   void OnSettingsButtonPressed();
   void OnChipButtonPressed(int button_id);
 
+  void ResetPreTargetHandler();
+
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
 
   // `delegate_` outlives `this`.

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
@@ -135,7 +136,11 @@ void EditorMenuView::OnWidgetActivationChanged(views::Widget* widget,
                                                bool active) {
   // When the widget is active, will use default focus behavior.
   if (active) {
-    pre_target_handler_.reset();
+    // Reset `pre_target_handler_` immediately causes problems if the events are
+    // not all precessed. Reset it asynchronously.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&EditorMenuView::ResetPreTargetHandler,
+                                  weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -279,6 +284,10 @@ void EditorMenuView::OnSettingsButtonPressed() {
 void EditorMenuView::OnChipButtonPressed(int button_id) {
   CHECK(delegate_);
   delegate_->OnChipButtonPressed(button_id, textfield_->textfield()->GetText());
+}
+
+void EditorMenuView::ResetPreTargetHandler() {
+  pre_target_handler_.reset();
 }
 
 BEGIN_METADATA(EditorMenuView, views::View)
