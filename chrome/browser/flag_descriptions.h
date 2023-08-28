@@ -957,6 +957,9 @@ extern const char kWebIdentityMDocsDescription[];
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 
+extern const char kFileSystemObserverName[];
+extern const char kFileSystemObserverDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];

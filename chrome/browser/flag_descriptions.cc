@@ -1695,6 +1695,13 @@ const char kFileHandlingIconsDescription[] =
     "icons. See https://github.com/WICG/file-handling/blob/main/explainer.md "
     "for more information.";
 
+const char kFileSystemObserverName[] = "FileSystemObserver";
+const char kFileSystemObserverDescription[] =
+    "Enables the FileSystemObserver interface, which allows websites to be "
+    "notified of changes to the file system. See "
+    "https://github.com/whatwg/fs/blob/main/proposals/FileSystemObserver.md "
+    "for more information.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kFillingAcrossAffiliatedWebsitesName[] =
     "Fill passwords across affiliated websites.";

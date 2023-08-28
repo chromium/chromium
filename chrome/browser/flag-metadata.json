@@ -4419,6 +4419,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "file-system-observer",
+    "owners": [ "asully", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "file-transfer-enterprise-connector",
     "owners": [ "sseckler@google.com", "marcgrimme", "poromov" ],
     "expiry_milestone": 130
