@@ -37,6 +37,12 @@ constexpr int kBubbleBorderCornerRadius = 15;
 // Bubble border MD shadow elevation.
 constexpr int kBubbleBorderMdShadowElevation = 3;
 
+// Bubble margins.
+constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 15, 15, 20);
+
+// Bubble title margins.
+constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 10, 10, 10);
+
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     base::OnceCallback<void()> hide_view_cb,
@@ -56,6 +62,8 @@ AutoPipSettingView::AutoPipSettingView(
   SetCloseCallback(std::move(hide_view_cb));
   set_fixed_width(kBubbleFixedWidth);
   set_use_custom_frame(true);
+  set_margins(kBubbleMargins);
+  set_title_margins(kBubbleTitleMargins);
 
   // Initialize Bubble.
   InitBubble();
