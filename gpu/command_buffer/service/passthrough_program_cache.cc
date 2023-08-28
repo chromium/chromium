@@ -33,6 +33,11 @@ bool BlobCacheExtensionAvailable(gl::GLDisplayEGL* gl_display) {
 // forced to have this be global.
 PassthroughProgramCache* g_program_cache = nullptr;
 
+// Blob cache function pointers can only be set once per EGLDisplay. Using a
+// single bool is not technically correct, but it's acceptable since we only
+// have one EGLDisplay in practice.
+bool g_blob_cache_funcs_set = false;
+
 }  // namespace
 
 PassthroughProgramCache::PassthroughProgramCache(
@@ -52,10 +57,11 @@ PassthroughProgramCache::PassthroughProgramCache(
   g_program_cache = this;
 
   // display is EGL_NO_DISPLAY during unittests.
-  if (egl_display != EGL_NO_DISPLAY &&
+  if (egl_display != EGL_NO_DISPLAY && !g_blob_cache_funcs_set &&
       BlobCacheExtensionAvailable(gl_display)) {
     // Register the blob cache callbacks.
     eglSetBlobCacheFuncsANDROID(egl_display, BlobCacheSet, BlobCacheGet);
+    g_blob_cache_funcs_set = true;
   }
 #endif  // defined(USE_EGL)
 }
