@@ -4551,6 +4551,10 @@ const char kEnableAndroidGamepadVibrationName[] = "Gamepad vibration";
 const char kEnableAndroidGamepadVibrationDescription[] =
     "Enables the ability to play vibration effects on supported gamepads.";
 
+const char kEnableBuiltinHlsName[] = "Builtin HLS player";
+const char kEnableBuiltinHlsDescription[] =
+    "Enables chrome's builtin HLS player instead of Android's MediaPlayer";
+
 const char kCormorantName[] = "Cormorant";
 const char kCormorantDescription[] = "Enables the experimental Cormorant UI.";
 
