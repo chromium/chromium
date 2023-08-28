@@ -1019,6 +1019,11 @@ const char kNewOverflowMenuShareChromeActionName[] =
 const char kNewOverflowMenuShareChromeActionDescription[] =
     "Enables the Share Chrome App action in the new overflow menu.";
 
+const char kSyncEnableBatchUploadLocalDataName[] =
+    "Enable batch upload of local data";
+const char kSyncEnableBatchUploadLocalDataDescription[] =
+    "Allows batch upload of local data from the account settings panel.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

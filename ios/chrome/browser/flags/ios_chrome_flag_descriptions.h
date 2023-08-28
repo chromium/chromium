@@ -897,6 +897,11 @@ extern const char kNewOverflowMenuShareChromeActionDescription[];
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];
 
+// Title and description for the flag to allow batch upload of local data from
+// the new account settings panel.
+extern const char kSyncEnableBatchUploadLocalDataName[];
+extern const char kSyncEnableBatchUploadLocalDataDescription[];
+
 // Title and description for the flag to control if Chrome Sync should use the
 // sandbox servers.
 extern const char kSyncSandboxName[];

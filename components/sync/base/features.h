@@ -189,6 +189,10 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
         base::Milliseconds(100)};
 
+// Flag to enable the option to batch upload local data from the new account
+// settings panel.
+BASE_DECLARE_FEATURE(kSyncEnableBatchUploadLocalData);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

@@ -172,4 +172,8 @@ BASE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions,
              "SyncPasswordCleanUpAccidentalBatchDeletions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEnableBatchUploadLocalData,
+             "SyncEnableBatchUploadLocalData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer
