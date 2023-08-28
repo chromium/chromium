@@ -10,6 +10,8 @@ assert(is_chromeos_ash,
 
 source_set("fast_pair_handshake") {
   sources = [
+    "async_fast_pair_handshake_lookup_impl.cc",
+    "async_fast_pair_handshake_lookup_impl.h",
     "fake_fast_pair_handshake.cc",
     "fake_fast_pair_handshake.h",
     "fake_fast_pair_handshake_lookup.cc",
@@ -80,6 +82,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "async_fast_pair_handshake_lookup_impl_unittest.cc",
     "fast_pair_data_encryptor_impl_unittest.cc",
     "fast_pair_encryption_unittest.cc",
     "fast_pair_gatt_service_client_impl_unittest.cc",
