@@ -2588,6 +2588,26 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
   EXPECT_EQ(u"uk", result.options[1].content);
 }
 
+// Test that the content for the <option> can be computed when the <option>s
+// have nested HTML nodes.
+TEST_F(FormAutofillTest,
+       WebFormControlElementToFormFieldSelectListNestedNodes) {
+  LoadHTML(
+      "<SELECTLIST id='element'>"
+      "<OPTION><div><img/><b>+1</b> (Canada)</div></OPTION>"
+      "</SELECTLIST>");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+  WebFormControlElement element = GetFormControlElementById("element");
+
+  FormFieldData result;
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
+                                   EXTRACT_OPTIONS, &result);
+  ASSERT_EQ(1u, result.options.size());
+  EXPECT_EQ(u"+1 (Canada)", result.options[0].content);
+}
+
 // We should be able to extract a <textarea> field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   LoadHTML("<TEXTAREA id='element'>"
