@@ -15,6 +15,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -236,6 +237,23 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             recordApiCall(
                     ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
             return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
+        }
+    }
+
+    @Override
+    public void setUserAgentMetadataFromMap(Map<String, Object> uaMetadata) {
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_USER_AGENT_METADATA")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_USER_AGENT_METADATA);
+            mAwSettings.setUserAgentMetadataFromMap(uaMetadata);
+        }
+    }
+    @Override
+    public Map<String, Object> getUserAgentMetadataMap() {
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_USER_AGENT_METADATA")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_USER_AGENT_METADATA);
+            return mAwSettings.getUserAgentMetadataMap();
         }
     }
 }

@@ -11,6 +11,7 @@ package org.chromium.support_lib_boundary;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,4 +63,7 @@ public interface WebSettingsBoundaryInterface {
 
     void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled);
     boolean getEnterpriseAuthenticationAppLinkPolicyEnabled();
+
+    void setUserAgentMetadataFromMap(Map<String, Object> uaMetadata);
+    Map<String, Object> getUserAgentMetadataMap();
 }

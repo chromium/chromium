@@ -3200,6 +3200,13 @@ Unknown properties are collapsed to zero. -->
   <int value="74" label="JS_REPLY_POST_MESSAGE_WITH_PAYLOAD">
     JsReplyProxy#postMessageWithPayload(WebMessagePayload)
   </int>
+  <int value="75" label="WEB_SETTINGS_SET_USER_AGENT_METADATA">
+    WebSettingsCompat#setUserAgentMetadataFromMap(Map(String, Object)
+    uaMetadataMap)
+  </int>
+  <int value="76" label="WEB_SETTINGS_GET_USER_AGENT_METADATA">
+    WebSettingsCompat#getUserAgentMetadataMap()
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">
