@@ -67,15 +67,15 @@ struct ODFSFileSystemAndPath {
 };
 
 // The string conversions of ash::cloud_upload::mojom::UserAction.
-const char kUserActionCancel[] = "cancel";
-const char kUserActionCancelGoogleDrive[] = "cancel-drive";
-const char kUserActionCancelOneDrive[] = "cancel-onedrive";
-const char kUserActionSetUpOneDrive[] = "setup-onedrive";
-const char kUserActionUploadToGoogleDrive[] = "upload-drive";
-const char kUserActionUploadToOneDrive[] = "upload-onedrive";
-const char kUserActionConfirmOrUploadToGoogleDrive[] =
+constexpr char kUserActionCancel[] = "cancel";
+constexpr char kUserActionCancelGoogleDrive[] = "cancel-drive";
+constexpr char kUserActionCancelOneDrive[] = "cancel-onedrive";
+constexpr char kUserActionSetUpOneDrive[] = "setup-onedrive";
+constexpr char kUserActionUploadToGoogleDrive[] = "upload-drive";
+constexpr char kUserActionUploadToOneDrive[] = "upload-onedrive";
+constexpr char kUserActionConfirmOrUploadToGoogleDrive[] =
     "confirm-or-upload-google-drive";
-const char kUserActionConfirmOrUploadToOneDrive[] =
+constexpr char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
 
 // Either OneDrive for the Office PWA or Drive for Drive Web editing.
