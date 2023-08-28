@@ -4862,6 +4862,22 @@
             ]
         }
     ],
+    "DeskButton": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230828",
+                    "enable_features": [
+                        "DeskButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
