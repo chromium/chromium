@@ -191,8 +191,19 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
          !IsRawResource(*resource);
 }
 
-bool ShouldResourceBeKeptStrongReferenceByType(Resource* resource) {
+bool ShouldResourceBeKeptStrongReferenceByType(
+    Resource* resource,
+    const SecurityOrigin* settings_object_origin) {
   // Image, fonts, stylesheets and scripts are the most commonly reused scripts.
+
+  if (base::FeatureList::IsEnabled(
+          features::kMemoryCacheStrongReferenceFilterCrossOriginScripts) &&
+      resource->GetType() == ResourceType::kScript &&
+      !SecurityOrigin::Create(resource->Url())
+           ->IsSameOriginWith(settings_object_origin)) {
+    return false;
+  }
+
   return (resource->GetType() == ResourceType::kImage &&
           !base::FeatureList::IsEnabled(
               features::kMemoryCacheStrongReferenceFilterImages)) ||
@@ -204,11 +215,14 @@ bool ShouldResourceBeKeptStrongReferenceByType(Resource* resource) {
          resource->GetType() == ResourceType::kMock;  // For tests.
 }
 
-bool ShouldResourceBeKeptStrongReference(Resource* resource) {
+bool ShouldResourceBeKeptStrongReference(
+    Resource* resource,
+    const SecurityOrigin* settings_object_origin) {
   return IsMainThread() && resource->IsLoaded() &&
          resource->GetResourceRequest().HttpMethod() == http_names::kGET &&
          resource->Options().data_buffering_policy != kDoNotBufferData &&
-         ShouldResourceBeKeptStrongReferenceByType(resource) &&
+         ShouldResourceBeKeptStrongReferenceByType(resource,
+                                                   settings_object_origin) &&
          !resource->GetResponse().CacheControlContainsNoCache() &&
          !resource->GetResponse().CacheControlContainsNoStore();
 }
@@ -2821,6 +2835,10 @@ void ResourceFetcher::CancelWebBundleSubresourceLoadersFor(
 }
 
 void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
+  if (!base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference)) {
+    return;
+  }
+
   static const size_t total_size_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
   static const size_t resource_size_threshold = static_cast<size_t>(
@@ -2831,16 +2849,24 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
                                     resource_size <= total_size_threshold &&
                                     document_resource_strong_refs_total_size_ <=
                                         total_size_threshold - resource_size;
-  if (base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference) &&
-      ShouldResourceBeKeptStrongReference(resource) && size_is_small_enough) {
-    document_resource_strong_refs_.insert(resource);
-    document_resource_strong_refs_total_size_ += resource_size;
-    freezable_task_runner_->PostDelayedTask(
-        FROM_HERE,
-        WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
-                      WrapWeakPersistent(this), WrapWeakPersistent(resource)),
-        GetResourceStrongReferenceTimeout(resource));
+
+  if (!size_is_small_enough) {
+    return;
   }
+
+  const SecurityOrigin* settings_object_origin =
+      properties_->GetFetchClientSettingsObject().GetSecurityOrigin();
+  if (!ShouldResourceBeKeptStrongReference(resource, settings_object_origin)) {
+    return;
+  }
+
+  document_resource_strong_refs_.insert(resource);
+  document_resource_strong_refs_total_size_ += resource_size;
+  freezable_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      WTF::BindOnce(&ResourceFetcher::RemoveResourceStrongReference,
+                    WrapWeakPersistent(this), WrapWeakPersistent(resource)),
+      GetResourceStrongReferenceTimeout(resource));
 }
 
 void ResourceFetcher::OnMemoryPressure(

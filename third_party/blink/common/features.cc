@@ -1151,6 +1151,10 @@ BASE_FEATURE(kMemoryCacheStrongReferenceFilterScripts,
              "MemoryCacheStrongReferenceFilterScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMemoryCacheStrongReferenceFilterCrossOriginScripts,
+             "MemoryCacheStrongReferenceFilterCrossOriginScripts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
              base::FEATURE_DISABLED_BY_DEFAULT);
