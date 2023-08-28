@@ -48,6 +48,7 @@ js_type_check("closure_compile_local") {
     ":gesture_navigation",
     ":guest_tos",
     ":hw_data_collection",
+    ":local_password_setup",
     ":local_state_error",
     ":managed_terms_of_service",
     ":marketing_opt_in",
@@ -360,6 +361,21 @@ js_library("hw_data_collection") {
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("local_password_setup") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/local_password_setup.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_back_button",
+    "../../components/buttons:oobe_next_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -771,6 +787,7 @@ html_to_js("web_components") {
     "gesture_navigation.js",
     "guest_tos.js",
     "hw_data_collection.js",
+    "local_password_setup.js",
     "local_state_error.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",

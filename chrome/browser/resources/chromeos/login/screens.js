@@ -27,6 +27,7 @@ import './screens/common/gaia_signin.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
 import './screens/common/hw_data_collection.js';
+import './screens/common/local_password_setup.js';
 import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
@@ -116,6 +117,11 @@ export const commonScreensList = [
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},
   {tag: 'guest-tos-element', id: 'guest-tos'},
   {tag: 'hw-data-collection-element', id: 'hw-data-collection'},
+  {
+    tag: 'local-password-setup-element',
+    id: 'local-password-setup',
+    condition: 'isOobeConsumersLocalPasswordsEnabled',
+  },
   {tag: 'local-state-error-element', id: 'local-state-error'},
   {tag: 'managed-terms-of-service-element', id: 'terms-of-service'},
   {tag: 'marketing-opt-in-element', id: 'marketing-opt-in'},

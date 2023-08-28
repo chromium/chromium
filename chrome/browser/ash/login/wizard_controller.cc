@@ -85,6 +85,7 @@
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
+#include "chrome/browser/ash/login/screens/local_password_setup_screen.h"
 #include "chrome/browser/ash/login/screens/local_state_error_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 #include "chrome/browser/ash/login/screens/management_transition_screen.h"
@@ -169,6 +170,7 @@
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
@@ -892,6 +894,12 @@ WizardController::CreateScreens() {
         oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
                             weak_factory_.GetWeakPtr())));
+  }
+
+  if (features::AreLocalPasswordsEnabledForConsumers()) {
+    append(std::make_unique<LocalPasswordSetupScreen>(
+        oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
+        base::BindRepeating([](LocalPasswordSetupScreen::Result result) {})));
   }
 
   return result;

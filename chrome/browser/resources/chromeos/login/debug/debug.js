@@ -859,6 +859,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'local-password-setup',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'saml-confirm-password',
       kind: ScreenKind.OTHER,
       suffix: 'SAML',

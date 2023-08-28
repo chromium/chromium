@@ -2980,6 +2980,8 @@ static_library("ui") {
       "webui/ash/login/lacros_data_backward_migration_screen_handler.h",
       "webui/ash/login/lacros_data_migration_screen_handler.cc",
       "webui/ash/login/lacros_data_migration_screen_handler.h",
+      "webui/ash/login/local_password_setup_handler.cc",
+      "webui/ash/login/local_password_setup_handler.h",
       "webui/ash/login/local_state_error_screen_handler.cc",
       "webui/ash/login/local_state_error_screen_handler.h",
       "webui/ash/login/locale_switch_screen_handler.cc",

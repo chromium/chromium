@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
@@ -341,6 +342,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isPasswordSelectionEnabledInOobe",
                      features::IsPasswordSelectionEnabledInOobe());
 
+  source->AddBoolean("isOobeConsumersLocalPasswordsEnabled",
+                     features::AreLocalPasswordsEnabledForConsumers());
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsOobeSimonEnabled()) {
@@ -464,6 +468,10 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<FamilyLinkNoticeScreenHandler>());
 
   AddScreenHandler(std::make_unique<FingerprintSetupScreenHandler>());
+
+  if (features::AreLocalPasswordsEnabledForConsumers()) {
+    AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
+  }
 
   AddScreenHandler(std::make_unique<GestureNavigationScreenHandler>());
 

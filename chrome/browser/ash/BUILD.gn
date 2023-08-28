@@ -1840,6 +1840,8 @@ source_set("ash") {
     "login/screens/lacros_data_backward_migration_screen.h",
     "login/screens/lacros_data_migration_screen.cc",
     "login/screens/lacros_data_migration_screen.h",
+    "login/screens/local_password_setup_screen.cc",
+    "login/screens/local_password_setup_screen.h",
     "login/screens/local_state_error_screen.cc",
     "login/screens/local_state_error_screen.h",
     "login/screens/locale_switch_notification.cc",
