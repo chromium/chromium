@@ -4257,7 +4257,15 @@
           previous track
         </message>
         <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MENU" desc="The text read aloud by the screen reader describing the keyboard icon 'menu." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_HOME" desc="The text read aloud by the screen reader describing the keyboard icon 'browser home'." translateable="false">
+          browser home
+        </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_MAIL" desc="The text read aloud by the screen reader describing the keyboard icon 'launch mail'." translateable="false">
+          launch mail
+        </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU" desc="The text read aloud by the screen reader describing the keyboard icon 'context menu." translateable="false">
           menu
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MICROPHONE_MUTE_TOGGLE" desc="The text read aloud by the screen reader describing the keyboard icon 'toggle microphone mute'.">
