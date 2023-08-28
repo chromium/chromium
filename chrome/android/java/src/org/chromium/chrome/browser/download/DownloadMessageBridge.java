@@ -49,6 +49,7 @@ public class DownloadMessageBridge {
                 Snackbar.make(context.getString(R.string.download_file_type_not_supported), null,
                         Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_LOGIN);
         snackbar.setAction(context.getString(R.string.ok), null);
+        snackbar.setSingleLine(false);
         snackbarManager.showSnackbar(snackbar);
     }
 
