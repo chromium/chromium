@@ -45,14 +45,15 @@ KeyPermissionsServiceFactory::KeyPermissionsServiceFactory()
   DependsOn(UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance());
 }
 
-KeyedService* KeyPermissionsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+KeyPermissionsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     return nullptr;
   }
 
-  return new KeyPermissionsServiceImpl(
+  return std::make_unique<KeyPermissionsServiceImpl>(
       ProfileHelper::IsUserProfile(profile),
       profile->GetProfilePolicyConnector()->IsManaged(),
       PlatformKeysServiceFactory::GetForBrowserContext(profile),

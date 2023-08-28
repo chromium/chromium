@@ -40,7 +40,7 @@ class KeyPermissionsServiceFactory : public ProfileKeyedServiceFactory {
   ~KeyPermissionsServiceFactory() override = default;
 
   // BrowserStateKeyedServiceFactory.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
