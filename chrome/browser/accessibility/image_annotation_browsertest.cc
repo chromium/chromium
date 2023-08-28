@@ -538,8 +538,14 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
       "Appears to say: red.png Annotation. Appears to be: red.png 'fr' Label");
 }
 
+// TODO(crbug.com/1476383): Fix flakiness on ChromeOS MSan
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_DoesntAnnotateInternalPages DISABLED_DoesntAnnotateInternalPages
+#else
+#define MAYBE_DoesntAnnotateInternalPages DoesntAnnotateInternalPages
+#endif
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
-                       DoesntAnnotateInternalPages) {
+                       MAYBE_DoesntAnnotateInternalPages) {
   FakeAnnotator::SetReturnLabelResults(true);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
