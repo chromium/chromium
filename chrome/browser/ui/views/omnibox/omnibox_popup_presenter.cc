@@ -107,7 +107,9 @@ void OmniboxPopupPresenter::FrameSizeChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Size& frame_size) {
   if (widget_) {
-    widget_->SetBounds(GetTargetBounds(frame_size.height()));
+    gfx::Rect bounds = GetTargetBounds(frame_size.height());
+    bounds.set_height(std::min(bounds.height(), max_size().height()));
+    widget_->SetBounds(bounds);
   }
 }
 
