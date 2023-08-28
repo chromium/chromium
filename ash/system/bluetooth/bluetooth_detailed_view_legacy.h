@@ -49,7 +49,9 @@ class ASH_EXPORT BluetoothDetailedViewLegacy : public BluetoothDetailedView,
 
   // BluetoothDetailedView:
   views::View* GetAsView() override;
-  void UpdateBluetoothEnabledState(bool enabled) override;
+  void UpdateBluetoothEnabledState(
+      const bluetooth_config::mojom::BluetoothSystemState system_state)
+      override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
   views::View* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
                                       int text_id) override;

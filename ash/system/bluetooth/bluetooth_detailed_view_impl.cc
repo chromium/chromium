@@ -23,6 +23,8 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -45,6 +47,10 @@
 namespace ash {
 namespace {
 
+using bluetooth_config::IsBluetoothEnabled;
+using bluetooth_config::IsBluetoothEnabledOrEnabling;
+using bluetooth_config::mojom::BluetoothSystemState;
+
 constexpr auto kToggleRowTriViewInsets = gfx::Insets::VH(8, 24);
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 constexpr auto kPairNewDeviceIconMargins = gfx::Insets::TLBR(0, 2, 0, 0);
@@ -61,7 +67,7 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
   CreateScrollableList();
   CreateTopContainer();
   CreateMainContainer();
-  UpdateBluetoothEnabledState(/*enabled=*/false);
+  UpdateBluetoothEnabledState(BluetoothSystemState::kDisabled);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
@@ -72,29 +78,34 @@ views::View* BluetoothDetailedViewImpl::GetAsView() {
   return this;
 }
 
-void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
+void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(
+    const BluetoothSystemState system_state) {
+  bool is_enabled_or_enabling = IsBluetoothEnabledOrEnabling(system_state);
+
   // Use square corners on the bottom edge when Bluetooth is enabled.
-  top_container_->SetBehavior(enabled
+  top_container_->SetBehavior(is_enabled_or_enabling
                                   ? RoundedContainer::Behavior::kTopRounded
                                   : RoundedContainer::Behavior::kAllRounded);
-  main_container_->SetVisible(enabled);
+  main_container_->SetVisible(is_enabled_or_enabling);
 
   // Update the top container Bluetooth icon.
   toggle_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      enabled ? kSystemMenuBluetoothIcon : kSystemMenuBluetoothDisabledIcon,
+      is_enabled_or_enabling ? kSystemMenuBluetoothIcon
+                             : kSystemMenuBluetoothDisabledIcon,
       cros_tokens::kCrosSysOnSurface));
 
   // Update the top container on/off label.
   toggle_row_->text_label()->SetText(l10n_util::GetStringUTF16(
-      enabled ? IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT
-              : IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT));
+      is_enabled_or_enabling ? IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT
+                             : IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT));
 
   // Update the toggle row and button tooltips. The entire row is clickable.
   std::u16string tooltip_template =
-      enabled ? l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)
-              : l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP);
+      is_enabled_or_enabling
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP);
   std::u16string tooltip_text = l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_template);
   toggle_row_->SetTooltipText(tooltip_text);
@@ -103,9 +114,13 @@ void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
 
   // Ensure the toggle button is in sync with the current Bluetooth state.
-  if (toggle_button_->GetIsOn() != enabled) {
-    toggle_button_->SetIsOn(enabled);
+  if (toggle_button_->GetIsOn() != is_enabled_or_enabling) {
+    toggle_button_->SetIsOn(is_enabled_or_enabling);
   }
+
+  // Only show "Pair new device" button if bluetooth is enabled.
+  // see (b/297044914)
+  pair_new_device_view_->SetVisible(IsBluetoothEnabled(system_state));
 
   InvalidateLayout();
 }
@@ -256,10 +271,14 @@ void BluetoothDetailedViewImpl::OnToggleClicked() {
 void BluetoothDetailedViewImpl::ToggleBluetoothState(bool new_state) {
   delegate()->OnToggleClicked(new_state);
 
+  const BluetoothSystemState new_system_state =
+      new_state ? BluetoothSystemState::kEnabling
+                : BluetoothSystemState::kDisabling;
+
   // Avoid the situation where there is a delay between the toggle becoming
   // enabled/disabled and Bluetooth becoming enabled/disabled by forcing the
   // view state to match the toggle state.
-  UpdateBluetoothEnabledState(new_state);
+  UpdateBluetoothEnabledState(new_system_state);
 }
 
 BEGIN_METADATA(BluetoothDetailedViewImpl, TrayDetailedView)

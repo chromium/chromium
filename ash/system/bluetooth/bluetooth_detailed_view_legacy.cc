@@ -24,6 +24,8 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -37,6 +39,10 @@
 
 namespace ash {
 
+using bluetooth_config::IsBluetoothEnabled;
+using bluetooth_config::IsBluetoothEnabledOrEnabling;
+using bluetooth_config::mojom::BluetoothSystemState;
+
 BluetoothDetailedViewLegacy::BluetoothDetailedViewLegacy(
     DetailedViewDelegate* detailed_view_delegate,
     BluetoothDetailedView::Delegate* delegate)
@@ -48,7 +54,7 @@ BluetoothDetailedViewLegacy::BluetoothDetailedViewLegacy(
   CreateScrollableList();
   CreateDisabledView();
   CreatePairNewDeviceView();
-  UpdateBluetoothEnabledState(/*enabled=*/false);
+  UpdateBluetoothEnabledState(BluetoothSystemState::kDisabled);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
@@ -59,23 +65,31 @@ views::View* BluetoothDetailedViewLegacy::GetAsView() {
   return this;
 }
 
-void BluetoothDetailedViewLegacy::UpdateBluetoothEnabledState(bool enabled) {
-  disabled_view_->SetVisible(!enabled);
-  pair_new_device_view_->SetVisible(enabled);
-  scroller()->SetVisible(enabled);
+void BluetoothDetailedViewLegacy::UpdateBluetoothEnabledState(
+    const BluetoothSystemState system_state) {
+  bool is_enabled_or_enabling = IsBluetoothEnabledOrEnabling(system_state);
+  disabled_view_->SetVisible(!is_enabled_or_enabling);
+  scroller()->SetVisible(is_enabled_or_enabling);
+
+  // Only show "Pair new device" button if bluetooth is enabled.
+  // see (b/297044914)
+  pair_new_device_view_->SetVisible(IsBluetoothEnabled(system_state));
 
   const std::u16string toggle_tooltip =
-      enabled ? l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)
-              : l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP);
+      is_enabled_or_enabling
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP);
   toggle_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, toggle_tooltip));
 
-  // The toggle should already have animated to |enabled| unless it has become
-  // out of sync with the Bluetooth state, so just set it to the correct state.
-  if (toggle_button_->GetIsOn() != enabled)
-    toggle_button_->SetIsOn(enabled);
+  // The toggle should already have animated to |is_enabled_or_enabling| unless
+  // it has become out of sync with the Bluetooth state, so just set it to the
+  // correct state.
+  if (toggle_button_->GetIsOn() != is_enabled_or_enabling) {
+    toggle_button_->SetIsOn(is_enabled_or_enabling);
+  }
 
   Layout();
 }
@@ -219,10 +233,14 @@ void BluetoothDetailedViewLegacy::OnToggleClicked() {
   const bool toggle_state = toggle_button_->GetIsOn();
   delegate()->OnToggleClicked(toggle_state);
 
+  const BluetoothSystemState new_system_state =
+      toggle_state ? BluetoothSystemState::kEnabling
+                   : BluetoothSystemState::kDisabling;
+
   // Avoid the situation where there is a delay between the toggle becoming
   // enabled/disabled and Bluetooth becoming enabled/disabled by forcing the
   // view state to match the toggle state.
-  UpdateBluetoothEnabledState(toggle_state);
+  UpdateBluetoothEnabledState(new_system_state);
 }
 
 }  // namespace ash
