@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -129,5 +130,16 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
   // TODO(npm): it would be better if the bubble actually moves with the
   // corresponding tab, instead of being altogether deleted.
+  EXPECT_FALSE(GetBubble());
+}
+
+// Tests crash scenario from crbug.com/1473691.
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ClosedBrowser) {
+  PreShow();
+  browser()->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(browser());
+
+  // Invoking this after browser is closed should not cause a crash.
+  ShowUi("");
   EXPECT_FALSE(GetBubble());
 }
