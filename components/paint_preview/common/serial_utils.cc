@@ -51,8 +51,9 @@ sk_sp<SkData> SerializePictureAsRectData(SkPicture* picture, void* ctx) {
 
   auto it = context->content_id_to_transformed_clip.find(picture->uniqueID());
   // Defers picture serialization behavior to Skia.
-  if (it == context->content_id_to_transformed_clip.end())
+  if (it == context->content_id_to_transformed_clip.end()) {
     return nullptr;
+  }
 
   // This data originates from |PaintPreviewTracker|.
   const SkRect& transformed_cull_rect = it->second;
@@ -199,8 +200,9 @@ sk_sp<SkPicture> DeserializePictureAsRectData(const void* data,
                                               size_t length,
                                               void* ctx) {
   SerializedRectData rect_data;
-  if (length < sizeof(rect_data))
+  if (length < sizeof(rect_data)) {
     return MakeEmptyPicture();
+  }
   memcpy(&rect_data, data, sizeof(rect_data));
   auto* context = reinterpret_cast<DeserializationContext*>(ctx);
   context->insert(
@@ -220,14 +222,16 @@ sk_sp<SkPicture> GetPictureFromDeserialContext(const void* data,
                                                size_t length,
                                                void* ctx) {
   SerializedRectData rect_data;
-  if (length < sizeof(rect_data))
+  if (length < sizeof(rect_data)) {
     return MakeEmptyPicture();
+  }
   memcpy(&rect_data, data, sizeof(rect_data));
   auto* context = reinterpret_cast<LoadedFramesDeserialContext*>(ctx);
 
   auto it = context->find(rect_data.content_id);
-  if (it == context->end())
+  if (it == context->end()) {
     return MakeEmptyPicture();
+  }
 
   // Scroll and clip the subframe manually since the picture in |ctx| does not
   // encode this information.
@@ -280,21 +284,9 @@ SkSerialProcs MakeSerialProcs(PictureSerializationContext* picture_ctx,
   procs.fTypefaceProc = SerializeTypeface;
   procs.fTypefaceCtx = typeface_ctx;
 
-  // TODO(crbug/1008875): find a consistently smaller and low-memory overhead
-  // image downsampling method to use as fImageProc.
-  //
-  // At present this uses the native representation, but skips serializing if
-  // loading to a bitmap for encoding might cause an OOM.
-  if (image_ctx) {
-    image_ctx->memory_budget_exceeded = false;
-    if (image_ctx->max_decoded_image_size_bytes !=
-            std::numeric_limits<uint64_t>::max() ||
-        image_ctx->remaining_image_size !=
-            std::numeric_limits<uint64_t>::max()) {
-      procs.fImageProc = SerializeImage;
-      procs.fImageCtx = image_ctx;
-    }
-  }
+  image_ctx->memory_budget_exceeded = false;
+  procs.fImageProc = SerializeImage;
+  procs.fImageCtx = image_ctx;
   return procs;
 }
 

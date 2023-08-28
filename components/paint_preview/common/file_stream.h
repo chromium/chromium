@@ -56,6 +56,8 @@ class FileRStream : public SkStream {
   explicit FileRStream(base::File file);
   ~FileRStream() override;
 
+  size_t length() const { return length_; }
+
   // SkStream impl.
   size_t read(void* buffer, size_t size) override;
   bool isAtEnd() const override;
