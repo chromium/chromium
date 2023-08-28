@@ -24,6 +24,8 @@ import {
   UnsupportedOperationException,
   type EmptyResult,
   InvalidArgumentException,
+  NoSuchElementException,
+  UnableToCaptureScreenException,
 } from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -33,6 +35,7 @@ import {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
+import {Script} from '../../../protocol/protocol.js';
 
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import type {CdpTarget} from './CdpTarget.js';
@@ -704,56 +707,37 @@ export class BrowsingContextImpl {
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
   }
 
-  async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
+  async captureScreenshot(
+    params: BrowsingContext.CaptureScreenshotParameters
+  ): Promise<BrowsingContext.CaptureScreenshotResult> {
+    if (!this.isTopLevelContext()) {
+      throw new UnsupportedOperationException(
+        `Non-top-level 'context' (${params.context}) is currently not supported`
+      );
+    }
+
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
-    let clip: Protocol.DOM.Rect;
+    let rect = await this.#parseRect(params.clip);
 
-    if (this.isTopLevelContext()) {
-      const {cssContentSize, cssLayoutViewport} =
-        await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics');
-      clip = {
-        x: cssContentSize.x,
-        y: cssContentSize.y,
-        width: cssLayoutViewport.clientWidth,
-        height: cssLayoutViewport.clientHeight,
-      };
-    } else {
-      const {
-        result: {value: iframeDocRect},
-      } = await this.#cdpTarget.cdpClient.sendCommand(
-        'Runtime.callFunctionOn',
-        {
-          functionDeclaration: String(() => {
-            const docRect =
-              globalThis.document.documentElement.getBoundingClientRect();
-            return JSON.stringify({
-              x: docRect.x,
-              y: docRect.y,
-              width: docRect.width,
-              height: docRect.height,
-            });
-          }),
-          executionContextId: this.#defaultRealm.executionContextId,
-        }
-      );
-      clip = JSON.parse(iframeDocRect);
-    }
+    const {cssContentSize, cssLayoutViewport} =
+      await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics');
+    const viewport = {
+      x: cssContentSize.x,
+      y: cssContentSize.y,
+      width: cssLayoutViewport.clientWidth,
+      height: cssLayoutViewport.clientHeight,
+    };
+
+    rect = rect ? getIntersectionRect(rect, viewport) : viewport;
 
     const result = await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
-      {
-        clip: {
-          ...clip,
-          scale: 1.0,
-        },
-      }
+      {clip: {...rect, scale: 1.0}}
     );
-    return {
-      data: result.data,
-    };
+    return {data: result.data};
   }
 
   async print(
@@ -848,9 +832,160 @@ export class BrowsingContextImpl {
     }
   }
 
+  /**
+   * See
+   * https://w3c.github.io/webdriver-bidi/#:~:text=If%20command%20parameters%20contains%20%22clip%22%3A
+   */
+  async #parseRect(clip?: BrowsingContext.ClipRectangle) {
+    if (!clip) {
+      return;
+    }
+    switch (clip.type) {
+      case 'viewport':
+        return {x: clip.x, y: clip.y, width: clip.width, height: clip.height};
+      case 'element': {
+        if (clip.scrollIntoView) {
+          throw new UnsupportedOperationException(
+            `'scrollIntoView' is currently not supported`
+          );
+        }
+        // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
+        const sandbox = await this.getOrCreateSandbox(undefined);
+        const result = await sandbox.callFunction(
+          String((element: unknown) => {
+            return element instanceof Element;
+          }),
+          {type: 'undefined'},
+          [clip.element],
+          false,
+          Script.ResultOwnership.None,
+          {}
+        );
+        if (result.type === 'exception') {
+          throw new NoSuchElementException(
+            `Element '${clip.element.sharedId}' was not found`
+          );
+        }
+        assert(result.result.type === 'boolean');
+        if (!result.result.value) {
+          throw new NoSuchElementException(
+            `Node '${clip.element.sharedId}' is not an Element`
+          );
+        }
+        {
+          const result = await sandbox.callFunction(
+            String((element: Element) => {
+              const rect = element.getBoundingClientRect();
+              return {
+                x: rect.x,
+                y: rect.y,
+                height: rect.height,
+                width: rect.width,
+              };
+            }),
+            {type: 'undefined'},
+            [clip.element],
+            false,
+            Script.ResultOwnership.None,
+            {}
+          );
+          assert(result.type === 'success');
+          const rect = deserializeDOMRect(result.result);
+          if (!rect) {
+            throw new UnableToCaptureScreenException(
+              `Could not get bounding box for Element '${clip.element.sharedId}'`
+            );
+          }
+          return rect;
+        }
+      }
+    }
+  }
+
   async close(): Promise<void> {
     await this.#cdpTarget.cdpClient.sendCommand('Page.close');
   }
+}
+
+function deserializeDOMRect(
+  result: Script.RemoteValue
+): Protocol.DOM.Rect | undefined {
+  if (result.type !== 'object' || result.value === undefined) {
+    return;
+  }
+  const x = result.value.find(([key]) => {
+    return key === 'x';
+  })?.[1];
+  const y = result.value.find(([key]) => {
+    return key === 'y';
+  })?.[1];
+  const height = result.value.find(([key]) => {
+    return key === 'height';
+  })?.[1];
+  const width = result.value.find(([key]) => {
+    return key === 'width';
+  })?.[1];
+  if (
+    x?.type !== 'number' ||
+    y?.type !== 'number' ||
+    height?.type !== 'number' ||
+    width?.type !== 'number'
+  ) {
+    return;
+  }
+  return {
+    x: x.value,
+    y: y.value,
+    width: width.value,
+    height: height.value,
+  } as Protocol.DOM.Rect;
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */
+function normalizeRect(box: Readonly<Protocol.DOM.Rect>): Protocol.DOM.Rect {
+  return {
+    ...(box.width < 0
+      ? {
+          x: box.x + box.width,
+          width: -box.width,
+        }
+      : {
+          x: box.x,
+          width: box.width,
+        }),
+    ...(box.height < 0
+      ? {
+          y: box.y + box.height,
+          height: -box.height,
+        }
+      : {
+          y: box.y,
+          height: box.height,
+        }),
+  };
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
+function getIntersectionRect(
+  first: Readonly<Protocol.DOM.Rect>,
+  second: Readonly<Protocol.DOM.Rect>
+): Protocol.DOM.Rect {
+  first = normalizeRect(first);
+  second = normalizeRect(second);
+  const x = Math.max(first.x, second.x);
+  const y = Math.max(first.y, second.y);
+  return {
+    x,
+    y,
+    width: Math.max(
+      Math.min(first.x + first.width, second.x + second.width) - x,
+      0
+    ),
+    height: Math.max(
+      Math.min(first.y + first.height, second.y + second.height) - y,
+      0
+    ),
+  };
 }
 
 function parseInteger(value: string) {

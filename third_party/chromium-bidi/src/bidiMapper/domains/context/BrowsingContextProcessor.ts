@@ -165,7 +165,7 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CaptureScreenshotParameters
   ): Promise<BrowsingContext.CaptureScreenshotResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
-    return context.captureScreenshot();
+    return context.captureScreenshot(params);
   }
 
   async print(

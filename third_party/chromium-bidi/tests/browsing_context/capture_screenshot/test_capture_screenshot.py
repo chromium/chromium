@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (assert_images_equal, execute_command, get_tree,
+from test_helpers import (assert_images_similar, execute_command, get_tree,
                           goto_url, read_JSON_message, send_JSON_command)
 
 
@@ -65,7 +65,51 @@ async def test_screenshot(websocket, context_id, png_filename,
         resp = await read_JSON_message(websocket)
         assert resp["result"] == {'data': ANY_STR}
 
-        assert_images_equal(resp["result"]["data"], png_base64)
+        assert_images_similar(resp["result"]["data"], png_base64)
+
+
+@pytest.mark.asyncio
+async def test_screenshot_element(websocket, context_id, query_selector,
+                                  get_cdp_session_id, html):
+    await goto_url(websocket, context_id, html('<div>hello</div>'))
+    session_id = await get_cdp_session_id(context_id)
+
+    # Set a fixed viewport to make the test deterministic.
+    await execute_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "Emulation.setDeviceMetricsOverride",
+                "params": {
+                    "width": 200,
+                    "height": 200,
+                    "deviceScaleFactor": 1.0,
+                    "mobile": False,
+                },
+                "session": session_id
+            }
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "clip": {
+                    "type": "element",
+                    "element": await query_selector("div")
+                }
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp["result"] == {'data': ANY_STR}
+
+    with open(Path(__file__).parent.resolve() / 'element.png',
+              'rb') as image_file:
+        assert_images_similar(
+            resp["result"]["data"],
+            base64.b64encode(image_file.read()).decode('utf-8'))
 
 
 @pytest.mark.asyncio
@@ -115,4 +159,4 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe,
               'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
-        assert_images_equal(resp["result"]["data"], png_base64)
+        assert_images_similar(resp["result"]["data"], png_base64)

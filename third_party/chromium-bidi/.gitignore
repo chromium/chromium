@@ -15,6 +15,5 @@ wptreport*.json
 .nyc_output*
 .wireit/
 MANIFEST.json
-*.png
 coverage/
 *.cddl

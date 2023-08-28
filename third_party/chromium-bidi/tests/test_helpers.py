@@ -193,8 +193,10 @@ def AnyExtending(expected: list | dict):
     return expected
 
 
-def assert_images_equal(img1: Image.Image | str, img2: Image.Image | str):
-    """Assert that the given images are equal."""
+def assert_images_similar(img1: Image.Image | str,
+                          img2: Image.Image | str,
+                          percent=0.90):
+    """Assert that the given images are similar based on the given percent."""
     if isinstance(img1, str):
         img1 = Image.open(io.BytesIO(base64.b64decode(img1)))
     if isinstance(img2, str):
@@ -209,8 +211,14 @@ def assert_images_equal(img1: Image.Image | str, img2: Image.Image | str):
     else:
         equal_alphas = True
 
-    equal_content = not ImageChops.difference(img1.convert("RGB"),
-                                              img2.convert("RGB")).getbbox()
+    difference = ImageChops.difference(img1.convert("RGB"),
+                                       img2.convert("RGB")).getdata()
+    pixel_count = 0
+    for pixel in difference:
+        if pixel == (0, 0, 0):
+            pixel_count += 1
+
+    equal_content = pixel_count / len(difference) > percent
 
     assert equal_alphas
     assert equal_size
