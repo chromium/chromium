@@ -14596,6 +14596,21 @@
             ]
         }
     ],
+    "ShortCircuitUnfocusAnimation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShortCircuitUnfocusAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShutdownConfirmationBubble": [
         {
             "platforms": [
