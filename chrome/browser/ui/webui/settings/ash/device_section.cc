@@ -810,7 +810,10 @@ bool IsShowForceRespectUiGainsToggleEnabled() {
 }
 
 void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString keyboard_strings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString keyboard_strings[] = {
       {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
@@ -833,7 +836,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS},
       {"keyboardSendInvertedFunctionKeysDescription",
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
-      {"keyboardShowInputSettings", IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
+      {"keyboardShowInputSettings",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS
+                        : IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
       // TODO(crbug.com/1097328): Remove this string, as it is unused.
       {"keyboardShowLanguageAndInput",
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},

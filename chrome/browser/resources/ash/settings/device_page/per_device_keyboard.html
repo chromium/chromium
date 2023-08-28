@@ -26,8 +26,7 @@
         pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
         label="$i18n{keyboardAccentMarks}"
         sub-label="$i18n{keyboardAccentMarksSubLabel}"
-        deep-link-focus-id$="[[Setting.kShowDiacritic]]"
-        >
+        deep-link-focus-id$="[[Setting.kShowDiacritic]]">
     </settings-toggle-button>
   <settings-toggle-button
       class="hr continuation"
@@ -48,8 +47,8 @@
           disabled="[[
               !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
           label-aria="$i18n{keyRepeatDelay}"
-          label-min="$i18n{keyRepeatDelayLong}"
-          label-max="$i18n{keyRepeatDelayShort}">
+          label-min="[[getRepeatDelaySliderLabelMin_()]]"
+          label-max="[[getRepeatDelaySliderLabelMax_()]]">
       </settings-slider>
     </div>
     <div class="settings-box continuation">
@@ -85,10 +84,11 @@
       <settings-slider id="delaySlider"
           pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
           ticks="[[autoRepeatDelays]]"
-          disabled="[[!prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+          disabled="[[
+              !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
           label-aria="$i18n{keyRepeatDelay}"
-          label-min="$i18n{keyRepeatDelayLong}"
-          label-max="$i18n{keyRepeatDelayShort}">
+          label-min="[[getRepeatDelaySliderLabelMin_()]]"
+          label-max="[[getRepeatDelaySliderLabelMax_()]]">
       </settings-slider>
     </div>
     <div class="settings-box continuation embedded">

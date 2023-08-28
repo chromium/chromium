@@ -24,6 +24,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -72,7 +73,11 @@ export class SettingsPerDeviceKeyboardElement extends
        */
       autoRepeatDelays: {
         type: Array,
-        value: [2000, 1500, 1000, 500, 300, 200, 150],
+        value() {
+          const autoRepeatDelays = [2000, 1500, 1000, 500, 300, 200, 150];
+          return isRevampWayfindingEnabled() ? autoRepeatDelays.reverse() :
+                                               autoRepeatDelays;
+        },
         readOnly: true,
       },
 
@@ -98,6 +103,13 @@ export class SettingsPerDeviceKeyboardElement extends
         ]),
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
+
       /**
        * Whether the setting for long press diacritics should be shown
        */
@@ -110,6 +122,7 @@ export class SettingsPerDeviceKeyboardElement extends
   protected shouldShowDiacriticSetting: boolean =
       loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
   private prefs: chrome.settingsPrivate.PrefObject;
+  private isRevampWayfindingEnabled_: boolean;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
   private browserProxy: DevicePageBrowserProxy =
@@ -158,6 +171,18 @@ export class SettingsPerDeviceKeyboardElement extends
 
   private computeIsLastDevice(index: number) {
     return index === this.keyboards.length - 1;
+  }
+
+  private getRepeatDelaySliderLabelMin_(): string {
+    return this.i18n(
+        this.isRevampWayfindingEnabled_ ? 'keyRepeatDelayShort' :
+                                          'keyRepeatDelayLong');
+  }
+
+  private getRepeatDelaySliderLabelMax_(): string {
+    return this.i18n(
+        this.isRevampWayfindingEnabled_ ? 'keyRepeatDelayLong' :
+                                          'keyRepeatDelayShort');
   }
 }
 
