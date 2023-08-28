@@ -405,7 +405,7 @@ BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,
 // Enable WebUSB on extension service workers.
 BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable extended descriptions for key settings in Chrome settings.
 BASE_FEATURE(kExtendedSettingsDescriptions,

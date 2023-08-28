@@ -1149,16 +1149,6 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
-// Test fixture with kEnableWebUsbOnExtensionServiceWorker enabled.
-class WebUsbExtensionFeatureEnabledBrowserTest
-    : public WebUsbExtensionBrowserTest {
- public:
-  WebUsbExtensionFeatureEnabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableWebUsbOnExtensionServiceWorker}, {});
-  }
-};
-
 // Test fixture with kEnableWebUsbOnExtensionServiceWorker disabled.
 class WebUsbExtensionFeatureDisabledBrowserTest
     : public WebUsbExtensionBrowserTest {
@@ -1168,20 +1158,6 @@ class WebUsbExtensionFeatureDisabledBrowserTest
         {}, {features::kEnableWebUsbOnExtensionServiceWorker});
   }
 };
-
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, FeatureDefaultDisabled) {
-  constexpr base::StringPiece kBackgroundJs = R"(
-    chrome.test.sendMessage("ready", async () => {
-      try {
-        chrome.test.assertEq(navigator.usb, undefined);
-        chrome.test.notifyPass();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )";
-  LoadExtensionAndRunTest(kBackgroundJs);
-}
 
 IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
                        FeatureDisabled) {
@@ -1198,7 +1174,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest, GetDevices) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, GetDevices) {
   constexpr base::StringPiece kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1214,8 +1190,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest, GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
-                       RequestDevice) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, RequestDevice) {
   constexpr base::StringPiece kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1229,8 +1204,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
-                       UsbConnectionTracker) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, UsbConnectionTracker) {
   constexpr char kBackgroundJs[] = R"(
     // |device| is a global variable to store UsbDevice object being tested in
     // case the local one is garbage collected, which can close the connection.
@@ -1259,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
                        DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context = browser()
                                                ->profile()
