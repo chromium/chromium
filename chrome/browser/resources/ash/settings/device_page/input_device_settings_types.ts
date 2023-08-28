@@ -46,7 +46,9 @@ export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 
 export type Keyboard = InputDeviceSettingsTypes.Keyboard;
 export type Touchpad = InputDeviceSettingsTypes.Touchpad;
-export type Mouse = InputDeviceSettingsTypes.Mouse;
+export type Mouse = Omit<InputDeviceSettingsTypes.Mouse, 'settings'>&{
+  settings: MouseSettings,
+};
 export type PointingStick = InputDeviceSettingsTypes.PointingStick;
 
 export interface Stylus {
@@ -75,7 +77,10 @@ export interface GraphicsTabletSettings {
 
 export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
 export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;
-export type MouseSettings = InputDeviceSettingsTypes.MouseSettings;
+export type MouseSettings =
+    Omit<InputDeviceSettingsTypes.MouseSettings, 'buttonRemappings'>&{
+      buttonRemappings: ButtonRemapping[],
+    };
 export type PointingStickSettings =
     InputDeviceSettingsTypes.PointingStickSettings;
 export type DeviceSettings =
@@ -107,22 +112,16 @@ export interface FakeKeyEvent {
   keyDisplay: string;
 }
 
-export interface FakeRemappingAction {
-  keyEvent?: FakeKeyEvent;
-  action?: AcceleratorActionTypes.AcceleratorAction;
-}
-
-export interface FakeButtonRemapping {
-  name: string;
-  button: InputDeviceSettingsTypes.Button;
-  remappingAction?: FakeRemappingAction;
-}
-
 export type ButtonRemapping =
-    Required<InputDeviceSettingsTypes.ButtonRemapping>&
-    Partial<FakeButtonRemapping>;
+    Omit<InputDeviceSettingsTypes.ButtonRemapping, 'remappingAction'>&{
+      remappingAction?: RemappingAction,
+    };
 
-export type RemappingAction = InputDeviceSettingsTypes.RemappingAction;
+export type RemappingAction =
+    Omit<InputDeviceSettingsTypes.RemappingAction, 'keyEvent'>&{
+      keyEvent?: KeyEvent,
+    };
+
 export type KeyEvent =
     Required<InputDeviceSettingsTypes.KeyEvent>&Partial<FakeKeyEvent>;
 
