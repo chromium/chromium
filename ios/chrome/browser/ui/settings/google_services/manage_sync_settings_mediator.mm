@@ -787,8 +787,11 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 - (SyncSettingsAccountState)syncAccountState {
   // As the manage sync settings mediator is running, the sync account state
   // does not change except only when the user signs out of their account.
-
-  if (_syncService->GetAccountInfo().IsEmpty()) {
+  //  The TransportState::PAUSED can show up temporarily if a signout is
+  //  triggered from another device.
+  if (_syncService->GetAccountInfo().IsEmpty() ||
+      _syncService->GetTransportState() ==
+          syncer::SyncService::TransportState::PAUSED) {
     return SyncSettingsAccountState::kSignedOut;
   }
   return _initialAccountState;
