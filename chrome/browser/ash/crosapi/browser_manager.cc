@@ -263,14 +263,19 @@ void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
   // Preload Widevine for the right architecture.
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #if defined(ARCH_CPU_ARM_FAMILY)
+#if defined(ARCH_CPU_ARM64)
+  base::FilePath libwidevine_path = lacros_dir.Append(
+      "WidevineCdm/_platform_specific/cros_arm64/libwidevinecdm.so");
+#else
   base::FilePath libwidevine_path = lacros_dir.Append(
       "WidevineCdm/_platform_specific/cros_arm/libwidevinecdm.so");
+#endif  // defined(ARCH_CPU_ARM64)
 #else
   base::FilePath libwidevine_path = lacros_dir.Append(
       "WidevineCdm/_platform_specific/cros_x64/libwidevinecdm.so");
-#endif
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
   PreloadFile(libwidevine_path);
-#endif
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 }
 
 ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
