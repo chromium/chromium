@@ -5,10 +5,6 @@
 import {openTab} from '/_test_resources/test_util/tabs_util.js';
 
 chrome.test.runTests([
-
-  // TODO(crbug.com/1385165): Clear all registered user scripts at the beginning
-  // of each test once userScripts.unregister() is implemented.
-
   // Tests that an error is returned when multiple user script entries in
   // userScripts.register share the same ID.
   async function duplicateScriptId_DuplicatesInSameCall() {
@@ -30,6 +26,8 @@ chrome.test.runTests([
   // succession, the first call will successfully register the script and the
   // second call with return with an error.
   async function duplicateScriptId_DuplicateInPendingRegistration() {
+    await chrome.userScripts.unregister();
+
     const scriptId = 'script2';
     const scripts = [
       {id: scriptId, matches: ['*://notused.com/*'], js: [{file: 'script.js'}]}
@@ -50,6 +48,8 @@ chrome.test.runTests([
   // Tests that an error is returned when a user script to be registered has
   // the same ID as a previously registered user script.
   async function duplicateScriptId_DuplicatePreviouslyRegistered() {
+    await chrome.userScripts.unregister();
+
     const scriptId = 'script3';
     const scripts = [
       {id: scriptId, matches: ['*://notused.com/*'], js: [{file: 'script.js'}]}
@@ -66,6 +66,8 @@ chrome.test.runTests([
   // Tests that an error is returned if a user script is specified with an
   // invalid ID.
   async function emptyScriptId() {
+    await chrome.userScripts.unregister();
+
     const scripts =
         [{id: '', matches: ['*://notused.com/*'], js: [{file: 'script.js'}]}];
 
@@ -79,9 +81,11 @@ chrome.test.runTests([
   // Test that no scripts are registered when an empty array of scripts is
   // passed to userScripts.register.
   async function emptyScripts() {
+    await chrome.userScripts.unregister();
+
     await chrome.userScripts.register([]);
-    // TODO(crbug.com/1459670): Verify there are no registered scripts once
-    // userScripts.getScripts() is implemented.
+    const registeredUserScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(0, registeredUserScripts.length);
 
     chrome.test.succeed();
   },
@@ -89,6 +93,8 @@ chrome.test.runTests([
   // Test that an error is returned if a user script is specified with a file
   // that cannot be read.
   async function scriptFileError() {
+    await chrome.userScripts.unregister();
+
     const scriptFile = 'nonexistent.js';
     const scripts = [
       {id: 'script4', matches: ['*://notused.com/*'], js: [{file: scriptFile}]}
@@ -104,6 +110,8 @@ chrome.test.runTests([
   // Test that an error is returned if a user script does not specify any
   // script source to inject.
   async function invalidScriptSource_EmptyJs() {
+    await chrome.userScripts.unregister();
+
     const scriptId = 'empty';
     const scripts = [{id: scriptId, matches: ['*://notused.com/*'], js: []}];
 
@@ -117,6 +125,8 @@ chrome.test.runTests([
   // Test that an error is returned if a user script source does not specify
   // either code or file.
   async function invalidScriptSource_EmptySource() {
+    await chrome.userScripts.unregister();
+
     const scriptId = 'script5';
     const scripts = [{id: scriptId, matches: ['*://notused.com/*'], js: [{}]}];
 
@@ -131,6 +141,8 @@ chrome.test.runTests([
   // Test that an error is returned if a user script source specifies both
   // code and file.
   async function invalidScriptSource_MultipleSource() {
+    await chrome.userScripts.unregister();
+
     const scriptId = 'script6';
     const scripts = [{
       id: scriptId,
@@ -148,6 +160,8 @@ chrome.test.runTests([
 
   // Test that a user script must specify a list of match patterns.
   async function matchPatternsNotSpecified() {
+    await chrome.userScripts.unregister();
+
     const scriptId = 'script7';
     const scripts = [{id: scriptId, js: [{file: 'script.js'}]}];
 
@@ -161,6 +175,8 @@ chrome.test.runTests([
   // Test that an error is returned if a user script specifies a malformed
   // match pattern.
   async function invalidMatchPattern() {
+    await chrome.userScripts.unregister();
+
     const scripts = [{
       id: 'invalidMatchPattern',
       matches: ['invalid**match////'],
@@ -178,6 +194,8 @@ chrome.test.runTests([
   // Tests that a (valid) script is registered and injected into a frame where
   // the extension has host permissions for.
   async function scriptRegistered_HostPermissions() {
+    await chrome.userScripts.unregister();
+
     const scripts = [{
       id: 'hostPerms',
       matches: ['*://requested.com/*'],
@@ -202,6 +220,8 @@ chrome.test.runTests([
   // Tests that a registered user script will not be injected into a frame
   // where the extension does not have the host permissions for.
   async function scriptRegistered_NoHostPermissions() {
+    await chrome.userScripts.unregister();
+
     const scripts = [{
       id: 'noHostPerms',
       matches: ['*://non-requested.com/*'],
@@ -226,6 +246,8 @@ chrome.test.runTests([
 
   // Tests that a file can be used both as a user script and content script.
   async function fileUsedAsContentScript() {
+    await chrome.userScripts.unregister();
+
     const file = 'script.js'
     const contentScripts =
         [{id: 'contentScript', matches: ['*://*/*'], js: [file]}];
@@ -235,13 +257,11 @@ chrome.test.runTests([
     await chrome.scripting.registerContentScripts(contentScripts);
     await chrome.userScripts.register(userScripts);
 
-    let registered_content_scripts =
+    const registerContentScripts =
         await chrome.scripting.getRegisteredContentScripts();
-    chrome.test.assertEq('contentScript', registered_content_scripts[0].id);
-    // TODO(crbug.com/1385165): Assert user script was registered once we add
-    // a User Scripts API method for retrieving user scripts and unregistering
-    // them in between tests (otherwise we would retrieve here all user scripts
-    // across tests).
+    chrome.test.assertEq('contentScript', registerContentScripts[0].id);
+    const registeredUserScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq('userScript', registeredUserScripts[0].id);
 
     chrome.test.succeed();
   },
