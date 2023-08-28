@@ -44,9 +44,9 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
         OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
             infobar_.get(), InfobarOverlayType::kBanner);
     consumer_ = [[FakeInfobarBannerConsumer alloc] init];
-    mediator_ = [[SaveCardInfobarBannerOverlayMediator alloc]
-        initWithRequest:request_.get()];
-    ;
+    mediator_ = OCMPartialMock([[SaveCardInfobarBannerOverlayMediator alloc]
+        initWithRequest:request_.get()]);
+
     mediator_.consumer = consumer_;
   }
 
