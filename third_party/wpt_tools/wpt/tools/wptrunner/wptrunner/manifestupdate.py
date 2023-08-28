@@ -667,7 +667,14 @@ class PropertyUpdate:
                 else:
                     errors.append(error)
 
-            for child in node.children:
+            try:
+                # Attempt to stably order the next group of conditions by their
+                # values, which are typically string/numeric types that have an
+                # order defined.
+                children = sorted(node.children, key=lambda child: child.value)
+            except TypeError:
+                children = node.children
+            for child in children:
                 queue.append((child, parents_and_self))
 
         conditions = conditions[::-1]
