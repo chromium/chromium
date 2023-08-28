@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -51,9 +54,12 @@ constexpr int kMarginDip = 8;
 }  // namespace
 
 EditorMenuPromoCardView::EditorMenuPromoCardView(
-    const gfx::Rect& anchor_view_bounds)
+    const gfx::Rect& anchor_view_bounds,
+    EditorMenuViewDelegate* delegate)
     : pre_target_handler_(
-          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)) {
+          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)),
+      delegate_(delegate) {
+  CHECK(delegate_);
   InitLayout();
 }
 
@@ -61,7 +67,8 @@ EditorMenuPromoCardView::~EditorMenuPromoCardView() = default;
 
 // static
 views::UniqueWidgetPtr EditorMenuPromoCardView::CreateWidget(
-    const gfx::Rect& anchor_view_bounds) {
+    const gfx::Rect& anchor_view_bounds,
+    EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
@@ -73,8 +80,8 @@ views::UniqueWidgetPtr EditorMenuPromoCardView::CreateWidget(
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
   EditorMenuPromoCardView* editor_menu_promo_card_view =
-      widget->SetContentsView(
-          std::make_unique<EditorMenuPromoCardView>(anchor_view_bounds));
+      widget->SetContentsView(std::make_unique<EditorMenuPromoCardView>(
+          anchor_view_bounds, delegate));
   editor_menu_promo_card_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -198,15 +205,27 @@ void EditorMenuPromoCardView::InitButtonBar(views::View* main_view) {
   // Dismiss button.
   dismiss_button_ =
       button_bar->AddChildView(std::make_unique<views::LabelButton>(
-          views::Button::PressedCallback(),
+          base::BindRepeating(&EditorMenuPromoCardView::OnDismissButtonPressed,
+                              weak_factory_.GetWeakPtr()),
           l10n_util::GetStringUTF16(
               IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
 
   // Tell me more button.
   button_bar->AddChildView(std::make_unique<views::LabelButton>(
-      views::Button::PressedCallback(),
+      base::BindRepeating(&EditorMenuPromoCardView::OnTellMeMoreButtonPressed,
+                          weak_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(
           IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON)));
+}
+
+void EditorMenuPromoCardView::OnDismissButtonPressed() {
+  CHECK(delegate_);
+  delegate_->OnPromoCardDismissButtonPressed();
+}
+
+void EditorMenuPromoCardView::OnTellMeMoreButtonPressed() {
+  CHECK(delegate_);
+  delegate_->OnPromoCardTellMeMoreButtonPressed();
 }
 
 BEGIN_METADATA(EditorMenuPromoCardView, views::View)

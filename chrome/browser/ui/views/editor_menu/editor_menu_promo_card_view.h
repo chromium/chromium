@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_PROMO_CARD_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -17,6 +18,7 @@ class LabelButton;
 
 namespace chromeos::editor_menu {
 
+class EditorMenuViewDelegate;
 class PreTargetHandler;
 
 // A view which shows a promo card to introduce the Editor Menu feature.
@@ -25,7 +27,8 @@ class EditorMenuPromoCardView : public views::View,
  public:
   METADATA_HEADER(EditorMenuPromoCardView);
 
-  explicit EditorMenuPromoCardView(const gfx::Rect& anchor_view_bounds);
+  EditorMenuPromoCardView(const gfx::Rect& anchor_view_bounds,
+                          EditorMenuViewDelegate* delegate);
 
   EditorMenuPromoCardView(const EditorMenuPromoCardView&) = delete;
   EditorMenuPromoCardView& operator=(const EditorMenuPromoCardView&) = delete;
@@ -33,7 +36,8 @@ class EditorMenuPromoCardView : public views::View,
   ~EditorMenuPromoCardView() override;
 
   static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds);
+      const gfx::Rect& anchor_view_bounds,
+      EditorMenuViewDelegate* delegate);
 
   // views::View:
   void AddedToWidget() override;
@@ -51,12 +55,20 @@ class EditorMenuPromoCardView : public views::View,
   void InitTextContainer(views::View* main_view);
   void InitButtonBar(views::View* main_view);
 
+  void OnDismissButtonPressed();
+  void OnTellMeMoreButtonPressed();
+
   std::unique_ptr<PreTargetHandler> pre_target_handler_;
+
+  // `delegate_` outlives `this`.
+  raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
 
   raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  base::WeakPtrFactory<EditorMenuPromoCardView> weak_factory_{this};
 };
 
 }  // namespace chromeos::editor_menu

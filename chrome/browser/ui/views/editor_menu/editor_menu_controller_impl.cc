@@ -33,7 +33,8 @@ void EditorMenuControllerImpl::MaybeShowEditorMenu(
   }
 
   if (status == ConsentStatus::kPending) {
-    editor_menu_widget_ = EditorMenuPromoCardView::CreateWidget(anchor_bounds);
+    editor_menu_widget_ =
+        EditorMenuPromoCardView::CreateWidget(anchor_bounds, this);
     editor_menu_widget_->ShowInactive();
     return;
   }
