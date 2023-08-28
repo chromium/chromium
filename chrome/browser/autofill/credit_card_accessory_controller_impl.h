@@ -43,8 +43,7 @@ class CreditCardAccessoryControllerImpl
 
   // CreditCardAccessManager::Accessor:
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card,
-                           const std::u16string& cvc) override;
+                           const CreditCard* credit_card) override;
 
   static void CreateForWebContentsForTesting(
       content::WebContents* web_contents,

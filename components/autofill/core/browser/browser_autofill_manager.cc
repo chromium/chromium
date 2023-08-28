@@ -1956,14 +1956,18 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   }
 }
 
-void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
-                                                 const CreditCard* credit_card,
-                                                 const std::u16string& cvc) {
+void BrowserAutofillManager::OnCreditCardFetched(
+    CreditCardFetchResult result,
+    const CreditCard* credit_card) {
   if (result != CreditCardFetchResult::kSuccess) {
     driver().RendererShouldClearPreviewedForm();
     return;
   }
 
+  // In the failure case, `credit_card` can be nullptr but in the success case
+  // it is non-null.
+  CHECK(credit_card);
+  const std::u16string& cvc = credit_card->cvc();
   last_unlocked_credit_card_cvc_ = cvc;
 
   FormStructure* form_structure = nullptr;
@@ -1985,6 +1989,8 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
     options.masked_card_number_last_four =
         credit_card_.ObfuscatedNumberWithVisibleLastFourDigits();
     options.virtual_card = *credit_card;
+    // TODO(crbug.com/1473481): Remove CVC from
+    // VirtualCardManualFallbackBubbleOptions.
     options.virtual_card_cvc = cvc;
     options.card_image = GetCardImage(*credit_card);
     client().OnVirtualCardDataAvailable(options);

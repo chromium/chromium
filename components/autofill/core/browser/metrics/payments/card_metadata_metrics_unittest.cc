@@ -59,7 +59,7 @@ class CardMetadataFormEventMetricsTest
                            .action = ""});
 
     // Add a masked server card.
-    card_ = test::GetMaskedServerCard();
+    card_ = test::GetMaskedServerCardWithCvc();
     card_.set_guid(kCardGuid);
     if (registered_card_issuer_available()) {
       card_.set_issuer_id(kCapitalOneCardIssuerId);
@@ -259,7 +259,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       Suggestion::BackendId(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card(), u"123");
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -302,7 +302,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
 
   // Fill the suggestion again.
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card(), u"123");
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -335,7 +335,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       Suggestion::BackendId(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card(), u"123");
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
   SubmitForm(form());
 
   // Verify that:

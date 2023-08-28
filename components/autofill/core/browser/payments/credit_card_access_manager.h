@@ -74,6 +74,7 @@ enum class CreditCardFetchResult {
   kMaxValue = kPermanentError,
 };
 
+// TODO(crbug.com/1473481): Remove CVC from CachedServerCardInfo.
 struct CachedServerCardInfo {
  public:
   // An unmasked CreditCard.
@@ -97,8 +98,7 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
    public:
     virtual ~Accessor() = default;
     virtual void OnCreditCardFetched(CreditCardFetchResult result,
-                                     const CreditCard* credit_card,
-                                     const std::u16string& cvc) = 0;
+                                     const CreditCard* credit_card) = 0;
   };
 
   CreditCardAccessManager(AutofillDriver* driver,
@@ -494,12 +494,11 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   bool can_fetch_unmask_details_ = true;
 
   // The credit card being accessed.
+  // It will be set when user preview or select the card. Before authentication,
+  // the card is the masked server card which is retrieved from webdatabase.
+  // After FIDO, CVC, OTP authentication, it will be override by a new card
+  // constructed by the server response.
   std::unique_ptr<CreditCard> card_;
-
-  // When authorizing a new card, the CVC will be temporarily stored after the
-  // first CVC check, and then will be used to fill the form after FIDO
-  // authentication is complete.
-  std::u16string cvc_ = std::u16string();
 
   // Set to true only if user has a verifying platform authenticator.
   // e.g. Touch/Face ID, Windows Hello, Android fingerprint, etc., is available

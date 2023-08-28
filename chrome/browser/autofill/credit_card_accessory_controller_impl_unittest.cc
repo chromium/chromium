@@ -69,7 +69,7 @@ class TestAccessManager : public CreditCardAccessManager {
 
   void FetchCreditCard(const CreditCard* card,
                        base::WeakPtr<Accessor> accessor) override {
-    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card, u"");
+    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card);
   }
 };
 
