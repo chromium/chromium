@@ -263,13 +263,13 @@ class SlowDownloadInterceptor {
 };
 
 const char SlowDownloadInterceptor::kUnknownSizeUrl[] =
-    "http://url.handled.by.slow.download/download-unknown-size";
+    "https://url.handled.by.slow.download/download-unknown-size";
 const char SlowDownloadInterceptor::kKnownSizeUrl[] =
-    "http://url.handled.by.slow.download/download-known-size";
+    "https://url.handled.by.slow.download/download-known-size";
 const char SlowDownloadInterceptor::kFinishDownloadUrl[] =
-    "http://url.handled.by.slow.download/download-finish";
+    "https://url.handled.by.slow.download/download-finish";
 const char SlowDownloadInterceptor::kErrorDownloadUrl[] =
-    "http://url.handled.by.slow.download/download-error";
+    "https://url.handled.by.slow.download/download-error";
 
 // Utility method to retrieve a notification object by id. Warning: this will
 // check the last display service that was created. If there's a normal and an

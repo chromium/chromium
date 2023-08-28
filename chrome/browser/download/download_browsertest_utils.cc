@@ -85,7 +85,16 @@ DownloadTestBase::~DownloadTestBase() = default;
 void DownloadTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(CheckTestDir());
   ASSERT_TRUE(InitialSetup());
+
+  https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
   host_resolver()->AddRule("www.a.com", "127.0.0.1");
+  host_resolver()->AddRule("www.a.test", "127.0.0.1");
+  host_resolver()->AddRule("www.b.test", "127.0.0.1");
+  host_resolver()->AddRule("a.test", "127.0.0.1");
+  host_resolver()->AddRule("b.test", "127.0.0.1");
   host_resolver()->AddRule("foo.com", "127.0.0.1");
   host_resolver()->AddRule("bar.com", "127.0.0.1");
   content::SetupCrossSiteRedirector(embedded_test_server());
