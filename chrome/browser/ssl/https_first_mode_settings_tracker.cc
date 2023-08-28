@@ -225,6 +225,11 @@ bool HttpsFirstModeService::MaybeEnableHttpsFirstModeForUser(
   constexpr char kTimestampKey[] = "timestamp";
   base::Time now = clock_->Now();
 
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
+    return false;
+  }
+
   const base::Value::Dict& base_pref =
       profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeFallbacks);
 
