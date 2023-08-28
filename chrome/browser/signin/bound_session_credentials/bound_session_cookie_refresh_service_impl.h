@@ -13,9 +13,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -47,7 +47,7 @@ class BoundSessionCookieRefreshServiceImpl
   void Initialize() override;
   // Can be called iff the kBoundSessionExplicitRegistration feature is enabled.
   void RegisterNewBoundSession(
-      const bound_session_credentials::RegistrationParams& params) override;
+      const bound_session_credentials::BoundSessionParams& params) override;
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
   chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
       const override;
@@ -72,8 +72,8 @@ class BoundSessionCookieRefreshServiceImpl
   // `BoundSessionCookieController`.
   using BoundSessionCookieControllerFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
-          const bound_session_credentials::RegistrationParams&
-              registration_params,
+          const bound_session_credentials::BoundSessionParams&
+              bound_session_params,
           const base::flat_set<std::string>& cookie_names,
           Delegate* delegate)>;
 
@@ -89,8 +89,8 @@ class BoundSessionCookieRefreshServiceImpl
   }
 
   void OnRegistrationRequestComplete(
-      absl::optional<bound_session_credentials::RegistrationParams>
-          registration_params);
+      absl::optional<bound_session_credentials::BoundSessionParams>
+          bound_session_params);
 
   // BoundSessionCookieController::Delegate
   void OnBoundSessionThrottlerParamsChanged() override;
@@ -98,10 +98,11 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(
-      const bound_session_credentials::RegistrationParams& registration_params,
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
       const base::flat_set<std::string>& cookie_names);
   void InitializeBoundSession(
-      const bound_session_credentials::RegistrationParams& registration_params);
+      const bound_session_credentials::BoundSessionParams&
+          bound_session_params);
 
   void UpdateAllRenderers();
 

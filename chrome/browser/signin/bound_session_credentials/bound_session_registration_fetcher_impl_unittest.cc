@@ -27,7 +27,7 @@ namespace {
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
 const char kXSSIPrefix[] = ")]}'";
-const char kJSONRegistrationParams[] = R"(
+const char kJSONBoundSessionParams[] = R"(
     {
         "session_identifier": "007",
         "credentials": [
@@ -49,8 +49,8 @@ std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
           crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
 }
 
-bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
-  bound_session_credentials::RegistrationParams params;
+bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams() {
+  bound_session_credentials::BoundSessionParams params;
   params.set_site("https://google.com");
   params.set_session_id("007");
   return params;
@@ -116,7 +116,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoService) {
 
   ConfigureURLLoaderFactoryForRegistrationResponse(
       &url_loader_factory,
-      std::string(kXSSIPrefix) + std::string(kJSONRegistrationParams),
+      std::string(kXSSIPrefix) + std::string(kJSONBoundSessionParams),
       &made_download);
 
   BoundSessionRegistrationFetcherParam params =
@@ -126,7 +126,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoService) {
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(params), url_loader_factory.GetSafeWeakWrapper(), nullptr);
   base::test::TestFuture<
-      absl::optional<bound_session_credentials::RegistrationParams>>
+      absl::optional<bound_session_credentials::BoundSessionParams>>
       future;
 
   fetcher->Start(future.GetCallback());
@@ -145,7 +145,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
 
   ConfigureURLLoaderFactoryForRegistrationResponse(
       &url_loader_factory,
-      std::string(kXSSIPrefix) + std::string(kJSONRegistrationParams),
+      std::string(kXSSIPrefix) + std::string(kJSONBoundSessionParams),
       &made_download, &request_body);
 
   BoundSessionRegistrationFetcherParam params =
@@ -157,7 +157,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
           &unexportable_key_service());
   base::test::TestFuture<
-      absl::optional<bound_session_credentials::RegistrationParams>>
+      absl::optional<bound_session_credentials::BoundSessionParams>>
       future;
 
   fetcher->Start(future.GetCallback());
@@ -166,7 +166,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   EXPECT_FALSE(future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestRegistrationParams()));
+  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestBoundSessionParams()));
   ASSERT_TRUE(made_download);
 
   // Verify the wrapped key.
@@ -194,7 +194,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
   bool made_download = false;
 
   ConfigureURLLoaderFactoryForRegistrationResponse(
-      &url_loader_factory, std::string(kJSONRegistrationParams),
+      &url_loader_factory, std::string(kJSONBoundSessionParams),
       &made_download);
 
   BoundSessionRegistrationFetcherParam params =
@@ -206,7 +206,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
           &unexportable_key_service());
   base::test::TestFuture<
-      absl::optional<bound_session_credentials::RegistrationParams>>
+      absl::optional<bound_session_credentials::BoundSessionParams>>
       future;
 
   ASSERT_FALSE(made_download);
@@ -214,16 +214,16 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestRegistrationParams()));
+  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestBoundSessionParams()));
   ASSERT_TRUE(made_download);
 }
 
-TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONRegistrationParams) {
+TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONBoundSessionParams) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   network::TestURLLoaderFactory url_loader_factory;
   bool made_download = false;
 
-  // Response body contains XSSI prefix but JSON of registration params
+  // Response body contains XSSI prefix but JSON of bound session params
   // missing. Expecting early termination and callback to be called with
   // absl::nullopt.
   ConfigureURLLoaderFactoryForRegistrationResponse(
@@ -238,7 +238,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONRegistrationParams) {
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
           &unexportable_key_service());
   base::test::TestFuture<
-      absl::optional<bound_session_credentials::RegistrationParams>>
+      absl::optional<bound_session_credentials::BoundSessionParams>>
       future;
 
   ASSERT_FALSE(made_download);

@@ -9,7 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -27,11 +27,11 @@ namespace {
 constexpr char kSessionIdentifier[] = "session_identifier";
 const char kXSSIPrefix[] = ")]}'";
 
-bound_session_credentials::RegistrationParams CreateRegistrationParams(
+bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
     const std::string& url,
     const std::string& session_id,
     const std::string& wrapped_key) {
-  bound_session_credentials::RegistrationParams params;
+  bound_session_credentials::BoundSessionParams params;
   params.set_site(url);
   params.set_session_id(session_id);
   params.set_wrapped_key(wrapped_key);
@@ -79,7 +79,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
 
   absl::optional<int> http_response_code;
-  absl::optional<bound_session_credentials::RegistrationParams> return_value =
+  absl::optional<bound_session_credentials::BoundSessionParams> return_value =
       absl::nullopt;
 
   if (head && head->headers) {
@@ -115,7 +115,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
       return;
     }
 
-    return_value = CreateRegistrationParams(
+    return_value = CreateBoundSessionParams(
         net::SchemefulSite(registration_params_.RegistrationEndpoint())
             .Serialize(),
         *session_id, wrapped_key_str_);

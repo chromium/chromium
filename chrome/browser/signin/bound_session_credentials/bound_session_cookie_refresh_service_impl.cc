@@ -40,18 +40,17 @@ BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
 
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
-  absl::optional<bound_session_credentials::RegistrationParams>
-      registration_params = session_params_storage_->ReadParams();
-  if (registration_params.has_value()) {
-    InitializeBoundSession(registration_params.value());
+  absl::optional<bound_session_credentials::BoundSessionParams>
+      bound_session_params = session_params_storage_->ReadParams();
+  if (bound_session_params.has_value()) {
+    InitializeBoundSession(bound_session_params.value());
   }
 }
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
-    const bound_session_credentials::RegistrationParams& params) {
+    const bound_session_credentials::BoundSessionParams& params) {
   if (!session_params_storage_->SaveParams(params)) {
-    DVLOG(1) << "Invalid session params or failed to serialize bound session "
-                "registration params.";
+    DVLOG(1) << "Invalid session params or failed to serialize session params.";
     return;
   }
   // New session should override an existing one.
@@ -137,10 +136,10 @@ BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
-    absl::optional<bound_session_credentials::RegistrationParams>
-        registration_params) {
-  if (registration_params.has_value()) {
-    RegisterNewBoundSession(*registration_params);
+    absl::optional<bound_session_credentials::BoundSessionParams>
+        bound_session_params) {
+  if (bound_session_params.has_value()) {
+    RegisterNewBoundSession(*bound_session_params);
   }
 
   active_registration_request_.reset();
@@ -159,25 +158,25 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
 
 std::unique_ptr<BoundSessionCookieController>
 BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
-    const bound_session_credentials::RegistrationParams& registration_params,
+    const bound_session_credentials::BoundSessionParams& bound_session_params,
     const base::flat_set<std::string>& cookie_names) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
                    key_service_.get(), storage_partition_,
-                   network_connection_tracker_, registration_params,
+                   network_connection_tracker_, bound_session_params,
                    cookie_names, this)
-             : controller_factory_for_testing_.Run(registration_params,
+             : controller_factory_for_testing_.Run(bound_session_params,
                                                    cookie_names, this);
 }
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
-    const bound_session_credentials::RegistrationParams& registration_params) {
+    const bound_session_credentials::BoundSessionParams& bound_session_params) {
   CHECK(!cookie_controller_);
   constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
   constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 
   cookie_controller_ = CreateBoundSessionCookieController(
-      registration_params, {k1PSIDTSCookieName, k3PSIDTSCookieName});
+      bound_session_params, {k1PSIDTSCookieName, k3PSIDTSCookieName});
   cookie_controller_->Initialize();
   UpdateAllRenderers();
 }

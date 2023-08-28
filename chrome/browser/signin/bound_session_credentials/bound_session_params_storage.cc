@@ -6,15 +6,15 @@
 
 #include "base/base64.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-const char kRegistrationParamsPref[] =
-    "bound_session_credentials_registration_params";
+const char kBoundSessionParamsPref[] =
+    "bound_session_credentials_bound_session_params";
 
 class BoundSessionParamsPrefsStorage : public BoundSessionParamsStorage {
  public:
@@ -22,9 +22,9 @@ class BoundSessionParamsPrefsStorage : public BoundSessionParamsStorage {
   ~BoundSessionParamsPrefsStorage() override;
 
   [[nodiscard]] bool SaveParams(
-      const bound_session_credentials::RegistrationParams& params) override;
+      const bound_session_credentials::BoundSessionParams& params) override;
 
-  absl::optional<bound_session_credentials::RegistrationParams> ReadParams()
+  absl::optional<bound_session_credentials::BoundSessionParams> ReadParams()
       const override;
 
   void ClearParams() override;
@@ -40,7 +40,7 @@ BoundSessionParamsPrefsStorage::BoundSessionParamsPrefsStorage(
 BoundSessionParamsPrefsStorage::~BoundSessionParamsPrefsStorage() = default;
 
 bool BoundSessionParamsPrefsStorage::SaveParams(
-    const bound_session_credentials::RegistrationParams& params) {
+    const bound_session_credentials::BoundSessionParams& params) {
   if (!AreParamsValid(params)) {
     return false;
   }
@@ -52,14 +52,14 @@ bool BoundSessionParamsPrefsStorage::SaveParams(
 
   std::string encoded_serialized_params;
   base::Base64Encode(serialized_params, &encoded_serialized_params);
-  pref_service_->SetString(kRegistrationParamsPref, encoded_serialized_params);
+  pref_service_->SetString(kBoundSessionParamsPref, encoded_serialized_params);
   return true;
 }
 
-absl::optional<bound_session_credentials::RegistrationParams>
+absl::optional<bound_session_credentials::BoundSessionParams>
 BoundSessionParamsPrefsStorage::ReadParams() const {
   std::string encoded_params_str =
-      pref_service_->GetString(kRegistrationParamsPref);
+      pref_service_->GetString(kBoundSessionParamsPref);
   if (encoded_params_str.empty()) {
     return absl::nullopt;
   }
@@ -69,7 +69,7 @@ BoundSessionParamsPrefsStorage::ReadParams() const {
     return absl::nullopt;
   }
 
-  bound_session_credentials::RegistrationParams params;
+  bound_session_credentials::BoundSessionParams params;
   if (params.ParseFromString(params_str) && AreParamsValid(params)) {
     return params;
   }
@@ -77,7 +77,7 @@ BoundSessionParamsPrefsStorage::ReadParams() const {
 }
 
 void BoundSessionParamsPrefsStorage::ClearParams() {
-  pref_service_->ClearPref(kRegistrationParamsPref);
+  pref_service_->ClearPref(kBoundSessionParamsPref);
 }
 
 class BoundSessionParamsInMemoryStorage : public BoundSessionParamsStorage {
@@ -86,15 +86,15 @@ class BoundSessionParamsInMemoryStorage : public BoundSessionParamsStorage {
   ~BoundSessionParamsInMemoryStorage() override;
 
   [[nodiscard]] bool SaveParams(
-      const bound_session_credentials::RegistrationParams& params) override;
+      const bound_session_credentials::BoundSessionParams& params) override;
 
-  absl::optional<bound_session_credentials::RegistrationParams> ReadParams()
+  absl::optional<bound_session_credentials::BoundSessionParams> ReadParams()
       const override;
 
   void ClearParams() override;
 
  private:
-  absl::optional<bound_session_credentials::RegistrationParams>
+  absl::optional<bound_session_credentials::BoundSessionParams>
       in_memory_params_;
 };
 
@@ -104,7 +104,7 @@ BoundSessionParamsInMemoryStorage::~BoundSessionParamsInMemoryStorage() =
     default;
 
 bool BoundSessionParamsInMemoryStorage::SaveParams(
-    const bound_session_credentials::RegistrationParams& params) {
+    const bound_session_credentials::BoundSessionParams& params) {
   if (!AreParamsValid(params)) {
     return false;
   }
@@ -113,7 +113,7 @@ bool BoundSessionParamsInMemoryStorage::SaveParams(
   return true;
 }
 
-absl::optional<bound_session_credentials::RegistrationParams>
+absl::optional<bound_session_credentials::BoundSessionParams>
 BoundSessionParamsInMemoryStorage::ReadParams() const {
   return in_memory_params_;
 }
@@ -143,14 +143,14 @@ BoundSessionParamsStorage::CreatePrefsStorageForTesting(
 // static
 void BoundSessionParamsStorage::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(kRegistrationParamsPref, std::string());
+  registry->RegisterStringPref(kBoundSessionParamsPref, std::string());
 }
 
 // static
 bool BoundSessionParamsStorage::AreParamsValid(
-    const bound_session_credentials::RegistrationParams& registration_params) {
+    const bound_session_credentials::BoundSessionParams& bound_session_params) {
   // TODO(crbug.com/1441168): Check for validity of other fields once they are
   // available.
-  return registration_params.has_session_id() &&
-         registration_params.has_wrapped_key();
+  return bound_session_params.has_session_id() &&
+         bound_session_params.has_wrapped_key();
 }

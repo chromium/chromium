@@ -9,7 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "url/gurl.h"
 
@@ -44,7 +44,7 @@ class BoundSessionCookieController {
   };
 
   BoundSessionCookieController(
-      const bound_session_credentials::RegistrationParams& registration_params,
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 

@@ -16,8 +16,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -31,8 +31,8 @@
 namespace {
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
-constexpr char kRegistrationParamsPref[] =
-    "bound_session_credentials_registration_params";
+constexpr char kBoundSessionParamsPref[] =
+    "bound_session_credentials_bound_session_params";
 const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 constexpr char kWrappedKey[] = "wrapped_key";
 constexpr char kTestSessionId[] = "test_session_id";
@@ -40,13 +40,13 @@ constexpr char kTestSessionId[] = "test_session_id";
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
   explicit FakeBoundSessionCookieController(
-      const bound_session_credentials::RegistrationParams& registration_params,
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate)
-      : BoundSessionCookieController(registration_params,
+      : BoundSessionCookieController(bound_session_params,
                                      cookie_names,
                                      delegate) {
-    std::string wrapped_key_str = registration_params.wrapped_key();
+    std::string wrapped_key_str = bound_session_params.wrapped_key();
     wrapped_key_.assign(wrapped_key_str.begin(), wrapped_key_str.end());
   }
 
@@ -113,12 +113,12 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   ~BoundSessionCookieRefreshServiceImplTest() override = default;
 
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
-      const bound_session_credentials::RegistrationParams& registration_params,
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
       const base::flat_set<std::string>& cookie_names,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
         std::make_unique<FakeBoundSessionCookieController>(
-            registration_params, cookie_names, delegate);
+            bound_session_params, cookie_names, delegate);
     controller->set_on_destroy_callback(base::BindOnce(
         &BoundSessionCookieRefreshServiceImplTest::OnCookieControllerDestroy,
         base::Unretained(this)));
@@ -174,11 +174,11 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     CHECK(!cookie_refresh_service_)
         << "If the cookie refresh service is already created, consider using "
            "`RegisterNewBoundSession` to start a new bound session.";
-    bound_session_credentials::RegistrationParams params =
-        CreateTestRegistrationParams();
-    std::string registration_params;
-    base::Base64Encode(params.SerializeAsString(), &registration_params);
-    prefs()->SetString(kRegistrationParamsPref, registration_params);
+    bound_session_credentials::BoundSessionParams params =
+        CreateTestBoundSessionParams();
+    std::string bound_session_params;
+    base::Base64Encode(params.SerializeAsString(), &bound_session_params);
+    prefs()->SetString(kBoundSessionParamsPref, bound_session_params);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -186,7 +186,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   void VerifyBoundSession() {
     CHECK(cookie_refresh_service_);
     EXPECT_TRUE(cookie_refresh_service_->GetBoundSessionThrottlerParams());
-    EXPECT_TRUE(prefs()->HasPrefPath(kRegistrationParamsPref));
+    EXPECT_TRUE(prefs()->HasPrefPath(kBoundSessionParamsPref));
     EXPECT_TRUE(cookie_controller());
   }
 
@@ -194,11 +194,11 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     CHECK(cookie_refresh_service_);
     EXPECT_FALSE(cookie_refresh_service_->GetBoundSessionThrottlerParams());
     EXPECT_FALSE(cookie_controller());
-    EXPECT_FALSE(prefs()->HasPrefPath(kRegistrationParamsPref));
+    EXPECT_FALSE(prefs()->HasPrefPath(kBoundSessionParamsPref));
   }
 
-  bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
-    bound_session_credentials::RegistrationParams params;
+  bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams() {
+    bound_session_credentials::BoundSessionParams params;
     params.set_site(kTestGaiaURL.spec());
     params.set_session_id(kTestSessionId);
     params.set_wrapped_key(kWrappedKey);
@@ -290,7 +290,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
     EXPECT_TRUE(cookie_controller());
     EXPECT_FALSE(service->GetBoundSessionThrottlerParams().is_null());
   });
-  service->RegisterNewBoundSession(CreateTestRegistrationParams());
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 
@@ -416,36 +416,36 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   VerifyNoBoundSession();
 
-  service->RegisterNewBoundSession(CreateTestRegistrationParams());
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
   VerifyBoundSession();
-  // TODO(http://b/286222327): check registration params once they are
+  // TODO(http://b/286222327): check bound session params once they are
   // properly passed to controller.
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  service->RegisterNewBoundSession(CreateTestRegistrationParams());
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
-  auto new_params = CreateTestRegistrationParams();
+  auto new_params = CreateTestBoundSessionParams();
   new_params.set_session_id("test_session_id_2");
   service->RegisterNewBoundSession(new_params);
 
   VerifyBoundSession();
-  // TODO(http://b/286222327): check registration params once they are
+  // TODO(http://b/286222327): check bound session params once they are
   // properly passed to controller.
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        OverrideExistingBoundSessionWithInvalidParams) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  service->RegisterNewBoundSession(CreateTestRegistrationParams());
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
-  auto invalid_params = CreateTestRegistrationParams();
+  auto invalid_params = CreateTestBoundSessionParams();
   invalid_params.clear_session_id();
   service->RegisterNewBoundSession(invalid_params);
 
   // Original session should not be modified.
   VerifyBoundSession();
-  // TODO(http://b/286222327): check registration params once they are
+  // TODO(http://b/286222327): check bound session params once they are
   // properly passed to controller.
 }

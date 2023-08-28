@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -46,17 +46,18 @@ class BoundSessionParamsStorage {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static bool AreParamsValid(
-      const bound_session_credentials::RegistrationParams& registration_params);
+      const bound_session_credentials::BoundSessionParams&
+          bound_session_params);
 
   // Saves `params` to storage. Overwrites existing params if any. `params` are
   // verified before being saved.
   // Returns whether the new parameters were saved. In case of a failure, keeps
   // the existing value intact.
   [[nodiscard]] virtual bool SaveParams(
-      const bound_session_credentials::RegistrationParams& params) = 0;
+      const bound_session_credentials::BoundSessionParams& params) = 0;
 
   // Returns currently stored parameters if any.
-  virtual absl::optional<bound_session_credentials::RegistrationParams>
+  virtual absl::optional<bound_session_credentials::BoundSessionParams>
   ReadParams() const = 0;
 
   // Cleans the storage.

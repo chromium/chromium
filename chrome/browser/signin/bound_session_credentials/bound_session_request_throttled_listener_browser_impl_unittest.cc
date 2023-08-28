@@ -29,7 +29,7 @@ class FakeBoundSessionCookieRefreshService
   void Initialize() override {}
 
   void RegisterNewBoundSession(
-      const bound_session_credentials::RegistrationParams& params) override {}
+      const bound_session_credentials::BoundSessionParams& params) override {}
 
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override {
   }

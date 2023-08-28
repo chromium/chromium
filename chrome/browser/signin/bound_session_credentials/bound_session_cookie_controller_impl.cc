@@ -25,18 +25,20 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
-    const bound_session_credentials::RegistrationParams& registration_params,
+    const bound_session_credentials::BoundSessionParams& bound_session_params,
     const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
-    : BoundSessionCookieController(registration_params, cookie_names, delegate),
+    : BoundSessionCookieController(bound_session_params,
+                                   cookie_names,
+                                   delegate),
       key_service_(key_service),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
       wait_for_network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
-  CHECK(!registration_params.wrapped_key().empty());
+  CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
-      base::as_bytes(base::make_span(registration_params.wrapped_key()));
+      base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
   session_binding_helper_ = std::make_unique<SessionBindingHelper>(
       key_service_.get(), wrapped_key, session_id_);
   // Preemptively load the binding key to speed up the generation of binding

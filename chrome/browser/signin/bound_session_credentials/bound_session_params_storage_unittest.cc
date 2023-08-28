@@ -5,7 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,17 +14,17 @@
 
 namespace {
 
-bound_session_credentials::RegistrationParams CreateValidBoundSessionParams() {
-  bound_session_credentials::RegistrationParams params;
+bound_session_credentials::BoundSessionParams CreateValidBoundSessionParams() {
+  bound_session_credentials::BoundSessionParams params;
   params.set_session_id("123");
   params.set_site("https://example.org");
   params.set_wrapped_key("456");
   return params;
 }
 
-bound_session_credentials::RegistrationParams
+bound_session_credentials::BoundSessionParams
 CreateInvalidBoundSessionParams() {
-  bound_session_credentials::RegistrationParams params;
+  bound_session_credentials::BoundSessionParams params;
   // Leaves a required `session_id` field empty.
   return params;
 }
@@ -41,14 +41,14 @@ TEST(BoundSessionParamsStorageAreParamsValidTest, Valid) {
 }
 
 TEST(BoundSessionParamsStorageAreParamsValidTest, InvalidMissingSessionId) {
-  bound_session_credentials::RegistrationParams params =
+  bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   params.clear_session_id();
   EXPECT_FALSE(BoundSessionParamsStorage::AreParamsValid(params));
 }
 
 TEST(BoundSessionParamsStorageAreParamsValidTest, InvalidMissingWrappedKey) {
-  bound_session_credentials::RegistrationParams params =
+  bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   params.clear_wrapped_key();
   EXPECT_FALSE(BoundSessionParamsStorage::AreParamsValid(params));
@@ -82,7 +82,7 @@ TEST_P(BoundSessionParamsStorageTest, InitiallyEmpty) {
 }
 
 TEST_P(BoundSessionParamsStorageTest, SaveAndRead) {
-  bound_session_credentials::RegistrationParams params =
+  bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(params));
   EXPECT_THAT(storage().ReadParams(), testing::Optional(EqualsProto(params)));
@@ -95,7 +95,7 @@ TEST_P(BoundSessionParamsStorageTest, SaveInvalidParams) {
 
 TEST_P(BoundSessionParamsStorageTest, OverwriteWithValidParams) {
   ASSERT_TRUE(storage().SaveParams(CreateValidBoundSessionParams()));
-  bound_session_credentials::RegistrationParams new_params =
+  bound_session_credentials::BoundSessionParams new_params =
       CreateValidBoundSessionParams();
   new_params.set_session_id("unique_id");
   EXPECT_TRUE(storage().SaveParams(new_params));
@@ -104,7 +104,7 @@ TEST_P(BoundSessionParamsStorageTest, OverwriteWithValidParams) {
 }
 
 TEST_P(BoundSessionParamsStorageTest, OverwriteWithInvalidParams) {
-  bound_session_credentials::RegistrationParams valid_params =
+  bound_session_credentials::BoundSessionParams valid_params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(valid_params));
   EXPECT_FALSE(storage().SaveParams(CreateInvalidBoundSessionParams()));
@@ -119,7 +119,7 @@ TEST_P(BoundSessionParamsStorageTest, Clear) {
 }
 
 TEST_P(BoundSessionParamsStorageTest, Persistence) {
-  bound_session_credentials::RegistrationParams params =
+  bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(params));
   EXPECT_TRUE(storage().ReadParams().has_value());
@@ -154,7 +154,7 @@ class BoundSessionParamsStorageOTRTest : public testing::Test {
 TEST_F(BoundSessionParamsStorageOTRTest, NoInheritance) {
   std::unique_ptr<BoundSessionParamsStorage> parent_storage =
       BoundSessionParamsStorage::CreateForProfile(parent_profile());
-  bound_session_credentials::RegistrationParams params =
+  bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(parent_storage->SaveParams(params));
   EXPECT_TRUE(parent_storage->ReadParams().has_value());
@@ -163,7 +163,7 @@ TEST_F(BoundSessionParamsStorageOTRTest, NoInheritance) {
       BoundSessionParamsStorage::CreateForProfile(
           *parent_profile().GetPrimaryOTRProfile(/*create_if_needed=*/true));
   EXPECT_EQ(otr_storage->ReadParams(), absl::nullopt);
-  bound_session_credentials::RegistrationParams params2 =
+  bound_session_credentials::BoundSessionParams params2 =
       CreateValidBoundSessionParams();
   params2.set_session_id("otr_session");
   ASSERT_TRUE(otr_storage->SaveParams(params2));

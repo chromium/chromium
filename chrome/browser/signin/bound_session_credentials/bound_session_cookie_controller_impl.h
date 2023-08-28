@@ -39,7 +39,7 @@ class BoundSessionCookieControllerImpl
       unexportable_keys::UnexportableKeyService& key_service,
       content::StoragePartition* storage_partition,
       network::NetworkConnectionTracker* network_connection_tracker,
-      const bound_session_credentials::RegistrationParams& registration_params,
+      const bound_session_credentials::BoundSessionParams& bound_session_params,
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 
