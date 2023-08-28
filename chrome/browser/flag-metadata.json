@@ -847,6 +847,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "bluetooth-floss-availability-check",
+    "owners": [ "howardchung@google.com", "chromeos-bt-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "bluetooth-floss-coredump",
     "owners": ["mmandlik", "chromeos-bt-team@google.com"],
     "expiry_milestone": 120

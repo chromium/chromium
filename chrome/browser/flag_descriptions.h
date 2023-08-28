@@ -3207,6 +3207,9 @@ extern const char kRobustAudioDeviceSelectLogicDescription[];
 extern const char kBluetoothUseFlossName[];
 extern const char kBluetoothUseFlossDescription[];
 
+extern const char kBluetoothFlossIsAvailabilityCheckNeededName[];
+extern const char kBluetoothFlossIsAvailabilityCheckNeededDescription[];
+
 extern const char kBluetoothUseLLPrivacyName[];
 extern const char kBluetoothUseLLPrivacyDescription[];
 

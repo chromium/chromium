@@ -17,10 +17,13 @@ BASE_FEATURE(kFlossEnabled, "Floss", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFlossIsAvailable,
              "FlossIsAvailable",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFlossIsAvailabilityCheckNeeded,
+             "FlossIsAvailabilityCheckNeeded",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 bool IsFlossEnabled() {
-  if (!IsFlossAvailable()) {
+  if (IsFlossAvailabilityCheckNeeded() && !IsFlossAvailable()) {
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -42,5 +45,15 @@ bool IsFlossAvailable() {
 #endif
 }
 
+bool IsFlossAvailabilityCheckNeeded() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(
+      floss::features::kFlossIsAvailabilityCheckNeeded);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsFlossAvailabilityCheckNeeded();
+#else
+  return false;
+#endif
+}
 }  // namespace features
 }  // namespace floss

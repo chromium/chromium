@@ -5549,6 +5549,14 @@ const char kBluetoothUseFlossDescription[] =
     "instead of Bluez. This is meant to be used by developers and is not "
     "guaranteed to be stable";
 
+const char kBluetoothFlossIsAvailabilityCheckNeededName[] =
+    "Floss availability check";
+const char kBluetoothFlossIsAvailabilityCheckNeededDescription[] =
+    "Floss availability is determined by each machine. If the machine set "
+    "Floss is unavailable, Floss won't be enabled no matter what "
+    "bluetooth-use-floss is set. Enable this flag will bypass the check so "
+    "that users can still enable Floss by bluetooth-use-floss.";
+
 const char kBluetoothUseLLPrivacyName[] = "Enable LL Privacy in BlueZ";
 const char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "

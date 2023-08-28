@@ -1020,8 +1020,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 69
-// Next id: 69
+// Next version: 70
+// Next id: 70
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1440,6 +1440,12 @@ struct BrowserInitParams {
   // energy saving UI should defer to the OS.
   [MinVersion=68]
   bool is_cros_battery_saver_available@68;
+
+  // Tells lacros whether to check Floss availability of the machine. The check
+  // is used to block Floss from enabling if the machine is indicated
+  // unavailable.
+  [MinVersion=69]
+  bool is_floss_availability_check_needed@69;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

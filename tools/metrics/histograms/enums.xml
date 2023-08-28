@@ -62993,6 +62993,7 @@ from previous Chrome versions.
   <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
   <int value="-754479863" label="SmartCard:disabled"/>
+  <int value="-753988121" label="FlossIsAvailabilityCheckNeeded:enabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750784296" label="AllowTouchpadScrollSettings:disabled"/>
@@ -63646,6 +63647,7 @@ from previous Chrome versions.
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
   <int value="-424261945" label="RequestDesktopSiteWindowSetting:disabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
+  <int value="-424125732" label="FlossIsAvailabilityCheckNeeded:disabled"/>
   <int value="-423134304" label="VirtualKeyboardMultitouch:disabled"/>
   <int value="-421428607" label="InheritNativeThemeFromParentWidget:disabled"/>
   <int value="-421314301" label="ForceShowContinueSection:enabled"/>
