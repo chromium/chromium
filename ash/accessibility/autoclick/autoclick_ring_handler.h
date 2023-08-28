@@ -42,8 +42,8 @@ class AutoclickRingHandler : public gfx::LinearAnimation {
   const int kAutoclickRingInnerRadius = 20;
 
   enum class AnimationType {
-    NONE,
-    GROW_ANIMATION,
+    kNone,
+    kGrowAnimation,
   };
 
   void StartAnimation(base::TimeDelta duration);
@@ -59,7 +59,7 @@ class AutoclickRingHandler : public gfx::LinearAnimation {
   // Location of the simulated mouse event from auto click in screen
   // coordinates.
   gfx::Point tap_down_location_;
-  AnimationType current_animation_type_ = AnimationType::NONE;
+  AnimationType current_animation_type_ = AnimationType::kNone;
   base::TimeDelta animation_duration_;
   int radius_ = kAutoclickRingInnerRadius;
 };
