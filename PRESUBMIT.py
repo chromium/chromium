@@ -502,7 +502,10 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        'base/gtest_prod_util.h and use FRIEND_TEST_ALL_PREFIXES() instead.',
       ),
       False,
-      (),
+      excluded_paths = (
+        "base/gtest_prod_util.h",
+        "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h",
+      ),
     ),
     BanRule(
       'setMatrixClip',
@@ -634,7 +637,10 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'other use cases, please contact base/time/OWNERS.',
       ),
       False,
-      (),
+      excluded_paths = (
+        "base/time/time.h",
+        "base/allocator/partition_allocator/partition_alloc_base/time/time.h",
+      ),
     ),
     BanRule(
       'CallJavascriptFunctionUnsafe',
