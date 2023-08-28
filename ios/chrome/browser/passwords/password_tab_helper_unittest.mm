@@ -54,6 +54,7 @@ class PasswordTabHelperTest : public PlatformTest {
     id dispatcher = [[CommandDispatcher alloc] init];
     id mockApplicationSettingsCommandHandler =
         OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    dispatcher_ = mockApplicationSettingsCommandHandler;
     [dispatcher
         startDispatchingToTarget:mockApplicationSettingsCommandHandler
                      forProtocol:@protocol(ApplicationSettingsCommands)];
