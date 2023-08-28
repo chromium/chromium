@@ -27,9 +27,6 @@
 - (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:
     (ManageSyncSettingsCoordinator*)coordinator;
 
-// Called when the user signs out from the account settings.
-- (void)showSignOutToast;
-
 @end
 
 // Coordinator for the Manage Sync Settings TableView Controller.

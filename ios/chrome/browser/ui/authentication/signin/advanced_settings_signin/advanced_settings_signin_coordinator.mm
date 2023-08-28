@@ -228,10 +228,6 @@ using l10n_util::GetNSString;
   return l10n_util::GetNSString(IDS_IOS_SYNC_SETTINGS_TITLE);
 }
 
-- (void)showSignOutToast {
-  NOTREACHED_NORETURN();
-}
-
 - (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:
     (ManageSyncSettingsCoordinator*)coordinator {
   switch (self.signinStateForCancel) {

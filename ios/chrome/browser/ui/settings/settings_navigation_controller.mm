@@ -935,20 +935,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
 }
 
-- (void)showSignOutToast {
-  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-  int message_id =
-      syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-              HasManagedSyncDataType(syncService)
-          ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
-          : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(message_id)];
-  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
-}
-
 #pragma mark - PasswordsCoordinatorDelegate
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {

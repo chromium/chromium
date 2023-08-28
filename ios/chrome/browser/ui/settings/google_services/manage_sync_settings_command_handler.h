@@ -17,10 +17,7 @@
 // Presents the data options available when turning off Sync.
 // `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
-- (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect;
-
-// Signs out.
-- (void)signOut;
+- (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // Shows a view displaying all Google Accounts present on the current device.
 // The view allows adding and removing accounts.

@@ -526,6 +526,10 @@ Things to consider:
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" desc="The title for the setting item to Sign in to Chromium [iOS only]">
         Sign in to Chromium
       </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.  [iOS only].">
+        Some of your Chromium data hasn't been saved in your Google Account yet.
+        Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+      </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a gmail account and sync is turned on [iOS only].">
         Choose whether to clear your Chromium data from this device or keep it
       </message>

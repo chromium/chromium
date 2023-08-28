@@ -1003,16 +1003,14 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
       break;
     case SignOutAndTurnOffSyncItemType:
-      [self.commandHandler showTurnOffSyncOptionsFromTargetRect:cellRect];
+    case SignOutItemType:
+      [self.commandHandler signOutFromTargetRect:cellRect];
       break;
     case ManageGoogleAccountItemType:
       [self.commandHandler showManageYourGoogleAccount];
       break;
     case ManageAccountsItemType:
       [self.commandHandler showAccountsPage];
-      break;
-    case SignOutItemType:
-      [self.commandHandler signOut];
       break;
     case SyncEverythingItemType:
     case AutofillDataTypeItemType:

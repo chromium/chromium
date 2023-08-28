@@ -586,10 +586,6 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       break;
     }
     case ItemTypeSignOut: {
-      if ([self isAccountSignedInNotSyncing]) {
-        [self signOut];
-        break;
-      }
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
       [self showSignOutWithItemView:itemView];
@@ -1003,32 +999,4 @@ constexpr CGFloat kErrorSymbolSize = 22.;
               ->HasSyncConsent();
 }
 
-// Signs out without showing action sheet.
-// Used when the user is signed in not syncing.
-- (void)signOut {
-  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // This could happen if the account somehow got removed after the UI was
-    // created.
-    return;
-  }
-  CHECK([self isAccountSignedInNotSyncing]);
-  if (_authenticationOperationInProgress) {
-    return;
-  }
-  _authenticationOperationInProgress = YES;
-  [self preventUserInteraction];
-  signin_metrics::RecordSignoutUserAction(/*force_clear_data=*/false);
-  __weak AccountsTableViewController* weakSelf = self;
-  ProceduralBlock signOutCompletion = ^() {
-    __strong AccountsTableViewController* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf allowUserInteraction];
-    [strongSelf handleAuthenticationOperationDidFinish];
-  };
-  [self authService]->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/NO, signOutCompletion);
-}
 @end

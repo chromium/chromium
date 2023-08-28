@@ -268,7 +268,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [handler closeSettingsUIAndOpenURL:command];
 }
 
-- (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect {
+- (void)signOutFromTargetRect:(CGRect)targetRect {
+  if (!self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // This could happen in very rare cases, if the account somehow got removed
+    // after the settings UI was created.
+    return;
+  }
   self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -279,37 +284,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.signoutActionSheetCoordinator.delegate = self;
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
-    if (success) {
-      [weakSelf closeManageSyncSettings];
-    }
-  };
-  [self.signoutActionSheetCoordinator start];
-}
-
-- (void)signOut {
-  if (!self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // This could happen in very rare cases, if the account somehow got removed
-    // after the settings UI was created.
-    return;
-  }
-
-  self.signOutFlowInProgress = YES;
-  [self.viewController preventUserInteraction];
-  signin_metrics::RecordSignoutUserAction(/*force_clear_data=*/false);
-  __weak ManageSyncSettingsCoordinator* weakSelf = self;
-  ProceduralBlock signOutCompletion = ^() {
-    __strong ManageSyncSettingsCoordinator* strongSelf = weakSelf;
-    if (!strongSelf) {
+    if (!success) {
       return;
     }
-    [strongSelf.viewController allowUserInteraction];
-    strongSelf.signOutFlowInProgress = NO;
-    [strongSelf.delegate showSignOutToast];
-    [strongSelf closeManageSyncSettings];
+    [weakSelf closeManageSyncSettings];
   };
-  self.authService->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/NO, signOutCompletion);
+  [self.signoutActionSheetCoordinator start];
 }
 
 - (void)showAccountsPage {
