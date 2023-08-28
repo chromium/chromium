@@ -10221,7 +10221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.ClearLatency" units="ms"
-    expires_after="M119">
+    expires_after="M122">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
@@ -10233,7 +10233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.FetchLatencyUs" units="microseconds"
-    expires_after="M119">
+    expires_after="M122">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
@@ -10251,7 +10251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.StoreLatency" units="ms"
-    expires_after="M119">
+    expires_after="M122">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
@@ -10263,7 +10263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.UpdateSize" units="count"
-    expires_after="M119">
+    expires_after="M122">
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>victortan@chromium.org</owner>
