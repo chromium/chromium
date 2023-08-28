@@ -678,6 +678,7 @@ void FrameTreeNode::DidStartLoading(
 
   // Notify the proxies of the event.
   current_frame_host()->browsing_context_state()->OnDidStartLoading();
+  devtools_instrumentation::DidChangeFrameLoadingState(*this);
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.DidStartLoading.",
                     IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
@@ -715,6 +716,7 @@ void FrameTreeNode::DidStopLoading() {
     loading_tree->NodeLoadingStateChanged(*this,
                                           LoadingState::LOADING_UI_REQUESTED);
   }
+  devtools_instrumentation::DidChangeFrameLoadingState(*this);
 }
 
 void FrameTreeNode::DidChangeLoadProgress(double load_progress) {

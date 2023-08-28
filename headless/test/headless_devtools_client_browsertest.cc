@@ -270,6 +270,14 @@ class HeadlessDevToolsNavigationControlTest
   void RunDevTooledTest() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    SendCommandSync(devtools_client_, "Page.enable");
+    SendCommandSync(devtools_client_, "Network.enable");
+
+    base::Value::List patterns;
+    patterns.Append(Param("urlPattern", "*"));
+    devtools_client_.SendCommand("Network.setRequestInterception",
+                                 Param("patterns", std::move(patterns)));
+
     devtools_client_.AddEventHandler(
         "Network.requestIntercepted",
         base::BindRepeating(
@@ -281,14 +289,6 @@ class HeadlessDevToolsNavigationControlTest
         base::BindRepeating(
             &HeadlessDevToolsNavigationControlTest::OnFrameStoppedLoading,
             base::Unretained(this)));
-
-    SendCommandSync(devtools_client_, "Page.enable");
-    SendCommandSync(devtools_client_, "Network.enable");
-
-    base::Value::List patterns;
-    patterns.Append(Param("urlPattern", "*"));
-    devtools_client_.SendCommand("Network.setRequestInterception",
-                                 Param("patterns", std::move(patterns)));
 
     devtools_client_.SendCommand(
         "Page.navigate",

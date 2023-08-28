@@ -225,7 +225,6 @@
         "FrameDetachedFromParent",
         "FrameRequestedNavigation",
         "FrameScheduledNavigation",
-        "FrameStartedLoading",
         "FrameStoppedLoading",
         "LifecycleEvent",
         "LoadEventFired",

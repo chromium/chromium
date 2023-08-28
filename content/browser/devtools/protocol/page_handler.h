@@ -103,6 +103,7 @@ class PageHandler : public DevToolsDomainHandler,
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
 
   void OnFrameDetached(const base::UnguessableToken& frame_id);
+  void DidChangeFrameLoadingState(const FrameTreeNode& ftn);
 
   bool ShouldBypassCSP();
   void BackForwardCacheNotUsed(

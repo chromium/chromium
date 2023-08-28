@@ -648,6 +648,19 @@ void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {
   frontend_->FrameDetached(frame_id.ToString(), "remove");
 }
 
+void PageHandler::DidChangeFrameLoadingState(const FrameTreeNode& ftn) {
+  if (!enabled_) {
+    return;
+  }
+  const std::string& frame_id =
+      ftn.current_frame_host()->devtools_frame_token().ToString();
+  if (ftn.IsLoading()) {
+    frontend_->FrameStartedLoading(frame_id);
+  } else {
+    frontend_->FrameStoppedLoading(frame_id);
+  }
+}
+
 void PageHandler::OnDownloadDestroyed(download::DownloadItem* item) {
   pending_downloads_.erase(item);
 }

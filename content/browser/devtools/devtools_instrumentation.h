@@ -420,6 +420,8 @@ void OnFencedFrameReportResponseReceived(
     const GURL& final_url,
     scoped_refptr<net::HttpResponseHeaders> headers);
 
+void DidChangeFrameLoadingState(FrameTreeNode& ftn);
+
 }  // namespace devtools_instrumentation
 
 }  // namespace content

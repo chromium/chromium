@@ -1110,13 +1110,9 @@ bool InspectorPageAgent::ScreencastEnabled() {
   return enabled_.Get() && screencast_enabled_.Get();
 }
 
-void InspectorPageAgent::FrameStartedLoading(LocalFrame* frame) {
-  GetFrontend()->frameStartedLoading(IdentifiersFactory::FrameId(frame));
-  GetFrontend()->flush();
-}
-
 void InspectorPageAgent::FrameStoppedLoading(LocalFrame* frame) {
-  GetFrontend()->frameStoppedLoading(IdentifiersFactory::FrameId(frame));
+  // The actual event is reported by the browser, but let's make sure
+  // earlier events from the commit make their way to client first.
   GetFrontend()->flush();
 }
 

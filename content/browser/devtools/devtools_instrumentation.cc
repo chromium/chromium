@@ -2142,6 +2142,11 @@ void OnFencedFrameReportResponseReceived(
                    network::URLLoaderCompletionStatus(net::OK));
 }
 
+void DidChangeFrameLoadingState(FrameTreeNode& ftn) {
+  DispatchToAgents(&ftn, &protocol::PageHandler::DidChangeFrameLoadingState,
+                   ftn);
+}
+
 }  // namespace devtools_instrumentation
 
 }  // namespace content

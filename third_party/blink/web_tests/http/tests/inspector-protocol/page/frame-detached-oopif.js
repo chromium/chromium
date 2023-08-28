@@ -19,17 +19,18 @@
   await dp.Target.setDiscoverTargets({discover: true});
 
   testRunner.log('Creating a frame with the URL ' + url);
-  session.evaluate(`
+  const frameLoaded = session.evaluateAsync(`
     window.frame = document.createElement('iframe');
     frame.src = '${url}';
     document.body.appendChild(frame);
+    new Promise(resolve => { frame.onload = resolve });
   `);
-  const onceFrameStoppedLoading = dp.Page.onceFrameStoppedLoading();
+
   const onceFrameAttached = dp.Page.onceFrameAttached();
   const onceFrameDetachedSwap = dp.Page.onceFrameDetached();
   testRunner.log(await onceFrameAttached, 'Attached frame ', replacedAttributes);
   testRunner.log(await onceFrameDetachedSwap, 'Detached frame (swap)', replacedAttributes);
-  await onceFrameStoppedLoading;
+  await frameLoaded;
 
   testRunner.log('Removing the frame');
   const onceTargetDestroyed = dp.Target.onceTargetDestroyed();

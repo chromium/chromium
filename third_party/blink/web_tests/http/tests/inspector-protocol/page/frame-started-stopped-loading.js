@@ -46,10 +46,6 @@
   await dp2.Page.onceDomContentEventFired();
   testRunner.log(await session2.evaluate(`location.href`));
 
-  // Note the below case results in an asymmetric event, only frameStoppedLoading
-  // is emitted. This is because (1) we do not emit frameStartedLoading for the
-  // new, provisional frame and (2) we do not emit frameStartedLoading in the old
-  // subframe, as the navigation is external to it (originated in the parent frame).
   testRunner.log(`Navigating back to in-process`);
   session.evaluate(`document.getElementById('frame').src = '${url1}'`);
   await dp.Page.onceFrameStoppedLoading();
