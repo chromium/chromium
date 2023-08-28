@@ -63,13 +63,10 @@ export class OutputRule {
    * @return {boolean} true if the role was set, false otherwise.
    */
   populateRole(role, parentRole, formatName) {
-    const eventBlock = OutputRule.RULES[this.event_];
-    if (role && eventBlock[role] && eventBlock[role][formatName]) {
+    if (this.hasRule_(role, formatName) && role) {
       this.role_ = role;
       return true;
-    } else if (
-        parentRole && eventBlock[parentRole] &&
-        eventBlock[parentRole][formatName]) {
+    } else if (this.hasRule_(parentRole, formatName) && parentRole) {
       this.role_ = parentRole;
       return true;
     }
@@ -105,6 +102,19 @@ export class OutputRule {
   /** @return {string|undefined} */
   get output() {
     return this.output_;
+  }
+
+  // ========= Private methods =========
+
+  /**
+   * @param {ChromeVoxRole|undefined} role
+   * @param {string|undefined} format
+   * @return {boolean} Whether there is a rule for this role/format combo.
+   * @private
+   */
+  hasRule_(role, format) {
+    const eventBlock = OutputRule.RULES[this.event_];
+    return role && eventBlock[role] && eventBlock[role][format];
   }
 }
 
