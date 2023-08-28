@@ -1485,8 +1485,7 @@ class TabListMediator {
      * reasonable.
      */
     private int getSpanCount(int screenWidthDp) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
                     ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
                     : screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP

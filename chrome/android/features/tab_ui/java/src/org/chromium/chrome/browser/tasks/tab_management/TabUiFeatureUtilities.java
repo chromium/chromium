@@ -92,15 +92,6 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether the Grid Tab Switcher UI is enabled and available for use.
-     * @param context The activity context.
-     */
-    public static boolean isGridTabSwitcherEnabled(Context context) {
-        // TODO(crbug/1466158): Remove this.
-        return true;
-    }
-
-    /**
      * @return Whether the Grid Tab Switcher UI should use list mode.
      * @param context The activity context.
      */

@@ -651,11 +651,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
-            // TODO(1239025): Remove all GTS enabled checks after GTS is enabled by default on
-            // tablets.
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
-                createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
-            }
+            createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
 
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
@@ -697,7 +693,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
                 createStartSurface(compositorViewHolder, tabSwitcherContainer);
             }
-        } else if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
+        } else {
             createStartSurface(compositorViewHolder, tabSwitcherContainer);
         }
     }

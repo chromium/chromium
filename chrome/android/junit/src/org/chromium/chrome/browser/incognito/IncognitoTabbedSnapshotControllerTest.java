@@ -36,7 +36,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
@@ -83,10 +82,8 @@ public class IncognitoTabbedSnapshotControllerTest {
     private DestroyObserver mDestroyObserver;
     private FilterLayoutStateObserver mFilterLayoutStateObserver;
     private TabModelSelectorObserver mTabModelSelectorObserver;
-    private boolean mIsGTSEnabled;
     private boolean mIsInOverviewMode;
 
-    private Supplier<Boolean> mIsGTSEnabledSupplier;
     private Supplier<Boolean> mIsIncognitoShowingSupplier;
     private Supplier<Boolean> mIsInOverviewModeSupplier;
 
@@ -95,19 +92,18 @@ public class IncognitoTabbedSnapshotControllerTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mIncognitoTabModelMock).when(mTabModelSelectorMock).getModel(/*incognito=*/true);
 
-        mIsGTSEnabledSupplier = () -> mIsGTSEnabled;
         mIsInOverviewModeSupplier = () -> mIsInOverviewMode;
 
         mIsIncognitoShowingSupplier =
                 IncognitoTabbedSnapshotController.getIsShowingIncognitoSupplier(
-                        mTabModelSelectorMock, mIsGTSEnabledSupplier, mIsInOverviewModeSupplier);
+                        mTabModelSelectorMock, mIsInOverviewModeSupplier);
 
         mParams = new LayoutParams();
         doReturn(mParams).when(mWindowMock).getAttributes();
         doReturn(mWindowMock).when(mActivityMock).getWindow();
 
         mController = new IncognitoTabbedSnapshotController(mActivityMock, mLayoutManagerMock,
-                mTabModelSelectorMock, mActivityLifecycleDispatcherMock, mIsGTSEnabledSupplier,
+                mTabModelSelectorMock, mActivityLifecycleDispatcherMock,
                 mIsIncognitoShowingSupplier);
 
         verify(mActivityLifecycleDispatcherMock, times(1))
@@ -254,73 +250,12 @@ public class IncognitoTabbedSnapshotControllerTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
-    public void testIsShowingIncognito_CurrentModelRegular_GTSEnabled_ReturnsFalse() {
+    public void testIsShowingIncognito_CurrentModelRegular_ReturnsFalse() {
         // Regular mode
         doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
         doReturn(false).when(mTabModelMock).isIncognito();
-
-        mIsGTSEnabled = true;
 
         assertFalse("isShowingIncognito should return false ", mIsIncognitoShowingSupplier.get());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
-    public void
-    testIsShowingIncognito_CurrentModelRegular_GTSDisabled_NotOverviewMode_ReturnsFalse() {
-        // Regular mode
-        doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
-        doReturn(false).when(mTabModelMock).isIncognito();
-
-        mIsGTSEnabled = false;
-        mIsInOverviewMode = false;
-
-        // Come out of overview mode.
-        mFilterLayoutStateObserver.onStartedHiding(LayoutType.TAB_SWITCHER);
-
-        assertFalse("isShowingIncognito should return false ", mIsIncognitoShowingSupplier.get());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
-    public void
-    testIsShowingIncognito_CurrentModelRegular_GTSDisabled_OverviewMode_NoIncognitoTabs_ReturnsFalse() {
-        // Regular mode
-        doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
-        doReturn(false).when(mTabModelMock).isIncognito();
-
-        // Incognito model has no tabs.
-        doReturn(0).when(mIncognitoTabModelMock).getCount();
-
-        mIsGTSEnabled = false;
-        mIsInOverviewMode = true;
-
-        // Enter overview mode.
-        mFilterLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER);
-
-        assertFalse("isShowingIncognito should return false ", mIsIncognitoShowingSupplier.get());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
-    public void
-    testIsShowingIncognito_CurrentModelRegular_GTSDisabled_OverviewMode_IncognitoTabsPresent_ReturnsTrue() {
-        // Regular mode
-        doReturn(mTabModelMock).when(mTabModelSelectorMock).getCurrentModel();
-        doReturn(false).when(mTabModelMock).isIncognito();
-
-        // Incognito tab model has non zero Incognito tabs.
-        doReturn(1).when(mIncognitoTabModelMock).getCount();
-        mIsGTSEnabled = false;
-        mIsInOverviewMode = true;
-
-        // Enter overview mode.
-        mFilterLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER);
-
-        assertTrue("isShowingIncognito should be true", mIsIncognitoShowingSupplier.get());
     }
 
     @Test

@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.PathUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.flags.PostNativeFlag;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -123,23 +123,11 @@ public class TabContentManager {
      */
     private static int getIntegerResourceWithOverride(Context context, int resourceId,
             String commandLineSwitch) {
-        int val = -1;
-        // TODO(crbug/959054): Convert this to Finch config.
-        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)) {
-            // With Grid Tab Switcher, we can greatly reduce the capacity of thumbnail cache.
-            // See crbug.com/959054 for more details.
-            if (resourceId == R.integer.default_thumbnail_cache_size) val = 2;
-            if (resourceId == R.integer.default_approximation_thumbnail_cache_size) val = 8;
-            assert val != -1;
-        } else {
-            val = context.getResources().getInteger(resourceId);
-        }
         String switchCount = CommandLine.getInstance().getSwitchValue(commandLineSwitch);
         if (switchCount != null) {
-            int count = Integer.parseInt(switchCount);
-            val = count;
+            return Integer.parseInt(switchCount);
         }
-        return val;
+        return context.getResources().getInteger(resourceId);
     }
 
     /**
@@ -195,11 +183,11 @@ public class TabContentManager {
         boolean useApproximationThumbnails =
                 !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && !sThumbnailCacheRefactor.isEnabled();
-        boolean saveJpegThumbnails = TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext);
 
         mNativeTabContentManager = TabContentManagerJni.get().init(TabContentManager.this,
                 mFullResThumbnailsMaxSize, approximationCacheSize, compressionQueueMaxSize,
-                writeQueueMaxSize, useApproximationThumbnails, saveJpegThumbnails);
+                writeQueueMaxSize, useApproximationThumbnails,
+                /*saveJpegThumbnails=*/!SysUtils.isLowEndDevice());
     }
 
     /**

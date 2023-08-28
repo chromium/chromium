@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ALPHA;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_DESCRIPTION;
@@ -39,8 +38,6 @@ class StartSurfaceToolbarViewBinder {
             view.onAccessibilityStatusChanged(model.get(ACCESSIBILITY_ENABLED));
         } else if (propertyKey == BUTTONS_CLICKABLE) {
             view.setButtonClickableState(model.get(BUTTONS_CLICKABLE));
-        } else if (propertyKey == GRID_TAB_SWITCHER_ENABLED) {
-            view.setGridTabSwitcherEnabled(model.get(GRID_TAB_SWITCHER_ENABLED));
         } else if (propertyKey == INCOGNITO_SWITCHER_VISIBLE) {
             view.setIncognitoToggleTabVisibility((Boolean) model.get(INCOGNITO_SWITCHER_VISIBLE));
         } else if (propertyKey == IDENTITY_DISC_AT_START) {

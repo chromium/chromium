@@ -70,7 +70,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private ObjectAnimator mVisiblityAnimator;
     private @Nullable ToolbarAlphaInOverviewObserver mToolbarAlphaInOverviewObserver;
 
-    private boolean mIsGridTabSwitcherEnabled;
     private boolean mIsFullscreenToolbar;
     private boolean mShowZoomingAnimation;
 
@@ -95,16 +94,14 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mNewTabViewButton.setOnClickListener(this);
     }
 
-    void initialize(boolean isGridTabSwitcherEnabled, boolean isFullscreenToolbar,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
+    void initialize(boolean isFullscreenToolbar, boolean isTabToGtsAnimationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
-        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsFullscreenToolbar = isFullscreenToolbar;
-        mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
+        mShowZoomingAnimation = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mToolbarAlphaInOverviewObserver = toolbarColorObserverManager;
 
-        mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
         mNewTabImageButton.setStartSurfaceEnabled(false);
         setIncognitoToggleVisibility(shouldShowIncognitoToggle());
         updateNewTabButtonVisibility();
@@ -350,12 +347,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
     private int getToolbarColorForCurrentState() {
         // TODO(huayinz): Split tab switcher background color from primary background color.
-        if (DeviceClassManager.enableAccessibilityLayout(getContext())
-                || mIsGridTabSwitcherEnabled) {
-            return ChromeColors.getPrimaryBackgroundColor(getContext(), mIsIncognito);
-        }
-
-        return Color.TRANSPARENT;
+        return ChromeColors.getPrimaryBackgroundColor(getContext(), mIsIncognito);
     }
 
     private void inflateIncognitoToggle() {
@@ -385,12 +377,9 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
      *         incognito status and form-factor.
      */
     private boolean shouldShowIncognitoToggle() {
-        boolean accessibilityEnabled = DeviceClassManager.enableAccessibilityLayout(getContext());
-
         // TODO(crbug.com/1434937): Remove top toggle (and update "New Tab" button logic,
         //  accordingly) for the a11y switcher, since that variant has the bottom toggle showing.
-        return (mIsGridTabSwitcherEnabled || accessibilityEnabled)
-                && mIsIncognitoModeEnabledSupplier.getAsBoolean()
+        return mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                         || mIsFullscreenToolbar);
     }

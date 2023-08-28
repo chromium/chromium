@@ -888,8 +888,7 @@ public final class ReturnToChromeUtil {
      * Returns true if START_SURFACE_REFACTOR is enabled.
      */
     public static boolean isStartSurfaceRefactorEnabled(Context context) {
-        return ChromeFeatureList.sStartSurfaceRefactor.isEnabled()
-                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
+        return ChromeFeatureList.sStartSurfaceRefactor.isEnabled();
     }
 
     /**

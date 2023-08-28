@@ -1127,7 +1127,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tasks/TasksUma.java",
   "java/src/org/chromium/chrome/browser/toolbar/AppThemeColorProvider.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarButtonInProductHelpController.java",
-  "java/src/org/chromium/chrome/browser/toolbar/ToolbarColors.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java",
   "java/src/org/chromium/chrome/browser/tracing/TracingController.java",
   "java/src/org/chromium/chrome/browser/tracing/TracingNotificationManager.java",

@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -386,11 +385,7 @@ public class StatusBarColorController
             if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
                 return mToolbarColor;
             }
-            return (mIsIncognito
-                           && ToolbarColors.canUseIncognitoToolbarThemeColorInOverview(
-                                   mWindow.getContext()))
-                    ? mIncognitoPrimaryBgColor
-                    : mStandardPrimaryBgColor;
+            return mIsIncognito ? mIncognitoPrimaryBgColor : mStandardPrimaryBgColor;
         }
 
         // Return status bar color in standard NewTabPage. If location bar is not shown in NTP, we

@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -134,8 +133,7 @@ public class TabListSceneLayer extends SceneLayer {
 
     /** Returns the background color of the scene layer. */
     protected int getTabListBackgroundColor(Context context) {
-        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context) && mTabModelSelector != null
-                && mTabModelSelector.isIncognitoSelected()) {
+        if (mTabModelSelector != null && mTabModelSelector.isIncognitoSelected()) {
             return context.getColor(R.color.default_bg_color_dark);
         }
         return SemanticColorUtils.getDefaultBgColor(context);

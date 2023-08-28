@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -159,8 +158,7 @@ public class LayoutManagerChrome
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimCoordinator scrimCoordinator, ViewGroup tabSwitcherScrimAnchor) {
         assert mOverviewLayout == null && mTabSwitcherLayout == null
-                && mStartSurfaceHomeLayout == null
-                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mHost.getContext());
+                && mStartSurfaceHomeLayout == null;
         boolean isRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
 

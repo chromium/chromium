@@ -63,10 +63,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mNewTabButton.setStartSurfaceEnabled(true);
     }
 
-    void setGridTabSwitcherEnabled(boolean isGridTabSwitcherEnabled) {
-        mNewTabButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
-    }
-
     /**
      * Sets whether the "+" new tab button view and "New tab" text is enabled or not.
      *

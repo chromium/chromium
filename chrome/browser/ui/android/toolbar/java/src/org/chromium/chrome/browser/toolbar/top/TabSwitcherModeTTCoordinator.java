@@ -47,18 +47,16 @@ class TabSwitcherModeTTCoordinator {
     @Nullable
     private IncognitoTabModelObserver mIncognitoTabModelObserver;
 
-    private final boolean mIsGridTabSwitcherEnabled;
     private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
     private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
 
     TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
-            MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
+            MenuButtonCoordinator menuButtonCoordinator, boolean isTabToGtsAnimationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
-        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mTopToolbarInteractabilityManager =
@@ -187,9 +185,8 @@ class TabSwitcherModeTTCoordinator {
      * @param isFullscreenToolbar Whether or not the given toolbar is fullscreen or not.
      */
     private void initializeToolbar(TabSwitcherModeTopToolbar toolbar, boolean isFullscreenToolbar) {
-        toolbar.initialize(mIsGridTabSwitcherEnabled, isFullscreenToolbar,
-                mIsTabToGtsAnimationEnabled, mIsIncognitoModeEnabledSupplier,
-                mToolbarColorObserverManager);
+        toolbar.initialize(isFullscreenToolbar, mIsTabToGtsAnimationEnabled,
+                mIsIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
         mMenuButtonCoordinator.setMenuButton(toolbar.findViewById(R.id.menu_button_wrapper));
 
         // It's expected that these properties are set by the time the tab switcher is entered.

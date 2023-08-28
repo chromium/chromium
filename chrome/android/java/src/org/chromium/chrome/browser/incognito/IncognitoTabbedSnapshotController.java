@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /**
  * This is the controller that prevents incognito tabs from being visible in Android Recents
@@ -30,7 +29,6 @@ public class IncognitoTabbedSnapshotController
     private final @NonNull LayoutManagerChrome mLayoutManager;
     private final @NonNull LayoutStateObserver mLayoutStateObserver;
     private final @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final @NonNull Supplier<Boolean> mIsGTSEnabledSupplier;
 
     /**
      * Creates and registers a new {@link IncognitoTabbedSnapshotController}.
@@ -44,22 +42,18 @@ public class IncognitoTabbedSnapshotController
     public static void createIncognitoTabSnapshotController(@NonNull Activity activity,
             @NonNull LayoutManagerChrome layoutManager, @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        Supplier<Boolean> isGTSEnabledSupplier =
-                () -> TabUiFeatureUtilities.isGridTabSwitcherEnabled(activity);
         Supplier<Boolean> isOverviewModeSupplier =
                 () -> layoutManager.getActiveLayoutType() == LayoutType.TAB_SWITCHER;
-        Supplier<Boolean> isShowingIncognitoSupplier = getIsShowingIncognitoSupplier(
-                tabModelSelector, isGTSEnabledSupplier, isOverviewModeSupplier);
+        Supplier<Boolean> isShowingIncognitoSupplier =
+                getIsShowingIncognitoSupplier(tabModelSelector, isOverviewModeSupplier);
 
         new IncognitoTabbedSnapshotController(activity, layoutManager, tabModelSelector,
-                activityLifecycleDispatcher, isGTSEnabledSupplier, isShowingIncognitoSupplier);
+                activityLifecycleDispatcher, isShowingIncognitoSupplier);
     }
 
     /**
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
      *         fetched.
-     * @param isGTSEnabledSupplier The {@link Supplier<Boolean>} to supply with the information
-     *         whether GTS is enabled or not.
      * @param isInOverviewModeSupplier The {@link Supplier<Boolean>} to supply with the information
      *         whether overview mode is shown or not.
      *
@@ -69,18 +63,9 @@ public class IncognitoTabbedSnapshotController
     @VisibleForTesting
     static Supplier<Boolean> getIsShowingIncognitoSupplier(
             @NonNull TabModelSelector tabModelSelector,
-            @NonNull Supplier<Boolean> isGTSEnabledSupplier,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier) {
         return () -> {
-            boolean isInIncognitoModel = tabModelSelector.getCurrentModel().isIncognito();
-
-            // If we're using the overlapping tab switcher, we show the edge of the open incognito
-            // tabs even if the tab switcher is showing the normal stack. But if the grid tab
-            // switcher is enabled, incognito tabs are not visible while we're showing the normal
-            // tabs.
-            return isInIncognitoModel
-                    || (!isGTSEnabledSupplier.get() && isInOverviewModeSupplier.get()
-                            && tabModelSelector.getModel(true).getCount() > 0);
+            return tabModelSelector.getCurrentModel().isIncognito();
         };
     }
 
@@ -91,8 +76,6 @@ public class IncognitoTabbedSnapshotController
      *         fetched.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} which would allow
      *         to register as {@link DestroyObserver}.
-     * @param isGTSEnabledSupplier The {@link Supplier<Boolean>} to supply with the information
-     *         whether GTS is enabled or not.
      * @param isShowingIncognitoSupplier The {@link Supplier<Boolean>} to supply with the
      *         information if we are showing Incognito currently.
      */
@@ -100,14 +83,12 @@ public class IncognitoTabbedSnapshotController
     IncognitoTabbedSnapshotController(@NonNull Activity activity,
             @NonNull LayoutManagerChrome layoutManager, @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Supplier<Boolean> isGTSEnabledSupplier,
             @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
         super(activity, isShowingIncognitoSupplier);
 
         mLayoutManager = layoutManager;
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mIsGTSEnabledSupplier = isGTSEnabledSupplier;
 
         mLayoutStateObserver =
                 new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {

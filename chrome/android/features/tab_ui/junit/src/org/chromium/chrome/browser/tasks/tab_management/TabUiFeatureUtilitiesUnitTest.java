@@ -59,8 +59,6 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd() {
-        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
-                ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
@@ -72,8 +70,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
-        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
-                ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
@@ -86,8 +82,6 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_LowEnd() {
-        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
-                ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
@@ -99,8 +93,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
-        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
-                ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(

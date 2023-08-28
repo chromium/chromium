@@ -653,8 +653,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mStartSurfaceMenuStateObserver = mOverviewModeMenuButtonCoordinator.getStateObserver();
         }
 
-        boolean isGridTabSwitcherEnabled =
-                TabUiFeatureUtilities.isGridTabSwitcherEnabled(mActivity);
         boolean isTabToGtsAnimationEnabled =
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivity);
         boolean isTabGroupsAndroidContinuationEnabled =
@@ -673,9 +671,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, mCompositorViewHolder.getInvalidator(),
-                identityDiscController, isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                mIsStartSurfaceEnabled, isTabGroupsAndroidContinuationEnabled,
-                initializeWithIncognitoColors, startSurfaceLogoClickedCallback, mConstraintsProxy);
+                identityDiscController, isTabToGtsAnimationEnabled, mIsStartSurfaceEnabled,
+                isTabGroupsAndroidContinuationEnabled, initializeWithIncognitoColors,
+                startSurfaceLogoClickedCallback, mConstraintsProxy);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -1166,10 +1164,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ToolbarControlContainer controlContainer, ToolbarLayout toolbarLayout,
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider, Invalidator invalidator,
-            IdentityDiscController identityDiscController, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
-            boolean isTabGroupsAndroidContinuationEnabled, boolean initializeWithIncognitoColors,
-            Callback<LoadUrlParams> logoClickedCallback,
+            IdentityDiscController identityDiscController, boolean isTabToGtsAnimationEnabled,
+            boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled,
+            boolean initializeWithIncognitoColors, Callback<LoadUrlParams> logoClickedCallback,
             ObservableSupplier<Integer> constraintsSupplier) {
         ViewStub tabSwitcherToolbarStub = mActivity.findViewById(R.id.tab_switcher_toolbar_stub);
 
@@ -1193,7 +1190,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                                              : mLayoutStateProvider.getActiveLayoutType()),
                 mCompositorViewHolder::getResourceManager,
                 IncognitoUtils::isIncognitoModeEnabled,
-                isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
+                isTabToGtsAnimationEnabled,
                 isStartSurfaceEnabled, isTabGroupsAndroidContinuationEnabled,
                 HistoryManagerUtils::showHistoryManager,
                 PartnerBrowserCustomizations.getInstance()::isHomepageProviderAvailableAndEnabled,

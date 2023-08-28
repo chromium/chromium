@@ -66,8 +66,8 @@ public class StartSurfaceToolbarCoordinator {
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             UserEducationHelper userEducationHelper, ButtonDataProvider identityDiscController,
             ThemeColorProvider provider, MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
+            Supplier<ButtonData> identityDiscButtonSupplier, boolean isTabToGtsAnimationEnabled,
+            boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
             boolean shouldCreateLogoInToolbar, Callback<Boolean> finishedTransitionCallback,
@@ -81,8 +81,6 @@ public class StartSurfaceToolbarCoordinator {
                                          .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue())
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, false)
-                        .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
-                                isGridTabSwitcherEnabled)
                         .build();
 
         mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
