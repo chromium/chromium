@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
@@ -58,6 +59,11 @@ class LocationIconView : public IconLabelBubbleView {
     // Gets an icon for the location bar icon chip.
     virtual ui::ImageModel GetLocationIcon(
         IconFetchedCallback on_icon_fetched) const = 0;
+
+    // Gets an optional background color override for the location bar icon
+    // chip.
+    virtual absl::optional<ui::ColorId> GetLocationIconBackgroundColorOverride()
+        const;
   };
 
   LocationIconView(const gfx::FontList& font_list,

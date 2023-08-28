@@ -24,6 +24,7 @@ aggregate_vector_icons("components_vector_icons") {
     "back_arrow.icon",
     "back_arrow_chrome_refresh.icon",
     "back_to_tab.icon",
+    "back_to_tab_chrome_refresh.icon",
     "blocked_badge.icon",
     "bluetooth.icon",
     "bluetooth_chrome_refresh.icon",
