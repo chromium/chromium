@@ -173,6 +173,9 @@ if (!is_win) {
         ]
       }
 
+      # TODO(crbug.com/1476401): Fix libdisasm/x86_format.c
+      cflags = [ "-Wno-fortify-source" ]
+
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += default_breakpad_configs
