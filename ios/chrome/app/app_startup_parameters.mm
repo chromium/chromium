@@ -85,6 +85,9 @@
     case FOCUS_OMNIBOX:
       [description appendString:@", should focus omnibox"];
       break;
+    case OPEN_READING_LIST:
+      [description appendString:@", should open reading list"];
+      break;
     default:
       break;
   }
@@ -105,7 +108,8 @@
 
 - (BOOL)isValidPostOpeningAction:(TabOpeningPostOpeningAction)action {
   switch (action) {
-      // NO_ACTION and SHOW_DEFAULT_BROWSER_SETTINGS are  allowed on any URL.
+      // NO_ACTION , SHOW_DEFAULT_BROWSER_SETTINGS and SEARCH_PASSWORDS are
+      // allowed on any URL.
     case NO_ACTION:
     case SHOW_DEFAULT_BROWSER_SETTINGS:
     case SEARCH_PASSWORDS:

@@ -61,6 +61,7 @@ NSString* const kShortcutLensFromSpotlight = @"OpenLensFromSpotlight";
 NSString* const kSiriShortcutOpenInChrome = @"OpenInChromeIntent";
 NSString* const kSiriShortcutSearchInChrome = @"SearchInChromeIntent";
 NSString* const kSiriShortcutOpenInIncognito = @"OpenInChromeIncognitoIntent";
+NSString* const kSiriOpenReadingList = @"OpenReadingListIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -299,6 +300,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                                 Incognito:YES
                                 initStage:initStage];
 
+  } else if ([userActivity.activityType isEqualToString:kSiriOpenReadingList]) {
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+                completeURL:GURL(kChromeUINewTabURL)
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
+
+    startupParams.postOpeningAction = OPEN_READING_LIST;
+    [connectionInformation setStartupParameters:startupParams];
   } else {
     // Do nothing for unknown activity type.
     return NO;

@@ -8,11 +8,13 @@
 
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
+#import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 
 @interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
                                     OpenInChromeIntentHandling,
-                                    SearchInChromeIntentHandling>
+                                    SearchInChromeIntentHandling,
+                                    OpenReadingListIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -103,6 +105,22 @@
   SearchInChromeIntentResponse* response = [[SearchInChromeIntentResponse alloc]
       initWithCode:SearchInChromeIntentResponseCodeContinueInApp
       userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - OpenReadingListIntentHandling
+
+- (void)handleOpenReadingList:(OpenReadingListIntent*)intent
+                   completion:
+                       (void (^)(OpenReadingListIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([OpenReadingListIntent class])];
+
+  OpenReadingListIntentResponse* response =
+      [[OpenReadingListIntentResponse alloc]
+          initWithCode:OpenReadingListIntentResponseCodeContinueInApp
+          userActivity:activity];
 
   completion(response);
 }

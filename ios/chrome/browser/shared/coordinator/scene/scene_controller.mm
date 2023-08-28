@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -2485,6 +2486,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf startPasswordSearch];
       };
+    case OPEN_READING_LIST:
+      return ^{
+        [weakSelf openReadingList];
+      };
     default:
       return nil;
   }
@@ -2557,6 +2562,16 @@ void InjectNTP(Browser* browser) {
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                          ApplicationSettingsCommands);
   [applicationSettingsCommandsHandler showPasswordSearchPage];
+}
+
+- (void)openReadingList {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  [browserCoordinatorCommandsHandler showReadingList];
 }
 
 #pragma mark - TabOpening implementation.
