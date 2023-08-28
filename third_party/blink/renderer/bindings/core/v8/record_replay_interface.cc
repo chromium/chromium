@@ -1868,6 +1868,9 @@ function DOM_getBoxModel({ node: nodeRrpId }) {
   if (!isBlinkInstanceOf(nodeObj, Element)) {
     // Handle invalid input (this is how we do this in Gecko)
     model.content = [];
+    model.padding = [];
+    model.border = [];
+    model.margin = [];
   } else {
     const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
     /**
