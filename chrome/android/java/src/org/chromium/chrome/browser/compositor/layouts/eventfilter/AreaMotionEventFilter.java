@@ -123,6 +123,15 @@ public class AreaMotionEventFilter extends MotionEventFilter {
                     || e.getActionMasked() == MotionEvent.ACTION_HOVER_MOVE) {
                 mHasHoverEnterOrMoveEventInArea = true;
                 return super.onInterceptHoverEventInternal(e);
+            } else if (e.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
+                // A hover exit event is recorded inside the filter area when another screen
+                // interaction through a gesture event occurs. In this case, we will give a chance
+                // to the event filter to handle such an exit event if a previous hover entry/move
+                // event was intercepted.
+                if (mHasHoverEnterOrMoveEventInArea) {
+                    mHasHoverEnterOrMoveEventInArea = false;
+                    return super.onInterceptHoverEventInternal(e);
+                }
             }
         } else {
             // If there was a previous hover into/within the rect, potentially handle hovering out

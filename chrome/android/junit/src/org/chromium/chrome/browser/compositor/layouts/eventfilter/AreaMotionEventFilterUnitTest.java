@@ -72,6 +72,21 @@ public class AreaMotionEventFilterUnitTest {
     }
 
     @Test
+    public void testHoverExitInterceptionWithinFilterArea() {
+        // Intercept an ACTION_HOVER_ENTER into the filter area.
+        boolean intercepted = mEventFilter.onInterceptHoverEvent(mHoverEnterEvent);
+
+        // Intercept an ACTION_HOVER_EXIT inside the filter area potentially triggered by another
+        // gesture motion event. In this case the hover exit action will be recorded from within the
+        // rect.
+        var hoverExitEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 50.f, 50.f, 0);
+        intercepted = mEventFilter.onInterceptHoverEvent(hoverExitEvent);
+        Assert.assertTrue("Hover exit event in area should be intercepted.", intercepted);
+        Assert.assertFalse("|mHasHoverEnterOrMoveEventInArea| should be set to false.",
+                mEventFilter.getHasHoverEnterOrMoveEventInAreaForTesting());
+    }
+
+    @Test
     public void testHoverEnterInterceptionOutsideFilterArea() {
         // Do not intercept an ACTION_HOVER_ENTER outside the filter area.
         mHoverEnterEvent.setLocation(101.f, 101.f);
