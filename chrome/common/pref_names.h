@@ -166,15 +166,6 @@ inline constexpr char kURLsToRestoreOnStartup[] = "session.startup_urls";
 // Boolean that is true when user feedback to Google is allowed.
 inline constexpr char kUserFeedbackAllowed[] = "feedback_allowed";
 
-#if !BUILDFLAG(IS_ANDROID)
-// Replaced by kManagedSerialAllowAllPortsForUrls in M-93.
-inline constexpr char kManagedProfileSerialAllowAllPortsForUrlsDeprecated[] =
-    "profile.managed.serial_allow_all_ports_for_urls";
-// Replaced by kManagedSerialAllowUsbDevicesForUrls in M-93.
-inline constexpr char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[] =
-    "profile.managed.serial_allow_usb_devices_for_urls";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_RLZ)
 // Integer. RLZ ping delay in seconds.
 inline constexpr char kRlzPingDelaySeconds[] = "rlz_ping_delay";
@@ -1327,6 +1318,8 @@ inline constexpr char kUseAshProxy[] = "lacros.proxy.use_ash_proxy";
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Linux specific preference on whether we should match the system theme.
+// TODO(crbug.com/1476487): The pref `kUsesSystemThemeDeprecated` is still in
+// use. Please remove once code is cleaned up.
 inline constexpr char kUsesSystemThemeDeprecated[] =
     "extensions.theme.use_system";
 inline constexpr char kSystemTheme[] = "extensions.theme.system_theme";
@@ -3014,9 +3007,6 @@ inline constexpr char kCloudPrintUserSettings[] = "cloud_print.user_settings";
 // List of printers settings.
 inline constexpr char kCloudPrintPrinters[] =
     "cloud_print.user_settings.printers";
-// A boolean indicating whether submitting jobs to Google Cloud Print is
-// blocked by policy.
-inline constexpr char kCloudPrintSubmitEnabled[] = "cloud_print.submit_enabled";
 
 // Preference to store proxy settings.
 inline constexpr char kMaxConnectionsPerProxy[] =
@@ -3660,18 +3650,6 @@ inline constexpr char kCertificateProvisioningStateForDevice[] =
 // DeviceLoginScreenPromptOnMultipleMatchingCertificates).
 inline constexpr char kPromptOnMultipleMatchingCertificates[] =
     "prompt_on_multiple_matching_certificates";
-
-// This pref enables periodically fetching new Media Feed items for top feeds.
-inline constexpr char kMediaFeedsBackgroundFetching[] =
-    "media_feeds_background_fetching_enabled";
-
-// This pref enables checking of Media Feed items against the Safe Search API.
-inline constexpr char kMediaFeedsSafeSearchEnabled[] =
-    "media_feeds_safe_search_enabled";
-
-// This pref enables automated selection of Media Feeds to fetch.
-inline constexpr char kMediaFeedsAutoSelectEnabled[] =
-    "media_feeds_auto_select_enabled";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref indicating whether the notification informing the user that

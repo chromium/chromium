@@ -527,49 +527,13 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 06/2022.
-const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
-const char kStabilityGpuCrashCount[] =
-    "user_experience_metrics.stability.gpu_crash_count";
-const char kStabilityRendererCrashCount[] =
-    "user_experience_metrics.stability.renderer_crash_count";
-const char kStabilityExtensionRendererCrashCount[] =
-    "user_experience_metrics.stability.extension_renderer_crash_count";
-const char kPrivacySandboxPreferencesReconciled[] =
-    "privacy_sandbox.preferences_reconciled";
+// Deprecated 06/2022
+// TODO(crbug.com/1476489): Remove when unit test code is updated.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-const char kStabilityPageLoadCount[] =
-    "user_experience_metrics.stability.page_load_count";
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kImprovedShortcutsNotificationShownCount[] =
-    "ash.improved_shortcuts_notification_shown_count";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_ANDROID)
-const char kDownloadLaterPromptStatus[] =
-    "download.download_later_prompt_status";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Deprecated 07/2022
-const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
-const char kPrivacySandboxFlocDataAccessibleSince[] =
-    "privacy_sandbox.floc_data_accessible_since";
-const char kStabilityCrashCount[] =
-    "user_experience_metrics.stability.crash_count";
-const char kPrivacySandboxApisEnabledV2Init[] =
-    "privacy_sandbox.apis_enabled_v2_init";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Deprecated 06/2022.
-const char kU2fSecurityKeyApiEnabled[] =
-    "extensions.u2f_security_key_api_enabled";
-
-// Deprecated 07/2022.
-const char kExtensionToolbar[] = "extensions.toolbar";
-
 // Deprecated 10/2022.
 const char kLoadCryptoTokenExtension[] =
     "extensions.load_cryptotoken_extension";
@@ -577,30 +541,6 @@ const char kLoadCryptoTokenExtension[] =
 
 // Deprecated 10/2022.
 const char kOriginTrialPrefKey[] = "origin_trials.persistent_trials";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 07/2022.
-// The name of a boolean pref that determines whether we can show the folder
-// selection user nudge for the screen capture tool. When this pref is false, it
-// means that we showed the nudge at some point and the user interacted with the
-// capture mode session UI in such a way that the nudge no longer needs to be
-// displayed again.
-constexpr char kCanShowFolderSelectionNudge[] =
-    "ash.capture_mode.can_show_folder_selection_nudge";
-const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 08/2022.
-constexpr char kSecurityTokenSessionNotificationDisplayed[] =
-    "security_token_session_notification_displayed";
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 08/2022.
-const char kProfileAvatarTutorialShown[] =
-    "profile.avatar_bubble_tutorial_shown";
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 09/2022.
@@ -969,18 +909,6 @@ const char kDriveFsBulkPinningMaxQueueSize[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 06/2022.
-  registry->RegisterInt64Pref(kBackgroundTracingLastUpload, 0);
-  registry->RegisterIntegerPref(kStabilityGpuCrashCount, 0);
-  registry->RegisterIntegerPref(kStabilityRendererCrashCount, 0);
-  registry->RegisterIntegerPref(kStabilityExtensionRendererCrashCount, 0);
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterIntegerPref(kStabilityPageLoadCount, 0);
-#endif
-
-  // Deprecated 07/2022.
-  registry->RegisterIntegerPref(kStabilityCrashCount, 0);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 09/2022
   registry->RegisterDictionaryPref(kUsersLastInputMethod);
@@ -1106,72 +1034,18 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kCanShowFolderSelectionNudge,
-                                /*default_value=*/true);
-
-  registry->RegisterIntegerPref(kImprovedShortcutsNotificationShownCount, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Removed in M91.
-  registry->RegisterBooleanPref(prefs::kMediaFeedsBackgroundFetching, false);
-  registry->RegisterBooleanPref(prefs::kMediaFeedsSafeSearchEnabled, false);
-  registry->RegisterBooleanPref(prefs::kMediaFeedsAutoSelectEnabled, false);
-
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterListPref(
-      prefs::kManagedProfileSerialAllowAllPortsForUrlsDeprecated);
-  registry->RegisterListPref(
-      prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Deprecated 06/2022
+  // TODO(crbug.com/1476489): Remove when unit test code is updated.
   registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  registry->RegisterBooleanPref(kPrivacySandboxPreferencesReconciled, false);
-
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterIntegerPref(kDownloadLaterPromptStatus, 0);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Deprecated 06/2022
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  registry->RegisterBooleanPref(kU2fSecurityKeyApiEnabled, false);
-#endif
-
-  // Deprecated 07/2022
-  registry->RegisterBooleanPref(kPrivacySandboxFlocEnabled, true);
-  registry->RegisterBooleanPref(kPrivacySandboxFlocDataAccessibleSince, false);
-  registry->RegisterBooleanPref(kPrivacySandboxApisEnabledV2Init, false);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Deprecated 07/2022
-  registry->RegisterListPref(kExtensionToolbar);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kSettingsShowOSBanner, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Deprecated 08/2022
-  registry->RegisterBooleanPref(kSecurityTokenSessionNotificationDisplayed,
-                                false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Deprecated 08/2022.
-  registry->RegisterIntegerPref(kProfileAvatarTutorialShown, 0);
-#endif
-
 #if BUILDFLAG(IS_LINUX)
   // Deprecated 08/2022.
+  // TODO(crbug.com/1476487): The pref `kUsesSystemThemeDeprecated` is still in
+  // use. Please remove once code is cleaned up.
   registry->RegisterBooleanPref(prefs::kUsesSystemThemeDeprecated, false);
 #endif
 
@@ -2103,18 +1977,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 06/2022.
-  local_state->ClearPref(kBackgroundTracingLastUpload);
-  local_state->ClearPref(kStabilityGpuCrashCount);
-  local_state->ClearPref(kStabilityRendererCrashCount);
-  local_state->ClearPref(kStabilityExtensionRendererCrashCount);
-#if !BUILDFLAG(IS_ANDROID)
-  local_state->ClearPref(kStabilityPageLoadCount);
-#endif
-
-  // Added 07/2002.
-  local_state->ClearPref(kStabilityCrashCount);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 09/2022
   local_state->ClearPref(kUsersLastInputMethod);
@@ -2273,56 +2135,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Added 06/2022.
+  // TODO(crbug.com/1476489): Remove when unit test code is updated.
   profile_prefs->ClearPref(kTokenServiceDiceCompatible);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(IS_ANDROID)
-  // Added 06/2022.
-  profile_prefs->ClearPref(kDownloadLaterPromptStatus);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 06/2022.
-  profile_prefs->ClearPref(kImprovedShortcutsNotificationShownCount);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 06/2022.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  profile_prefs->ClearPref(kU2fSecurityKeyApiEnabled);
-#endif
-  profile_prefs->ClearPref(prefs::kCloudPrintSubmitEnabled);
-
-  // Added 06/2022.
-  profile_prefs->ClearPref(kPrivacySandboxPreferencesReconciled);
-
-  // Added 07/2022
-  profile_prefs->ClearPref(kPrivacySandboxFlocEnabled);
-  profile_prefs->ClearPref(kPrivacySandboxFlocDataAccessibleSince);
-  profile_prefs->ClearPref(kPrivacySandboxApisEnabledV2Init);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Added 07/2022.
-  profile_prefs->ClearPref(kExtensionToolbar);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 07/2022.
-  profile_prefs->ClearPref(kCanShowFolderSelectionNudge);
-  profile_prefs->ClearPref(kSettingsShowOSBanner);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 08/2022.
-  profile_prefs->ClearPref(kSecurityTokenSessionNotificationDisplayed);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 08/2022.
-  profile_prefs->ClearPref(kProfileAvatarTutorialShown);
-#endif
-
 #if BUILDFLAG(IS_LINUX)
   // Added 08/2022.
+  // TODO(crbug.com/1476487): The pref `kUsesSystemThemeDeprecated` is still in
+  // use. Please remove once code is cleaned up.
   if (profile_prefs->HasPrefPath(prefs::kUsesSystemThemeDeprecated)) {
     auto migrated_theme =
         profile_prefs->GetBoolean(prefs::kUsesSystemThemeDeprecated)
