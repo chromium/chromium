@@ -146,15 +146,18 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    net::CookieSettingOverrides overrides) const {
-  ContentSetting setting =
-      GetCookieSettingInternal(
-          url,
-          GetFirstPartyURL(site_for_cookies,
-                           base::OptionalToPtr(top_frame_origin)),
-          IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr)
-          .cookie_setting();
-  return IsAllowed(setting);
+    net::CookieSettingOverrides overrides,
+    CookieSettingWithMetadata* cookie_settings) const {
+  CookieSettingWithMetadata setting = GetCookieSettingInternal(
+      url,
+      GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
+      IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr);
+
+  if (cookie_settings) {
+    *cookie_settings = setting;
+  }
+
+  return IsAllowed(setting.cookie_setting());
 }
 
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {

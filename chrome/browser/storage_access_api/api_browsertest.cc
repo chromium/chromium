@@ -149,6 +149,13 @@ std::string QueryPermission(content::RenderFrameHost* render_frame_host) {
       .ExtractString();
 }
 
+bool ThirdPartyPartitionedStorageAllowedByDefault() {
+  return base::FeatureList::IsEnabled(
+             net::features::kThirdPartyPartitionedStorageAllowedByDefault) &&
+         base::FeatureList::IsEnabled(
+             net::features::kThirdPartyStoragePartitioning);
+}
+
 class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
  protected:
   explicit StorageAccessAPIBaseBrowserTest(bool is_storage_partitioned)
@@ -1595,7 +1602,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
 
-  ExpectStorage(GetFrame(), false);
+  ExpectStorage(GetFrame(), ThirdPartyPartitionedStorageAllowedByDefault());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -1628,7 +1635,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
 
-  ExpectStorage(GetNestedFrame(), false);
+  ExpectStorage(GetNestedFrame(),
+                ThirdPartyPartitionedStorageAllowedByDefault());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   prompt_factory()->set_response_type(
@@ -1673,7 +1681,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
 
-  storage::test::ExpectCrossTabInfoForFrame(GetFrame(), false);
+  storage::test::ExpectCrossTabInfoForFrame(
+      GetFrame(), ThirdPartyPartitionedStorageAllowedByDefault());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));

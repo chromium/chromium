@@ -445,6 +445,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 // Enables SHA-256 and username hashing support for HTTP Digest auth.
 NET_EXPORT BASE_DECLARE_FEATURE(kDigestAuthEnableSecureAlgorithms);
 
+NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

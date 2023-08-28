@@ -87,6 +87,8 @@ class CookieSettingsBase {
 
   class CookieSettingWithMetadata {
    public:
+    CookieSettingWithMetadata() = default;
+
     CookieSettingWithMetadata(
         ContentSetting cookie_setting,
         absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
@@ -142,7 +144,8 @@ class CookieSettingsBase {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
-      net::CookieSettingOverrides overrides) const;
+      net::CookieSettingOverrides overrides,
+      CookieSettingWithMetadata* cookie_settings = nullptr) const;
 
   // Returns true if the cookie set by a page identified by |url| should be
   // session only. Querying this only makes sense if |IsFullCookieAccessAllowed|

@@ -4,10 +4,12 @@
 
 #include "components/content_settings/browser/content_settings_manager_impl.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -16,6 +18,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -160,9 +163,25 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
 
   // TODO(crbug.com/1386190): Consider whether the following check should
   // get CookieSettingOverrides from the frame rather than default to none.
+
+  CookieSettingsBase::CookieSettingWithMetadata cookie_settings;
+
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      cookie_settings_->SettingOverridesForStorage());
+      cookie_settings_->SettingOverridesForStorage(), &cookie_settings);
+
+  //  If storage partitioning is active, third-party partitioned storage is
+  //  allowed by default, and access is only blocked due to general third-party
+  //  cookie blocking (and not due to a user specified pattern) then we'll allow
+  //  storage access.
+  if (base::FeatureList::IsEnabled(
+          net::features::kThirdPartyStoragePartitioning) &&
+      base::FeatureList::IsEnabled(
+          net::features::kThirdPartyPartitionedStorageAllowedByDefault) &&
+      !allowed && cookie_settings.BlockedByThirdPartyCookieBlocking()) {
+    allowed = true;
+  }
+
   // Allow storage when --test-third-party-cookie-phaseout is used, but ensure
   // that only partitioned storage is available. This developer flag is meant to
   // simulate Chrome's behavior when 3P cookies are turned down to help
