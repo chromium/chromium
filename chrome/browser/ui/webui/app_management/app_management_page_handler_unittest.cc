@@ -223,10 +223,19 @@ TEST_F(AppManagementPageHandlerTestBase, PreferredAppOverlappingScopePort) {
   EXPECT_TRUE(IsAppPreferred(app_id1));
   EXPECT_FALSE(IsAppPreferred(app_id2));
 
-  // Setting app_id2 as preferred should set app_id1 as not preferred.
   handler()->SetPreferredApp(app_id2, /*is_preferred_app=*/true);
   AwaitWebAppCommandsComplete();
+
+// On Windows, Mac and Linux, nested scopes are not considered overlapping,
+// so 2 apps having nested scopes can be set as preferred at the same time,
+// while on CrOS, this cannot happen.
+// TODO(crbug.com/1476011): If CrOS decides to treat overlapping apps
+// as non-nested ones, then this will need to be modified.
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(IsAppPreferred(app_id1));
+#else
+  EXPECT_TRUE(IsAppPreferred(app_id1));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(IsAppPreferred(app_id2));
 }
 
@@ -310,7 +319,8 @@ TEST_F(AppManagementPageHandlerTestBase,
   EXPECT_TRUE(updated_result.Get()->supported_links.empty());
 }
 
-TEST_F(AppManagementPageHandlerTestBase, GetOverlappingPreferredApps) {
+TEST_F(AppManagementPageHandlerTestBase,
+       GetOverlappingPreferredAppsSingleAppOnly) {
   // First install an app that has some scope set in it.
   auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info1->title = u"app_name";
@@ -338,6 +348,45 @@ TEST_F(AppManagementPageHandlerTestBase, GetOverlappingPreferredApps) {
   std::vector<std::string> overlapping_apps =
       GetOverlappingPreferredApps(app_id1);
   EXPECT_TRUE(overlapping_apps.empty());
+}
+
+TEST_F(AppManagementPageHandlerTestBase,
+       GetOverlappingPreferredAppsNestedScope) {
+  // First install an app that has some scope set in it.
+  auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info1->title = u"app_name";
+  web_app_info1->start_url = GURL("https://example.com/index.html");
+  web_app_info1->scope = GURL("https://example.com/");
+
+  std::string app_id1 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info1));
+
+  // 2nd app has the same scope, but different app_id and opens in a new window.
+  auto web_app_info2 = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info2->title = u"app_name2";
+  web_app_info2->start_url = GURL("https://example.com/nested/index_abc.html");
+  web_app_info2->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app_info2->scope = GURL("https://example.com/nested/");
+
+  std::string app_id2 =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info2));
+
+  // Set app_id1 as a preferred app.
+  handler()->SetPreferredApp(app_id1, /*is_preferred_app=*/true);
+  AwaitWebAppCommandsComplete();
+
+  std::vector<std::string> overlapping_apps =
+      GetOverlappingPreferredApps(app_id2);
+
+// TODO(crbug.com/1476011): Modify if nested scope behavior changes on CrOS.
+// On Windows, Mac and Linux, apps with nested scopes are not considered
+// overlapping, but on CrOS they are.
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_THAT(overlapping_apps, testing::ElementsAre(app_id1));
+#else
+  EXPECT_TRUE(overlapping_apps.empty());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(AppManagementPageHandlerTestBase, GetOverlappingPreferredAppsTwice) {
@@ -469,6 +518,9 @@ TEST_F(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
   EXPECT_TRUE(overlapping_apps.empty());
 }
 
+// TODO(crbug.com/1476011): The overlapping nested scope based behavior is only
+// on ChromeOS, and will need to be modified if the behavior changes.
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AppManagementPageHandlerTestBase, UseCase_ADisabledBDisabled) {
   auto web_app_info1 = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info1->title = u"A";
@@ -598,6 +650,7 @@ TEST_F(AppManagementPageHandlerTestBase, UseCase_AEnabledBEnabled) {
       GetOverlappingPreferredApps(appB);
   EXPECT_TRUE(overlapping_apps_b.empty());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class AppManagementPageHandlerArcTest

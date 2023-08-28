@@ -441,7 +441,7 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
              GetOverlappingPreferredAppsCallback callback,
              web_app::AllAppsLock& all_apps_lock) {
             std::move(callback).Run(
-                all_apps_lock.registrar().GetOverlappingAppsMatchingScopePrefix(
+                all_apps_lock.registrar().GetOverlappingAppsMatchingScope(
                     app_id));
           },
           app_id, std::move(callback)));
