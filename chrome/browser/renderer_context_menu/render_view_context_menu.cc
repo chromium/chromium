@@ -1872,7 +1872,7 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   menu_model_.AddItem(GetSearchForImageIdc(), menu_string);
-  if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+  if (companion::IsNewBadgeEnabledForSearchImageMenuItem(GetBrowser())) {
     menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
   }
 
@@ -2168,7 +2168,9 @@ void RenderViewContextMenu::AppendSearchProvider() {
                                      default_provider->short_name(),
                                      printable_selection_text));
       if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
-        menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+        if (companion::IsNewBadgeEnabledForSearchWebMenuItem(GetBrowser())) {
+          menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+        }
         // Add an "in new tab" item performing the non-side panel behavior.
         if (base::FeatureList::IsEnabled(
                 companion::features::
@@ -2467,7 +2469,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     menu_model_.AddItem(GetRegionSearchIdc(),
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
-    if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
+    if (companion::IsNewBadgeEnabledForSearchImageMenuItem(GetBrowser())) {
       menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
     }
   }

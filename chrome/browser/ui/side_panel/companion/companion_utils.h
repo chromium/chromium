@@ -46,6 +46,11 @@ bool IsSearchWebInCompanionSidePanelSupported(const Browser* browser);
 // Google.
 bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser);
 
+// Return true if companion feature is enabled and feature for enabling "new"
+// badges on context menu items is enabled.
+bool IsNewBadgeEnabledForSearchImageMenuItem(const Browser* browser);
+bool IsNewBadgeEnabledForSearchWebMenuItem(const Browser* browser);
+
 // Updated the default value for the pref used to determine whether companion
 // should be pinned to the toolbar by default.
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service);
