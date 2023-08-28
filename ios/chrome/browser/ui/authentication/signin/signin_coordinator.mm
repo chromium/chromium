@@ -211,22 +211,10 @@ using signin_metrics::PromoAction;
                                                 accessPoint:(signin_metrics::
                                                                  AccessPoint)
                                                                 accessPoint {
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  BOOL canShowWithZeroIdentities =
-      accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
-      IsConsistencyNewAccountInterfaceEnabled();
-  if (!accountManagerService->HasIdentities() && !canShowWithZeroIdentities) {
-    RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
-        accessPoint);
-    return nil;
-  }
-  return [[ConsistencyPromoSigninCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:browser
-                     accessPoint:accessPoint];
+  return [ConsistencyPromoSigninCoordinator
+      coordinatorWithBaseViewController:viewController
+                                browser:browser
+                            accessPoint:accessPoint];
 }
 
 - (void)dealloc {

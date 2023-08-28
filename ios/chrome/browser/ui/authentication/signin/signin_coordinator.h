@@ -9,9 +9,9 @@
 
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
 class Browser;
 namespace syncer {
@@ -24,7 +24,7 @@ class PrefRegistrySyncable;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
-@interface SigninCoordinator : ChromeCoordinator
+@interface SigninCoordinator : InterruptibleChromeCoordinator
 
 // Called when the sign-in dialog is interrupted, canceled or successful.
 // This completion needs to be set before calling -[SigninCoordinator start].

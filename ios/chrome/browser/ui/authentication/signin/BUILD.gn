@@ -23,6 +23,7 @@ source_set("signin_headers") {
     "//components/signin/public/base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
   ]
 }
 
@@ -67,6 +68,7 @@ source_set("signin_impl") {
     "//ios/chrome/browser/ui/authentication/signin/two_screens_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
+    "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
   ]
 }
 
