@@ -256,6 +256,7 @@ per-file third_party/android_tools_internal=*
 per-file third_party/gles2_conform=*
 per-file third_party/googlemac=*
 per-file third_party/khronos_glcts=*
+per-file third_party/speedometer/v3.0=*
 per-file third_party/widevine/cdm/chromeos=*
 per-file third_party/widevine/cdm/linux=*
 per-file third_party/widevine/cdm/mac=*

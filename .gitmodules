@@ -341,6 +341,9 @@
 [submodule "third_party/securemessage/src"]
 	path = third_party/securemessage/src
 	url = https://chromium.googlesource.com/external/github.com/google/securemessage.git
+[submodule "third_party/speedometer/v3.0"]
+	path = third_party/speedometer/v3.0
+	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer.git
 [submodule "third_party/ukey2/src"]
 	path = third_party/ukey2/src
 	url = https://chromium.googlesource.com/external/github.com/google/ukey2.git
