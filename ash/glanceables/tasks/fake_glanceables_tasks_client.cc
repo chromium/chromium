@@ -55,15 +55,25 @@ void FakeGlanceablesTasksClient::GetTasks(const std::string& task_list_id,
 void FakeGlanceablesTasksClient::MarkAsCompleted(
     const std::string& task_list_id,
     const std::string& task_id,
-    MarkAsCompletedCallback callback) {
-  completed_tasks_.push_back(base::JoinString({task_list_id, task_id}, ":"));
-  std::move(callback).Run(/*success=*/true);
+    bool completed) {
+  if (completed) {
+    pending_completed_tasks_.push_back(
+        base::JoinString({task_list_id, task_id}, ":"));
+  } else {
+    pending_completed_tasks_.erase(std::find(
+        pending_completed_tasks_.begin(), pending_completed_tasks_.end(),
+        base::JoinString({task_list_id, task_id}, ":")));
+  }
 }
 
-void FakeGlanceablesTasksClient::OnGlanceablesBubbleClosed() {
+void FakeGlanceablesTasksClient::OnGlanceablesBubbleClosed(
+    GlanceablesTasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
   ++bubble_closed_count_;
   RunPendingGetTaskListsCallbacks();
   RunPendingGetTasksCallbacks();
+  completed_tasks_ += pending_completed_tasks_.size();
+  pending_completed_tasks_.clear();
+  std::move(callback).Run();
 }
 
 int FakeGlanceablesTasksClient::GetAndResetBubbleClosedCount() {

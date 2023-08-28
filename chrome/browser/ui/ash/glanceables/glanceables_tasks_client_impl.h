@@ -60,11 +60,12 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       GlanceablesTasksClient::GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
                 GlanceablesTasksClient::GetTasksCallback callback) override;
-  void MarkAsCompleted(
-      const std::string& task_list_id,
-      const std::string& task_id,
-      GlanceablesTasksClient::MarkAsCompletedCallback callback) override;
-  void OnGlanceablesBubbleClosed() override;
+  void MarkAsCompleted(const std::string& task_list_id,
+                       const std::string& task_id,
+                       bool completed) override;
+  void OnGlanceablesBubbleClosed(
+      GlanceablesTasksClient::OnAllPendingCompletedTasksSavedCallback callback =
+          base::DoNothing()) override;
 
   using TaskListsRequestCallback =
       base::RepeatingCallback<void(const std::string& page_token)>;
@@ -161,15 +162,12 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
                      google_apis::ApiErrorCode> result);
 
-  // Callback for `MarkAsCompleted()` request. Removes the task from
-  // `tasks_in_task_lists_` if succeeded. Runs `callback` passed from
-  // `MarkAsCompleted()` when done.
-  void OnMarkedAsCompleted(
-      const std::string& task_list_id,
-      const std::string& task_id,
-      const base::Time& request_start_time,
-      GlanceablesTasksClient::MarkAsCompletedCallback callback,
-      google_apis::ApiErrorCode status_code);
+  // Callback for `MarkAsCompleted()` request. Does not removes the task from
+  // `tasks_in_task_lists_` as it will be cleared by
+  // `OnGlanceablesBubbleClosed`.
+  void OnMarkedAsCompleted(const base::Time& request_start_time,
+                           base::RepeatingClosure on_done,
+                           google_apis::ApiErrorCode status_code);
 
   // To be called when requests to get user's task lists complete.
   // It sets the task lists fetch status to `final_fetch_status`, and runs all
@@ -183,6 +181,10 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   void RunGetTasksCallbacks(const std::string& task_list_id,
                             FetchStatus final_fetch_status,
                             ui::ListModel<GlanceablesTask>* tasks);
+
+  // A map of `task_list_id` to a set of `task_id` that are pending to be
+  // completed.
+  std::map<std::string, std::set<std::string>> pending_completed_tasks_;
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();

@@ -205,13 +205,18 @@ TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
       GetTaskItemsContainerView()->children()[0]);
   ASSERT_TRUE(task_view);
   ASSERT_FALSE(task_view->GetCompletedForTest());
-  ASSERT_TRUE(tasks_client()->completed_tasks().empty());
+  ASSERT_TRUE(tasks_client()->pending_completed_tasks().empty());
 
   GestureTapOn(task_view->GetButtonForTest());
   ASSERT_TRUE(task_view->GetCompletedForTest());
-  ASSERT_EQ(tasks_client()->completed_tasks().size(), 1u);
-  EXPECT_EQ(tasks_client()->completed_tasks().front(),
+  ASSERT_EQ(tasks_client()->pending_completed_tasks().size(), 1u);
+  EXPECT_EQ(tasks_client()->pending_completed_tasks().front(),
             "TaskListID1:TaskListItem1");
+
+  // Tasks should not be marked as completed until closing the bubble.
+  EXPECT_EQ(0, tasks_client()->completed_task_count());
+  tasks_client()->OnGlanceablesBubbleClosed();
+  EXPECT_EQ(1, tasks_client()->completed_task_count());
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUI) {

@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash {
@@ -24,7 +25,7 @@ class ASH_EXPORT GlanceablesTasksClient {
       base::OnceCallback<void(ui::ListModel<GlanceablesTaskList>* task_lists)>;
   using GetTasksCallback =
       base::OnceCallback<void(ui::ListModel<GlanceablesTask>* tasks)>;
-  using MarkAsCompletedCallback = base::OnceCallback<void(bool success)>;
+  using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
 
   // Fetches all the authenticated user's task lists and invokes `callback` when
   // done.
@@ -35,16 +36,18 @@ class ASH_EXPORT GlanceablesTasksClient {
   virtual void GetTasks(const std::string& task_list_id,
                         GetTasksCallback callback) = 0;
 
-  // Marks the specified task in the specified task list as completed and
-  // invokes `callback` when done. Only root tasks can be marked as completed
-  // (all subtasks will be marked as completed automatically by the API).
+  // Marks the specified task in the specified task list as completed. Only root
+  // tasks can be marked as completed (all subtasks will be marked as completed
+  // automatically by the API). Changes are propagated server side after calling
+  // OnGlanceablesBubbleClosed.
   virtual void MarkAsCompleted(const std::string& task_list_id,
                                const std::string& task_id,
-                               MarkAsCompletedCallback callback) = 0;
+                               bool completed) = 0;
 
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached tasks data.
-  virtual void OnGlanceablesBubbleClosed() = 0;
+  virtual void OnGlanceablesBubbleClosed(
+      OnAllPendingCompletedTasksSavedCallback callback = base::DoNothing()) = 0;
 
   virtual ~GlanceablesTasksClient() = default;
 };

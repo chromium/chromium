@@ -243,20 +243,15 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 GlanceablesTaskView::~GlanceablesTaskView() = default;
 
 void GlanceablesTaskView::ButtonPressed() {
-  if (button_->checked()) {
-    return;
-  }
-
+  bool target_state = !button_->checked();
   // Visually mark the task as completed.
-  button_->SetChecked(true);
-  SetupTasksLabel(/*completed=*/true);
+  button_->SetChecked(target_state);
+  SetupTasksLabel(/*completed=*/target_state);
 
   ash::Shell::Get()
       ->glanceables_v2_controller()
       ->GetTasksClient()
-      ->MarkAsCompleted(task_list_id_, task_id_,
-                        base::BindOnce(&GlanceablesTaskView::MarkedAsCompleted,
-                                       weak_ptr_factory_.GetWeakPtr()));
+      ->MarkAsCompleted(task_list_id_, task_id_, /*completed=*/target_state);
 }
 
 const views::ImageButton* GlanceablesTaskView::GetButtonForTest() const {
@@ -265,15 +260,6 @@ const views::ImageButton* GlanceablesTaskView::GetButtonForTest() const {
 
 bool GlanceablesTaskView::GetCompletedForTest() const {
   return button_->checked();
-}
-
-void GlanceablesTaskView::MarkedAsCompleted(bool success) {
-  if (!success) {
-    SetupTasksLabel(/*completed=*/false);
-  }
-
-  // Uncheck button if the tasks is not successfully marked as completed.
-  button_->SetChecked(success);
 }
 
 void GlanceablesTaskView::SetupTasksLabel(bool completed) {

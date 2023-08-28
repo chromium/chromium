@@ -123,18 +123,6 @@ class TestRequestHandler {
               (const HttpRequest&));
 };
 
-// Observer for `ui::ListModel` changes.
-class TestListModelObserver : public ui::ListModelObserver {
- public:
-  MOCK_METHOD(void, ListItemsAdded, (size_t start, size_t count), (override));
-  MOCK_METHOD(void, ListItemsRemoved, (size_t start, size_t count), (override));
-  MOCK_METHOD(void,
-              ListItemMoved,
-              (size_t index, size_t target_index),
-              (override));
-  MOCK_METHOD(void, ListItemsChanged, (size_t start, size_t count), (override));
-};
-
 }  // namespace
 
 class GlanceablesTasksClientImplTest : public testing::Test {
@@ -1083,8 +1071,10 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_CALL(
       request_handler(),
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
-      .WillOnce(
-          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(""))));
+      .Times(2)
+      .WillRepeatedly(Invoke([](const HttpRequest&) {
+        return TestRequestHandler::CreateSuccessfulResponse("");
+      }));
 
   TestFuture<ui::ListModel<GlanceablesTask>*> get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
@@ -1093,24 +1083,20 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   auto* const tasks = get_tasks_future.Get();
   EXPECT_EQ(tasks->item_count(), 2u);
 
-  testing::StrictMock<TestListModelObserver> observer;
-  tasks->AddObserver(&observer);
-
-  EXPECT_CALL(observer, ListItemsRemoved(/*start=*/1, /*count=*/1));
   TestFuture<bool> mark_as_completed_future;
-  client()->MarkAsCompleted("test-task-list-id", "task-2",
-                            mark_as_completed_future.GetCallback());
-  ASSERT_TRUE(mark_as_completed_future.Wait());
+  client()->MarkAsCompleted("test-task-list-id", "task-1", true);
+  client()->MarkAsCompleted("test-task-list-id", "task-2", true);
 
-  EXPECT_TRUE(mark_as_completed_future.Get());
-  EXPECT_EQ(tasks->item_count(), 1u);
-  EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
+  TestFuture<void> glanceables_bubble_closed_future;
+  client()->OnGlanceablesBubbleClosed(
+      glanceables_bubble_closed_future.GetCallback());
+  ASSERT_TRUE(glanceables_bubble_closed_future.Wait());
 
   histogram_tester()->ExpectTotalCount(
-      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);
+      "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/2);
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", ApiErrorCode::HTTP_SUCCESS,
-      /*expected_bucket_count=*/1);
+      /*expected_bucket_count=*/2);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
@@ -1144,13 +1130,13 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
   const auto* const tasks = get_tasks_future.Get();
   EXPECT_EQ(tasks->item_count(), 2u);
 
-  TestFuture<bool> mark_as_completed_future;
-  client()->MarkAsCompleted("test-task-list-id", "task-2",
-                            mark_as_completed_future.GetCallback());
-  ASSERT_TRUE(mark_as_completed_future.Wait());
-
-  EXPECT_FALSE(mark_as_completed_future.Get());
+  client()->MarkAsCompleted("test-task-list-id", "task-2", true);
   EXPECT_EQ(tasks->item_count(), 2u);
+
+  TestFuture<void> glanceables_bubble_closed_future;
+  client()->OnGlanceablesBubbleClosed(
+      glanceables_bubble_closed_future.GetCallback());
+  ASSERT_TRUE(glanceables_bubble_closed_future.Wait());
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);

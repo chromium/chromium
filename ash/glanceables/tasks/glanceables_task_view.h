@@ -46,7 +46,6 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   ~GlanceablesTaskView() override;
 
   void ButtonPressed();
-  void MarkedAsCompleted(bool success);
 
   const views::ImageButton* GetButtonForTest() const;
   bool GetCompletedForTest() const;
@@ -67,8 +66,6 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   const std::string task_list_id_;
   // ID for the task represented by this view.
   const std::string task_id_;
-
-  base::WeakPtrFactory<GlanceablesTaskView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

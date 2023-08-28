@@ -149,7 +149,8 @@ TEST_F(GlanceablesPixelTest, DISABLED_GlanceablesTasksMarkAsCompleted) {
   ASSERT_TRUE(task_view);
   task_view->GetWidget()->LayoutRootViewIfNecessary();
   ASSERT_FALSE(task_view->GetCompletedForTest());
-  ASSERT_EQ(0u, fake_glanceables_tasks_client()->completed_tasks().size());
+  ASSERT_EQ(0u,
+            fake_glanceables_tasks_client()->pending_completed_tasks().size());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "glanceables_task_view_no_completed_tasks", /*revision_number=*/1,
@@ -157,7 +158,8 @@ TEST_F(GlanceablesPixelTest, DISABLED_GlanceablesTasksMarkAsCompleted) {
 
   GestureTapOn(task_view->GetButtonForTest());
   ASSERT_TRUE(task_view->GetCompletedForTest());
-  ASSERT_EQ(1u, fake_glanceables_tasks_client()->completed_tasks().size());
+  ASSERT_EQ(1u,
+            fake_glanceables_tasks_client()->pending_completed_tasks().size());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "glanceables_task_view_one_completed_task", /*revision_number=*/1,
