@@ -14,6 +14,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
@@ -35,6 +37,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -339,6 +342,8 @@ class PageInfoBubbleViewTestApi {
 namespace {
 
 using ::base::test::ParseJson;
+using ::testing::_;
+using ::testing::Return;
 
 constexpr char kTestUserEmail[] = "user@example.com";
 
@@ -1131,14 +1136,27 @@ class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
         {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   }
 
+  void SetUp() override {
+    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
+        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            web_contents_helper_->profile(),
+            base::BindRepeating(&BuildMockPrivacySandboxService)));
+
+    PageInfoBubbleViewTest::SetUp();
+  }
   void ExpectViewContainsText(views::View* view, const std::u16string& text) {
     EXPECT_TRUE(view);
     EXPECT_THAT(base::UTF16ToUTF8(api_->GetTextOnView(view)),
                 ::testing::HasSubstr(base::UTF16ToUTF8(text)));
   }
 
+  MockPrivacySandboxService* mock_privacy_sandbox_service() {
+    return mock_privacy_sandbox_service_.get();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list;
+  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
 
 }  // namespace
@@ -1157,6 +1175,20 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   size_t kExpectedChildren = 3;
   const std::u16string owner_name = u"example_owner";
   cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};
+
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kMigrateStorageToBDM)) {
+    // The initial `SetCookieInfo` call coming from `OpenCookiesPage` through
+    // the `PageInfo` constructor synchronously has an empty
+    // `cookie_info.fps_info` which causes a persistent false state for FPS info
+    // and consequently persisting incorrect histogram reports in this test.
+    // Mocking the call into `GetFirstPartySetOwnerForDisplay` resolves this by
+    // overriding the `owner_name` for synchronous init call to `SetCookieInfo`.
+    EXPECT_CALL(*mock_privacy_sandbox_service(),
+                GetFirstPartySetOwnerForDisplay(_))
+        .Times(1)
+        .WillOnce(Return(owner_name));
+  }
 
   // Open cookies subpage to get the buttons.
   api_->navigation_handler()->OpenCookiesPage();

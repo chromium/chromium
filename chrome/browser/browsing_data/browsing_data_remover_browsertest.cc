@@ -34,6 +34,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browsing_data/content/browsing_data_model.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -205,21 +207,21 @@ class BrowsingDataRemoverBrowserTest
     ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
     EXPECT_EQ(0, GetSiteDataCount());
-    ExpectCookieTreeModelCount(0);
+    ExpectTotalModelCount(0);
     EXPECT_FALSE(HasDataForType(type));
 
     SetDataForType(type);
     EXPECT_EQ(1, GetSiteDataCount());
     // TODO(crbug.com/1307796): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. ExpectCookieTreeModelCount(1) is not always true
+    // 3PSP is fully enabled. ExpectTotalModelCount(1) is not always true
     // here.
     EXPECT_TRUE(HasDataForType(type));
 
     RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                   delete_begin);
     EXPECT_EQ(0, GetSiteDataCount());
-    ExpectCookieTreeModelCount(0);
+    ExpectTotalModelCount(0);
     EXPECT_FALSE(HasDataForType(type));
   }
 
@@ -227,42 +229,53 @@ class BrowsingDataRemoverBrowserTest
   // creates an empty store, are counted and deleted correctly.
   void TestEmptySiteData(const std::string& type, TimeEnum delete_begin) {
     EXPECT_EQ(0, GetSiteDataCount());
-    ExpectCookieTreeModelCount(0);
+    ExpectTotalModelCount(0);
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
     EXPECT_EQ(0, GetSiteDataCount());
-    ExpectCookieTreeModelCount(0);
+    ExpectTotalModelCount(0);
     // Opening a store of this type creates a site data entry.
     EXPECT_FALSE(HasDataForType(type));
     EXPECT_EQ(1, GetSiteDataCount());
     // TODO(crbug.com/1307796): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
-    // 3PSP is fully enabled. ExpectCookieTreeModelCount(1) is not always true
+    // 3PSP is fully enabled. ExpectTotalModelCount(1) is not always true
     // here.
     RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                   delete_begin);
 
     EXPECT_EQ(0, GetSiteDataCount());
-    ExpectCookieTreeModelCount(0);
+    ExpectTotalModelCount(0);
   }
 
-  inline void ExpectCookieTreeModelCount(int expected) {
-    std::unique_ptr<CookiesTreeModel> model = GetCookiesTreeModel(GetProfile());
-    EXPECT_EQ(expected, GetCookiesTreeModelCount(model->GetRoot()))
-        << GetCookiesTreeModelInfo(model->GetRoot());
+  inline void ExpectTotalModelCount(int expected) {
+    std::unique_ptr<CookiesTreeModel> cookies_tree_model =
+        GetCookiesTreeModel(GetProfile());
+    std::unique_ptr<BrowsingDataModel> browsing_data_model =
+        GetBrowsingDataModel(GetProfile());
+    int total_model_size =
+        GetCookiesTreeModelCount(cookies_tree_model->GetRoot()) +
+        browsing_data_model->size();
+    EXPECT_EQ(expected, total_model_size)
+        << GetCookiesTreeModelInfo(cookies_tree_model->GetRoot());
   }
 
-  inline void ExpectCookieTreeModelCount(int expected3PSPDisabled,
-                                         int expected3PSPEnabled) {
+  // This method is used to decide which entry count to expect depending on
+  // whether `kThirdPartyStoragePartitioning` or `kMigrateStorageToBDM` are
+  // enabled or disabled.
+  inline void ExpectTotalModelCount(int expectedAllDisabled,
+                                    int expectedAnyEnabled) {
     // TODO(crbug.com/1307796): Use a different approach to determine presence
     // of data that does not depend on UI code and has a better resolution when
     // 3PSP is fully enabled. Also, remove helper duplication between the
     // incognito, and remover, browsing data browser tests.
-    if (base::FeatureList::IsEnabled(
-            net::features::kThirdPartyStoragePartitioning)) {
-      ExpectCookieTreeModelCount(expected3PSPEnabled);
+    if (!base::FeatureList::IsEnabled(
+            net::features::kThirdPartyStoragePartitioning) &&
+        !base::FeatureList::IsEnabled(
+            browsing_data::features::kMigrateStorageToBDM)) {
+      ExpectTotalModelCount(expectedAllDisabled);
     } else {
-      ExpectCookieTreeModelCount(expected3PSPDisabled);
+      ExpectTotalModelCount(expectedAnyEnabled);
     }
   }
 
@@ -1096,7 +1109,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   SetDataForType(kDataType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectCookieTreeModelCount(1);
+  ExpectTotalModelCount(1);
   EXPECT_TRUE(HasDataForType(kDataType));
 
   // Start data removal.  This will CreateTaskCompletionClosureForMojo and
@@ -1183,14 +1196,14 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
 // Test that session storage is not counted until crbug.com/772337 is fixed.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, SessionStorageCounting) {
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   SetDataForType("SessionStorage");
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   EXPECT_TRUE(HasDataForType("SessionStorage"));
 }
 
@@ -1299,12 +1312,12 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Try to remove the Media Licenses using a time frame up until an hour ago,
@@ -1312,7 +1325,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA, delete_begin,
                 TimeEnum::kLastHour);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Now try with a time range that includes the current time, which should
@@ -1320,7 +1333,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA, delete_begin,
                 TimeEnum::kMax);
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 }
 
@@ -1337,12 +1350,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 }
 
@@ -1380,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   SetDataForType(kMediaLicenseType);
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // As Clear Browsing Data typically deletes recent data (e.g. last hour,
@@ -1392,14 +1405,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
   // nodes. `count` should be 1 here.
   EXPECT_EQ(1, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   // Now try with a time range that includes all time, which should
   // clear the media license created by the PRE_ test.
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
 }
 
 // TODO(crbug.com/1472412): Enable after fixing flakiness.
@@ -1417,12 +1430,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   SetDataForType(kMediaLicenseType);
 
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // Try to remove the Media Licenses using a deletelist that doesn't include
@@ -1435,7 +1448,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
 
   // Now try with a preservelist that includes the current URL. Media License
   // should not be deleted.
@@ -1445,7 +1458,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
 
   // Now try with a deletelist that includes the current URL. Media License
   // should be deleted this time.
@@ -1455,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectCookieTreeModelCount(0, 1);
+  ExpectTotalModelCount(0, 1);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -1471,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
                                            /*check_leveldb_content=*/false));
   ASSERT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
 
   // To use secure-only features on a host name, we need an https server.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -1509,13 +1522,17 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // LocalStorage are counted. TODO(crbug.com/1307796): Use a different approach
   // to determine presence of data that does not depend on UI code and has a
   // better resolution when 3PSP is fully enabled.
-  ExpectCookieTreeModelCount(kStorageTypes.size() - 2, 3);
+  ExpectTotalModelCount(kStorageTypes.size() - 2,
+                        base::FeatureList::IsEnabled(
+                            browsing_data::features::kMigrateStorageToBDM)
+                            ? 2
+                            : 3);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |
                 chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS);
   EXPECT_EQ(0, GetSiteDataCount());
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
@@ -1552,7 +1569,7 @@ const std::vector<std::string> kSessionOnlyStorageTestTypes{
 // Test that storage gets deleted if marked as SessionOnly.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        PRE_SessionOnlyStorageRemoved) {
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
@@ -1565,7 +1582,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Cookies and LocalStorage are counted. TODO(crbug.com/1307796): Use a
   // different approach to determine presence of data that does not depend on UI
   // code and has a better resolution when 3PSP is fully enabled.
-  ExpectCookieTreeModelCount(kSessionOnlyStorageTestTypes.size() - 1, 3);
+  ExpectTotalModelCount(kSessionOnlyStorageTestTypes.size() - 1,
+                        base::FeatureList::IsEnabled(
+                            browsing_data::features::kMigrateStorageToBDM)
+                            ? 2
+                            : 3);
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
@@ -1582,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        MAYBE_SessionOnlyStorageRemoved) {
   // All cookies should have been deleted.
-  ExpectCookieTreeModelCount(0);
+  ExpectTotalModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   for (const std::string& type : kSessionOnlyStorageTestTypes) {

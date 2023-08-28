@@ -1100,6 +1100,8 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
 
 // Flaky on CrOS and Linux. https://crbug.com/930481
 TEST_F(SiteSettingsHandlerTest, GetAllSites) {
+  SetupModels();
+
   base::Value::List get_all_sites_args;
   get_all_sites_args.Append(kCallbackId);
 
@@ -2901,6 +2903,7 @@ TEST_F(SiteSettingsHandlerTest, BlockAutoplay_Update) {
 }
 
 TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
+  SetupModels();
   const ContentSettingsType content_settings_type =
       ContentSettingsType::NOTIFICATIONS;
   // Register WebUIAllowlist auto-granted permissions.

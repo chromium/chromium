@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
 class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
@@ -82,6 +83,9 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
 
   // Returns the cookie tree model for the browser.
   std::unique_ptr<CookiesTreeModel> GetCookiesTreeModel(Profile* profile);
+
+  // Returns the browsing data model for the browser.
+  std::unique_ptr<BrowsingDataModel> GetBrowsingDataModel(Profile* profile);
 
   // Returns the sum of the number of datatypes per host.
   int GetCookiesTreeModelCount(const CookieTreeNode* root);

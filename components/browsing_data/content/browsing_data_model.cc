@@ -67,23 +67,33 @@ struct GetDataOwner {
         return *owner;
       }
     }
-    // By default all data is owned by its host.
-    return GetOwningHost(data_key);
+
+    return GetOwningOriginOrHost(data_key);
   }
 
  private:
   template <class T>
-  std::string GetOwningHost(const T& data_key) const;
+  BrowsingDataModel::DataOwner GetOwningOriginOrHost(const T& data_key) const;
+
+  // Returns the origin's host if the URL scheme is `http` or `https` otherwise
+  // returns the origin.
+  BrowsingDataModel::DataOwner GetOwnerBasedOnScheme(
+      const url::Origin origin) const {
+    if (origin.GetURL().SchemeIsHTTPOrHTTPS()) {
+      return origin.host();
+    }
+    return origin;
+  }
 
   raw_ptr<BrowsingDataModel::Delegate> delegate_;
   BrowsingDataModel::StorageType storage_type_;
 };
 
 template <>
-std::string GetDataOwner::GetOwningHost<url::Origin>(
+BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<url::Origin>(
     const url::Origin& data_key) const {
   if (storage_type_ == BrowsingDataModel::StorageType::kTrustTokens) {
-    return data_key.host();
+    return GetOwnerBasedOnScheme(data_key);
   }
 
   NOTREACHED() << "Unexpected StorageType: " << static_cast<int>(storage_type_);
@@ -91,7 +101,8 @@ std::string GetDataOwner::GetOwningHost<url::Origin>(
 }
 
 template <>
-std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     const blink::StorageKey& data_key) const {
   // TODO(crbug.com/1271155): This logic is useful for testing during the
   // implementation of the model, but ultimately these storage types may not
@@ -101,7 +112,7 @@ std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
     case BrowsingDataModel::StorageType::kSessionStorage:
-      return data_key.origin().host();
+      return GetOwnerBasedOnScheme(data_key.origin());
     default:
       NOTREACHED() << "Unexpected StorageType: "
                    << static_cast<int>(storage_type_);
@@ -110,41 +121,44 @@ std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
 }
 
 template <>
-std::string GetDataOwner::GetOwningHost<
+BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<
     content::InterestGroupManager::InterestGroupDataKey>(
     const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
   CHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
-  return data_key.owner.host();
+  return GetOwnerBasedOnScheme(data_key.owner);
 }
 
 template <>
-std::string GetDataOwner::GetOwningHost<content::AttributionDataModel::DataKey>(
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<content::AttributionDataModel::DataKey>(
     const content::AttributionDataModel::DataKey& data_key) const {
   CHECK_EQ(BrowsingDataModel::StorageType::kAttributionReporting,
            storage_type_);
-  return data_key.reporting_origin().host();
+  return GetOwnerBasedOnScheme(data_key.reporting_origin());
 }
 
 template <>
-std::string
-GetDataOwner::GetOwningHost<content::PrivateAggregationDataModel::DataKey>(
+BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<
+    content::PrivateAggregationDataModel::DataKey>(
     const content::PrivateAggregationDataModel::DataKey& data_key) const {
   CHECK_EQ(BrowsingDataModel::StorageType::kPrivateAggregation, storage_type_);
-  return data_key.reporting_origin().host();
+  return GetOwnerBasedOnScheme(data_key.reporting_origin());
 }
 
 template <>
-std::string GetDataOwner::GetOwningHost<net::SharedDictionaryIsolationKey>(
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<net::SharedDictionaryIsolationKey>(
     const net::SharedDictionaryIsolationKey& isolation_key) const {
   DCHECK_EQ(BrowsingDataModel::StorageType::kSharedDictionary, storage_type_);
-  return isolation_key.frame_origin().host();
+  return GetOwnerBasedOnScheme(isolation_key.frame_origin());
 }
 
 template <>
-std::string GetDataOwner::GetOwningHost<browsing_data::SharedWorkerInfo>(
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<browsing_data::SharedWorkerInfo>(
     const browsing_data::SharedWorkerInfo& shared_worker_info) const {
   DCHECK_EQ(BrowsingDataModel::StorageType::kSharedWorker, storage_type_);
-  return shared_worker_info.storage_key.origin().host();
+  return GetOwnerBasedOnScheme(shared_worker_info.storage_key.origin());
 }
 
 // Helper which allows the lifetime management of a deletion action to occur

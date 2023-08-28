@@ -34,6 +34,7 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -1654,12 +1655,21 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
     const browsing_data::LocalSharedObjectsContainer& container =
         pscs->allowed_local_shared_objects();
     EXPECT_TRUE(pscs->IsContentAllowed(ContentSettingsType::COOKIES));
-    EXPECT_EQ(container.local_storages()->GetCount(), 1u);
-    EXPECT_EQ(container.session_storages()->GetCount(), 1u);
-    EXPECT_EQ(container.cache_storages()->GetCount(), 1u);
-    EXPECT_EQ(container.file_systems()->GetCount(), 1u);
-    EXPECT_EQ(container.indexed_dbs()->GetCount(), 1u);
-    EXPECT_EQ(container.shared_workers()->GetSharedWorkerCount(), 1u);
+
+    bool is_migrate_storage_to_bdm_enabled = base::FeatureList::IsEnabled(
+        browsing_data::features::kMigrateStorageToBDM);
+    if (is_migrate_storage_to_bdm_enabled) {
+      EXPECT_EQ(pscs->allowed_browsing_data_model()->size(), 1u);
+    }
+
+    size_t expected_size = is_migrate_storage_to_bdm_enabled ? 0u : 1u;
+    EXPECT_EQ(container.local_storages()->GetCount(), expected_size);
+    EXPECT_EQ(container.session_storages()->GetCount(), expected_size);
+    EXPECT_EQ(container.cache_storages()->GetCount(), expected_size);
+    EXPECT_EQ(container.file_systems()->GetCount(), expected_size);
+    EXPECT_EQ(container.indexed_dbs()->GetCount(), expected_size);
+    EXPECT_EQ(container.shared_workers()->GetSharedWorkerCount(),
+              expected_size);
     EXPECT_EQ(container.service_workers()->GetCount(), 1u);
   }
 }

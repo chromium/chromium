@@ -1121,7 +1121,9 @@ void PageSpecificContentSettings::OnTrustTokenAccessed(
 void PageSpecificContentSettings::OnBrowsingDataAccessed(
     BrowsingDataModel::DataKey data_key,
     BrowsingDataModel::StorageType storage_type,
-    bool blocked) {
+    bool blocked,
+    content::Page* originating_page) {
+  originating_page = originating_page ? originating_page : &page();
   auto& model =
       blocked ? blocked_browsing_data_model_ : allowed_browsing_data_model_;
 
@@ -1147,12 +1149,17 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
   MaybeUpdateParent(&PageSpecificContentSettings::OnBrowsingDataAccessed,
-                    data_key, storage_type, blocked);
+                    data_key, storage_type, blocked, originating_page);
 
   // TODO(njeunje): Look into populating an actual url for this access details.
   // Could be obtained from the `data_key`.
-  AccessDetails access_details{SiteDataType::kUnknown, AccessType::kUnknown,
-                               GURL(), blocked, false};
+  GURL accessing_url =
+      absl::holds_alternative<blink::StorageKey>(data_key)
+          ? absl::get<blink::StorageKey>(data_key).origin().GetURL()
+          : GURL();
+  AccessDetails access_details{SiteDataType::kStorage, AccessType::kUnknown,
+                               accessing_url, blocked,
+                               originating_page->IsPrimary()};
   MaybeNotifySiteDataObservers(access_details);
 }
 
