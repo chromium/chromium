@@ -24,7 +24,7 @@ class ASH_EXPORT ClassroomBubbleTeacherView : public ClassroomBubbleBaseView {
   void OnSeeAllPressed() override;
 
   // Handle switching between assignment lists.
-  void SelectedAssignmentListChanged();
+  void SelectedAssignmentListChanged(bool initial_update);
 
   base::WeakPtrFactory<ClassroomBubbleTeacherView> weak_ptr_factory_{this};
 };

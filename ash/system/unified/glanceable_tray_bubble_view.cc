@@ -185,6 +185,14 @@ void GlanceableTrayBubbleView::InitializeContents() {
 
   scroll_view_->SetContents(std::move(child_glanceable_container));
 
+  if (!calendar_view_) {
+    calendar_view_ =
+        scroll_view_->contents()->AddChildView(std::make_unique<CalendarView>(
+            detailed_view_delegate_.get(), /*for_glanceables_container=*/true));
+    // TODO(b:277268122): Update with glanceable spec.
+    calendar_view_->SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, 400));
+  }
+
   auto* const tasks_client =
       Shell::Get()->glanceables_v2_controller()->GetTasksClient();
   if (should_show_non_calendar_glanceables && tasks_client) {
@@ -194,13 +202,6 @@ void GlanceableTrayBubbleView::InitializeContents() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (!calendar_view_) {
-    calendar_view_ =
-        scroll_view_->contents()->AddChildView(std::make_unique<CalendarView>(
-            detailed_view_delegate_.get(), /*for_glanceables_container=*/true));
-    // TODO(b:277268122): Update with glanceable spec.
-    calendar_view_->SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, 400));
-  }
   int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
   ChangeAnchorAlignment(shelf_->alignment());
@@ -225,10 +226,15 @@ void GlanceableTrayBubbleView::InitializeContents() {
           base::Unretained(&classroom_bubble_teacher_view_)));
     }
   }
+
+  calendar_view_->ScrollViewToVisible();
 }
 
-bool GlanceableTrayBubbleView::CanActivate() const {
-  return true;
+void GlanceableTrayBubbleView::AddedToWidget() {
+  if (!scroll_view_) {
+    InitializeContents();
+  }
+  TrayBubbleView::AddedToWidget();
 }
 
 void GlanceableTrayBubbleView::OnWidgetClosing(views::Widget* widget) {
@@ -267,6 +273,12 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
       scroll_contents->children().begin();
   *view = scroll_contents->AddChildViewAt(
       std::make_unique<T>(detailed_view_delegate_.get()), calendar_view_index);
+
+  views::View* const default_focused_child =
+      scroll_contents->GetChildrenFocusList().front();
+  if (default_focused_child != calendar_view_) {
+    calendar_view_->InsertBeforeInFocusList(default_focused_child);
+  }
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
@@ -280,6 +292,12 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
       std::make_unique<TasksBubbleView>(detailed_view_delegate_.get(),
                                         task_lists),
       0);
+
+  views::View* const default_focused_child =
+      scroll_contents->GetChildrenFocusList().front();
+  if (default_focused_child != calendar_view_) {
+    calendar_view_->InsertBeforeInFocusList(default_focused_child);
+  }
 }
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {

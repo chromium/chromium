@@ -45,7 +45,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   CalendarView* GetCalendarView() { return calendar_view_; }
 
   // TrayBubbleView:
-  bool CanActivate() const override;
+  void AddedToWidget() override;
   void OnWidgetClosing(views::Widget* widget) override;
 
   // ScreenLayoutObserver:

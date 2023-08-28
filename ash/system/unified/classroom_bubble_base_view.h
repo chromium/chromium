@@ -60,6 +60,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   // Handles received assignments by rendering them in `list_container_view_`.
   void OnGetAssignments(
       const std::u16string& list_name,
+      bool initial_update,
       bool success,
       std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments);
 

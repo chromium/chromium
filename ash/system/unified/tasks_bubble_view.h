@@ -93,9 +93,10 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
 
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();
-  void ScheduleUpdateTasksList();
+  void ScheduleUpdateTasksList(bool initial_update);
   void UpdateTasksList(const std::string& task_list_id,
                        const std::string& task_list_title,
+                       bool initial_update,
                        ui::ListModel<GlanceablesTask>* tasks);
 
   // Announces text describing the task list state through a screen

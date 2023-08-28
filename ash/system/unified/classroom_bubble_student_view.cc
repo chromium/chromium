@@ -98,8 +98,9 @@ ClassroomBubbleStudentView::ClassroomBubbleStudentView(
           std::make_unique<ClassroomStudentComboboxModel>()) {
   combo_box_view_->SetCallback(base::BindRepeating(
       &ClassroomBubbleStudentView::SelectedAssignmentListChanged,
-      base::Unretained(this)));
-  SelectedAssignmentListChanged();
+      base::Unretained(this),
+      /*initial_update=*/false));
+  SelectedAssignmentListChanged(/*initial_update=*/true);
 }
 
 ClassroomBubbleStudentView::~ClassroomBubbleStudentView() = default;
@@ -121,7 +122,8 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
   }
 }
 
-void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
+void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
+    bool initial_update) {
   auto* const client =
       Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
   if (!client) {
@@ -140,9 +142,10 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
 
   AboutToRequestAssignments();
 
-  auto callback = base::BindOnce(&ClassroomBubbleStudentView::OnGetAssignments,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 GetAssignmentListName(selected_index));
+  auto callback =
+      base::BindOnce(&ClassroomBubbleStudentView::OnGetAssignments,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     GetAssignmentListName(selected_index), initial_update);
   switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
     case StudentAssignmentsListType::kAssigned:
       empty_list_label_->SetText(l10n_util::GetStringUTF16(

@@ -10,10 +10,12 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
-GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
+GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray, bool from_keyboard)
+    : tray_(tray) {
   TrayBubbleView::InitParams init_params =
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
   // TODO(b:277268122): Update with glanceable spec.
@@ -27,34 +29,17 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
     *init_params.insets -= gfx::Insets::VH(8, 0);
   }
 
-  bubble_view_ = new GlanceableTrayBubbleView(init_params, tray_->shelf());
-
-  // bubble_widget_ takes ownership of the bubble_view_.
-  bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
-  bubble_widget_->AddObserver(this);
-  TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
-  bubble_view_->InitializeContents();
-  bubble_view_->InitializeAndShowBubble();
-
-  tray->tray_event_filter()->AddBubble(this);
+  auto bubble_view =
+      std::make_unique<GlanceableTrayBubbleView>(init_params, tray_->shelf());
+  if (from_keyboard) {
+    bubble_view->SetCanActivate(true);
+  }
+  bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(tray);
+  bubble_wrapper_->ShowBubble(std::move(bubble_view));
 }
 
 GlanceableTrayBubble::~GlanceableTrayBubble() {
-  tray_->tray_event_filter()->RemoveBubble(this);
-
-  if (bubble_widget_) {
-    bubble_widget_->RemoveObserver(this);
-    bubble_widget_->Close();
-  }
-}
-
-void GlanceableTrayBubble::OnWidgetDestroying(views::Widget* widget) {
-  CHECK_EQ(bubble_widget_, widget);
-  bubble_widget_->RemoveObserver(this);
-  bubble_widget_ = nullptr;
-
-  // `tray_->CloseBubble()` will delete `this`.
-  tray_->CloseBubble();
+  bubble_wrapper_->bubble_view()->ResetDelegate();
 }
 
 TrayBackgroundView* GlanceableTrayBubble::GetTray() const {
@@ -62,31 +47,36 @@ TrayBackgroundView* GlanceableTrayBubble::GetTray() const {
 }
 
 TrayBubbleView* GlanceableTrayBubble::GetBubbleView() const {
-  return bubble_view_;
+  return bubble_wrapper_->bubble_view();
 }
 
 views::Widget* GlanceableTrayBubble::GetBubbleWidget() const {
-  return bubble_widget_;
+  return bubble_wrapper_->GetBubbleWidget();
+  ;
 }
 
 TasksBubbleView* GlanceableTrayBubble::GetTasksView() {
-  return bubble_view_->GetTasksView();
+  return GetGlanceableTrayBubbleView()->GetTasksView();
 }
 
 ClassroomBubbleTeacherView* GlanceableTrayBubble::GetClassroomTeacherView() {
-  return bubble_view_->GetClassroomTeacherView();
+  return GetGlanceableTrayBubbleView()->GetClassroomTeacherView();
 }
 
 ClassroomBubbleStudentView* GlanceableTrayBubble::GetClassroomStudentView() {
-  return bubble_view_->GetClassroomStudentView();
+  return GetGlanceableTrayBubbleView()->GetClassroomStudentView();
 }
 
 CalendarView* GlanceableTrayBubble::GetCalendarView() {
-  return bubble_view_->GetCalendarView();
+  return GetGlanceableTrayBubbleView()->GetCalendarView();
 }
 
 bool GlanceableTrayBubble::IsBubbleActive() const {
-  return bubble_widget_->IsActive();
+  return GetBubbleWidget()->IsActive();
+}
+
+GlanceableTrayBubbleView* GlanceableTrayBubble::GetGlanceableTrayBubbleView() {
+  return views::AsViewClass<GlanceableTrayBubbleView>(GetBubbleView());
 }
 
 }  // namespace ash

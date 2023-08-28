@@ -160,7 +160,7 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
 
-  SelectedTasksListChanged();
+  ScheduleUpdateTasksList(/*initial_update=*/true);
 }
 
 TasksBubbleView::~TasksBubbleView() = default;
@@ -185,10 +185,10 @@ void TasksBubbleView::ActionButtonPressed() {
 void TasksBubbleView::SelectedTasksListChanged() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  ScheduleUpdateTasksList();
+  ScheduleUpdateTasksList(/*initial_update=*/false);
 }
 
-void TasksBubbleView::ScheduleUpdateTasksList() {
+void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
   if (!task_list_combo_box_view_->GetSelectedIndex().has_value()) {
     return;
   }
@@ -202,11 +202,12 @@ void TasksBubbleView::ScheduleUpdateTasksList() {
       active_task_list->id,
       base::BindOnce(&TasksBubbleView::UpdateTasksList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
-                     active_task_list->title));
+                     active_task_list->title, initial_update));
 }
 
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       const std::string& task_list_title,
+                                      bool initial_update,
                                       ui::ListModel<GlanceablesTask>* tasks) {
   const gfx::Size old_preferred_size = GetPreferredSize();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
@@ -248,6 +249,10 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
   if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
+    if (!initial_update) {
+      GetWidget()->LayoutRootViewIfNecessary();
+      ScrollViewToVisible();
+    }
   }
 }
 

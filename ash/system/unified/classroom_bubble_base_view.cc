@@ -138,6 +138,7 @@ void ClassroomBubbleBaseView::AboutToRequestAssignments() {
 
 void ClassroomBubbleBaseView::OnGetAssignments(
     const std::u16string& list_name,
+    bool initial_update,
     bool success,
     std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
   const gfx::Size old_preferred_size = GetPreferredSize();
@@ -177,6 +178,11 @@ void ClassroomBubbleBaseView::OnGetAssignments(
 
   if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
+
+    if (!initial_update) {
+      GetWidget()->LayoutRootViewIfNecessary();
+      ScrollViewToVisible();
+    }
   }
 }
 
