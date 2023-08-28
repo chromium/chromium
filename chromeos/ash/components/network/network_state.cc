@@ -759,11 +759,11 @@ void NetworkState::SetVpnProvider(const std::string& id,
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const NetworkState::PortalState& state) {
-  using PortalState = NetworkState::PortalState;
+                         const NetworkState::PortalState state) {
+  using State = NetworkState::PortalState;
   switch (state) {
-#define PRINT(s)          \
-  case PortalState::k##s: \
+#define PRINT(s)    \
+  case State::k##s: \
     return out << #s;
     PRINT(Unknown)
     PRINT(Online)
@@ -775,7 +775,28 @@ std::ostream& operator<<(std::ostream& out,
   }
 
   return out << "PortalState("
-             << static_cast<std::underlying_type_t<PortalState>>(state) << ")";
+             << static_cast<std::underlying_type_t<State>>(state) << ")";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const NetworkState::NetworkTechnologyType type) {
+  using Type = NetworkState::NetworkTechnologyType;
+  switch (type) {
+#define PRINT(s)   \
+  case Type::k##s: \
+    return out << #s;
+    PRINT(Cellular)
+    PRINT(Ethernet)
+    PRINT(EthernetEap)
+    PRINT(WiFi)
+    PRINT(Tether)
+    PRINT(VPN)
+    PRINT(Unknown)
+#undef PRINT
+  }
+
+  return out << "NetworkTechnologyType("
+             << static_cast<std::underlying_type_t<Type>>(type) << ")";
 }
 
 }  // namespace ash
