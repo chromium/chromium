@@ -5786,6 +5786,12 @@ class QuicNetworkTransactionWithDestinationTest
 
     HttpNetworkSessionParams session_params;
     session_params.enable_quic = true;
+    // To simplefy tests, we disable UseDnsHttpsSvcbAlpn feature. If this is
+    // enabled, we need to prepare mock sockets for `dns_alpn_h3_job_`. Also
+    // AsyncQuicSession feature makes it more complecated because it changes the
+    // socket call order.
+    session_params.use_dns_https_svcb_alpn = false;
+
     context_.params()->allow_remote_alt_svc = true;
     context_.params()->supported_versions = supported_versions_;
 
