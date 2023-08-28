@@ -75,8 +75,45 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
     const anchor = document.createElement('div');
     document.body.appendChild(anchor);
     element.showAt(anchor);
-    assertTrue(element.$.crActionMenu.getDialog().open);
+    assertTrue(element.$.dialog.open);
     element.hide();
-    assertFalse(element.$.crActionMenu.getDialog().open);
+    assertFalse(element.$.dialog.open);
+  });
+
+  test('PositionsCorrectly', () => {
+    const windowHeight = 1000;
+    const dialogWidth = 100;
+    const dialogHeight = 200;
+    const anchorWidth = 50;
+    const anchorHeight = 25;
+    const anchorTop = 300;
+    const anchorLeft = 400;
+
+    // Force some dimensions to testing is more predictable.
+    const anchor = document.createElement('div');
+    anchor.style.position = 'fixed';
+    anchor.style.top = `${anchorTop}px`;
+    anchor.style.height = `${anchorHeight}px`;
+    anchor.style.left = `${anchorLeft}px`;
+    anchor.style.width = `${anchorWidth}px`;
+    element.$.dialog.style.width = `${dialogWidth}px`;
+    element.$.dialog.style.height = `${dialogHeight}px`;
+    window.innerHeight = windowHeight;
+
+    document.body.appendChild(anchor);
+    element.showAt(anchor);
+
+    assertEquals(`${anchorTop + anchorHeight}px`, element.$.dialog.style.top);
+    assertEquals(
+        `${anchorLeft + anchorWidth - dialogWidth}px`,
+        element.$.dialog.style.left);
+    element.hide();
+
+    // Test that the top position changes if anchor is near bottom of window.
+    const newAnchorTop = windowHeight;
+    anchor.style.top = `${newAnchorTop}px`;
+    element.showAt(anchor);
+    assertEquals(
+        `${newAnchorTop - dialogHeight}px`, element.$.dialog.style.top);
   });
 });

@@ -1,11 +1,8 @@
 <style include="cr-icons">
-  cr-action-menu {
-    --cr-menu-background-sheen: transparent;
-  }
-
-  cr-action-menu::part(dialog) {
+  dialog {
     background: var(--color-theme-color-picker-hue-slider-dialog-background,
         var(--cr-fallback-color-surface));
+    border: 0;
     border-radius: 12px;
     box-shadow: var(--cr-elevation-3);
     box-sizing: border-box;
@@ -14,8 +11,11 @@
     height: 137px;
     isolation: isolate;
     overflow: hidden;
-    padding: 12px 20px;
+    margin: 0;
+    padding: 20px;
+    position: absolute;
     width: 296px;
+    z-index: 999;
   }
 
   #header {
@@ -29,7 +29,6 @@
     flex: 1;
     font-size: 16px;
     font-weight: 500;
-    line-height: 24px;
     margin: 0;
   }
 
@@ -67,7 +66,7 @@
   }
 </style>
 
-<cr-action-menu id="crActionMenu">
+<dialog id="dialog">
   <div id="header">
     <h2 id="title">[[i18n('hueSliderTitle')]]</h2>
     <cr-icon-button id="close" class="icon-clear"
@@ -84,4 +83,4 @@
       aria-labelledby="title"
       noink>
   </cr-slider>
-</cr-action-menu>
+</dialog>

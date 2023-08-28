@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -31,7 +29,7 @@ const hueGradient = `linear-gradient(to right, ${hueGradientParts.join(',')})`;
 
 export interface ThemeHueSliderDialogElement {
   $: {
-    crActionMenu: CrActionMenuElement,
+    dialog: HTMLDialogElement,
     slider: CrSliderElement,
   };
 }
@@ -92,22 +90,24 @@ export class ThemeHueSliderDialogElement extends
   }
 
   showAt(anchor: HTMLElement) {
-    // By default, align the dialog below the anchor. If the window is too
-    // small (140px is about the dialog's height with some margin), show it
-    // above the anchor.
-    let anchorAlignmentY = AnchorAlignment.AFTER_END;
-    if (this.getBoundingClientRect().top + 140 >= window.innerHeight) {
-      anchorAlignmentY = AnchorAlignment.BEFORE_START;
-    }
+    this.$.dialog.show();
 
-    this.$.crActionMenu.showAt(anchor, {
-      anchorAlignmentY,
-      noOffset: true,
-    });
+    this.$.dialog.style.left = `${
+        anchor.offsetLeft + anchor.offsetWidth - this.$.dialog.offsetWidth}px`;
+
+    // By default, align the dialog below the anchor. If the window is too
+    // small, show it above the anchor.
+    const anchorBottom = anchor.offsetTop + anchor.offsetHeight;
+    if (anchorBottom + this.$.dialog.offsetHeight >= window.innerHeight) {
+      this.$.dialog.style.top =
+          `${anchor.offsetTop - this.$.dialog.offsetHeight}px`;
+    } else {
+      this.$.dialog.style.top = `${anchorBottom}px`;
+    }
   }
 
   hide() {
-    this.$.crActionMenu.close();
+    this.$.dialog.close();
   }
 
   private updateSelectedHueValue_() {
