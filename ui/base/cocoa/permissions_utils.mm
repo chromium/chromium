@@ -77,6 +77,15 @@ bool TryPromptUserForScreenCapture() {
 }
 
 void WarmScreenCapture() {
+  if (base::mac::IsAtLeastOS14()) {
+    // Starting in macOS 14, a "your screen is being captured" chip shows in the
+    // menu bar while an app is capturing the screen, and if it's a one-time
+    // image capture, it shows for ten seconds. Doing the warmup below would
+    // cause the chip to show on every app start. Therefore, skip the warmup as
+    // the benefit isn't worth the cost of startling the user with the chip.
+    return;
+  }
+
   // WarmScreenCapture() is meant to be called during early startup. Since the
   // calls to warm the cache may block, execute them off the main thread so we
   // don't hold up startup. To be effective these calls need to run before
