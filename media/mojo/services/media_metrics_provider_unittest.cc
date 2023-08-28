@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_message_loop.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/mojo/services/media_metrics_provider.h"
@@ -140,7 +141,8 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
   provider_->SetTimeToMetadata(kMetadataTime);
   provider_->SetTimeToFirstFrame(kFirstFrameTime);
   provider_->SetTimeToPlayReady(kPlayReadyTime);
-  provider_->SetContainerName(container_names::CONTAINER_MOV);
+  provider_->SetContainerName(
+      container_names::MediaContainerName::kContainerMOV);
   provider_->OnError(PIPELINE_ERROR_DECODE);
   provider_.reset();
   base::RunLoop().RunUntilIdle();
@@ -169,7 +171,9 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
                  kFirstFrameTime.InMilliseconds());
       EXPECT_UKM(UkmEntry::kTimeToPlayReadyName,
                  kPlayReadyTime.InMilliseconds());
-      EXPECT_UKM(UkmEntry::kContainerNameName, container_names::CONTAINER_MOV);
+      EXPECT_UKM(UkmEntry::kContainerNameName,
+                 base::to_underlying(
+                     container_names::MediaContainerName::kContainerMOV));
     }
   }
 }
@@ -199,7 +203,8 @@ TEST_F(MediaMetricsProviderTest, TestUkmMediaStream) {
   provider_->SetTimeToMetadata(kMetadataTime);
   provider_->SetTimeToFirstFrame(kFirstFrameTime);
   provider_->SetTimeToPlayReady(kPlayReadyTime);
-  provider_->SetContainerName(container_names::CONTAINER_MOV);
+  provider_->SetContainerName(
+      container_names::MediaContainerName::kContainerMOV);
   provider_->OnError(PIPELINE_ERROR_DECODE);
   provider_.reset();
   base::RunLoop().RunUntilIdle();

@@ -137,8 +137,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::VideoPixelFormat, media::PIXEL_FORMAT_MAX)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoRotation, media::VIDEO_ROTATION_MAX)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::container_names::MediaContainerName,
-                          media::container_names::CONTAINER_MAX)
+IPC_ENUM_TRAITS_MAX_VALUE(
+    media::container_names::MediaContainerName,
+    media::container_names::MediaContainerName::kMaxValue)
 
 #if BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(media::MediaDrmKeyType,

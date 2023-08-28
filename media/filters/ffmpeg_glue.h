@@ -90,7 +90,7 @@ class MEDIA_EXPORT FFmpegGlue {
   RAW_PTR_EXCLUSION AVFormatContext* format_context_ = nullptr;
   std::unique_ptr<AVIOContext, ScopedPtrAVFree> avio_context_;
   container_names::MediaContainerName container_ =
-      container_names::CONTAINER_UNKNOWN;
+      container_names::MediaContainerName::kContainerUnknown;
 };
 
 }  // namespace media

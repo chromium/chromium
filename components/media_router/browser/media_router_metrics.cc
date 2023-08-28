@@ -147,8 +147,8 @@ void MediaRouterMetrics::RecordCloseDialogLatency(
 // static
 void MediaRouterMetrics::RecordMediaRouterFileFormat(
     const media::container_names::MediaContainerName format) {
-  UMA_HISTOGRAM_ENUMERATION(kHistogramMediaRouterFileFormat, format,
-                            media::container_names::CONTAINER_MAX + 1);
+  base::UmaHistogramEnumeration(
+      kHistogramMediaRouterFileFormat, format);
 }
 
 // static
