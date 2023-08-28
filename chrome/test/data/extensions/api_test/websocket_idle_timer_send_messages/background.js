@@ -18,7 +18,7 @@ async function openSocket() {
 
 // Sends messages to the (previously-opened) web socket for two seconds, and
 // then replies to the C++ caller.
-async function sendMessagesFor2Seconds() {
+async function perform2SecondsOfWebSocketActivity() {
   // IMPORTANT: We cannot use any APIs that extend service worker lifetime
   // (including APIs like chrome.test.sendMessage()) until after the two
   // seconds have passed. Otherwise, this would keep the service worker alive

@@ -2653,9 +2653,15 @@ void ServiceWorkerGlobalScope::NotifyWebSocketActivity() {
   CHECK(IsContextThread());
   CHECK(event_queue_);
 
+  ScriptState* script_state = ScriptController()->GetScriptState();
+  CHECK(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+
+  v8::Local<v8::Context> v8_context = script_state->GetContext();
+
   bool notify = To<ServiceWorkerGlobalScopeProxy>(ReportingProxy())
-                    .ShouldNotifyServiceWorkerOnWebSocketActivity(
-                        GetThread()->GetIsolate()->GetCurrentContext());
+                    .ShouldNotifyServiceWorkerOnWebSocketActivity(v8_context);
 
   if (notify) {
     // TODO(crbug/1399324): refactor with RAII pattern.
