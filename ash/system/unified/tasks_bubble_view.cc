@@ -28,29 +28,64 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace {
 
 constexpr int kMaximumTasks = 5;
 constexpr int kInteriorGlanceableBubbleMargin = 16;
+constexpr int kAddNewButtonCornerRadius = 16;
 constexpr auto kAddNewTaskButtonMargins = gfx::Insets::TLBR(0, 0, 16, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
 
-}  // namespace
+std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
+    views::Button::PressedCallback callback) {
+  auto add_new_task_button = std::make_unique<views::LabelButton>(
+      std::move(callback),
+      l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL));
+  add_new_task_button->SetID(
+      base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
+  add_new_task_button->SetImageModel(
+      views::Button::ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
+                                     cros_tokens::kCrosSysOnSurface));
+  add_new_task_button->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
+  add_new_task_button->SetImageLabelSpacing(8);
+  add_new_task_button->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kAddNewButtonCornerRadius));
+  add_new_task_button->SetTextColorId(views::Button::ButtonState::STATE_NORMAL,
+                                      cros_tokens::kCrosSysOnSurface);
+  add_new_task_button->SetProperty(views::kMarginsKey,
+                                   kAddNewTaskButtonMargins);
 
-namespace ash {
+  views::FocusRing::Get(add_new_task_button.get())
+      ->SetColorId(cros_tokens::kCrosSysFocusRing);
+  views::HighlightPathGenerator::Install(
+      add_new_task_button.get(),
+      std::make_unique<views::RoundRectHighlightPathGenerator>(
+          gfx::Insets(), kAddNewButtonCornerRadius));
+
+  return add_new_task_button;
+}
+
+}  // namespace
 
 TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
                                  ui::ListModel<GlanceablesTaskList>* task_list)
@@ -90,26 +125,9 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
           views::BoxLayout::Orientation::kVertical));
   layout->set_between_child_spacing(2);
 
-  add_new_task_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL)));
-  add_new_task_button_->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
-  add_new_task_button_->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
-                                     cros_tokens::kCrosSysOnSurface));
-  add_new_task_button_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_CENTER);
-  add_new_task_button_->SetImageLabelSpacing(8);
-  add_new_task_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, 16));
-  add_new_task_button_->SetTextColorId(views::Button::ButtonState::STATE_NORMAL,
-                                       cros_tokens::kCrosSysOnSurface);
-  add_new_task_button_->SetProperty(views::kMarginsKey,
-                                    kAddNewTaskButtonMargins);
+  add_new_task_button_ =
+      AddChildView(CreateAddNewTaskButton(base::BindRepeating(
+          &TasksBubbleView::ActionButtonPressed, base::Unretained(this))));
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
