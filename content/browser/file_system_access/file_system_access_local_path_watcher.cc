@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_local_path_watcher.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
@@ -42,16 +43,25 @@ void FileSystemAccessLocalPathWatcher::Initialize(
     base::OnceCallback<void(bool)> on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (scope().IsRecursive() &&
+      !base::FilePathWatcher::RecursiveWatchAvailable()) {
+    std::move(on_source_initialized).Run(false);
+    return;
+  }
+
   base::FilePathWatcher::Callback on_change_callback =
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
+
+  // TODO(https://crbug.com/1019297): Report the affected path.
+  base::FilePathWatcher::WatchOptions watch_options{
+      .type = scope().IsRecursive()
+                  ? base::FilePathWatcher::Type::kRecursive
+                  : base::FilePathWatcher::Type::kNonRecursive};
+
   watcher_.AsyncCall(&base::FilePathWatcher::WatchWithOptions)
       .WithArgs(
-          scope().root_url().path(),
-          // TODO(https://crbug.com/1019297): Support recursive watches.
-          // TODO(https://crbug.com/1019297): Report the affected path.
-          base::FilePathWatcher::WatchOptions{
-              .type = base::FilePathWatcher::Type::kNonRecursive},
+          scope().root_url().path(), std::move(watch_options),
           base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
       .Then(std::move(on_source_initialized));
 }

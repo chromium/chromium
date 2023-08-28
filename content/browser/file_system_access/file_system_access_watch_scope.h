@@ -37,6 +37,10 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
   // Returns true if `scope` is contained within this `Scope`.
   bool Contains(const FileSystemAccessWatchScope& scope) const;
 
+  bool IsRecursive() const {
+    return watch_type_ == WatchType::kDirectoryRecursive;
+  }
+
   const storage::FileSystemURL& root_url() const { return root_url_; }
   FileSystemAccessPermissionContext::HandleType handle_type() const {
     switch (watch_type_) {

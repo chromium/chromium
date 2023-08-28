@@ -21,7 +21,6 @@ namespace content {
 // TODO(https://crbug.com/1019297): Consider making these WPTs, and adding a
 // lot more of them. For example:
 //   - change types
-//   - recursively watching a directory
 //   - watching non-local file systems
 //   - observing a handle without permission should fail
 //   - changes should not be reported to swap files
@@ -243,6 +242,59 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
                      "return await promise; })()")
                   .ExtractBool());
 #endif  // BUILDFLAG(IS_FUCHSIA)
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryRecursively) {
+  base::FilePath dir_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("test"), &dir_path));
+    base::CreateDirectory(dir_path.AppendASCII("sub1"));
+    base::CreateDirectory(dir_path.AppendASCII("sub1").AppendASCII("sub2"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+// `base::FilePatchWatcher` is not implemented on Fuchsia. See
+// https://crbug.com/851641. Instead, just check that attempting to observe a
+// handle does not crash.
+// Meanwhile, recursive watches are not supported on iOS.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+  auto result =
+      EvalJs(shell(),
+             "(async () => {"
+             "function onChange(records, observer) {};"
+             "const dir = await self.showDirectoryPicker();"
+             "const observer = new FileSystemObserver(onChange);"
+             "await observer.observe(dir, { recursive: true }); })()");
+  EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
+      << result.error;
+#else
+  EXPECT_TRUE(
+      EvalJs(shell(),
+             "(async () => {"
+             "let promiseResolve, promiseReject;"
+             "let promise = new Promise(function(resolve, reject) {"
+             "  promiseResolve = resolve;"
+             "  promiseReject = reject;"
+             "});"
+             "async function onChange(records, observer) {"
+             "  promiseResolve(true);"
+             "};"
+             "const dir = await self.showDirectoryPicker();"
+             "const observer = new FileSystemObserver(onChange);"
+             "await observer.observe(dir, { recursive: true });"
+             "const subDir1 = await dir.getDirectoryHandle('sub1');"
+             "const subDir2 = await subDir1.getDirectoryHandle('sub2');"
+             "await subDir2.getFileHandle('newFile.txt', { create: true });"
+             "return await promise; })()")
+          .ExtractBool());
+#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

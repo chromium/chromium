@@ -521,13 +521,16 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 }
 
-TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
+TEST_F(FileSystemAccessWatcherManagerTest,
+       WatchLocalDirectoryNonRecursivelyDoesNotSeeRecursiveChanges) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
   auto dir_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
+  // Create a file within a subdirectory of the directory being watched.
   base::CreateDirectory(dir_path);
-  auto file_path = dir_path.AppendASCII("foo");
+  base::CreateDirectory(dir_path.AppendASCII("subdir"));
+  auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
   base::WriteFile(file_path, "watch me");
 
   base::test::TestFuture<std::unique_ptr<Observation>> get_observation_future;
@@ -543,18 +546,60 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   ChangeAccumulator accumulator(get_observation_future.Take());
   EXPECT_TRUE(
       watcher_manager().HasObservationForTesting(accumulator.observation()));
+  EXPECT_TRUE(watcher_manager().HasSourcesForTesting());
 
-  // Delete a file in the directory. This should be reported to `accumulator`.
+  // Delete a file in the sub-directory. This should _not_ be reported to
+  // `accumulator`.
+  base::DeleteFile(file_path);
+
+  // No events should be received, since this change falls outside the scope
+  // of this observation.
+  SpinEventLoopForABit();
+  EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+}
+
+TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
+  auto dir_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+
+  // Create a file within a subdirectory of the directory being watched.
+  base::CreateDirectory(dir_path);
+  base::CreateDirectory(dir_path.AppendASCII("subdir"));
+  auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
+  base::WriteFile(file_path, "watch me");
+
+  base::test::TestFuture<std::unique_ptr<Observation>> get_observation_future;
+  watcher_manager().GetDirectoryObservation(
+      dir_url,
+      /*is_recursive=*/true, get_observation_future.GetCallback());
+  // Watching the local file system is not supported on Android or Fuchsia.
+  // Recursive watching of the local file system is not supported on iOS.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(get_observation_future.Get());
+#else
+  ASSERT_TRUE(get_observation_future.Get());
+
+  ChangeAccumulator accumulator(get_observation_future.Take());
+  EXPECT_TRUE(
+      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  EXPECT_TRUE(watcher_manager().HasSourcesForTesting());
+
+  // TODO(https://crbug.com/1432064): Ensure that no events are reported by this
+  // point.
+
+  // Delete a file in the sub-directory. This should be reported to
+  // `accumulator`.
   base::DeleteFile(file_path);
 
   // TODO(https://crbug.com/1019297): Report the affected path, not that of the
   // watched directory.
-  std::list<Change> expected_changes = {{dir_url, /*error=*/false}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::ContainerEq(expected_changes))(
+    return testing::Matches(testing::Not(testing::IsEmpty()))(
         accumulator.changes());
   }));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
