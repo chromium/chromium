@@ -201,6 +201,10 @@ class FloatingWorkspaceService : public KeyedService,
   void RemoveAllPreviousDesksExceptActiveDesk(
       const base::Uuid& exclude_desk_uuid);
 
+  // Sign out of the current user session when we detect another active session
+  // after this service was started.
+  void MaybeSignOutOfCurrentSession();
+
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
@@ -214,7 +218,14 @@ class FloatingWorkspaceService : public KeyedService,
   bool should_run_restore_ = true;
 
   // Time when the service is initialized.
-  base::TimeTicks initialization_timestamp_;
+  base::TimeTicks initialization_timeticks_;
+
+  // Time when service is initialized in base::Time format for comparison with
+  // desk template time.
+  base::Time initialization_time_;
+
+  // Time when we first received `kUpToDate` status from `sync_service_`
+  absl::optional<base::TimeTicks> first_uptodate_download_timeticks_;
 
   // Timer used for periodic capturing and uploading.
   base::RepeatingTimer timer_;

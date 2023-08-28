@@ -34,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash::floating_workspace {
@@ -270,6 +271,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   syncer::TestSyncService* test_sync_service() {
     return test_sync_service_.get();
   }
+  ui::UserActivityDetector* user_activity_detector() {
+    return user_activity_detector_.get();
+  }
   bool HasNotificationFor(const std::string& id) {
     absl::optional<message_center::Notification> notification =
         display_service()->GetNotification(id);
@@ -301,6 +305,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     AddTestNetworkDevice();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
+    user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
+    user_activity_detector_->set_last_activity_time_for_test(
+        base::TimeTicks::Now());
   }
 
  private:
@@ -312,6 +319,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
+  std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
 };
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
@@ -753,6 +761,8 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
       base::Seconds(1));
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
   EXPECT_TRUE(test_floating_workspace_service_v2
                   .GetUploadedFloatingWorkspaceTemplate());
   EXPECT_EQ(
@@ -786,6 +796,8 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureSameFloatingWorkspaceTemplate) {
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
       base::Seconds(1));
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
   const base::Time second_captured_template_creation_time = base::Time::Now();
   std::unique_ptr<DeskTemplate> second_captured_floating_workspace_template =
       MakeTestFloatingWorkspaceDeskTemplate(
@@ -836,6 +848,8 @@ TEST_F(FloatingWorkspaceServiceTest,
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
       base::Seconds(1));
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
   const base::Time second_captured_template_creation_time = base::Time::Now();
   std::unique_ptr<DeskTemplate> second_captured_floating_workspace_template =
       MakeTestFloatingWorkspaceDeskTemplate(
@@ -1174,7 +1188,8 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_FALSE(test_floating_workspace_service_v2
                    .GetRestoredFloatingWorkspaceTemplate());
   EXPECT_TRUE(HasNotificationFor(kNotificationForRestoreAfterError));
-
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
   // Capture a new desk before user restores.
   const std::string captured_template_name =
       "floating_workspace_captured_template";
@@ -1265,6 +1280,43 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordFloatingWorkspaceV2InitMetric) {
 
   histogram_tester.ExpectTotalCount(
       floating_workspace_metrics_util::kFloatingWorkspaceV2Initialized, 1u);
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       CaptureButDontUploadIfNoUserActionAfterkUpToDate) {
+  // Upload should be executed if two captured templates are the different.
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
+  // Idle for a while.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), test_sync_service(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time first_captured_template_creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> first_captured_floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(
+          template_name, first_captured_template_creation_time);
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(
+          std::move(first_captured_floating_workspace_template));
+  // Trigger the first capture task.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+
+  EXPECT_FALSE(test_floating_workspace_service_v2
+                   .GetUploadedFloatingWorkspaceTemplate());
   scoped_feature_list().Reset();
 }
 

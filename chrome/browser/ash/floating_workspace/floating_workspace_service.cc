@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -44,6 +45,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -95,7 +97,8 @@ FloatingWorkspaceService::FloatingWorkspaceService(
     floating_workspace_util::FloatingWorkspaceVersion version)
     : profile_(profile),
       version_(version),
-      initialization_timestamp_(base::TimeTicks::Now()) {}
+      initialization_timeticks_(base::TimeTicks::Now()),
+      initialization_time_(base::Time::Now()) {}
 
 FloatingWorkspaceService::~FloatingWorkspaceService() {
   if (timer_.IsRunning()) {
@@ -162,7 +165,7 @@ void FloatingWorkspaceService::
   if (!should_run_restore_)
     return;
   if (base::TimeTicks::Now() >
-      initialization_timestamp_ +
+      initialization_timeticks_ +
           ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
               .Get()) {
     // No need to restore any remote session 3 seconds (TBD) after login.
@@ -218,9 +221,6 @@ void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
 }
 
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
-  if (!should_run_restore_) {
-    return;
-  }
   switch (sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK)) {
     case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates: {
       // Floating Workspace Service needs to Wait until workspace desks are up
@@ -228,6 +228,13 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       break;
     }
     case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate: {
+      if (!should_run_restore_) {
+        MaybeSignOutOfCurrentSession();
+        return;
+      }
+      if (!first_uptodate_download_timeticks_.has_value()) {
+        first_uptodate_download_timeticks_ = base::TimeTicks::Now();
+      }
       StopProgressBarNotification();
       RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
       break;
@@ -235,6 +242,9 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
     case syncer::SyncService::ModelTypeDownloadStatus::kError: {
       // Sync is not expected to deliver the data, let user decide.
       // TODO: send notification to user asking if restore local.
+      if (!should_run_restore_) {
+        return;
+      }
       StopProgressBarNotification();
       HandleSyncEror();
       break;
@@ -405,7 +415,7 @@ void FloatingWorkspaceService::StopProgressBarNotification() {
 
 void FloatingWorkspaceService::HandleProgressBarStatus() {
   const base::TimeDelta time_difference =
-      base::TimeTicks::Now() - initialization_timestamp_;
+      base::TimeTicks::Now() - initialization_timeticks_;
   if (!should_run_restore_ ||
       time_difference >=
           ash::features::
@@ -482,12 +492,12 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
   // Record metrics for window and tab count and also the time it took to
   // download the floating workspace template.
   floating_workspace_metrics_util::RecordFloatingWorkspaceV2TemplateLoadTime(
-      base::TimeTicks::Now() - initialization_timestamp_);
+      base::TimeTicks::Now() - initialization_timeticks_);
   RecordWindowAndTabCountHistogram(*desk_template);
   // Check if template has been downloaded after
   // kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.
   if (base::TimeTicks::Now() >
-      initialization_timestamp_ +
+      initialization_timeticks_ +
           ash::features::
               kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.Get()) {
     // Template arrives late, asking user to restore or not.
@@ -634,8 +644,12 @@ void FloatingWorkspaceService::OnTemplateCaptured(
     floating_workspace_uuid_ = desk_template->uuid();
   }
 
-  // If successfully captured desk, remove old entry and record new uuid.
-  if (!IsCurrentDeskSameAsPrevious(desk_template.get())) {
+  // If successfully captured desk, remove old entry and record new uuid only if
+  // the user was active from when the sync cycle is finished to now.
+  if (!IsCurrentDeskSameAsPrevious(desk_template.get()) &&
+      (first_uptodate_download_timeticks_.has_value() &&
+       first_uptodate_download_timeticks_.value() <=
+           ui::UserActivityDetector::Get()->last_activity_time())) {
     UploadFloatingWorkspaceTemplateToDeskModel(std::move(desk_template));
   }
 }
@@ -695,7 +709,7 @@ void FloatingWorkspaceService::SendNotification(const std::string& id) {
   std::u16string title, message;
   message_center::SystemNotificationWarningLevel warning_level;
   const base::TimeDelta time_difference =
-      base::TimeTicks::Now() - initialization_timestamp_;
+      base::TimeTicks::Now() - initialization_timeticks_;
   bool is_progress_bar = false;
   switch (GetNotificationTypeById(id)) {
     case FloatingWorkspaceServiceNotificationType::kNoNetworkConnection:
@@ -809,6 +823,35 @@ void FloatingWorkspaceService::RemoveAllPreviousDesksExceptActiveDesk(
                                      ash::DeskCloseType::kCloseAllWindows);
       }
     }
+  }
+}
+
+void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
+  auto* latest_floating_workspace = GetLatestFloatingWorkspaceTemplate();
+  if (latest_floating_workspace == nullptr) {
+    return;
+  }
+  // Checks if the latest uploaded floating workspace template is a captured
+  // template from this device and sign out of this session if it is not. Note:
+  // we are comparing the last activity time for the user here with the template
+  // that we just got. Since `last_activity_time` is in timeticks and the
+  // template time is in time, we need to do some manually conversion with
+  // Time. Note: this time_delta is strictly > 0 but can be smaller than wall
+  // clock time difference. Some additional time buffer (using the 30s from the
+  // periodic capture job) is added to account for clock drifts from device to
+  // device.
+  base::TimeDelta time_delta =
+      ui::UserActivityDetector::Get()->last_activity_time() -
+      initialization_timeticks_;
+
+  if (latest_floating_workspace->client_cache_guid() !=
+          desk_sync_service_->GetDeskModel()->GetCacheGuid() &&
+      latest_floating_workspace->GetLastUpdatedTime() >
+          initialization_time_ + time_delta +
+              ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds
+                  .Get()) {
+    VLOG(1) << "Another device uploaded a template, logging out.";
+    chrome::AttemptUserExit();
   }
 }
 
