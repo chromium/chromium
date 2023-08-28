@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -281,6 +283,11 @@ TEST(WebAuthenticationJSONConversionTest,
 
 TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAttestationResponseOptionalFields) {
+  // TODO(https://crbug.com/1454841): Remove this.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      device::kWebAuthnRequireUpToDateJSONForRemoteDesktop);
+
   // Test both that `null` is an error, and that omitting the field works, for
   // the sole optional field, `authenticatorAttachment`.
   constexpr char kJsonWithNull[] = R"({
@@ -337,6 +344,10 @@ TEST(WebAuthenticationJSONConversionTest,
 
 TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAttestationResponseEasyAccessorFields) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      device::kWebAuthnRequireUpToDateJSONForRemoteDesktop);
+
   constexpr char kJson[] = R"({
     "rawId":"Lnc6JGTv2WBS05AsZB6xdg",
     "authenticatorAttachment":"platform",
@@ -563,6 +574,11 @@ TEST(WebAuthenticationJSONConversionTest,
   }
 
   {
+    // TODO(https://crbug.com/1454841): Remove this.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        device::kWebAuthnRequireUpToDateJSONForRemoteDesktop);
+
     // ... but not for remote-desktop
     auto [response, error] =
         GetAssertionResponseFromValue(*value, JSONUser::kRemoteDesktop);

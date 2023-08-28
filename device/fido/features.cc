@@ -90,10 +90,10 @@ BASE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON,
              "WebAuthenticationRequireEasyAccessorFieldsInJSON",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop,
              "WebAuthenticationRequireUpToDateJSONForRemoteDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnICloudKeychain,
