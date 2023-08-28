@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -85,6 +86,10 @@ void WebContentsHandler::RunFileChooser(
 
 }  // namespace
 
+ExternalAppDialog::InitParams::InitParams() = default;
+
+ExternalAppDialog::InitParams::~InitParams() = default;
+
 // static
 void ExternalAppDialog::Show(const InitParams& params) {
   if (g_instance) {
@@ -100,7 +105,9 @@ content::WebContents* ExternalAppDialog::GetWebContents() {
 }
 
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
-    : content_url_(params.content_url) {
+    : content::WebContentsObserver(nullptr),
+      content_url_(params.content_url),
+      on_console_log_(params.on_console_log) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -151,6 +158,10 @@ std::string ExternalAppDialog::GetDialogArgs() const {
   return {};
 }
 
+void ExternalAppDialog::OnLoadingStateChanged(content::WebContents* source) {
+  content::WebContentsObserver::Observe(source);
+}
+
 // NOTE: This function deletes this object at the end.
 void ExternalAppDialog::OnDialogClosed(const std::string& json_retval) {
   delete this;
@@ -175,6 +186,19 @@ bool ExternalAppDialog::ShouldCenterDialogTitleText() const {
 
 bool ExternalAppDialog::ShouldShowCloseButton() const {
   return true;
+}
+
+void ExternalAppDialog::OnDidAddMessageToConsole(
+    content::RenderFrameHost* source_frame,
+    blink::mojom::ConsoleMessageLevel log_level,
+    const std::u16string& message,
+    int32_t line_no,
+    const std::u16string& source_id,
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
+  if (on_console_log_) {
+    on_console_log_.Run(content::ConsoleMessageLevelToLogSeverity(log_level),
+                        message, line_no, source_id);
+  }
 }
 
 }  // namespace ash::shimless_rma
