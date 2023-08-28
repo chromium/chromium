@@ -11,5 +11,11 @@
   }
 </style>
 <div id="header">
-  <div id="description">[[mouse.name]]</div>
+  <div id="description">[[selectedMouse.name]]</div>
+</div>
+<div class="subsection">
+  <customize-buttons-subsection
+      button-remapping-list="[[selectedMouse.settings.buttonRemappings]]"
+      action-list$="[[buttonActionList_]]">
+  </customize-buttons-subsection>
 </div>

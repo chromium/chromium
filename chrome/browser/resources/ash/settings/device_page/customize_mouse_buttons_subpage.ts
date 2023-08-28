@@ -20,7 +20,8 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
-import {Mouse} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {ActionChoice, InputDeviceSettingsProviderInterface, Mouse} from './input_device_settings_types.js';
 
 const SettingsCustomizeMouseButtonsSubpageElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement));
@@ -37,11 +38,15 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
 
   static get properties(): PolymerElementProperties {
     return {
-      mouse: {
+      selectedMouse: {
         type: Object,
       },
 
-      mice: {
+      mouseList: {
+        type: Array,
+      },
+
+      buttonActionList_: {
         type: Array,
       },
     };
@@ -49,12 +54,15 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
 
   static get observers(): string[] {
     return [
-      'onMouseListUpdated(mice.*)',
+      'onMouseListUpdated(mouseList.*)',
     ];
   }
 
-  mouse: Mouse;
-  mice: Mouse[];
+  selectedMouse: Mouse;
+  mouseList: Mouse[];
+  private buttonActionList_: ActionChoice[];
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -62,7 +70,8 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
     if (this.hasMice() &&
-        (!this.mouse || this.mouse.id !== this.getMouseIdFromUrl())) {
+        (!this.selectedMouse ||
+         this.selectedMouse.id !== this.getMouseIdFromUrl())) {
       this.initializeMouse();
     }
   }
@@ -71,11 +80,18 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
    * Get the mouse to display according to the mouseId in the url query,
    * initializing the page and pref with the mouse data.
    */
-  private initializeMouse(): void {
+  private async initializeMouse(): Promise<void> {
+    // TODO(yyhyyh@): Remove the if condition after getActions functions is
+    // added in the mojo.
+    if (this.inputDeviceSettingsProvider_
+            .getActionsForMouseButtonCustomization) {
+      this.buttonActionList_ = await this.inputDeviceSettingsProvider_
+                                   .getActionsForMouseButtonCustomization();
+    }
     const mouseId = this.getMouseIdFromUrl();
     const searchedMouse =
-        this.mice.find((mouse: Mouse) => mouse.id === mouseId);
-    this.mouse = castExists(searchedMouse);
+        this.mouseList.find((mouse: Mouse) => mouse.id === mouseId);
+    this.selectedMouse = castExists(searchedMouse);
   }
 
   private getMouseIdFromUrl(): number {
@@ -83,11 +99,11 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   }
 
   private hasMice(): boolean {
-    return this.mice?.length > 0;
+    return this.mouseList?.length > 0;
   }
 
   private isMouseConnected(id: number): boolean {
-    return !!this.mice.find(mouse => mouse.id === id);
+    return !!this.mouseList.find(mouse => mouse.id === id);
   }
 
   onMouseListUpdated(): void {

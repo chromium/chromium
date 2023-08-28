@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/lazy_load.js';
+
 import {SettingsCustomizeMouseButtonsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeMice, Mouse, Router, routes} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMice, fakeMouseButtonActions, Mouse, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<settings-customize-mouse-buttons-subpage>', () => {
@@ -12,7 +14,8 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
 
   setup(async () => {
     page = document.createElement('settings-customize-mouse-buttons-subpage');
-    page.mice = fakeMice;
+    page.mouseList = fakeMice;
+    setupFakeInputDeviceSettingsProvider();
     // Set the current route with mouseId as search param and notify
     // the observer to update mouse settings.
     const url =
@@ -33,12 +36,22 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
   test('navigate to device page when mouse detached', async () => {
     assertEquals(
         Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
-    const mouse: Mouse = page.mouse;
+    const mouse: Mouse = page.selectedMouse;
     assertTrue(!!mouse);
     assertEquals(mouse.id, fakeMice[0]!.id);
     // Remove fakeMice[0] from the mouse list.
-    page.mice = [fakeMice[1]!];
+    page.mouseList = [fakeMice[1]!];
     await flushTasks();
     assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
+  });
+
+  test('button action list fetched from provider', async () => {
+    const mouse: Mouse = page.selectedMouse;
+    assertTrue(!!mouse);
+    assertEquals(mouse.id, fakeMice[0]!.id);
+
+    const buttonActionList = page.get('buttonActionList_');
+    const expectedActionList = fakeMouseButtonActions;
+    assertDeepEquals(buttonActionList, expectedActionList);
   });
 });
