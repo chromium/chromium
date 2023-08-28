@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2024-01-07">
+<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>The time elapsed for booting up the ARC instance.</summary>
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2023-09-01">
+<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Anr.{AnrPeriod}.{ArcBootType}" units="ANRs"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
 
-<histogram name="Arc.Anr.{AnrSource}" enum="ArcAnr" expires_after="2023-09-01">
+<histogram name="Arc.Anr.{AnrSource}" enum="ArcAnr" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1002,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CpuRestrictionDisabled{ArcThrottleObservers}" units="ms"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CpuRestrictionVmResult" enum="ArcCpuRestrictionVmResult"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1229,7 +1229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -1256,7 +1256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchRequest.TimeDelta" units="ms"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1839,7 +1839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreLaunch.TimeDelta" units="ms"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1924,7 +1924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreShown.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2090,7 +2090,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.CommitDeviation2{ArcPerformanceAppCategories}"
-    units="microseconds" expires_after="2023-09-01">
+    units="microseconds" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -2105,7 +2105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.FPS2{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2023-09-01">
+    units="fps" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -2119,7 +2119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -2130,7 +2130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FrameTime" units="ms"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -2140,7 +2140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
-    expires_after="2024-01-07">
+    expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -2151,7 +2151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.RenderQuality2{ArcPerformanceAppCategories}"
-    units="%" expires_after="2023-09-01">
+    units="%" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>
@@ -2312,7 +2312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2325,7 +2325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2338,7 +2338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-03-01">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
