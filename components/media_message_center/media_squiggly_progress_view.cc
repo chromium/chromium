@@ -71,13 +71,17 @@ int RoundToPercent(double fractional_value) {
 }  // namespace
 
 MediaSquigglyProgressView::MediaSquigglyProgressView(
-    ui::ColorId foreground_color_id,
-    ui::ColorId background_color_id,
+    ui::ColorId playing_foreground_color_id,
+    ui::ColorId playing_background_color_id,
+    ui::ColorId paused_foreground_color_id,
+    ui::ColorId paused_background_color_id,
     ui::ColorId focus_ring_color_id,
     base::RepeatingCallback<void(bool)> dragging_callback,
     base::RepeatingCallback<void(double)> seek_callback)
-    : foreground_color_id_(foreground_color_id),
-      background_color_id_(background_color_id),
+    : playing_foreground_color_id_(playing_foreground_color_id),
+      playing_background_color_id_(playing_background_color_id),
+      paused_foreground_color_id_(paused_foreground_color_id),
+      paused_background_color_id_(paused_background_color_id),
       focus_ring_color_id_(focus_ring_color_id),
       dragging_callback_(std::move(dragging_callback)),
       seek_callback_(std::move(seek_callback)),
@@ -157,7 +161,8 @@ void MediaSquigglyProgressView::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kStrokeWidth);
   flags.setAntiAlias(true);
-  flags.setColor(color_provider->GetColor(foreground_color_id_));
+  flags.setColor(color_provider->GetColor(
+      is_paused_ ? paused_foreground_color_id_ : playing_foreground_color_id_));
 
   // Translate the canvas to avoid painting anything in the width inset.
   canvas->Save();
@@ -200,7 +205,9 @@ void MediaSquigglyProgressView::OnPaint(gfx::Canvas* canvas) {
   // Paint the background straight line.
   if (progress_width + kProgressIndicatorSize.width() / 2 < view_width) {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setColor(color_provider->GetColor(background_color_id_));
+    flags.setColor(
+        color_provider->GetColor(is_paused_ ? paused_background_color_id_
+                                            : playing_background_color_id_));
     canvas->DrawLine(
         gfx::PointF(progress_width + kProgressIndicatorSize.width() / 2,
                     view_height / 2),

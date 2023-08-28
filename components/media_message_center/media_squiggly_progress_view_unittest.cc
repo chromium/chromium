@@ -28,7 +28,7 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
     ui::ColorId id;
     view_ =
         widget_->SetContentsView(std::make_unique<MediaSquigglyProgressView>(
-            id, id, id,
+            id, id, id, id, id,
             base::BindRepeating(
                 &MediaSquigglyProgressViewTest::OnProgressDragging,
                 base::Unretained(this)),

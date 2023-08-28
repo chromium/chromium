@@ -25,8 +25,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
  public:
   METADATA_HEADER(MediaSquigglyProgressView);
   explicit MediaSquigglyProgressView(
-      ui::ColorId foreground_color_id,
-      ui::ColorId background_color_id,
+      ui::ColorId playing_foreground_color_id,
+      ui::ColorId playing_background_color_id,
+      ui::ColorId paused_foreground_color_id,
+      ui::ColorId paused_background_color_id,
       ui::ColorId focus_ring_color_id,
       base::RepeatingCallback<void(bool)> dragging_callback,
       base::RepeatingCallback<void(double)> seek_callback);
@@ -75,8 +77,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   bool IsValidSeekPosition(int x, int y);
 
   // Init parameters.
-  ui::ColorId foreground_color_id_;
-  ui::ColorId background_color_id_;
+  ui::ColorId playing_foreground_color_id_;
+  ui::ColorId playing_background_color_id_;
+  ui::ColorId paused_foreground_color_id_;
+  ui::ColorId paused_background_color_id_;
   ui::ColorId focus_ring_color_id_;
   const base::RepeatingCallback<void(bool)> dragging_callback_;
   const base::RepeatingCallback<void(double)> seek_callback_;

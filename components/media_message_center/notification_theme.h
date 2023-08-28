@@ -27,20 +27,35 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaColorTheme {
   MediaColorTheme& operator=(const MediaColorTheme&);
   ~MediaColorTheme();
 
-  // Color ID for texts and icons.
+  // Color ID for primary texts and most media action button icons.
   ui::ColorId primary_foreground_color_id = 0;
 
   // Color ID for secondary texts.
   ui::ColorId secondary_foreground_color_id = 0;
 
-  // Color ID for time scrubber foreground.
-  ui::ColorId primary_container_color_id = 0;
+  // Color ID for the play button icon.
+  ui::ColorId play_button_foreground_color_id = 0;
 
-  // Color ID for time scrubber background.
-  ui::ColorId secondary_container_color_id = 0;
+  // Color ID for the play button container.
+  ui::ColorId play_button_container_color_id = 0;
 
-  // Color ID for the play/pause button background.
-  ui::ColorId system_container_color_id = 0;
+  // Color ID for the pause button icon.
+  ui::ColorId pause_button_foreground_color_id = 0;
+
+  // Color ID for the pause button container.
+  ui::ColorId pause_button_container_color_id = 0;
+
+  // Color ID for media squiggly progress foreground when the media is playing.
+  ui::ColorId playing_progress_foreground_color_id = 0;
+
+  // Color ID for media squiggly progress background when the media is playing.
+  ui::ColorId playing_progress_background_color_id = 0;
+
+  // Color ID for media squiggly progress foreground when the media is paused.
+  ui::ColorId paused_progress_foreground_color_id = 0;
+
+  // Color ID for media squiggly progress background when the media is paused.
+  ui::ColorId paused_progress_background_color_id = 0;
 
   // Color ID for media view background.
   ui::ColorId background_color_id = 0;
