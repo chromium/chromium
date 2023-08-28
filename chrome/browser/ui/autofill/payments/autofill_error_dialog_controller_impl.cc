@@ -67,6 +67,12 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
     case AutofillErrorDialogType::kVirtualCardNotEligibleError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE);
+    case AutofillErrorDialogType::
+        kMaskedServerCardRiskBasedUnmaskingNetworkError:
+    case AutofillErrorDialogType::
+        kMaskedServerCardRiskBasedUnmaskingPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASKING_ERROR_TITLE);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
       return std::u16string();
@@ -94,6 +100,14 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kVirtualCardNotEligibleError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::
+        kMaskedServerCardRiskBasedUnmaskingNetworkError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK);
+    case AutofillErrorDialogType::
+        kMaskedServerCardRiskBasedUnmaskingPermanentError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
       return std::u16string();

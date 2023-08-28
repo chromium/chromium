@@ -26,8 +26,14 @@ enum class AutofillErrorDialogType {
   kVirtualCardNotEligibleError = 2,
   // Default value, should never be used.
   kTypeUnknown = 3,
+  // Error shown when the server returns a permanent error for unmasking a
+  // masked server card.
+  kMaskedServerCardRiskBasedUnmaskingPermanentError = 4,
+  // Error shown when the card cannot be verified because Google Payments
+  // servers can't be reached.
+  kMaskedServerCardRiskBasedUnmaskingNetworkError = 5,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kTypeUnknown,
+  kMaxValue = kMaskedServerCardRiskBasedUnmaskingNetworkError,
 };
 
 // The context for the autofill error dialog.
