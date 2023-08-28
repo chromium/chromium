@@ -855,6 +855,8 @@ try_.gpu.optional_tests_builder(
 try_.builder(
     name = "linux-js-coverage-rel",
     mirrors = ["ci/linux-js-code-coverage"],
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
