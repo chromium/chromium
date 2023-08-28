@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -2035,8 +2036,8 @@ TEST_F(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
   EXPECT_EQ(kPoint, host_context_menu_location.value());
 }
 
-// Test the field of context_menu_data is_password_type_by_heuristics which
-// should be set iff a field's type is plain text but heuristics (e.g. the name
+// Test the field of `context_menu_data` `is_password_type_by_heuristics` which
+// should be set if a field's type is plain text but heuristics (e.g. the name
 // attribute contains 'password' as a substring) recognize it as a password
 // field.
 TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
@@ -2092,6 +2093,33 @@ TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
       document->getElementById(AtomicString("moja_lOzinKa123"));
   EXPECT_TRUE(ShowContextMenuForElement(foreign_password, kMenuSourceMouse));
   context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
+}
+
+// Test the field of `context_menu_data` `is_password_type_by_heuristics` which
+// should be set if a field's type is plain text and `HasBeenPassword` returns
+// true (due to either server predictions or user's masking of input values).
+TEST_F(ContextMenuControllerTest, HasBeenPasswordHeuristic) {
+  WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
+  frame_test_helpers::LoadHTMLString(LocalMainFrame(),
+                                     R"(<html>
+        <form>
+          <input type="text" id="has_been_password">
+        </form>
+      </html>
+      )",
+                                     url);
+  Document* document = GetDocument();
+  ASSERT_TRUE(IsA<HTMLDocument>(document));
+
+  Element* input_element =
+      document->getElementById(AtomicString("has_been_password"));
+  ASSERT_TRUE(input_element);
+
+  DynamicTo<HTMLInputElement>(input_element)->SetHasBeenPasswordField();
+
+  ASSERT_TRUE(ShowContextMenuForElement(input_element, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
 }
 

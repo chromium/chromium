@@ -130,8 +130,9 @@ void SetInputFieldsData(Element* element, ContextMenuData& data) {
 
   // Uses heuristics (finding 'password' and its short versions and translations
   // in field name and id etc.) to recognize a field intended for password input
-  // of plain text HTML field type, and it is used to set the field
-  // is_password_type_by_heuristics.
+  // of plain text HTML field type or `HasBeenPasswordField` which returns true
+  // due to either server predictions or user's masking of input values. It is
+  // used to set the field is_password_type_by_heuristics.
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
     const AtomicString& id = input->GetIdAttribute();
     const AtomicString& name = input->GetNameAttribute();
@@ -144,7 +145,8 @@ void SetInputFieldsData(Element* element, ContextMenuData& data) {
         (data.input_field_type ==
          mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
         (passwordRegexp->Match(id.GetString()) >= 0 ||
-         passwordRegexp->Match(name.GetString()) >= 0);
+         passwordRegexp->Match(name.GetString()) >= 0 ||
+         input->HasBeenPasswordField());
   }
 }
 
