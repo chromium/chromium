@@ -26,6 +26,9 @@ chromium-metrics-reviews@google.com.
                velocity and acceleration suggest it will leave soon. The
                output of this predictor is mouse velocity instead of a
                logit/probability."/>
+  <variant name="OnPreloadingHeuristicsMLModel"
+      summary="The estimated probability that a user will click on a link
+               that is calculated by preloading heuristic ML model."/>
 </variants>
 
 <variants name="GroundTruth">

@@ -2145,7 +2145,6 @@ if (!is_android) {
       "../browser/navigation_predictor/anchor_element_preloader_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_browsertest.cc",
       "../browser/navigation_predictor/navigation_predictor_preconnect_client_browsertest.cc",
-      "../browser/navigation_predictor/preloading_model_keyed_service_browsertest.cc",
       "../browser/navigation_predictor/search_engine_preconnector_browsertest.cc",
       "../browser/net/cert_verifier_service_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
@@ -2766,8 +2765,14 @@ if (!is_android) {
     }
 
     if (build_with_tflite_lib) {
-      sources += [ "../browser/permissions/prediction_service_browsertest.cc" ]
+      sources += [
+        "../browser/navigation_predictor/preloading_model_keyed_service_browsertest.cc",
+        "../browser/permissions/prediction_service_browsertest.cc",
+      ]
       deps += [ "//components/permissions/prediction_service" ]
+      data += [
+        "../browser/navigation_predictor/test/preloading_heuristics.tflite",
+      ]
     }
 
     #If this target is used on Android in the future, these browser / speech/*

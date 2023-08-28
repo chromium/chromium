@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -869,6 +869,42 @@ TEST_F(PreloadingDeciderTest,
   histogram_tester.ExpectBucketCount(
       "Preloading.Experimental.OnPointerHoverWithMotionEstimator.Positive",
       /*100*(75-0/500)=*/15, 1);
+}
+
+TEST_F(PreloadingDeciderTest, OnPreloadingHeuristicsModelDone) {
+  base::HistogramTester histogram_tester;
+
+  GURL url1{"https://www.example.com"};
+  GetPrimaryMainFrame().OnPreloadingHeuristicsModelDone(
+      /*url=*/url1, /*score=*/0.2);
+
+  GURL url2{"https://www.google.com"};
+  GetPrimaryMainFrame().OnPreloadingHeuristicsModelDone(
+      /*url=*/url2, /*score=*/0.9);
+
+  // Navigate to `url2`.
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&GetPrimaryMainFrame());
+  PreloadingDataImpl* preloading_data = static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents));
+  ASSERT_TRUE(preloading_data);
+  MockNavigationHandle navigation_handle{url2,
+                                         web_contents->GetPrimaryMainFrame()};
+  preloading_data->DidStartNavigation(&navigation_handle);
+
+  // Check UMA records.
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Negative",
+      /*100*0.2=*/20, 1);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Negative",
+      /*100*0.9=*/90, 0);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
+      /*100*0.2=*/20, 0);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
+      /*100*0.9=*/90, 1);
 }
 
 }  // namespace

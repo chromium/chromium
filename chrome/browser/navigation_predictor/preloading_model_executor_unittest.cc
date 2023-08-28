@@ -26,7 +26,7 @@ class PreloadingModelExecutorTest : public testing::Test {
   void SetUp() override {
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
-    // A model of `add` operator.
+
     model_file_path_ = source_root_dir.AppendASCII("chrome")
                            .AppendASCII("browser")
                            .AppendASCII("navigation_predictor")

@@ -12,7 +12,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
@@ -72,6 +74,9 @@ class NavigationPredictor
       blink::mojom::AnchorElementPointerDownPtr pointer_down_event) override;
   void ReportNewAnchorElements(
       std::vector<blink::mojom::AnchorElementMetricsPtr> elements) override;
+  void ProcessPointerEventUsingMLModel(
+      blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event)
+      override;
 
   // Computes and stores document level metrics, including |number_of_anchors_|
   // etc.
@@ -97,6 +102,12 @@ class NavigationPredictor
   // Returns `NavigationPredictorMetricsDocumentData` for the current page.
   NavigationPredictorMetricsDocumentData&
   GetNavigationPredictorMetricsDocumentData() const;
+
+  // Called when the async preloading heuristics model is done running and the
+  // returned the result.
+  virtual void OnPreloadingHeuristicsModelDone(
+      GURL url,
+      PreloadingModelKeyedService::Result result);
 
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
   size_t clicked_count_ = 0;
@@ -127,7 +138,13 @@ class NavigationPredictor
   // The time at which the navigation started.
   base::TimeTicks navigation_start_;
 
+  // Used to cancel ML model execution requests sent to
+  // `PreloadingModelKeyedService`.
+  base::CancelableTaskTracker scoring_model_task_tracker_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<NavigationPredictor> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_H_

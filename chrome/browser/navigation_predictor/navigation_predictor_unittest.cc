@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
@@ -88,8 +89,10 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     std::map<std::string, std::string> params;
     params["random_anchor_sampling_period"] = "1";
 
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kNavigationPredictor, params);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kNavigationPredictor, params},
+         {blink::features::kPreloadingHeuristicsMLModel, {}}},
+        {});
   }
 
  private:
@@ -519,12 +522,28 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
     auto it = tracked_anchor_id_to_index_.find(anchor_id);
     return (it != tracked_anchor_id_to_index_.end()) ? it->second : -1;
   }
+  // NavigationPredictor::
+  void OnPreloadingHeuristicsModelDone(
+      GURL url,
+      PreloadingModelKeyedService::Result result) override {
+    NavigationPredictor::OnPreloadingHeuristicsModelDone(url, result);
+    if (on_preloading_heuristics_mode_done_callback_) {
+      std::move(on_preloading_heuristics_mode_done_callback_).Run(result);
+    }
+  }
+
+  void SetOnPreloadingHeuristicsModelDoneCallback(
+      base::OnceCallback<void(PreloadingModelKeyedService::Result)> callback) {
+    on_preloading_heuristics_mode_done_callback_ = std::move(callback);
+  }
 
  private:
   MockNavigationPredictorForTesting(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver)
       : NavigationPredictor(render_frame_host, std::move(receiver)) {}
+  base::OnceCallback<void(PreloadingModelKeyedService::Result)>
+      on_preloading_heuristics_mode_done_callback_;
 };
 
 class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
@@ -537,6 +556,46 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
       absl::optional<int> id = absl::nullopt) {
     std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
     metrics.push_back(CreateMetricsPtr(id));
+
+    MockNavigationPredictorForTesting::AnchorId anchor_id(
+        metrics[0]->anchor_id);
+    predictor_service->ReportNewAnchorElements(std::move(metrics));
+    return anchor_id;
+  }
+
+  MockNavigationPredictorForTesting::AnchorId ReportNewAnchorElementWithDetails(
+      blink::mojom::AnchorElementMetricsHost* predictor_service,
+      float ratio_area,
+      float ratio_visible_area,
+      float ratio_distance_top_to_visible_top,
+      float ratio_distance_center_to_visible_top,
+      float ratio_distance_root_top,
+      float ratio_distance_root_bottom,
+      bool is_in_iframe,
+      bool contains_image,
+      bool is_same_host,
+      bool is_url_incremented_by_one,
+      bool has_text_sibling,
+      uint32_t font_size_px,
+      uint32_t font_weight) {
+    std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
+    metrics.push_back(CreateMetricsPtr());
+
+    metrics[0]->ratio_area = ratio_area;
+    metrics[0]->ratio_visible_area = ratio_visible_area;
+    metrics[0]->ratio_distance_top_to_visible_top =
+        ratio_distance_top_to_visible_top;
+    metrics[0]->ratio_distance_center_to_visible_top =
+        ratio_distance_center_to_visible_top;
+    metrics[0]->ratio_distance_root_top = ratio_distance_root_top;
+    metrics[0]->ratio_distance_root_bottom = ratio_distance_root_bottom;
+    metrics[0]->is_in_iframe = is_in_iframe;
+    metrics[0]->contains_image = contains_image;
+    metrics[0]->is_same_host = is_same_host;
+    metrics[0]->is_url_incremented_by_one = is_url_incremented_by_one;
+    metrics[0]->has_text_sibling = has_text_sibling;
+    metrics[0]->font_size_px = font_size_px;
+    metrics[0]->font_weight = font_weight;
 
     MockNavigationPredictorForTesting::AnchorId anchor_id(
         metrics[0]->anchor_id);
@@ -624,6 +683,22 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
         blink::mojom::AnchorElementPointerDown::New(
             static_cast<uint32_t>(anchor_id), navigation_start_to_pointer_down);
     predictor_service->ReportAnchorElementPointerDown(std::move(metrics));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void ProcessPointerEventUsingMLModel(
+      blink::mojom::AnchorElementMetricsHost* predictor_service,
+      MockNavigationPredictorForTesting::AnchorId anchor_id,
+      bool is_mouse,
+      blink::mojom::AnchorElementUserInteractionEventForMLModelType
+          user_interaction_event_type) {
+    blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event =
+        blink::mojom::AnchorElementPointerEventForMLModel::New(
+            /*anchor_id=*/static_cast<uint32_t>(anchor_id),
+            /*is_mouse=*/is_mouse,
+            /*user_interaction_event_type=*/user_interaction_event_type);
+    predictor_service->ProcessPointerEventUsingMLModel(
+        std::move(pointer_event));
     base::RunLoop().RunUntilIdle();
   }
 };
@@ -1158,4 +1233,45 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   EXPECT_EQ(0u,
             navigation_predictor_metrics_data->GetUserInteractionsData().count(
                 anchor_index));
+}
+
+TEST_F(NavigationPredictorUserInteractionsTest,
+       ProcessPointerEventUsingMLModel) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  predictor_service_host->SetOnPreloadingHeuristicsModelDoneCallback(
+      base::BindLambdaForTesting(
+          [&](PreloadingModelKeyedService::Result result) {
+            EXPECT_FALSE(result.has_value());
+            run_loop.Quit();
+          }));
+
+  auto anchor_id = ReportNewAnchorElementWithDetails(
+      predictor_service.get(),
+      /*ratio_area=*/0.1,
+      /*ratio_visible_area=*/0.1,
+      /*ratio_distance_top_to_visible_top=*/0.0,
+      /*ratio_distance_center_to_visible_top=*/0.0,
+      /*ratio_distance_root_top=*/0.0,
+      /*ratio_distance_root_bottom=*/0.0,
+      /*is_in_iframe=*/false,
+      /*contains_image=*/true,
+      /*is_same_host=*/true,
+      /*is_url_incremented_by_one=*/true,
+      /*has_text_sibling=*/false,
+      /*font_size_px=*/1,
+      /*font_weight=*/1);
+
+  ProcessPointerEventUsingMLModel(
+      /*predictor_service=*/predictor_service.get(),
+      /*anchor_id=*/anchor_id,
+      /*is_mouse=*/true,
+      /*user_interaction_event_type=*/
+      blink::mojom::AnchorElementUserInteractionEventForMLModelType::
+          kPointerOver);
+
+  run_loop.Run();
 }

@@ -17,6 +17,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -41,6 +42,43 @@ size_t kMaxClicksTracked = 10;
 bool IsPrerendering(content::RenderFrameHost& render_frame_host) {
   return render_frame_host.GetLifecycleState() ==
          content::RenderFrameHost::LifecycleState::kPrerendering;
+}
+
+int GetFontSizeFromPx(uint32_t font_size_px) {
+  if (font_size_px < 10) {
+    return 1;
+  } else if (font_size_px < 18) {
+    return 2;
+  } else {
+    return 3;
+  }
+}
+
+bool IsBoldFont(uint32_t font_weight) {
+  return font_weight > 500;
+}
+
+struct PathLengthDepthAndHash {
+  int64_t path_length;
+  int64_t path_depth;
+  uint32_t hash;
+};
+
+PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
+  base::StringPiece path = target_url.path_piece();
+  int64_t path_length = path.length();
+  path_length = ukm::GetLinearBucketMin(path_length, 10);
+  // Truncate at 100 characters.
+  path_length = std::min(path_length, static_cast<int64_t>(100));
+
+  int64_t num_slashes = base::ranges::count(path, '/');
+  // Truncate at 5.
+  int64_t path_depth = std::min(num_slashes, static_cast<int64_t>(5));
+
+  // 10-bucket hash of the URL's path.
+  uint32_t hash = base::PersistentHash(path.data(), path.length());
+  hash = hash % 10;
+  return {path_length, path_depth, hash};
 }
 
 }  // namespace
@@ -182,14 +220,93 @@ void NavigationPredictor::ReportNewAnchorElements(
             kAnchorElementsParsedFromWebPage,
         new_predictions);
   }
+}
 
+void NavigationPredictor::OnPreloadingHeuristicsModelDone(
+    GURL url,
+    PreloadingModelKeyedService::Result result) {
+  if (!result.has_value()) {
+    return;
+  }
+  render_frame_host().OnPreloadingHeuristicsModelDone(url, result.value());
+}
+
+// TODO(isaboori): Currently not all of ML model inputs are connected properly
+// and the model is executed for both kPointerOver and kPointerOut events. In
+// the next CL this will be fixed. We should also call the ML model periodically
+// while the mouse pointer is hovering over a link.
+void NavigationPredictor::ProcessPointerEventUsingMLModel(
+    blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event) {
+  // Currently we only process mouse based events.
+  if (!pointer_event->is_mouse) {
+    return;
+  }
+  // Find anchor elements data.
+  AnchorId anchor_id(pointer_event->anchor_id);
+  auto it = anchors_.find(anchor_id);
+  if (it == anchors_.end()) {
+    return;
+  }
+  const blink::mojom::AnchorElementMetricsPtr& anchor = it->second;
+
+  // Ignore anchors pointing to the same document.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  GURL document_url = anchor->source_url.ReplaceComponents(replacements);
+  GURL target_url = anchor->target_url.ReplaceComponents(replacements);
+  if (target_url == document_url) {
+    return;
+  }
+
+  // Check whether preloading is enabled or not.
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+  if (prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) !=
+      content::PreloadingEligibility::kEligible) {
+    return;
+  }
+
+  // Execute the model.
   PreloadingModelKeyedService* model_service =
-      PreloadingModelKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
+      PreloadingModelKeyedServiceFactory::GetForProfile(profile);
   if (!model_service) {
     return;
   }
-  // TODO(isaboori): use the ML model to predict the next use click.
+
+  PreloadingModelKeyedService::Inputs inputs;
+  inputs.contains_image = anchor->contains_image;
+  inputs.font_size = GetFontSizeFromPx(anchor->font_size_px);
+  inputs.has_text_sibling = anchor->has_text_sibling;
+  inputs.is_bold = IsBoldFont(anchor->font_weight);
+  inputs.is_in_iframe = anchor->is_in_iframe;
+  inputs.is_url_incremented_by_one = anchor->is_url_incremented_by_one;
+  // TODO(isaboori): set the input with correct value.
+  inputs.navigation_start_to_link_logged = base::TimeDelta();
+  auto path_info = GetUrlPathLengthDepthAndHash(anchor->target_url);
+  inputs.path_length = path_info.path_length;
+  inputs.path_depth = path_info.path_depth;
+
+  // Convert the ratio area and ratio distance from [0,1] to [0,100].
+  int percent_ratio_area = static_cast<int>(anchor->ratio_area * 100);
+  inputs.percent_clickable_area =
+      GetLinearBucketForRatioArea(percent_ratio_area);
+
+  int percent_ratio_distance_root_top =
+      static_cast<int>(anchor->ratio_distance_root_top * 100);
+  inputs.percent_vertical_distance =
+      GetLinearBucketForLinkLocation(percent_ratio_distance_root_top);
+
+  inputs.is_same_origin = anchor->is_same_host;
+  // TODO(isaboori): set the input to correct value.
+  inputs.entered_viewport_to_left_viewport = base::TimeDelta();
+  // TODO(isaboori): set the input to correct value.
+  inputs.hover_dwell_time = base::TimeDelta();
+  // TODO(isaboori): set the input to correct value.
+  inputs.pointer_hovering_over_count = 0;
+  model_service->Score(
+      &scoring_model_task_tracker_, inputs,
+      base::BindOnce(&NavigationPredictor::OnPreloadingHeuristicsModelDone,
+                     weak_ptr_factory_.GetWeakPtr(), anchor->target_url));
 }
 
 void NavigationPredictor::ReportAnchorElementClick(
@@ -450,31 +567,15 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     metrics.contains_image_ = anchor->contains_image;
     metrics.is_same_origin_ = anchor->is_same_host;
     metrics.has_text_sibling_ = anchor->has_text_sibling;
-    metrics.is_bold_ = anchor->font_weight > 500;
+    metrics.is_bold_ = IsBoldFont(anchor->font_weight);
     metrics.navigation_start_to_link_logged =
         element->navigation_start_to_entered_viewport;
 
-    if (anchor->font_size_px < 10) {
-      metrics.font_size_ = 1;
-    } else if (anchor->font_size_px < 18) {
-      metrics.font_size_ = 2;
-    } else {
-      metrics.font_size_ = 3;
-    }
-
-    base::StringPiece path = anchor->target_url.path_piece();
-    int64_t path_length = path.length();
-    path_length = ukm::GetLinearBucketMin(path_length, 10);
-    // Truncate at 100 characters.
-    metrics.path_length_ = std::min(path_length, static_cast<int64_t>(100));
-
-    int64_t num_slashes = base::ranges::count(path, '/');
-    // Truncate at 5.
-    metrics.path_depth_ = std::min(num_slashes, static_cast<int64_t>(5));
-
-    // 10-bucket hash of the URL's path.
-    uint32_t hash = base::PersistentHash(path.data(), path.length());
-    metrics.bucketed_path_hash_ = hash % 10;
+    metrics.font_size_ = GetFontSizeFromPx(anchor->font_size_px);
+    auto path_info = GetUrlPathLengthDepthAndHash(anchor->target_url);
+    metrics.path_length_ = path_info.path_length;
+    metrics.path_depth_ = path_info.path_depth;
+    metrics.bucketed_path_hash_ = path_info.hash;
 
     // Convert the ratio area and ratio distance from [0,1] to [0,100].
     int percent_ratio_area = static_cast<int>(anchor->ratio_area * 100);

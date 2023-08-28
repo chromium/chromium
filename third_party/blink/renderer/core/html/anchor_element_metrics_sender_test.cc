@@ -92,6 +92,10 @@ class MockAnchorElementMetricsHost
     }
   }
 
+  void ProcessPointerEventUsingMLModel(
+      mojom::blink::AnchorElementPointerEventForMLModelPtr pointer_event)
+      override {}
+
  public:
   std::vector<mojom::blink::AnchorElementClickPtr> clicks_;
   std::vector<mojom::blink::AnchorElementEnteredViewportPtr> entered_viewport_;

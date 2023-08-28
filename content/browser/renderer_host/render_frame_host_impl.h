@@ -748,6 +748,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::FrameOwnerElementType owner_type,
       ukm::SourceId document_ukm_source_id);
 
+  void OnPreloadingHeuristicsModelDone(const GURL& url, float score) override;
+
   // Update this frame's state at the appropriate time when a navigation
   // commits. This is called by Navigator::DidNavigate as a helper, in the
   // midst of a DidCommitProvisionalLoad call. If |was_within_same_document| is
