@@ -56,6 +56,8 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // to accept permissions if not granted or denied already.
   void RequestPermission();
 
+  void DoDisplayNotification(mojom::NotificationPtr notification);
+
   // Initializes the |delivered_notifications_| with notifications currently
   // shown in the macOS notification center.
   void InitializeDeliveredNotifications(base::OnceClosure callback);
@@ -67,6 +69,7 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // Called regularly while we think that notifications are on screen to detect
   // when they get closed.
   void ScheduleSynchronizeNotifications();
+  void SynchronizeNotifications(base::OnceClosure done);
   void DoSynchronizeNotifications(
       std::vector<mojom::NotificationIdentifierPtr> notifications);
 
@@ -90,6 +93,9 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   base::flat_map<std::string, mojom::NotificationMetadataPtr>
       delivered_notifications_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingTimer synchronize_displayed_notifications_timer_;
+  bool is_synchronizing_notifications_ = false;
+  std::vector<base::OnceClosure> synchronize_notifications_done_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The constructor immediately kicks of a permission request, so on
   // construction this should be true. Set to false when that permission request

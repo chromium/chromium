@@ -20,6 +20,7 @@
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "chrome/services/mac_notifications/un_user_notifications_spi.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -219,7 +220,8 @@ class MacNotificationServiceUNTest : public testing::Test {
   mac_notifications::mojom::NotificationPtr CreateMojoNotification(
       const std::string& notification_id,
       const std::string& profile_id,
-      bool incognito) {
+      bool incognito,
+      bool renotify = true) {
     auto notification_identifier = mojom::NotificationIdentifier::New(
         notification_id, mojom::ProfileIdentifier::New(profile_id, incognito));
     auto meta = mojom::NotificationMetadata::New(
@@ -228,8 +230,7 @@ class MacNotificationServiceUNTest : public testing::Test {
     std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
 
     return mac_notifications::mojom::Notification::New(
-        std::move(meta), u"title", u"subtitle", u"body",
-        /*renotify=*/true,
+        std::move(meta), u"title", u"subtitle", u"body", renotify,
         /*show_settings_button=*/true, std::move(buttons),
         /*icon=*/gfx::ImageSkia());
   }
@@ -338,6 +339,122 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
 
   // Expect a new notification category for this notification.
   EXPECT_EQ(1u, category_count_);
+}
+
+TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {
+  auto notification_no_renotify =
+      CreateMojoNotification("notificationId", "profileId",
+                             /*incognito=*/false, /*renotify=*/false);
+  auto notification_with_renotify =
+      CreateMojoNotification("notificationId", "profileId",
+                             /*incognito=*/false, /*renotify=*/true);
+
+  auto verify_notification_content = [](UNNotificationContent* content) {
+    NSDictionary* user_info = content.userInfo;
+    EXPECT_NSEQ(@"notificationId", [user_info objectForKey:kNotificationId]);
+    EXPECT_NSEQ(@"profileId", [user_info objectForKey:kNotificationProfileId]);
+    EXPECT_FALSE([[user_info objectForKey:kNotificationIncognito] boolValue]);
+
+    EXPECT_NSEQ(@"title", content.title);
+    EXPECT_NSEQ(@"subtitle", content.subtitle);
+    EXPECT_NSEQ(@"body", content.body);
+  };
+
+  {
+    // Display a new notification.
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    [[mock_notification_center_ expect]
+        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                           UNNotificationRequest* request) {
+          EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
+          verify_notification_content(request.content);
+          quit_closure.Run();
+          return YES;
+        }]
+         withCompletionHandler:[OCMArg any]];
+
+    service_remote_->DisplayNotification(notification_no_renotify.Clone());
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+
+  {
+    // Now display the same notification again, with redisplay set to false.
+    // This should query the currently displayed notifications, and only cause
+    // the contents to be replaced if the notification is still delivered.
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
+      [invocation getArgument:&callback atIndex:2];
+      callback(@[ CreateNotification("notificationId", "profileId",
+                                     /*incognito=*/false, /*display=*/false) ]);
+    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
+    [[mock_notification_center_ expect]
+        replaceContentForRequestWithIdentifier:@"r|profileId|notificationId"
+                            replacementContent:
+                                [OCMArg checkWithBlock:^BOOL(
+                                            UNNotificationContent* content) {
+                                  verify_notification_content(content);
+                                  quit_closure.Run();
+                                  return YES;
+                                }]
+                             completionHandler:[OCMArg any]];
+    service_remote_->DisplayNotification(notification_no_renotify.Clone());
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+
+  {
+    // Now display the notification with renotify set to true.
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    [[mock_notification_center_ expect]
+        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                           UNNotificationRequest* request) {
+          EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
+          verify_notification_content(request.content);
+          quit_closure.Run();
+          return YES;
+        }]
+         withCompletionHandler:[OCMArg any]];
+    service_remote_->DisplayNotification(notification_with_renotify.Clone());
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+
+  {
+    // Finally, display the notification with renotify set to false, but with
+    // the notification having been closed by the OS in the meantime,
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
+      [invocation getArgument:&callback atIndex:2];
+      callback(@[]);
+    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
+    [[mock_notification_center_ expect]
+        addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                           UNNotificationRequest* request) {
+          EXPECT_NSEQ(@"r|profileId|notificationId", request.identifier);
+          verify_notification_content(request.content);
+          quit_closure.Run();
+          return YES;
+        }]
+         withCompletionHandler:[OCMArg any]];
+    service_remote_->DisplayNotification(notification_no_renotify.Clone());
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
 }
 
 TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
@@ -547,15 +664,17 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
        /*button_index=*/0, u"reply"},
   };
 
+  int i = 0;
   for (const auto& params : kNotificationActionParams) {
+    std::string notification_id = base::StringPrintf("notificationId%d", i++);
     FakeUNNotification* notification =
-        CreateNotification("notificationId", "profileId",
+        CreateNotification(notification_id, "profileId",
                            /*incognito=*/false);
 
     base::RunLoop run_loop;
     EXPECT_CALL(mock_handler_, OnNotificationAction)
         .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
-          EXPECT_EQ("notificationId", action_info->meta->id->id);
+          EXPECT_EQ(notification_id, action_info->meta->id->id);
           EXPECT_EQ("profileId", action_info->meta->id->profile->id);
           EXPECT_FALSE(action_info->meta->id->profile->incognito);
           EXPECT_EQ(params.operation, action_info->operation);
