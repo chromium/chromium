@@ -131,15 +131,30 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
 
 BASE_FEATURE(kEnableBookmarksAccountStorage,
              "EnableBookmarksAccountStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_IOS)
+);
 
 BASE_FEATURE(kReadingListEnableDualReadingListModel,
              "ReadingListEnableDualReadingListModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_IOS)
+);
 
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_IOS)
+);
 
 BASE_FEATURE(kSyncEnableWalletMetadataInTransportMode,
              "SyncEnableWalletMetadataInTransportMode",

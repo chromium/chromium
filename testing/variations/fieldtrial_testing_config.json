@@ -5658,21 +5658,6 @@
             ]
         }
     ],
-    "EnableBookmarksAccountStorageIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230629",
-                    "enable_features": [
-                        "EnableBookmarksAccountStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCrossSiteFlagNetworkIsolationKey": [
         {
             "platforms": [
@@ -13111,22 +13096,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReadingListEnableDualReadingListModel"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReadingListEnableDualReadingListModelAndOptInFlow": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230629",
-                    "enable_features": [
-                        "ReadingListEnableDualReadingListModel",
-                        "ReadingListEnableSyncTransportModeUponSignIn"
                     ]
                 }
             ]
