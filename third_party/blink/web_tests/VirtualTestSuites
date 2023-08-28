@@ -2455,9 +2455,13 @@
     "prefix": "deprecated-css-appearance-values-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "css-parser/deprecated-css-appearance-values-warning/appearance-warning-cssom-usecounter.html",
+      "css-parser/deprecated-css-appearance-values-warning/appearance-warning-usecounter.html",
+      "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-cssom-usecounter.html",
+      "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-usecounter.html",
       "http/tests/inspector-protocol/issues/css-appearance-non-standard-issue.js",
-      "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js",
-      "css-parser/appearance-warning-usecounter.html"
+      "http/tests/inspector-protocol/issues/css-appearance-non-standard-cssom-issue.js",
+      "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js"
     ],
     "args": ["--enable-blink-features=NonStandardAppearanceValues",
              "--enable-blink-features=NonStandardAppearanceValueSliderVertical",

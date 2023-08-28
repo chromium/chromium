@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:dizhangg@chromium.org">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<button id="button">foo</button>
+
+<script>
+const button = document.getElementById('button');
+const useCounterIdNonStandard = 4416;
+const useCounterIdInnerSpinButton = 2814;
+
+test((t) => {
+  assert_false(internals.isUseCounted(document, useCounterIdInnerSpinButton));
+  assert_false(internals.isUseCounted(document, useCounterIdNonStandard),
+    'Having an element with no appearance should not activate the use counter.');
+
+  button.style = `appearance: auto`;
+  assert_false(internals.isUseCounted(document, useCounterIdInnerSpinButton));
+  assert_false(internals.isUseCounted(document, useCounterIdNonStandard), 'Having an element with appearance value "auto" should not activate the use counter.');
+
+  button.style = '';
+
+  button.style = `appearance: inner-spin-button`;
+  assert_true(internals.isUseCounted(document, useCounterIdInnerSpinButton));
+  assert_true(internals.isUseCounted(document, useCounterIdNonStandard), 'Having an element with to be deprecated appearance value "inner-spin-button" should activate the use counter.');
+});
+</script>

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -1775,7 +1776,7 @@ static inline CSSValue* ParseCSSWideKeywordValue(const LChar* ptr,
 
 static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                    StringView string,
-                                   CSSParserMode parser_mode) {
+                                   const CSSParserContext* context) {
   DCHECK(!string.empty());
 
   CSSValue* css_wide_keyword =
@@ -1822,7 +1823,9 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
   DCHECK_NE(value_id, CSSValueID::kRevertLayer);
 
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property_id, value_id,
-                                                         parser_mode)) {
+                                                         context->Mode())) {
+    css_parsing_utils::CountKeywordOnlyPropertyUsage(property_id, *context,
+                                                     value_id);
     return CSSIdentifierValue::Create(value_id);
   }
   return nullptr;
@@ -2089,7 +2092,7 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
 
 CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
                                               StringView string,
-                                              CSSParserMode parser_mode) {
+                                              const CSSParserContext* context) {
   if (!string.Is8Bit()) {
     // If we have non-ASCII characters, we can never match any of the
     // fast paths that we support, so we can just as well return early.
@@ -2098,14 +2101,14 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
     return nullptr;
   }
   if (CSSValue* length =
-          ParseSimpleLengthValue(property_id, string, parser_mode)) {
+          ParseSimpleLengthValue(property_id, string, context->Mode())) {
     return length;
   }
   if (IsColorPropertyID(property_id)) {
     Color color;
     CSSValueID color_id;
-    switch (
-        blink::ParseColor(property_id, string, parser_mode, color, color_id)) {
+    switch (blink::ParseColor(property_id, string, context->Mode(), color,
+                              color_id)) {
       case ParseColorResult::kFailure:
         break;
       case ParseColorResult::kKeyword:
@@ -2114,7 +2117,7 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
         return cssvalue::CSSColor::Create(color);
     }
   }
-  if (CSSValue* keyword = ParseKeywordValue(property_id, string, parser_mode)) {
+  if (CSSValue* keyword = ParseKeywordValue(property_id, string, context)) {
     return keyword;
   }
   if (CSSValue* transform = ParseSimpleTransform(property_id, string)) {

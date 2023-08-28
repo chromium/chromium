@@ -1120,6 +1120,7 @@ crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-
 crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-border-top-width-001.html [ Failure ]
 # This test sometimes times out, but rather than limit test coverage, we mark it [ Pass Timeout ] which will still catch
 # regressions in the deprecation messages.
+crbug.com/1470290 [ Linux ] http/tests/inspector-protocol/issues/css-appearance-non-standard-cssom-issue.js [ Pass Timeout ]
 crbug.com/1470290 [ Linux ] http/tests/inspector-protocol/issues/css-appearance-non-standard-issue.js [ Pass Timeout ]
 crbug.com/1470290 [ Linux ] http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js [ Pass Timeout ]
 

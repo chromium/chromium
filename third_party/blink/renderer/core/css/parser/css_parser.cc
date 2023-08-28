@@ -156,10 +156,12 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
 
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   CSSParserMode parser_mode = declaration->CssParserMode();
+  const CSSParserContext* context = GetParserContext(
+      secure_context_mode, style_sheet, execution_context, parser_mode);
 
   // See if this property has a specific fast-path parser.
-  const CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      resolved_property, string, parser_mode);
+  const CSSValue* value =
+      CSSParserFastPaths::MaybeParseValue(resolved_property, string, context);
   if (value) {
     return declaration->SetLonghandProperty(CSSPropertyValue(
         CSSPropertyName(resolved_property), *value, important));
@@ -173,8 +175,6 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   //
   // We only allow this path in standards mode, which rules out situations
   // like @font-face parsing etc. (which have their own rules).
-  const CSSParserContext* context = GetParserContext(
-      secure_context_mode, style_sheet, execution_context, parser_mode);
   const CSSProperty& property = CSSProperty::Get(resolved_property);
   if (parser_mode == kHTMLStandardMode && property.IsProperty() &&
       !property.IsShorthand()) {
@@ -239,8 +239,8 @@ const CSSValue* CSSParser::ParseSingleValue(CSSPropertyID property_id,
   if (string.empty()) {
     return nullptr;
   }
-  if (CSSValue* value = CSSParserFastPaths::MaybeParseValue(property_id, string,
-                                                            context->Mode())) {
+  if (CSSValue* value =
+          CSSParserFastPaths::MaybeParseValue(property_id, string, context)) {
     return value;
   }
   CSSTokenizer tokenizer(string);
