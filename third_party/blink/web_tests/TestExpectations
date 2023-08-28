@@ -318,6 +318,9 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1473117 external/wpt/html/canvas/element/text/2d.text.measure.baselines.html [ Failure ]
 crbug.com/1473117 external/wpt/html/canvas/offscreen/text/2d.text.measure.baselines.html [ Failure ]
 crbug.com/1473117 external/wpt/html/canvas/offscreen/text/2d.text.measure.baselines.worker.html [ Failure ]
+# Context lost.
+crbug.com/1476080 [ Linux ] virtual/no-alloc-direct-call/fast/canvas/offscreencanvas-oncontextlost.html [ Failure Pass ]
+crbug.com/1476080 [ Linux ] virtual/oopr-canvas2d/fast/canvas/offscreencanvas-lost-gpu-context.html [ Failure Pass ]
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac11-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]
@@ -6622,8 +6625,6 @@ crbug.com/1459159 [ Linux ] fast/events/touch/gesture/gesture-tap-mouse-events.h
 # Flaky
 crbug.com/1459333 [ Mac11 ] virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-viewport-resize.html [ Failure Pass ]
 # Slightly flaky
-crbug.com/1459304 [ Linux ] virtual/no-alloc-direct-call/fast/canvas/offscreencanvas-oncontextlost.html [ Failure Pass ]
-crbug.com/1459304 [ Linux ] virtual/oopr-canvas2d/fast/canvas/offscreencanvas-lost-gpu-context.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/request-will-be-sent-extra-info-connect-timing.js [ Failure Pass ]
 crbug.com/1459304 [ Linux ] fast/filesystem/workers/file-writer-events.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrolling-container-moves-offscreen.html [ Failure Pass ]
