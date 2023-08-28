@@ -38,7 +38,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   base::span<const uint8_t> wrapped_key =
       base::as_bytes(base::make_span(registration_params.wrapped_key()));
   session_binding_helper_ = std::make_unique<SessionBindingHelper>(
-      key_service_.get(), wrapped_key, /*session_id=*/"");
+      key_service_.get(), wrapped_key, session_id_);
   // Preemptively load the binding key to speed up the generation of binding
   // key assertion.
   session_binding_helper_->MaybeLoadBindingKey();
