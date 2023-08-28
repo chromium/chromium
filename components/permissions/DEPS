@@ -5,6 +5,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/messages/android",
   "+components/pref_registry",
+  "+components/guest_view/browser",
   "+components/prefs",
   "+components/resources/android",
   "+components/strings",

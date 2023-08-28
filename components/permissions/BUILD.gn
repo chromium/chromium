@@ -193,6 +193,7 @@ source_set("permissions") {
       "permission_hats_trigger_helper.h",
       "permission_prompt_impl.cc",
     ]
+    deps += [ "//components/guest_view/browser" ]
   }
   public_deps = [ ":permissions_common" ]
 }

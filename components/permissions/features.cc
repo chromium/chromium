@@ -140,6 +140,11 @@ BASE_FEATURE(kRecordPermissionExpirationTimestamps,
              "RecordPermissionExpirationTimestamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for the mitigation for https://crbug.com/1462709
+BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
+             "MitigateUnpartitionedWebviewPermissions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, permission grants for Storage Access API will be enabled.

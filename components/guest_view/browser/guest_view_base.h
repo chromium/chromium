@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/guest_view/browser/guest_view_message_handler.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
@@ -233,6 +234,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Returns true if an SSL error in the guest's main frame should show an
   // interstitial instead of a plain error page.
   virtual bool RequiresSslInterstitials() const;
+
+  // Returns false if permission management should automatically drop
+  // permission requests of the given `type`.
+  virtual bool IsPermissionRequestable(ContentSettingsType type) const;
 
   content::RenderFrameHost* GetGuestMainFrame() const;
 

@@ -42,6 +42,10 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
+
 namespace permissions {
 namespace {
 
@@ -111,6 +115,7 @@ PermissionContextBase::PermissionContextBase(
     : browser_context_(browser_context),
       content_settings_type_(content_settings_type),
       permissions_policy_feature_(permissions_policy_feature) {
+  CHECK(permissions::PermissionUtil::IsPermission(content_settings_type_));
   PermissionDecisionAutoBlocker::UpdateFromVariations();
 }
 
@@ -302,6 +307,28 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
     }
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Some GuestViews are loaded in a separate StoragePartition. Given that
+  // permissions are scoped to a BrowserContext, not a StoragePartition, we may
+  // have a situation where a user has granted a permission to an origin in a
+  // tab and then visits the same origin in a guest. This would lead to
+  // inappropriate sharing of the permission with the guest. To mitigate this,
+  // we drop permission requests from guests for cases where it's not possible
+  // for the guest to have been granted the permission. Note that sharing of
+  // permissions that the guest could legitimately be granted is still possible.
+  // TODO(crbug.com/1469672): Scope granted permissions to a StoragePartition.
+  if (base::FeatureList::IsEnabled(
+          features::kMitigateUnpartitionedWebviewPermissions)) {
+    guest_view::GuestViewBase* guest =
+        guest_view::GuestViewBase::FromRenderFrameHost(render_frame_host);
+    if (guest && !guest->IsPermissionRequestable(content_settings_type_)) {
+      return content::PermissionResult(
+          PermissionStatus::DENIED,
+          content::PermissionStatusSource::UNSPECIFIED);
+    }
+  }
+#endif
+
   ContentSetting content_setting = GetPermissionStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 
@@ -409,8 +436,10 @@ void PermissionContextBase::DecidePermission(
       PermissionRequestManager::FromWebContents(web_contents);
   // TODO(felt): sometimes |permission_request_manager| is null. This check is
   // meant to prevent crashes. See crbug.com/457091.
-  if (!permission_request_manager)
+  if (!permission_request_manager) {
+    std::move(callback).Run(CONTENT_SETTING_ASK);
     return;
+  }
 
   std::unique_ptr<PermissionRequest> request_ptr = CreatePermissionRequest(
       requesting_origin, content_settings_type_, user_gesture, web_contents,

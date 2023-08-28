@@ -22,6 +22,7 @@
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
+#include "components/permissions/permission_util.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -74,6 +75,7 @@
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1129,6 +1131,33 @@ void WebViewGuest::WillAttachToEmbedder() {
 bool WebViewGuest::RequiresSslInterstitials() const {
   // Some enterprise workflows rely on clicking through self-signed cert errors.
   return true;
+}
+
+bool WebViewGuest::IsPermissionRequestable(ContentSettingsType type) const {
+  CHECK(permissions::PermissionUtil::IsPermission(type));
+  const blink::PermissionType permission_type =
+      permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+
+  switch (permission_type) {
+    case blink::PermissionType::GEOLOCATION:
+    case blink::PermissionType::AUDIO_CAPTURE:
+    case blink::PermissionType::VIDEO_CAPTURE:
+      // Any permission that could be granted by the webview permissionrequest
+      // API should be requestable.
+      return true;
+    default:
+      // Any other permission could not be legitimately granted to the webview.
+      // We preemptivly reject such requests here. The permissions system should
+      // have rejected it anyway as there would be no way to prompt the user.
+      // Ideally, we would just let the permissions system take care of this on
+      // its own, however, since permissions are currently scoped to a
+      // BrowserContext, not a StoragePartition, a permission granted to an
+      // origin loaded in a regular tab could be applied to a webview, hence the
+      // need to preemptively reject it.
+      // TODO(crbug.com/1469672): Permissions should be scoped to
+      // StoragePartitions.
+      return false;
+  }
 }
 
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(

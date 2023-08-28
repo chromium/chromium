@@ -872,6 +872,10 @@ bool GuestViewBase::RequiresSslInterstitials() const {
   return false;
 }
 
+bool GuestViewBase::IsPermissionRequestable(ContentSettingsType type) const {
+  return true;
+}
+
 content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {
   // TODO(crbug/1261928): Migrate the implementation for MPArch.
   return web_contents()->GetPrimaryMainFrame();

@@ -62,6 +62,7 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
@@ -6883,4 +6884,35 @@ IN_PROC_BROWSER_TEST_F(WebViewUsbTest, Shim_TestCannotReuseUsbPairedInTab) {
   // attempts to use the paired device. The granted permission should not be
   // available for that context.
   TestHelper("testCannotReuseUsbPairedInTab", "web_view/shim", NO_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestCannotRequestFonts) {
+  TestHelper("testCannotRequestFonts", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestCannotRequestFontsGrantedInTab) {
+  // We start the test server here, instead of in TestHelper, because we need
+  // to know the origin used in both the tab and webview before running the rest
+  // of the test.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Grant access to fonts from a tab.
+  permissions::MockPermissionPromptFactory tab_prompt_factory(
+      permissions::PermissionRequestManager::FromWebContents(tab_web_contents));
+  tab_prompt_factory.set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+  EXPECT_TRUE(content::ExecJs(tab_web_contents,
+                              R"((async () => {
+        await window.queryLocalFonts();
+      })())"));
+
+  // Have the embedder create a webview which navigates to the same origin and
+  // attempts to access fonts. The granted permission should not be
+  // available for that context.
+  TestHelper("testCannotRequestFonts", "web_view/shim", NO_TEST_SERVER);
 }

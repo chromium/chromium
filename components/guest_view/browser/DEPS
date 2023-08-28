@@ -1,5 +1,6 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/content_settings/core/common",
   "+components/zoom",
   "+content/public/browser",
   "+content/public/common",

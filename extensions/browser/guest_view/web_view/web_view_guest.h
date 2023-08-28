@@ -196,6 +196,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void SignalWhenReady(base::OnceClosure callback) final;
   void WillAttachToEmbedder() final;
   bool RequiresSslInterstitials() const final;
+  bool IsPermissionRequestable(ContentSettingsType type) const final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;

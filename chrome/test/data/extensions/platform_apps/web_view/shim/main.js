@@ -3795,6 +3795,27 @@ function testCannotReuseUsbPairedInTab() {
   document.body.appendChild(webview);
 }
 
+function testCannotRequestFonts() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    let getFonts = async () => {
+      let fonts = await window.queryLocalFonts();
+      return fonts.map(font => font.fullName);
+    };
+
+    try {
+      let result = await evalInWebView(webview, getFonts, []);
+      embedder.test.assertEq(0, result.length);
+    } catch (ex) {
+      embedder.test.fail();
+    }
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3941,6 +3962,7 @@ embedder.test.testList = {
   'testInsertIntoDetachedIframe': testInsertIntoDetachedIframe,
   'testCannotRequestUsb': testCannotRequestUsb,
   'testCannotReuseUsbPairedInTab': testCannotReuseUsbPairedInTab,
+  'testCannotRequestFonts': testCannotRequestFonts,
 };
 
 onload = function() {
