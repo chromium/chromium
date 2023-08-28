@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
@@ -119,6 +120,32 @@ TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
   std::string id = test_api()->AddNotification();
   test_api()->RemoveNotification(id);
 
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+  EXPECT_FALSE(test_api()->IsTrayShown());
+}
+
+// When the only notifications present are all in the same group, removing the
+// parent notification of that group should result in the bubble being destroyed
+// and the tray being hidden.
+TEST_F(NotificationCenterTrayTest,
+       RemovingGroupParentDestroysBubbleAndHidesTray) {
+  // Add two notifications that belong to the same group.
+  const std::string url = "http://test-url.com";
+  const std::string id0 = test_api()->AddNotificationWithSourceUrl(url);
+  const std::string id1 = test_api()->AddNotificationWithSourceUrl(url);
+  ASSERT_EQ(message_center_utils::GetNotificationCount(), 1u);
+  ASSERT_TRUE(test_api()->IsTrayShown());
+
+  // Show the bubble.
+  test_api()->ToggleBubble();
+  ASSERT_TRUE(test_api()->IsBubbleShown());
+
+  // Remove the parent notification.
+  const std::string parent_id =
+      test_api()->NotificationIdToParentNotificationId(id0);
+  test_api()->RemoveNotification(parent_id);
+
+  // Verify that the bubble and tray are both gone.
   EXPECT_FALSE(test_api()->IsBubbleShown());
   EXPECT_FALSE(test_api()->IsTrayShown());
 }
@@ -318,6 +345,38 @@ TEST_F(NotificationCenterTrayTest, FocusRing) {
   EXPECT_TRUE(test_api()->GetFocusRing()->GetVisible());
   EXPECT_EQ(test_api()->GetFocusRing()->size(),
             test_api()->GetTray()->size() + kTrayBackgroundFocusPadding.size());
+}
+
+// Tests that removing all notifications while the lock screen is showing hides
+// the tray.
+TEST_F(NotificationCenterTrayTest,
+       RemovingAllNotificationsOnLockScreenHidesTray) {
+  // Add a notification to make the notification center tray visible.
+  const std::string id = test_api()->AddNotification();
+
+  // Show the lock screen.
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  ASSERT_TRUE(test_api()->IsTrayShown());
+
+  // Remove the notification.
+  test_api()->RemoveNotification(id);
+
+  // Verify that the tray is hidden.
+  EXPECT_FALSE(test_api()->IsTrayShown());
+}
+
+// Tests that adding an initial notification while the lock screen is showing
+// shows the tray.
+TEST_F(NotificationCenterTrayTest, AddingNotificationOnLockScreenShowsTray) {
+  // Show the lock screen.
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  ASSERT_FALSE(test_api()->IsTrayShown());
+
+  // Add a notification.
+  test_api()->AddNotification();
+
+  // Verify that the tray is shown.
+  EXPECT_TRUE(test_api()->IsTrayShown());
 }
 
 // Tests that `NotificationCounterView` is not still visible on secondary

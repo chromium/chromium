@@ -376,6 +376,14 @@ void NotificationIconsController::OnNotificationAdded(const std::string& id) {
   }
 
   UpdateNotificationIndicators();
+
+  if (features::IsQsRevampEnabled()) {
+    // There are certain sequences of notification updates that can require
+    // explicitly updating the notification center tray even after its tray
+    // items have been updated - for instance, adding an initial notification on
+    // the lock screen. See http://b/297579552.
+    notification_center_tray_->UpdateVisibility();
+  }
 }
 
 void NotificationIconsController::OnNotificationRemoved(const std::string& id,
@@ -386,6 +394,15 @@ void NotificationIconsController::OnNotificationRemoved(const std::string& id,
     UpdateNotificationIcons();
 
   UpdateNotificationIndicators();
+
+  if (features::IsQsRevampEnabled()) {
+    // There are certain sequences of notification updates that can require
+    // explicitly updating the notification center tray even after its tray
+    // items have been updated - for instance, removing a notification group's
+    // parent notification when the only remaining notifications belong to that
+    // group. See http://b/296918234.
+    notification_center_tray_->UpdateVisibility();
+  }
 }
 
 void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
