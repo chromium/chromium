@@ -205,14 +205,11 @@ cargo_crate("stdio_fixture") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":lib",
-    "//third_party/rust/atty/v0_2:lib",
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/clap_lex/v0_3:lib",
     "//third_party/rust/strsim/v0_10:lib",
-    "//third_party/rust/termcolor/v1:lib",
   ]
   features = [
-    "color",
     "error-context",
     "help",
     "std",
@@ -423,22 +420,15 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    "//third_party/rust/atty/v0_2:lib",
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/clap_lex/v0_3:lib",
     "//third_party/rust/strsim/v0_10:lib",
-    "//third_party/rust/termcolor/v1:lib",
   ]
   features = [
-    "color",
     "error-context",
     "help",
     "std",
     "suggestions",
     "usage",
   ]
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
-  testonly = true
 }

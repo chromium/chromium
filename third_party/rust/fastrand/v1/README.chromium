@@ -1,7 +1,0 @@
-Name: fastrand
-URL: https://crates.io/crates/fastrand
-Description: A simple and fast random number generator
-Version: 1.7.0
-Security Critical: no
-Shipped: yes
-License: Apache 2.0

@@ -14,15 +14,6 @@ name = "anyhow"
 version = "1.0.70"
 
 [[package]]
-name = "atty"
-version = "0.2.14"
-dependencies = [
- "hermit-abi",
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 
@@ -35,31 +26,6 @@ name = "bitflags"
 version = "1.3.2"
 
 [[package]]
-name = "camino"
-version = "1.0.9"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "cargo-platform"
-version = "0.1.2"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "cargo_metadata"
-version = "0.14.2"
-dependencies = [
- "camino",
- "cargo-platform",
- "semver",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 
@@ -69,20 +35,15 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bitflags",
- "cargo-platform",
- "cargo_metadata",
  "cfg-if",
- "clap",
  "cxx",
  "cxxbridge-cmd",
- "env_logger",
  "font-types",
  "hex",
  "hex-literal",
  "lazy_static",
  "log",
  "memoffset",
- "once_cell",
  "proc-macro2",
  "qr_code",
  "quote",
@@ -94,7 +55,6 @@ dependencies = [
  "rstest_reuse",
  "rustc-demangle-capi",
  "rustversion",
- "semver",
  "serde",
  "serde_json",
  "serde_json_lenient",
@@ -102,8 +62,6 @@ dependencies = [
  "small_ctor",
  "static_assertions",
  "syn",
- "tempfile",
- "toml",
  "unicode-linebreak",
  "wycheproof",
 ]
@@ -112,11 +70,9 @@ dependencies = [
 name = "clap"
 version = "4.0.26"
 dependencies = [
- "atty",
  "bitflags",
  "clap_lex",
  "strsim",
- "termcolor",
 ]
 
 [[package]]
@@ -163,22 +119,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "env_logger"
-version = "0.10.0"
-dependencies = [
- "log",
- "regex",
- "termcolor",
-]
-
-[[package]]
-name = "fastrand"
-version = "1.7.0"
-dependencies = [
- "instant",
-]
-
-[[package]]
 name = "font-types"
 version = "0.3.4"
 
@@ -192,42 +132,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "hashbrown"
-version = "0.11.2"
-
-[[package]]
-name = "hermit-abi"
-version = "0.1.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "hex"
 version = "0.4.3"
 
 [[package]]
 name = "hex-literal"
 version = "0.4.1"
-
-[[package]]
-name = "indexmap"
-version = "1.8.1"
-dependencies = [
- "autocfg",
- "hashbrown",
-]
-
-[[package]]
-name = "instant"
-version = "0.1.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
-dependencies = [
- "cfg-if",
-]
 
 [[package]]
 name = "itoa"
@@ -266,10 +176,6 @@ version = "0.6.5"
 dependencies = [
  "autocfg",
 ]
-
-[[package]]
-name = "once_cell"
-version = "1.16.0"
 
 [[package]]
 name = "os_str_bytes"
@@ -336,15 +242,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "redox_syscall"
-version = "0.2.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62f25bc4c7e55e0b0b7a1d43fb893f4fa1361d0abe38b9ce4f323c2adfe6ef42"
-dependencies = [
- "bitflags",
-]
-
-[[package]]
 name = "regex"
 version = "1.6.0"
 dependencies = [
@@ -356,13 +253,6 @@ dependencies = [
 [[package]]
 name = "regex-syntax"
 version = "0.6.27"
-
-[[package]]
-name = "remove_dir_all"
-version = "0.5.3"
-dependencies = [
- "winapi",
-]
 
 [[package]]
 name = "rstest"
@@ -423,9 +313,6 @@ version = "1.0.5"
 [[package]]
 name = "semver"
 version = "1.0.4"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "serde"
@@ -490,30 +377,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "tempfile"
-version = "3.3.0"
-dependencies = [
- "cfg-if",
- "fastrand",
- "libc",
- "redox_syscall",
- "remove_dir_all",
- "winapi",
-]
-
-[[package]]
 name = "termcolor"
 version = "1.1.2"
 dependencies = [
  "winapi-util",
-]
-
-[[package]]
-name = "toml"
-version = "0.5.9"
-dependencies = [
- "indexmap",
- "serde",
 ]
 
 [[package]]

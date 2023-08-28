@@ -1,7 +1,0 @@
-Name: camino
-URL: https://crates.io/crates/camino
-Description: UTF-8 paths
-Version: 1.0.9
-Security Critical: no
-Shipped: yes
-License: Apache 2.0
