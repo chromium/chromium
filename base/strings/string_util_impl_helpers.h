@@ -519,7 +519,7 @@ absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
     const bool is_strict_mode,
     std::vector<size_t>* offsets) {
   size_t substitutions = subst.size();
-  DCHECK_LT(substitutions, 11U);
+  DCHECK_LT(substitutions, 10U);
 
   size_t sub_length = 0;
   for (const auto& cur : subst) {
