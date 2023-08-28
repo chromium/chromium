@@ -377,6 +377,9 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
 
   // Create a new CVDisplayLink while not holding `globals.lock`.
   auto shared_state = DisplayLinkMacSharedState::Create(display_id);
+  if (!shared_state) {
+    return nullptr;
+  }
 
   // Take `globals.lock` again and store `shared_state` in the map (or use an
   // existing DisplayLinkMacSharedState, if another thread created one).
