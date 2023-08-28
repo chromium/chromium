@@ -27,7 +27,8 @@ enum class AbortedReason {
   kChromeVoxEnabled = 2,
   kTabletModeEnabled = 3,
   kUserDeclinedTour = 4,
-  kMaxValue = kUserDeclinedTour,
+  kShutdown = 5,
+  kMaxValue = kShutdown,
 };
 
 // Enumeration of reasons the Welcome Tour may be prevented. These values are

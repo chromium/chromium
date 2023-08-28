@@ -13,6 +13,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/memory/weak_ptr.h"
@@ -24,7 +25,9 @@
 namespace ash {
 
 class AccessibilityControllerImpl;
+class ScopedToastPause;
 class SessionController;
+class Shell;
 class WelcomeTourAcceleratorHandler;
 class WelcomeTourControllerObserver;
 class WelcomeTourNotificationBlocker;
@@ -37,6 +40,7 @@ class WelcomeTourWindowMinimizer;
 class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
                                          public AccessibilityObserver,
                                          public SessionObserver,
+                                         public ShellObserver,
                                          public TabletModeObserver {
  public:
   WelcomeTourController();
@@ -69,6 +73,9 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void OnChromeTerminating() override;
   void OnSessionStateChanged(session_manager::SessionState) override;
 
+  // ShellObserver:
+  void OnShellDestroying() override;
+
   // TabletModeObserver:
   void OnTabletControllerDestroyed() override;
   void OnTabletModeStarting() override;
@@ -99,6 +106,10 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // The elapsed time since the beginning of the `current_step_`.
   base::ElapsedTimer current_step_timer_;
 
+  // Handles accelerator actions during the Welcome Tour. Exists only while the
+  // Welcome Tour is in progress.
+  std::unique_ptr<WelcomeTourAcceleratorHandler> accelerator_handler_;
+
   // Blocks all notifications while the Welcome Tour is in progress. Any
   // notifications received during the tour will appear in the Notification
   // Center after the tour is over.
@@ -109,9 +120,9 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // is in progress.
   std::unique_ptr<WelcomeTourScrim> scrim_;
 
-  // Handles accelerator actions during the Welcome Tour. Created/destroyed when
-  // the Welcome Tour starts/ends.
-  std::unique_ptr<WelcomeTourAcceleratorHandler> accelerator_handler_;
+  // Suppresses all toasts during the Welcome Tour. Exists only while the
+  // Welcome Tour is in progress.
+  std::unique_ptr<ScopedToastPause> toast_pause_;
 
   // Minimizes any app windows that are visible at the start of the Welcome
   // Tour, and any that attempt to become visible during the tour. Exists only
@@ -130,6 +141,11 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // the first time at which point the Welcome Tour is started.
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
+
+  // Shell is observed only while the Welcome Tour is in progress. The Welcome
+  // Tour is aborted when Shell is destroying to ensure the Welcome Tour does
+  // not outlive its dependencies.
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   // Tablet mode is observed only while the Welcome Tour is in progress, and
   // will trigger an abort of the tour if the device switches to tablet mode.

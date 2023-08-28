@@ -9,6 +9,8 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/system/scoped_toast_pause.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -288,7 +290,7 @@ WelcomeTourController::GetTutorialDescriptions() {
 }
 
 void WelcomeTourController::OnAccessibilityControllerShutdown() {
-  accessibility_observation_.Reset();
+  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
 }
 
 void WelcomeTourController::OnAccessibilityStatusChanged() {
@@ -312,8 +314,12 @@ void WelcomeTourController::OnSessionStateChanged(
   MaybeStartWelcomeTour();
 }
 
+void WelcomeTourController::OnShellDestroying() {
+  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
+}
+
 void WelcomeTourController::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
+  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
 }
 
 void WelcomeTourController::OnTabletModeStarting() {
@@ -441,14 +447,13 @@ void WelcomeTourController::OnWelcomeTourStarted() {
       base::BindRepeating(&WelcomeTourController::MaybeAbortWelcomeTour,
                           weak_ptr_factory_.GetWeakPtr(),
                           welcome_tour_metrics::AbortedReason::kAccelerator));
-
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
-
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   notification_blocker_->Init();
-
   scrim_ = std::make_unique<WelcomeTourScrim>();
+  shell_observation_.Observe(Shell::Get());
   tablet_mode_observation_.Observe(TabletMode::Get());
+  toast_pause_ = ToastManager::Get()->CreateScopedPause();
   window_minimizer_ = std::make_unique<WelcomeTourWindowMinimizer>();
 
   // NOTE: The accept button doesn't need to be explicitly handled because the
@@ -488,7 +493,9 @@ void WelcomeTourController::OnWelcomeTourEnded(
   accessibility_observation_.Reset();
   notification_blocker_.reset();
   scrim_.reset();
+  shell_observation_.Reset();
   tablet_mode_observation_.Reset();
+  toast_pause_.reset();
   window_minimizer_.reset();
 
   if (completed) {

@@ -15,6 +15,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/test_session_controller_client.h"
@@ -898,6 +900,43 @@ TEST_F(WelcomeTourControllerRunTest, Scrim) {
 
   // Case: After Welcome Tour.
   ExpectScrimsOnAllRootWindows(false);
+}
+
+// Verifies that toasts are suppressed while the Welcome Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, ToastPause) {
+  static constexpr char kToastId[] = "toast_id";
+
+  // Verify toast manager exists.
+  auto* const toast_manager = ToastManager::Get();
+  ASSERT_TRUE(toast_manager);
+
+  // Cache helper to check if a toast matching `kToastId` is showing.
+  auto is_showing_toast = [&]() { return toast_manager->IsRunning(kToastId); };
+
+  // Cache helper to show a toast matching `kToastId`.
+  auto show_toast = [&]() {
+    toast_manager->Show(ToastData(kToastId, ToastCatalogName::kMaxValue,
+                                  u"text", ToastData::kInfiniteDuration,
+                                  /*visible_on_lock_screen=*/true));
+  };
+
+  // Case: Before Welcome Tour.
+  EXPECT_FALSE(is_showing_toast());
+  show_toast();
+  EXPECT_TRUE(is_showing_toast());
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(is_showing_toast());
+        show_toast();
+        EXPECT_FALSE(is_showing_toast());
+      })));
+
+  // Case: After Welcome Tour.
+  EXPECT_FALSE(is_showing_toast());
+  show_toast();
+  EXPECT_TRUE(is_showing_toast());
 }
 
 // Verifies accelerator actions before/during/after the Welcome Tour.
