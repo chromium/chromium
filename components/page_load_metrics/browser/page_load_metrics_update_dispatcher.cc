@@ -9,6 +9,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -502,6 +503,13 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSoftNavigationIntervalLayoutShift(*render_data);
     UpdateSoftNavigation(std::move(*soft_navigation_metrics));
   } else {
+    if (!render_frame_host->GetParentOrOuterDocument()) {
+      // TODO(crbug.com/1455048): `client_->IsPageMainFrame()` didn't return the
+      // correct status.
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
     // This path is just for the AMP metrics.
