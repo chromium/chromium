@@ -1,6 +1,6 @@
 Test the (pointer) media features. See Bug 136119 for details.
 
-------------- with 'coarse' pointer -------------
+------------- with 'coarse' pointer, 'coarse' is primary -------------
 Query "(pointer)": true
 Query "(Pointer)": true
 Query "(pointer:none)": false
@@ -19,7 +19,7 @@ Query "(any-pointer:coARse)": true
 Query "(any-pointer:bogusvalue)": false
 Query "(any-pointer:fine)": false
 Query "(any-pointer:fInE)": false
-------------- with 'fine' pointer -------------
+------------- with 'fine' pointer, 'fine' is primary -------------
 Query "(pointer)": true
 Query "(Pointer)": true
 Query "(pointer:none)": false
@@ -76,7 +76,7 @@ Query "(any-pointer:coARse)": true
 Query "(any-pointer:bogusvalue)": false
 Query "(any-pointer:fine)": true
 Query "(any-pointer:fInE)": true
-------------- with 'none', 'fine' and 'coarse' pointer, 'none' is primary -------------
+------------- with 'none' and 'fine' and 'coarse' pointer, 'none' is primary -------------
 Query "(pointer)": false
 Query "(Pointer)": false
 Query "(pointer:none)": true
@@ -95,7 +95,7 @@ Query "(any-pointer:coARse)": true
 Query "(any-pointer:bogusvalue)": false
 Query "(any-pointer:fine)": true
 Query "(any-pointer:fInE)": true
-------------- with 'none' pointer -------------
+------------- with 'none' pointer, 'none' is primary -------------
 Query "(pointer)": false
 Query "(Pointer)": false
 Query "(pointer:none)": true

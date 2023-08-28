@@ -1,49 +1,34 @@
 <html>
 <head>
 <title>Test CSSOM View module: MediaQueryList interface</title>
-<style type="text/css">
-
-</style>
+<script type="text/javascript" src="resources/media-utils.js"></script>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
+  if (window.testRunner) testRunner.dumpAsText();
 
-    function log(m)
-    {
-        var results = document.getElementById('results');
-        results.innerHTML += m + '<br>';
-    }
+  function testQuery(query, expected) {
+    const result = window.matchMedia(query).matches;
+    log(`"${query}" evaluates to ${result}: ${result == expected ? "PASS" : "FAIL"}`);
+  }
 
-    function testQuery(query, expected)
-    {
-        var isTrue = window.matchMedia(query).matches;
-        var message = '\"' + query + '\" evaluates to ' + (isTrue ? 'true' : 'false');
-        message += (isTrue == expected) ? ': PASS' : ': FAIL';
-        log(message);
-    }
+  function runTests() {
+    testQuery("screen", true);
+    testQuery("projection", false);
 
-    function runTests()
-    {
-        testQuery('screen', true);
-        testQuery('projection', false);
+    testQuery("all and (color)", true);
+    testQuery("not projection and (color)", true);
+    testQuery("(color)", true);
+    testQuery("(color", true);
+    testQuery("color", false);
 
-        testQuery('all and (color)', true);
-        testQuery('not projection and (color)', true);
-        testQuery('(color)', true);
-        testQuery('(color', true);
-        testQuery('color', false);
+    testQuery("garbage", false);
 
-        testQuery('garbage', false);
-
-        testQuery('(min-device-width: 100px)', true);
-        testQuery('(min-device-width: 50000px)', false);
-    }
-
+    testQuery("(min-device-width: 100px)", true);
+    testQuery("(min-device-width: 50000px)", false);
+  }
 </script>
 </head>
 <body onload="runTests()">
-    <p>Test the MediaQueryList interface: <a href="http://dev.w3.org/csswg/cssom-view/#the-mediaquerylist-interface" title="CSSOM View Module">http://dev.w3.org/csswg/cssom-view/#the-mediaquerylist-interface</a>.</p>
-    <div id="results">
-    </div>
+  <p>Test the MediaQueryList interface: <a href="http://dev.w3.org/csswg/cssom-view/#the-mediaquerylist-interface" title="CSSOM View Module">http://dev.w3.org/csswg/cssom-view/#the-mediaquerylist-interface</a>.</p>
+  <div id="results"></div>
 </body>
 </html>

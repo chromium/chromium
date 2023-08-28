@@ -1,63 +1,46 @@
 <html>
 <head>
 <title>Test the Manifest media query "display-mode" features.</title>
-<style type="text/css">
-
-</style>
+<script type="text/javascript" src="resources/media-utils.js"></script>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
+  if (window.testRunner) testRunner.dumpAsText();
 
-    function log(m) {
-        document.getElementById('results').innerHTML += m + '<br>';
+  const supportedValues = [
+    "browser",
+    "minimal-ui",
+    "standalone",
+    "fullscreen",
+    "window-controls-overlay",
+    "borderless",
+  ];
+
+  function testQueries() {
+    [
+      // OK values.
+      "(display-mode)",
+      ...supportedValues.map((mode) => `(display-mode: ${mode})`),
+
+      // Unexpected values.
+      "(display-mode: fine)",
+      "(display-mode: 1)",
+      "(display-mode: 3%)",
+    ].forEach(query => logMatchMediaQuery(query));
+  }
+
+  function runTests() {
+    if (!window.internals) return;
+
+    for (const mode of supportedValues) {
+      log(`------------- with '${mode}' display mode -------------`);
+      internals.settings.setDisplayModeOverride(mode);
+      testQueries();
     }
-
-    const supportedValues = [
-        'browser',
-        'minimal-ui',
-        'standalone',
-        'fullscreen',
-        'window-controls-overlay',
-        'borderless',
-    ]
-
-    function testQueries()
-    {
-        var queries = [
-            // OK values.
-            "(display-mode)",
-            ...supportedValues.map((mode) => `(display-mode: ${mode})`),
-
-            // Unexpected values.
-            "(display-mode: fine)",
-            "(display-mode: 1)",
-            "(display-mode: 3%)",
-        ];
-
-        for (var index=0; index < queries.length; index++) {
-            log("Query &quot;" + queries[index] + "&quot: " +
-                window.matchMedia(queries[index]).matches);
-        }
-    }
-
-    function runTests()
-    {
-        if (!window.internals)
-            return;
-
-        for (const mode of supportedValues) {
-          log(`------------- with '${mode}' display mode -------------`);
-          internals.settings.setDisplayModeOverride(mode);
-          testQueries();
-        }
-    }
+  }
 
 </script>
 </head>
 <body onload="runTests()">
-    <p>Test the <a href="http://www.w3.org/TR/mediaqueries-5/#display-mode">(display-mode: ...)</a> media features.
-
-    <div id="results">
-    </div>
+  <p>Test the <a href="http://www.w3.org/TR/mediaqueries-5/#display-mode">(display-mode: ...)</a> media features.</p>
+  <div id="results"></div>
 </body>
 </html>

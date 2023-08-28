@@ -1,88 +1,55 @@
 <html>
 <head>
 <title>Test the CSS4 media query "pointer" features.</title>
-<style type="text/css">
-
-</style>
+<script type="text/javascript" src="resources/media-utils.js"></script>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
+  if (window.testRunner) testRunner.dumpAsText();
 
-    function log(m) {
-        document.getElementById('results').innerHTML += m + '<br>';
-    }
+  function testQueries() {
+    [
+      "(pointer)",
+      "(Pointer)",
+      "(pointer:none)",
+      "(pointer:NoNe)",
+      "(pointer:coarse)",
+      "(pointer:coARse)",
+      "(pointer:bogusvalue)",
+      "(pointer:fine)",
+      "(pointer:fInE)",
+      "(any-pointer)",
+      "(any-Pointer)",
+      "(any-pointer:none)",
+      "(any-pointer:NoNe)",
+      "(any-pointer:coarse)",
+      "(any-pointer:coARse)",
+      "(any-pointer:bogusvalue)",
+      "(any-pointer:fine)",
+      "(any-pointer:fInE)",
+    ].forEach(query => logMatchMediaQuery(query));
+  }
 
-    function testQueries()
-    {
-        var queries = [
-            "(pointer)",
-            "(Pointer)",
-            "(pointer:none)",
-            "(pointer:NoNe)",
-            "(pointer:coarse)",
-            "(pointer:coARse)",
-            "(pointer:bogusvalue)",
-            "(pointer:fine)",
-            "(pointer:fInE)",
-            "(any-pointer)",
-            "(any-Pointer)",
-            "(any-pointer:none)",
-            "(any-pointer:NoNe)",
-            "(any-pointer:coarse)",
-            "(any-pointer:coARse)",
-            "(any-pointer:bogusvalue)",
-            "(any-pointer:fine)",
-            "(any-pointer:fInE)"
-            ];
-        for (var index=0; index < queries.length; index++) {
-            log("Query &quot;" + queries[index] + "&quot: " +
-                window.matchMedia(queries[index]).matches);
-        }
-    }
+  function runTestCase(pointerType, availablePointerTypes) {
+  log(`------------- with '${availablePointerTypes.replaceAll(",", "' and '")}' pointer, '${pointerType}' is primary -------------`);
+    internals.settings.setPrimaryPointerType(pointerType);
+    internals.settings.setAvailablePointerTypes(availablePointerTypes);
+    testQueries();
+  }
 
-    function runTests()
-    {
-        if (!window.internals)
-            return;
+  function runTests() {
+    if (!window.internals) return;
 
-        log("------------- with 'coarse' pointer -------------");
-        internals.settings.setPrimaryPointerType('coarse');
-        internals.settings.setAvailablePointerTypes('coarse');
-        testQueries();
-
-        log("------------- with 'fine' pointer -------------");
-        internals.settings.setPrimaryPointerType('fine');
-        internals.settings.setAvailablePointerTypes('fine');
-        testQueries();
-
-        log("------------- with 'fine' and 'coarse' pointer, 'fine' is primary -------------");
-        internals.settings.setPrimaryPointerType('fine');
-        internals.settings.setAvailablePointerTypes('fine,coarse');
-        testQueries();
-
-        log("------------- with 'fine' and 'coarse' pointer, 'coarse' is primary -------------");
-        internals.settings.setPrimaryPointerType('coarse');
-        internals.settings.setAvailablePointerTypes('fine,coarse');
-        testQueries();
-
-        log("------------- with 'none', 'fine' and 'coarse' pointer, 'none' is primary -------------");
-        internals.settings.setPrimaryPointerType('none');
-        internals.settings.setAvailablePointerTypes('none,fine,coarse');
-        testQueries();
-
-        log("------------- with 'none' pointer -------------");
-        internals.settings.setPrimaryPointerType('none');
-        internals.settings.setAvailablePointerTypes('none');
-        testQueries();
-    }
-
+    runTestCase("coarse", "coarse");
+    runTestCase("fine", "fine");
+    runTestCase("fine", "fine,coarse");
+    runTestCase("coarse", "fine,coarse");
+    runTestCase("none", "none,fine,coarse");
+    runTestCase("none", "none");
+  }
 </script>
 </head>
 <body onload="runTests()">
-    <p>Test the <a href="http://www.w3.org/TR/2014/WD-mediaqueries-4-20140605/#pointer">(pointer)</a> media features.
-    See <a href="http://crbug.com/136119">Bug 136119</a> for details.</p>
-
-    <div id="results">
-    </div>
+  <p>Test the <a href="http://www.w3.org/TR/2014/WD-mediaqueries-4-20140605/#pointer">(pointer)</a> media features.
+  See <a href="http://crbug.com/136119">Bug 136119</a> for details.</p>
+  <div id="results"></div>
 </body>
 </html>

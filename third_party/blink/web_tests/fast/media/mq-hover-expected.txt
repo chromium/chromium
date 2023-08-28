@@ -1,6 +1,6 @@
 Test the (hover) media features. See Bug 136119 for details.
 
-------------- with 'hover' hover -------------
+------------- with 'hover' hover, 'hover' is primary -------------
 Query "(hover)": true
 Query "(Hover)": true
 Query "(hover:none)": false
@@ -34,7 +34,7 @@ Query "(any-hover:on-demand)": false
 Query "(any-hover:bogusvalue)": false
 Query "(any-hover:hover)": true
 Query "(any-hover:HoveR)": true
-------------- with 'none' hover -------------
+------------- with 'none' hover, 'none' is primary -------------
 Query "(hover)": false
 Query "(Hover)": false
 Query "(hover:none)": true
