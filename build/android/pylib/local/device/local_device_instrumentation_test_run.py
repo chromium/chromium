@@ -198,6 +198,7 @@ class LocalDeviceInstrumentationTestRun(
     self._chrome_proxy = None
     self._context_managers = collections.defaultdict(list)
     self._flag_changers = {}
+    self._webview_flag_changers = {}
     self._render_tests_device_output_dir = None
     self._shared_prefs_to_restore = []
     self._skia_gold_session_manager = None
@@ -460,20 +461,37 @@ class LocalDeviceInstrumentationTestRun(
 
       @trace_event.traced
       def create_flag_changer(dev):
-        flags = self._test_instance.flags[:]
-        if self._test_instance.variations_test_seed_path:
-          test_data_root_dir = posixpath.join(dev.GetExternalStoragePath(),
-                                              'chromium_tests_root')
-          seed_path_components = DevicePathComponentsFor(
-              self._test_instance.variations_test_seed_path)
+        flags = self._test_instance.flags
+        webview_flags = self._test_instance.webview_flags
+        test_data_root_dir = posixpath.join(dev.GetExternalStoragePath(),
+                                            'chromium_tests_root')
+
+        def _get_variations_seed_path_arg(seed_path):
+          seed_path_components = DevicePathComponentsFor(seed_path)
           test_seed_path = local_device_test_run.SubstituteDeviceRoot(
               seed_path_components, test_data_root_dir)
-          flags.append('--variations-test-seed-path={0}'.format(test_seed_path))
+          return '--variations-test-seed-path={0}'.format(test_seed_path)
+
+        if self._test_instance.variations_test_seed_path:
+          flags.append(
+              _get_variations_seed_path_arg(
+                  self._test_instance.variations_test_seed_path))
+
+        if self._test_instance.webview_variations_test_seed_path:
+          webview_flags.append(
+              _get_variations_seed_path_arg(
+                  self._test_instance.webview_variations_test_seed_path))
+
+        if flags or webview_flags:
+          self._CreateFlagChangersIfNeeded(dev)
 
         if flags:
-          self._CreateFlagChangerIfNeeded(dev)
           logging.debug('Attempting to set flags: %r', flags)
           self._flag_changers[str(dev)].AddFlags(flags)
+
+        if webview_flags:
+          logging.debug('Attempting to set WebView flags: %r', webview_flags)
+          self._webview_flag_changers[str(dev)].AddFlags(webview_flags)
 
         valgrind_tools.SetChromeTimeoutScale(
             dev, self._test_instance.timeout_scale)
@@ -555,6 +573,9 @@ class LocalDeviceInstrumentationTestRun(
       if str(dev) in self._flag_changers:
         self._flag_changers[str(dev)].Restore()
 
+      if self._webview_flag_changers[str(dev)].GetCurrentFlags():
+        self._webview_flag_changers[str(dev)].Restore()
+
       # Remove package-specific configuration
       dev.RunShellCommand(['am', 'clear-debug-app'], check_return=True)
 
@@ -603,7 +624,10 @@ class LocalDeviceInstrumentationTestRun(
     ]
     dev.RunShellCommand(cmd, check_return=True)
 
-  def _CreateFlagChangerIfNeeded(self, device):
+  def _CreateFlagChangersIfNeeded(self, device):
+    self._webview_flag_changers.setdefault(
+        str(device), flag_changer.FlagChanger(device, 'webview-command-line'))
+
     if str(device) not in self._flag_changers:
       cmdline_file = 'test-cmdline-file'
       if self._test_instance.use_apk_under_test_flags_file:
@@ -883,7 +907,7 @@ class LocalDeviceInstrumentationTestRun(
       flags_to_add.extend(self._chrome_proxy.GetFlags())
 
     if flags_to_add:
-      self._CreateFlagChangerIfNeeded(device)
+      self._CreateFlagChangersIfNeeded(device)
       self._flag_changers[str(device)].PushFlags(add=flags_to_add)
 
     time_ms = lambda: int(time.time() * 1e3)
@@ -910,7 +934,6 @@ class LocalDeviceInstrumentationTestRun(
 
       if self._env.trace_output:
         self._SaveTraceData(trace_device_file, device, test['class'])
-
 
       def restore_flags():
         if flags_to_add:
