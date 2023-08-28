@@ -21,7 +21,7 @@ namespace ui {
 namespace {
 constexpr uint32_t kMinVersion = 1;
 constexpr uint32_t kMaxVersion = 3;
-}
+}  // namespace
 
 // static
 constexpr char WaylandZwpPointerGestures::kInterfaceName[];
@@ -65,19 +65,18 @@ WaylandZwpPointerGestures::WaylandZwpPointerGestures(
 WaylandZwpPointerGestures::~WaylandZwpPointerGestures() = default;
 
 void WaylandZwpPointerGestures::Init() {
+  DCHECK(connection_->seat());
   DCHECK(connection_->seat()->pointer());
+  wl_pointer* pointer = connection_->seat()->pointer()->wl_object();
 
-  pinch_.reset(zwp_pointer_gestures_v1_get_pinch_gesture(
-      obj_.get(), connection_->seat()->pointer()->wl_object()));
-
-  static constexpr zwp_pointer_gesture_pinch_v1_listener
-      zwp_pointer_gesture_pinch_v1_listener = {
-          &WaylandZwpPointerGestures::OnPinchBegin,
-          &WaylandZwpPointerGestures::OnPinchUpdate,
-          &WaylandZwpPointerGestures::OnPinchEnd,
-      };
-  zwp_pointer_gesture_pinch_v1_add_listener(
-      pinch_.get(), &zwp_pointer_gesture_pinch_v1_listener, this);
+  pinch_.reset(zwp_pointer_gestures_v1_get_pinch_gesture(obj_.get(), pointer));
+  static constexpr zwp_pointer_gesture_pinch_v1_listener kPinchListener = {
+      .begin = &OnPinchBegin,
+      .update = &OnPinchUpdate,
+      .end = &OnPinchEnd,
+  };
+  zwp_pointer_gesture_pinch_v1_add_listener(pinch_.get(), &kPinchListener,
+                                            this);
 
 #if defined(ZWP_POINTER_GESTURES_V1_GET_HOLD_GESTURE_SINCE_VERSION)
   if (zwp_pointer_gestures_v1_get_version(obj_.get()) <
@@ -85,15 +84,10 @@ void WaylandZwpPointerGestures::Init() {
     return;
   }
 
-  hold_.reset(zwp_pointer_gestures_v1_get_hold_gesture(
-      obj_.get(), connection_->seat()->pointer()->wl_object()));
-
-  static constexpr zwp_pointer_gesture_hold_v1_listener
-      zwp_pointer_gesture_hold_v1_listener = {
-          &WaylandZwpPointerGestures::OnHoldBegin,
-          &WaylandZwpPointerGestures::OnHoldEnd};
-  zwp_pointer_gesture_hold_v1_add_listener(
-      hold_.get(), &zwp_pointer_gesture_hold_v1_listener, this);
+  hold_.reset(zwp_pointer_gestures_v1_get_hold_gesture(obj_.get(), pointer));
+  static constexpr zwp_pointer_gesture_hold_v1_listener kHoldListener = {
+      .begin = &OnHoldBegin, .end = &OnHoldEnd};
+  zwp_pointer_gesture_hold_v1_add_listener(hold_.get(), &kHoldListener, this);
 #endif
 }
 

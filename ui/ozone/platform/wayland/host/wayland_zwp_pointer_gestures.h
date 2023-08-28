@@ -49,7 +49,7 @@ class WaylandZwpPointerGestures
   void Init();
 
  private:
-  // zwp_pointer_gesture_pinch_v1_listener
+  // zwp_pointer_gesture_pinch_v1_listener callbacks:
   static void OnPinchBegin(
       void* data,
       struct zwp_pointer_gesture_pinch_v1* zwp_pointer_gesture_pinch_v1,
@@ -71,6 +71,8 @@ class WaylandZwpPointerGestures
       uint32_t serial,
       uint32_t time,
       int32_t cancelled);
+
+  // zwp_pointer_gesture_hold_v1_listener callbacks:
 #if defined(ZWP_POINTER_GESTURE_HOLD_V1_BEGIN_SINCE_VERSION)
   static void OnHoldBegin(
       void* data,

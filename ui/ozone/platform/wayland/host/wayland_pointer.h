@@ -45,61 +45,63 @@ class WaylandPointer {
   wl_pointer* wl_object() const { return obj_.get(); }
 
  private:
-  // wl_pointer_listener
-  static void Enter(void* data,
-                    wl_pointer* obj,
-                    uint32_t serial,
-                    wl_surface* surface,
-                    wl_fixed_t surface_x,
-                    wl_fixed_t surface_y);
-  static void Leave(void* data,
-                    wl_pointer* obj,
-                    uint32_t serial,
-                    wl_surface* surface);
-  static void Motion(void* data,
-                     wl_pointer* obj,
-                     uint32_t time,
-                     wl_fixed_t surface_x,
-                     wl_fixed_t surface_y);
-  static void Button(void* data,
-                     wl_pointer* obj,
-                     uint32_t serial,
-                     uint32_t time,
-                     uint32_t button,
-                     uint32_t state);
-  static void Axis(void* data,
-                   wl_pointer* obj,
-                   uint32_t time,
-                   uint32_t axis,
-                   wl_fixed_t value);
-  static void Frame(void* data, wl_pointer* obj);
-  static void AxisSource(void* data, wl_pointer* obj, uint32_t axis_source);
-  static void AxisStop(void* data,
+  // wl_pointer_listener callbacks:
+  static void OnEnter(void* data,
+                      wl_pointer* obj,
+                      uint32_t serial,
+                      wl_surface* surface,
+                      wl_fixed_t surface_x,
+                      wl_fixed_t surface_y);
+  static void OnLeave(void* data,
+                      wl_pointer* obj,
+                      uint32_t serial,
+                      wl_surface* surface);
+  static void OnMotion(void* data,
                        wl_pointer* obj,
                        uint32_t time,
-                       uint32_t axis);
-  static void AxisDiscrete(void* data,
-                           wl_pointer* obj,
-                           uint32_t axis,
-                           int32_t discrete);
-  static void AxisValue120(void* data,
-                           wl_pointer* obj,
-                           uint32_t axis,
-                           int32_t value120);
+                       wl_fixed_t surface_x,
+                       wl_fixed_t surface_y);
+  static void OnButton(void* data,
+                       wl_pointer* obj,
+                       uint32_t serial,
+                       uint32_t time,
+                       uint32_t button,
+                       uint32_t state);
+  static void OnAxis(void* data,
+                     wl_pointer* obj,
+                     uint32_t time,
+                     uint32_t axis,
+                     wl_fixed_t value);
+  static void OnFrame(void* data, wl_pointer* obj);
+  static void OnAxisSource(void* data, wl_pointer* obj, uint32_t axis_source);
+  static void OnAxisStop(void* data,
+                         wl_pointer* obj,
+                         uint32_t time,
+                         uint32_t axis);
+  static void OnAxisDiscrete(void* data,
+                             wl_pointer* obj,
+                             uint32_t axis,
+                             int32_t discrete);
+  static void OnAxisValue120(void* data,
+                             wl_pointer* obj,
+                             uint32_t axis,
+                             int32_t value120);
 
   void SetupStylus();
 
-  // zcr_pointer_stylus_v2_listener
-  static void Tool(void* data, struct zcr_pointer_stylus_v2* x, uint32_t y);
-  static void Force(void* data,
-                    struct zcr_pointer_stylus_v2* x,
-                    uint32_t y,
-                    wl_fixed_t z);
-  static void Tilt(void* data,
-                   struct zcr_pointer_stylus_v2* x,
-                   uint32_t y,
-                   wl_fixed_t z,
-                   wl_fixed_t a);
+  // zcr_pointer_stylus_v2_listener callbacks:
+  static void OnTool(void* data,
+                     struct zcr_pointer_stylus_v2* stylus,
+                     uint32_t y);
+  static void OnForce(void* data,
+                      struct zcr_pointer_stylus_v2* stylus,
+                      uint32_t y,
+                      wl_fixed_t z);
+  static void OnTilt(void* data,
+                     struct zcr_pointer_stylus_v2* stylus,
+                     uint32_t y,
+                     wl_fixed_t z,
+                     wl_fixed_t a);
 
   wl::Object<wl_pointer> obj_;
   wl::Object<zcr_pointer_stylus_v2> zcr_pointer_stylus_v2_;
