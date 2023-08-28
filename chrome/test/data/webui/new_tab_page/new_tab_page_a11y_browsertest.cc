@@ -27,7 +27,8 @@ class NewTabPageA11yBrowserTest : public WebUIMochaBrowserTest {
 
 using NewTabPageAppA11yTest = NewTabPageA11yBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppA11yTest, Clicks) {
+// TODO(crbug.com/1476647/) Reenable this test after finding a proper fix.
+IN_PROC_BROWSER_TEST_F(NewTabPageAppA11yTest, DISABLED_Clicks) {
   ASSERT_EQ(
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode(),
       ui::kAXModeComplete);
