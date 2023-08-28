@@ -34,11 +34,6 @@ base::FilePath model_file_path() {
       .AppendASCII("test-model-quantized.tflite");
 }
 
-void GetModelWithMetadataCallback(base::File model,
-                                  const std::string& config_proto) {
-  EXPECT_TRUE(model.IsValid());
-  EXPECT_TRUE(config_proto.empty());
-}
 }  // namespace
 
 class VisualSearchSuggestionsServiceTest : public ::testing::Test {
@@ -78,8 +73,11 @@ class VisualSearchSuggestionsServiceTest : public ::testing::Test {
 
 TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated) {
   VisualSearchSuggestionsService::ModelUpdateCallback callback =
-      base::BindOnce(&GetModelWithMetadataCallback);
-  service_->RegisterModelUpdateCallback(std::move(callback));
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
                            *model_info_);
@@ -89,8 +87,11 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated) {
 TEST_F(VisualSearchSuggestionsServiceTest,
        OnModelUpdated_BadOptimizationTarget) {
   VisualSearchSuggestionsService::ModelUpdateCallback callback =
-      base::BindOnce(&GetModelWithMetadataCallback);
-  service_->RegisterModelUpdateCallback(std::move(callback));
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_FALSE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_TEXT_EMBEDDER,
                            *model_info_);
@@ -111,8 +112,11 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
           .Build();
 
   VisualSearchSuggestionsService::ModelUpdateCallback callback =
-      base::BindOnce(&GetModelWithMetadataCallback);
-  service_->RegisterModelUpdateCallback(std::move(callback));
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_FALSE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
                            *invalid_model_info_);
@@ -121,8 +125,11 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
 
 TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
   VisualSearchSuggestionsService::ModelUpdateCallback callback =
-      base::BindOnce(&GetModelWithMetadataCallback);
-  service_->RegisterModelUpdateCallback(std::move(callback));
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
                            *model_info_);
@@ -136,19 +143,24 @@ TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_ModelAlreadyLoaded) {
 
 TEST_F(VisualSearchSuggestionsServiceTest, OnModelUpdated_NullModelUpdate) {
   VisualSearchSuggestionsService::ModelUpdateCallback callback =
-      base::BindOnce(&GetModelWithMetadataCallback);
-  service_->RegisterModelUpdateCallback(std::move(callback));
+      base::BindOnce([](base::File model, std::string config_proto) {
+        EXPECT_TRUE(model.IsValid());
+        EXPECT_TRUE(config_proto.empty());
+      });
+  service_->SetModelUpdateCallback(std::move(callback));
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
                            *model_info_);
   task_environment_.RunUntilIdle();
 
   // Null model update should unload the model.
-  VisualSearchSuggestionsService::ModelUpdateCallback callback2 =
-      base::BindOnce(&GetModelWithMetadataCallback);
+  callback = base::BindOnce([](base::File model, std::string config_proto) {
+    EXPECT_FALSE(model.IsValid());
+    EXPECT_TRUE(config_proto.empty());
+  });
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
                            absl::nullopt);
-  service_->RegisterModelUpdateCallback(std::move(callback2));
+  service_->SetModelUpdateCallback(std::move(callback));
   task_environment_.RunUntilIdle();
 }
