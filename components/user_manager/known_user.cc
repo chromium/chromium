@@ -214,9 +214,6 @@ absl::optional<AccountId> GetPlatformKnownUserId(
   if (user_email == kStubUserEmail) {
     return StubAccountId();
   }
-  if (user_email == kStubAdUserEmail) {
-    return StubAdAccountId();
-  }
   if (user_email == kGuestUserName) {
     return GuestAccountId();
   }

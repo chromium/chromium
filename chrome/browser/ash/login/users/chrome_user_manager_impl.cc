@@ -1231,8 +1231,7 @@ void ChromeUserManagerImpl::AsyncRemoveCryptohome(
 }
 
 bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
-  return account_id == user_manager::StubAccountId() ||
-         account_id == user_manager::StubAdAccountId();
+  return account_id == user_manager::StubAccountId();
 }
 
 bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(

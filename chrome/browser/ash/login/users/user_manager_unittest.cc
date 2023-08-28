@@ -355,19 +355,6 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAccountId) {
   EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAccountId()));
 }
 
-// Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
-// is a stub ad account id.
-TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAdAccountId) {
-  EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAdAccountId()));
-
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
-  RetrieveTrustedDevicePolicies();
-
-  EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAdAccountId()));
-}
-
 // Tests that `IsEphemeralAccountId(account_id)` returns true when `account_id`
 // is a public account id.
 TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForPublicAccountId) {

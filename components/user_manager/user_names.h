@@ -19,12 +19,6 @@ USER_MANAGER_EXPORT extern const char kStubUserEmail[];
 // Stub Gaia user id. For tests and CrOS on Linux dev build only.
 USER_MANAGER_EXPORT extern const char kStubUserId[];
 
-// Stub Active Directory user name. For tests only.
-USER_MANAGER_EXPORT extern const char kStubAdUserEmail[];
-
-// Stub Active Directory user object GUID. For tests only.
-USER_MANAGER_EXPORT extern const char kStubAdUserObjGuid[];
-
 // Magic e-mail addresses are bad. They exist here because some code already
 // depends on them and it is hard to figure out what. Any user types added in
 // the future should be identified by a new |UserType|, not a new magic e-mail
@@ -42,9 +36,6 @@ USER_MANAGER_EXPORT std::string CanonicalizeUserID(const std::string& user_id);
 
 // Stub account id for a Gaia user.
 USER_MANAGER_EXPORT const AccountId& StubAccountId();
-
-// Stub account id for an Active Directory user.
-USER_MANAGER_EXPORT const AccountId& StubAdAccountId();
 
 // AccountId for the login screen. It identifies ephemeral profile that is used
 // to display WebUI during OOBE and SignIn.
