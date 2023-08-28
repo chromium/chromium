@@ -48,17 +48,21 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/freetype/src/src/autofit/afws-decl.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
 constexpr float kSmallCapsFontSizeMultiplier = 0.7f;
 constexpr float kEmphasisMarkFontSizeMultiplier = 0.5f;
+constexpr int32_t kFontObjectsMemoryConsumption =
+    std::max(sizeof(AF_LatinMetricsRec), sizeof(AF_CJKMetricsRec));
 
 SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
                                scoped_refptr<CustomFontData> custom_data,
@@ -67,8 +71,29 @@ SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
     : platform_data_(platform_data),
       font_(platform_data_.size() ? platform_data.CreateSkFont() : SkFont()),
       custom_font_data_(std::move(custom_data)) {
+  // Every time new SimpleFontData instance is created, Skia will ask
+  // FreeType to get the metrics for glyphs by invoking
+  // af_face_globals_get_metrics. There FT will allocate style_metrics_size
+  // bytes of memory on the metrics. Depending on the used script,
+  // style_metrics_size is equal to sizeof(AF_LatinMetricsRec) or to
+  // sizeof(AF_CJKMetricsRec). GC is not aware of this allocation. So in
+  // situations when we create a lot of Font objects in the small period of
+  // time, memory usage will grow unboundedly without GC kicking in. To prevent
+  // that we are informing GC about external allocated memory using
+  // style_metrics_size as the font memory consumption.
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    isolate->AdjustAmountOfExternalAllocatedMemory(
+        kFontObjectsMemoryConsumption);
+  }
   PlatformInit(subpixel_ascent_descent, metrics_override);
   PlatformGlyphInit();
+}
+
+SimpleFontData::~SimpleFontData() {
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    isolate->AdjustAmountOfExternalAllocatedMemory(
+        -kFontObjectsMemoryConsumption);
+  }
 }
 
 void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,

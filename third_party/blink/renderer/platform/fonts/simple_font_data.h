@@ -82,6 +82,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   SimpleFontData(const SimpleFontData&) = delete;
   SimpleFontData(SimpleFontData&&) = delete;
+  ~SimpleFontData() override;
   SimpleFontData& operator=(const SimpleFontData&) = delete;
   SimpleFontData& operator=(const SimpleFontData&&) = delete;
 
