@@ -36,10 +36,8 @@ BoundSessionCookieRefreshServiceFactory::
     : ProfileKeyedServiceFactory(
           "BoundSessionCookieRefreshService",
           ProfileSelections::Builder()
-              // TODO(b/279719658): Enable on OTR profiles after removing
-              // dependency on `ChromeSigninClient`.
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(UnexportableKeyServiceFactory::GetInstance());
 }
@@ -50,6 +48,7 @@ BoundSessionCookieRefreshServiceFactory::
 std::unique_ptr<KeyedService>
 BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // TODO(b/297000904): Enable on Dice profiles under a feature flag.
   if (!switches::IsBoundSessionCredentialsEnabled()) {
     return nullptr;
   }
