@@ -5354,7 +5354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.AppListUpdate.Latency" units="ms"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5367,7 +5367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.AppStream.LaunchAttempt" enum="AppStreamLaunchEntryPoint"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5378,8 +5378,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connection.Duration" units="ms"
-    expires_after="2024-01-31">
-  <owner>samchiu@chromium.org</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The duration of time the phone is in the state connected to eche signaling
@@ -5388,8 +5389,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connection.Result" enum="BooleanSuccess"
-    expires_after="2024-01-31">
-  <owner>samchiu@chromium.org</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Measures Eche connection success rate. This is recorded at the end of each
@@ -5401,7 +5403,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Eche.Connection.Result.FailureReason"
     enum="SecureChannelConnectionAttemptFailureReason"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -5412,8 +5414,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connectivity.Latency" units="ms"
-    expires_after="2024-01-31">
-  <owner>samchiu@chromium.org</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The duration of time the phone is in the state connecting to eche signaling
@@ -5422,7 +5425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.MultiDeviceFeatureState" enum="MultiDevice_FeatureState"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -5433,7 +5436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.NetworkCheck.FailureReason" enum="ConnectionFailReason"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>jonmann@google.com</owner>
   <owner>nayebi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5444,7 +5447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.NetworkCheck.Result" enum="BooleanSuccess"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>jonmann@google.com</owner>
   <owner>nayebi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5455,12 +5458,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.NotificationClicked" enum="EcheNotificationInteraction"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <obsolete>
     Deprecated as of 11/2022. Replaced with Eche.AppStream.LaunchAttempt
   </obsolete>
-  <owner>samchiu@chromium.org</owner>
-  <owner>andychou@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Events logged after the user interacts with a PhoneHub notification by
@@ -5469,9 +5472,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Onboarding.UserAction" enum="OnboardingUserActionMetric"
-    expires_after="2024-01-31">
-  <owner>paulzchen@google.com</owner>
-  <owner>andychou@google.com</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
   <owner>samchiu@google.com</owner>
   <summary>
     Events logged the user action in the Eche onboarding. Recorded when users
@@ -5480,9 +5483,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent" enum="StreamState"
-    expires_after="2024-01-31">
-  <owner>paulzchen@google.com</owner>
-  <owner>andychou@google.com</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Events logged in the Eche stream state. Records when a stream is started and
@@ -5492,10 +5495,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.ConnectionFail" enum="ConnectionFailReason"
-    expires_after="2024-01-31">
-  <owner>paulzchen@google.com</owner>
-  <owner>andychou@google.com</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Events logged the root cause of Eche connection failure. Records when
     signaling timeout on EcheSignaler or the tablet mode check on EcheTray.
@@ -5503,10 +5506,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.Duration.FromInitializeToClose" units="ms"
-    expires_after="2024-01-31">
-  <owner>paulzchen@google.com</owner>
-  <owner>andychou@google.com</owner>
+    expires_after="2024-07-10">
+  <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the elapsed time from when the stream is initializing to when the
     stream is closed before the stream doesn't started. Fires during the process
@@ -5516,7 +5519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.FromLauncher" enum="StreamState"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5528,7 +5531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.FromNotification" enum="StreamState"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5541,7 +5544,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.ConnectionFail"
-    enum="ConnectionFailReason" expires_after="2024-01-31">
+    enum="ConnectionFailReason" expires_after="2024-07-10">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5555,7 +5558,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.Result"
-    enum="StreamState" expires_after="2024-01-31">
+    enum="StreamState" expires_after="2024-07-10">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5568,7 +5571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.FromRecentApps" enum="StreamState"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -5580,7 +5583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.UniqueAppsStreamed.PerDay" units="count"
-    expires_after="2024-01-31">
+    expires_after="2024-07-10">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
