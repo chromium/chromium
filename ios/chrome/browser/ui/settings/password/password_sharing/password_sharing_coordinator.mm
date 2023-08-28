@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
 
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -19,7 +21,9 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using password_manager::FetchFamilyMembersRequestStatus;
 
@@ -42,6 +46,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 // Coordinator for family promo view.
 @property(nonatomic, strong) FamilyPromoCoordinator* familyPromoCoordinator;
+
+// Coordinator to display modal alerts to the user.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
 @end
 
@@ -93,6 +100,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
   [self stopFamilyPickerCoordinator];
   [self stopFamilyPromoCoordinator];
+  [self stopAlertCoordinator];
 }
 
 #pragma mark - FamilyPickerCoordinatorDelegate
@@ -145,12 +153,40 @@ using password_manager::FetchFamilyMembersRequestStatus;
     case FetchFamilyMembersRequestStatus::kUnknown:
     case FetchFamilyMembersRequestStatus::kNetworkError:
     case FetchFamilyMembersRequestStatus::kPendingRequest:
-      // TODO(crbug.com/1463882): Implement error view.
+      __weak __typeof(self) weakSelf = self;
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:^() {
+                               [weakSelf startAlertCoordinator];
+                             }];
       break;
   }
 }
 
 #pragma mark - Private
+
+- (void)startAlertCoordinator {
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR_TITLE);
+  NSString* message = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR);
+  [self.alertCoordinator stop];
+  self.alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message];
+  __weak __typeof(self) weakSelf = self;
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^() {
+                  [weakSelf stopAlertCoordinator];
+                  [weakSelf.delegate
+                      passwordSharingCoordinatorDidRemove:weakSelf];
+                }
+                 style:UIAlertActionStyleCancel];
+  [self.alertCoordinator start];
+}
 
 - (void)stopFamilyPickerCoordinator {
   [self.familyPickerCoordinator stop];
@@ -162,6 +198,11 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.familyPromoCoordinator stop];
   self.familyPromoCoordinator.delegate = nil;
   self.familyPromoCoordinator = nil;
+}
+
+- (void)stopAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end

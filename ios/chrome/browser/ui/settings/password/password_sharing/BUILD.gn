@@ -24,8 +24,11 @@ source_set("password_sharing") {
   deps = [
     ":password_sharing_ui",
     "//components/password_manager/core/browser",
+    "//components/strings",
     "//components/version_info:channel",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -34,6 +37,7 @@ source_set("password_sharing") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/common:common",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
   ]
 }
 
