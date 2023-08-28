@@ -65,6 +65,9 @@ class FileSystemAccessObserverHost
       ObserveCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
 
+  void DidResolveTransferTokenToUnobserve(
+      FileSystemAccessTransferTokenImpl* resolved_token);
+
   void GotObservation(
       absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                     std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,

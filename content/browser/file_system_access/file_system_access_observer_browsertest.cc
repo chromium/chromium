@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/test_timeouts.h"
 #include "build/buildflag.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -297,6 +298,105 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
 #endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveThenUnobserve) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // Calling unobserve() with a corresponding observe() should not crash.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "async function onChange(records, observer) {};"
+                     "const [file] = await self.showOpenFilePicker();"
+                     "const observer = new FileSystemObserver(onChange);"
+                     "await observer.observe(file);"
+                     "observer.unobserve(file); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveThenUnobserveUnrelated) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // Calling unobserve() with a handle unrelated to a corresponding observe()
+  // should not crash.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "async function onChange(records, observer) {};"
+                     "const [file] = await self.showOpenFilePicker();"
+                     "const root = await navigator.storage.getDirectory();"
+                     "const observer = new FileSystemObserver(onChange);"
+                     "await observer.observe(file);"
+                     "observer.unobserve(root); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       NoChangesAfterUnobserve) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // No changes should be received. The promise should be resolved after the
+  // setTimeout().
+  EXPECT_TRUE(
+      EvalJs(shell(),
+             JsReplace("(async () => {"
+                       "let promiseResolve, promiseReject;"
+                       "let promise = new Promise(function(resolve, reject) {"
+                       "  promiseResolve = resolve;"
+                       "  promiseReject = reject;"
+                       "});"
+                       "async function onChange(records, observer) {"
+                       "  promiseResolve(false);"  // Change was received. Bad!
+                       "};"
+                       "const [file] = await self.showOpenFilePicker();"
+                       "const observer = new FileSystemObserver(onChange);"
+                       "await observer.observe(file);"
+                       "observer.unobserve(file);"
+                       "const writable = await file.createWritable();"
+                       "await writable.write('blah');"
+                       "await writable.close();"
+                       "setTimeout(() => {"
+                       "  promiseResolve(true);"  // No changes received. Good!
+                       "}, $1);"
+                       "return await promise; })()"),
+             TestTimeouts::action_timeout().InMilliseconds())
+          .ExtractBool());
+}
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveBucketFS) {
@@ -312,6 +412,19 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveBucketFS) {
                        "await observer.observe(root); })()");
   EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
       << result.error;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       NothingToUnobserve) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // Calling unobserve() without a corresponding observe() should be a no-op.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "function onChange(records, observer) {};"
+                     "const observer = new FileSystemObserver(onChange);"
+                     "const root = await navigator.storage.getDirectory();"
+                     "observer.unobserve(root); })()"));
 }
 
 }  // namespace content

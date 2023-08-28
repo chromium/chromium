@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -120,8 +121,29 @@ void FileSystemAccessObserverHost::Unobserve(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(manager_);
 
-  // TODO(https://crbug.com/1019297): Implement this.
-  NOTIMPLEMENTED();
+  if (observations_.empty()) {
+    return;
+  }
+
+  manager_->ResolveTransferToken(
+      std::move(token),
+      base::BindOnce(
+          &FileSystemAccessObserverHost::DidResolveTransferTokenToUnobserve,
+          weak_factory_.GetWeakPtr()));
+}
+
+void FileSystemAccessObserverHost::DidResolveTransferTokenToUnobserve(
+    FileSystemAccessTransferTokenImpl* resolved_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!resolved_token) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1019297): Better handle overlapping observations.
+  base::EraseIf(observations_, [&](const auto& observation) {
+    return observation->handle_url() == resolved_token->url();
+  });
 }
 
 void FileSystemAccessObserverHost::GotObservation(

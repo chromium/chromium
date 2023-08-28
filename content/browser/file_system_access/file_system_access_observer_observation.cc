@@ -110,6 +110,12 @@ FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
 FileSystemAccessObserverObservation::~FileSystemAccessObserverObservation() =
     default;
 
+const storage::FileSystemURL& FileSystemAccessObserverObservation::handle_url()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return AsHandleBase(handle_).url();
+}
+
 void FileSystemAccessObserverObservation::OnChanges(
     const std::list<FileSystemAccessWatcherManager::Observation::Change>&
         changes) {
