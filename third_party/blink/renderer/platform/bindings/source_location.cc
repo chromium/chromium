@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
+#include "v8/include/v8-inspector-protocol.h"
 
 namespace blink {
 
