@@ -4,10 +4,17 @@
   },
   "event_trigger_data": [
     {
-      "trigger_data": "4",
+      "trigger_data": "3",
       "filters": {
         "a": [],
         "_lookback_window": 1
+      }
+    },
+    {
+      "trigger_data": "4",
+      "not_filters": {
+        "a": [],
+        "_lookback_window": 100
       }
     },
     {
@@ -15,6 +22,9 @@
       "filters": {
         "a": [],
         "_lookback_window": 10000
+      },
+      "not_filters": {
+        "_lookback_window": 1
       }
     }
   ],

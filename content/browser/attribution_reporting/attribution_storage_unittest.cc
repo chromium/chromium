@@ -2447,7 +2447,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
           false,
       },
       {
-          "negated filters match",
+          "negated filters false",
           attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/123,
               FilterPair(
@@ -2457,36 +2457,36 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
           false,
       },
       {
-          "negated filters match with lookback_window",
+          "negated filters false due to lookback_window",
           attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/123,
               FilterPair(
                   /*positive=*/{},
                   /*negative=*/attribution_reporting::FiltersForSourceType(
-                      SourceType::kNavigation,
+                      SourceType::kEvent,
                       /*lookback_window=*/kReportDelay))),
           false,
       },
       {
-          "negated filters mismatch due to lookback_window",
-          attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/123,
-              FilterPair(
-                  /*positive=*/{},
-                  /*negative=*/attribution_reporting::FiltersForSourceType(
-                      SourceType::kNavigation,
-                      /*lookback_window=*/kReportDelay -
-                          base::Microseconds(1)))),
-          true,
-      },
-      {
-          "negated filters mismatch",
+          "negated filters true",
           attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/123,
               FilterPair(
                   /*positive=*/{},
                   /*negative=*/attribution_reporting::FiltersForSourceType(
                       SourceType::kEvent))),
+          true,
+      },
+      {
+          "negated filters true with lookback_window",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              FilterPair(
+                  /*positive=*/{},
+                  /*negative=*/attribution_reporting::FiltersForSourceType(
+                      SourceType::kEvent,
+                      /*lookback_window=*/kReportDelay -
+                          base::Microseconds(1)))),
           true,
       },
       {
