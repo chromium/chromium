@@ -6127,7 +6127,10 @@
   {
     "name": "overlay-scrollbars",
     "owners": [ "chaopeng", "bokan", "input-dev" ],
-    "expiry_milestone": 114
+    // This flag is used by users to improve the accessibility of scroll bars
+    // and should not be allowed to expire until https://crbug.com/801671 is
+    // resolved.
+    "expiry_milestone": -1
   },
   {
     "name": "overlay-strategies",
