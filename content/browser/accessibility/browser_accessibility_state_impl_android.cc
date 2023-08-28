@@ -417,6 +417,18 @@ void BrowserAccessibilityStateImplAndroid::OnDisplayInversionEnabledChanged(
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
+void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
+    bool highContrastEnabled) {
+  // We need to call into GetInstanceForWeb on the UI thread,
+  // so ensure that we setup the notification on the correct thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
+  native_theme->SetPreferredContrast(
+      highContrastEnabled ? ui::NativeTheme::PreferredContrast::kMore
+                          : ui::NativeTheme::PreferredContrast::kNoPreference);
+  native_theme->NotifyOnNativeThemeUpdated();
+}
+
 void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {
   BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
 

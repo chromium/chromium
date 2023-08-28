@@ -187,6 +187,7 @@ public class AccessibilityState {
 
     private static boolean sExtraStateInitialized;
     private static boolean sDisplayInversionEnabled;
+    private static boolean sHighContrastEnabled;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
     private static final ApplicationStatus.ActivityStateListener sActivityStateListener =
@@ -196,6 +197,7 @@ public class AccessibilityState {
     private static ServicesObserver sAccessibilityServicesObserver;
     private static ServicesObserver sAnimationDurationScaleObserver;
     private static ServicesObserver sDisplayInversionEnabledObserver;
+    private static ServicesObserver sContrastLevelObserver;
     private static AccessibilityManager sAccessibilityManager;
 
     /**
@@ -321,6 +323,11 @@ public class AccessibilityState {
         return sDisplayInversionEnabled;
     }
 
+    public static boolean isHighContrastEnabled() {
+        if (!sExtraStateInitialized) updateExtraState();
+        return sHighContrastEnabled;
+    }
+
     @Deprecated
     public static boolean isAccessibilitySpeakPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
@@ -415,6 +422,14 @@ public class AccessibilityState {
                 Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED, 0);
         boolean isDisplayInversionEnabled = displayInversionEnabledSetting == 1;
         sDisplayInversionEnabled = isDisplayInversionEnabled;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            float contrastLevelSetting = Settings.Secure.getFloat(context.getContentResolver(),
+                    /*Settings.Secure.CONTRAST_LEVEL*/ "contrast_level", 0);
+            // The contrast level setting has 3 options, Standard (0), Medium (0.5) and High (1).
+            // If set to medium or high, then prefers-contrast should be more.
+            sHighContrastEnabled = contrastLevelSetting >= 0.5;
+        }
     }
 
     static void updateAccessibilityServices() {
@@ -705,8 +720,10 @@ public class AccessibilityState {
                 () -> AccessibilityStateJni.get().onAnimatorDurationScaleChanged());
         sAccessibilityServicesObserver = new ServicesObserver(
                 ThreadUtils.getUiThreadHandler(), AccessibilityState::processServicesChange);
-        sDisplayInversionEnabledObserver = new ServicesObserver(ThreadUtils.getUiThreadHandler(),
-                AccessibilityState::processDisplayInversionChange);
+        sDisplayInversionEnabledObserver = new ServicesObserver(
+                ThreadUtils.getUiThreadHandler(), AccessibilityState::processExtraStateChange);
+        sContrastLevelObserver = new ServicesObserver(
+                ThreadUtils.getUiThreadHandler(), AccessibilityState::processExtraStateChange);
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
@@ -733,6 +750,13 @@ public class AccessibilityState {
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED),
                 false, sDisplayInversionEnabledObserver);
+
+        // We want to be notified if the user changes their contrast settings.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            contentResolver.registerContentObserver(
+                    Settings.Secure.getUriFor(/*Settings.Secure.CONTRAST_LEVEL*/ "contrast_level"),
+                    false, sContrastLevelObserver);
+        }
     }
 
     public static void initializeOnStartup() {
@@ -758,7 +782,10 @@ public class AccessibilityState {
     private static void onActivityStateChange(Activity activity, int newState) {
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers and query state when Chrome is brought back to the foreground.
-        if (newState == ActivityState.RESUMED) processServicesChange();
+        if (newState == ActivityState.RESUMED) {
+            processServicesChange();
+            processExtraStateChange();
+        }
     }
 
     private static void onApplicationStateChange(int newState) {
@@ -777,10 +804,14 @@ public class AccessibilityState {
         contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
         contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
         contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            contentResolver.unregisterContentObserver(sContrastLevelObserver);
+        }
         sState = null;
         sInitialized = false;
         sExtraStateInitialized = false;
         sDisplayInversionEnabled = false;
+        sHighContrastEnabled = false;
         sAccessibilityManager = null;
     }
 
@@ -789,9 +820,10 @@ public class AccessibilityState {
         AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
     }
 
-    private static void processDisplayInversionChange() {
+    private static void processExtraStateChange() {
         updateExtraState();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
+        AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
     }
 
     private static class ServicesObserver extends ContentObserver {
@@ -817,6 +849,7 @@ public class AccessibilityState {
     interface Natives {
         void onAnimatorDurationScaleChanged();
         void onDisplayInversionEnabledChanged(boolean enabled);
+        void onContrastLevelChanged(boolean highContrastEnabled);
         void recordAccessibilityServiceInfoHistograms();
     }
 

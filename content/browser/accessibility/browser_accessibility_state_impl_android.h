@@ -22,6 +22,7 @@ class BrowserAccessibilityStateImplAndroid
   // ui::AccessibilityState::AccessibilityStateDelegate overrides
   void OnAnimatorDurationScaleChanged() override;
   void OnDisplayInversionEnabledChanged(bool enabled) override;
+  void OnContrastLevelChanged(bool highContrastEnabled) override;
   void RecordAccessibilityServiceInfoHistograms() override;
 
  protected:
