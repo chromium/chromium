@@ -1517,4 +1517,24 @@ public class BookmarkManagerMediatorTest {
         PropertyModel model = mModelList.get(0).model;
         assertFalse(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchWithWhitespace() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel propertyModel = mModelList.get(0).model;
+        Callback<String> searchTextCallback =
+                propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+        assertNotNull(searchTextCallback);
+
+        String queryWithWhitespace = " foo ";
+        searchTextCallback.onResult(queryWithWhitespace);
+        // Model queries should be trimmed, but the View property should still have whitespace.
+        assertEquals(
+                queryWithWhitespace, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        verify(mBookmarkModel).searchBookmarks(eq("foo"), anyInt());
+    }
 }

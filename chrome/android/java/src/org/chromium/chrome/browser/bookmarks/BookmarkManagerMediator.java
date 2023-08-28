@@ -840,7 +840,7 @@ class BookmarkManagerMediator
             String searchText = getCurrentSearchText();
             if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(searchText)) {
                 setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(
-                        searchText, getCurrentSearchPowerFilter()));
+                        searchText.trim(), getCurrentSearchPowerFilter()));
             }
         }
 
@@ -1375,7 +1375,7 @@ class BookmarkManagerMediator
     }
 
     private void onSearchTextChangeCallback(String searchText) {
-        searchText = searchText == null ? "" : searchText.trim();
+        searchText = searchText == null ? "" : searchText;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
             getSearchBoxPropertyModel().set(
