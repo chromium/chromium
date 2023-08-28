@@ -146,6 +146,11 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
       return;
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
+
+    if (page.on_manifest_fetch) {
+      std::move(page.on_manifest_fetch).Run();
+    }
+
     if (!bypass_service_worker_check && !page.has_service_worker) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -229,6 +234,11 @@ FakeWebContentsManager::FakeIconState::~FakeIconState() = default;
 FakeWebContentsManager::FakeWebContentsManager() = default;
 FakeWebContentsManager::~FakeWebContentsManager() = default;
 
+void FakeWebContentsManager::SetUrlLoaded(content::WebContents* web_contents,
+                                          const GURL& url) {
+  loaded_urls_[web_contents] = url;
+}
+
 std::unique_ptr<WebAppUrlLoader> FakeWebContentsManager::CreateUrlLoader() {
   return std::make_unique<FakeUrlLoader>(weak_factory_.GetWeakPtr());
 }
@@ -239,16 +249,16 @@ FakeWebContentsManager::CreateDataRetriever() {
 }
 
 void FakeWebContentsManager::SetIconState(
-    const GURL& gurl,
+    const GURL& icon_url,
     const FakeWebContentsManager::FakeIconState& icon_state) {
-  icon_state_[gurl] = icon_state;
+  icon_state_[icon_url] = icon_state;
 }
 FakeWebContentsManager::FakeIconState&
-FakeWebContentsManager::GetOrCreateIconState(const GURL& gurl) {
-  return icon_state_[gurl];
+FakeWebContentsManager::GetOrCreateIconState(const GURL& icon_url) {
+  return icon_state_[icon_url];
 }
-void FakeWebContentsManager::DeleteIconState(const GURL& gurl) {
-  icon_state_.erase(gurl);
+void FakeWebContentsManager::DeleteIconState(const GURL& icon_url) {
+  icon_state_.erase(icon_url);
 }
 
 void FakeWebContentsManager::SetPageState(

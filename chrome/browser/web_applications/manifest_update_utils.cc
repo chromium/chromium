@@ -52,6 +52,10 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result) {
       return os << "kSystemShutdown";
     case ManifestUpdateResult::kAppIdentityUpdateRejectedAndUninstalled:
       return os << "kAppIdentityUpdateRejectedAndUninstalled";
+    case ManifestUpdateResult::kAppIsIsolatedWebApp:
+      return os << "kAppIsIsolatedWebApp";
+    case ManifestUpdateResult::kCancelledDueToMainFrameNavigation:
+      return os << "kCancelledDueToMainFrameNavigation";
   }
 }
 
@@ -92,6 +96,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckResult stage) {
       return os << "kIconReadFromDiskFailed";
     case ManifestUpdateCheckResult::kWebContentsDestroyed:
       return os << "kWebContentsDestroyed";
+    case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
+      return os << "kCancelledDueToMainFrameNavigation";
   }
 }
 
@@ -119,6 +125,8 @@ ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
       return ManifestUpdateResult::kIconReadFromDiskFailed;
     case ManifestUpdateCheckResult::kWebContentsDestroyed:
       return ManifestUpdateResult::kWebContentsDestroyed;
+    case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
+      return ManifestUpdateResult::kCancelledDueToMainFrameNavigation;
   }
 }
 

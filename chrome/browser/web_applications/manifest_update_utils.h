@@ -39,7 +39,9 @@ enum class ManifestUpdateResult {
   // kAppAssociationsUpdated = 14,
   kSystemShutdown = 15,
   kAppIdentityUpdateRejectedAndUninstalled = 16,
-  kMaxValue = kAppIdentityUpdateRejectedAndUninstalled,
+  kAppIsIsolatedWebApp = 17,
+  kCancelledDueToMainFrameNavigation = 18,
+  kMaxValue = kCancelledDueToMainFrameNavigation,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result);
@@ -67,6 +69,7 @@ enum class ManifestUpdateCheckResult {
   kIconDownloadFailed,
   kIconReadFromDiskFailed,
   kWebContentsDestroyed,
+  kCancelledDueToMainFrameNavigation,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckResult result);

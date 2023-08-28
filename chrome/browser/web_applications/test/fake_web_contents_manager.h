@@ -63,6 +63,8 @@ class FakeWebContentsManager {
     webapps::InstallableStatusCode error_code;
     GURL favicon_url;
     std::vector<SkBitmap> favicon;
+
+    base::OnceClosure on_manifest_fetch;
   };
 
   // State used to represent an icon at a url, which is retrieved through
@@ -81,14 +83,17 @@ class FakeWebContentsManager {
   FakeWebContentsManager();
   ~FakeWebContentsManager();
 
+  void SetUrlLoaded(content::WebContents* web_contents, const GURL& url);
+
   std::unique_ptr<WebAppUrlLoader> CreateUrlLoader();
   std::unique_ptr<WebAppDataRetriever> CreateDataRetriever();
+  std::unique_ptr<WebAppIconDownloader> CreateIconDownloader();
 
   // Set the behavior for calls to `GetIcons` from wrappers returned by this
   // fake class.
-  void SetIconState(const GURL& gurl, const FakeIconState& icon_state);
-  FakeIconState& GetOrCreateIconState(const GURL& gurl);
-  void DeleteIconState(const GURL& gurl);
+  void SetIconState(const GURL& icon_url, const FakeIconState& icon_state);
+  FakeIconState& GetOrCreateIconState(const GURL& icon_url);
+  void DeleteIconState(const GURL& icon_url);
 
   // Set the behavior for calls to `LoadUrl`, `GetWebAppInstallInfo`, and
   // `CheckInstallabilityAndRetrieveManifest`  from wrappers returned by this
