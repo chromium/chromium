@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
@@ -33,7 +34,8 @@ class BoundSessionParamsStorage;
 
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
-      public BoundSessionCookieController::Delegate {
+      public BoundSessionCookieController::Delegate,
+      public content::StoragePartition::DataRemovalObserver {
  public:
   explicit BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
@@ -96,6 +98,13 @@ class BoundSessionCookieRefreshServiceImpl
   void OnBoundSessionThrottlerParamsChanged() override;
   void TerminateSession() override;
 
+  // StoragePartition::DataRemovalObserver:
+  void OnStorageKeyDataCleared(
+      uint32_t remove_mask,
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      const base::Time begin,
+      const base::Time end) override;
+
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
@@ -113,6 +122,10 @@ class BoundSessionCookieRefreshServiceImpl
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
   RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater_;
+
+  base::ScopedObservation<content::StoragePartition,
+                          content::StoragePartition::DataRemovalObserver>
+      data_removal_observation_{this};
 
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
 

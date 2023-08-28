@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -27,6 +29,9 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
@@ -160,6 +165,20 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
             base::RepeatingClosure());
   }
 
+  void ClearOriginData(uint32_t remove_mask,
+                       const url::Origin& origin,
+                       base::Time begin = base::Time::Now(),
+                       base::Time end = base::Time::Now()) {
+    CHECK(cookie_refresh_service_);
+    cookie_refresh_service_->OnStorageKeyDataCleared(
+        remove_mask,
+        base::BindLambdaForTesting(
+            [&origin](const blink::StorageKey& storage_key) {
+              return storage_key.MatchesOriginForTrustedStorageDeletion(origin);
+            }),
+        begin, end);
+  }
+
   void ResetCookieRefreshService() { cookie_refresh_service_.reset(); }
 
   FakeBoundSessionCookieController* cookie_controller() {
@@ -202,12 +221,15 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     params.set_site(kTestGaiaURL.spec());
     params.set_session_id(kTestSessionId);
     params.set_wrapped_key(kWrappedKey);
+    *params.mutable_creation_time() =
+        bound_session_credentials::TimeToTimestamp(base::Time::Now());
     return params;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable prefs_;
   content::TestStoragePartition storage_partition_;
   std::unique_ptr<BoundSessionCookieRefreshServiceImpl> cookie_refresh_service_;
@@ -448,4 +470,55 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   VerifyBoundSession();
   // TODO(http://b/286222327): check bound session params once they are
   // properly passed to controller.
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest, ClearMatchingData) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
+
+  ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
+                  url::Origin::Create(kTestGaiaURL));
+  VerifyNoBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       ClearMatchingDataTypeMismatch) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
+
+  ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE,
+                  url::Origin::Create(kTestGaiaURL));
+  VerifyBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       ClearMatchingDataOriginMismatch) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
+
+  ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
+                  url::Origin::Create(GURL("https://example.org")));
+  VerifyBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       ClearMatchingDataOriginMismatchSuborigin) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
+
+  ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
+                  url::Origin::Create(GURL("https://accounts.google.com")));
+  VerifyBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       ClearMatchingDataCreationTimeMismatch) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
+
+  ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
+                  url::Origin::Create(kTestGaiaURL),
+                  base::Time::Now() - base::Seconds(5),
+                  base::Time::Now() - base::Seconds(3));
+  VerifyBoundSession();
 }

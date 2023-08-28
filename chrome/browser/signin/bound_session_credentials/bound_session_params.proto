@@ -25,6 +25,11 @@ message Credential {
   }
 }
 
+message Timestamp {
+  // Represents microseconds since the Windows epoch.
+  required int64 microseconds = 1;
+}
+
 // Set of parameters for a single device bound session.
 message BoundSessionParams {
   // Site on which the bound session is running.
@@ -37,4 +42,6 @@ message BoundSessionParams {
   optional bytes wrapped_key = 3;
   // List of credentials that the browser needs to refresh periodically.
   repeated Credential credentials = 4;
+  // Creation time of the session.
+  optional Timestamp creation_time = 5;
 }

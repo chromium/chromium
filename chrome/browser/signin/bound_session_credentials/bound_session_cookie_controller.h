@@ -61,6 +61,7 @@ class BoundSessionCookieController {
 
   const GURL& url() const { return url_; }
   const std::string& session_id() const { return session_id_; }
+  base::Time session_creation_time() const { return session_creation_time_; }
   base::Time min_cookie_expiration_time();
   chrome::mojom::BoundSessionThrottlerParamsPtr
   bound_session_throttler_params();
@@ -68,6 +69,7 @@ class BoundSessionCookieController {
  protected:
   const GURL url_;
   const std::string session_id_;
+  const base::Time session_creation_time_;
   // Map from cookie name to cookie expiration time, it is expected to have two
   // elements the 1P and 3P cookies.
   // Cookie expiration time is reduced by threshold to guarantee cookie will be

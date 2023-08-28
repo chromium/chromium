@@ -19,6 +19,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace {
 const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
@@ -34,6 +36,8 @@ BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker) {
   CHECK(session_params_storage_);
+  CHECK(storage_partition_);
+  data_removal_observation_.Observe(storage_partition_);
 }
 
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
@@ -154,6 +158,40 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
   cookie_controller_.reset();
   session_params_storage_->ClearParams();
   UpdateAllRenderers();
+}
+
+void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
+    uint32_t remove_mask,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    const base::Time begin,
+    const base::Time end) {
+  // No active session is running. Nothing to terminate.
+  if (!cookie_controller_) {
+    return;
+  }
+
+  // Only terminate a session if cookies are cleared.
+  // TODO(b/296372836): introduce a specific data type for bound sessions.
+  if (!(remove_mask & content::StoragePartition::REMOVE_DATA_MASK_COOKIES)) {
+    return;
+  }
+
+  // Only terminate a session if it was created within the specified time range.
+  base::Time session_creation_time =
+      cookie_controller_->session_creation_time();
+  if (session_creation_time < begin || session_creation_time > end) {
+    return;
+  }
+
+  // Only terminate a session if its URL matches `storage_key_matcher`.
+  // Bound sessions are only supported in first-party contexts, so it's
+  // acceptable to use `blink::StorageKey::CreateFirstParty()`.
+  if (!storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(cookie_controller_->url())))) {
+    return;
+  }
+
+  TerminateSession();
 }
 
 std::unique_ptr<BoundSessionCookieController>

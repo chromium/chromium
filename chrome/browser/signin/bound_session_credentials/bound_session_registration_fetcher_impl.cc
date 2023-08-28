@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -35,6 +36,8 @@ bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
   params.set_site(url);
   params.set_session_id(session_id);
   params.set_wrapped_key(wrapped_key);
+  *params.mutable_creation_time() =
+      bound_session_credentials::TimeToTimestamp(base::Time::Now());
   return params;
 }
 }  // namespace
