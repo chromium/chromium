@@ -101,13 +101,5 @@ interface CastContentWindow {
 
   // Enables touch input to be routed to the window's WebContents.
   EnableTouchInput(bool enabled);
-
-  // Provide activity-related metadata. This data should include information
-  // that is common for all activities, such as type.
-  SetActivityContext(mojo_base.mojom.Value context);
-
-  // Use this to stash custom data for this class. This data will be visible to
-  // the window manager.
-  SetHostContext(mojo_base.mojom.Value context);
 };
 

@@ -160,10 +160,6 @@ void CastContentWindowAura::EnableTouchInput(bool enabled) {
 void CastContentWindowAura::RequestVisibility(
     VisibilityPriority visibility_priority) {}
 
-void CastContentWindowAura::SetActivityContext(base::Value activity_context) {}
-
-void CastContentWindowAura::SetHostContext(base::Value host_context) {}
-
 void CastContentWindowAura::OnWindowVisibilityChanged(aura::Window* window,
                                                       bool visible) {
   if (visible) {

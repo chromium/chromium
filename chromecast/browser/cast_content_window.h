@@ -58,8 +58,6 @@ class CastContentWindow : public mojom::CastContentWindow,
   void RevokeScreenAccess() override = 0;
   void RequestVisibility(VisibilityPriority visibility_priority) override = 0;
   void EnableTouchInput(bool enabled) override = 0;
-  void SetActivityContext(base::Value activity_context) override = 0;
-  void SetHostContext(base::Value host_context) override = 0;
 
   // mojom::ActivityWindow implementation:
   void Show() override;

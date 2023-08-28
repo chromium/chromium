@@ -133,11 +133,6 @@ void CastContentWindowAndroid::OnActivityStopped(
 void CastContentWindowAndroid::RequestVisibility(
     VisibilityPriority visibility_priority) {}
 
-void CastContentWindowAndroid::SetActivityContext(
-    base::Value activity_context) {}
-
-void CastContentWindowAndroid::SetHostContext(base::Value host_context) {}
-
 void CastContentWindowAndroid::OnVisibilityChange(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
