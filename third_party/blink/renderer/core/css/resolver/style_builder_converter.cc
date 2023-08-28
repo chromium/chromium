@@ -1882,9 +1882,7 @@ ScopedCSSName* StyleBuilderConverter::ConvertAnchorDefault(
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kImplicit);
     return nullptr;
   }
-  const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
-  return MakeGarbageCollected<ScopedCSSName>(custom_ident.Value(),
-                                             custom_ident.GetTreeScope());
+  return ConvertCustomIdent(state, value);
 }
 
 ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorName(
