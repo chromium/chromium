@@ -327,6 +327,10 @@ class SkiaOutputSurfaceImplOnGpu
     return context_state_->graphite_context();
   }
 
+  skgpu::graphite::Recorder* graphite_recorder() const {
+    return context_state_->gpu_main_graphite_recorder();
+  }
+
   bool is_using_vulkan() const {
     return !!vulkan_context_provider_ &&
            gpu_preferences_.gr_context_type == gpu::GrContextType::kVulkan;

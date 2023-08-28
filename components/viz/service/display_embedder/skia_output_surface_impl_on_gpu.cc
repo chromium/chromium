@@ -1036,21 +1036,34 @@ bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
     gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
     GrGpuFinishedProc finished_proc,
     GrGpuFinishedContext finished_context) {
-  GrFlushInfo flush_info;
-  flush_info.fNumSemaphores = end_semaphores.size();
-  flush_info.fSignalSemaphores = end_semaphores.data();
-  flush_info.fFinishedProc = finished_proc;
-  flush_info.fFinishedContext = finished_context;
-  gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
-  GrSemaphoresSubmitted flush_result =
-      surface ? gr_context()->flush(surface, flush_info)
-              : gr_context()->flush(flush_info);
-  if (scoped_write_access) {
-    scoped_write_access->ApplyBackendSurfaceEndState();
+  if (gr_context()) {
+    GrFlushInfo flush_info;
+    flush_info.fNumSemaphores = end_semaphores.size();
+    flush_info.fSignalSemaphores = end_semaphores.data();
+    flush_info.fFinishedProc = finished_proc;
+    flush_info.fFinishedContext = finished_context;
+    gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
+                                          &flush_info);
+    GrSemaphoresSubmitted flush_result =
+        surface ? gr_context()->flush(surface, flush_info)
+                : gr_context()->flush(flush_info);
+    if (scoped_write_access) {
+      scoped_write_access->ApplyBackendSurfaceEndState();
+    }
+    return flush_result == GrSemaphoresSubmitted::kYes ||
+           end_semaphores.empty();
   }
-  return flush_result == GrSemaphoresSubmitted::kYes || end_semaphores.empty();
+
+  CHECK(graphite_recorder());
+  auto recording = graphite_recorder()->snap();
+  if (recording) {
+    skgpu::graphite::InsertRecordingInfo info = {};
+    info.fRecording = recording.get();
+    return graphite_context()->insertRecording(info);
+  }
+  return false;
 }
 
 SkiaOutputSurfaceImplOnGpu::MailboxAccessData::MailboxAccessData() = default;
@@ -1643,7 +1656,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     paint.setColor(SK_ColorBLACK);
     paint.setBlendMode(SkBlendMode::kDstATop);
     surface->getCanvas()->drawPaint(paint);
-    skgpu::ganesh::Flush(surface);
+    if (!FlushSurface(surface, end_semaphores, scoped_access.get())) {
+      FailedSkiaFlush("CopyOutputRGBA need_discard_alpha flush");
+      return;
+    }
   }
 
   absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
