@@ -28,6 +28,10 @@ namespace policy {
 class ComponentUpdaterPolicyTest;
 }
 
+namespace screen_ai {
+class ScreenAIDownloaderNonChromeOS;
+}
+
 namespace speech {
 class SodaInstallerImpl;
 }
@@ -184,6 +188,7 @@ class ComponentUpdateService {
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
+  friend class screen_ai::ScreenAIDownloaderNonChromeOS;
   friend class speech::SodaInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);

@@ -94,6 +94,12 @@ base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
   return screen_ai::GetRelativeInstallDir();
 }
 
+// static
+std::string ScreenAIComponentInstallerPolicy::GetOmahaId() {
+  return crx_file::id_util::GenerateIdFromHash(
+      kScreenAIPublicKeySHA256, std::size(kScreenAIPublicKeySHA256));
+}
+
 void ScreenAIComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kScreenAIPublicKeySHA256,
@@ -114,8 +120,12 @@ void ScreenAIComponentInstallerPolicy::DeleteComponent() {
   base::FilePath component_binary_path =
       screen_ai::GetLatestComponentBinaryPath();
 
-  if (!component_binary_path.empty())
+  if (!component_binary_path.empty()) {
     base::DeletePathRecursively(component_binary_path.DirName());
+    screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
+        /*install=*/false,
+        /*successful=*/true);
+  }
 }
 
 void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
