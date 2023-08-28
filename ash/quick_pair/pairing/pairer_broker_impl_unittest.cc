@@ -43,7 +43,6 @@ constexpr char kTestDeviceAddress2[] = "test_address_2";
 constexpr char kDeviceName[] = "test_device_name";
 constexpr char kBluetoothCanonicalizedAddress[] = "0C:0E:4C:C8:05:08";
 constexpr base::TimeDelta kCancelPairingRetryDelay = base::Seconds(1);
-constexpr base::TimeDelta kRetryHandshakeDelay = base::Seconds(1);
 
 const char kFastPairRetryCountMetricName[] =
     "Bluetooth.ChromeOS.FastPair.PairRetry.Count";
@@ -823,18 +822,14 @@ TEST_F(PairerBrokerImplTest, ReuseHandshake_Retroactive) {
 }
 
 TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Initial) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairHandshakeLongTermRefactor};
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairInitial);
   pairer_broker_->PairDevice(device_);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-  FakeFastPairHandshakeLookup::GetFakeInstance()->Clear();
-  task_environment()->FastForwardBy(kRetryHandshakeDelay);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-  FakeFastPairHandshakeLookup::GetFakeInstance()->Clear();
-  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
 
   EXPECT_EQ(device_paired_count_, 0);
@@ -846,18 +841,14 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Initial) {
 }
 
 TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairHandshakeLongTermRefactor};
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
   pairer_broker_->PairDevice(device_);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-  FakeFastPairHandshakeLookup::GetFakeInstance()->Clear();
-  task_environment()->FastForwardBy(kRetryHandshakeDelay);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-  FakeFastPairHandshakeLookup::GetFakeInstance()->Clear();
-  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
 
   EXPECT_EQ(device_paired_count_, 0);
@@ -866,22 +857,17 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
                 kInitializePairingProcessFailureReasonSubsequent,
                 PairFailure::kCreateGattConnection),
             1);
-  histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 1);
 }
 
 TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairHandshakeLongTermRefactor};
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
   pairer_broker_->PairDevice(device_);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-  FakeFastPairHandshakeLookup::GetFakeInstance()->Clear();
-  task_environment()->FastForwardBy(kRetryHandshakeDelay);
-  InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
-  FakeFastPairHandshakeLookup::GetFakeInstance()->Clear();
-  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   InvokeHandshakeLookupCallbackFailure(PairFailure::kCreateGattConnection);
 
   EXPECT_EQ(device_paired_count_, 0);

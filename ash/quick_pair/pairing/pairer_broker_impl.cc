@@ -231,7 +231,8 @@ void PairerBrokerImpl::OnHandshakeComplete(
 void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
                                           PairFailure failure) {
   if (num_handshake_attempts_[device->metadata_id()] <
-      kMaxNumHandshakeAttempts) {
+          kMaxNumHandshakeAttempts &&
+      !ash::features::IsFastPairHandshakeLongTermRefactorEnabled()) {
     // Directly calling CreateHandshake() from here will cause the new
     // handshake to be nested inside the failed handshake. Use a timer to give
     // the failed handshake time to cleanup and avoid nesting.
