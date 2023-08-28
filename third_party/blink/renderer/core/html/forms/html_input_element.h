@@ -112,8 +112,9 @@ class CORE_EXPORT HTMLInputElement
   // isRadio, isFile.  If you want to check the input type, you may use
   // |input->type() == input_type_names::kImage|, etc.
 
-  // Returns whether this field is or has ever been a password field so that
-  // its value can be protected from memorization by autofill or keyboards.
+  // Returns whether this field is or has ever been a password field, or if
+  // autofill classified the field as password by predictions, so that its value
+  // can be protected from memorization by autofill or keyboards.
   bool HasBeenPasswordField() const;
 
   bool IsCheckable() const;
