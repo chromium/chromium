@@ -4,15 +4,32 @@
 
 #include "ui/gfx/image/image_skia_operations.h"
 
+#include <vector>
+
+#include "build/blink_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "ui/base/resource/resource_scale_factor.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace gfx {
 namespace {
 
 TEST(ImageSkiaOperationsTest, ResizeFailure) {
+#if BUILDFLAG(IS_IOS)
+  // Ensure we have supported scale factors. iOS may not support k100Percent
+  // like other platforms, so we force support for 100 and 200 percent here.
+  std::vector<ui::ResourceScaleFactor> supported_factors;
+  supported_factors.push_back(ui::k100Percent);
+  supported_factors.push_back(ui::k200Percent);
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
+#endif  // BUILDFLAG(IS_IOS)
+
   ImageSkia image(ImageSkiaRep(gfx::Size(10, 10), 1.f));
 
   // Try to resize to empty. This isn't a valid resize and fails gracefully.

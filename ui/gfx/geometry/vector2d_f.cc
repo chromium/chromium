@@ -71,7 +71,7 @@ Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale) {
 }
 
 float Vector2dF::SlopeAngleRadians() const {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // atan2f(...) returns less accurate results on Mac.
   // 3.1415925 vs. 3.14159274 for atan2f(0, -50) as an example.
   return static_cast<float>(
