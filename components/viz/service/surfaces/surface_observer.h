@@ -43,9 +43,19 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
   //
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
   // Should return true if this causes a Display to be damaged.
+  enum class HandleInteraction {
+    // Surface is damaged due to user interaction (e.g., a frame activation with
+    // scrolling).
+    kYes,
+    // Surface is no longer interactive (e.g. `DidNotProduceFrame` or frame
+    // activation with no scrolling).
+    kNo,
+    // No change to the interaction state (e.g. `CopyOutputRequest` submission).
+    kNoChange,
+  };
   virtual bool OnSurfaceDamaged(const SurfaceId& surface_id,
                                 const BeginFrameAck& ack,
-                                bool is_handling_interaction);
+                                HandleInteraction handle_interaction);
 
   // Called when a Surface's CompositorFrame producer has received a BeginFrame
   // and, thus, is expected to produce damage soon.

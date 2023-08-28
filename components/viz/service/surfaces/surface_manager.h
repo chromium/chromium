@@ -110,7 +110,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
   bool SurfaceModified(const SurfaceId& surface_id,
                        const BeginFrameAck& ack,
-                       bool is_handling_interaction);
+                       SurfaceObserver::HandleInteraction handle_interaction);
 
   // Called when a surface has an active frame for the first time.
   void FirstSurfaceActivation(const SurfaceInfo& surface_info);

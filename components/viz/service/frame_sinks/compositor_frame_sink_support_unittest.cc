@@ -1473,6 +1473,7 @@ TEST_F(CompositorFrameSinkSupportTest,
            CopyOutputRequest::ResultFormat::RGBA,
            CopyOutputRequest::ResultDestination::kSystemMemory,
            base::BindOnce(StubResultCallback))});
+  EXPECT_TRUE(surface_observer_.IsSurfaceDamaged(id1));
 
   // Send an exact CopyOutputRequest for Surface1. It can only be picked up by
   // Surface1.
@@ -1483,6 +1484,7 @@ TEST_F(CompositorFrameSinkSupportTest,
            CopyOutputRequest::ResultDestination::kSystemMemory,
            base::BindOnce(StubResultCallback)),
        /*capture_exact_id=*/true});
+  EXPECT_TRUE(surface_observer_.IsSurfaceDamaged(id2));
 
   // Surface2 picks up the non-exact CopyOutputRequest.
   GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();

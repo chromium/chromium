@@ -49,8 +49,10 @@ class TestDisplayDamageTracker : public DisplayDamageTracker {
                              bool is_handling_interaction = false) {
     if (display_damaged)
       undrawn_surfaces_.insert(surface_id);
-    ProcessSurfaceDamage(surface_id, ack, display_damaged,
-                         is_handling_interaction);
+    HandleInteraction interaction = is_handling_interaction
+                                        ? HandleInteraction::kYes
+                                        : HandleInteraction::kNo;
+    ProcessSurfaceDamage(surface_id, ack, display_damaged, interaction);
   }
   void ClearUndrawnSurfaces() { undrawn_surfaces_.clear(); }
   void SetRootFrameMissingForTest(bool missing) {

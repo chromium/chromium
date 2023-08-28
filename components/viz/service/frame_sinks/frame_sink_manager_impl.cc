@@ -362,15 +362,47 @@ void FrameSinkManagerImpl::RequestCopyOfOutput(
     std::unique_ptr<CopyOutputRequest> request,
     bool capture_exact_surface_id) {
   TRACE_EVENT0("viz", "FrameSinkManagerImpl::RequestCopyOfOutput");
+  PendingCopyOutputRequest pending_request(
+      surface_id.local_surface_id(), SubtreeCaptureId(), std::move(request),
+      capture_exact_surface_id);
+  // The exact request can be picked up by the targeted surface right away,
+  // instead of being queued up in the `CompositorFrameSinkSupport`. In some
+  // cases (e.g., a request issued against the old surface after the old
+  // renderer tearing down the frame sink) when the request arrives the frame
+  // sink is already unregistered, but the targeted surface is still kept alive.
+  if (capture_exact_surface_id) {
+    auto* exact_surface = surface_manager_.GetSurfaceForId(surface_id);
+    if (exact_surface) {
+      exact_surface->RequestCopyOfOutput(std::move(pending_request));
+
+      BeginFrameAck ack;
+      ack.has_damage = true;
+      surface_manager_.SurfaceModified(
+          surface_id, ack, SurfaceObserver::HandleInteraction::kNoChange);
+      return;
+    }
+  }
+
+  // For the exact request yet to have a surface, or the non-exact request,
+  // queue them up in the matching `CompositorFrameSinkSupport`.
   auto it = support_map_.find(surface_id.frame_sink_id());
   if (it == support_map_.end()) {
-    // |request| will send an empty result when it goes out of scope.
+    if (capture_exact_surface_id) {
+      // It is extremely rare for the browser to issue a copy request against
+      // its embedded `SurfaceId` before the surface exists (submitting a
+      // request before the GPU draws anything) or before the frame sink exists
+      // (submitting a request before the renderer loads the document). We don't
+      // want to crash the GPU in either cases. The ERROR log shows up in
+      // "chrome://gpu".
+      LOG(ERROR) << "The browser issued an exact CopyOutputRequest for "
+                 << surface_id
+                 << " but there is no such surface or a frame sink.";
+    }
+    // `pending_request` will send an empty result when it goes out of scope.
     return;
   }
 
-  it->second->RequestCopyOfOutput({surface_id.local_surface_id(),
-                                   SubtreeCaptureId(), std::move(request),
-                                   capture_exact_surface_id});
+  it->second->RequestCopyOfOutput(std::move(pending_request));
 }
 
 void FrameSinkManagerImpl::DestroyFrameSinkBundle(const FrameSinkBundleId& id) {

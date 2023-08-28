@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -52,6 +53,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/did_commit_navigation_interceptor.h"
+#include "content/test/render_document_feature.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -1744,6 +1746,11 @@ class RenderWidgetHostViewCopyFromSurfaceBrowserTest
     } else {
       scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
     }
+
+    // Enable `RenderDocument` to guarantee renderer/RFH swap for cross-site
+    // navigations.
+    InitAndEnableRenderDocumentFeature(&scoped_feature_list_render_document_,
+                                       RenderDocumentFeatureFullyEnabled()[0]);
   }
 
   void SetUpOnMainThread() override {
@@ -1761,6 +1768,7 @@ class RenderWidgetHostViewCopyFromSurfaceBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_render_document_;
 };
 
 IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
@@ -1841,9 +1849,9 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
     auto* request = NavigationRequest::From(handle);
     request->set_ready_to_commit_callback_for_testing(base::BindOnce(
         [](RenderWidgetHostView* old_view,
-           base::OnceCallback<bool()> is_same_proc_nav,
+           base::OnceCallback<bool()> renderer_swapped,
            base::RepeatingClosure resume) {
-          ASSERT_FALSE(std::move(is_same_proc_nav).Run());
+          ASSERT_TRUE(std::move(renderer_swapped).Run());
           ASSERT_TRUE(old_view);
           static_cast<RenderWidgetHostViewBase*>(old_view)
               ->CopyFromExactSurface(gfx::Rect(), gfx::Size(),
@@ -1852,8 +1860,14 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
         },
         request->frame_tree_node()->current_frame_host()->GetView(),
         // The request must outlive its own callback.
-        base::BindOnce(&NavigationRequest::IsSameProcess,
-                       base::Unretained(request)),
+        base::BindOnce(
+            base::BindLambdaForTesting([](NavigationRequest* request) {
+              return request->GetRenderFrameHost() !=
+                     request->frame_tree_node()
+                         ->render_manager()
+                         ->current_frame_host();
+            }),
+            base::Unretained(request)),
         run_loop_.QuitClosure()));
   }
 

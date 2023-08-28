@@ -20,6 +20,18 @@ BASE_FEATURE(kSkipBeginFramesFromOtherDisplays,
              "SkipBeginFramesFromOtherDisplays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+bool ShouldAccumulateInteraction(
+    SurfaceObserver::HandleInteraction handle_interaction) {
+  switch (handle_interaction) {
+    case SurfaceObserver::HandleInteraction::kYes:
+      return true;
+    case SurfaceObserver::HandleInteraction::kNo:
+      return false;
+    case SurfaceObserver::HandleInteraction::kNoChange:
+      return false;
+  }
+}
+
 }  // namespace
 
 DisplayDamageTracker::DisplayDamageTracker(SurfaceManager* surface_manager,
@@ -65,7 +77,10 @@ void DisplayDamageTracker::SetNewRootSurface(const SurfaceId& root_surface_id) {
 void DisplayDamageTracker::SetRootSurfaceDamaged() {
   BeginFrameAck ack;
   ack.has_damage = true;
-  ProcessSurfaceDamage(root_surface_id_, ack, true, false);
+  // Since we're damaging to redraw the last activated frame, there shouldn't be
+  // any change in interaction state.
+  ProcessSurfaceDamage(root_surface_id_, ack, true,
+                       HandleInteraction::kNoChange);
 }
 
 bool DisplayDamageTracker::IsRootSurfaceValid() const {
@@ -79,14 +94,16 @@ void DisplayDamageTracker::DisplayResized() {
   NotifyDisplayDamaged(root_surface_id_);
 }
 
-void DisplayDamageTracker::ProcessSurfaceDamage(const SurfaceId& surface_id,
-                                                const BeginFrameAck& ack,
-                                                bool display_damaged,
-                                                bool is_handling_interaction) {
+void DisplayDamageTracker::ProcessSurfaceDamage(
+    const SurfaceId& surface_id,
+    const BeginFrameAck& ack,
+    bool display_damaged,
+    HandleInteraction handle_interaction) {
   TRACE_EVENT1("viz", "DisplayDamageTracker::SurfaceDamaged", "surface_id",
                surface_id.ToString());
 
-  has_surface_damage_due_to_interaction_ |= is_handling_interaction;
+  has_surface_damage_due_to_interaction_ |=
+      ShouldAccumulateInteraction(handle_interaction);
 
   if (surface_id == root_surface_id_)
     expecting_root_surface_damage_because_of_resize_ = false;
@@ -180,9 +197,10 @@ void DisplayDamageTracker::OnSurfaceMarkedForDestruction(
   NotifyPendingSurfacesChanged();
 }
 
-bool DisplayDamageTracker::OnSurfaceDamaged(const SurfaceId& surface_id,
-                                            const BeginFrameAck& ack,
-                                            bool is_handling_interaction) {
+bool DisplayDamageTracker::OnSurfaceDamaged(
+    const SurfaceId& surface_id,
+    const BeginFrameAck& ack,
+    HandleInteraction handle_interaction) {
   bool display_damaged = false;
   if (ack.has_damage) {
     display_damaged =
@@ -197,8 +215,7 @@ bool DisplayDamageTracker::OnSurfaceDamaged(const SurfaceId& surface_id,
   if (surface_id == root_surface_id_)
     UpdateRootFrameMissing();
 
-  ProcessSurfaceDamage(surface_id, ack, display_damaged,
-                       is_handling_interaction);
+  ProcessSurfaceDamage(surface_id, ack, display_damaged, handle_interaction);
 
   return display_damaged;
 }

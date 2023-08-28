@@ -522,9 +522,11 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   BeginFrameAck modified_ack(ack);
   modified_ack.has_damage = false;
 
+  // If the client doesn't produce a frame, we assume it's no longer interactive
+  // for scheduling.
   if (last_activated_surface_id_.is_valid())
     surface_manager_->SurfaceModified(last_activated_surface_id_, modified_ack,
-                                      false);
+                                      SurfaceObserver::HandleInteraction::kNo);
 
   if (begin_frame_source_) {
     begin_frame_source_->DidFinishFrame(this);
@@ -1116,7 +1118,9 @@ void CompositorFrameSinkSupport::RequestCopyOfOutput(
   if (last_activated_surface_id_.is_valid()) {
     BeginFrameAck ack;
     ack.has_damage = true;
-    surface_manager_->SurfaceModified(last_activated_surface_id_, ack, false);
+    surface_manager_->SurfaceModified(
+        last_activated_surface_id_, ack,
+        SurfaceObserver::HandleInteraction::kNoChange);
   }
 }
 
@@ -1415,6 +1419,11 @@ void CompositorFrameSinkSupport::ClearAllPendingCopyOutputRequests() {
       auto* target_surface = surface_manager_->GetSurfaceForId(target_id);
       if (target_surface) {
         target_surface->RequestCopyOfOutput(std::move(request));
+
+        BeginFrameAck ack;
+        ack.has_damage = true;
+        surface_manager_->SurfaceModified(
+            target_id, ack, SurfaceObserver::HandleInteraction::kNoChange);
       } else {
         // We might not have a `Surface` if the renderer is crashed, or too busy
         // to even submit a CompositorFrame (e.g., low end Android devices). In

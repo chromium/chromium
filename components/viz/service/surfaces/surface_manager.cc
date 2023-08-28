@@ -36,6 +36,15 @@ namespace {
 
 constexpr base::TimeDelta kExpireInterval = base::Seconds(10);
 
+SurfaceObserver::HandleInteraction GetHandleInteraction(
+    const CompositorFrameMetadata& metadata) {
+  if (metadata.is_handling_interaction) {
+    return SurfaceObserver::HandleInteraction::kYes;
+  } else {
+    return SurfaceObserver::HandleInteraction::kNo;
+  }
+}
+
 }  // namespace
 
 SurfaceManager::SurfaceManager(
@@ -448,14 +457,14 @@ Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) const {
   return it->second.get();
 }
 
-bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id,
-                                     const BeginFrameAck& ack,
-                                     bool is_handling_interaction) {
+bool SurfaceManager::SurfaceModified(
+    const SurfaceId& surface_id,
+    const BeginFrameAck& ack,
+    SurfaceObserver::HandleInteraction handle_interaction) {
   CHECK(thread_checker_.CalledOnValidThread());
   bool changed = false;
   for (auto& observer : observer_list_)
-    changed |=
-        observer.OnSurfaceDamaged(surface_id, ack, is_handling_interaction);
+    changed |= observer.OnSurfaceDamaged(surface_id, ack, handle_interaction);
   return changed;
 }
 
@@ -475,7 +484,7 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
   // Trigger a display frame if necessary.
   const CompositorFrameMetadata& metadata = surface->GetActiveFrameMetadata();
   if (!SurfaceModified(surface->surface_id(), metadata.begin_frame_ack,
-                       metadata.is_handling_interaction)) {
+                       GetHandleInteraction(metadata))) {
     TRACE_EVENT_INSTANT0("viz", "Damage not visible.",
                          TRACE_EVENT_SCOPE_THREAD);
     surface->SendAckToClient();
