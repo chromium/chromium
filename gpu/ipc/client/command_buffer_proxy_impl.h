@@ -82,7 +82,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   CommandBufferProxyImpl(
       scoped_refptr<GpuChannelHost> channel,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int32_t stream_id,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::SharedMemoryMapper* transfer_buffer_mapper = nullptr);
@@ -260,8 +259,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   base::ObserverList<DeletionObserver>::Unchecked deletion_observers_;
 
   scoped_refptr<GpuChannelHost> channel_;
-  raw_ptr<GpuMemoryBufferManager, LeakedDanglingUntriaged>
-      gpu_memory_buffer_manager_;
   bool disconnected_ = false;
   const int channel_id_;
   const int32_t route_id_;

@@ -422,8 +422,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
         .WillByDefault(Return(&mock_context_gl_));
 
     gpu_command_buffer_proxy_ = new gpu::CommandBufferProxyImpl(
-        gpu_channel_host_, &gpu_memory_buffer_manager_,
-        content::kGpuStreamIdDefault,
+        gpu_channel_host_, content::kGpuStreamIdDefault,
         task_environment_.GetMainThreadTaskRunner());
     gpu_command_buffer_proxy_->Initialize(
         gpu::kNullSurfaceHandle, nullptr, content::kGpuStreamPriorityDefault,

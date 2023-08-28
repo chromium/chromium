@@ -146,8 +146,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   // This command buffer is a client-side proxy to the command buffer in the
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
-      channel_, gpu_memory_buffer_manager_, stream_id_, task_runner,
-      buffer_mapper_);
+      channel_, stream_id_, task_runner, buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
       surface_handle_, /*shared_command_buffer=*/nullptr, stream_priority_,
       attributes_, active_url_);
