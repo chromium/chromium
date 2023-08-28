@@ -52,21 +52,20 @@ bool IsValidPageStateTransition(PageState old_state, PageState new_state) {
 PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
                            const std::string& browser_context_id,
                            const GURL& visible_url,
-                           bool is_visible,
-                           bool is_audible,
+                           PagePropertyFlags initial_properties,
                            base::TimeTicks visibility_change_time,
                            PageState page_state)
     : contents_proxy_(contents_proxy),
       visibility_change_time_(visibility_change_time),
       main_frame_url_(visible_url),
       browser_context_id_(browser_context_id),
-      is_visible_(is_visible),
-      is_audible_(is_audible),
+      is_visible_(initial_properties.Has(PagePropertyFlag::kIsVisible)),
+      is_audible_(initial_properties.Has(PagePropertyFlag::kIsAudible)),
       page_state_(page_state) {
   DCHECK(IsValidInitialPageState(page_state));
   weak_this_ = weak_factory_.GetWeakPtr();
 
-  if (is_audible) {
+  if (is_audible_.value()) {
     audible_change_time_ = base::TimeTicks::Now();
   }
 

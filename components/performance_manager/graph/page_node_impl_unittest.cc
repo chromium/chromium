@@ -126,8 +126,7 @@ TEST_F(PageNodeImplTest, TimeSinceLastAudibleChange) {
   // Test a page that's audible at creation.
   auto audible_page = CreateNode<PageNodeImpl>(
       WebContentsProxy(), /*browser_context_id=*/std::string(), GURL(),
-      /*is_visible=*/false,
-      /*is_audible=*/true);
+      PagePropertyFlags{PagePropertyFlag::kIsAudible});
   AdvanceClock(base::Seconds(56));
   EXPECT_EQ(base::Seconds(56), audible_page->TimeSinceLastAudibleChange());
   EXPECT_TRUE(audible_page->is_audible());
@@ -480,8 +479,7 @@ TEST_F(PageNodeImplTest, Prerendering) {
       WebContentsProxy(),                   // wc_proxy
       std::string(),                        // browser_context_id
       GURL(),                               // url
-      false,                                // is_visible
-      false,                                // is_audible
+      PagePropertyFlags{},                  // initial_property_flags
       base::TimeTicks::Now(),               // visibility_change_time
       PageNode::PageState::kPrerendering);  // page_state
   EXPECT_EQ(PageNode::PageState::kPrerendering, page->page_state());

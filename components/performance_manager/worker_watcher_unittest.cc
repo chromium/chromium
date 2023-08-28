@@ -600,8 +600,7 @@ TestFrameNodeSource::TestFrameNodeSource()
           WebContentsProxy(),
           "page_node_context_id",
           GURL(),
-          false,
-          false,
+          PagePropertyFlags{},
           base::TimeTicks::Now(),
           PageNode::PageState::kActive)) {}
 

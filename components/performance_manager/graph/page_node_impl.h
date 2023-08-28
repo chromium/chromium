@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,16 @@ class PageAggregatorAccess;
 class PageLoadTrackerAccess;
 class SiteDataAccess;
 
+// The starting state of various boolean properties of the PageNode.
+enum class PagePropertyFlag {
+  kIsVisible,  // initializes PageNode::IsVisible()
+  kMin = kIsVisible,
+  kIsAudible,  // initializes PageNode::IsAudible()
+  kMax = kIsAudible,
+};
+using PagePropertyFlags = base::
+    EnumSet<PagePropertyFlag, PagePropertyFlag::kMin, PagePropertyFlag::kMax>;
+
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver> {
@@ -44,8 +55,7 @@ class PageNodeImpl
   PageNodeImpl(const WebContentsProxy& contents_proxy,
                const std::string& browser_context_id,
                const GURL& visible_url,
-               bool is_visible,
-               bool is_audible,
+               PagePropertyFlags initial_properties,
                base::TimeTicks visibility_change_time,
                PageState page_state);
 

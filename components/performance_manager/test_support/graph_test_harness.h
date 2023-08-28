@@ -126,12 +126,11 @@ struct TestNodeWrapper<PageNodeImpl>::Factory {
       const WebContentsProxy& wc_proxy = WebContentsProxy(),
       const std::string& browser_context_id = std::string(),
       const GURL& url = GURL(),
-      bool is_visible = false,
-      bool is_audible = false,
+      PagePropertyFlags initial_property_flags = {},
       base::TimeTicks visibility_change_time = base::TimeTicks::Now(),
       PageNode::PageState page_state = PageNode::PageState::kActive) {
     return std::make_unique<PageNodeImpl>(wc_proxy, browser_context_id, url,
-                                          is_visible, is_audible,
+                                          initial_property_flags,
                                           visibility_change_time, page_state);
   }
 };
