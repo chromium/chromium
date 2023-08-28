@@ -619,6 +619,13 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                                     "Dest shared image is not writable"));
   }
 
+  // Flush dest surface and submit if necessary before exiting.
+  absl::Cleanup cleanup = [&]() {
+    FlushSurface(dest_scoped_access.get());
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                      is_drdc_enabled_);
+  };
+
   gfx::Rect new_cleared_rect;
   gfx::Rect old_cleared_rect = dest_shared_image->ClearedRect();
   if (!gles2::TextureManager::CombineAdjacentRects(old_cleared_rect, dest_rect,
@@ -638,6 +645,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
           dest_scoped_access.get(), representation_factory_,
           shared_context_state_, is_drdc_enabled_, begin_semaphores,
           end_semaphores)) {
+    // Cancel cleanup as TryCopySubTextureINTERNALMemory already handles it.
+    std::move(cleanup).Cancel();
     return base::ok();
   }
 
@@ -660,9 +669,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     if (!dest_shared_image->IsCleared()) {
       dest_shared_image->SetClearedRect(new_cleared_rect);
     }
-    FlushSurface(dest_scoped_access.get());
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
 
     // Note, that we still generate error for the client to indicate there was
     // problem.
@@ -687,10 +693,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     DCHECK(ret);
   }
   if (!source_scoped_access) {
-    // We still need to flush surface for begin semaphores above.
-    FlushSurface(dest_scoped_access.get());
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
     return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
                                     "Source shared image is not accessable"));
   }
@@ -771,6 +773,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     }
   }
 
+  // Cancel cleanup as the cleanup order is different here.
+  std::move(cleanup).Cancel();
   FlushSurface(dest_scoped_access.get());
   source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
