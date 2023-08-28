@@ -227,6 +227,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://b/294977915
   "bruschetta.*@eve",
 
+  # b/296913657
+  "secagentd.ProcessEvents@amd64-generic",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
@@ -269,9 +272,6 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1470305
   "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
-
-  # b/296913657
-  "secagentd.ProcessEvents@amd64-generic",
 
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
