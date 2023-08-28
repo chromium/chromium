@@ -727,31 +727,34 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // always match.
   virtual bool IsActive() = 0;
 
-  // Returns true iff the RenderFrameHost is inactive, i.e., when the
-  // RenderFrameHost is either in BackForwardCache, Prerendering, or pending
-  // deletion. This function should be used when we are unsure if inactive
-  // RenderFrameHosts can properly handle events and events processing shouldn't
-  // or can't be deferred until the RenderFrameHost becomes active again.
-  // Callers that only want to check whether a RenderFrameHost is active or not
-  // should use IsActive() instead.
+  // Checks that the RenderFrameHost is inactive (with some exceptions) and
+  // ensures that it will be never activated if it is inactive when calling this
+  // function.
   //
-  // Additionally, this method has a side effect for back-forward cache and
-  // prerendering, where the document is prevented from ever becoming active
-  // after calling this method. This allows to safely ignore the event as the
-  // RenderFrameHost will never be shown to the user again.
+  // Side effect: In the case of the RenderFrameHost is inactive, this ensures
+  // it will be never activated through the following:
   //
-  // For BackForwardCache: it evicts the document from the cache and triggers
-  // deletion.
-  // For Prerendering: it cancels prerendering and triggers deletion.
+  // - For BackForwardCache: it evicts the document from the cache and
+  //   triggers deletion.
+  // - For Prerendering: it cancels prerendering and triggers deletion.
   //
-  // This should not be called for speculative and pending commit
+  // This should be used when we are unsure if inactive RenderFrameHosts can
+  // properly handle events and events processing shouldn't or can't be deferred
+  // until the RenderFrameHost becomes active again. This allows the callers to
+  // safely ignore the event as the RenderFrameHost will never be shown to the
+  // user again.
+  //
+  // This should not be used just to check whether a RenderFrameHost is active
+  // or not. For that, use |IsActive()| instead.
+  //
+  // This should not be used for speculative and pending commit
   // RenderFrameHosts as disallowing activation is not supported. In that case
   // |IsInactiveAndDisallowActivation()| returns false along with terminating
   // the renderer process.
   //
-  // The return value of IsInactiveAndDisallowActivation() is the opposite of
-  // IsActive() except in some uncommon cases:
-  // - The "small window" referred to in the IsActive() documentation.
+  // Return value: The opposite of |IsActive()|, except in some uncommon cases:
+  //
+  // - The "small window" referred to in the |IsActive()| documentation.
   // - For speculative and pending commit RenderFrameHosts, as mentioned above.
   //
   // |reason| will be logged via UMA and UKM. It is recommended to provide
