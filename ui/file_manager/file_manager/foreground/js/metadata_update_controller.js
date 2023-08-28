@@ -4,7 +4,7 @@
 
 import {util} from '../../common/js/util.js';
 import {Store} from '../../externs/ts/store.js';
-import {updateMetadata} from '../../state/actions/all_entries.js';
+import {updateMetadata} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
