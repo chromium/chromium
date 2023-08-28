@@ -78,9 +78,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // regardless of its current state.
   virtual int GetTopInset(bool restored) const = 0;
 
-  // Returns the amount that the theme background should be inset.
-  virtual int GetThemeBackgroundXInset() const = 0;
-
   // Updates the top UI state to be hidden or shown in fullscreen according to
   // the preference's state. Currently only used on Mac.
   virtual void UpdateFullscreenTopUI();

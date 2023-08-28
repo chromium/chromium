@@ -136,17 +136,6 @@ BrowserFrameHeaderChromeOS::BrowserFrameHeaderChromeOS(
 
 BrowserFrameHeaderChromeOS::~BrowserFrameHeaderChromeOS() = default;
 
-// static
-int BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset() {
-  // In the pre-Ash era the web content area had a frame along the left edge, so
-  // user-generated theme images for the new tab page assume they are shifted
-  // right relative to the header.  Now that we have removed the left edge frame
-  // we need to copy the theme image for the window header from a few pixels
-  // inset to preserve alignment with the NTP image, or else we'll break a bunch
-  // of existing themes.  We do something similar on OS X for the same reason.
-  return 5;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameHeaderChromeOS, protected:
 

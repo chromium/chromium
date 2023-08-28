@@ -28,7 +28,6 @@ class BrowserViewLayoutDelegate {
       const gfx::Rect& available_space,
       views::Label& window_title_label) const = 0;
   virtual int GetTopInsetInBrowserView() const = 0;
-  virtual int GetThemeBackgroundXInset() const = 0;
   virtual bool IsToolbarVisible() const = 0;
   virtual bool IsBookmarkBarVisible() const = 0;
   virtual bool IsContentsSeparatorEnabled() const = 0;

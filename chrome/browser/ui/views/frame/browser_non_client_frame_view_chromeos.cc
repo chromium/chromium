@@ -274,10 +274,6 @@ int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
              : caption_button_container_->bounds().bottom();
 }
 
-int BrowserNonClientFrameViewChromeOS::GetThemeBackgroundXInset() const {
-  return BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset();
-}
-
 void BrowserNonClientFrameViewChromeOS::UpdateThrobber(bool running) {
   if (window_icon_)
     window_icon_->Update();

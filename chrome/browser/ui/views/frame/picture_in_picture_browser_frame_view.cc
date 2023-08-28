@@ -427,10 +427,6 @@ int PictureInPictureBrowserFrameView::GetTopInset(bool restored) const {
   return GetTopAreaHeight();
 }
 
-int PictureInPictureBrowserFrameView::GetThemeBackgroundXInset() const {
-  return 0;
-}
-
 void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
   BrowserNonClientFrameView::OnBrowserViewInitViewsComplete();
 

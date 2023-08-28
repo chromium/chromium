@@ -179,10 +179,6 @@ int BrowserFrameViewWin::GetTopInset(bool restored) const {
              : 0;
 }
 
-int BrowserFrameViewWin::GetThemeBackgroundXInset() const {
-  return 0;
-}
-
 bool BrowserFrameViewWin::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
   DCHECK(GetWidget());

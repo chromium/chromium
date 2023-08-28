@@ -39,10 +39,6 @@ class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
 
   ~BrowserFrameHeaderChromeOS() override;
 
-  // Returns the amount that the frame background is inset from the left edge of
-  // the window.
-  static int GetThemeBackgroundXInset();
-
   // FrameHeader:
   void UpdateFrameColors() override;
   SkPath GetWindowMaskForFrameHeader(const gfx::Size& size) override;

@@ -259,10 +259,6 @@ int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
              : layout_->NonClientTopHeight(restored);
 }
 
-int OpaqueBrowserFrameView::GetThemeBackgroundXInset() const {
-  return 0;
-}
-
 void OpaqueBrowserFrameView::UpdateThrobber(bool running) {
   if (window_icon_)
     window_icon_->Update();

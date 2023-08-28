@@ -212,10 +212,6 @@ int BrowserFrame::GetTopInset() const {
   return browser_frame_view_->GetTopInset(false);
 }
 
-int BrowserFrame::GetThemeBackgroundXInset() const {
-  return browser_frame_view_->GetThemeBackgroundXInset();
-}
-
 void BrowserFrame::UpdateThrobber(bool running) {
   browser_frame_view_->UpdateThrobber(running);
 }

@@ -688,12 +688,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return browser_view_->frame()->GetTopInset() - browser_view_->y();
   }
 
-  int GetThemeBackgroundXInset() const override {
-    // TODO(pkotwicz): Return the inset with respect to the left edge of the
-    // BrowserView.
-    return browser_view_->frame()->GetThemeBackgroundXInset();
-  }
-
   bool IsToolbarVisible() const override {
     return browser_view_->IsToolbarVisible();
   }

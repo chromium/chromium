@@ -262,10 +262,6 @@ int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
   return y_offset + top_inset;
 }
 
-int BrowserNonClientFrameViewMac::GetThemeBackgroundXInset() const {
-  return 0;
-}
-
 void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
   // Update to the new toolbar style if needed.
   FullscreenToolbarStyle new_style;

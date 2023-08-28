@@ -394,8 +394,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
     top = LayoutTabStripRegion(top);
     if (delegate_->IsTabStripVisible()) {
       tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
-                                      browser_view_->GetMirroredX() +
-                                      delegate_->GetThemeBackgroundXInset());
+                                      browser_view_->GetMirroredX());
     }
     top = LayoutWebUITabStrip(top);
   }
