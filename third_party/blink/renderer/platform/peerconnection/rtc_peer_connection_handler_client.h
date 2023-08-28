@@ -35,6 +35,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -55,7 +56,8 @@ struct PLATFORM_EXPORT WebRTCSctpTransportSnapshot {
       webrtc::DtlsTransportInformation(webrtc::DtlsTransportState::kNew);
 };
 
-class PLATFORM_EXPORT RTCPeerConnectionHandlerClient {
+class PLATFORM_EXPORT RTCPeerConnectionHandlerClient
+    : public GarbageCollectedMixin {
  public:
   virtual ~RTCPeerConnectionHandlerClient();
 

@@ -417,12 +417,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // first call fails.
   bool initialize_called_ = false;
 
-  // |client_| is a raw pointer to the blink object (blink::RTCPeerConnection)
+  // |client_| points to the blink object (blink::RTCPeerConnection)
   // that owns this object.
-  // It is valid for the lifetime of this object, but is cleared when
-  // CloseAndUnregister() is called, in order to make sure it doesn't
-  // interfere with garbage collection of the owner object.
-  RTCPeerConnectionHandlerClient* client_ = nullptr;
+  WeakPersistent<RTCPeerConnectionHandlerClient> client_;
   // True if this PeerConnection has been closed.
   // After the PeerConnection has been closed, this object may no longer
   // forward callbacks to blink.
