@@ -556,46 +556,20 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
   }
 
   // Fade in/out the minimized windows and position non-minimized windows.
-  float scroll_ratio = y_offset / WmGestureHandler::kVerticalThresholdDp;
+  const float scroll_ratio = y_offset / WmGestureHandler::kVerticalThresholdDp;
   for (size_t i = 0; i < window_list_.size(); ++i) {
-    auto* window_item = window_list_[i].get();
-    // TODO(b/297427797) : We should avoid going deep into the implementation
-    // `OverviewItem` in `OverviewGrid`.
-    auto* window = window_item->GetWindow();
-    auto* window_item_leaf = window_item->GetLeafItemForWindow(window);
-    gfx::RectF rect = cached_rects_[i];
-    // If this is the first scroll update, position minimized windows
-    // and hide the headers of non-minimized windows.
-    if (first_scroll) {
-      // TODO(sammiequon): This should use
-      // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
-      // windows behave like minimized windows in overview, even if continuous
-      // scroll and tucked windows will not be supported together.
-      if (WindowState::Get(window)->IsMinimized()) {
-        window_item->SetBounds(rect, OVERVIEW_ANIMATION_NONE);
-      } else {
-        window_item_leaf->overview_item_view()->layer()->SetOpacity(0.0f);
-      }
-    }
-    // For all scroll updates, set the opacity of minimized windows and
-    // reposition non-minimized windows.
-    if (WindowState::Get(window_item->GetWindow())->IsMinimized()) {
-      float opacity = std::clamp(0.01f, scroll_ratio, 1.f);
-      window_item_leaf->overview_item_view()->layer()->SetOpacity(opacity);
-    } else {
-      rect = gfx::Tween::RectFValueBetween(
-          scroll_ratio, gfx::RectF(window_item->GetWindow()->bounds()), rect);
-      window_item->SetBounds(rect, OVERVIEW_ANIMATION_NONE);
-    }
+    // TODO(b/297923747): The assumption here is: For item at index `i` in
+    // `window_list_`, there is a corresponding correct target rect also at
+    // index `i` in `cached_rects_`. We need to make sure that this assumption
+    // is still standing when integrating with snap groups.
+    window_list_[i]->OnOverviewItemContinuousScroll(cached_rects_[i],
+                                                    first_scroll, scroll_ratio);
   }
 
-  // Move the desk bar up/down.
+  // Move the desks bar up/down.
   if (auto* desks_bar = desks_bar_view()) {
-    gfx::Transform transform;
-    transform.Translate(
-        0, -desks_bar->GetBoundsInScreen().height() +
-               (desks_bar->GetBoundsInScreen().height() * scroll_ratio));
-    desks_bar->layer()->SetTransform(transform);
+    desks_bar->layer()->SetTransform(gfx::Transform::MakeTranslation(
+        0, desks_bar->height() * (scroll_ratio - 1)));
   }
 }
 

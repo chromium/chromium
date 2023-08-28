@@ -97,6 +97,9 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   bool IsDragItem() const override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
+  void OnOverviewItemContinuousScroll(const gfx::RectF& target_bounds,
+                                      bool first_scroll,
+                                      float scroll_ratio) override;
   void SetVisibleDuringItemDragging(bool visible, bool animate) override;
   void UpdateShadowTypeForDrag(bool is_dragging) override;
   void UpdateCannotSnapWarningVisibility(bool animate) override;

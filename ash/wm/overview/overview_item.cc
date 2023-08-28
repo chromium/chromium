@@ -903,6 +903,39 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
   is_being_dragged_ = false;
 }
 
+void OverviewItem::OnOverviewItemContinuousScroll(
+    const gfx::RectF& target_bounds,
+    bool first_scroll,
+    float scroll_ratio) {
+  const auto* window = GetWindow();
+  const bool is_window_minimized = WindowState::Get(window)->IsMinimized();
+  auto* item_layer = overview_item_view_->layer();
+
+  // If this is the first scroll update, position minimized windows
+  // and hide the headers of non-minimized windows.
+  if (first_scroll) {
+    // TODO(sammiequon): This should use
+    // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
+    // windows behave like minimized windows in overview, even if continuous
+    // scroll and tucked windows will not be supported together.
+    if (is_window_minimized) {
+      SetBounds(target_bounds, OVERVIEW_ANIMATION_NONE);
+    } else {
+      item_layer->SetOpacity(0.0f);
+    }
+  }
+
+  // For all scroll updates, set the opacity of minimized windows and
+  // reposition non-minimized windows.
+  if (is_window_minimized) {
+    item_layer->SetOpacity(std::clamp(0.01f, scroll_ratio, 1.f));
+  } else {
+    SetBounds(gfx::Tween::RectFValueBetween(
+                  scroll_ratio, gfx::RectF(window->bounds()), target_bounds),
+              OVERVIEW_ANIMATION_NONE);
+  }
+}
+
 void OverviewItem::SetVisibleDuringItemDragging(bool visible, bool animate) {
   aura::Window::Windows windows = GetWindowsForHomeGesture();
   float new_opacity = visible ? 1.f : 0.f;

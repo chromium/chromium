@@ -123,7 +123,10 @@ class OverviewItemBase {
   // Returns true if `target` is contained in this OverviewItem.
   virtual bool Contains(const aura::Window* target) const = 0;
 
-  // Returns the direct `OverviewItem` that represents the given `window`.
+  // Returns the direct `OverviewItem` that represents the given `window`. This
+  // is temporarily added for the current overview tests, we should avoid using
+  // this API moving forward.
+  // TODO(b/297580539): Completely get rid of this API.
   virtual OverviewItem* GetLeafItemForWindow(aura::Window* window) = 0;
 
   // Restores and animates the managed window(s) to its non overview mode state.
@@ -227,6 +230,13 @@ class OverviewItemBase {
 
   virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
+
+  // Called when performing the continuous scroll on overview item to set bounds
+  // and opacity with pre-calculated `target_bounds`. `first_scroll` is used to
+  // decide if any special handlings are needed for first scroll update.
+  virtual void OnOverviewItemContinuousScroll(const gfx::RectF& target_bouns,
+                                              bool first_scroll,
+                                              float scroll_ratio) = 0;
 
   // Shows/Hides window item during window dragging. Used when swiping up a
   // window from shelf.
