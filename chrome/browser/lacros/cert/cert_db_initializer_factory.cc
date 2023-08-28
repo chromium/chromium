@@ -44,11 +44,13 @@ void CertDbInitializerFactory::SetCreateWithBrowserContextForTesting(
   should_create_with_browser_context_ = should_create;
 }
 
-KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CertDbInitializerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
+  std::unique_ptr<CertDbInitializerImpl> result =
+      std::make_unique<CertDbInitializerImpl>(profile);
   result->Start();
   return result;
 }
