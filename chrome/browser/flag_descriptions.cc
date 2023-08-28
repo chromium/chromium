@@ -6575,6 +6575,10 @@ const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
     "detection screen UI and related infrastructure.";
 
+const char kOrcaKeyName[] = "Secret key for Orca feature";
+const char kOrcaKeyDescription[] =
+    "Secret key for Orca feature. Incorrect values will cause chrome crashes.";
+
 const char kOsFeedbackJellyName[] =
     "Enable jelly colors for the OS Feedback app";
 const char kOsFeedbackJellyDescription[] =

@@ -1486,6 +1486,9 @@ extern const char kOptimizationGuideInstallWideModelStoreDescription[];
 extern const char kOptimizationGuidePushNotificationName[];
 extern const char kOptimizationGuidePushNotificationDescription[];
 
+extern const char kOrcaKeyName[];
+extern const char kOrcaKeyDescription[];
+
 extern const char kOsFeedbackJellyName[];
 extern const char kOsFeedbackJellyDescription[];
 
