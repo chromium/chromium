@@ -5,7 +5,7 @@
 /**
  * @fileoverview Interface to prevent circular dependencies.
  */
-import {TextEditHandler} from '../editing/editing.js';
+import {TextEditHandler} from '../editing/text_edit_handler.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 

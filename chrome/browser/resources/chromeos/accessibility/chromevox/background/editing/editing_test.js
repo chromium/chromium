@@ -30,9 +30,11 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
           [
             'AutomationEditableText',
             'AutomationRichEditableText',
-            'TextEditHandler',
           ],
           '/chromevox/background/editing/editing.js'),
+      importModule(
+          'TextEditHandler',
+          '/chromevox/background/editing/text_edit_handler.js'),
       importModule(
           'DesktopAutomationInterface',
           '/chromevox/background/event/desktop_automation_interface.js'),
