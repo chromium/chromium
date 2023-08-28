@@ -7,9 +7,25 @@
 #include <tuple>
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "net/base/schemeful_site.h"
 
 namespace net {
+
+namespace {
+
+std::string SiteTypeToString(SiteType site_type) {
+  switch (site_type) {
+    case SiteType::kPrimary:
+      return "kPrimary";
+    case SiteType::kAssociated:
+      return "kAssociated";
+    case SiteType::kService:
+      return "kService";
+  }
+}
+
+}  // namespace
 
 FirstPartySetEntry::SiteIndex::SiteIndex() = default;
 
@@ -76,6 +92,11 @@ absl::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
       NOTREACHED() << "Unknown SiteType: " << value;
   }
   return absl::nullopt;
+}
+
+std::string FirstPartySetEntry::GetDebugString() const {
+  return base::StrCat({"{primary: ", primary_.GetDebugString(),
+                       ", site_type: ", SiteTypeToString(site_type_), "}"});
 }
 
 std::ostream& operator<<(std::ostream& os,

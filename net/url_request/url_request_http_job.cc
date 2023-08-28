@@ -58,6 +58,7 @@
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/source_stream.h"
 #include "net/filter/zstd_source_stream.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_log_util.h"
@@ -100,6 +101,26 @@
 #endif
 
 namespace {
+
+base::Value::Dict FirstPartySetMetadataNetLogParams(
+    const GURL& request_site,
+    const net::FirstPartySetMetadata* first_party_set_metadata = nullptr) {
+  base::Value::Dict dict;
+  dict.Set("request_url", request_site.spec());
+  if (first_party_set_metadata) {
+    auto entry_or_empty =
+        [](const absl::optional<net::FirstPartySetEntry>& entry)
+        -> std::string {
+      return entry.has_value() ? entry->GetDebugString() : "none";
+    };
+
+    dict.Set("frame_entry",
+             entry_or_empty(first_party_set_metadata->frame_entry()));
+    dict.Set("top_frame_primary",
+             entry_or_empty(first_party_set_metadata->top_frame_entry()));
+  }
+  return dict;
+}
 
 base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::string& operation,
@@ -290,23 +311,38 @@ void URLRequestHttpJob::Start() {
                         should_add_cookie_header);
 
   if (!should_add_cookie_header) {
-    OnGotFirstPartySetMetadata(FirstPartySetMetadata());
+    OnGotFirstPartySetMetadata(/*emit_log_event=*/false,
+                               FirstPartySetMetadata());
     return;
   }
+
+  request_->net_log().AddEvent(
+      NetLogEventType::FIRST_PARTY_SETS_METADATA_REQUESTED,
+      [&]() { return FirstPartySetMetadataNetLogParams(request()->url()); });
   absl::optional<FirstPartySetMetadata> metadata =
       cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
           SchemefulSite(request()->url()), request()->isolation_info(),
           request()->context()->cookie_store()->cookie_access_delegate(),
           base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), /*emit_log_event=*/true));
 
   if (metadata.has_value())
-    OnGotFirstPartySetMetadata(std::move(metadata.value()));
+    OnGotFirstPartySetMetadata(/*emit_log_event=*/true,
+                               std::move(metadata.value()));
 }
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
+    bool emit_log_event,
     FirstPartySetMetadata first_party_set_metadata) {
   first_party_set_metadata_ = std::move(first_party_set_metadata);
+
+  if (emit_log_event) {
+    request_->net_log().AddEvent(
+        NetLogEventType::FIRST_PARTY_SETS_METADATA_RECEIVED, [&]() {
+          return FirstPartySetMetadataNetLogParams(request()->url(),
+                                                   &first_party_set_metadata_);
+        });
+  }
 
   if (!request()->network_delegate()) {
     OnGotFirstPartySetCacheFilterMatchInfo(

@@ -65,6 +65,8 @@ class NET_EXPORT FirstPartySetEntry {
 
   static absl::optional<net::SiteType> DeserializeSiteType(int value);
 
+  std::string GetDebugString() const;
+
   const SchemefulSite& primary() const { return primary_; }
 
   SiteType site_type() const { return site_type_; }
