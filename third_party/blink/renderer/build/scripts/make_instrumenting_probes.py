@@ -177,6 +177,7 @@ class Parameter(object):
             self.type = param_decl
             self.name = build_param_name(self.type)
 
+        self.is_reference = "&" in self.type
         if self.type[-1] == "*" and "char" not in self.type:
             self.member_type = "Member<%s>" % self.type[:-1]
         else:

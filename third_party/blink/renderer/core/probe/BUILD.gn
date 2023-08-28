@@ -2,32 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/nocompile.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
-action("instrumentation_probes") {
-  script = "../../build/scripts/make_instrumenting_probes.py"
+template("probe_generator") {
+  assert(defined(invoker.probe_set))
+  assert(defined(invoker.probe_sink))
+  assert(defined(invoker.output))
 
-  inputs = [
-    "core_probes.pidl",
-    "core_probes.json5",
-    "../../build/scripts/templates/instrumenting_probes_impl.cc.tmpl",
-    "../../build/scripts/templates/instrumenting_probes_inl.h.tmpl",
-    "../../build/scripts/templates/probe_sink.h.tmpl",
-  ]
+  action(target_name) {
+    script = "../../build/scripts/make_instrumenting_probes.py"
 
-  outputs = [
-    "$blink_core_output_dir/core_probes_inl.h",
-    "$blink_core_output_dir/core_probes_impl.cc",
-    "$blink_core_output_dir/core_probe_sink.h",
-  ]
+    inputs = [
+      "${invoker.probe_set}.pidl",
+      "${invoker.probe_set}.json5",
+      "../../build/scripts/templates/instrumenting_probes_impl.cc.tmpl",
+      "../../build/scripts/templates/instrumenting_probes_inl.h.tmpl",
+      "../../build/scripts/templates/probe_sink.h.tmpl",
+    ]
 
-  args = [
-    rebase_path(inputs[0], root_build_dir),
-    "--config",
-    rebase_path("core_probes.json5", root_build_dir),
-    "--output_dir",
-    rebase_path(blink_core_output_dir, root_build_dir),
-  ]
+    outputs = [
+      "${invoker.output}/${invoker.probe_set}_inl.h",
+      "${invoker.output}/${invoker.probe_set}_impl.cc",
+      "${invoker.output}/${invoker.probe_sink}.h",
+    ]
+
+    args = [
+      rebase_path(inputs[0], root_build_dir),
+      "--config",
+      rebase_path("${invoker.probe_set}.json5", root_build_dir),
+      "--output_dir",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+  }
+}
+
+probe_generator("instrumentation_probes") {
+  probe_set = "core_probes"
+  probe_sink = "core_probe_sink"
+  output = blink_core_output_dir
 }
 
 source_set("generated") {
@@ -53,4 +66,27 @@ blink_core_sources("probe") {
     "//third_party/blink/renderer/platform/wtf",
     "//v8",
   ]
+}
+
+if (enable_nocompile_tests) {
+  probe_generator("test_probes") {
+    probe_set = "test_probes"
+    probe_sink = "test_probe_sink"
+    output = "${blink_core_output_dir}/probe"
+  }
+
+  nocompile_test("blink_probes_nocompile_tests") {
+    sources = [ "probes_test.nc" ]
+
+    deps = [
+      ":test_probes",
+      "//base",
+      "//base/test:run_all_unittests",
+      "//testing/gtest",
+    ]
+    include_dirs = [
+      root_gen_dir,
+      "//v8/include",
+    ]
+  }
 }

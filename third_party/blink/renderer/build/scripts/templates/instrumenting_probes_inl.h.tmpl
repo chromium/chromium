@@ -27,7 +27,11 @@ namespace probe {
 
 {%- macro params_decl(probe) %}
 {%- for param in probe.params %}
+{%- if probe.is_scoped and param.is_reference %}
+std::reference_wrapper<std::remove_reference_t<{{param.type}}>>
+{%- else %}
 {{ param.type }}
+{%- endif %}
 {%- if param.default_value %} = {{ param.default_value }}
 {%- endif %}
 {%- if not loop.last %}, {% endif %}

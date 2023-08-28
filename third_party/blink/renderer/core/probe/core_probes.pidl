@@ -165,11 +165,11 @@ interface CoreProbes {
   void WillHandlePromise([Keep] ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like, const char* promise_like);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
-  ExecuteScript([Keep] ExecutionContext* context, const v8::Local<v8::Context>& v8_context, const String& script_url, int script_id);
+  ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);
   CompileAndRunScript([Keep] ExecutionContext* context, const blink::Script* script);
 
-  CallFunction([Keep] ExecutionContext* context, const v8::Local<v8::Context>& v8_context, v8::Local<v8::Function> function, int depth = 0);
-  UserCallback([Keep] ExecutionContext* context, const char* name, const AtomicString& atomic_name, bool recurring, EventTarget* event_target = nullptr, Event* event = nullptr, EventListener* listener = nullptr);
+  CallFunction([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, v8::Local<v8::Function> function, int depth = 0);
+  UserCallback([Keep] ExecutionContext* context, const char* name, AtomicString atomic_name, bool recurring, EventTarget* event_target = nullptr, Event* event = nullptr, EventListener* listener = nullptr);
   InvokeCallback([Keep] ExecutionContext* context, const char* name, CallbackFunctionBase* callback, v8::MaybeLocal<v8::Value> function = v8::MaybeLocal<v8::Value>());
   InvokeEventHandler([Keep] ExecutionContext* context, EventTarget* event_target = nullptr, Event* event = nullptr, EventListener* listener = nullptr);
   V8Compile([Keep] ExecutionContext* context, const String& file_name, int line, int column);
