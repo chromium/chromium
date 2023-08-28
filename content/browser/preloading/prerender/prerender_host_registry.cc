@@ -211,7 +211,9 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kLowEndDevice:
       return PreloadingEligibility::kLowMemory;
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
+      NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
+      return PreloadingEligibility::kHttpOrHttpsOnly;
     case PrerenderFinalStatus::kInProgressNavigation:
     case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
     case PrerenderFinalStatus::kMainFrameNavigation:

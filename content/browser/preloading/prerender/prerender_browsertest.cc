@@ -644,6 +644,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       std::vector<Visibility> visibility_transitions);
   void TestTimerResetWhenPageGoBackToForeground(Visibility visibility);
   void TestCancelPrerenderWithTargetBlankWhenTimeout(Visibility visibility);
+  void TestEmbedderTriggerWithUnsupportedScheme(const GURL& prerendering_url);
 
   net::test_server::EmbeddedTestServer& ssl_server() { return ssl_server_; }
 
@@ -9298,12 +9299,20 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ViewSource) {
+void PrerenderBrowserTest::TestEmbedderTriggerWithUnsupportedScheme(
+    const GURL& prerendering_url) {
   const GURL initial_url = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-  const GURL prerendering_url =
-      GURL("view-source:" + GetUrl("/empty.html?prerender").spec());
   ASSERT_FALSE(prerendering_url.SchemeIsHTTPOrHTTPS());
+
+  auto* preloading_data =
+      PreloadingData::GetOrCreateForWebContents(web_contents_impl());
+  PreloadingPredictor preloading_predictor(100, "Embedder");
+  PreloadingURLMatchCallback same_url_matcher =
+      PreloadingData::GetSameURLMatcher(prerendering_url);
+  PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
+      preloading_predictor, PreloadingType::kPrerender,
+      std::move(same_url_matcher));
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
@@ -9312,37 +9321,55 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ViewSource) {
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+          PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderFinalStatus::kInvalidSchemeNavigation, 1);
+
+  // Navigate primary page to flush the metrics.
+  const GURL navigated_url = GetUrl("/empty.html?navigated");
+  ASSERT_TRUE(NavigateToURL(shell(), navigated_url));
+
+  {
+    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    auto attempt_ukm_entry_builder =
+        std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
+            preloading_predictor);
+    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder->BuildEntry(
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kHttpOrHttpsOnly,
+        PreloadingHoldbackStatus::kUnspecified,
+        PreloadingTriggeringOutcome::kUnspecified,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/false,
+        /*ready_time=*/absl::nullopt,
+        /*eagerness=*/absl::nullopt);
+
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_DataUrl) {
-  const GURL initial_url = GetUrl("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       EmbedderTrigger_UnsupportedScheme_ViewSource) {
+  const GURL prerendering_url =
+      GURL("view-source:" + GetUrl("/empty.html?prerender").spec());
+  TestEmbedderTriggerWithUnsupportedScheme(prerendering_url);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       EmbedderTrigger_UnsupportedScheme_DataUrl) {
   // The content is "<h1>Hello, World!</h1>".
   const GURL prerendering_url(
       "data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E");
-  ASSERT_FALSE(prerendering_url.SchemeIsHTTPOrHTTPS());
-
-  // Start prerendering by embedder triggered prerendering.
-  std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          prerendering_url, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
-  EXPECT_FALSE(prerender_handle);
-
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
-      "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kInvalidSchemeNavigation, 1);
+  TestEmbedderTriggerWithUnsupportedScheme(prerendering_url);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
