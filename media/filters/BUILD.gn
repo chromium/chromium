@@ -419,6 +419,7 @@ source_set("unit_tests") {
       "hls_manifest_demuxer_engine_unittest.cc",
       "hls_test_helpers.cc",
       "hls_test_helpers.h",
+      "hls_vod_rendition_unittest.cc",
       "manifest_demuxer_unittest.cc",
     ]
   }

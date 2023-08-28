@@ -12,6 +12,8 @@ namespace media {
 // Chosen mostly arbitrarily.
 constexpr size_t kChunkSize = 1024 * 32;
 
+constexpr base::TimeDelta kBufferDuration = base::Seconds(10);
+
 // A nice round number, chosen to make sure that we get a good average network
 // speed calculation.
 constexpr size_t kMovingAverageSampleSize = 128;
@@ -85,10 +87,10 @@ void HlsVodRendition::CheckState(
     return;
   }
 
-  // Not being in the last loaded range is an error.
-  // TODO(crbug/1266991) This can sometimes happen if the manifest lies about
-  // the duration and gets to the end of playback, and a user seeks there.
-  if (!ranges.contains(ranges.size() - 1, media_time)) {
+  auto time_until_underflow = base::Seconds(0);
+  if (ranges.start(ranges.size() - 1) > media_time) {
+    // If media time comes before the last loaded range, then a seek probably
+    // failed, and this should be an error.
     PipelineStatus error = DEMUXER_ERROR_COULD_NOT_PARSE;
     engine_host_->OnError(std::move(error)
                               .WithData("timestamp", media_time)
@@ -97,29 +99,29 @@ void HlsVodRendition::CheckState(
     return;
   }
 
-  // Determine if we should delay and clear out old buffered frames.
-  auto remaining = ranges.back().second - media_time;
-  auto remaining_rate = playback_rate ? playback_rate : 1;
-  remaining /= remaining_rate;
+  if (ranges.contains(ranges.size() - 1, media_time)) {
+    // If media time is inside the last range, then we might have time to
+    // recalculate and clear buffers.
+    time_until_underflow = ranges.back().second - media_time;
+    time_until_underflow /= playback_rate ? playback_rate : 1;
+  }
 
   // If the remaining time is large enough, then there is time to clear old
-  // data and delay for a bit. "Large enough" is calculated to be at least 3
+  // data and delay for a bit. "Large enough" is calculated to be at least 10
   // seconds, chosen based on the "slow 3g" connection setting in devtools for
   // a 1080p h264 video stream. "Large enough" must also be much more than the
   // amount of time it would take to fetch the next segment, and the 6x
   // multiplier was again chosen after messing about with the devtools network
-  // speed panel. The delay is then chosen such that there is roughly 4x as long
-  // to make a fetch request as it should take, based on the running average, or
-  // 1 second, whichever is longer.
-  // TODO(crbug/1266991) Update the `fetch_time_` moving average when network
-  // speed changes.
-  if (remaining > base::Seconds(3) && remaining > fetch_time_.Average() * 6) {
+  // speed panel. The delay is then calculated such that roughly half the buffer
+  // has been rendered by the time another state check happens.
+  if (time_until_underflow > kBufferDuration &&
+      time_until_underflow > fetch_time_.Average() * 6) {
     // We have buffered enough to have time to clear old segments and delay.
     base::TimeDelta time_to_clear = ClearOldSegments(media_time);
     auto delay_time = kNoTimestamp;
     if (playback_rate) {
-      delay_time = remaining - (fetch_time_.Average() * 10) - time_to_clear -
-                   base::Seconds(1);
+      delay_time = time_until_underflow - (fetch_time_.Average() * 10) -
+                   time_to_clear - base::Seconds(5);
       if (delay_time < base::TimeDelta()) {
         delay_time = base::TimeDelta();
       }
@@ -179,11 +181,17 @@ void HlsVodRendition::CancelPendingNetworkRequests() {
 base::TimeDelta HlsVodRendition::ClearOldSegments(base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeTicks removal_start = base::TimeTicks::Now();
-  auto it =
-      std::lower_bound(segments_.begin(), segments_.end(), media_time,
-                       [](const SegmentInfo& segment, base::TimeDelta time) {
-                         return segment.absolute_end < time;
-                       });
+  // Keep 10 seconds of content before the current media time. `media_time` is
+  // more accurately described as the highest timestamp yet seen in the current
+  // continual stream of playback, and depending on framerate, might be slightly
+  // ahead of where the actual currently-being-rendered frame is. Additionally,
+  // the ten seconds allows a small backwards-seek to not totally reset the
+  // buffer and redownload old content.
+  auto it = std::lower_bound(
+      segments_.begin(), segments_.end(), media_time - kBufferDuration,
+      [](const SegmentInfo& segment, base::TimeDelta time) {
+        return segment.absolute_end < time;
+      });
   if (it != segments_.end()) {
     if ((*it).absolute_start > base::TimeDelta()) {
       engine_host_->Remove(role_, base::TimeDelta(), (*it).absolute_start);
