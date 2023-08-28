@@ -24,7 +24,7 @@
 namespace {
 
 std::unique_ptr<views::View> CreatePasskeyList(
-    const std::u16string& title,
+    const absl::optional<std::u16string>& title,
     const std::vector<int>& passkey_indices,
     const base::span<const AuthenticatorRequestDialogModel::Mechanism> mechs) {
   auto container = std::make_unique<views::BoxLayoutView>();
@@ -38,11 +38,13 @@ std::unique_ptr<views::View> CreatePasskeyList(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  auto label = std::make_unique<views::Label>(
-      title, views::style::CONTEXT_DIALOG_BODY_TEXT);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label_container->AddChildView(std::move(label));
-  container->AddChildView(std::move(label_container));
+  if (title) {
+    auto label = std::make_unique<views::Label>(
+        *title, views::style::CONTEXT_DIALOG_BODY_TEXT);
+    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    label_container->AddChildView(std::move(label));
+    container->AddChildView(std::move(label_container));
+  }
   container->AddChildView(std::make_unique<HoverListView>(
       std::make_unique<TransportHoverListModel>(mechs, passkey_indices)));
   return container;
@@ -69,7 +71,10 @@ AuthenticatorMultiSourcePickerSheetView::BuildStepSpecificContent() {
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   container->SetBetweenChildSpacing(kPaddingInBetweenPasskeyLists);
 
+  absl::optional<std::u16string> secondary_passkeys_label;
   if (!sheet_model->primary_passkey_indices().empty()) {
+    secondary_passkeys_label =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_OTHER_DEVICES_LABEL),
     container->AddChildView(
         CreatePasskeyList(sheet_model->primary_passkeys_label(),
                           sheet_model->primary_passkey_indices(),
@@ -77,8 +82,7 @@ AuthenticatorMultiSourcePickerSheetView::BuildStepSpecificContent() {
   }
 
   container->AddChildView(CreatePasskeyList(
-      l10n_util::GetStringUTF16(IDS_WEBAUTHN_OTHER_DEVICES_LABEL),
-      sheet_model->secondary_passkey_indices(),
+      secondary_passkeys_label, sheet_model->secondary_passkey_indices(),
       sheet_model->dialog_model()->mechanisms()));
 
   return std::make_pair(std::move(container), AutoFocus::kYes);
