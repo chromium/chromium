@@ -37,11 +37,15 @@ crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
 
 // static
 void BrowserPostLoginParams::WaitForLogin() {
+  // TODO(crbug.com/1475643): added to investigate the cause of this crash.
+  // Please remove once the cause is identified.
+  LOG(WARNING) << "Waiting for login.";
+
   auto* instance = GetInstanceInternal();
   if (!instance->postlogin_params_) {
     // Fetch the postlogin parameters, or wait for them to be available.
     instance->postlogin_params_ = ReadStartupBrowserPostLoginParams();
-    DCHECK(instance->postlogin_params_);
+    CHECK(instance->postlogin_params_);
   } else {
     // This code path should only be reached in tests after calling
     // SetPostLoginParamsForTests.
