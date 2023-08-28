@@ -7190,6 +7190,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-minimized", flag_descriptions::kCCTMinimizedName,
+     flag_descriptions::kCCTMinimizedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTMinimized)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"cct-page-insights-hub", flag_descriptions::kCCTPageInsightsHubName,
      flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

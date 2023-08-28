@@ -3810,6 +3810,10 @@ const char kCCTIncognitoAvailableToThirdPartyDescription[] =
     "Enabling it would allow third party apps to open incognito mode for "
     "Chrome Custom Tabs, on Android.";
 
+const char kCCTMinimizedName[] = "Allow Custom Tabs to be minimized";
+const char kCCTMinimizedDescription[] =
+    "When enabled, CCTs can be minimized into picture-in-picture (PiP) mode.";
+
 const char kCCTPageInsightsHubName[] = "PageInsights Hub";
 const char kCCTPageInsightsHubDescription[] =
     "Show PageInsights Hub on Chrome Custom Tabs.";

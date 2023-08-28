@@ -64983,6 +64983,7 @@ from previous Chrome versions.
   <int value="247200195" label="EnhancedProtectionPromoCard:enabled"/>
   <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
+  <int value="251262596" label="CCTMinimized:disabled"/>
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="251764234" label="AccessibilityPerformanceFiltering:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
@@ -66007,6 +66008,7 @@ from previous Chrome versions.
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
+  <int value="756018202" label="CCTMinimized:enabled"/>
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>
   <int value="758299873" label="OmniboxSuggestionHoverFillShape:enabled"/>

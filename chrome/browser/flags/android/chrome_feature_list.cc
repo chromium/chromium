@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTIncognito,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
+    &kCCTMinimized,
     &kCCTNewDownloadTab,
     &kCCTPageInsightsHub,
     &kCCTPostMessageAPI,
@@ -566,6 +567,8 @@ BASE_FEATURE(kCCTIncognitoAvailableToThirdParty,
 BASE_FEATURE(kCCTIntentFeatureOverrides,
              "CCTIntentFeatureOverrides",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTMinimized, "CCTMinimized", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPageInsightsHub,
              "CCTPageInsightsHub",

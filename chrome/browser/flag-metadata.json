@@ -1086,6 +1086,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cct-minimized",
+    "owners": ["katzz@google.com", "sinansahin@google.com", "kgrosu@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cct-page-insights-hub",
     "owners": [ "jinsukkim", "kgrosu@google.com", "twellington" ],
     "expiry_milestone": 130

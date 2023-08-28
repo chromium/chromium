@@ -182,6 +182,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =
             "CCTIncognitoAvailableToThirdParty";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
+    public static final String CCT_MINIMIZED = "CCTMinimized";
     public static final String CCT_NEW_DOWNLOAD_TAB = "CCTNewDownloadTab";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
     public static final String CCT_POST_MESSAGE_API = "CCTPostMessageAPI";

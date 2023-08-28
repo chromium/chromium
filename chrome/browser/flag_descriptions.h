@@ -2219,6 +2219,9 @@ extern const char kCCTIncognitoDescription[];
 extern const char kCCTIncognitoAvailableToThirdPartyName[];
 extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 
+extern const char kCCTMinimizedName[];
+extern const char kCCTMinimizedDescription[];
+
 extern const char kCCTPageInsightsHubName[];
 extern const char kCCTPageInsightsHubDescription[];
 
