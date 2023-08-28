@@ -1449,6 +1449,15 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R118-15594.0.0",
+        "name": "chromeos_integration_tests JACUZZI_PUBLIC_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "variant_id": "JACUZZI_PUBLIC_LKGM"
+      },
+      {
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-public/R118-15594.0.0",
         "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
