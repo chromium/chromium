@@ -10350,24 +10350,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Custom_Missing_Value_071523",
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_Custom_Missing_Value_CF_071523",
-                    "params": {
-                        "MlUrlScoringCounterfactual": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_Final_Matches_Only_Custom_Missing_Value_071523",
+                    "name": "Enabled_Final_Matches_Only_Custom_Missing_Value_082823",
                     "params": {
                         "MlUrlScoringRerankFinalMatchesOnly": "true"
                     },
@@ -10377,10 +10360,73 @@
                     ]
                 },
                 {
-                    "name": "Enabled_Final_Matches_Only_Preserve_Default_Custom_Missing_Value_071523",
+                    "name": "Enabled_Final_Matches_Only_Custom_Missing_Non_Default_082823",
                     "params": {
-                        "MlUrlScoringPreserveDefault": "true",
                         "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Sync_Custom_Missing_Value_082823",
+                    "params": {
+                        "MlSyncBatchUrlScoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Sync_Custom_Missing_Non_Default_082823",
+                    "params": {
+                        "MlSyncBatchUrlScoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Sync_Final_Matches_Only_Custom_Missing_Value_082823",
+                    "params": {
+                        "MlSyncBatchUrlScoring": "true",
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Sync_Final_Matches_Only_Custom_Missing_Non_Default_082823",
+                    "params": {
+                        "MlSyncBatchUrlScoring": "true",
+                        "MlUrlScoringRerankFinalMatchesOnly": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Sync_10_Matches_Provider_Limit_Custom_Missing_Value_082823",
+                    "params": {
+                        "MlSyncBatchUrlScoring": "true",
+                        "MlUrlScoringMaxMatchesByProvider": "1:10,4:10,8:10,64:10,65536:10"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Sync_10_Matches_Provider_Limit_Custom_Missing_Non_Default_082823",
+                    "params": {
+                        "MlSyncBatchUrlScoring": "true",
+                        "MlUrlScoringMaxMatchesByProvider": "1:10,4:10,8:10,64:10,65536:10"
                     },
                     "enable_features": [
                         "MlUrlScoring",
