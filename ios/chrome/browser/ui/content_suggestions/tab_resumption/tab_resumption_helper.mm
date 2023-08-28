@@ -39,6 +39,8 @@ void LastSyncedTabItemFromSession(
     const synced_sessions::DistantSession* session,
     FaviconLoader* favicon_loader,
     TabResumptionHelper::TabResumptionItemCompletionBlock item_block_handler) {
+  CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
+
   const synced_sessions::DistantTab* tab = session->tabs.front().get();
 
   TabResumptionItem* tab_resumption_item = [[TabResumptionItem alloc]
@@ -105,11 +107,13 @@ TabResumptionHelper::TabResumptionHelper(Browser* browser) : browser_(browser) {
 
 void TabResumptionHelper::LastTabResumptionItem(
     TabResumptionItemCompletionBlock item_block_handler) {
-  // If sync is enabled and `GetOpenTabsUIDelegate()` returns nullptr, that
-  // means the `session_sync_service_` is not fully operational.
-  if (sync_service_->IsSyncFeatureEnabled() &&
-      !session_sync_service_->GetOpenTabsUIDelegate()) {
-    return;
+  if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
+    // If sync is enabled and `GetOpenTabsUIDelegate()` returns nullptr, that
+    // means the `session_sync_service_` is not fully operational.
+    if (sync_service_->IsSyncFeatureEnabled() &&
+        !session_sync_service_->GetOpenTabsUIDelegate()) {
+      return;
+    }
   }
 
   base::Time most_recent_tab_opened_time = base::Time::UnixEpoch();
@@ -124,13 +128,16 @@ void TabResumptionHelper::LastTabResumptionItem(
   }
 
   const synced_sessions::DistantSession* session;
-  auto const synced_sessions =
-      std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
-  if (synced_sessions->GetSessionCount()) {
-    // Get the last synced session and tab.
-    session = synced_sessions->GetSession(0);
-    // TODO(crbug.com/1464185): Add restrictions.
-    last_synced_tab_synced_time = session->modified_time;
+  if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
+    auto const synced_sessions =
+        std::make_unique<synced_sessions::SyncedSessions>(
+            session_sync_service_);
+    if (synced_sessions->GetSessionCount()) {
+      // Get the last synced session and tab.
+      session = synced_sessions->GetSession(0);
+      // TODO(crbug.com/1464185): Add restrictions.
+      last_synced_tab_synced_time = session->modified_time;
+    }
   }
 
   // If both times have not been updated, that means there is no item to return.
@@ -138,6 +145,7 @@ void TabResumptionHelper::LastTabResumptionItem(
       last_synced_tab_synced_time == base::Time::UnixEpoch()) {
     return;
   } else if (last_synced_tab_synced_time > most_recent_tab_opened_time) {
+    CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
     LastSyncedTabItemFromSession(session, favicon_loader_, item_block_handler);
   } else {
     MostRecentTabItemFromWebState(most_recent_tab, most_recent_tab_opened_time,

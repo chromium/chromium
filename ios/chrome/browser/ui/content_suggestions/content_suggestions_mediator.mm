@@ -309,13 +309,14 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     }
 
     if (IsMagicStackEnabled() && IsTabResumptionEnabled()) {
-      sync_sessions::SessionSyncService* sessionSyncService =
-          SessionSyncServiceFactory::GetForBrowserState(
-              browser->GetBrowserState());
-
-      _syncedSessionsObserver =
-          std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
-              self, sessionSyncService);
+      if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
+        sync_sessions::SessionSyncService* sessionSyncService =
+            SessionSyncServiceFactory::GetForBrowserState(
+                browser->GetBrowserState());
+        _syncedSessionsObserver =
+            std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
+                self, sessionSyncService);
+      }
 
       _tabResumptionHelper =
           std::make_unique<TabResumptionHelper>(TabResumptionHelper(browser));
@@ -685,6 +686,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - SyncedSessionsObserver
 
 - (void)onForeignSessionsChanged {
+  DCHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
   [self showTabResumptionTile];
 }
 

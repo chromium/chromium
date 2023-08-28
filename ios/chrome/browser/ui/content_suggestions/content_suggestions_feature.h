@@ -46,6 +46,12 @@ extern const char kDiscoverFeedIsNativeUIEnabled[];
 extern const char kHideContentSuggestionsTilesParamMostVisited[];
 extern const char kHideContentSuggestionsTilesParamShortcuts[];
 
+// Feature parameters for the tab resumption feature. If no parameter is set,
+// the default (most recent tab only) will be used.
+extern const char kTabResumptionParameterName[];
+extern const char kTabResumptionMostRecentTabOnlyParam[];
+extern const char kTabResumptionAllTabsParam[];
+
 // Whether the Discover feed is enabled instead of the Zine feed.
 // TODO(crbug.com/1385512): Remove this.
 bool IsDiscoverFeedEnabled();
@@ -55,6 +61,9 @@ bool IsMagicStackEnabled();
 
 // Whether the tab resumption feature is enabled.
 bool IsTabResumptionEnabled();
+
+// Whether the tab resumption feature is enabled for most recent tab only.
+bool IsTabResumptionEnabledForMostRecentTabOnly();
 
 // Whether the Most Visited Sites should be put into the Magic Stack.
 bool ShouldPutMostVisitedSitesInMagicStack();

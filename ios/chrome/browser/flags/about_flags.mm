@@ -608,11 +608,23 @@ const FeatureEntry::FeatureParam kTabPickupThresholdTwoHours[] = {
 
 const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
     {"Ten Minutes", kTabPickupThresholdTenMinutes,
-     std::size(kTabInactivityThresholdOneWeek), nullptr},
+     std::size(kTabPickupThresholdTenMinutes), nullptr},
     {"One Hour", kTabPickupThresholdOneHour,
-     std::size(kTabInactivityThresholdTwoWeeks), nullptr},
+     std::size(kTabPickupThresholdOneHour), nullptr},
     {"Two Hours", kTabPickupThresholdTwoHours,
-     std::size(kTabInactivityThresholdThreeWeeks), nullptr},
+     std::size(kTabPickupThresholdTwoHours), nullptr},
+};
+
+const FeatureEntry::FeatureParam kTabResumptionMostRecentTabOnly[] = {
+    {kTabResumptionParameterName, kTabResumptionMostRecentTabOnlyParam}};
+const FeatureEntry::FeatureParam kTabResumptionAllTabs[] = {
+    {kTabResumptionParameterName, kTabResumptionAllTabsParam}};
+
+const FeatureEntry::FeatureVariation kTabResumptionVariations[] = {
+    {"Most recent tab only", kTabResumptionMostRecentTabOnly,
+     std::size(kTabResumptionMostRecentTabOnly), nullptr},
+    {"Most recent tab and last synced tab", kTabResumptionAllTabs,
+     std::size(kTabResumptionAllTabs), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1637,7 +1649,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordAuthOnEntry)},
     {"tab-resumption", flag_descriptions::kTabResumptionName,
      flag_descriptions::kTabResumptionDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabResumption)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumption,
+                                    kTabResumptionVariations,
+                                    "TabResumption")},
     {"ios-lens-use-direct-upload",
      flag_descriptions::kIOSLensUseDirectUploadName,
      flag_descriptions::kIOSLensUseDirectUploadDescription, flags_ui::kOsIos,

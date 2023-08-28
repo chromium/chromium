@@ -41,6 +41,11 @@ const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
 const char kHideContentSuggestionsTilesParamMostVisited[] = "HideMostVisited";
 const char kHideContentSuggestionsTilesParamShortcuts[] = "HideShortcuts";
 
+const char kTabResumptionParameterName[] = "variant";
+const char kTabResumptionMostRecentTabOnlyParam[] =
+    "tab-resumption-recent-tab-only";
+const char kTabResumptionAllTabsParam[] = "tab-resumption-all-tabs";
+
 bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
 }
@@ -52,6 +57,13 @@ bool IsMagicStackEnabled() {
 bool IsTabResumptionEnabled() {
   CHECK(IsMagicStackEnabled());
   return base::FeatureList::IsEnabled(kTabResumption);
+}
+
+bool IsTabResumptionEnabledForMostRecentTabOnly() {
+  CHECK(IsTabResumptionEnabled());
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kTabResumption, kTabResumptionParameterName);
+  return feature_param != kTabResumptionAllTabsParam;
 }
 
 bool ShouldPutMostVisitedSitesInMagicStack() {
