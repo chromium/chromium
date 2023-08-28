@@ -33,9 +33,12 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/extension_util.h"
@@ -96,6 +99,26 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
         GetPromiseAppTitle(profile, app_id);
     if (!promise_app_title.empty()) {
       return promise_app_title;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+    std::u16string shortcut_title;
+    if (apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->ShortcutRegistryCache()
+            ->HasShortcut(apps::ShortcutId(app_id))) {
+      absl::optional<std::string> shortcut_name =
+          apps::AppServiceProxyFactory::GetForProfile(profile)
+              ->ShortcutRegistryCache()
+              ->GetShortcut(apps::ShortcutId(app_id))
+              ->name;
+      if (shortcut_name.has_value()) {
+        shortcut_title = base::UTF8ToUTF16(shortcut_name.value());
+      }
+    }
+
+    if (!shortcut_title.empty()) {
+      return shortcut_title;
     }
   }
 

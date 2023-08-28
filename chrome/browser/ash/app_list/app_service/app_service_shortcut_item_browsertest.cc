@@ -6,6 +6,8 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/public/cpp/shelf_item.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -226,6 +229,11 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
             menu_model->GetIconAt(tootle_pin_command_index.value())
                 .GetVectorIcon()
                 .vector_icon());
+  auto* controller = ChromeShelfController::instance();
+  auto* shelf_item = controller->GetItem(ash::ShelfID(shortcut_id.value()));
+  EXPECT_TRUE(shelf_item);
+  EXPECT_EQ(shelf_item->type, ash::ShelfItemType::TYPE_PINNED_APP);
+  EXPECT_EQ(shelf_item->title, shortcut_name);
 
   menu_model->ActivatedAt(tootle_pin_command_index.value());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN),
@@ -234,6 +242,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
             menu_model->GetIconAt(tootle_pin_command_index.value())
                 .GetVectorIcon()
                 .vector_icon());
+  EXPECT_FALSE(controller->GetItem(ash::ShelfID(shortcut_id.value())));
 }
 
 IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
