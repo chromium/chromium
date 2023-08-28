@@ -11,6 +11,7 @@ source_set("context_menu_api") {
   deps = [
     "//base",
     "//ios/web/public/ui",
+    "//services/metrics/public/cpp:metrics_cpp",
   ]
   frameworks = [ "UIKit.framework" ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
