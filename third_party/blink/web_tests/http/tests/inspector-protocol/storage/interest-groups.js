@@ -22,7 +22,7 @@
     const auctionJs = `
       (async function() {
         config = await navigator.runAdAuction({
-            decisionLogicUrl: "${base}fledge_decision_logic.js.php",
+            decisionLogicURL: "${base}fledge_decision_logic.js.php",
             seller: "${baseOrigin}",
             interestGroupBuyers: ["${baseOrigin}"],
             resolveToConfig: true});

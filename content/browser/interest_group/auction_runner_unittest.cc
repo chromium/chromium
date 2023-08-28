@@ -603,7 +603,7 @@ std::string MakeDecisionScript(
     const std::string& debug_win_report_url = "",
     bool report_top_level_post_auction_signals = false) {
   constexpr char kCheckingAuctionScript[] = R"(
-    const decisionLogicUrl = "%s";
+    const decisionLogicURL = "%s";
     let sendReportUrl = "%s";
     const reportPostAuctionSignals = %s;
     const postAuctionSignalsPlaceholder = "%s";
@@ -644,8 +644,8 @@ std::string MakeDecisionScript(
           "componentSeller" in browserSignals) {
         throw new Error("wrong adMetadata.fromComponentAuction");
       }
-      if (auctionConfig.decisionLogicUrl !== decisionLogicUrl)
-        throw new Error("wrong decisionLogicUrl in auctionConfig");
+      if (auctionConfig.decisionLogicURL !== decisionLogicURL)
+        throw new Error("wrong decisionLogicURL in auctionConfig");
       // Check `perBuyerSignals` for the first bidder.
       let signals1 = auctionConfig.perBuyerSignals['https://adplatform.com'];
       if (signals1[auctionConfig.seller + 'Signals'] !== 'Ad PlatformSignals')
@@ -662,14 +662,14 @@ std::string MakeDecisionScript(
         throw new Error("timeout in auctionConfig.perBuyerCumulativeTimeouts " +
                         "is the wrong value. huh");
       }
-      if (auctionConfig.sellerSignals["url"] != decisionLogicUrl)
+      if (auctionConfig.sellerSignals["url"] != decisionLogicURL)
         throw new Error("Wrong sellerSignals");
       if (typeof auctionConfig.sellerTimeout !== "number")
         throw new Error("auctionConfig.sellerTimeout is not a number. huh");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
 
-      if (decisionLogicUrl.startsWith(topLevelSeller)) {
+      if (decisionLogicURL.startsWith(topLevelSeller)) {
         // Top-level sellers should receive component sellers, but only for
         // bids received from component auctions.
         if ("topLevelSeller" in browserSignals)
@@ -753,12 +753,12 @@ std::string MakeDecisionScript(
       let signals1 = auctionConfig.perBuyerSignals['https://adplatform.com'];
       if (signals1[auctionConfig.seller + 'Signals'] !== 'Ad PlatformSignals')
         throw new Error("Wrong perBuyerSignals in auctionConfig");
-      if (auctionConfig.decisionLogicUrl !== decisionLogicUrl)
-        throw new Error("wrong decisionLogicUrl in auctionConfig");
+      if (auctionConfig.decisionLogicURL !== decisionLogicURL)
+        throw new Error("wrong decisionLogicURL in auctionConfig");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname in browserSignals");
 
-      if (decisionLogicUrl.startsWith(topLevelSeller)) {
+      if (decisionLogicURL.startsWith(topLevelSeller)) {
         // Top-level sellers should receive component sellers, but only for
         // bids received from component auctions.
         if ("topLevelSeller" in browserSignals)
@@ -835,7 +835,7 @@ std::string MakeDecisionScript(
     // top-level auction, or if all bidders from component auctions are passed
     // to the top-level auction.
     function computeScore(bid) {
-      if (decisionLogicUrl == "https://adstuff.publisher1.com/auction.js")
+      if (decisionLogicURL == "https://adstuff.publisher1.com/auction.js")
         return 2 * bid;
       return 100 - bid;
     }

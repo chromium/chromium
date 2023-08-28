@@ -1587,12 +1587,12 @@ TEST_F(SellerWorkletTest, ScoreAdBiddingDuration) {
 TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
   decision_logic_url_ = GURL("https://url.test/");
   RunScoreAdWithReturnValueExpectingResult(
-      "auctionConfig.decisionLogicUrl.length",
+      "auctionConfig.decisionLogicURL.length",
       decision_logic_url_.spec().length());
 
   decision_logic_url_ = GURL("https://url.test/longer/url");
   RunScoreAdWithReturnValueExpectingResult(
-      "auctionConfig.decisionLogicUrl.length",
+      "auctionConfig.decisionLogicURL.length",
       decision_logic_url_.spec().length());
 
   direct_from_seller_auction_signals_header_ad_slot_ = R"("abcde")";

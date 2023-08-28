@@ -159,7 +159,7 @@ void FencedFrameTestHelper::NavigateFencedFrameUsingFledge(
       const auction_config = {
         seller: page_origin,
         interestGroupBuyers: [page_origin],
-        decisionLogicUrl: new URL(FLEDGE_DECISION_URL, page_origin),
+        decisionLogicURL: new URL(FLEDGE_DECISION_URL, page_origin),
       };
       auction_config.resolveToConfig = true;
 

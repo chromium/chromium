@@ -92,7 +92,7 @@ function createBiddingScriptURL(params = {}) {
 // returns something or throws.
 //
 // The default reportResult() method is empty.
-function createDecisionScriptUrl(uuid, params = {}) {
+function createDecisionScriptURL(uuid, params = {}) {
   let url = new URL(`${FLEDGE_BASE_URL}resources/decision-logic.sub.py`);
   url.searchParams.append('uuid', uuid);
   if (params.scoreAd)
@@ -191,7 +191,8 @@ async function runReportTest(test, uuid, codeToInsert, expectedNumReports = 0) {
   await joinInterestGroup(test, uuid, interestGroupOverrides);
   await runBasicFledgeAuctionAndNavigate(
       test, uuid,
-      { decisionLogicUrl: createDecisionScriptUrl(
+    {
+      decisionLogicURL: createDecisionScriptURL(
         uuid, { scoreAd, reportResult })
     });
 

@@ -17,8 +17,8 @@
 async function runTrustedScoringSignalsTest(test, uuid, renderURL, scoreAdCheck) {
   const auctionConfigOverrides = {
       trustedScoringSignalsUrl: TRUSTED_SCORING_SIGNALS_URL,
-      decisionLogicUrl:
-          createDecisionScriptUrl(uuid, {
+    decisionLogicURL:
+      createDecisionScriptURL(uuid, {
               scoreAd: `if (!(${scoreAdCheck})) throw "error";` })};
   await runBasicFledgeTestExpectingWinner(
       test,
@@ -49,7 +49,7 @@ async function runTrustedScoringSignalsDataVersionTest(
   await joinInterestGroup(test, uuid, interestGroupOverrides);
 
   const auctionConfigOverrides = {
-    decisionLogicUrl: createDecisionScriptUrl(
+    decisionLogicURL: createDecisionScriptURL(
         uuid,
         { scoreAd:
               `if (!(${check})) return false;`,
@@ -79,13 +79,13 @@ function createScoringSignalsRenderUrlWithBody(uuid, responseBody) {
 
 promise_test(async test => {
   const uuid = generateUuid(test);
-  const decisionLogicScriptUrl = createDecisionScriptUrl(
+  const decisionLogicScriptUrl = createDecisionScriptURL(
       uuid,
       { scoreAd: 'if (trustedScoringSignals !== null) throw "error";'});
   await runBasicFledgeTestExpectingWinner(
       test,
       { uuid: uuid,
-        auctionConfigOverrides: { decisionLogicUrl: decisionLogicScriptUrl }
+        auctionConfigOverrides: { decisionLogicURL: decisionLogicScriptUrl }
       });
 }, 'No trustedScoringSignalsUrl.');
 
@@ -268,8 +268,8 @@ promise_test(async test => {
   let auctionConfigOverrides = { trustedScoringSignalsUrl: TRUSTED_SCORING_SIGNALS_URL };
 
   // scoreAd() only accepts the first IG's bid, validating its trustedScoringSignals.
-  auctionConfigOverrides.decisionLogicUrl =
-        createDecisionScriptUrl(uuid, {
+  auctionConfigOverrides.decisionLogicURL =
+    createDecisionScriptURL(uuid, {
             scoreAd: `if (browserSignals.renderURL === "${renderURL1}" &&
                           trustedScoringSignals.renderURL["${renderURL1}"] !== 1 ||
                           trustedScoringSignals.renderURL["${renderURL2}"] !== undefined)
@@ -280,8 +280,8 @@ promise_test(async test => {
       `Wrong value type returned from first auction: ${config.constructor.type}`);
 
   // scoreAd() only accepts the second IG's bid, validating its trustedScoringSignals.
-  auctionConfigOverrides.decisionLogicUrl =
-        createDecisionScriptUrl(uuid, {
+  auctionConfigOverrides.decisionLogicURL =
+    createDecisionScriptURL(uuid, {
             scoreAd: `if (browserSignals.renderURL === "${renderURL2}" &&
                           trustedScoringSignals.renderURL["${renderURL1}"] !== undefined ||
                           trustedScoringSignals.renderURL["${renderURL2}"] !== '1')

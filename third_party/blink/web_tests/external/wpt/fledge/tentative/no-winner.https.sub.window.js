@@ -71,10 +71,10 @@ for (error of BIDDING_LOGIC_SCRIPT_ERRORS) {
 
 for (error of DECISION_LOGIC_SCRIPT_ERRORS) {
   promise_test((async (error, test) => {
-    let decisionLogicUrl =
+    let decisionLogicURL =
         `${BASE_URL}resources/decision-logic.sub.py?${error}`;
     await runBasicFledgeTestExpectingNoWinner(
-      test, {auctionConfigOverrides: {decisionLogicUrl: decisionLogicUrl}}
+      test, { auctionConfigOverrides: { decisionLogicURL: decisionLogicURL } }
     );
   }).bind(undefined, error), `Decision logic script: ${error}`);
 }

@@ -138,7 +138,7 @@ void RunAdAuction(const content::ToRenderFrameHost& adapter,
         try {
           await navigator.runAdAuction({
             seller: $1,
-            decisionLogicUrl: $2,
+            decisionLogicURL: $2,
             interestGroupBuyers: [$3],
           });
         } catch (e) {

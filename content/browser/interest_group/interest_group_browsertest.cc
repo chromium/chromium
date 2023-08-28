@@ -1180,7 +1180,7 @@ function provideAdditionalBids(seller, nonce, bidStringList) {
     }).then(ads => {
       return navigator.finalizeAd(ads, {
         seller: "https://example.site",
-        decisionLogicUrl: "https://example.site/script.js",
+        decisionLogicURL: "https://example.site/script.js",
         perBuyerSignals: {"example.site": { randomParam: "value1" }},
         auctionSignals: "pubCode123",
         sellerSignals: { someKey: "sellerValue" }
@@ -1362,7 +1362,7 @@ function provideAdditionalBids(seller, nonce, bidStringList) {
                               R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1],
 }
                               )",
@@ -1655,7 +1655,7 @@ try {
         ad_url,
         JsReplace(R"({
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1]
         })",
                   url::Origin::Create(test_url),
@@ -4393,7 +4393,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
       "'https://invalid^&' for AuctionAdConfig must be a valid https origin.",
       RunAuctionAndWait(R"({
       seller: 'https://invalid^&',
-      decisionLogicUrl: 'https://test.com/decision_logic'
+      decisionLogicURL: 'https://test.com/decision_logic'
   })"));
   WaitForAccessObserved({});
 }
@@ -4407,7 +4407,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionHttpSeller) {
       "'http://test.com' for AuctionAdConfig must be a valid https origin.",
       RunAuctionAndWait(R"({
       seller: 'http://test.com',
-      decisionLogicUrl: 'https://test.com/decision_logic'
+      decisionLogicURL: 'https://test.com/decision_logic'
   })"));
   WaitForAccessObserved({});
 }
@@ -4423,7 +4423,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'https://test.com' cannot be resolved to a valid URL.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://invalid^&'
+      decisionLogicURL: 'https://invalid^&'
   })"));
   WaitForAccessObserved({});
 }
@@ -4477,7 +4477,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           origin.Serialize().c_str()),
       RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       trustedScoringSignalsUrl: 'https://invalid^&'
   })",
                                   origin, url)));
@@ -4500,7 +4500,7 @@ IN_PROC_BROWSER_TEST_F(
       "'https://test.com/scoring1')",
       RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       trustedScoringSignalsURL: 'https://test.com/scoring1',
       trustedScoringSignalsUrl: 'https://test.com/scoring2'
   })",
@@ -4521,7 +4521,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'https://a.test/' must match seller origin.",
       RunAuctionAndWait(R"({
     seller: "https://a.test/",
-    decisionLogicUrl: "https://b.test/foo",
+    decisionLogicURL: "https://b.test/foo",
     interestGroupBuyers: ["https://c.test/"],
                         })"));
   WaitForAccessObserved({});
@@ -4541,7 +4541,7 @@ IN_PROC_BROWSER_TEST_F(
       "seller 'https://a.test/' must match seller origin.",
       RunAuctionAndWait(R"({
     seller: "https://a.test/",
-    decisionLogicUrl: "https://a.test/foo",
+    decisionLogicURL: "https://a.test/foo",
     trustedScoringSignalsUrl: "https://b.test/foo",
     interestGroupBuyers: ["https://c.test/"],
                         })"));
@@ -4559,7 +4559,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "with seller 'https://test.com' must be a valid https origin.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       interestGroupBuyers: ['https://invalid^&'],
   })"));
   WaitForAccessObserved({});
@@ -4576,7 +4576,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "provided value cannot be converted to a sequence.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       interestGroupBuyers: 'not an array',
   })"));
   WaitForAccessObserved({});
@@ -4589,7 +4589,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
   })"));
   WaitForAccessObserved({});
 }
@@ -4601,7 +4601,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       interestGroupBuyers: [],
   })"));
   WaitForAccessObserved({});
@@ -4624,7 +4624,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       auctionSignals: alert,
       interestGroupBuyers: []
   })",
@@ -4644,7 +4644,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       auctionSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -4667,7 +4667,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       auctionSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve(function() {}); }, 10) }),
       interestGroupBuyers: []
@@ -4701,7 +4701,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       sellerSignals: function() {},
       interestGroupBuyers: []
   })",
@@ -4720,7 +4720,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       sellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -4743,7 +4743,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       sellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve(function() {}); }, 10) }),
       interestGroupBuyers: []
@@ -4771,7 +4771,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -4794,7 +4794,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve(52); }, 10) }),
       interestGroupBuyers: []
@@ -4828,7 +4828,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerSignals: {'https://invalid^&': {a:1}},
       interestGroupBuyers: []
   })",
@@ -4847,7 +4847,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -4870,7 +4870,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { resolve({'http://b.com': 52}); }, 10) }),
       interestGroupBuyers: []
@@ -4906,7 +4906,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerTimeouts: {'https://invalid^&': 100},
       interestGroupBuyers: []
   })",
@@ -4926,7 +4926,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerCumulativeTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -4950,7 +4950,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerCumulativeTimeouts: new Promise((resolve, reject) => { setTimeout(
           () => { resolve({'http://b.com': 52}); }, 10) }),
       interestGroupBuyers: []
@@ -4985,7 +4985,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerCumulativeTimeouts: {'https://invalid^&': 100},
       interestGroupBuyers: []
   })",
@@ -5011,7 +5011,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerCurrencies: {'https://invalid^&': 'USD'},
       interestGroupBuyers: []
   })",
@@ -5037,7 +5037,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerCurrencies: {'*': 'usd'},
       interestGroupBuyers: []
   })",
@@ -5055,7 +5055,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       " 'https://test.com' must be a 3-letter uppercase currency code.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       sellerCurrency: 'usd'
   })"));
   WaitForAccessObserved({});
@@ -5072,7 +5072,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "seller 'https://test.com' must be greater than 0.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       perBuyerGroupLimits: {'https://test.com': 0}
   })"));
   WaitForAccessObserved({});
@@ -5090,7 +5090,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "origin.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       perBuyerGroupLimits: {'https://invalid^&': 100}
   })"));
   WaitForAccessObserved({});
@@ -5107,7 +5107,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "provided double value is non-finite.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       perBuyerPrioritySignals: {
           'https://foo.com/':{"key": "Values must be numbers"}
       }
@@ -5121,7 +5121,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "reserved \"browserSignals.\" prefix.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       perBuyerPrioritySignals: {
           'https://foo.com/':{"browserSignals.thisPrefixIsReserved": 1}
       }
@@ -5139,11 +5139,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "may only have one of 'interestGroupBuyers' or 'componentAuctions'.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       interestGroupBuyers: ['https://test.com'],
       componentAuctions: [{
           seller: 'https://test.com',
-          decisionLogicUrl: 'https://test.com',
+          decisionLogicURL: 'https://test.com',
           interestGroupBuyers: ['https://test.com']
       }]
   })"));
@@ -5162,11 +5162,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'componentAuctions'.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       additionalBids: [],
       componentAuctions: [{
           seller: 'https://test.com',
-          decisionLogicUrl: 'https://test.com',
+          decisionLogicURL: 'https://test.com',
           interestGroupBuyers: ['https://test.com']
       }]
   })"));
@@ -5182,7 +5182,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "provided value cannot be converted to a sequence.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       componentAuctions: ''
   })"));
 }
@@ -5197,7 +5197,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "The provided value is not of type 'AuctionAdConfig'.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       componentAuctions: ['test']
   })"));
 }
@@ -5211,10 +5211,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'http://test.com' for AuctionAdConfig must be a valid https origin.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       componentAuctions: [{
         seller: 'http://test.com',
-        decisionLogicUrl: 'http://test.com'
+        decisionLogicURL: 'http://test.com'
       }]
   })"));
 }
@@ -5229,13 +5229,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "componentAuctions.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
       componentAuctions: [{
         seller: 'https://test2.com',
-        decisionLogicUrl: 'https://test2.com',
+        decisionLogicURL: 'https://test2.com',
         componentAuctions: [{
           seller: 'https://test3.com',
-          decisionLogicUrl: 'https://test3.com',
+          decisionLogicURL: 'https://test3.com',
         }]
       }]
   })"));
@@ -5258,7 +5258,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerSignals: {'https://test.com': function() {}},
       interestGroupBuyers: []
   })",
@@ -5276,7 +5276,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -5351,7 +5351,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: new Promise((resolve, reject) => { setTimeout(
           () => { resolve('http://test.com/signals'); }, 10) }),
       interestGroupBuyers: []
@@ -5380,7 +5380,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: new Promise((resolve, reject) => {
         let o = { toString: () => { throw "Don't stringify me!"; } }
         resolve(o);
@@ -5414,7 +5414,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: 'https://invalid^&',
       interestGroupBuyers: []
   })",
@@ -5439,7 +5439,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: 'http://test.com/signals',
       interestGroupBuyers: []
   })",
@@ -5465,7 +5465,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: 'https://test2.com/signals',
       interestGroupBuyers: [$1]
   })",
@@ -5492,7 +5492,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: $1 + '/signals?shouldntBeHere',
       interestGroupBuyers: [$1]
   })",
@@ -5564,7 +5564,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       interestGroupBuyers: [$3],
       directFromSellerSignals: $4
   });
@@ -5646,7 +5646,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       interestGroupBuyers: [$3],
       directFromSellerSignals: $4
   });
@@ -5732,7 +5732,7 @@ IN_PROC_BROWSER_TEST_F(
 (async function() {
   return await navigator.runAdAuction({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       interestGroupBuyers: [$3],
       directFromSellerSignals: $4
   });
@@ -5820,7 +5820,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       interestGroupBuyers: [$3],
       directFromSellerSignals: maybePromise($4)
   });
@@ -6011,7 +6011,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignalsHeaderAdSlot: Promise.resolve((() => {
         function CantConvertToString() {}
         CantConvertToString.prototype.toString = function () {
@@ -6041,7 +6041,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "given component auction, top-level auction, or non-component auction.",
       RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignals: Promise.resolve($3),
       directFromSellerSignalsHeaderAdSlot: Promise.resolve("adSlot1"),
       interestGroupBuyers: [$1]
@@ -6066,7 +6066,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       additionalBids: Promise.resolve([1, 2, 3]),
       interestGroupBuyers: [$1]
   })",
@@ -6091,7 +6091,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       additionalBids: Promise.resolve([{
         bid: "",
         signatures: [{key: new Uint8Array(), signature: new Uint8Array()}]
@@ -6119,7 +6119,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       additionalBids: Promise.resolve([{
         bid: "",
         signatures: [{key: new Uint8Array(32), signature: new Uint8Array()}]
@@ -6150,7 +6150,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       additionalBids: Promise.resolve([{
         bid: "",
         signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
@@ -6170,7 +6170,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                          })",
                          url::Origin::Create(test_url),
@@ -6189,7 +6189,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(JsReplace(
                 R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     auctionReportBuyerKeys: [3],
                          })",
                 url::Origin::Create(test_url),
@@ -6212,7 +6212,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(JsReplace(
                 R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     auctionReportBuyerKeys: [1n << 129n],
                          })",
                 url::Origin::Create(test_url),
@@ -6235,7 +6235,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             RunAuctionAndWait(JsReplace(
                 R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     auctionReportBuyerKeys: [-1n],
                          })",
                 url::Origin::Create(test_url),
@@ -6254,7 +6254,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     auctionReportBuyerKeys: [1n],
     auctionReportBuyers: {
       unknownReportType: { bucket: 0n, scale: 1 },
@@ -6279,7 +6279,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     auctionReportBuyerKeys: [1n],
     auctionReportBuyers: {
       bidCount: { bucket: 0n },
@@ -6297,7 +6297,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     auctionReportBuyerKeys: [1n],
     auctionReportBuyers: {
       bidCount: { scale: 1 },
@@ -6318,7 +6318,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     requiredSellerCapabilities: ['non-valid-capability'],
                          })",
                          url::Origin::Create(test_url),
@@ -6390,7 +6390,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6422,7 +6422,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6486,7 +6486,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6527,7 +6527,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6595,7 +6595,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6636,7 +6636,7 @@ IN_PROC_BROWSER_TEST_F(
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6700,7 +6700,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts', 'latency-stats'],
                 })",
@@ -6732,7 +6732,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     requiredSellerCapabilities: ['interest-group-counts'],
                 })",
@@ -6773,7 +6773,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -6844,7 +6844,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -6895,7 +6895,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -7026,7 +7026,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1]
         })",
       test_origin,
@@ -7057,7 +7057,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ForceReload) {
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1]})",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
@@ -7125,7 +7125,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string auction_config = JsReplace(
       R"({
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1]
         })",
       test_origin,
@@ -7162,7 +7162,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string auction_config = JsReplace(
       R"({
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1]
         })",
       test_origin,
@@ -7203,7 +7203,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1]
       })",
       test_origin,
@@ -7246,7 +7246,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
       })",
       test_origin,
@@ -7326,7 +7326,7 @@ IN_PROC_BROWSER_TEST_F(
       JsReplace(
           R"({
             seller: $1,
-            decisionLogicUrl: $2,
+            decisionLogicURL: $2,
             interestGroupBuyers: [$1],
             perBuyerSignals: {$1: {a:1}, 'https://not_in_buyers.com': {a:1}},
             perBuyerTimeouts: {'https://not_in_buyers.com': 100}
@@ -7363,7 +7363,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancel) {
       let controller = new AbortController();
       const config = {
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1],
         signal: controller.signal
       };
@@ -7404,7 +7404,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelLate) {
       let controller = new AbortController();
       const config = {
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1],
         signal: controller.signal
       };
@@ -7453,7 +7453,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelBefore) {
       let controller = new AbortController();
       const config = {
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1],
         signal: controller.signal
       };
@@ -7494,7 +7494,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1],
       })",
       test_origin,
@@ -7550,7 +7550,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -7653,7 +7653,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -7720,7 +7720,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionRepro1451572) {
   const config = {
     seller: $1,
     // Must have FLEDGE header and JS mime type.
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1]
   };
 
@@ -7743,7 +7743,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   const char* kTestCases[] = {
       R"(runAdAuction({
         seller: "foo", // required
-        decisionLogicUrl: "foo", // required
+        decisionLogicURL: "foo", // required
       }, 0.0)
     )",
       R"(joinAdInterestGroup({
@@ -7841,7 +7841,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       ad_url, JsReplace(
                   R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
 auctionSignals: {x: 1},
 sellerSignals: {yet: 'more', info: 1},
@@ -7971,7 +7971,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   std::string auction_config = JsReplace(
       R"({
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1]
         })",
       test_origin,
@@ -8036,7 +8036,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       ad_url, JsReplace(
                   R"({
                       seller: $1,
-                      decisionLogicUrl: $2,
+                      decisionLogicURL: $2,
                       interestGroupBuyers: [$1]
                     })",
                   url::Origin::Create(test_url),
@@ -8116,7 +8116,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       JsReplace(
           R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
 auctionSignals: {x: 1},
 sellerSignals: {yet: 'more', info: 1},
@@ -8215,7 +8215,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       JsReplace(
           R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
 auctionSignals: {x: 1},
 sellerSignals: {yet: 'more', info: 1},
@@ -8248,7 +8248,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
       JsReplace(
           R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
 auctionSignals: {x: 1},
 sellerSignals: {yet: 'more', info: 1},
@@ -8324,7 +8324,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       ad_url, JsReplace(
                   R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
 auctionSignals: {x: 1},
 sellerSignals: {yet: 'more', info: 1},
@@ -8390,7 +8390,7 @@ IN_PROC_BROWSER_TEST_F(
       test_url, JsReplace(
                     R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
 auctionSignals: {x: 1},
 sellerSignals: {yet: 'more', info: 1},
@@ -8539,7 +8539,7 @@ function reportResult(
                   R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   trustedScoringSignalsUrl: $3,
   interestGroupBuyers: [$4],
 }
@@ -8595,7 +8595,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -8683,7 +8683,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
                                           R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$3],
   auctionSignals: {x: 1},
   sellerSignals: {yet: 'more', info: 1},
@@ -8749,7 +8749,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, Iframe) {
           R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$3]
 }
           )",
@@ -8811,7 +8811,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
                 })",
       test_origin,
@@ -8873,7 +8873,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     perBuyerGroupLimits: {'*': 1},
                 })",
@@ -8976,7 +8976,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
   std::string auction_config = JsReplace(
       R"({
     seller: $3,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
     perBuyerGroupLimits: {$1: 1, '*': 2},
                 })",
@@ -9089,7 +9089,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $3,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
     perBuyerGroupLimits: {$3: 3, '*': 1},
                 })",
@@ -9149,7 +9149,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     perBuyerGroupLimits: {'*': 3},
                 })",
@@ -9247,7 +9247,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
   })",
       origin2,
@@ -9322,7 +9322,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
       origin2,
@@ -9398,7 +9398,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
   })",
       origin_b,
@@ -9425,7 +9425,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1, $3],
   })",
       origin_b,
@@ -9464,7 +9464,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     sellerSignals: {reportTo: $3},
                 })",
@@ -9588,7 +9588,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -9609,7 +9609,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -9641,7 +9641,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                          })",
                          test_origin,
@@ -9678,7 +9678,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
                   R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1]
 }
                   )",
@@ -9854,7 +9854,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1]
 }
       )",
@@ -9951,7 +9951,7 @@ return {
       ad_url, JsReplace(
                   R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1]
                   })",
                   url::Origin::Create(test_url),
@@ -10013,7 +10013,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
   });
 })())",
@@ -10043,13 +10043,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ComponentAuction) {
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         // Signal to the top-level seller to allow participation in a component
         // auction.
         auctionSignals: "sellerAllowsComponentAuction",
         componentAuctions: [{
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1],
           // Signal to the bidder and component seller to allow participation in
           // a component auction.
@@ -10086,13 +10086,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         // Signal to the top-level seller to allow participation in a component
         // auction.
         auctionSignals: "sellerAllowsComponentAuction",
         componentAuctions: [{
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1],
           // Signal to the component seller to allow participation in a
           // component auction.
@@ -10128,10 +10128,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         componentAuctions: [{
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1],
           // Signal to the bidder and component seller to allow participation in
           // a component auction.
@@ -10168,13 +10168,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         // Signal to the top-level seller to allow participation in a component
         // auction.
         auctionSignals: "sellerAllowsComponentAuction",
         componentAuctions: [{
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1],
           // Signal to the bidder to allow participation in a component auction.
           auctionSignals: "bidderAllowsComponentAuction"
@@ -10348,7 +10348,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     trustedScoringSignalsUrl: $3,
     interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
@@ -10498,7 +10498,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     trustedScoringSignalsUrl: $3,
     interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
@@ -11300,7 +11300,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
   });
 })())",
@@ -11448,7 +11448,7 @@ function validateAuctionConfig(auctionConfig) {
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: 3,
     sellerSignals: 4,
@@ -11563,7 +11563,7 @@ function validateAuctionConfig(auctionConfig) {
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: new Promise((resolve, reject) => {
       setTimeout(
@@ -11666,7 +11666,7 @@ function validateAuctionConfig(auctionConfig) {
           let controller = new AbortController();
           let adPromise =  navigator.runAdAuction({
             seller: $1,
-            decisionLogicUrl: $2,
+            decisionLogicURL: $2,
             interestGroupBuyers: [$1],
             auctionSignals: new Promise((resolve, reject) => {
               setTimeout(
@@ -11814,7 +11814,7 @@ function validateDirectFromSellerSignals(directFromSellerSignals) {
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: new Promise((resolve, reject) => {
       setTimeout(
@@ -11962,7 +11962,7 @@ function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     perBuyerTimeouts: new Promise((resolve, reject) => {
       setTimeout(
@@ -12004,7 +12004,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, QuitWithRunningAuction) {
   ExecuteScriptAsync(shell(), JsReplace(R"(
 navigator.runAdAuction({
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1]
 });
                                         )",
@@ -12422,7 +12422,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     std::string auction_config = JsReplace(
         R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       interestGroupBuyers: [$1, $3],
                   )",
         bidder_a_origin,
@@ -12463,7 +12463,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(JsReplace(
           R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     sellerTimeout: 1,
                 })",
@@ -12505,7 +12505,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     trustedScoringSignalsUrl: $3,
     interestGroupBuyers: [$4],
     sellerExperimentGroupId: 8349,
@@ -12583,7 +12583,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$3, $4],
     perBuyerExperimentGroupIds: {'*': 3498,
                                  $4: 1203},
@@ -12653,7 +12653,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                          R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$3]
 }
                          )",
@@ -12713,7 +12713,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                 R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$3]
 }
                 )",
@@ -12778,7 +12778,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1],
   sellerSignals: {reportTo: $3},
 }
@@ -12872,7 +12872,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1],
   sellerSignals: {reportTo: $3},
 }
@@ -13264,7 +13264,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$3],
   });
 })())",
@@ -13419,7 +13419,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                       R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1],
 }
                               )",
@@ -13581,7 +13581,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
                       R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1],
 }
                               )",
@@ -13637,7 +13637,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       perBuyerCumulativeTimeouts: {$1: 1, $3: 50},
       interestGroupBuyers: [$1, $3]
   })";
@@ -13754,7 +13754,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
                     R"(
 {
   seller: $1,
-  decisionLogicUrl: $2,
+  decisionLogicURL: $2,
   interestGroupBuyers: [$1],
 }
                             )",
@@ -13845,7 +13845,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
     std::string auction_config = JsReplace(
         R"({
           seller: $1,
-          decisionLogicUrl: $2,
+          decisionLogicURL: $2,
           interestGroupBuyers: [$1]
         })",
         test_origin,
@@ -13926,7 +13926,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
         RunAuctionAndWaitForUrl(JsReplace(
             R"({
                     seller: $1,
-                    decisionLogicUrl: $2,
+                    decisionLogicURL: $2,
                     interestGroupBuyers: [$1],
                   })",
             test_origin,
@@ -14257,7 +14257,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       ad_url, JsReplace(
                   R"({
 seller: $1,
-decisionLogicUrl: $2,
+decisionLogicURL: $2,
 interestGroupBuyers: [$1],
                   })",
                   test_origin,
@@ -14310,7 +14310,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       ad_url, JsReplace(
                   R"({
                     seller: $1,
-                    decisionLogicUrl: $2,
+                    decisionLogicURL: $2,
                     interestGroupBuyers: [$1],
                   })",
                   test_origin,
@@ -14462,7 +14462,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       ad_url, JsReplace(
                   R"({
                       seller: $1,
-                      decisionLogicUrl: $2,
+                      decisionLogicURL: $2,
                       interestGroupBuyers: [$1],
                   })",
                   test_origin,
@@ -14527,7 +14527,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
             RunAuctionAndWaitForUrl(JsReplace(
                 R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
                 test_origin,
@@ -14547,7 +14547,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
             RunAuctionAndWaitForUrl(JsReplace(
                 R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
                 test_origin,
@@ -14559,7 +14559,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
                          test_origin,
@@ -14598,7 +14598,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
             RunAuctionAndWaitForUrl(JsReplace(
                 R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
                 test_origin,
@@ -14611,7 +14611,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
                 JsReplace(
                     R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
                     test_origin,
@@ -14626,7 +14626,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
       RunAuctionAndWait(JsReplace(
                             R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
                 })",
                             test_origin,
@@ -14685,7 +14685,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string auction_config = JsReplace(
       R"({
     seller: $1,
-    decisionLogicUrl: $2,
+    decisionLogicURL: $2,
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
@@ -14810,7 +14810,7 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
           JsReplace(
               R"({
                 seller: $1,
-                decisionLogicUrl: $2,
+                decisionLogicURL: $2,
                 interestGroupBuyers: [$1]
               })",
               url::Origin::Create(test_url),
@@ -14823,7 +14823,7 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
           JsReplace(
               R"({
                 seller: $1,
-                decisionLogicUrl: $2,
+                decisionLogicURL: $2,
                 interestGroupBuyers: [$1]
               })",
               url::Origin::Create(test_url),
@@ -15591,7 +15591,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DISABLED_AuctionNonceIsValid) {
   std::string auction_config = JsReplace(
       R"({
         seller: $1,
-        decisionLogicUrl: $2,
+        decisionLogicURL: $2,
         interestGroupBuyers: [$1],
         auctionNonce: $3,
       })",

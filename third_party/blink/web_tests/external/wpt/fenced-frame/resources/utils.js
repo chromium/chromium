@@ -118,17 +118,17 @@ async function generateURNFromFledgeRawURL(
   let auctionConfig = {
     seller: location.origin,
     interestGroupBuyers: [location.origin],
-    decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+    decisionLogicURL: new URL(FLEDGE_DECISION_URL, location.origin),
     auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     resolveToConfig: resolve_to_config
   };
 
   if (requested_size) {
-    let decisionUrlParams =
-      new URLSearchParams(auctionConfig.decisionLogicUrl.search);
-    decisionUrlParams.set(
+    let decisionURLParams =
+      new URLSearchParams(auctionConfig.decisionLogicURL.search);
+    decisionURLParams.set(
         'requested-size', requested_size[0] + '-' + requested_size[1]);
-    auctionConfig.decisionLogicUrl.search = decisionUrlParams;
+    auctionConfig.decisionLogicURL.search = decisionURLParams;
 
     auctionConfig['requestedSize'] = {width: requested_size[0], height: requested_size[1]};
   }

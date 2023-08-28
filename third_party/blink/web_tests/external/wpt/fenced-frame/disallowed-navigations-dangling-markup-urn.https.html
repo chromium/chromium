@@ -46,7 +46,7 @@ for (const substring of kDanglingMarkupSubstrings) {
     const auctionConfig = {
       seller: location.origin,
       interestGroupBuyers: [location.origin],
-      decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+      decisionLogicURL: new URL(FLEDGE_DECISION_URL, location.origin),
       auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
     };
 

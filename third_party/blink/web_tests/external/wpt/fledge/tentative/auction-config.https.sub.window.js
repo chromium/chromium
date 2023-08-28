@@ -104,15 +104,15 @@ makeTest({
 });
 
 makeTest({
-  name: 'decisionLogicUrl is invalid',
+  name: 'decisionLogicURL is invalid',
   expect: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { decisionLogicUrl: "https://foo:99999999999" },
+  auctionConfigOverrides: { decisionLogicURL: "https://foo:99999999999" },
 });
 
 makeTest({
-  name: 'decisionLogicUrl is cross-origin with seller',
+  name: 'decisionLogicURL is cross-origin with seller',
   expect: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { decisionLogicUrl: "https://example.com" },
+  auctionConfigOverrides: { decisionLogicURL: "https://example.com" },
 });
 
 makeTest({
@@ -242,12 +242,12 @@ makeTest({
     componentAuctions: [
       {
         seller: window.location.origin,
-        decisionLogicUrl: window.location.origin,
+        decisionLogicURL: window.location.origin,
         interestGroupBuyers: undefined,
         componentAuctions: [
           {
             seller: window.location.origin,
-            decisionLogicUrl: window.location.origin,
+            decisionLogicURL: window.location.origin,
           }
         ],
       },
@@ -263,7 +263,7 @@ makeTest({
     componentAuctions: [
       {
         seller: window.location.origin,
-        decisionLogicUrl: window.location.origin,
+        decisionLogicURL: window.location.origin,
         interestGroupBuyers: [],
       },
     ],
