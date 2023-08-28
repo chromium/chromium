@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -236,5 +237,20 @@ public class BookmarkSearchBoxRowTest {
 
         onView(withId(R.id.clear_text_button)).perform(click());
         verify(mClearSearchTextRunnable).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testRebindSingleSearchTextChangeCallback() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModelChangeProcessor.create(
+                    mPropertyModel, mBookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+            PropertyModelChangeProcessor.create(
+                    mPropertyModel, mBookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+        });
+
+        String searchText = "foo";
+        setProperty(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        verify(mSearchTextChangeCallback, times(1)).onResult(eq(searchText));
     }
 }
