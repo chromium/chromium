@@ -102,6 +102,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void SetPluginTreeSource(PluginAXTreeSource* source) override;
   void OnPluginRootNodeUpdated() override;
   void ShowPluginContextMenu() override;
+  void RecordInaccessiblePdfUkm() override;
 
   // RenderFrameObserver implementation.
   void DidCreateNewDocument() override;

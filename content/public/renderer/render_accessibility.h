@@ -37,6 +37,8 @@ class CONTENT_EXPORT RenderAccessibility {
   virtual void ShowPluginContextMenu() = 0;
   virtual void OnPluginRootNodeUpdated() = 0;
 
+  virtual void RecordInaccessiblePdfUkm() = 0;
+
  protected:
   ~RenderAccessibility() {}
 

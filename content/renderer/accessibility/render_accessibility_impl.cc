@@ -1681,6 +1681,13 @@ void RenderAccessibilityImpl::ConnectionClosed() {
   serialization_in_flight_ = false;
 }
 
+void RenderAccessibilityImpl::RecordInaccessiblePdfUkm() {
+  ukm::builders::Accessibility_InaccessiblePDFs(
+      GetMainDocument().GetUkmSourceId())
+      .SetSeen(true)
+      .Record(ukm_recorder_.get());
+}
+
 void RenderAccessibilityImpl::MaybeSendUKM() {
   if (slowest_serialization_time_ < kMinSerializationTimeToSend)
     return;
