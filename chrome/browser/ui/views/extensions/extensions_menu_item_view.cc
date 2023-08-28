@@ -468,6 +468,13 @@ void ExtensionMenuItemView::SetupContextMenuButton() {
                               base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               context_menu_button_.get())));
+
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. This is the accepted workaround to ensure only accessible
+  // name is announced by a screenreader rather than tooltip text and
+  // accessible name.
+  context_menu_button_->GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
 void ExtensionMenuItemView::OnContextMenuPressed() {
