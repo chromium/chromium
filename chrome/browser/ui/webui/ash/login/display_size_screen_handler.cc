@@ -46,6 +46,8 @@ void DisplaySizeScreenHandler::DeclareLocalizedValues(
   // CHOOBE resources
   builder->Add("choobeDisplaySizeTitle",
                IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE);
+  builder->Add("choobeDisplaySizeSubtitle",
+               IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_SUBTITLE);
 }
 
 void DisplaySizeScreenHandler::Show(base::Value::Dict data) {

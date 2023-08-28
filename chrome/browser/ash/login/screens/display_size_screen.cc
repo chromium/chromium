@@ -55,7 +55,7 @@ float GetCurrentZoomFactor(PrefService* prefs) {
 
 std::string RetrieveChoobeSubtitle(PrefService* prefs) {
   int percentage = std::round(GetCurrentZoomFactor(prefs) * 100);
-  return base::NumberToString(percentage) + "%";
+  return base::NumberToString(percentage);
 }
 
 bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
