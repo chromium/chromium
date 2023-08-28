@@ -78,10 +78,15 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     SetPaintToLayer();
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 
     SetBackground(views::CreateThemedRoundedRectBackground(
-        GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated),
         kDialogRoundedCornerRadius));
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kDialogRoundedCornerRadius,
+        views::HighlightBorder::Type::kHighlightBorder1));
 
     view_shadow_ = std::make_unique<ViewShadow>(this, kDialogShadowElevation);
     view_shadow_->SetRoundedCornerRadius(kDialogRoundedCornerRadius);
@@ -116,6 +121,9 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     if (chromeos::features::IsJellyrollEnabled()) {
       TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
                                             *title_);
+    } else {
+      title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
     }
 
     title_->SetPaintToLayer();
@@ -232,16 +240,6 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
-  }
-
-  void OnThemeChanged() override {
-    views::WidgetDelegateView::OnThemeChanged();
-
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kDialogRoundedCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1));
-    title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   void OnStartTetheringClicked(const ui::Event& event) {
