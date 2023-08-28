@@ -29,10 +29,9 @@ namespace content {
 class PepperVideoDecoderHost;
 
 // This class is a shim to wrap a media::VideoDecoder so that it can be used
-// by PepperVideoDecoderHost in place of a media::VideoDecodeAccelerator.
-// This class should be constructed, used, and destructed on the main (render)
-// thread.
-class VideoDecoderShim : public media::VideoDecodeAccelerator {
+// by PepperVideoDecoderHost. This class should be constructed, used, and
+// destructed on the main (render) thread.
+class VideoDecoderShim {
  public:
   static std::unique_ptr<VideoDecoderShim> Create(PepperVideoDecoderHost* host,
                                                   uint32_t texture_pool_size,
@@ -41,17 +40,15 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   VideoDecoderShim(const VideoDecoderShim&) = delete;
   VideoDecoderShim& operator=(const VideoDecoderShim&) = delete;
 
-  ~VideoDecoderShim() override;
+  ~VideoDecoderShim();
 
-  // media::VideoDecodeAccelerator implementation.
-  bool Initialize(const Config& config, Client* client) override;
-  void Decode(media::BitstreamBuffer bitstream_buffer) override;
-  void AssignPictureBuffers(
-      const std::vector<media::PictureBuffer>& buffers) override;
-  void ReusePictureBuffer(int32_t picture_buffer_id) override;
-  void Flush() override;
-  void Reset() override;
-  void Destroy() override;
+  bool Initialize(media::VideoCodecProfile profile);
+  void Decode(media::BitstreamBuffer bitstream_buffer);
+  void AssignPictureBuffers(const std::vector<media::PictureBuffer>& buffers);
+  void ReusePictureBuffer(int32_t picture_buffer_id);
+  void Flush();
+  void Reset();
+  void Destroy();
 
  private:
   enum State {

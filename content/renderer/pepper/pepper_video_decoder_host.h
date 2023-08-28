@@ -23,10 +23,8 @@
 namespace content {
 
 class RendererPpapiHost;
-class VideoDecoderShim;
 
-class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
-                               public media::VideoDecodeAccelerator::Client {
+class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
  public:
   PepperVideoDecoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
@@ -78,18 +76,17 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
       const IPC::Message& msg,
       ppapi::host::HostMessageContext* context) override;
 
-  // media::VideoDecodeAccelerator::Client implementation.
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              media::VideoPixelFormat format,
                              uint32_t textures_per_buffer,
                              const gfx::Size& dimensions,
-                             uint32_t texture_target) override;
-  void DismissPictureBuffer(int32_t picture_buffer_id) override;
-  void PictureReady(const media::Picture& picture) override;
-  void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id) override;
-  void NotifyFlushDone() override;
-  void NotifyResetDone() override;
-  void NotifyError(media::VideoDecodeAccelerator::Error error) override;
+                             uint32_t texture_target);
+  void DismissPictureBuffer(int32_t picture_buffer_id);
+  void PictureReady(const media::Picture& picture);
+  void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id);
+  void NotifyFlushDone();
+  void NotifyResetDone();
+  void NotifyError(media::VideoDecodeAccelerator::Error error);
 
   int32_t OnHostMsgInitialize(ppapi::host::HostMessageContext* context,
                               const ppapi::HostResource& graphics_context,
@@ -112,8 +109,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
   int32_t OnHostMsgFlush(ppapi::host::HostMessageContext* context);
   int32_t OnHostMsgReset(ppapi::host::HostMessageContext* context);
 
-  // These methods are needed by VideoDecodeShim, to look like a
-  // VideoDecodeAccelerator.
   const uint8_t* DecodeIdToAddress(uint32_t decode_id);
   std::vector<gpu::Mailbox> TakeMailboxes() {
     return std::move(texture_mailboxes_);
@@ -174,12 +169,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
 
   bool initialized_ = false;
 };
-
-// Checks the corresponding flag and enterprise policy to know if the
-// MojoVideoDecoder should be used in Pepper for hardware video decoding.
-// Returns true if the MojoVideoDecoder should be used and false if the
-// legacy VDA path should be used instead.
-bool ShouldUseMojoVideoDecoderForPepper();
 
 }  // namespace content
 

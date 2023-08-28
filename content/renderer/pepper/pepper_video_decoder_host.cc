@@ -212,9 +212,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
         std::max(shim_texture_pool_size, min_picture_count_);
     auto new_decoder = VideoDecoderShim::Create(this, shim_texture_pool_size,
                                                 /*use_hw_decoder=*/true);
-    if (new_decoder &&
-        new_decoder->Initialize(media::VideoDecodeAccelerator::Config(profile_),
-                                this)) {
+    if (new_decoder && new_decoder->Initialize(profile_)) {
       decoder_.reset(new_decoder.release());
       initialized_ = true;
       mojo_video_decoder_path_initialized_ = true;
@@ -558,8 +556,7 @@ bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
                                     min_picture_count_);
   std::unique_ptr<VideoDecoderShim> new_decoder(VideoDecoderShim::Create(
       this, shim_texture_pool_size, /*use_hw_decoder=*/false));
-  if (!new_decoder->Initialize(media::VideoDecodeAccelerator::Config(profile_),
-                               this)) {
+  if (!new_decoder->Initialize(profile_)) {
     return false;
   }
 

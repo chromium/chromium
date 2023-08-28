@@ -470,23 +470,18 @@ VideoDecoderShim::~VideoDecoderShim() {
                                 base::Owned(decoder_impl_.release())));
 }
 
-bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
-  DCHECK_EQ(client, host_);
+bool VideoDecoderShim::Initialize(media::VideoCodecProfile profile) {
   DCHECK(RenderThreadImpl::current());
   DCHECK_EQ(state_, UNINITIALIZED);
 
-  if (vda_config.is_encrypted()) {
-    NOTREACHED() << "Encrypted streams are not supported";
-    return false;
-  }
-
   media::VideoCodec codec = media::VideoCodec::kUnknown;
-  if (vda_config.profile <= media::H264PROFILE_MAX)
+  if (profile <= media::H264PROFILE_MAX) {
     codec = media::VideoCodec::kH264;
-  else if (vda_config.profile <= media::VP8PROFILE_MAX)
+  } else if (profile <= media::VP8PROFILE_MAX) {
     codec = media::VideoCodec::kVP8;
-  else if (vda_config.profile <= media::VP9PROFILE_MAX)
+  } else if (profile <= media::VP9PROFILE_MAX) {
     codec = media::VideoCodec::kVP9;
+  }
   DCHECK_NE(codec, media::VideoCodec::kUnknown);
 
   // For hardware decoding, an unsupported codec is expected to manifest in an
@@ -495,10 +490,9 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
     return false;
 
   media::VideoDecoderConfig video_decoder_config(
-      codec, vda_config.profile,
-      media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
-      media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),
-      kDefaultSize,
+      codec, profile, media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+      media::VideoColorSpace(), media::kNoTransformation, kDefaultSize,
+      gfx::Rect(kDefaultSize), kDefaultSize,
       // TODO(bbudge): Verify extra data isn't needed.
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 
