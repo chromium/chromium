@@ -23,6 +23,10 @@ import {MimeType} from './type.js';
 import {expandPath} from './util.js';
 
 export class ChromeHelperFake extends ChromeHelper {
+  // This class contains methods that overrides ChromeHelper, and async-ness
+  // should follow the ChromeHelper class. We can manually write
+  // Promise.resolve(...) instead but it's more verbose without much gain.
+  /* eslint-disable @typescript-eslint/require-await */
   override async initTabletModeMonitor(_onChange: (isTablet: boolean) => void):
       Promise<boolean> {
     return false;
@@ -151,6 +155,7 @@ export class ChromeHelperFake extends ChromeHelper {
   override openStorageManagement(): void {
     /* Do nothing. */
   }
+  /* eslint-enable @typescript-eslint/require-await */
 }
 
 localDev.setOverride(getInstanceImpl, () => new ChromeHelperFake());
