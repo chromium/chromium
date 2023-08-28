@@ -498,7 +498,8 @@ public class RootUiCoordinator
         mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
                 mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
-                mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
+                mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider,
+                mStartSurfaceSupplier);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mPageZoomCoordinator = new PageZoomCoordinator(new PageZoomCoordinatorDelegate() {

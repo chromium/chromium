@@ -38,6 +38,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.CommandLine;
@@ -48,6 +49,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -718,6 +720,13 @@ public class StartSurfaceTestUtils {
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         pressBack(testRule);
         Assert.assertTrue(AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+    }
+
+    public static void waitForStatusBarColor(Activity activity, int expectedColor) {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    activity.getWindow().getStatusBarColor(), Matchers.is(expectedColor));
+        }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**

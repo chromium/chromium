@@ -14,8 +14,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -31,9 +33,12 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.UiUtils;
@@ -82,6 +87,8 @@ public class StatusBarColorController
     private final @ColorInt int mStandardDefaultThemeColor;
     private final @ColorInt int mIncognitoDefaultThemeColor;
     private final @ColorInt int mActiveOmniboxDefaultColor;
+    private final boolean mIsSurfacePolishEnabled;
+    private final @ColorInt int mPolishedHomeSurfaceBgColor;
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
 
@@ -100,6 +107,10 @@ public class StatusBarColorController
     private boolean mShouldUpdateStatusBarColorForNTP;
     private @ColorInt int mStatusIndicatorColor;
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
+    private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
+    private StartSurface mStartSurface;
+    private StartSurface.StateObserver mStartSurfaceStateObserver;
+    private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
     /**
      * Constructs a StatusBarColorController.
@@ -112,20 +123,26 @@ public class StatusBarColorController
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
+     * @param startSurfaceSupplier The supplier for {@link StartSurface}.
      */
     public StatusBarColorController(Window window, boolean isTablet, Context context,
             StatusBarColorProvider statusBarColorProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            ActivityTabProvider tabProvider, TopUiThemeColorProvider topUiThemeColorProvider) {
+            ActivityTabProvider tabProvider, TopUiThemeColorProvider topUiThemeColorProvider,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
+        mStartSurfaceSupplier = startSurfaceSupplier;
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
 
         mStandardPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, false);
         mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, true);
         mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, true);
+        mPolishedHomeSurfaceBgColor = ChromeColors.getSurfaceColor(
+                context, R.dimen.home_surface_background_color_elevation);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
@@ -198,7 +215,16 @@ public class StatusBarColorController
             }
         };
 
-        if (layoutManagerSupplier != null) {
+        // TODO(https://crbug.com/1315679): Remove mStartSurfaceSupplier after the refactor is
+        // enabled by default. If Start surface refactor is enabled, we can observe layout state
+        // change to see if the Start surface is showing. If disabled, we have to observe the
+        // StartSurfaceState provided by mStartSurfaceSupplier.
+        if (ReturnToChromeUtil.isStartSurfaceEnabled(context)
+                && !ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context)) {
+            mStartSurfaceSupplier.onAvailable(this::onStartSurfaceAvailable);
+        } else if (layoutManagerSupplier != null) {
+            // LayoutState is observed when the feature "Start surface refactor" is enabled or Start
+            // surface is disabled.
             layoutManagerSupplier.addObserver(mCallbackController.makeCancelable(layoutManager -> {
                 assert layoutManager != null;
                 mLayoutStateProvider = layoutManager;
@@ -210,7 +236,8 @@ public class StatusBarColorController
                             return;
                         }
                         mIsInOverviewMode = true;
-                        if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+                        if (shouldUpdateStatusBarColorForHomeSurface()
+                                || !OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
                             updateStatusBarColor();
                         }
                     }
@@ -243,6 +270,37 @@ public class StatusBarColorController
         mToolbarColorChanged = false;
     }
 
+    private boolean shouldUpdateStatusBarColorForHomeSurface() {
+        return mIsSurfacePolishEnabled && !mIsIncognito && mStartSurfaceSupplier.hasValue()
+                && mStartSurfaceSupplier.get().isHomepageShown();
+    }
+
+    private void onStartSurfaceAvailable(StartSurface startSurface) {
+        mStartSurface = startSurface;
+        if (mStartSurface.getStartSurfaceState() != mStartSurfaceState) {
+            onStartSurfaceStateChanged(mStartSurface.getStartSurfaceState());
+        }
+        mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
+            if (mStartSurfaceState != newState) {
+                onStartSurfaceStateChanged(newState);
+            }
+        };
+        // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|,
+        // |mStartSurfaceState| and |mStartSurfaceStateObserver| after the refactor is
+        // enabled by default.
+        mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
+    }
+
+    private void onStartSurfaceStateChanged(@StartSurfaceState int newState) {
+        mStartSurfaceState = newState;
+        if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {
+            mIsInOverviewMode = false;
+        } else {
+            mIsInOverviewMode = true;
+        }
+        updateStatusBarColor();
+    }
+
     // DestroyObserver implementation.
     @Override
     public void onDestroy() {
@@ -256,6 +314,14 @@ public class StatusBarColorController
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+        if (mStartSurfaceSupplier != null) {
+            if (mStartSurface != null) {
+                mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
+                mStartSurface = null;
+                mStartSurfaceStateObserver = null;
+            }
+            mStartSurfaceSupplier = null;
         }
     }
 
@@ -380,6 +446,10 @@ public class StatusBarColorController
 
         // Return status bar color in overview mode.
         if (mIsInOverviewMode) {
+            if (shouldUpdateStatusBarColorForHomeSurface()) {
+                return mPolishedHomeSurfaceBgColor;
+            }
+
             // Toolbar will notify status bar color controller about the toolbar color during
             // overview animation.
             if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
