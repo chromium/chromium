@@ -4,10 +4,36 @@
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 
+#include "content/public/browser/picture_in_picture_window_controller.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 
+namespace {
+
+class MockPictureInPictureWindowController
+    : public content::PictureInPictureWindowController {
+ public:
+  MockPictureInPictureWindowController() = default;
+  MockPictureInPictureWindowController(
+      const MockPictureInPictureWindowController&) = delete;
+  MockPictureInPictureWindowController& operator=(
+      const MockPictureInPictureWindowController&) = delete;
+  ~MockPictureInPictureWindowController() override = default;
+
+  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, FocusInitiator, (), (override));
+  MOCK_METHOD(void, Close, (bool), (override));
+  MOCK_METHOD(void, CloseAndFocusInitiator, (), (override));
+  MOCK_METHOD(void, OnWindowDestroyed, (bool), (override));
+  MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
+  MOCK_METHOD(absl::optional<gfx::Rect>, GetWindowBounds, (), (override));
+  MOCK_METHOD(content::WebContents*, GetChildWebContents, (), (override));
+};
+
 using PictureInPictureWindowManagerTest = testing::Test;
+
+}  // namespace
 
 TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
   // The max window size should be 80% of the screen.
@@ -53,4 +79,20 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
       PictureInPictureWindowManager::
           CalculateInitialPictureInPictureWindowBounds(pip_options, display)
               .size());
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       ExitPictureInPictureReturnsFalseWhenThereIsNoWindow) {
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture());
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       ExitPictureInPictureReturnsTrueAndClosesWindow) {
+  MockPictureInPictureWindowController controller;
+  PictureInPictureWindowManager::GetInstance()
+      ->EnterPictureInPictureWithController(&controller);
+  EXPECT_CALL(controller, Close(/*should_pause_video=*/false));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture());
 }

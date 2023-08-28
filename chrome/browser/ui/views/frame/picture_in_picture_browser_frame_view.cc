@@ -179,6 +179,17 @@ class WindowEventObserver : public ui::EventObserver {
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
+void DefinitelyExitPictureInPicture(
+    PictureInPictureBrowserFrameView& frame_view) {
+  if (!PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture()) {
+    // If the picture-in-picture controller has been disconnected for
+    // some reason, then just manually close the window to prevent
+    // getting into a state where the back to tab button no longer
+    // closes the window.
+    frame_view.browser_view()->Close();
+  }
+}
+
 }  // namespace
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
@@ -309,8 +320,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
             PictureInPictureWindowManager::GetInstance()->FocusInitiator();
-            PictureInPictureWindowManager::GetInstance()
-                ->ExitPictureInPicture();
+            DefinitelyExitPictureInPicture(*frame_view);
           },
           base::Unretained(this))));
 
@@ -318,8 +328,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   close_image_button_ = button_container_view_->AddChildView(
       std::make_unique<CloseImageButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
-            PictureInPictureWindowManager::GetInstance()
-                ->ExitPictureInPicture();
+            DefinitelyExitPictureInPicture(*frame_view);
           },
           base::Unretained(this))));
 
