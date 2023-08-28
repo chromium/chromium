@@ -2315,14 +2315,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     }
   }
 
-  auto mode = CSSTimingData::GetRepeated(state.transition_data->BehaviorList(),
-                                         transition_index);
+  auto behavior = CSSTimingData::GetRepeated(
+      state.transition_data->BehaviorList(), transition_index);
 
   // If no smooth interpolation exists between the old and new values and
   // transition-behavior didn't indicate that we should do a discrete
   // transition, then don't start a transition.
   if (discrete_interpolation &&
-      mode != CSSTransitionData::TransitionBehavior::kAllowDiscrete) {
+      behavior != CSSTransitionData::TransitionBehavior::kAllowDiscrete) {
     return;
   }
 
@@ -2477,8 +2477,13 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
   CSSPropertyID resolved_id =
       ResolveCSSPropertyID(transition_property.unresolved_property);
   bool animate_all = resolved_id == CSSPropertyID::kAll;
+  bool with_discrete =
+      state.transition_data &&
+      CSSTimingData::GetRepeated(state.transition_data->BehaviorList(),
+                                 transition_index) ==
+          CSSTransitionData::TransitionBehavior::kAllowDiscrete;
   const StylePropertyShorthand& property_list =
-      animate_all ? PropertiesForTransitionAll()
+      animate_all ? PropertiesForTransitionAll(with_discrete)
                   : shorthandForProperty(resolved_id);
   // If not a shorthand we only execute one iteration of this loop, and
   // refer to the property directly.
@@ -3034,25 +3039,29 @@ void CSSAnimations::TransitionEventDelegate::Trace(Visitor* visitor) const {
   AnimationEffect::EventDelegate::Trace(visitor);
 }
 
-const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll() {
+const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
+    bool with_discrete) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand, ());
   if (properties.empty()) {
     for (CSSPropertyID id : CSSPropertyIDList()) {
       // Avoid creating overlapping transitions with perspective-origin and
       // transition-origin.
+      // transition:all shouldn't expand to itself
       if (id == CSSPropertyID::kWebkitPerspectiveOriginX ||
           id == CSSPropertyID::kWebkitPerspectiveOriginY ||
           id == CSSPropertyID::kWebkitTransformOriginX ||
           id == CSSPropertyID::kWebkitTransformOriginY ||
-          id == CSSPropertyID::kWebkitTransformOriginZ)
-        continue;
-      // transition:all shouldn't expand to itself
-      if (id == CSSPropertyID::kAll) {
+          id == CSSPropertyID::kWebkitTransformOriginZ ||
+          id == CSSPropertyID::kAll) {
         continue;
       }
       const CSSProperty& property = CSSProperty::Get(id);
+      if (!with_discrete && !property.IsInterpolable()) {
+        continue;
+      }
       if (IsAnimationAffectingProperty(property) || property.IsShorthand()) {
+        DCHECK(with_discrete);
         continue;
       }
       properties.push_back(&property);

@@ -67,7 +67,14 @@ class CORE_EXPORT CSSAnimations final {
   CSSAnimations(const CSSAnimations&) = delete;
   CSSAnimations& operator=(const CSSAnimations&) = delete;
 
-  static const StylePropertyShorthand& PropertiesForTransitionAll();
+  // When |with_discrete| is set to true, this method returns not just
+  // interpolable properties, but properties which can be transitioned with
+  // transition-behavior:allow-discrete. |with_discrete| returns almost 3x as
+  // many properties, which may result in slower style update performance, so
+  // they are worth separating.
+  static const StylePropertyShorthand& PropertiesForTransitionAll(
+      bool with_discrete);
+
   static bool IsAnimationAffectingProperty(const CSSProperty&);
   static bool IsAffectedByKeyframesFromScope(const Element&, const TreeScope&);
   static bool IsAnimatingCustomProperties(const ElementAnimations*);
