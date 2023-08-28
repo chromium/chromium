@@ -60,6 +60,12 @@ class GuestOsDlcInstallation {
 
   ~GuestOsDlcInstallation();
 
+  // If you intend to uninstall immediately after canceling, prefer this
+  // method. Normally you can just delete the object to cancel the installation,
+  // but dlcservice may still try to mount it in the background. Using this
+  // cancel ensures dlcservice won't be busy with the current installation.
+  void CancelGracefully();
+
  private:
   void CheckState();
 
@@ -75,6 +81,7 @@ class GuestOsDlcInstallation {
   int retries_remaining_;
   base::OnceCallback<void(Result)> completion_callback_;
   ProgressCallback progress_callback_;
+  bool gracefully_cancelled_ = false;
 
   base::WeakPtrFactory<GuestOsDlcInstallation> weak_factory_{this};
 };

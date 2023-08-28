@@ -91,6 +91,11 @@ GuestOsDlcInstallation::~GuestOsDlcInstallation() {
   }
 }
 
+void GuestOsDlcInstallation::CancelGracefully() {
+  gracefully_cancelled_ = true;
+  retries_remaining_ = 0;
+}
+
 void GuestOsDlcInstallation::CheckState() {
   ash::DlcserviceClient::Get()->GetDlcState(
       dlc_id_, base::BindOnce(&GuestOsDlcInstallation::OnGetDlcStateCompleted,
@@ -100,10 +105,13 @@ void GuestOsDlcInstallation::CheckState() {
 void GuestOsDlcInstallation::OnGetDlcStateCompleted(
     const std::string& err,
     const dlcservice::DlcState& dlc_state) {
+  ash::DlcserviceClient::InstallResult result;
   switch (dlc_state.state()) {
     case dlcservice::DlcState::INSTALLED:
-      std::move(completion_callback_)
-          .Run(base::ok(base::FilePath(dlc_state.root_path())));
+      result.dlc_id = dlc_state.id();
+      result.root_path = dlc_state.root_path();
+      result.error = dlcservice::kErrorNone;
+      OnDlcInstallCompleted(result);
       break;
     case dlcservice::DlcState::NOT_INSTALLED:
       StartInstall();
@@ -121,6 +129,11 @@ void GuestOsDlcInstallation::OnGetDlcStateCompleted(
 }
 
 void GuestOsDlcInstallation::StartInstall() {
+  // Skip calling install if we've canceled.
+  if (gracefully_cancelled_) {
+    OnDlcInstallCompleted({});
+    return;
+  }
   dlcservice::InstallRequest install_request;
   install_request.set_id(dlc_id_);
   ash::DlcserviceClient::Get()->Install(
@@ -132,6 +145,10 @@ void GuestOsDlcInstallation::StartInstall() {
 
 void GuestOsDlcInstallation::OnDlcInstallCompleted(
     const ash::DlcserviceClient::InstallResult& result) {
+  if (gracefully_cancelled_) {
+    std::move(completion_callback_).Run(base::unexpected(Error::Cancelled));
+    return;
+  }
   CHECK(result.dlc_id == dlc_id_);
   if (result.error == dlcservice::kErrorNone) {
     std::move(completion_callback_)

@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using base::test::TestFuture;
@@ -195,9 +196,19 @@ TEST_F(TerminaInstallTest, InstallDlc) {
 }
 
 TEST_F(TerminaInstallTest, InstallDlcCancell) {
+  fake_dlc_client_->set_install_error(dlcservice::kErrorBusy);
+
   TestFuture<TerminaInstaller::InstallResult> result_future;
   termina_installer_.Install(result_future.GetCallback());
+
+  // The installer should *not* complete until dlcservice stops being busy.
+  task_env_.RunUntilIdle();
   termina_installer_.CancelInstall();
+  task_env_.RunUntilIdle();
+  EXPECT_FALSE(result_future.IsReady());
+
+  task_env_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(result_future.IsReady());
   EXPECT_EQ(TerminaInstaller::InstallResult::Cancelled, result_future.Get());
 }
 
