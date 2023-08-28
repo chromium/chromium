@@ -620,8 +620,10 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterHigherVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -630,6 +632,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   // The candidate uninstall should not have altered global prefs.
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive("0.0.0.0"));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   // Do not call `Uninstall()` since the outdated updater uninstalled itself.
   // Additional clean up is needed because of how this test is set up. After
@@ -700,6 +703,7 @@ TEST_F(IntegrationTest, CleanupOldVersion) {
 TEST_F(IntegrationTest, SelfUpdate) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -709,6 +713,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -717,6 +722,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
 TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
 
   base::Version next_version(base::StringPrintf("%s1", kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
@@ -726,6 +732,7 @@ TEST_F(IntegrationTest, SelfUpdateWithWakeAll) {
   ASSERT_NO_FATAL_FAILURE(RunWakeAll());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kUpdaterAppId, next_version));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
