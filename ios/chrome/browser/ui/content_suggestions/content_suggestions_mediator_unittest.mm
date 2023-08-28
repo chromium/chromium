@@ -189,6 +189,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     promos_manager_ = std::make_unique<MockPromosManager>();
     mediator_.promosManager = promos_manager_.get();
 
+    mediator_.NTPMetricsDelegate =
+        OCMProtocolMock(@protocol(NewTabPageMetricsDelegate));
+
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
