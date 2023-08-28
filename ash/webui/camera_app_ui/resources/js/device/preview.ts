@@ -158,7 +158,7 @@ export class Preview {
     return this.constraints;
   }
 
-  private async updateFacing() {
+  private updateFacing() {
     const {facingMode} = this.getVideoTrack().getSettings();
     switch (facingMode) {
       case 'user':
@@ -177,7 +177,7 @@ export class Preview {
     const deviceOperator = DeviceOperator.getInstance();
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
 
-    this.isSupportPTZInternal = await (async () => {
+    this.isSupportPTZInternal = (() => {
       if (pan === undefined && tilt === undefined && zoom === undefined) {
         return false;
       }
@@ -327,7 +327,7 @@ export class Preview {
           this.onNewStreamNeeded();
         }
       }, 100);
-      await this.updateFacing();
+      this.updateFacing();
       this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
       await this.updatePTZ();
 
@@ -356,7 +356,7 @@ export class Preview {
       this.onPreviewExpired = new WaitableEvent();
       state.set(state.State.STREAMING, true);
     } catch (e) {
-      await this.close();
+      this.close();
       throw e;
     }
     return this.streamInternal;
@@ -365,7 +365,7 @@ export class Preview {
   /**
    * Closes the preview.
    */
-  async close(): Promise<void> {
+  close(): void {
     this.clearWatchdog();
     // Pause video element to avoid black frames during transition.
     this.video.pause();
@@ -635,7 +635,7 @@ export class Preview {
   /**
    * Hides display preview metadata on preview screen.
    */
-  private async disableShowMetadata(): Promise<void> {
+  private disableShowMetadata(): void {
     if (this.streamInternal === null || this.metadataObserver === null) {
       return;
     }
@@ -657,7 +657,7 @@ export class Preview {
   /**
    * Handles changed intrinsic size (first loaded or orientation changes).
    */
-  private async onIntrinsicSizeChanged(): Promise<void> {
+  private onIntrinsicSizeChanged(): void {
     if (this.video.videoWidth !== 0 && this.video.videoHeight !== 0) {
       nav.layoutShownViews();
     }

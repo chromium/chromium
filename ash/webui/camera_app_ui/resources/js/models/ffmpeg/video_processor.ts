@@ -390,7 +390,7 @@ class FFMpegVideoProcessor {
   /**
    * Writes a blob with mkv data into the processor.
    */
-  async write(blob: Blob): Promise<void> {
+  write(blob: Blob): void {
     this.jobQueue.push(async () => {
       const buf = await blob.arrayBuffer();
       this.inputDevice.push(new Int8Array(buf));
@@ -404,7 +404,7 @@ class FFMpegVideoProcessor {
    */
   async close(): Promise<void> {
     // Flush and close the input device.
-    this.jobQueue.push(async () => {
+    this.jobQueue.push(() => {
       this.inputDevice.endPush();
     });
     await this.jobQueue.flush();
@@ -423,7 +423,7 @@ class FFMpegVideoProcessor {
   async cancel(): Promise<void> {
     // Clear and make sure there is no pending task.
     await this.jobQueue.clear();
-    this.jobQueue.push(async () => {
+    this.jobQueue.push(() => {
       this.inputDevice.cancel();
       // When input device is cancelled, for some reason calling
       // emscripten_force_exit() will not close the corresponding file

@@ -334,7 +334,7 @@ export class Camera extends View implements CameraViewUI {
         () => this.cameraManager.reconfigure());
 
     this.initVideoEncoderOptions();
-    this.initScanMode();
+    await this.initScanMode();
   }
 
   /**
@@ -547,12 +547,8 @@ export class Camera extends View implements CameraViewUI {
     }
   }
 
-  async onPhotoError(): Promise<void> {
+  onPhotoError(): void {
     toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
-  }
-
-  async onNoPortrait(): Promise<void> {
-    toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
   }
 
   async cropIfUsingSquareResolution(result: Promise<PhotoResult>):

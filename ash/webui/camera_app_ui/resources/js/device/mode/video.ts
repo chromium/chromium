@@ -677,6 +677,11 @@ export class Video extends ModeBase {
         } finally {
           this.recordTime.stop();
           sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
+          // TypeScript wrongly deduce the type of this.snapshotting to be
+          // null, since there's an assert at the beginning of this function,
+          // and TypeScript doesn't consider other methods will change the type
+          // of properties.
+          // eslint-disable-next-line @typescript-eslint/await-thenable
           await this.snapshotting;
         }
       } catch (e) {
@@ -879,7 +884,7 @@ export class Video extends ModeBase {
           }
         }
 
-        const onStop = async () => {
+        const onStop = () => {
           assert(this.mediaRecorder !== null);
 
           state.set(state.State.RECORDING, false);

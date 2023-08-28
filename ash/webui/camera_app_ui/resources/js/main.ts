@@ -281,7 +281,7 @@ export class App {
     // TODO(b/236800499): Remove the toast around 3 milestones after the feature
     // is launched.
     const showTimeLapseToast = () => this.cameraManager.registerCameraUI({
-      onUpdateConfig: async () => {
+      onUpdateConfig: () => {
         if (localStorage.getBool(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN) ||
             state.get(Mode.VIDEO)) {
           return;

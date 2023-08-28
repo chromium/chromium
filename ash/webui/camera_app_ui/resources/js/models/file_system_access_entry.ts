@@ -137,8 +137,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     return this.handle.name;
   }
 
-  async getHandle(): Promise<FileSystemDirectoryHandle> {
-    return this.handle;
+  getHandle(): Promise<FileSystemDirectoryHandle> {
+    return Promise.resolve(this.handle);
   }
 
   async getFiles(): Promise<FileAccessEntry[]> {
