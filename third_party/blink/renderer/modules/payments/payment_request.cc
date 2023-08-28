@@ -1641,6 +1641,10 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       exception_code = DOMExceptionCode::kOptOutError;
       break;
 
+    case PaymentErrorReason::USER_ACTIVATION_REQUIRED:
+      exception_code = DOMExceptionCode::kSecurityError;
+      break;
+
     case PaymentErrorReason::UNKNOWN:
       break;
   }

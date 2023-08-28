@@ -1261,7 +1261,7 @@ public class PaymentRequestService
                 // page.
                 mRejectShowForUserActivation = true;
                 onShowFailed(NotShownReason.OTHER, ErrorStrings.CANNOT_SHOW_WITHOUT_USER_ACTIVATION,
-                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                        PaymentErrorReason.USER_ACTIVATION_REQUIRED);
                 return;
             }
             mJourneyLogger.setActivationlessShow();

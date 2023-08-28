@@ -311,7 +311,7 @@ void PaymentRequest::Show(bool wait_for_updated_details,
       DCHECK(!has_recorded_completion_);
       has_recorded_completion_ = true;
       journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
-      client_->OnError(mojom::PaymentErrorReason::NOT_ALLOWED_ERROR,
+      client_->OnError(mojom::PaymentErrorReason::USER_ACTIVATION_REQUIRED,
                        errors::kCannotShowWithoutUserActivation);
       ResetAndDeleteThis();
       return;
