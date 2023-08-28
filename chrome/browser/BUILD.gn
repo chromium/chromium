@@ -5184,6 +5184,7 @@ static_library("browser") {
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/apps/app_deduplication_service",
+      "//chrome/browser/apps/app_discovery_service:almanac_fetcher",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/apps/app_provisioning_service",
       "//chrome/browser/ash",

@@ -1,0 +1,33 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("almanac_fetcher") {
+  sources = [
+    "launcher_app_almanac_connector.cc",
+    "launcher_app_almanac_connector.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_discovery_service/almanac_api:proto",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "launcher_app_almanac_connector_unittest.cc" ]
+
+  deps = [
+    ":almanac_fetcher",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
