@@ -6,16 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -31,22 +26,18 @@ class VisualViewport;
 // It's responsible for bookkeeping tree state in other order, for example, the
 // most recent position container seen.
 struct PaintPropertyTreeBuilderFragmentContext {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   // Initializes all property tree nodes to the roots.
   PaintPropertyTreeBuilderFragmentContext();
 
-  void Trace(Visitor*) const;
-
   // State that propagates on the containing block chain (and so is adjusted
   // when an absolute or fixed position object is encountered).
   struct ContainingBlockContext {
-    DISALLOW_NEW();
+    STACK_ALLOCATED();
 
    public:
-    void Trace(Visitor*) const;
-
     // The combination of a transform and paint offset describes a linear space.
     // When a layout object recur to its children, the main context is expected
     // to refer the object's border box, then the callee will derive its own
@@ -85,7 +76,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
     PhysicalOffset directly_composited_container_paint_offset_subpixel_delta;
 
     // The PaintLayer corresponding to the origin of |paint_offset|.
-    Member<const LayoutObject> paint_offset_root;
+    const LayoutObject* paint_offset_root;
 
     // True if any fixed-position children within this context are fixed to the
     // root of the FrameView (and hence above its scroll).
@@ -182,15 +173,12 @@ struct PaintPropertyTreeBuilderContext final {
 
  public:
   PaintPropertyTreeBuilderContext();
-  PaintPropertyTreeBuilderContext(const PaintPropertyTreeBuilderContext&) =
-      default;
-  ~PaintPropertyTreeBuilderContext();
 
-  // TODO(paint-dev): With the removal of legacy block fragmentation support,
-  // there'll only ever be one entry in this vector.
-  // PaintPropertyTreeBuilderFragmentContext should be folded into
-  // PaintPropertyTreeBuilderContext.
-  HeapVector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
+  // TODO(paint-dev): We should fold PaintPropertyTreeBuilderFragmentContext
+  // into PaintPropertyTreeBuilderContext but we can't do it for now because
+  // SVG hidden containers need the default constructor of the former to
+  // initialize an independent paint property tree context.
+  PaintPropertyTreeBuilderFragmentContext fragment_context;
 
   const LayoutObject* container_for_absolute_position = nullptr;
   const LayoutObject* container_for_fixed_position = nullptr;
@@ -364,21 +352,17 @@ class PaintPropertyTreeBuilder {
   static bool ScheduleDeferredOpacityNodeUpdate(LayoutObject& object);
 
  private:
-  ALWAYS_INLINE void InitFragmentPaintProperties(
-      FragmentData&,
-      bool needs_paint_properties,
-      PaintPropertyTreeBuilderFragmentContext&);
-  ALWAYS_INLINE void InitFragmentPaintPropertiesForNG(
-      bool needs_paint_properties);
-  ALWAYS_INLINE void InitSingleFragmentFromParent(bool needs_paint_properties);
+  ALWAYS_INLINE void InitPaintProperties();
   ALWAYS_INLINE bool ObjectTypeMightNeedPaintProperties() const;
-  ALWAYS_INLINE void UpdateFragments();
+  ALWAYS_INLINE FragmentData& GetFragmentData() const;
+  ALWAYS_INLINE void UpdateFragmentData();
   ALWAYS_INLINE void UpdatePaintingLayer();
   ALWAYS_INLINE bool IsAffectedByOuterViewportBoundsDelta() const;
 
   ALWAYS_INLINE void UpdateGlobalMainThreadScrollingReasons();
 
   bool IsInNGFragmentTraversal() const { return pre_paint_info_; }
+
   static bool CanDoDeferredTransformNodeUpdate(const LayoutObject& object);
   static bool CanDoDeferredOpacityNodeUpdate(const LayoutObject& object);
 
@@ -389,8 +373,5 @@ class PaintPropertyTreeBuilder {
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::PaintPropertyTreeBuilderFragmentContext)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_H_

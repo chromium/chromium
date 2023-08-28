@@ -246,37 +246,22 @@ bool PaintInvalidator::InvalidatePaint(
   }
 
   if (pre_paint_info) {
-    FragmentData& fragment_data = *pre_paint_info->fragment_data;
-    context.fragment_data = &fragment_data;
-
-    if (tree_builder_context) {
-      DCHECK_EQ(tree_builder_context->fragments.size(), 1u);
-      const auto& fragment_tree_builder_context =
-          tree_builder_context->fragments[0];
-      UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
-      UpdateLayoutShiftTracking(object, fragment_tree_builder_context, context);
-    } else {
-      context.old_paint_offset = fragment_data.PaintOffset();
-    }
-
-    object.InvalidatePaint(context);
+    context.fragment_data = pre_paint_info->fragment_data;
+    CHECK(context.fragment_data);
   } else {
-    DCHECK(!object.IsFragmented());
-
-    auto* fragment_data = &object.GetMutableForPainting().FirstFragment();
-    context.fragment_data = fragment_data;
-
-    if (tree_builder_context) {
-      const auto& fragment_tree_builder_context =
-          tree_builder_context->fragments[0];
-      UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
-      UpdateLayoutShiftTracking(object, fragment_tree_builder_context, context);
-    } else {
-      context.old_paint_offset = fragment_data->PaintOffset();
-    }
-
-    object.InvalidatePaint(context);
+    context.fragment_data = &object.GetMutableForPainting().FirstFragment();
   }
+
+  if (tree_builder_context) {
+    const auto& fragment_tree_builder_context =
+        tree_builder_context->fragment_context;
+    UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
+    UpdateLayoutShiftTracking(object, fragment_tree_builder_context, context);
+  } else {
+    context.old_paint_offset = context.fragment_data->PaintOffset();
+  }
+
+  object.InvalidatePaint(context);
 
   auto reason = static_cast<const DisplayItemClient&>(object)
                     .GetPaintInvalidationReason();

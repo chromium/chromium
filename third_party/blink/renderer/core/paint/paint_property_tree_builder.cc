@@ -118,29 +118,12 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
       composited_scrolling_preference(
           static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
 
-PaintPropertyTreeBuilderContext::~PaintPropertyTreeBuilderContext() {
-  fragments.clear();
-}
-
-void PaintPropertyTreeBuilderFragmentContext::Trace(Visitor* visitor) const {
-  visitor->Trace(current);
-  visitor->Trace(absolute_position);
-  visitor->Trace(fixed_position);
-}
-
-void PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(paint_offset_root);
-}
-
 void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
     VisualViewport& visual_viewport,
     PaintPropertyTreeBuilderContext& full_context) {
-  if (full_context.fragments.empty())
-    full_context.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
-
-  PaintPropertyTreeBuilderFragmentContext& context = full_context.fragments[0];
+  PaintPropertyTreeBuilderFragmentContext& context =
+      full_context.fragment_context;
 
   auto property_changed =
       visual_viewport.UpdatePaintPropertyNodesIfNeeded(context);
@@ -178,10 +161,8 @@ void VisualViewportPaintPropertyTreeBuilder::Update(
 void PaintPropertyTreeBuilder::SetupContextForFrame(
     LocalFrameView& frame_view,
     PaintPropertyTreeBuilderContext& full_context) {
-  if (full_context.fragments.empty())
-    full_context.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
-
-  PaintPropertyTreeBuilderFragmentContext& context = full_context.fragments[0];
+  PaintPropertyTreeBuilderFragmentContext& context =
+      full_context.fragment_context;
 
   // Block fragmentation doesn't cross frame boundaries.
   context.current.is_in_block_fragmentation = false;
@@ -206,12 +187,11 @@ class FragmentPaintPropertyTreeBuilder {
       const LayoutObject& object,
       NGPrePaintInfo* pre_paint_info,
       PaintPropertyTreeBuilderContext& full_context,
-      PaintPropertyTreeBuilderFragmentContext& context,
       FragmentData& fragment_data)
       : object_(object),
         pre_paint_info_(pre_paint_info),
         full_context_(full_context),
-        context_(context),
+        context_(full_context.fragment_context),
         fragment_data_(fragment_data),
         properties_(fragment_data.PaintProperties()) {}
 
@@ -3173,102 +3153,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateLayoutShiftRootChanged(
 
 }  // namespace
 
-void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
-    FragmentData& fragment,
-    bool needs_paint_properties,
-    PaintPropertyTreeBuilderFragmentContext& context) {
-  if (const auto* properties = fragment.PaintProperties()) {
-    if (const auto* translation = properties->PaintOffsetTranslation()) {
-      // If there is a paint offset translation, it only causes a net change
-      // in additional_offset_to_layout_shift_root_delta by the amount the
-      // paint offset translation changed from the prior frame. To implement
-      // this, we record a negative offset here, and then re-add it in
-      // UpdatePaintOffsetTranslation. The net effect is that the value
-      // of additional_offset_to_layout_shift_root_delta is the difference
-      // between the old and new paint offset translation.
-      context.pending_additional_offset_to_layout_shift_root_delta =
-          -PhysicalOffset::FromVector2dFRound(translation->Get2dTranslation());
-    }
-    gfx::Vector2dF translation2d;
-    for (const TransformPaintPropertyNode* transform :
-         properties->AllCSSTransformPropertiesOutsideToInside()) {
-      if (transform) {
-        if (IsLayoutShiftRootTransform(*transform)) {
-          translation2d = gfx::Vector2dF();
-          break;
-        }
-        translation2d += transform->Get2dTranslation();
-      }
-    }
-    context.translation_2d_to_layout_shift_root_delta -= translation2d;
-  }
-
-  if (needs_paint_properties) {
-    fragment.EnsurePaintProperties();
-  } else if (auto* properties = fragment.PaintProperties()) {
-    if (properties->HasTransformNode()) {
-      properties_changed_.transform_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
-    }
-    if (properties->HasClipNode()) {
-      properties_changed_.clip_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
-    }
-    if (properties->HasEffectNode()) {
-      properties_changed_.effect_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
-    }
-    if (properties->Scroll()) {
-      properties_changed_.scroll_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
-    }
-    fragment.ClearPaintProperties();
-  }
-}
-
-void PaintPropertyTreeBuilder::InitFragmentPaintPropertiesForNG(
-    bool needs_paint_properties) {
-  if (context_.fragments.empty())
-    context_.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
-  else
-    context_.fragments.resize(1);
-  context_.fragments[0].current.fragmentainer_idx =
-      pre_paint_info_->fragmentainer_idx;
-  InitFragmentPaintProperties(*pre_paint_info_->fragment_data,
-                              needs_paint_properties, context_.fragments[0]);
-}
-
-void PaintPropertyTreeBuilder::InitSingleFragmentFromParent(
-    bool needs_paint_properties) {
-  FragmentData& first_fragment =
-      object_.GetMutableForPainting().FirstFragment();
-  first_fragment.ClearNextFragment();
-  if (context_.fragments.empty()) {
-    context_.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
-  } else {
-    context_.fragments.resize(1);
-  }
-
-  PaintPropertyTreeBuilderFragmentContext& context = context_.fragments[0];
-  InitFragmentPaintProperties(first_fragment, needs_paint_properties, context);
-  if (context.current.fragmentainer_idx == WTF::kNotFound) {
-    // We're not fragmented, but we may have been previously. Reset the
-    // fragmentainer index.
-    first_fragment.SetFragmentID(0);
-  } else {
-    // We're inside monolithic content, but further out there's a fragmentation
-    // context. Keep the fragmentainer index, so that the contents end up in the
-    // right one.
-    first_fragment.SetFragmentID(context.current.fragmentainer_idx);
-  }
-}
-
-void PaintPropertyTreeBuilder::UpdateFragments() {
+void PaintPropertyTreeBuilder::InitPaintProperties() {
   bool needs_paint_properties =
-#if !DCHECK_IS_ON()
-      // If DCHECK is not on, use fast path for text.
-      !object_.IsText() &&
-#endif
+      ObjectTypeMightNeedPaintProperties() &&
       (NeedsPaintOffsetTranslation(object_, context_.direct_compositing_reasons,
                                    context_.container_for_fixed_position,
                                    context_.painting_layer) ||
@@ -3294,24 +3181,66 @@ void PaintPropertyTreeBuilder::UpdateFragments() {
   // If the object is a text, none of the above function should return true.
   DCHECK(!needs_paint_properties || !object_.IsText());
 
-  // Need of fragmentation clip will be determined in CreateFragmentContexts().
+  FragmentData& fragment = GetFragmentData();
+  if (const auto* properties = fragment.PaintProperties()) {
+    if (const auto* translation = properties->PaintOffsetTranslation()) {
+      // If there is a paint offset translation, it only causes a net change
+      // in additional_offset_to_layout_shift_root_delta by the amount the
+      // paint offset translation changed from the prior frame. To implement
+      // this, we record a negative offset here, and then re-add it in
+      // UpdatePaintOffsetTranslation. The net effect is that the value
+      // of additional_offset_to_layout_shift_root_delta is the difference
+      // between the old and new paint offset translation.
+      context_.fragment_context
+          .pending_additional_offset_to_layout_shift_root_delta =
+          -PhysicalOffset::FromVector2dFRound(translation->Get2dTranslation());
+    }
+    gfx::Vector2dF translation2d;
+    for (const TransformPaintPropertyNode* transform :
+         properties->AllCSSTransformPropertiesOutsideToInside()) {
+      if (transform) {
+        if (IsLayoutShiftRootTransform(*transform)) {
+          translation2d = gfx::Vector2dF();
+          break;
+        }
+        translation2d += transform->Get2dTranslation();
+      }
+    }
+    context_.fragment_context.translation_2d_to_layout_shift_root_delta -=
+        translation2d;
+  }
 
-  if (IsInNGFragmentTraversal()) {
-    InitFragmentPaintPropertiesForNG(needs_paint_properties);
-  } else {
-    InitSingleFragmentFromParent(needs_paint_properties);
+  if (needs_paint_properties) {
+    fragment.EnsurePaintProperties();
+  } else if (auto* properties = fragment.PaintProperties()) {
+    if (properties->HasTransformNode()) {
+      properties_changed_.transform_changed =
+          PaintPropertyChangeType::kNodeAddedOrRemoved;
+    }
+    if (properties->HasClipNode()) {
+      properties_changed_.clip_changed =
+          PaintPropertyChangeType::kNodeAddedOrRemoved;
+    }
+    if (properties->HasEffectNode()) {
+      properties_changed_.effect_changed =
+          PaintPropertyChangeType::kNodeAddedOrRemoved;
+    }
+    if (properties->Scroll()) {
+      properties_changed_.scroll_changed =
+          PaintPropertyChangeType::kNodeAddedOrRemoved;
+    }
+    fragment.ClearPaintProperties();
   }
 
   if (object_.IsSVGHiddenContainer()) {
     // SVG resources are painted within one or more other locations in the
     // SVG during paint, and hence have their own independent paint property
     // trees, paint offset, etc.
-    context_.fragments.clear();
-    context_.fragments.Grow(1);
+    context_.fragment_context = PaintPropertyTreeBuilderFragmentContext();
     context_.has_svg_hidden_container_ancestor = true;
-    PaintPropertyTreeBuilderFragmentContext& fragment_context =
-        context_.fragments[0];
 
+    PaintPropertyTreeBuilderFragmentContext& fragment_context =
+        context_.fragment_context;
     fragment_context.current.paint_offset_root =
         fragment_context.absolute_position.paint_offset_root =
             fragment_context.fixed_position.paint_offset_root = &object_;
@@ -3322,6 +3251,36 @@ void PaintPropertyTreeBuilder::UpdateFragments() {
   if (object_.HasLayer()) {
     To<LayoutBoxModelObject>(object_).Layer()->SetIsUnderSVGHiddenContainer(
         context_.has_svg_hidden_container_ancestor);
+  }
+}
+
+FragmentData& PaintPropertyTreeBuilder::GetFragmentData() const {
+  if (pre_paint_info_) {
+    CHECK(pre_paint_info_->fragment_data);
+    return *pre_paint_info_->fragment_data;
+  }
+  return object_.GetMutableForPainting().FirstFragment();
+}
+
+void PaintPropertyTreeBuilder::UpdateFragmentData() {
+  FragmentData& fragment = GetFragmentData();
+  if (IsInNGFragmentTraversal()) {
+    context_.fragment_context.current.fragmentainer_idx =
+        pre_paint_info_->fragmentainer_idx;
+  } else {
+    fragment.ClearNextFragment();
+
+    if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
+      // We're not fragmented, but we may have been previously. Reset the
+      // fragmentainer index.
+      fragment.SetFragmentID(0);
+    } else {
+      // We're inside monolithic content, but further out there's a
+      // fragmentation context. Keep the fragmentainer index, so that the
+      // contents end up in the right one.
+      fragment.SetFragmentID(
+          context_.fragment_context.current.fragmentainer_idx);
+    }
   }
 }
 
@@ -3384,32 +3343,13 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   }
 
   UpdatePaintingLayer();
+  UpdateFragmentData();
+  InitPaintProperties();
 
-  if (ObjectTypeMightNeedPaintProperties()) {
-    UpdateFragments();
-  } else {
-    DCHECK_EQ(context_.direct_compositing_reasons, CompositingReason::kNone);
-    if (!IsInNGFragmentTraversal())
-      object_.GetMutableForPainting().FirstFragment().ClearNextFragment();
-  }
-
-  if (pre_paint_info_) {
-    DCHECK_EQ(context_.fragments.size(), 1u);
-    FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
-                                             context_.fragments[0],
-                                             *pre_paint_info_->fragment_data);
-    builder.UpdateForSelf();
-    properties_changed_.Merge(builder.PropertiesChanged());
-  } else {
-    DCHECK_EQ(context_.fragments.size(), 1u);
-    auto* fragment_data = &object_.GetMutableForPainting().FirstFragment();
-    auto& fragment_context = context_.fragments[0];
-    FragmentPaintPropertyTreeBuilder builder(
-        object_, /* pre_paint_info */ nullptr, context_, fragment_context,
-        *fragment_data);
-    builder.UpdateForSelf();
-    properties_changed_.Merge(builder.PropertiesChanged());
-  }
+  FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
+                                           GetFragmentData());
+  builder.UpdateForSelf();
+  properties_changed_.Merge(builder.PropertiesChanged());
 
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
     object_.GetMutableForPainting()
@@ -3456,23 +3396,12 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   if (!ObjectTypeMightNeedPaintProperties())
     return;
 
-  FragmentData* fragment_data;
-  if (pre_paint_info_) {
-    DCHECK_EQ(context_.fragments.size(), 1u);
-    fragment_data = pre_paint_info_->fragment_data;
-    DCHECK(fragment_data);
-  } else {
-    fragment_data = &object_.GetMutableForPainting().FirstFragment();
-  }
-
   // For now, only consider single fragment elements as possible isolation
   // boundaries.
   // TODO(crbug.com/890932): See if this is needed.
   bool is_isolated = true;
-  DCHECK_EQ(context_.fragments.size(), 1u);
-  auto& fragment_context = context_.fragments[0];
   FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
-                                           fragment_context, *fragment_data);
+                                           GetFragmentData());
   // The element establishes an isolation boundary if it has isolation nodes
   // before and after updating the children. In other words, if it didn't have
   // isolation nodes previously then we still want to do a subtree walk. If it

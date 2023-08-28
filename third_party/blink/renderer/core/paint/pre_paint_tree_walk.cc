@@ -671,7 +671,7 @@ PrePaintTreeWalk::RebuildContextForMissedDescendant(
   PaintPropertyTreeBuilderContext& property_context =
       *context.tree_builder_context;
   PaintPropertyTreeBuilderFragmentContext& fragment_context =
-      property_context.fragments[0];
+      property_context.fragment_context;
   // Reset the relevant OOF context to this fragmentainer, since this is its
   // containing block, as far as the NG fragment structure is concerned.
   property_context.container_for_absolute_position = &object;
@@ -717,7 +717,7 @@ void PrePaintTreeWalk::WalkMissedChildren(
       if (descendant_context.tree_builder_context.has_value()) {
         PaintPropertyTreeBuilderContext* builder_context =
             &descendant_context.tree_builder_context.value();
-        builder_context->fragments[0].current.paint_offset +=
+        builder_context->fragment_context.current.paint_offset +=
             offset_to_block_start_edge;
       }
 
@@ -815,7 +815,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
         containing_block_context = nullptr;
     if (LIKELY(fragmentainer_context.tree_builder_context)) {
       PaintPropertyTreeBuilderFragmentContext& fragment_context =
-          fragmentainer_context.tree_builder_context->fragments[0];
+          fragmentainer_context.tree_builder_context->fragment_context;
       containing_block_context = &fragment_context.current;
       containing_block_context->paint_offset += child.offset;
 
@@ -1253,7 +1253,8 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
         if (!physical_fragment || physical_fragment->IsFirstForNode() ||
             CanPaintMultipleFragments(*physical_fragment)) {
           if (context.tree_builder_context) {
-            auto& current = context.tree_builder_context->fragments[0].current;
+            auto& current =
+                context.tree_builder_context->fragment_context.current;
             current.paint_offset = PhysicalOffset(ToRoundedPoint(
                 current.paint_offset +
                 layout_embedded_content->ReplacedContentRect().offset -
