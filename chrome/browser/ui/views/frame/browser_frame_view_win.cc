@@ -585,7 +585,8 @@ int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
 
 int BrowserFrameViewWin::GetFrameHeight() const {
   if (browser_view()->GetTabStripVisible()) {
-    return browser_view()->tab_strip_region_view()->GetMinimumSize().height();
+    return browser_view()->tab_strip_region_view()->GetMinimumSize().height() -
+           WindowTopY() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
   }
   return IsMaximized() ? TitlebarMaximizedVisualHeight()
                        : TitlebarHeight(false);

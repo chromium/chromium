@@ -79,7 +79,7 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
   auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::LayoutOrientation::kHorizontal,
