@@ -45,6 +45,9 @@ enum MethodType {
   // Method corresponding to `CompanionPageHandler.UpdateLoadingState`.
   kCompanionLoadingState = 11,
 
+  // Method corresponding to `CompanionPage.RefreshCompanionPage`.
+  kRefreshCompanionPage = 12,
+
   // Methods used in browser -> renderer communication.
   // Method corresponding to `CompanionPage.UpdateCompanionPage`.
   kUpdateCompanionPage = 31,
@@ -253,6 +256,9 @@ interface CompanionPageHandler {
 
   // Called to update the browser with the appropriate companion loading state.
   OnLoadingState(LoadingState state);
+
+  // Does a hard refresh of the companion page with new state.
+  RefreshCompanionPage();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

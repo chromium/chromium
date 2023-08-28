@@ -1719,6 +1719,29 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
       static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
 }
 
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       RefreshCompanionPageMessageDoesReload) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  // Simulate a message to refresh companion page.
+  CompanionScriptBuilder builder(MethodType::kRefreshCompanionPage);
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  WaitForCompanionIframeReload();
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+}
+
 class CompanionPageDisabledBrowserTest : public CompanionPageBrowserTest {
  public:
   CompanionPageDisabledBrowserTest() : CompanionPageBrowserTest() {

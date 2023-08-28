@@ -186,6 +186,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   EXPECT_TRUE(proto.is_sign_in_allowed());
   EXPECT_FALSE(proto.has_msbb_enabled());
   EXPECT_TRUE(proto.is_upload_dialog_supported());
+  EXPECT_TRUE(proto.is_hard_refresh_supported());
 }
 
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
@@ -224,6 +225,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_TRUE(proto.links_open_in_new_tab());
   EXPECT_FALSE(proto.is_vqs_enabled_on_chrome());
   EXPECT_TRUE(proto.is_upload_dialog_supported());
+  EXPECT_TRUE(proto.is_hard_refresh_supported());
 
   // Verify promo state.
   EXPECT_TRUE(proto.has_promo_state());

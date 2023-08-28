@@ -68,6 +68,7 @@ class CompanionPageHandler
   void OpenUrlInBrowser(const absl::optional<GURL>& url_to_open,
                         bool use_new_tab) override;
   void OnLoadingState(side_panel::mojom::LoadingState loading_state) override;
+  void RefreshCompanionPage() override;
 
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(

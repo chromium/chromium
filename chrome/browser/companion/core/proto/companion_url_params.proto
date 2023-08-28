@@ -24,7 +24,7 @@ message PromoState {
 
 // This proto file is shared between Chrome and Server side and used to pack the
 // URL query params for the companion URL request.
-// Next ID: 12
+// Next ID: 13
 message CompanionUrlParams {
   reserved 4, 5;
 
@@ -54,4 +54,7 @@ message CompanionUrlParams {
 
   // Whether the upload dialog file chooser is supported on Chrome.
   optional bool is_upload_dialog_supported = 11;
+
+  // Whether the hard refresh protocol message is supported on Chrome.
+  optional bool is_hard_refresh_supported = 12;
 }
