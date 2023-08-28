@@ -43987,6 +43987,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4633" label="XPathMissingVariableParsed"/>
   <int value="4634" label="XPathMissingVariableEvaluated"/>
   <int value="4635" label="ClientHintsPrefersReducedTransparency"/>
+  <int value="4636" label="ElementCapture"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

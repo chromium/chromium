@@ -3973,6 +3973,7 @@ enum WebFeature {
   kXPathMissingVariableParsed = 4633,
   kXPathMissingVariableEvaluated = 4634,
   kClientHintsPrefersReducedTransparency = 4635,
+  kElementCapture = 4636,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
