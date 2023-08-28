@@ -629,7 +629,8 @@ void DevToolsWindow::OpenDevToolsWindow(
   std::string type = agent_host->GetType();
 
   bool is_worker = type == DevToolsAgentHost::kTypeServiceWorker ||
-                   type == DevToolsAgentHost::kTypeSharedWorker;
+                   type == DevToolsAgentHost::kTypeSharedWorker ||
+                   type == DevToolsAgentHost::kTypeSharedStorageWorklet;
 
   if (!agent_host->GetFrontendURL().empty()) {
     DevToolsWindow::OpenExternalFrontend(profile, agent_host->GetFrontendURL(),
@@ -710,7 +711,8 @@ void DevToolsWindow::OpenExternalFrontend(
                     /* browser_connection */ false);
   } else {
     bool is_worker = type == DevToolsAgentHost::kTypeServiceWorker ||
-                     type == DevToolsAgentHost::kTypeSharedWorker;
+                     type == DevToolsAgentHost::kTypeSharedWorker ||
+                     type == DevToolsAgentHost::kTypeSharedStorageWorklet;
 
     FrontendType frontend_type =
         is_worker ? kFrontendRemoteWorker : kFrontendRemote;

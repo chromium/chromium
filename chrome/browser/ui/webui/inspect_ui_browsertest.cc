@@ -11,13 +11,17 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_browser_test.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 using content::WebContents;
 
@@ -148,6 +152,62 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, MAYBE_LaunchUIDevtools) {
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testElementDisabled", base::Value("#launch-ui-devtools"),
       base::Value(false)));
+}
+
+class InspectUISharedStorageTest : public InspectUITest {
+ public:
+  InspectUISharedStorageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kSharedStorageAPI,
+                              privacy_sandbox::kPrivacySandboxSettings4,
+                              features::kPrivacySandboxAdsAPIsOverride,
+                              privacy_sandbox::
+                                  kOverridePrivacySandboxSettingsLocalTesting},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    content::SetupCrossSiteRedirector(&https_server_);
+
+    ASSERT_TRUE(https_server_.Start());
+
+    InspectUITest::SetUpOnMainThread();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+// TODO(b/280457934): Fix crash for Javascript coverage build and re-enable.
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+#define MAYBE_SharedStorageWorklet DISABLED_SharedStorageWorklet
+#else
+#define MAYBE_SharedStorageWorklet SharedStorageWorklet
+#endif
+IN_PROC_BROWSER_TEST_F(InspectUISharedStorageTest, MAYBE_SharedStorageWorklet) {
+  GURL main_frame_url = https_server_.GetURL("a.test", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  const char kModuleScriptFile[] = "/shared_storage/simple_module.js";
+
+  GURL module_script_url = https_server_.GetURL("a.test", kModuleScriptFile);
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      content::JsReplace("sharedStorage.worklet.addModule($1)",
+                                         module_script_url)));
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUIInspectURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
+      "testTargetListed", base::Value("#shared-storage-worklets"),
+      base::Value("populateWorkerTargets"), base::Value(kModuleScriptFile)));
 }
 
 class InspectUIFencedFrameTest : public InspectUITest {
