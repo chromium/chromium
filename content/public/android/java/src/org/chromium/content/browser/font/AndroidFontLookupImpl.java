@@ -260,11 +260,18 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                 return null;
             }
 
-            mFetchedFontCache.put(fontUniqueName, fileDescriptor.dup());
+            // Duplicate the ParcelFileDescriptor and close the original.
+            ParcelFileDescriptor duplicateDescriptor = fileDescriptor.dup();
+            StreamUtil.closeQuietly(fileDescriptor);
+
+            mFetchedFontCache.put(fontUniqueName, duplicateDescriptor);
             // The size of the font cache should be at maximum the size of the font name to
             // query map, since there is a limited number of fonts we fetch from GMS Core.
             assert mFetchedFontCache.size() <= mFullFontNameToQuery.size();
-            return fileDescriptor;
+
+            // The FileDescriptor returned here will be passed to Core#wrapFileDescriptor, which
+            // takes ownership of the FD. Duplicate again so the cached FD isn't closed.
+            return duplicateDescriptor.dup();
         } catch (NameNotFoundException | IOException | OutOfMemoryError | RuntimeException e) {
             // We sometimes get CursorWindowAllocationException, but it's a hidden class. So, we
             // catch RuntimeException.

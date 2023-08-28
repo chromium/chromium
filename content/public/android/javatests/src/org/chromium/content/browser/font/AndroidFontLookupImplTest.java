@@ -58,6 +58,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.mojo.MojoTestRule;
 import org.chromium.mojo_base.mojom.ReadOnlyFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -87,6 +88,14 @@ public final class AndroidFontLookupImplTest {
     private ParcelFileDescriptor mMockFileDescriptor;
     @Mock
     private ParcelFileDescriptor mMockFileDescriptor2;
+    @Mock
+    private ParcelFileDescriptor mMockCachedFileDescriptor;
+    @Mock
+    private ParcelFileDescriptor mMockCachedFileDescriptor2;
+    @Mock
+    private ParcelFileDescriptor mMockDuplicateFileDescriptor;
+    @Mock
+    private ParcelFileDescriptor mMockDuplicateFileDescriptor2;
     private Context mMockContext;
 
     @Mock
@@ -102,15 +111,19 @@ public final class AndroidFontLookupImplTest {
     private AndroidFontLookupImpl mAndroidFontLookup;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         initMocks(this);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         MockContentResolver resolver = new MockContentResolver();
         MockContext mockContext = new MockContext();
-        when(mMockFileDescriptor.detachFd()).thenReturn(FD);
-        when(mMockFileDescriptor2.detachFd()).thenReturn(FD2);
+        when(mMockFileDescriptor.dup()).thenReturn(mMockCachedFileDescriptor);
+        when(mMockFileDescriptor2.dup()).thenReturn(mMockCachedFileDescriptor2);
+        when(mMockCachedFileDescriptor.dup()).thenReturn(mMockDuplicateFileDescriptor);
+        when(mMockCachedFileDescriptor2.dup()).thenReturn(mMockDuplicateFileDescriptor2);
+        when(mMockDuplicateFileDescriptor.detachFd()).thenReturn(FD);
+        when(mMockDuplicateFileDescriptor2.detachFd()).thenReturn(FD2);
         resolver.addProvider(AUTHORITY, new MockContentProvider(mockContext) {
             @Override
             public AssetFileDescriptor openTypedAssetFile(Uri url, String mimeType, Bundle opts) {
