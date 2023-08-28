@@ -1705,6 +1705,11 @@ void AutofillMetrics::LogAutofillFormCleared() {
 }
 
 // static
+void AutofillMetrics::LogAutofillUndo() {
+  base::RecordAction(base::UserMetricsAction("Autofill_UndoFilling"));
+}
+
+// static
 void AutofillMetrics::LogNumberOfEditedAutofilledFields(
     size_t num_edited_autofilled_fields,
     bool observed_submission) {

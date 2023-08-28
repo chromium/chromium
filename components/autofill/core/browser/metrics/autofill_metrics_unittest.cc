@@ -1928,6 +1928,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
   // Simulate selecting a "Clear form" suggestion.
   {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(features::kAutofillUndo);
     base::UserActionTester user_action_tester;
     external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
 
@@ -1936,6 +1938,19 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_ClearedForm"));
+  }
+
+  // Simulate selecting an "Undo autofill" suggestion.
+  {
+    base::test::ScopedFeatureList scoped_feature_list{features::kAutofillUndo};
+    base::UserActionTester user_action_tester;
+    external_delegate().OnQuery(form, form.fields.front(), gfx::RectF());
+
+    external_delegate().DidAcceptSuggestion(
+        Suggestion(PopupItemId::kClearForm), 0,
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+    EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_UndoFilling"));
   }
 
   // Simulate showing a credit card suggestion polled from "Credit card number"

@@ -303,6 +303,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // This serves as a clear form or undo autofill suggestion, depending on
       // the state of the feature `kAutofillUndo`.
       if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
+        AutofillMetrics::LogAutofillUndo();
         manager_->UndoAutofill(mojom::AutofillActionPersistence::kFill,
                                query_form_, query_field_);
       } else {
