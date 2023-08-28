@@ -548,6 +548,12 @@ class SystemAccessProcessPrintBrowserTestBase
             &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
             base::Unretained(this)));
     manager->AddTestObserver(*this);
+#if BUILDFLAG(IS_WIN)
+    if (simulate_pdf_conversion_error_on_page_index_.has_value()) {
+      manager->set_simulate_pdf_conversion_error_on_page_index(
+          *simulate_pdf_conversion_error_on_page_index_);
+    }
+#endif
     TestPrintViewManager* manager_ptr = manager.get();
     web_contents->SetUserData(PrintViewManager::UserDataKey(),
                               std::move(manager));
@@ -675,6 +681,12 @@ class SystemAccessProcessPrintBrowserTestBase
 #endif  // BUILDFLAG(IS_MAC)
 
   void PrimeAsRepeatingErrorGenerator() { reset_errors_after_check_ = false; }
+
+#if BUILDFLAG(IS_WIN)
+  void PrimeForPdfConversionErrorOnPageIndex(uint32_t page_index) {
+    simulate_pdf_conversion_error_on_page_index_ = page_index;
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   void PrimeForSpoolingSharedMemoryErrors() {
@@ -917,6 +929,9 @@ class SystemAccessProcessPrintBrowserTestBase
   bool did_get_settings_with_ui_ = false;
   bool print_backend_service_use_detected_ = false;
   bool simulate_spooling_memory_errors_ = false;
+#if BUILDFLAG(IS_WIN)
+  absl::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
+#endif
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -1247,6 +1262,44 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(cancel_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
+
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1474335):  Update test class to
+// `SystemAccessProcessPrintBrowserTest` and fill in expectations when cancel
+// after failed PDF conversion no longer crashes for OOPPD.
+IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
+                       StartPrintingPdfConversionFails) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // There are no callbacks for print stages with in-browser printing.  So
+  // the print job is started, but that fails, and there is no capturing of
+  // that result.
+  // The expected events for this are:
+  // 1.  Print job is started, but is destroyed due to failure during PDF
+  //     conversion failure.
+  // No error dialog is shown.
+  SetNumExpectedMessages(/*num=*/1);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  // TODO(crbug.com/1474335):  Update expectations when cancel after failed PDF
+  // conversion no longer crashes.
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        StartPrintingFails) {
@@ -1893,6 +1946,48 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   EXPECT_EQ(did_print_document_count(), 1);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
+
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1474335):  Update test class to
+// `SystemAccessProcessPrintBrowserTest` and fill in expectations when cancel
+// after failed PDF conversion no longer crashes for OOPPD.
+IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
+                       StartBasicPrintPdfConversionFails) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // There are only partial overrides to track most steps in the printing
+  // pipeline, so the expected events for this are:
+  // 1.  Gets default settings.
+  // 2.  Asks user for settings.
+  // 3.  A print job is started, but is destroyed due to failure during PDF
+  //     conversion.
+  // 4.  The renderer will have initiated printing of document, which could
+  //     invoke the print compositor.  Wait until all processing for
+  //     DidPrintDocument is known to have completed, to ensure printing
+  //     finished cleanly before completing the test.
+  // No error dialog is shown.
+  SetNumExpectedMessages(/*num=*/4);
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(print_job_destruction_count(), 1);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
 

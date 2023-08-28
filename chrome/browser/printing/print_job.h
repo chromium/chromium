@@ -196,6 +196,13 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // it.
   void UpdatePrintedDocument(scoped_refptr<PrintedDocument> new_document);
 
+#if BUILDFLAG(IS_WIN)
+  // Virtual to support testing.
+  virtual void OnPdfPageConverted(uint32_t page_index,
+                                  float scale_factor,
+                                  std::unique_ptr<MetafilePlayer> metafile);
+#endif
+
  private:
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(PrintJobTest, PageRangeMapping);
@@ -238,9 +245,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
       const GURL& url);
 
   void OnPdfConversionStarted(uint32_t page_count);
-  void OnPdfPageConverted(uint32_t page_index,
-                          float scale_factor,
-                          std::unique_ptr<MetafilePlayer> metafile);
 
   // Helper method to do the work for ResetPageMapping(). Split for unit tests.
   static std::vector<uint32_t> GetFullPageMapping(
