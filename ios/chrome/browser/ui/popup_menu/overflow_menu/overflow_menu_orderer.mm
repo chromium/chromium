@@ -390,14 +390,14 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
 - (void)commitActionsUpdate {
   ActionOrderData actionOrderData;
-  for (OverflowMenuAction* action in self.actionCustomizationModel.shownActions
-           .actions) {
+  for (OverflowMenuAction* action in self.actionCustomizationModel
+           .shownActions) {
     actionOrderData.shownActions.push_back(
         static_cast<overflow_menu::ActionType>(action.actionType));
   }
 
-  for (OverflowMenuAction* action in self.actionCustomizationModel.hiddenActions
-           .actions) {
+  for (OverflowMenuAction* action in self.actionCustomizationModel
+           .hiddenActions) {
     actionOrderData.hiddenActions.push_back(
         static_cast<overflow_menu::ActionType>(action.actionType));
   }

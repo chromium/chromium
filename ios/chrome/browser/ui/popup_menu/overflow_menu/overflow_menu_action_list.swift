@@ -18,7 +18,7 @@ struct OverflowMenuActionList: View {
 
   var body: some View {
     List {
-      ForEach(actionGroups) { actionGroup in
+      ForEach(actionGroups.filter({ !$0.actions.isEmpty })) { actionGroup in
         OverflowMenuActionSection(
           actionGroup: actionGroup, metricsHandler: metricsHandler)
       }

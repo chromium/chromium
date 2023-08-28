@@ -81,10 +81,8 @@ struct MenuCustomizationView: View {
               .tint(.chromeBlue)
           }
         }
-        ForEach([actionCustomizationModel.shownActions, actionCustomizationModel.hiddenActions]) {
-          group in
-          OverflowMenuActionSection(actionGroup: group, metricsHandler: nil)
-        }
+        OverflowMenuActionSection(
+          actionGroup: actionCustomizationModel.actionsGroup, metricsHandler: nil)
       }
       .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
     }
