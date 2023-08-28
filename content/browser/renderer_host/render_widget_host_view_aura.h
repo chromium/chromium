@@ -681,6 +681,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnViewportSegmentsChanged(
       const std::vector<gfx::Rect>& segments) override;
 
+  // Provided a list of viewport segments, calculate and set the
+  // DisplayFeature.
+  void ComputeDisplayFeature();
+
   raw_ptr<aura::Window> window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;
@@ -816,6 +820,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // are expressed in DIPs relative to the view. See display_feature.h for more
   // details.
   absl::optional<DisplayFeature> display_feature_;
+  // Viewport segments returned by the platform.
+  std::vector<gfx::Rect> viewport_segments_;
 
 #if BUILDFLAG(IS_WIN)
   mojo::Remote<device::mojom::DevicePostureProvider> device_posture_provider_;
