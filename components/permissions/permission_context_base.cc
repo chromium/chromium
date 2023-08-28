@@ -42,7 +42,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
 
@@ -307,7 +307,7 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Some GuestViews are loaded in a separate StoragePartition. Given that
   // permissions are scoped to a BrowserContext, not a StoragePartition, we may
   // have a situation where a user has granted a permission to an origin in a

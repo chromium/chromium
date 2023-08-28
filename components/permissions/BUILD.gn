@@ -136,6 +136,9 @@ source_set("permissions") {
       "contexts/geolocation_permission_context_system.h",
     ]
   }
+  if (!is_android && !is_ios) {
+    deps += [ "//components/guest_view/browser" ]
+  }
   if (is_android) {
     sources += [
       "android/android_permission_util.cc",
@@ -193,7 +196,6 @@ source_set("permissions") {
       "permission_hats_trigger_helper.h",
       "permission_prompt_impl.cc",
     ]
-    deps += [ "//components/guest_view/browser" ]
   }
   public_deps = [ ":permissions_common" ]
 }
