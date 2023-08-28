@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_model_handler.h"
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 
 #include <vector>
 
@@ -16,7 +16,7 @@
 
 namespace autofill {
 
-AutofillModelHandler::AutofillModelHandler(
+AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
     : optimization_guide::ModelHandler<ServerFieldType, const FormFieldData&>(
           model_provider,
@@ -32,9 +32,9 @@ AutofillModelHandler::AutofillModelHandler(
   // regressions during the rollout.
   SetShouldUnloadModelOnComplete(false);
 }
-AutofillModelHandler::~AutofillModelHandler() = default;
+AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;
 
-void AutofillModelHandler::GetModelPredictionsForForm(
+void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     const FormData& form_data,
     base::OnceCallback<void(const std::vector<ServerFieldType>&)> callback) {
   // According to the description of `BatchExecuteModelWithInput()`, it

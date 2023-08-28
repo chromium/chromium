@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ml_model/autofill_model_handler.h"
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 
 #include <vector>
 
@@ -28,7 +28,7 @@ using testing::ElementsAre;
 
 namespace {
 
-class AutofillModelHandlerTest : public testing::Test {
+class AutofillMlPredictionModelHandlerTest : public testing::Test {
  public:
   void SetUp() override {
     model_provider_ = std::make_unique<
@@ -48,8 +48,8 @@ class AutofillModelHandlerTest : public testing::Test {
         features::kAutofillModelPredictions,
         {{features::kAutofillModelDictionaryFilePath.name,
           dictionary_path.MaybeAsASCII()}});
-    model_handler_ =
-        std::make_unique<AutofillModelHandler>(model_provider_.get());
+    model_handler_ = std::make_unique<AutofillMlPredictionModelHandler>(
+        model_provider_.get());
     SimulateRetrieveModelFromServer(model_file_path);
     task_environment_.RunUntilIdle();
   }
@@ -80,14 +80,14 @@ class AutofillModelHandlerTest : public testing::Test {
   base::test::ScopedFeatureList features_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
-  std::unique_ptr<AutofillModelHandler> model_handler_;
+  std::unique_ptr<AutofillMlPredictionModelHandler> model_handler_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_environment_;
 };
 
 }  // namespace
 
-TEST_F(AutofillModelHandlerTest, ModelExecutedFormData) {
+TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedFormData) {
   FormData form_data = test::GetFormData({.fields = {
                                               {.label = u"First name"},
                                               {.label = u"Last name"},
@@ -97,7 +97,7 @@ TEST_F(AutofillModelHandlerTest, ModelExecutedFormData) {
               ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1));
 }
 
-TEST_F(AutofillModelHandlerTest, ModelExecutedMultipleForms) {
+TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedMultipleForms) {
   {
     FormData form_data = test::GetFormData({.fields = {
                                                 {.label = u"First name"},
@@ -117,7 +117,7 @@ TEST_F(AutofillModelHandlerTest, ModelExecutedMultipleForms) {
   }
 }
 
-TEST_F(AutofillModelHandlerTest, ModelExecutedEmptyForm) {
+TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedEmptyForm) {
   FormData form_data;
   EXPECT_TRUE(GetModelPredictions(form_data).empty());
 }
