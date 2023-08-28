@@ -71,14 +71,15 @@ LargeIconServiceFactory::LargeIconServiceFactory()
 
 LargeIconServiceFactory::~LargeIconServiceFactory() = default;
 
-KeyedService* LargeIconServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LargeIconServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
-  return new favicon::LargeIconServiceImpl(
+  return std::make_unique<favicon::LargeIconServiceImpl>(
       favicon_service,
       std::make_unique<image_fetcher::ImageFetcherImpl>(
           std::make_unique<ImageDecoderImpl>(),
