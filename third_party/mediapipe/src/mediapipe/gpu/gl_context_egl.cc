@@ -14,6 +14,8 @@
 
 #include <utility>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/log.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -23,7 +25,6 @@
 #include "mediapipe/framework/port/status_builder.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gl_context_internal.h"
-#include "absl/log/absl_check.h"
 
 #ifndef EGL_OPENGL_ES3_BIT_KHR
 #define EGL_OPENGL_ES3_BIT_KHR 0x00000040
@@ -35,6 +36,7 @@ namespace mediapipe {
 
 namespace {
 
+#if !MEDIAPIPE_DISABLE_PTHREADS
 static pthread_key_t egl_release_thread_key;
 static pthread_once_t egl_release_key_once = PTHREAD_ONCE_INIT;
 
@@ -71,6 +73,7 @@ static void EnsureEglThreadRelease() {
   pthread_setspecific(egl_release_thread_key,
                       reinterpret_cast<void*>(0xDEADBEEF));
 }
+#endif
 
 static absl::StatusOr<EGLDisplay> GetInitializedDefaultEglDisplay() {
   EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -288,7 +291,11 @@ void GlContext::GetCurrentContextBinding(GlContext::ContextBinding* binding) {
 
 absl::Status GlContext::SetCurrentContextBinding(
     const ContextBinding& new_binding) {
+#if !MEDIAPIPE_DISABLE_PTHREADS
   EnsureEglThreadRelease();
+#else
+  LOG(WARNING) << __func__ << ": make sure this thread releases EGL resources!";
+#endif
   EGLDisplay display = new_binding.display;
   if (display == EGL_NO_DISPLAY) {
     display = eglGetCurrentDisplay();

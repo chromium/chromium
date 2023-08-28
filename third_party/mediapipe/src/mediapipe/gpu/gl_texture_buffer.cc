@@ -14,6 +14,7 @@
 
 #include "mediapipe/gpu/gl_texture_buffer.h"
 
+#include "absl/log/log.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gl_texture_view.h"

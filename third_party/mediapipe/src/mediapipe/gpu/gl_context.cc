@@ -14,6 +14,10 @@
 
 #include "mediapipe/gpu/gl_context.h"
 
+#if !MEDIAPIPE_DISABLE_PTHREADS
+#include <pthread.h>
+#endif
+
 #include <sys/types.h>
 
 #include <cmath>
@@ -22,6 +26,7 @@
 #include <utility>
 
 #include "absl/base/dynamic_annotations.h"
+#include "absl/log/log.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/synchronization/mutex.h"
@@ -34,8 +39,8 @@
 
 #ifndef __EMSCRIPTEN__
 #include "absl/debugging/leak_check.h"
-#include "mediapipe/gpu/gl_thread_collector.h"
 #include "absl/log/absl_check.h"
+#include "mediapipe/gpu/gl_thread_collector.h"
 #endif
 
 #ifndef GL_MAJOR_VERSION
@@ -70,17 +75,29 @@ static void SetThreadName(const char* name) {
 }
 
 GlContext::DedicatedThread::DedicatedThread() {
+#if !MEDIAPIPE_DISABLE_PTHREADS
   ABSL_CHECK_EQ(pthread_create(&gl_thread_id_, nullptr, ThreadBody, this), 0);
+#else
+  gl_thread_ = std::thread(&DedicatedThread::ThreadBody, this);
+#endif
 }
 
 GlContext::DedicatedThread::~DedicatedThread() {
   if (IsCurrentThread()) {
     ABSL_CHECK(self_destruct_);
+#if !MEDIAPIPE_DISABLE_PTHREADS
     ABSL_CHECK_EQ(pthread_detach(gl_thread_id_), 0);
+#else
+    gl_thread_.detach();
+#endif
   } else {
     // Give an invalid job to signal termination.
     PutJob({});
+#if !MEDIAPIPE_DISABLE_PTHREADS
     ABSL_CHECK_EQ(pthread_join(gl_thread_id_, nullptr), 0);
+#else
+    gl_thread_.join();
+#endif
   }
 }
 
@@ -106,11 +123,14 @@ void GlContext::DedicatedThread::PutJob(Job job) {
   has_jobs_cv_.SignalAll();
 }
 
+#if !MEDIAPIPE_DISABLE_PTHREADS
+// static
 void* GlContext::DedicatedThread::ThreadBody(void* instance) {
   DedicatedThread* thread = static_cast<DedicatedThread*>(instance);
   thread->ThreadBody();
   return nullptr;
 }
+#endif
 
 #ifdef __APPLE__
 #define AUTORELEASEPOOL @autoreleasepool
@@ -174,7 +194,11 @@ void GlContext::DedicatedThread::RunWithoutWaiting(GlVoidFunction gl_func) {
 }
 
 bool GlContext::DedicatedThread::IsCurrentThread() {
+#if !MEDIAPIPE_DISABLE_PTHREADS
   return pthread_equal(gl_thread_id_, pthread_self());
+#else
+  return std::this_thread::get_id() == gl_thread_.get_id();
+#endif
 }
 
 bool GlContext::ParseGlVersion(absl::string_view version_string, GLint* major,
@@ -475,10 +499,6 @@ void GlContext::RunWithoutWaiting(GlVoidFunction gl_func) {
 }
 
 std::weak_ptr<GlContext>& GlContext::CurrentContext() {
-  // Workaround for b/67878799.
-#ifndef __EMSCRIPTEN__
-  absl::LeakCheckDisabler disable_leak_check;
-#endif
   ABSL_CONST_INIT thread_local std::weak_ptr<GlContext> current_context;
   return current_context;
 }
@@ -1057,7 +1077,7 @@ void GlContext::SetStandardTextureParams(GLenum target, GLint internal_format) {
   glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-const GlContext::Attachment<GLuint> kUtilityFramebuffer(
+ABSL_CONST_INIT const GlContext::Attachment<GLuint> kUtilityFramebuffer(
     [](GlContext&) -> GlContext::Attachment<GLuint>::Ptr {
       GLuint framebuffer;
       glGenFramebuffers(1, &framebuffer);

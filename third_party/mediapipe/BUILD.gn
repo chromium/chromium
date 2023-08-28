@@ -7,6 +7,10 @@ import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
 
+declare_args() {
+  mediapipe_build_with_gpu_support = is_win
+}
+
 config("mediapipe_config") {
   include_dirs = [
     "src",
@@ -28,10 +32,15 @@ config("mediapipe_flags") {
     "-Wno-range-loop-bind-reference",
   ]
 
-  defines = [
-    "MEDIAPIPE_DISABLE_GPU=1",
-    "MEDIAPIPE_PROTO_LITE=1",
-  ]
+  defines = [ "MEDIAPIPE_PROTO_LITE=1" ]
+
+  if (!mediapipe_build_with_gpu_support) {
+    defines += [ "MEDIAPIPE_DISABLE_GPU=1" ]
+  } else if (is_win) {
+    # When building with GPU support on Windows, we don't want MediaPipe to try
+    # and use pthreads, since they will be unavailable.
+    defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
+  }
 }
 
 source_set("any_lite_proto_impl") {
@@ -179,6 +188,7 @@ tflite_source_set("mediapipe_tasks_always_link") {
 # See src/docs/getting_started/troubleshooting.md
 tflite_source_set("mediapipe_core_always_link") {
   sources = [
+    "src/mediapipe/calculators/core/pass_through_calculator.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
     "src/mediapipe/framework/stream_handler/in_order_output_stream_handler.cc",
@@ -203,6 +213,13 @@ tflite_source_set("mediapipe_core_always_link") {
     ":mediapipe_flags",
     ":mediapipe_config",
   ]
+
+  if (mediapipe_build_with_gpu_support) {
+    sources += [
+      "src/mediapipe/gpu/gpu_buffer_to_image_frame_calculator.cc",
+      "src/mediapipe/gpu/image_frame_to_gpu_buffer_calculator.cc",
+    ]
+  }
 
   conditional_deps = [
     ":mediapipe_core",
@@ -380,7 +397,7 @@ tflite_static_library("mediapipe_core") {
   ]
 
   if (!is_win) {
-    # TODO(b/283522287): Investigate this farther. The .cc file itself reads
+    # TODO(b/283522287): Investigate this further. The .cc file itself reads
     # like it should be supported on Windows, but it fails to compile. This may
     # be unneeded code though, as mediapipe links successfully on Windows
     # without these files.
@@ -425,6 +442,43 @@ tflite_static_library("mediapipe_core") {
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
+
+  if (mediapipe_build_with_gpu_support) {
+    sources += [
+      "src/mediapipe/framework/formats/image.cc",
+      "src/mediapipe/framework/formats/image.h",
+      "src/mediapipe/framework/formats/image_frame.cc",
+      "src/mediapipe/framework/formats/image_frame.h",
+      "src/mediapipe/gpu/gl_calculator_helper.cc",
+      "src/mediapipe/gpu/gl_calculator_helper.h",
+      "src/mediapipe/gpu/gl_context.cc",
+      "src/mediapipe/gpu/gl_context.h",
+      "src/mediapipe/gpu/gl_context_egl.cc",
+      "src/mediapipe/gpu/gl_context_internal.h",
+      "src/mediapipe/gpu/gl_texture_buffer.cc",
+      "src/mediapipe/gpu/gl_texture_buffer.h",
+      "src/mediapipe/gpu/gl_texture_view.cc",
+      "src/mediapipe/gpu/gl_texture_view.h",
+      "src/mediapipe/gpu/gpu_buffer.cc",
+      "src/mediapipe/gpu/gpu_buffer.h",
+      "src/mediapipe/gpu/gpu_buffer_format.cc",
+      "src/mediapipe/gpu/gpu_buffer_format.h",
+      "src/mediapipe/gpu/gpu_buffer_storage.cc",
+      "src/mediapipe/gpu/gpu_buffer_storage.h",
+      "src/mediapipe/gpu/gpu_buffer_storage_image_frame.cc",
+      "src/mediapipe/gpu/gpu_buffer_storage_image_frame.h",
+      "src/mediapipe/gpu/gpu_service.cc",
+      "src/mediapipe/gpu/gpu_service.h",
+      "src/mediapipe/gpu/gpu_shared_data_internal.cc",
+      "src/mediapipe/gpu/gpu_shared_data_internal.h",
+    ]
+
+    public_deps = [
+      "//third_party/angle:includes",
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
+  }
 
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]

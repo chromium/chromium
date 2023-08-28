@@ -15,8 +15,6 @@
 #ifndef MEDIAPIPE_GPU_GL_CONTEXT_H_
 #define MEDIAPIPE_GPU_GL_CONTEXT_H_
 
-#include <pthread.h>
-
 #include <atomic>
 #include <functional>
 #include <memory>
@@ -277,8 +275,9 @@ class GlContext : public std::enable_shared_from_this<GlContext> {
   //
   // Therefore, instead of using std::function<void(void)>, we use a template
   // that only accepts arguments with a void result type.
-  template <typename T, typename = typename std::enable_if<std::is_void<
-                            typename std::result_of<T()>::type>::value>::type>
+  template <typename T,
+            typename = typename std::enable_if<std::is_void<
+                typename std::invoke_result<T>::type>::value>::type>
   void Run(T f) {
     Run([f] {
       f();

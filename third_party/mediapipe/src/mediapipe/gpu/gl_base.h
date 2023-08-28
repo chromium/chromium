@@ -77,6 +77,9 @@
 #undef Bool
 #undef Success
 
+// When using Windows, we may end up pulling a #define for GetObject.
+#undef GetObject
+
 #endif  // defined(__APPLE__)
 
 namespace mediapipe {

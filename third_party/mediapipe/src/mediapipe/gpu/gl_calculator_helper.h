@@ -16,6 +16,7 @@
 #define MEDIAPIPE_GPU_GL_CALCULATOR_HELPER_H_
 
 #include <memory>
+#include <type_traits>
 
 #include "absl/base/attributes.h"
 #include "absl/memory/memory.h"
@@ -97,8 +98,9 @@ class GlCalculatorHelper {
   //
   // Therefore, instead of using std::function<void(void)>, we use a template
   // that only accepts arguments with a void result type.
-  template <typename T, typename = typename std::enable_if<std::is_void<
-                            typename std::result_of<T()>::type>::value>::type>
+  template <typename T,
+            typename = typename std::enable_if<std::is_void<
+                typename std::invoke_result<T>::type>::value>::type>
   void RunInGlContext(T f) {
     RunInGlContext([f] {
       f();
