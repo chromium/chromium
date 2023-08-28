@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -30,6 +31,9 @@ const char kGreenPDFPath[] = "/green.pdf";
 // tab, switch back and forth betweeen the new tab and the old one by
 // swiping in the toolbar. The regression is a crash.
 - (void)testSwitchToAndFromPDF {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EARL_GREY_TEST_DISABLED(@"Failing on official builders. crbug.com/1476653");
+#endif
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -71,6 +75,9 @@ const char kGreenPDFPath[] = "/green.pdf";
 // the two tabs in the toolbar. The regressiom is a crash anywhere in this
 // process.
 - (void)testSwitchBetweenPDFs {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EARL_GREY_TEST_DISABLED(@"Failing on official builders. crbug.com/1476653");
+#endif
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -106,6 +113,9 @@ const char kGreenPDFPath[] = "/green.pdf";
 // to a PDF in that tab. Enter the tab grid. Wait five seconds. Exit the
 // tab switcher. The regression is a crash anywhere in this process.
 - (void)testPDFIntoTabGridAndWait {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EARL_GREY_TEST_DISABLED(@"Failing on official builders. crbug.com/1476653");
+#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Load a page, then a PDF.
