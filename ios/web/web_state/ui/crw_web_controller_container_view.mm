@@ -54,7 +54,7 @@
 }
 
 - (void)dealloc {
-  self.contentViewProxy.contentView = nil;
+  [self.contentViewProxy clearContentViewAndAddPlaceholder:NO];
 }
 
 #pragma mark Accessors
