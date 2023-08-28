@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -322,7 +323,8 @@ gfx::Rect VideoRecordingWatcher::GetCaptureSurfaceConfineBounds() const {
       return capture_region;
     }
     case CaptureModeSource::kWindow:
-      return gfx::Rect(window_being_recorded_->bounds().size());
+      return capture_mode_util::GetCaptureWindowConfineBounds(
+          window_being_recorded_);
   }
 }
 

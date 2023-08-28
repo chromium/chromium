@@ -117,13 +117,9 @@ gfx::Rect BaseCaptureModeSession::GetCaptureSurfaceConfineBounds() const {
           .work_area();
     }
     case CaptureModeSource::kWindow: {
-      // When the surface being captured is a window, on-capture-surface UI
-      // elements, such as the selfie camera or the demo tools key combo widget,
-      // need to be confined within the *local* bounds of this window, since
-      // they are added as direct children of the window so that they can get
-      // captured.
       auto* selected_window = GetSelectedWindow();
-      return selected_window ? gfx::Rect(selected_window->bounds().size())
+      return selected_window ? capture_mode_util::GetCaptureWindowConfineBounds(
+                                   selected_window)
                              : gfx::Rect();
     }
     case CaptureModeSource::kRegion: {

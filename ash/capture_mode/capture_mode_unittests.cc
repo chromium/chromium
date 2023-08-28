@@ -78,6 +78,7 @@
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -1074,6 +1075,30 @@ TEST_F(CaptureModeTest, WindowCapture) {
   // Stop the capture session to avoid CaptureModeSession from receiving more
   // events during test tearing down.
   controller->Stop();
+}
+
+TEST_F(CaptureModeTest, WindowCaptureConfineBoundsDoNotOverlapWindowCaption) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(200, 200)));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  GetEventGenerator()->MoveMouseToCenterOf(window.get());
+  auto* capture_mode_session = controller->capture_mode_session();
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window.get());
+
+  auto* frame_header = capture_mode_util::GetWindowFrameHeader(window.get());
+  auto* caption_button_container = frame_header->caption_button_container();
+
+  // While the session is still active, the calculated confine bounds should not
+  // overlap with the frame caption.
+  EXPECT_FALSE(controller->GetCaptureSurfaceConfineBounds().Intersects(
+      caption_button_container->bounds()));
+
+  // Start recording and expect that the confine bounds calculated during
+  // recording still do not overlap with the frame caption.
+  StartVideoRecordingImmediately();
+  WaitForRecordingToStart();
+  EXPECT_FALSE(controller->GetCaptureSurfaceConfineBounds().Intersects(
+      caption_button_container->bounds()));
 }
 
 // Tests that the capture bar is located on the root with the cursor when
@@ -2589,9 +2614,7 @@ TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
-  gfx::Rect capture_region = session->GetCaptureSurfaceConfineBounds();
-  wm::ConvertRectToScreen(session->GetSelectedWindow(), &capture_region);
-  EXPECT_EQ(capture_region, window->GetBoundsInScreen());
+  EXPECT_EQ(window.get(), session->GetSelectedWindow());
 
   // Start overview and verify that the capture region is refreshed correctly.
   auto* overview_controller = Shell::Get()->overview_controller();
