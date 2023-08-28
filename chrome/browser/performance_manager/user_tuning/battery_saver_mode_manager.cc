@@ -310,6 +310,13 @@ class ChromeOSBatterySaverProvider
     client->GetBatterySaverModeState(base::BindOnce(
         &ChromeOSBatterySaverProvider::OnInitialBatterySaverModeObtained,
         weak_ptr_factory_.GetWeakPtr()));
+
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(
+            BatterySaverModeManager::kForceDeviceHasBatterySwitch)) {
+      force_has_battery_ = true;
+      has_battery_ = true;
+    }
   }
 
   ~ChromeOSBatterySaverProvider() override = default;
@@ -333,8 +340,16 @@ class ChromeOSBatterySaverProvider
     manager_->NotifyOnBatterySaverModeChanged(enabled_);
   }
 
+  void PowerChanged(
+      const power_manager::PowerSupplyProperties& proto) override {
+    bool device_has_battery =
+        proto.battery_state() !=
+        power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
+    has_battery_ = force_has_battery_ || device_has_battery;
+  }
+
   // BatterySaverProvider:
-  bool DeviceHasBattery() const override { return false; }
+  bool DeviceHasBattery() const override { return has_battery_; }
   bool IsBatterySaverActive() const override { return enabled_; }
   bool IsUsingBatteryPower() const override { return false; }
   base::Time GetLastBatteryUsageTimestamp() const override {
@@ -349,6 +364,8 @@ class ChromeOSBatterySaverProvider
 
  private:
   bool enabled_ = false;
+  bool has_battery_ = false;
+  bool force_has_battery_ = false;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

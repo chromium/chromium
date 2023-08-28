@@ -1629,6 +1629,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the energy saver mode radio group. When energy saver mode is enabled, this radio group will be expanded and allow the user to choose between different triggering options.">
     Energy saver options
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_LINK_OS_SETTING_DESCRIPTION" desc="Description on the OS settings link to turn on energy saver mode">
+    Turn on Energy Saver to extend battery life
+  </message>
 
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">

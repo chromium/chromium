@@ -173,6 +173,14 @@
 namespace settings {
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
+std::string BuildOSSettingsUrl(const std::string& sub_page) {
+  std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
+  os_settings_url.append(sub_page);
+  return os_settings_url;
+}
+#endif
+
 void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"add", IDS_ADD},
@@ -709,6 +717,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
       {"batterySaverModeDescription",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION},
+      {"batterySaverModeLinkOsDescription",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_LINK_OS_SETTING_DESCRIPTION},
       {"batterySaverModeEnabledOnBatteryLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_ON_BATTERY_LABEL},
       {"batterySaverModeRadioGroupAriaLabel",
@@ -792,6 +802,12 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
                          chrome::kHighEfficiencyModeLearnMoreUrl);
   html_source->AddString("batterySaverLearnMoreUrl",
                          chrome::kBatterySaverModeLearnMoreUrl);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddString(
+      "osPowerSettingsUrl",
+      BuildOSSettingsUrl(chromeos::settings::mojom::kPowerSubpagePath));
+#endif
 }
 
 void AddLanguagesStrings(content::WebUIDataSource* html_source,
@@ -1595,14 +1611,6 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-std::string BuildOSSettingsUrl(const std::string& sub_page) {
-  std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
-  os_settings_url.append(sub_page);
-  return os_settings_url;
-}
-#endif
 
 void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

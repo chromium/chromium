@@ -36,6 +36,9 @@ class BatterySaverModeManager {
   // would be `20` for 20%.
   static const uint64_t kLowBatteryThresholdPercent;
 
+  // Command line switch for overriding the device has battery flag.
+  static const char kForceDeviceHasBatterySwitch[];
+
   class FrameThrottlingDelegate {
    public:
     virtual void StartThrottlingAllFrameSinks() = 0;
@@ -151,9 +154,6 @@ class BatterySaverModeManager {
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
-
-  // Command line switch for overriding the device has battery flag.
-  static const char kForceDeviceHasBatterySwitch[];
 };
 
 }  // namespace performance_manager::user_tuning

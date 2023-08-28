@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -19,6 +21,11 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;
 using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
@@ -55,8 +62,10 @@ const WebContentsInteractionTestUtil::DeepQuery kDiscardOnTimerQuery = {
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     SetUpFakeBatterySampler();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kBatterySaver);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     InteractiveBrowserTest::SetUp();
   }
 
@@ -65,6 +74,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->SetHighEfficiencyModeEnabled(true);
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     embedded_test_server()->StartAcceptingConnections();
   }
 
@@ -176,6 +186,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
   raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
       battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
@@ -365,6 +376,69 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class BatterySettingsInteractiveTest : public InteractiveAshTest {
+ public:
+  BatterySettingsInteractiveTest()
+      : scoped_feature_list_(ash::features::kBatterySaver) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        performance_manager::user_tuning::BatterySaverModeManager::
+            kForceDeviceHasBatterySwitch);
+  }
+
+  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
+                              const DeepQuery& element) {
+    StateChange element_renders;
+    element_renders.event = kElementRenders;
+    element_renders.where = element;
+    element_renders.type = StateChange::Type::kExistsAndConditionTrue;
+    element_renders.test_function =
+        "(el) => { return el !== null && el.clientWidth > 0 && el.clientHeight "
+        "> 0; }";
+
+    return WaitForStateChange(contents_id, element_renders);
+  }
+
+  auto ClickElement(const ui::ElementIdentifier& contents_id,
+                    const DeepQuery& element) {
+    return Steps(WaitForElementToRender(contents_id, element),
+                 MoveMouseTo(contents_id, element), ClickMouse());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
+                       BatterySaverSettingsLinksToOSSettings) {
+  SetupContextWidget();
+  InstallSystemApps();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);
+
+  const DeepQuery battery_saver_link_row = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-battery-page", "cr-link-row#batterySaverOSSettingsLinkRow"};
+
+  CreateBrowserWindow(GURL(chrome::kChromeUIPerformanceSettingsURL));
+  Browser* const browser = chrome::FindLastActive();
+  ASSERT_NE(browser, nullptr);
+
+  RunTestSequence(
+      InContext(browser->window()->GetElementContext(),
+                InstrumentTab(kPerformanceSettingsPage)),
+      WaitForElementToRender(kPerformanceSettingsPage, battery_saver_link_row),
+      InstrumentNextTab(kOsSettingsElementId, AnyBrowser()),
+      ClickElement(kPerformanceSettingsPage, battery_saver_link_row),
+      WaitForShow(kOsSettingsElementId),
+      WaitForWebContentsReady(kOsSettingsElementId,
+                              GURL("chrome://os-settings/power")));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PerformanceSettingsMultiStateModeInteractiveTest
     : public PerformanceSettingsInteractiveTest {
  public:
@@ -372,7 +446,7 @@ class PerformanceSettingsMultiStateModeInteractiveTest
     scoped_feature_list_.InitAndEnableFeature(
         performance_manager::features::kHighEfficiencyMultistateMode);
 
-    PerformanceSettingsInteractiveTest::SetUp();
+    InteractiveBrowserTest::SetUp();
   }
 
   auto WaitForDisabledStateChange(const ui::ElementIdentifier& contents_id,

@@ -15,6 +15,14 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
 namespace performance_manager::user_tuning {
 
 bool IsRefreshRateThrottled() {
@@ -27,6 +35,16 @@ bool IsRefreshRateThrottled() {
   }
 
   return BatterySaverModeManager::GetInstance()->IsBatterySaverActive();
+#endif
+}
+
+bool IsBatterySaverModeManagedByOS() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsBatterySaverAvailable();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsCrosBatterySaverAvailable();
+#else
+  return false;
 #endif
 }
 

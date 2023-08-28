@@ -24,6 +24,7 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/share/share_features.h"
@@ -123,14 +124,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -200,17 +193,6 @@ class TabstripLikeBackground : public views::Background {
 
   const raw_ptr<BrowserView> browser_view_;
 };
-
-bool IsCrosBatterySaverAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsBatterySaverAvailable();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCrosBatterySaverAvailable();
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 class ToolbarView::ContainerView : public views::View {
@@ -436,7 +418,7 @@ void ToolbarView::Init() {
 
   // Only show the Battery Saver button when it is not controlled by the OS. On
   // ChromeOS the battery icon in the shelf shows the same information.
-  if (!IsCrosBatterySaverAvailable()) {
+  if (!performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
     battery_saver_button_ = container_view_->AddChildView(
         std::make_unique<BatterySaverButton>(browser_view_));
   }
