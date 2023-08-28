@@ -30,9 +30,6 @@
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
-  # crbug.com/1468551
-  "dlp.DataLeakPreventionRulesListClipboardOmni.ash",
-
   # https://crbug.com/1379756
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
   "inputs.VirtualKeyboardGlideTyping.tablet_floating",

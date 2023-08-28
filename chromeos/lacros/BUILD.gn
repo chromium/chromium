@@ -109,7 +109,6 @@ if (is_chromeos_device) {
     # add the bug number.Please do not just delete it.
     tast_tests = [
       "a11y.Smoke.lacros",
-      "dlp.DataLeakPreventionRulesListClipboardOmni.lacros",
       "feedback.SysInfoPII.third_party_site_on_lacros",
       "inputs.SpellCheckRemoveWords.lacros",
       "policy.AutoOpenAllowedForURLs.lacros",
