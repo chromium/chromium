@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cc/input/scroll_snap_data.h"
+#include <limits>
 #include <memory>
 #include "cc/input/snap_selection_strategy.h"
 
@@ -12,7 +13,59 @@ namespace cc {
 
 using Type = SnapPositionData::Type;
 
-class ScrollSnapDataTest : public testing::Test {};
+class ScrollSnapDataTest : public testing::Test {
+ protected:
+  void TestSnapPositionX(
+      const SnapContainerData& container,
+      float cur_pos,
+      float delta,
+      Type expected_type,
+      float expected_pos,
+      float expected_covered_start = std::numeric_limits<float>::max(),
+      float expected_covered_end = std::numeric_limits<float>::max()) {
+    float invalid = std::numeric_limits<float>::max();
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndAndDirection(
+            gfx::PointF(cur_pos, 0), gfx::Vector2dF(delta, 0),
+            false /* use_fractional_deltas */);
+
+    SnapPositionData result = container.FindSnapPosition(*strategy);
+    EXPECT_EQ(expected_type, result.type);
+    EXPECT_EQ(expected_pos, result.position.x());
+
+    if (expected_covered_start != invalid && expected_covered_end != invalid) {
+      EXPECT_EQ(expected_covered_start, result.covered_range_x->start());
+      EXPECT_EQ(expected_covered_end, result.covered_range_x->end());
+    } else {
+      EXPECT_FALSE(result.covered_range_x.has_value());
+    }
+  }
+  void TestSnapPositionY(
+      const SnapContainerData& container,
+      float cur_pos,
+      float delta,
+      Type expected_type,
+      float expected_pos,
+      float expected_covered_start = std::numeric_limits<float>::max(),
+      float expected_covered_end = std::numeric_limits<float>::max()) {
+    float invalid = std::numeric_limits<float>::max();
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndAndDirection(
+            gfx::PointF(0, cur_pos), gfx::Vector2dF(0, delta),
+            false /* use_fractional_deltas */);
+
+    SnapPositionData result = container.FindSnapPosition(*strategy);
+    EXPECT_EQ(expected_type, result.type);
+    EXPECT_EQ(expected_pos, result.position.y());
+
+    if (expected_covered_start != invalid && expected_covered_end != invalid) {
+      EXPECT_EQ(expected_covered_start, result.covered_range_y->start());
+      EXPECT_EQ(expected_covered_end, result.covered_range_y->end());
+    } else {
+      EXPECT_FALSE(result.covered_range_y.has_value());
+    }
+  }
+};
 
 TEST_F(ScrollSnapDataTest, StartAlignmentCalculation) {
   SnapContainerData container(
@@ -719,6 +772,65 @@ TEST_F(ScrollSnapDataTest, ReportCoveringArea) {
   EXPECT_EQ(50, result.position.y());
   EXPECT_FALSE(result.covered_range_x.has_value());
   EXPECT_FALSE(result.covered_range_y.has_value());
+}
+
+TEST_F(ScrollSnapDataTest, CoveringWithOverlap1) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 200, 200), gfx::PointF(0, 4800));
+  SnapAreaData big_area(ScrollSnapAlign(SnapAlignment::kStart),
+                        gfx::RectF(0, 50, 200, 4900), false, ElementId(10));
+  SnapAreaData small_1(ScrollSnapAlign(SnapAlignment::kStart),
+                       gfx::RectF(0, 2000, 200, 300), false, ElementId(20));
+  SnapAreaData small_2(ScrollSnapAlign(SnapAlignment::kStart),
+                       gfx::RectF(0, 2300, 200, 300), false, ElementId(30));
+
+  container.AddSnapAreaData(big_area);
+  container.AddSnapAreaData(small_1);
+  container.AddSnapAreaData(small_2);
+
+  TestSnapPositionY(container, 100, 300, Type::kCovered, 400, 50, 1800);
+  TestSnapPositionY(container, 100, -100, Type::kAligned, 50);
+  // Snap to end of range dodging small_1.
+  TestSnapPositionY(container, 1600, 290, Type::kCovered, 1800, 50, 1800);
+  // Snap to small_1.
+  TestSnapPositionY(container, 1600, 310, Type::kAligned, 2000);
+  // Snap up, out of small_1.
+  TestSnapPositionY(container, 2000, -150, Type::kCovered, 1800, 50, 1800);
+  // Snap to small_2.
+  TestSnapPositionY(container, 1600, 600, Type::kAligned, 2300);
+  // Scroll inside small_2.
+  TestSnapPositionY(container, 2300, 50, Type::kCovered, 2350, 2300, 2400);
+  // Snap out of small_2.
+  TestSnapPositionY(container, 2300, 150, Type::kCovered, 2600, 2600, 4750);
+  // Snap up into small_2.
+  TestSnapPositionY(container, 2700, -300, Type::kCovered, 2400, 2300, 2400);
+}
+
+TEST_F(ScrollSnapDataTest, CoveringWithOverlap2) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kX, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 200, 200), gfx::PointF(4800, 0));
+  SnapAreaData big_area(ScrollSnapAlign(SnapAlignment::kEnd),
+                        gfx::RectF(0, 0, 5000, 200), false, ElementId(10));
+  SnapAreaData small_1(ScrollSnapAlign(SnapAlignment::kStart),
+                       gfx::RectF(100, 0, 300, 200), false, ElementId(20));
+  SnapAreaData small_2(ScrollSnapAlign(SnapAlignment::kStart),
+                       gfx::RectF(500, 0, 300, 200), false, ElementId(30));
+
+  container.AddSnapAreaData(big_area);
+  container.AddSnapAreaData(small_1);
+  container.AddSnapAreaData(small_2);
+
+  // Scroll into small_1.
+  TestSnapPositionX(container, 300, -150, Type::kCovered, 150, 100, 200);
+  // Snap to the start of small_1.
+  TestSnapPositionX(container, 300, -225, Type::kAligned, 100);
+  // Snap with end-alignment to the space between small_1 and small_2.
+  TestSnapPositionX(container, 200, 75, Type::kAligned, 300);
+  // Snap to the space before small_1
+  // (should be reachable regardless of big_area having end-alignment).
+  TestSnapPositionX(container, 300, -275, Type::kAligned, 0);
 }
 
 }  // namespace cc

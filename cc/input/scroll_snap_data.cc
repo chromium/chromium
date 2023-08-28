@@ -80,6 +80,58 @@ const absl::optional<SnapSearchResult>& ClosestSearchResult(
   return distance_a < distance_b ? a : b;
 }
 
+absl::optional<SnapSearchResult> SearchResultForDodgingRange(
+    const gfx::RangeF& area_range,
+    const gfx::RangeF& dodging_range,
+    const SnapSearchResult& aligned_candidate,
+    float preferred_offset,
+    float scroll_padding,
+    float snapport_size,
+    SnapAlignment alignment) {
+  if (dodging_range.is_empty() || dodging_range.is_reversed()) {
+    return absl::nullopt;
+  }
+
+  // Use aligned_candidate as a template (we will override snap_offset and
+  // covered_range).
+  SnapSearchResult result = aligned_candidate;
+
+  float min_offset = dodging_range.start() - scroll_padding;
+  float max_offset = dodging_range.end() - scroll_padding - snapport_size;
+
+  if (max_offset > min_offset) {
+    result.set_snap_offset(
+        std::clamp(preferred_offset, min_offset, max_offset));
+    result.set_covered_range(gfx::RangeF(min_offset, max_offset));
+    return result;
+  }
+
+  // The scrollport does not fit in the dodging range, but we should still
+  // return a snap position so that the content inside the dodging range is not
+  // unreachable. Choose a position by applying the snap area's alignment.
+
+  float offset;
+  switch (alignment) {
+    case SnapAlignment::kStart:
+      offset = min_offset;
+      break;
+    case SnapAlignment::kCenter:
+      offset = (min_offset + max_offset) / 2;
+      break;
+    case SnapAlignment::kEnd:
+      offset = max_offset;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  // Make sure the snap area is still covering the snapport.
+  result.set_snap_offset(
+      std::clamp(offset, area_range.start() - scroll_padding,
+                 area_range.end() - scroll_padding - snapport_size));
+  return result;
+}
+
 }  // namespace
 
 SnapSearchResult::SnapSearchResult(float offset, const gfx::RangeF& range)
@@ -412,11 +464,7 @@ SnapContainerData::FindClosestValidAreaInternal(
   absl::optional<SnapSearchResult> closest;
   // The search result with the intended position if it makes a snap area cover
   // the snapport.
-  absl::optional<SnapSearchResult> covering;
-
-  // The valid snap positions immediately before and after the current position.
-  float prev = std::numeric_limits<float>::lowest();
-  float next = std::numeric_limits<float>::max();
+  absl::optional<SnapSearchResult> covering_intended;
 
   // The intended position of the scroll operation if there's no snap. This
   // scroll position becomes the covering candidate if there is a snap area that
@@ -430,67 +478,60 @@ SnapContainerData::FindClosestValidAreaInternal(
 
   float smallest_distance =
       axis == SearchAxis::kX ? proximity_range_.x() : proximity_range_.y();
+
+  auto evaluate = [&](const SnapSearchResult& candidate) {
+    if (!IsMutualVisible(candidate, cross_axis_snap_result)) {
+      return;
+    }
+    if (!strategy.IsValidSnapPosition(axis, candidate.snap_offset())) {
+      return;
+    }
+    float distance = std::abs(candidate.snap_offset() - base_position);
+    if (distance > smallest_distance) {
+      return;
+    }
+    if (distance < smallest_distance ||
+        candidate.element_id() == active_element_id) {
+      smallest_distance = distance;
+      closest = candidate;
+    }
+  };
+
   for (const SnapAreaData& area : snap_area_list_) {
     if (!strategy.IsValidSnapArea(axis, area))
       continue;
 
     SnapSearchResult candidate = GetSnapSearchResult(axis, area);
-    gfx::RangeF covered_range;
+    evaluate(candidate);
+
     if (should_consider_covering &&
-        IsSnapportCoveredOnAxis(axis, intended_position, area.rect,
-                                covered_range)) {
+        IsSnapportCoveredOnAxis(axis, intended_position, area.rect)) {
       // Since snap area will cover the snapport, we consider the intended
       // position as a valid snap position.
-      SnapSearchResult covering_candidate = candidate;
-      covering_candidate.set_snap_offset(intended_position);
-      covering_candidate.set_covered_range(covered_range);
-      if (IsMutualVisible(covering_candidate, cross_axis_snap_result))
-        SetOrUpdateResult(covering_candidate, &covering, active_element_id);
-
-      // Even if a snap area covers the snapport, we need to continue this
-      // search to find previous and next snap positions and also to have
-      // alternative snap candidates if this covering candidate is ultimately
-      // rejected. And this covering snap area has its own alignment that may
-      // generates a snap position rejecting the current inplace candidate.
-    }
-    if (!IsMutualVisible(candidate, cross_axis_snap_result))
-      continue;
-
-    float distance = std::abs(candidate.snap_offset() - base_position);
-    if (strategy.IsValidSnapPosition(axis, candidate.snap_offset())) {
-      if (distance < smallest_distance ||
-          (candidate.element_id() == active_element_id &&
-           distance == smallest_distance)) {
-        smallest_distance = distance;
-        closest = candidate;
+      if (absl::optional<SnapSearchResult> covering =
+              FindCoveringCandidate(area, axis, candidate, intended_position)) {
+        if (covering->snap_offset() == intended_position) {
+          SetOrUpdateResult(*covering, &covering_intended, active_element_id);
+        } else {
+          // A covering candidate that is displaced from the intended position
+          // should behave similarly to an aligned snap position, competing on
+          // distance with other aligned snap positions - unlike a covering
+          // candidate at the intended position which may be given a higher
+          // priority in ScrollSnapStrategy::PickBestResult.
+          evaluate(*covering);
+        }
       }
     }
-    if (!should_consider_covering)
-      continue;
 
-    if (candidate.snap_offset() < intended_position &&
-        candidate.snap_offset() > prev) {
-      prev = candidate.snap_offset();
-    }
-    if (candidate.snap_offset() > intended_position &&
-        candidate.snap_offset() < next) {
-      next = candidate.snap_offset();
-    }
-  }
-
-  // According to the spec [1], if the snap area is covering the snapport, the
-  // scroll position is a valid snap position only if the distance between the
-  // geometrically previous and subsequent snap positions in that axis is larger
-  // than size of the snapport in that axis.
-  // [1] https://drafts.csswg.org/css-scroll-snap-1/#snap-overflow
-  float size = axis == SearchAxis::kX ? rect_.width() : rect_.height();
-  if (prev != std::numeric_limits<float>::lowest() &&
-      next != std::numeric_limits<float>::max() && next - prev <= size) {
-    covering = absl::nullopt;
+    // Even if a snap area covers the snapport, we need to continue this
+    // search to find previous and next snap positions and also to have
+    // alternative snap candidates if this covering candidate is ultimately
+    // rejected. And this covering snap area has its own alignment that may
+    // generates a snap position rejecting the current inplace candidate.
   }
 
   const absl::optional<SnapSearchResult>& picked =
-      strategy.PickBestResult(closest, covering);
+      strategy.PickBestResult(closest, covering_intended);
   return picked;
 }
 
@@ -542,12 +583,126 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
   return result;
 }
 
+absl::optional<SnapSearchResult> SnapContainerData::FindCoveringCandidate(
+    const SnapAreaData& area,
+    SearchAxis axis,
+    const SnapSearchResult& aligned_candidate,
+    float intended_position) const {
+  bool horiz = axis == SearchAxis::kX;
+  float scroll_padding = horiz ? rect_.x() : rect_.y();
+  float snapport_size = horiz ? rect_.width() : rect_.height();
+  SnapAlignment alignment = horiz ? area.scroll_snap_align.alignment_inline
+                                  : area.scroll_snap_align.alignment_block;
+  gfx::RangeF area_range = horiz
+                               ? gfx::RangeF(area.rect.x(), area.rect.right())
+                               : gfx::RangeF(area.rect.y(), area.rect.bottom());
+  gfx::RangeF preferred_snapport(
+      intended_position + scroll_padding,
+      intended_position + scroll_padding + snapport_size);
+
+  gfx::RangeF backward_dodging_range = area_range;
+  gfx::RangeF middle_dodging_range = area_range;
+  gfx::RangeF forward_dodging_range = area_range;
+
+  for (const SnapAreaData& intruder : snap_area_list_) {
+    gfx::RangeF intruder_range =
+        horiz ? gfx::RangeF(intruder.rect.x(), intruder.rect.right())
+              : gfx::RangeF(intruder.rect.y(), intruder.rect.bottom());
+
+    if (intruder_range.start() > area_range.end() ||
+        intruder_range.end() < area_range.start()) {
+      // Does not intrude.
+      continue;
+    }
+    if (intruder_range.start() <= area_range.start() &&
+        intruder_range.end() >= area_range.end()) {
+      // Superset of `area` also not treated as an intruder.
+      continue;
+    }
+
+    // Try three ways of dodging the intruders.
+    // In full generality this requires an interval tree. But we can simplify
+    // somewhat because we only care about a dodging range that is potentially
+    // closer than an aligned snap position, which each intruder also produces.
+    // For example, given:
+    //      |---A---|     |---preferred snapport---|
+    //             |---B---|
+    // We do not care about the dodging range before the start of A.
+
+    // backward_dodging_range finds a dodging range that is above any intruder
+    // that intersects the snapport.
+    if (intruder_range.end() < preferred_snapport.start()) {
+      backward_dodging_range.set_start(
+          std::max(backward_dodging_range.start(), intruder_range.end()));
+    } else {
+      backward_dodging_range.set_end(
+          std::min(backward_dodging_range.end(), intruder_range.start()));
+    }
+
+    // forward_dodging_range finds a dodging range that is below any intruder
+    // that intersects the snapport.
+    if (intruder_range.start() > preferred_snapport.end()) {
+      forward_dodging_range.set_end(
+          std::min(forward_dodging_range.end(), intruder_range.start()));
+    } else {
+      forward_dodging_range.set_start(
+          std::max(forward_dodging_range.start(), intruder_range.end()));
+    }
+
+    // middle_dodging_range finds a dodging range inside the snapport, if there
+    // are intruders from above and below.
+    if (intruder_range.Contains(preferred_snapport) ||
+        preferred_snapport.Contains(intruder_range)) {
+      middle_dodging_range = gfx::RangeF();
+    } else if (intruder_range.start() <= preferred_snapport.start()) {
+      middle_dodging_range.set_start(
+          std::max(middle_dodging_range.start(), intruder_range.end()));
+    } else {
+      DCHECK(intruder_range.end() >= preferred_snapport.end());
+      middle_dodging_range.set_end(
+          std::min(middle_dodging_range.end(), intruder_range.start()));
+    }
+  }
+
+  absl::optional<SnapSearchResult> middle_candidate =
+      SearchResultForDodgingRange(area_range, middle_dodging_range,
+                                  aligned_candidate, intended_position,
+                                  scroll_padding, snapport_size, alignment);
+  if (middle_candidate) {
+    return middle_candidate;
+  }
+
+  absl::optional<SnapSearchResult> backward_candidate =
+      SearchResultForDodgingRange(area_range, backward_dodging_range,
+                                  aligned_candidate, intended_position,
+                                  scroll_padding, snapport_size, alignment);
+  absl::optional<SnapSearchResult> forward_candidate =
+      SearchResultForDodgingRange(area_range, forward_dodging_range,
+                                  aligned_candidate, intended_position,
+                                  scroll_padding, snapport_size, alignment);
+
+  if (!backward_candidate) {
+    return forward_candidate;
+  }
+
+  if (!forward_candidate) {
+    return backward_candidate;
+  }
+
+  float backward_distance =
+      std::abs(backward_candidate->snap_offset() - intended_position);
+  float forward_distance =
+      std::abs(forward_candidate->snap_offset() - intended_position);
+
+  return backward_distance < forward_distance ? backward_candidate
+                                              : forward_candidate;
+}
+
 constexpr float kSnapportCoveredTolerance = 0.5;
 bool SnapContainerData::IsSnapportCoveredOnAxis(
     SearchAxis axis,
     float current_offset,
-    const gfx::RectF& area_rect,
-    gfx::RangeF& out_covered_range) const {
+    const gfx::RectF& area_rect) const {
   // We expand the range that SnapContainerData considers covering the snapport
   // by kSnapportCoveredTolerance to handle offsets at the boundaries of
   // the snap container. At the boundaries, |current_offset| might be a rounded
@@ -559,7 +714,6 @@ bool SnapContainerData::IsSnapportCoveredOnAxis(
       return false;
     float left = area_rect.x() - rect_.x();
     float right = area_rect.right() - rect_.right();
-    out_covered_range = gfx::RangeF(left, right);
     return current_offset >= left - kSnapportCoveredTolerance &&
            current_offset <= right + kSnapportCoveredTolerance;
   } else {
@@ -567,7 +721,6 @@ bool SnapContainerData::IsSnapportCoveredOnAxis(
       return false;
     float top = area_rect.y() - rect_.y();
     float bottom = area_rect.bottom() - rect_.bottom();
-    out_covered_range = gfx::RangeF(top, bottom);
     return current_offset >= top - kSnapportCoveredTolerance &&
            current_offset <= bottom + kSnapportCoveredTolerance;
   }

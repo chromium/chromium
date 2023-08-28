@@ -331,11 +331,16 @@ class CC_EXPORT SnapContainerData {
 
   bool IsSnapportCoveredOnAxis(SearchAxis axis,
                                float current_offset,
-                               const gfx::RectF& area_rect,
-                               gfx::RangeF& out_covered_range) const;
+                               const gfx::RectF& area_rect) const;
 
   void UpdateSnapAreaForTesting(ElementId element_id,
                                 SnapAreaData snap_area_data);
+
+  absl::optional<SnapSearchResult> FindCoveringCandidate(
+      const SnapAreaData& area,
+      SearchAxis axis,
+      const SnapSearchResult& aligned_candidate,
+      float intended_position) const;
 
   // Specifies whether a scroll container is a scroll snap container, how
   // strictly it snaps, and which axes are considered.
