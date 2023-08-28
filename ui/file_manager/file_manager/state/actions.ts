@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from './ducks/all_entries.js';
+import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from './actions/all_entries.js';
 import {AddAndroidAppsAction} from './ducks/android_apps.js';
 import {UpdateBulkPinProgressAction} from './ducks/bulk_pinning.js';
 import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from './ducks/current_directory.js';

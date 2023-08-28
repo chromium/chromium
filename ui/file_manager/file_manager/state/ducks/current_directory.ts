@@ -18,8 +18,6 @@ import {keyedKeepFirst} from '../../lib/concurrency_models.js';
 import {Action, ActionType} from '../actions.js';
 import {getStore} from '../store.js';
 
-import {cacheEntries} from './all_entries.js';
-
 /**
  * @fileoverview
  * @suppress {checkTypes}
@@ -86,11 +84,6 @@ export interface ChangeDirectoryAction extends BaseAction {
  */
 function changeDirectoryReducer(
     currentState: State, payload: ChangeDirectoryAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  if (payload.to) {
-    cacheEntries(currentState, [payload.to]);
-  }
-
   const {to, toKey} = payload;
   const key = toKey || to!.toURL();
   const status = payload.status || PropStatus.STARTED;
@@ -190,9 +183,6 @@ export interface ChangeSelectionAction extends BaseAction {
  */
 function updateSelectionReducer(
     currentState: State, payload: ChangeSelectionAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  cacheEntries(currentState, payload.entries);
-
   if (!currentState.currentDirectory) {
     console.warn('Missing `currentDirectory`');
     console.debug('Dropping action:', payload);
@@ -327,9 +317,6 @@ export interface UpdateDirectoryContentAction extends BaseAction {
 function updateDirectoryContentReducer(
     currentState: State,
     payload: UpdateDirectoryContentAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  cacheEntries(currentState, payload.entries);
-
   if (!currentState.currentDirectory) {
     console.warn('Missing `currentDirectory`');
     return currentState;

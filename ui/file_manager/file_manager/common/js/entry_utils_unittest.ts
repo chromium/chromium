@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/296792757)
-import '../../state/store.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {convertEntryToFileData} from '../../state/ducks/all_entries.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
+import {convertEntryToFileData} from '../../state/reducers/all_entries.js';
 
 import {isEntryInsideDrive, isEntryInsideMyDrive} from './entry_utils.js';
 import {EntryList} from './files_app_entry_types.js';

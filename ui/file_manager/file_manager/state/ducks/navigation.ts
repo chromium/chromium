@@ -9,9 +9,9 @@ import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
-import {getMyFiles} from '../ducks/all_entries.js';
 import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
 import {FileKey} from '../file_key.js';
+import {getMyFiles} from '../reducers/all_entries.js';
 import {getEntry, getFileData} from '../store.js';
 
 const VolumeType = VolumeManagerCommon.VolumeType;

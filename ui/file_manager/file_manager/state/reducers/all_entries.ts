@@ -1,51 +1,49 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType} from '../../common/js/dialog_type.js';
-import {isDriveRootEntryList, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
+import {isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, EntryType, FileData, State, Volume, VolumeMap} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {ActionsProducerGen} from '../../lib/actions_producer.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
+import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from '../actions/all_entries.js';
 import {hasDlpDisabledFiles} from '../ducks/current_directory.js';
 import {driveRootEntryListKey, getVolumeTypesNestedInMyFiles, makeRemovableParentKey, myFilesEntryListKey, recentRootKey, removableGroupKey} from '../ducks/volumes.js';
-import {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore} from '../store.js';
 
 /**
- * @fileoverview Actions, reducers, and action producers related to entries.
- * @suppress {checkTypes} TS already checks this file.
+ * Schedules the routine to remove stale entries from `allEntries`.
  */
+function scheduleClearCachedEntries() {
+  if (clearCachedEntriesRequestId === 0) {
+    clearCachedEntriesRequestId = requestIdleCallback(startClearCache);
+  }
+}
 
+/** ID for the current scheduled `clearCachedEntries`. */
+let clearCachedEntriesRequestId = 0;
 
-/** Map of actions to reducers for the search slice. */
-export const allEntriesReducersMap: ReducersMap<State, Action> = new Map();
-
-/**
- * Processes the allEntries and removes any entry that isn't in use any more.
- */
-export interface ClearStaleCachedEntriesAction extends BaseAction {
-  type: ActionType.CLEAR_STALE_CACHED_ENTRIES;
-  payload?: undefined;
+/** Starts the action CLEAR_STALE_CACHED_ENTRIES.  */
+function startClearCache() {
+  const store = getStore();
+  store.dispatch({type: ActionType.CLEAR_STALE_CACHED_ENTRIES});
+  clearCachedEntriesRequestId = 0;
 }
 
 /**
  * Scans the current state for entries still in use to be able to remove the
  * stale entries from the `allEntries`.
  */
-function clearCachedEntriesReducer(
-    state: State, _payload: ClearStaleCachedEntriesAction['payload']): State {
+export function clearCachedEntries(
+    state: State, _action: ClearStaleCachedEntriesAction): State {
   const entries = state.allEntries;
   const currentDirectoryKey = state.currentDirectory?.key;
   const entriesToKeep = new Set<string>();
@@ -124,31 +122,6 @@ function clearCachedEntriesReducer(
   }
 
   return state;
-}
-
-/** Create action for clearing stale entries in the cached. */
-export const clearCachedEntries = addReducer(
-    ActionType.CLEAR_STALE_CACHED_ENTRIES,
-    clearCachedEntriesReducer as Reducer<State, Action>, allEntriesReducersMap);
-
-/**
- * Schedules the routine to remove stale entries from `allEntries`.
- */
-function scheduleClearCachedEntries() {
-  if (clearCachedEntriesRequestId === 0) {
-    clearCachedEntriesRequestId = requestIdleCallback(startClearCache);
-  }
-}
-
-/** ID for the current scheduled `clearCachedEntries`. */
-let clearCachedEntriesRequestId = 0;
-
-/** Starts the action CLEAR_STALE_CACHED_ENTRIES.  */
-function startClearCache() {
-  const store = getStore();
-  // TODO(b/296792757)
-  store.dispatch(clearCachedEntries({}));
-  clearCachedEntriesRequestId = 0;
 }
 
 const prefetchPropertyNames = Array.from(new Set([
@@ -323,12 +296,55 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
 }
 
 /** Caches the Action's entry in the `allEntries` attribute. */
-export function cacheEntries(
-    currentState: State, entries: Array<Entry|FilesAppEntry>) {
+export function cacheEntries(currentState: State, action: Action): State {
+  // Schedule to clear the cached entries from the state.
   scheduleClearCachedEntries();
-  for (const entry of entries) {
+
+  if (action.type === ActionType.CHANGE_SELECTION ||
+      action.type === ActionType.UPDATE_DIRECTORY_CONTENT) {
+    for (const entry of action.payload.entries) {
+      appendEntry(currentState, entry);
+    }
+  }
+  if (action.type === ActionType.CHANGE_DIRECTORY) {
+    const entry = action.payload.to;
+    if (!entry) {
+      // Nothing to cache, just continue.
+      return currentState;
+    }
+
     appendEntry(currentState, entry);
   }
+
+  if (action.type === ActionType.UPDATE_METADATA) {
+    for (const entryMetadata of action.payload.metadata) {
+      appendEntry(currentState, entryMetadata.entry);
+    }
+  }
+
+  if (action.type === ActionType.ADD_VOLUME) {
+    appendEntry(currentState, new VolumeEntry(action.payload.volumeInfo));
+    volumeNestingEntries(
+        currentState, action.payload.volumeInfo, action.payload.volumeMetadata);
+  }
+  if (action.type === ActionType.ADD_UI_ENTRY) {
+    appendEntry(currentState, action.payload.entry);
+  }
+  if (action.type === ActionType.REFRESH_FOLDER_SHORTCUT) {
+    for (const entry of action.payload.entries) {
+      appendEntry(currentState, entry);
+    }
+  }
+  if (action.type === ActionType.ADD_FOLDER_SHORTCUT) {
+    appendEntry(currentState, action.payload.entry);
+  }
+  if (action.type === ActionType.ADD_CHILD_ENTRIES) {
+    for (const entry of action.payload.entries) {
+      appendEntry(currentState, entry);
+    }
+  }
+
+  return currentState;
 }
 
 function getEntryType(entry: Entry|FilesAppEntry): EntryType {
@@ -370,30 +386,12 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
   }
 }
 
-export interface EntryMetadata {
-  entry: Entry|FilesAppEntry;
-  metadata: MetadataItem;
-}
-
-/**
- * Action to update the allEntries metadata.
- */
-export interface UpdateMetadataAction extends BaseAction {
-  type: ActionType.UPDATE_METADATA;
-  payload: {
-    metadata: EntryMetadata[],
-  };
-}
-
 /**
  * Reducer that updates the metadata of the entries and returns the new state.
  */
-function updateMetadataReducer(
-    currentState: State, payload: UpdateMetadataAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  cacheEntries(currentState, payload.metadata.map(m => m.entry));
-
-  for (const entryMetadata of payload.metadata) {
+export function updateMetadata(
+    currentState: State, action: UpdateMetadataAction): State {
+  for (const entryMetadata of action.payload.metadata) {
     const key = entryMetadata.entry.toURL();
     const fileData = currentState.allEntries[key];
     const metadata = {...fileData.metadata, ...entryMetadata.metadata};
@@ -416,12 +414,6 @@ function updateMetadataReducer(
     currentDirectory,
   };
 }
-
-/** Create action to update metadata. */
-export const updateMetadata = addReducer(
-    ActionType.UPDATE_METADATA, updateMetadataReducer as Reducer<State, Action>,
-    allEntriesReducersMap);
-
 
 function findVolumeByType(
     volumes: VolumeMap, volumeType: VolumeManagerCommon.VolumeType): Volume|
@@ -474,7 +466,7 @@ export function getMyFiles(state: State):
  * For removables, it may nest in a EntryList if one device has multiple
  * partitions.
  */
-export function volumeNestingEntries(
+function volumeNestingEntries(
     state: State, volumeInfo: VolumeInfo,
     volumeMetadata: chrome.fileManagerPrivate.VolumeMetadata) {
   const VolumeType = VolumeManagerCommon.VolumeType;
@@ -669,24 +661,12 @@ export function volumeNestingEntries(
        volumeInfo.volumeType === VolumeManagerCommon.VolumeType.SMB);
 }
 
-/** Action to add child entries to a given parent entry. */
-export interface AddChildEntriesAction extends BaseAction {
-  type: ActionType.ADD_CHILD_ENTRIES;
-  payload: {
-    parentKey: FileKey,
-    entries: Array<Entry|FilesAppEntry>,
-  };
-}
-
 /**
  * Reducer for adding child entries to a parent entry.
  */
-function addChildEntriesReducer(
-    currentState: State, payload: AddChildEntriesAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  cacheEntries(currentState, payload.entries);
-
-  const {parentKey, entries} = payload;
+export function addChildEntries(
+    currentState: State, action: AddChildEntriesAction): State {
+  const {parentKey, entries} = action.payload;
   const {allEntries} = currentState;
   // The corresponding parent entry item has been removed somehow, do nothing.
   if (!allEntries[parentKey]) {
@@ -717,157 +697,4 @@ function addChildEntriesReducer(
       [parentKey]: parentFileData,
     },
   };
-}
-
-/** Action factory to add child entries to a given parent entry. */
-export const addChildEntries = addReducer(
-    ActionType.ADD_CHILD_ENTRIES,
-    addChildEntriesReducer as Reducer<State, Action>, allEntriesReducersMap);
-
-
-/**
- * Read sub directories for a given entry.
- * TODO(b/271485133): Remove successCallback/errorCallback.
- */
-export async function*
-    readSubDirectories(
-        entry: Entry|FilesAppEntry|null, recursive: boolean = false,
-        metricNameForTracking: string = ''):
-        ActionsProducerGen<AddChildEntriesAction> {
-  if (!entry || !entry.isDirectory || ('disabled' in entry && entry.disabled)) {
-    return;
-  }
-
-  // Track time for reading sub directories if metric for tracking is passed.
-  if (metricNameForTracking) {
-    metrics.startInterval(metricNameForTracking);
-  }
-
-  // Type casting here because TS can't exclude the invalid entry types via the
-  // above if checks.
-  const validEntry = entry as DirectoryEntry | FilesAppDirEntry;
-  const childEntriesToReadDeeper: Array<Entry|FilesAppEntry> = [];
-  if (isDriveRootEntryList(validEntry)) {
-    for await (
-        const action of readSubDirectoriesForDriveRootEntryList(validEntry)) {
-      yield action;
-      if (action) {
-        childEntriesToReadDeeper.push(...action.payload.entries);
-      }
-    }
-  } else {
-    const childEntries = await readChildEntriesForDirectoryEntry(validEntry);
-    // Only dispatch directories.
-    const subDirectories =
-        childEntries.filter(childEntry => childEntry.isDirectory);
-    // TODO(b/296792757)
-    yield addChildEntries(
-        {parentKey: entry.toURL(), entries: subDirectories}) as
-        AddChildEntriesAction;
-    childEntriesToReadDeeper.push(...subDirectories);
-  }
-
-  // Track time for reading sub directories if metric for tracking is passed.
-  if (metricNameForTracking) {
-    metrics.recordInterval(metricNameForTracking);
-  }
-
-  // Read sub directories for children when recursive is true.
-  if (recursive) {
-    // We only read deeper if the parent entry is expanded in the tree.
-    const fileData = getFileData(getStore().getState(), entry.toURL());
-    if (fileData?.expanded) {
-      for (const childEntry of childEntriesToReadDeeper) {
-        for await (const action of readSubDirectories(
-            childEntry, /* recursive */ true)) {
-          yield action;
-        }
-      }
-    }
-  }
-}
-
-/**
- * Read entries for Drive root entry list (aka "Google Drive"), there are some
- * differences compared to the `readSubDirectoriesForDirectoryEntry`:
- * * We don't need to call readEntries to get its child entries. Instead, all
- * its children are from its entry.getUIChildren().
- * * For fake entries children (e.g. Shared with me and Offline), we only show
- * them based on the dialog type.
- * * For curtain children (e.g. team drives and computers grand root), we only
- * show them when there's at least one child entries inside. So we need to read
- * their children (grand children of drive fake root) first before we can decide
- * if we need to show them or not.
- */
-async function*
-    readSubDirectoriesForDriveRootEntryList(entry: EntryList):
-        ActionsProducerGen<AddChildEntriesAction> {
-  const metricNameMap = {
-    [VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH]: 'TeamDrivesCount',
-    [VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH]: 'ComputerCount',
-  };
-
-  const driveChildren = entry.getUIChildren();
-  /**
-   * Store the filtered children, for fake entries or grand roots we might need
-   * to hide them based on curtain conditions.
-   */
-  const filteredChildren: Array<Entry|FilesAppEntry> = [];
-
-  const isFakeEntryVisible =
-      window.fileManager.dialogType !== DialogType.SELECT_SAVEAS_FILE;
-
-  for (const childEntry of driveChildren) {
-    // For fake entries ("Shared with me" and)
-    if (isFakeEntryInDrives(childEntry)) {
-      if (isFakeEntryVisible) {
-        filteredChildren.push(childEntry);
-      }
-      continue;
-    }
-    // For non grand roots (also not fake entries), we put them in the children
-    // directly and dispatch an action to read the it later.
-    if (!isGrandRootEntryInDrives(childEntry)) {
-      filteredChildren.push(childEntry);
-      continue;
-    }
-    // For grand roots ("Shared drives" and "Computers") inside Drive, we only
-    // show them when there's at least one child entries inside.
-    const grandChildEntries =
-        await readChildEntriesForDirectoryEntry(childEntry);
-    metrics.recordSmallCount(
-        metricNameMap[childEntry.fullPath]!, grandChildEntries.length);
-    if (grandChildEntries.length > 0) {
-      filteredChildren.push(childEntry);
-    }
-  }
-  // TODO(b/296792757)
-  yield addChildEntries(
-      {parentKey: entry.toURL(), entries: filteredChildren}) as
-      AddChildEntriesAction;
-}
-
-/**
- * Read child entries for a given directory entry.
- */
-async function readChildEntriesForDirectoryEntry(
-    entry: DirectoryEntry|
-    FilesAppDirEntry): Promise<Array<Entry|FilesAppEntry>> {
-  return new Promise<Array<Entry|FilesAppEntry>>(resolve => {
-    const reader = entry.createReader();
-    const subEntries: Array<Entry|FilesAppEntry> = [];
-    const readEntry = () => {
-      reader.readEntries((entries) => {
-        if (entries.length === 0) {
-          resolve(sortEntries(entry, subEntries));
-          return;
-        }
-        for (const subEntry of entries) {
-          subEntries.push(subEntry);
-        }
-        readEntry();
-      });
-    };
-    readEntry();
-  });
 }

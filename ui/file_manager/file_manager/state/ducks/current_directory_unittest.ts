@@ -12,9 +12,11 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
 import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {clearCachedEntries} from '../ducks/all_entries.js';
+import {ActionType} from '../actions.js';
+import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
 import {fetchFileTasks} from '../ducks/current_directory.js';
 import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, setUpFileManagerOnWindow, setupStore, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
+import {clearCachedEntries} from '../reducers/all_entries.js';
 import {getFilesData, Store} from '../store.js';
 
 import {changeDirectory, updateSelection} from './current_directory.js';
@@ -253,8 +255,11 @@ export function testChangeDirectoryContent() {
   ]);
 
   // Clear cached entries: only dir2 and file should be kept.
-  // TODO(b/296792757)
-  store.dispatch(clearCachedEntries({}));
+  const action: ClearStaleCachedEntriesAction = {
+    type: ActionType.CLEAR_STALE_CACHED_ENTRIES,
+    payload: undefined,
+  };
+  clearCachedEntries(store.getState(), action);
   assertEquals(
       2, allEntriesSize(store.getState()),
       'only dir-2 and dir-2/file should still be cached');

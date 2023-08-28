@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {State} from '../../externs/ts/state.js';
-import {Action} from '../actions.js';
-import {allEntriesReducersMap} from '../ducks/all_entries.js';
+import {Action, ActionType} from '../actions.js';
 import {androidAppsReducersMap} from '../ducks/android_apps.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
 import {currentDirectoryReducersMap} from '../ducks/current_directory.js';
@@ -15,6 +14,8 @@ import {preferencesReducersMap} from '../ducks/preferences.js';
 import {searchReducersMap} from '../ducks/search.js';
 import {uiEntriesReducersMap} from '../ducks/ui_entries.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
+
+import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
 
 // Reducers map created from merging together each slice's exported reducersMap.
 const rootReducersMap = new Map([
@@ -28,7 +29,6 @@ const rootReducersMap = new Map([
   ...preferencesReducersMap,
   ...deviceReducersMap,
   ...currentDirectoryReducersMap,
-  ...allEntriesReducersMap,
 ]);
 
 /**
@@ -40,6 +40,10 @@ const rootReducersMap = new Map([
  * from here.
  */
 export function rootReducer(currentState: State, action: Action): State {
+  // Before any actual Reducer, we cache the entries, so the reducers can just
+  // use any entry from `allEntries`.
+  const state = cacheEntries(currentState, action);
+
   if (window.DEBUG_STORE) {
     console.groupCollapsed(`Action: ${action.type}`);
     console.dir(action.payload);
@@ -47,6 +51,12 @@ export function rootReducer(currentState: State, action: Action): State {
   }
 
   switch (action.type) {
+    case ActionType.CLEAR_STALE_CACHED_ENTRIES:
+      return clearCachedEntries(state, action);
+    case ActionType.UPDATE_METADATA:
+      return updateMetadata(state, action);
+    case ActionType.ADD_CHILD_ENTRIES:
+      return addChildEntries(currentState, action);
     default:
       // Handles ducks reducers.
       const reducers = rootReducersMap.get(action.type);

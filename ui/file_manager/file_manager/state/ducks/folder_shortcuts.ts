@@ -8,8 +8,6 @@ import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store
 import {Action, ActionType} from '../actions.js';
 import {getEntry} from '../store.js';
 
-import {cacheEntries} from './all_entries.js';
-
 /**
  * Actions and reducers for folder shortcuts.
  *
@@ -28,17 +26,12 @@ export interface RefreshFolderShortcutAction extends BaseAction {
   };
 }
 
-function refreshFolderShortcutReducer(
-    currentState: State,
-    payload: RefreshFolderShortcutAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  cacheEntries(currentState, payload.entries);
-
-  return {
-    ...currentState,
-    folderShortcuts: payload.entries.map(entry => entry.toURL()),
-  };
-}
+const refreshFolderShortcutReducer =
+    (currentState: State, payload: RefreshFolderShortcutAction['payload']):
+        State => ({
+          ...currentState,
+          folderShortcuts: payload.entries.map(entry => entry.toURL()),
+        });
 
 /**
  * Action factory to refresh all folder shortcuts in the store, all folder
@@ -61,9 +54,6 @@ export interface AddFolderShortcutAction extends BaseAction {
 
 function addFolderShortcutReducer(
     currentState: State, payload: AddFolderShortcutAction['payload']): State {
-  // Cache entries, so the reducers can use any entry from `allEntries`.
-  cacheEntries(currentState, [payload.entry]);
-
   const {entry} = payload;
   const key = entry.toURL();
   const {folderShortcuts} = currentState;

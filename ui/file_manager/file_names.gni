@@ -253,12 +253,16 @@ ts_files = [
 
   # Actions.
   "file_manager/state/actions.ts",
+  "file_manager/state/actions/all_entries.ts",
+
+  # ActionsProducers.
+  "file_manager/state/actions_producers/all_entries.ts",
 
   # Reducers.
   "file_manager/state/reducers/root.ts",
+  "file_manager/state/reducers/all_entries.ts",
 
   # Ducks.
-  "file_manager/state/ducks/all_entries.ts",
   "file_manager/state/ducks/android_apps.ts",
   "file_manager/state/ducks/bulk_pinning.ts",
   "file_manager/state/ducks/device.ts",
@@ -386,11 +390,14 @@ ts_test_files = [
   "file_manager/lib/actions_producer_unittest.ts",
   "file_manager/lib/for_tests.ts",
 
+  # Action producers:
+  "file_manager/state/actions_producers/all_entries_unittest.ts",
+
   # Reducers:
   "file_manager/state/for_tests.ts",
+  "file_manager/state/reducers/all_entries_unittest.ts",
 
   # Ducks:
-  "file_manager/state/ducks/all_entries_unittest.ts",
   "file_manager/state/ducks/android_apps_unittest.ts",
   "file_manager/state/ducks/bulk_pinning_unittest.ts",
   "file_manager/state/ducks/device_unittest.ts",

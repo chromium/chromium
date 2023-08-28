@@ -7,8 +7,8 @@ import '../store.js';
 
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {State} from '../../externs/ts/state.js';
-import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
+import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState} from '../store.js';
 
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';

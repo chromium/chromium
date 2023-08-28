@@ -15,8 +15,8 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
-import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
+import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState, getEntry} from '../store.js';
 
 import {addVolume, convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, removeVolume, updateIsInteractiveVolume} from './volumes.js';
