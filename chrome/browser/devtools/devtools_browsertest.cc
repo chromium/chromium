@@ -2152,8 +2152,6 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
 
   void DidHideSuggestions() override {}
 
-  void OnTextFieldChanged() override {}
-
  private:
   const raw_ptr<WebContents> inspected_contents_;
 };

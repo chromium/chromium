@@ -113,8 +113,6 @@ void BrowserAutofillManagerTestDelegateImpl::DidHideSuggestions() {
   FireEvent(ObservedUiEvents::kSuggestionsHidden);
 }
 
-void BrowserAutofillManagerTestDelegateImpl::OnTextFieldChanged() {}
-
 void BrowserAutofillManagerTestDelegateImpl::SetExpectations(
     std::list<ObservedUiEvents> expected_events,
     base::TimeDelta timeout,

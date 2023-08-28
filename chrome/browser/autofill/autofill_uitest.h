@@ -68,7 +68,6 @@ class BrowserAutofillManagerTestDelegateImpl
   void DidFillFormData() override;
   void DidShowSuggestions() override;
   void DidHideSuggestions() override;
-  void OnTextFieldChanged() override;
 
   void SetExpectations(std::list<ObservedUiEvents> expected_events,
                        base::TimeDelta timeout = base::Seconds(0),

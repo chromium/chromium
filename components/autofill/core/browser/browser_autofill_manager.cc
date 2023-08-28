@@ -1071,9 +1071,6 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
     const TimeTicks timestamp) {
-  if (test_delegate_)
-    test_delegate_->OnTextFieldChanged();
-
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
