@@ -207,9 +207,7 @@ public class TabGroupUiMediatorUnitTest {
             doReturn(currentTab).when(mTabModelSelector).getCurrentTab();
         }
 
-        TabGridDialogMediator.DialogController controller =
-                TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext) ? mTabGridDialogController
-                                                                          : null;
+        TabGridDialogMediator.DialogController controller = mTabGridDialogController;
         OneshotSupplierImpl<TabGridDialogMediator.DialogController> controllerSupplier =
                 new OneshotSupplierImpl<>();
         doReturn(mTabGridDialogBackPressSupplier)

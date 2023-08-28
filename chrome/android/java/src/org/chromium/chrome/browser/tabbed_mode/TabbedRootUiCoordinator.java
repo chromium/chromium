@@ -95,7 +95,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -502,8 +501,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mCompositorViewHolderSupplier.get()::removeTouchEventObserver, mLayoutManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                && TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             getToolbarManager().enableBottomControls();
         }
 
@@ -832,12 +830,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initUndoGroupSnackbarController() {
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
-            mUndoGroupSnackbarController = new UndoGroupSnackbarController(
-                    mActivity, mTabModelSelectorSupplier.get(), mSnackbarManagerSupplier.get());
-        } else {
-            mUndoGroupSnackbarController = null;
-        }
+        mUndoGroupSnackbarController = new UndoGroupSnackbarController(
+                mActivity, mTabModelSelectorSupplier.get(), mSnackbarManagerSupplier.get());
     }
 
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {

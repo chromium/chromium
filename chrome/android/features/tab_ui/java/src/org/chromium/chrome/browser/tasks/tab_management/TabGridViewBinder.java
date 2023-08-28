@@ -431,11 +431,9 @@ class TabGridViewBinder {
 
         thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected);
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
             ViewCompat.setBackgroundTintList(backgroundView,
                     TabUiThemeProvider.getHoveredCardBackgroundTintList(
                             backgroundView.getContext(), isIncognito, isSelected));
-        }
     }
 
     private static void updateColorForActionButton(

@@ -693,8 +693,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 RecordUserAction.record("MobileTabSwitched");
             }
             // Only log when you switch a tab page directly from tab switcher.
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
-                    || getRelatedTabs(tab.getId()).size() == 1) {
+            if (getRelatedTabs(tab.getId()).size() == 1) {
                 RecordUserAction.record(
                         "MobileTabSwitched." + TabSwitcherCoordinator.COMPONENT_NAME);
             }
@@ -1167,8 +1166,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     private boolean ableToOpenDialog(Tab tab) {
-        return TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
-                && mTabModelSelector.isIncognitoSelected() == tab.isIncognito()
+        return mTabModelSelector.isIncognitoSelected() == tab.isIncognito()
                 && getRelatedTabs(tab.getId()).size() != 1;
     }
 

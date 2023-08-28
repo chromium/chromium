@@ -156,11 +156,6 @@ public class HistoryClustersCoordinatorTest {
         public void markVisitForRemoval(ClusterVisit clusterVisit) {
             mVisitsForRemoval.add(clusterVisit);
         }
-
-        @Override
-        public boolean areTabGroupsEnabled() {
-            return mAreTabGroupsEnabled;
-        }
     }
 
     @Rule
@@ -209,7 +204,6 @@ public class HistoryClustersCoordinatorTest {
     private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
             new ObservableSupplierImpl<>();
     private boolean mIsSeparateActivity = true;
-    private boolean mAreTabGroupsEnabled = true;
     private boolean mHasOtherFormsOfBrowsingHistory = true;
 
     @Before
@@ -476,7 +470,6 @@ public class HistoryClustersCoordinatorTest {
     @Test
     public void testMenuItemVisibility() {
         mIsSeparateActivity = false;
-        mAreTabGroupsEnabled = false;
         mHistoryClustersCoordinator.inflateActivityView();
         HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
                                                  .findViewById(R.id.selectable_list)
@@ -484,10 +477,9 @@ public class HistoryClustersCoordinatorTest {
 
         assertNotNull(toolbar);
         assertNull(toolbar.getMenu().findItem(R.id.close_menu_id));
-        assertNull(toolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group));
+        assertNotNull(toolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group));
 
         mIsSeparateActivity = true;
-        mAreTabGroupsEnabled = true;
         mHistoryClustersCoordinator.inflateActivityView();
         toolbar = mHistoryClustersCoordinator.getActivityContentView()
                           .findViewById(R.id.selectable_list)

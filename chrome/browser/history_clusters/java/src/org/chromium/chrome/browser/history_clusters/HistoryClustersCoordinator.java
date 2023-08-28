@@ -224,10 +224,6 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
             mToolbar.getMenu().removeItem(R.id.close_menu_id);
         }
 
-        if (!mDelegate.areTabGroupsEnabled()) {
-            mToolbar.getMenu().removeItem(R.id.selection_mode_open_in_tab_group);
-        }
-
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mDelegate.shouldShowPrivacyDisclaimerSupplier().addObserver(this::updateInfoMenuItem);
 

@@ -223,9 +223,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
             mIsSwipingToDismiss = false;
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-                mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
-            }
 
             RecyclerView.ViewHolder hoveredViewHolder =
                     mRecyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
@@ -383,7 +380,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         }
         mCurrentActionState = actionState;
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) return;
             int prev_hovered = mHoveredTabIndex;
             mHoveredTabIndex = TabListRecyclerView.getHoveredTabIndex(
                     recyclerView, viewHolder.itemView, dX, dY, mMergeThreshold);

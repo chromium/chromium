@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -580,7 +579,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         boolean isIncognitoReauthShowing = isIncognito && (mIncognitoReauthController != null)
                 && mIncognitoReauthController.isReauthPageShowing();
         boolean isTabSelectionEditorContext = isOverviewModeMenu
-                && TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
                 && !DeviceClassManager.enableAccessibilityLayout(mContext);
 
         boolean isMenuSelectTabsVisible = isTabSelectionEditorContext;

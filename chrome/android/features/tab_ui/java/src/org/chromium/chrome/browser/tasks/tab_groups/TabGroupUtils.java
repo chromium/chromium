@@ -42,10 +42,6 @@ public class TabGroupUtils {
     public static void maybeShowIPH(@FeatureConstants String featureName, View view,
             @Nullable BottomSheetController bottomSheetController) {
         if (view == null) return;
-        // For tab group, all three IPHs are valid.
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(view.getContext())) {
-            return;
-        }
 
         @StringRes
         int textId;

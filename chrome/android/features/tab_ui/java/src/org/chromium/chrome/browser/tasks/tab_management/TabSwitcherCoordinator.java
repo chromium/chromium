@@ -186,55 +186,48 @@ public class TabSwitcherCoordinator
                             .build();
 
             OneshotSupplier<TabGridDialogMediator.DialogController> dialogControllerSupplier = null;
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)) {
-                mGridDialogScrimCoordinator =
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mRootView.getContext())
-                        ? createScrimCoordinator()
-                        : scrimCoordinator;
-                mUsesTabGridDialogCoordinator = true;
-                dialogControllerSupplier =
-                        new OneshotSupplier<TabGridDialogMediator.DialogController>() {
-                            // Implementation is based on OneshotSupplierImpl with modifications
-                            // such that onAvailable does not invoke get() unless the object already
-                            // exists this prevents callers of onAvailable from triggering the lazy
-                            // creation of the TabGridDialogCoordinator before it is required.
-                            private final Promise<TabGridDialogMediator.DialogController> mPromise =
-                                    new Promise<>();
-                            private final ThreadUtils.ThreadChecker mThreadChecker =
-                                    new ThreadUtils.ThreadChecker();
+            mGridDialogScrimCoordinator =
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mRootView.getContext())
+                    ? createScrimCoordinator()
+                    : scrimCoordinator;
+            mUsesTabGridDialogCoordinator = true;
+            dialogControllerSupplier =
+                    new OneshotSupplier<TabGridDialogMediator.DialogController>() {
+                        // Implementation is based on OneshotSupplierImpl with modifications
+                        // such that onAvailable does not invoke get() unless the object already
+                        // exists this prevents callers of onAvailable from triggering the lazy
+                        // creation of the TabGridDialogCoordinator before it is required.
+                        private final Promise<TabGridDialogMediator.DialogController> mPromise =
+                                new Promise<>();
+                        private final ThreadUtils.ThreadChecker mThreadChecker =
+                                new ThreadUtils.ThreadChecker();
 
-                            @Override
-                            public TabGridDialogMediator.DialogController onAvailable(
-                                    Callback<TabGridDialogMediator.DialogController> callback) {
-                                mThreadChecker.assertOnValidThread();
-                                mPromise.then(callback);
-                                if (!hasValue()) return null;
+                        @Override
+                        public TabGridDialogMediator.DialogController onAvailable(
+                                Callback<TabGridDialogMediator.DialogController> callback) {
+                            mThreadChecker.assertOnValidThread();
+                            mPromise.then(callback);
+                            if (!hasValue()) return null;
 
-                                return get();
+                            return get();
+                        }
+
+                        @Override
+                        public TabGridDialogMediator.DialogController get() {
+                            mThreadChecker.assertOnValidThread();
+                            if (initTabGridDialogCoordinator()) {
+                                assert !mPromise.isFulfilled();
+                                mPromise.fulfill(mTabGridDialogCoordinator.getDialogController());
                             }
+                            assert mPromise.isFulfilled();
+                            return mPromise.getResult();
+                        }
 
-                            @Override
-                            public TabGridDialogMediator.DialogController get() {
-                                mThreadChecker.assertOnValidThread();
-                                if (initTabGridDialogCoordinator()) {
-                                    assert !mPromise.isFulfilled();
-                                    mPromise.fulfill(
-                                            mTabGridDialogCoordinator.getDialogController());
-                                }
-                                assert mPromise.isFulfilled();
-                                return mPromise.getResult();
-                            }
-
-                            @Override
-                            public boolean hasValue() {
-                                return mTabGridDialogCoordinator != null;
-                            }
-                        };
-            } else {
-                mGridDialogScrimCoordinator = null;
-                mUsesTabGridDialogCoordinator = false;
-                mTabGridDialogCoordinator = null;
-            }
+                        @Override
+                        public boolean hasValue() {
+                            return mTabGridDialogCoordinator != null;
+                        }
+                    };
             mMediator = new TabSwitcherMediator(activity, this, containerViewModel,
                     tabModelSelector, browserControls, container, tabContentManager, this, this,
                     multiWindowModeStateDispatcher, mode, incognitoReauthControllerSupplier,
@@ -423,8 +416,7 @@ public class TabSwitcherCoordinator
                             tabSuggestionMessageService);
                 }
 
-                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
-                        && !TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode)) {
+                if (!TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode)) {
                     mTabGridIphDialogCoordinator = new TabGridIphDialogCoordinator(
                             mActivity, mContainer, mModalDialogManager);
                     IphMessageService iphMessageService =
@@ -821,8 +813,7 @@ public class TabSwitcherCoordinator
 
     private boolean shouldRegisterMessageItemType() {
         return ChromeFeatureList.sCloseTabSuggestions.isEnabled()
-                || (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mRootView.getContext())
-                        && !TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode));
+                || !TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
     }
 
     private boolean shouldRegisterLargeMessageItemType() {

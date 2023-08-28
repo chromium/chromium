@@ -1578,19 +1578,6 @@ class TabListMediator {
 
     private void addTabInfoToModel(final PseudoTab pseudoTab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
-        // If the new tab is already in the target position of TabListModel, skip redundant
-        // addition. The only exception is when we undo a group-tabs operation. In that case, it is
-        // possible that the tab being added back has the same id as the PropertyModel of the
-        // group.
-        if (index < mModel.size()) {
-            int type = mModel.get(index).type;
-            PropertyModel model = mModel.get(index).model;
-            if ((type == UiType.CLOSABLE || type == UiType.SELECTABLE || type == UiType.STRIP)
-                    && model.get(TabProperties.TAB_ID) == pseudoTab.getId()
-                    && !TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-                return;
-            }
-        }
         boolean showIPH = false;
         boolean isRealTab = pseudoTab.hasRealTab();
         if (mActionsOnAllRelatedTabs && !mShownIPH && isRealTab) {

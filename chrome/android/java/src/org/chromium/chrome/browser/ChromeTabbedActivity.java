@@ -183,7 +183,6 @@ import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -1797,34 +1796,31 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mContentContainer, () -> FontPreloader.getInstance().onFirstDrawTabbedActivity());
 
         Supplier<Boolean> dialogVisibilitySupplier = null;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(this)) {
-            dialogVisibilitySupplier = () -> {
-                if (isStartSurfaceRefactorEnabled()) {
-                    // The grid tab switcher is lazily initialized on tablet.
-                    if (!mTabSwitcherSupplier.hasValue()) {
-                        assert isTablet();
-                        return false;
-                    }
+        dialogVisibilitySupplier = () -> {
+            if (isStartSurfaceRefactorEnabled()) {
+                // The grid tab switcher is lazily initialized on tablet.
+                if (!mTabSwitcherSupplier.hasValue()) {
+                    assert isTablet();
+                    return false;
                 }
-                // Return true if dialog from either tab switcher or tab strip is visible.
+            }
+            // Return true if dialog from either tab switcher or tab strip is visible.
 
-                ToolbarManager toolbarManager = getToolbarManager();
-                TabGroupUi tabGroupUi = toolbarManager.getTabGroupUi();
-                boolean isDialogVisible = tabGroupUi != null && tabGroupUi.isTabGridDialogVisible();
+            ToolbarManager toolbarManager = getToolbarManager();
+            TabGroupUi tabGroupUi = toolbarManager.getTabGroupUi();
+            boolean isDialogVisible = tabGroupUi != null && tabGroupUi.isTabGridDialogVisible();
 
-                Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
-                        isStartSurfaceRefactorEnabled()
-                        ? mTabSwitcherSupplier.get().getTabGridDialogVisibilitySupplier()
-                        : (mStartSurfaceSupplier == null || !mStartSurfaceSupplier.hasValue())
-                        ? null
-                        : mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
+            Supplier<Boolean> tabSwitcherDialogVisibilitySupplier = isStartSurfaceRefactorEnabled()
+                    ? mTabSwitcherSupplier.get().getTabGridDialogVisibilitySupplier()
+                    : (mStartSurfaceSupplier == null || !mStartSurfaceSupplier.hasValue())
+                    ? null
+                    : mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
 
-                if (tabSwitcherDialogVisibilitySupplier != null) {
-                    isDialogVisible = isDialogVisible || tabSwitcherDialogVisibilitySupplier.get();
-                }
-                return isDialogVisible;
-            };
-        }
+            if (tabSwitcherDialogVisibilitySupplier != null) {
+                isDialogVisible = isDialogVisible || tabSwitcherDialogVisibilitySupplier.get();
+            }
+            return isDialogVisible;
+        };
 
         mUndoBarPopupController = new UndoBarController(
                 this, mTabModelSelector, this::getSnackbarManager, dialogVisibilitySupplier);

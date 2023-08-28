@@ -8,13 +8,11 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 import javax.inject.Inject;
 
@@ -34,20 +32,14 @@ public class ChromeTabModelFilterFactory implements TabModelFilterFactory {
     }
 
     /**
-     * Return a {@link TabModelFilter} based on feature flags. This can return either:
-     * - A filter that implements tab groups.
-     * - A canonical {@link EmptyTabModelFilter}.
+     * Return a {@link TabModelFilter} for handling tab groups.
      *
      * @param model The {@link TabModel} that the {@link TabModelFilter} acts on.
      * @return a {@link TabModelFilter}.
      */
     @Override
     public TabModelFilter createTabModelFilter(TabModel model) {
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-            TabManagementDelegate tabManagementDelegate =
-                    TabManagementDelegateProvider.getDelegate();
-            return tabManagementDelegate.createTabGroupModelFilter(model);
-        }
-        return new EmptyTabModelFilter(model);
+        TabManagementDelegate tabManagementDelegate = TabManagementDelegateProvider.getDelegate();
+        return tabManagementDelegate.createTabGroupModelFilter(model);
     }
 }

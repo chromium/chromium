@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -280,11 +279,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 @Override
                 public void onOptOut() {
                     onHistoryClustersOptOutChanged(false);
-                }
-
-                @Override
-                public boolean areTabGroupsEnabled() {
-                    return TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity);
                 }
             };
 

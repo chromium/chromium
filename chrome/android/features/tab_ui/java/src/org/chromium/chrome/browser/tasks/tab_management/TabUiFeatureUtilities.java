@@ -101,15 +101,6 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether the tab group feature is enabled and available for use.
-     * @param context The activity context.
-     */
-    public static boolean isTabGroupsAndroidEnabled(Context context) {
-        // TODO(crbug/1466158): Remove this.
-        return true;
-    }
-
-    /**
      * @return Whether the tab group continuation feature is enabled and available for use.
      * @param context The activity context.
      */

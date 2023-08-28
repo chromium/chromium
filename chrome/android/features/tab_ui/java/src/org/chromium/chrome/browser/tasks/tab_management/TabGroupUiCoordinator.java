@@ -158,8 +158,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
             // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
-                    && mScrimCoordinator != null) {
+            if (mScrimCoordinator != null) {
                 mTabGridDialogControllerSupplier =
                         new OneshotSupplierImpl<>() {
                             @Override

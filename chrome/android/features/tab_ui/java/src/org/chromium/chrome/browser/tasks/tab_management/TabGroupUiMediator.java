@@ -147,8 +147,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mTabModelObserver = new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
-                        && getTabsToShowForId(lastId).contains(tab)) {
+                if (getTabsToShowForId(lastId).contains(tab)) {
                     return;
                 }
 
@@ -263,25 +262,23 @@ public class TabGroupUiMediator implements BackPressHandler {
             }
         };
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-            mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
-                @Override
-                public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                    if (mIsTabGroupUiVisible && movedTab == mTabModelSelector.getCurrentTab()) {
-                        resetTabStripWithRelatedTabsForId(movedTab.getId());
-                    }
+        mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
+            @Override
+            public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                if (mIsTabGroupUiVisible && movedTab == mTabModelSelector.getCurrentTab()) {
+                    resetTabStripWithRelatedTabsForId(movedTab.getId());
                 }
-            };
+            }
+        };
 
-            // TODO(995951): Add observer similar to TabModelSelectorTabModelObserver for
-            // TabModelFilter.
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     false))
-                    .addTabGroupObserver(mTabGroupModelFilterObserver);
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     true))
-                    .addTabGroupObserver(mTabGroupModelFilterObserver);
-        }
+        // TODO(995951): Add observer similar to TabModelSelectorTabModelObserver for
+        // TabModelFilter.
+        ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                 false))
+                .addTabGroupObserver(mTabGroupModelFilterObserver);
+        ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                 true))
+                .addTabGroupObserver(mTabGroupModelFilterObserver);
 
         mOmniboxFocusObserver = isFocus -> {
             // Hide tab strip when omnibox gains focus and try to re-show it when omnibox loses
@@ -343,13 +340,11 @@ public class TabGroupUiMediator implements BackPressHandler {
         View.OnClickListener rightButtonOnClickListener = view -> {
             Tab parentTabToAttach = null;
             Tab currentTab = mTabModelSelector.getCurrentTab();
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
-                List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
+            List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
 
-                assert relatedTabs.size() > 0;
+            assert relatedTabs.size() > 0;
 
-                parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
-            }
+            parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
             mTabCreatorManager.getTabCreator(currentTab.isIncognito())
                     .createNewTab(new LoadUrlParams(UrlConstants.NTP_URL),
                             TabLaunchType.FROM_TAB_GROUP_UI, parentTabToAttach);
