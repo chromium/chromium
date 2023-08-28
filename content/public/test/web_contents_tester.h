@@ -197,6 +197,10 @@ class WebContentsTester {
   // Returns the time that was set with SetTabSwitchStartTime, or a null
   // TimeTicks if it was never called.
   virtual base::TimeTicks GetTabSwitchStartTime() = 0;
+
+  // Sets the return value for GetPictureInPictureOptions().
+  virtual void SetPictureInPictureOptions(
+      absl::optional<blink::mojom::PictureInPictureWindowOptions> options) = 0;
 };
 
 }  // namespace content
