@@ -209,24 +209,22 @@ def main():
       except CipdError as e:
         logging.error(e)
         return 1
-      # support legacy (win-cross-experiments) and new (win-cross)
-      # TODO(crbug.com/1407557): drop -experiments support
-      wcedir = os.path.join(THIS_DIR, 'win-cross', toolchain)
+      win_cross_cfg_dir = 'win-cross'
+      wcedir = os.path.join(THIS_DIR, win_cross_cfg_dir, toolchain)
       if not os.path.exists(wcedir):
           os.makedirs(wcedir, mode=0o755)
-      for win_cross_cfg_dir in ['win-cross','win-cross-experiments']:
-          if os.path.exists(os.path.join(toolchain_root, win_cross_cfg_dir)):
-              # copy in win-cross*/toolchain
-              # as windows may not use symlinks.
-              for cfg in glob.glob(os.path.join(toolchain_root,
-                                                win_cross_cfg_dir,
-                                                '*.cfg')):
-                  fname = os.path.join(wcedir, os.path.basename(cfg))
-                  if os.path.exists(fname):
-                    os.chmod(fname, 0o777)
-                    os.remove(fname)
-                  logging.info('Copy from %s to %s...' % (cfg, fname))
-                  shutil.copy(cfg, fname)
+      if os.path.exists(os.path.join(toolchain_root, win_cross_cfg_dir)):
+          # copy in win-cross/toolchain
+          # as windows may not use symlinks.
+          for cfg in glob.glob(os.path.join(toolchain_root,
+                                            win_cross_cfg_dir,
+                                            '*.cfg')):
+              fname = os.path.join(wcedir, os.path.basename(cfg))
+              if os.path.exists(fname):
+                  os.chmod(fname, 0o777)
+                  os.remove(fname)
+              logging.info('Copy from %s to %s...' % (cfg, fname))
+              shutil.copy(cfg, fname)
 
     return 0
 
