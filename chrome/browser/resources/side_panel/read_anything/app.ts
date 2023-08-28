@@ -16,6 +16,7 @@ import {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {ReadAnythingToolbar} from './read_anything_toolbar.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -412,8 +413,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // Continue speaking with the next block of text.
         readAnythingApp.playMessage(text.substring(maxTextLength, text.length));
       } else {
-        // TODO(crbug.com/1474951): Ensure the play button resets when we run
-        // out of text to speak.
+        readAnythingApp?.onSpeechStopped();
       }
     };
 
@@ -433,6 +433,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.synth.cancel();
     this.synth.speak(message);
+  }
+
+  private onSpeechStopped() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const toolbar = shadowRoot.getElementById('toolbar');
+    assert(toolbar);
+    if (toolbar instanceof ReadAnythingToolbar) {
+      toolbar.updateUiForPausing();
+    }
   }
 
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed

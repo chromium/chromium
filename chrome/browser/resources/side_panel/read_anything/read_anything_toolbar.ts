@@ -229,6 +229,24 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.removeOnClickListeners(this.$.letterSpacingSubmenu);
   }
 
+  updateUiForPlaying() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const button = shadowRoot.getElementById('play-pause');
+    assert(button);
+    button.setAttribute('iron-icon', 'read-anything:pause');
+    this.isPaused = false;
+  }
+
+  updateUiForPausing() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const button = shadowRoot.getElementById('play-pause');
+    assert(button);
+    button.setAttribute('iron-icon', 'read-anything:play');
+    this.isPaused = true;
+  }
+
   private removeOnClickListeners(menu: CrActionMenuElement) {
     const nodes = Array.from(menu.children);
     nodes.forEach((element) => {
@@ -332,20 +350,13 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onPlayPauseClick_() {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const button = shadowRoot.getElementById('play-pause');
-    assert(button);
-
     if (this.isPaused) {
-      button.setAttribute('iron-icon', 'read-anything:pause');
-      this.isPaused = false;
+      this.updateUiForPlaying();
       if (this.contentPage) {
         this.contentPage.playSpeech();
       }
     } else {
-      button.setAttribute('iron-icon', 'read-anything:play');
-      this.isPaused = true;
+      this.updateUiForPausing();
       if (this.contentPage) {
         this.contentPage.stopSpeech();
       }
