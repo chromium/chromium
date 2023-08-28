@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -19,14 +20,24 @@
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 
-class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
+namespace web_app {
+namespace {
+
+class PWAConfirmationBubbleViewBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
-  PWAConfirmationBubbleViewBrowserTest() {
+  PWAConfirmationBubbleViewBrowserTest()
+      : prevent_close_on_deactivate_(
+            PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting()) {
     scoped_feature_list_.InitWithFeatures(
         {feature_engagement::kIPHDesktopPwaInstallFeature}, {});
   }
@@ -36,12 +47,14 @@ class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
     auto app_info = std::make_unique<WebAppInstallInfo>();
     app_info->title = u"Test app 2";
     app_info->start_url = GURL("https://example2.com");
-    app_info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+    app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     return app_info;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::AutoReset<bool> prevent_close_on_deactivate_;
 };
 
 IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
@@ -50,9 +63,8 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   app_info->title = u"Test app";
   app_info->start_url = GURL("https://example.com");
   Profile* profile = browser()->profile();
-  web_app::AppId app_id =
-      web_app::test::InstallWebApp(profile, std::move(app_info));
-  Browser* browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  AppId app_id = test::InstallWebApp(profile, std::move(app_info));
+  Browser* browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
 
   app_info = GetAppInfo();
   // Tests that we don't crash when showing the install prompt in a PWA window.
@@ -65,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   app_info = std::make_unique<WebAppInstallInfo>();
   app_info->title = u"Test app 3";
   app_info->start_url = GURL("https://example3.com");
-  app_info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+  app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   chrome::ShowPWAInstallBubble(
       browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
       base::DoNothing());
@@ -122,20 +134,15 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext())
           ->GetPrefs();
-  web_app::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-  EXPECT_EQ(
-      web_app::GetIntWebAppPref(pref_service, app_id, web_app::kIphIgnoreCount)
-          .value(),
-      1);
-  EXPECT_TRUE(web_app::GetTimeWebAppPref(pref_service, app_id,
-                                         web_app::kIphLastIgnoreTime)
-                  .has_value());
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  EXPECT_EQ(GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value(), 1);
+  EXPECT_TRUE(
+      GetTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime).has_value());
   {
     const auto& dict =
         pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(web_app::kIphIgnoreCount).value_or(0), 1);
-    EXPECT_TRUE(dict.contains(web_app::kIphLastIgnoreTime));
+    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 1);
+    EXPECT_TRUE(dict.contains(kIphLastIgnoreTime));
   }
 }
 
@@ -143,20 +150,18 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        AcceptDialogResetIphCounters) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url;
-  web_app::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
                                       ->tab_strip_model()
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext())
           ->GetPrefs();
-  web_app::UpdateIntWebAppPref(pref_service, app_id, web_app::kIphIgnoreCount,
-                               1);
+  UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, 1);
   {
     ScopedDictPrefUpdate update(pref_service,
                                 prefs::kWebAppsAppAgnosticIphState);
-    update->Set(web_app::kIphIgnoreCount, 1);
+    update->Set(kIphIgnoreCount, 1);
   }
   base::RunLoop loop;
   // Show the PWA install dialog.
@@ -175,13 +180,39 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   bubble_dialog->AcceptDialog();
   loop.Run();
 
-  EXPECT_EQ(
-      web_app::GetIntWebAppPref(pref_service, app_id, web_app::kIphIgnoreCount)
-          .value(),
-      0);
+  EXPECT_EQ(GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value(), 0);
   {
     const auto& dict =
         pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict.FindInt(web_app::kIphIgnoreCount).value_or(0), 0);
+    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 0);
   }
 }
+
+IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+                       CancelFromNavigation) {
+  absl::optional<bool> dialog_accepted_ = absl::nullopt;
+  chrome::ShowPWAInstallBubble(
+      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      base::BindLambdaForTesting(
+          [&](bool accepted,
+              std::unique_ptr<WebAppInstallInfo> app_info_callback) {
+            dialog_accepted_ = accepted;
+          }));
+  PWAConfirmationBubbleView* bubble_dialog =
+      PWAConfirmationBubbleView::GetBubble();
+
+  base::HistogramTester histograms;
+  views::test::WidgetDestroyedWaiter destroy_waiter(bubble_dialog->GetWidget());
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), GURL(url::kAboutBlankURL), /*number_of_navigations=*/1);
+
+  destroy_waiter.Wait();
+  ASSERT_TRUE(dialog_accepted_);
+  ASSERT_FALSE(dialog_accepted_.value());
+
+  histograms.ExpectUniqueSample("WebApp.InstallConfirmation.CloseReason",
+                                views::Widget::ClosedReason::kUnspecified, 1);
+}
+
+}  // namespace
+}  // namespace web_app

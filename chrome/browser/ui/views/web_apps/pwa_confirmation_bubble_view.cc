@@ -77,19 +77,21 @@ PWAConfirmationBubbleView* PWAConfirmationBubbleView::GetBubble() {
 
 PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     views::View* anchor_view,
+    content::WebContents* web_contents,
     PageActionIconView* highlight_icon_button,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker)
-    : LocationBarBubbleDelegateView(anchor_view, nullptr),
+    : LocationBarBubbleDelegateView(anchor_view, web_contents),
       highlight_icon_button_(highlight_icon_button),
       web_app_info_(std::move(web_app_info)),
       callback_(std::move(callback)),
       iph_state_(iph_state),
       prefs_(prefs),
       tracker_(tracker) {
+  SetCloseOnMainFrameOriginNavigation(true);
   DCHECK(web_app_info_);
   DCHECK(prefs_);
 
@@ -248,8 +250,8 @@ void ShowPWAInstallBubble(content::WebContents* web_contents,
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(browser_context);
   g_bubble_ = new PWAConfirmationBubbleView(
-      anchor_view, icon, std::move(web_app_info), std::move(callback),
-      iph_state, prefs, tracker);
+      anchor_view, web_contents, icon, std::move(web_app_info),
+      std::move(callback), iph_state, prefs, tracker);
 
   views::BubbleDialogDelegateView::CreateBubble(g_bubble_)->Show();
   base::RecordAction(base::UserMetricsAction("WebAppInstallShown"));

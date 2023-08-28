@@ -10,8 +10,12 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace views {
 class Checkbox;
@@ -32,6 +36,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   static PWAConfirmationBubbleView* GetBubble();
 
   PWAConfirmationBubbleView(views::View* anchor_view,
+                            content::WebContents* web_contents,
                             PageActionIconView* highlight_icon_button,
                             std::unique_ptr<WebAppInstallInfo> web_app_info,
                             chrome::AppInstallationAcceptanceCallback callback,
