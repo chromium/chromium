@@ -22,6 +22,22 @@ class View;
 
 namespace ash {
 
+// Refer to `anchored_nudge_manager_impl.cc` to see the duration values.
+// TODO(b/297619385): Move constants to a new constants file.
+enum class NudgeDuration {
+  // Default duration that is used for nudges that expire.
+  kDefaultDuration = 0,
+
+  // Used for nudges with a button or a body text that has
+  // `AnchoredNudgeManagerImpl::kLongBodyTextLength` or more characters.
+  kMediumDuration = 1,
+
+  // Used for nudges that are meant to persist until user interacts with them.
+  kLongDuration = 2,
+
+  kMaxValue = kLongDuration
+};
+
 using HoverStateChangeCallback =
     base::RepeatingCallback<void(bool is_hovering)>;
 using NudgeClickCallback = base::RepeatingCallback<void()>;
@@ -74,9 +90,10 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // Used to set the nudge's placement in relation to the anchor view, if any.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
 
-  // Nudges with long duration are meant to persist and expect an action from
-  // the user for them to be dismissed. They have a duration of 30 minutes.
-  bool has_long_duration = false;
+  // Nudges can set a default, medium or long duration for nudges that persist.
+  // Refer to `anchored_nudge_manager_impl.cc` to see the duration values.
+  // TODO(b/297619385): Move constants to a new constants file.
+  NudgeDuration duration = NudgeDuration::kDefaultDuration;
 
   // If true, `arrow` will be set based on the current shelf alignment, and the
   // nudge will listen to shelf alignment changes to readjust its `arrow`.

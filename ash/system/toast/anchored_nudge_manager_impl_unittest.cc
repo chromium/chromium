@@ -734,9 +734,9 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
   EXPECT_FALSE(GetShownNudges()[id]);
 
-  // Test that a nudge with long duration persists and lasts more than
-  // `kNudgeDefaultDuration` but expires after `kNudgeLongDuration`.
-  nudge_data.has_long_duration = true;
+  // Test that a nudge with medium duration lasts longer than
+  // `kNudgeDefaultDuration` but expires after `kNudgeMediumDuration`.
+  nudge_data.duration = NudgeDuration::kMediumDuration;
   anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 
@@ -744,6 +744,87 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
   EXPECT_TRUE(GetShownNudges()[id]);
 
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Test that a nudge with long duration lasts longer than
+  // `kNudgeMediumDuration` but expires after `kNudgeLongDuration`.
+  nudge_data.duration = NudgeDuration::kLongDuration;
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration + base::Seconds(1));
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeLongDuration);
+  EXPECT_FALSE(GetShownNudges()[id]);
+}
+
+// Tests that nudge's default duration is updated to medium duration if the
+// nudge has a long body text or a button.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeDefaultDurationIsUpdated) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  const std::u16string long_body_text =
+      u"This is just a body text that has more than sixty characters.";
+  const std::u16string first_button_text = u"first";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Show a nudge with default duration.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // The nudge should expire after `kNudgeDefaultDuration`.
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Add a long body text and show the nudge again.
+  ASSERT_GE(static_cast<int>(long_body_text.length()),
+            AnchoredNudgeManagerImpl::kLongBodyTextLength);
+  nudge_data.body_text = long_body_text;
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // The nudge should not expire after `kNudgeDefaultDuration` has passed, but
+  // will expire after `kNudgeMediumDuration` since it has a long body text.
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
+  EXPECT_TRUE(GetShownNudges()[id]);
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Clear body text, add a button and show the nudge again.
+  nudge_data.body_text = std::u16string();
+  nudge_data.first_button_text = first_button_text;
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // The nudge should not expire after `kNudgeDefaultDuration` has passed, but
+  // will expire after `kNudgeMediumDuration` since it has a button.
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
+  EXPECT_TRUE(GetShownNudges()[id]);
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Set the duration to long and show the nudge again.
+  nudge_data.duration = NudgeDuration::kLongDuration;
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Ensure the duration doesn't update back to medium if it was set to long.
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration + base::Seconds(1));
+  EXPECT_TRUE(GetShownNudges()[id]);
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeLongDuration);
   EXPECT_FALSE(GetShownNudges()[id]);

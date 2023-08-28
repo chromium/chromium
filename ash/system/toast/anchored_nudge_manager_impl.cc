@@ -31,6 +31,18 @@
 
 namespace ash {
 
+// Returns the `base::TimeDelta` constant based on a `NudgeDuration` enum value.
+base::TimeDelta GetNudgeDuration(NudgeDuration duration) {
+  switch (duration) {
+    case NudgeDuration::kDefaultDuration:
+      return AnchoredNudgeManagerImpl::kNudgeDefaultDuration;
+    case NudgeDuration::kMediumDuration:
+      return AnchoredNudgeManagerImpl::kNudgeMediumDuration;
+    case ash::NudgeDuration::kLongDuration:
+      return AnchoredNudgeManagerImpl::kNudgeLongDuration;
+  }
+}
+
 // Owns a `base::OneShotTimer` that can be paused and resumed.
 class AnchoredNudgeManagerImpl::PausableTimer {
  public:
@@ -300,8 +312,16 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
       anchored_nudge_widget->GetNativeWindow(), id,
       std::move(nudge_data.hover_state_change_callback), this);
 
+  // Nudge duration will be updated from default to medium if the nudge has a
+  // button or its body text has `kLongBodyTextLength` or more characters.
+  if (nudge_data.duration == NudgeDuration::kDefaultDuration &&
+      (nudge_data.body_text.length() >= kLongBodyTextLength ||
+       !nudge_data.first_button_text.empty())) {
+    nudge_data.duration = NudgeDuration::kMediumDuration;
+  }
+
   dismiss_timers_[id].Start(
-      nudge_data.has_long_duration ? kNudgeLongDuration : kNudgeDefaultDuration,
+      GetNudgeDuration(nudge_data.duration),
       base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
                           base::Unretained(this), id));
 }

@@ -62,10 +62,19 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   views::LabelButton* GetNudgeSecondButtonForTest(const std::string& id);
   AnchoredNudge* GetShownNudgeForTest(const std::string& id);
 
+  // TODO(b/297619385): Move constants to a new constants file.
+  // Nudges with a body text that has at least this number of characters will
+  // update its default duration to medium length.
+  static constexpr int kLongBodyTextLength = 60;
+
   // Default duration that is used for nudges that expire.
   static constexpr base::TimeDelta kNudgeDefaultDuration = base::Seconds(6);
 
-  // Duration for nudges that are meant to persist until user has interacted
+  // Duration used for nudges with a button or a body text that has
+  // `kLongBodyTextLength` or more characters.
+  static constexpr base::TimeDelta kNudgeMediumDuration = base::Seconds(10);
+
+  // Duration used for nudges that are meant to persist until the user interacts
   // with them.
   static constexpr base::TimeDelta kNudgeLongDuration = base::Minutes(30);
 

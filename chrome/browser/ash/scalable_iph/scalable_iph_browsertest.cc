@@ -1017,8 +1017,9 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, ShowBubbleAndDismiss) {
   CHECK(anchored_nudge_manager);
   EXPECT_TRUE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
 
-  // Default nudge duration is 6 seconds.
-  task_runner()->FastForwardBy(base::Seconds(7));
+  // Fast forward nudge medium duration + 1 second.
+  task_runner()->FastForwardBy(
+      ash::AnchoredNudgeManagerImpl::kNudgeMediumDuration + base::Seconds(1));
 
   EXPECT_FALSE(anchored_nudge_manager->IsNudgeShown(kTestBubbleId));
 
