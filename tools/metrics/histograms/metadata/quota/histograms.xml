@@ -302,13 +302,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.SkippedInvalidOriginUsage" enum="InvalidOriginReason"
-    expires_after="2023-06-24">
+    expires_after="2024-08-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     While accumulating usage information, ClientUsageTracker is encountering
     invalid origins. This enum histogram will capture the type of invalid
     origins that are encountered.
+
+    Histogram expired between 2023/06 and 2023/08.
   </summary>
 </histogram>
 
