@@ -2568,6 +2568,26 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
   EXPECT_TRUE(result.options.empty());
 }
 
+// Test that we use the aria-label as the content if the <option> has no text.
+TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
+  LoadHTML(
+      "<SELECTLIST id='element'>"
+      "<OPTION aria-label='usa'><img/></OPTION>"
+      "<OPTION aria-label='uk'><img/></OPTION>"
+      "</SELECTLIST>");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+  WebFormControlElement element = GetFormControlElementById("element");
+
+  FormFieldData result;
+  WebFormControlElementToFormField(WebFormElement(), element, nullptr,
+                                   EXTRACT_OPTIONS, &result);
+  ASSERT_EQ(2u, result.options.size());
+  EXPECT_EQ(u"usa", result.options[0].content);
+  EXPECT_EQ(u"uk", result.options[1].content);
+}
+
 // We should be able to extract a <textarea> field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   LoadHTML("<TEXTAREA id='element'>"
