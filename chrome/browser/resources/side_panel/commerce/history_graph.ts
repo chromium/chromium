@@ -265,12 +265,16 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     const ticks: number[] = [];
     const formattedTicks: string[] = [];
 
-    const minPrice = this.points.reduce((min, value) => {
+    let minPrice = this.points.reduce((min, value) => {
       return Math.min(min, value.price);
     }, this.points[0].price);
-    const maxPrice = this.points.reduce((max, value) => {
+    let maxPrice = this.points.reduce((max, value) => {
       return Math.max(max, value.price);
     }, this.points[0].price);
+
+    // Ensure the line is in the middle of the graph.
+    minPrice = Math.max(minPrice - 1, 0);
+    maxPrice = maxPrice + 1;
     const valueRange = maxPrice - minPrice;
     let tickInterval = valueRange / (TICK_COUNT_Y - 1);
 

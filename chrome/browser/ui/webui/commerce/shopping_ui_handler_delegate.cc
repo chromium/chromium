@@ -38,7 +38,7 @@ ShoppingUiHandlerDelegate::ShoppingUiHandlerDelegate(
 ShoppingUiHandlerDelegate::~ShoppingUiHandlerDelegate() = default;
 
 absl::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     return absl::nullopt;
   }
