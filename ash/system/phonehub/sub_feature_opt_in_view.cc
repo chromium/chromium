@@ -141,12 +141,11 @@ void SubFeatureOptInView::SetStringIds() {
 }
 
 void SubFeatureOptInView::UpdateLabels() {
-  text_label_->SetText(l10n_util::GetStringFUTF16(description_string_id_,
-                                                  ui::GetChromeOSDeviceName()));
-  set_up_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      set_up_button_accessible_name_string_id_, ui::GetChromeOSDeviceName()));
-  dismiss_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      dismiss_button_accessible_name_string_id_, ui::GetChromeOSDeviceName()));
+  text_label_->SetText(l10n_util::GetStringUTF16(description_string_id_));
+  set_up_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(set_up_button_accessible_name_string_id_));
+  dismiss_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(dismiss_button_accessible_name_string_id_));
 }
 
 void SubFeatureOptInView::InitLayout() {
@@ -181,8 +180,7 @@ void SubFeatureOptInView::InitLayout() {
                                .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   text_label_->SetMultiLine(/*multi_line=*/true);
   text_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  text_label_->SetText(l10n_util::GetStringFUTF16(description_string_id_,
-                                                  ui::GetChromeOSDeviceName()));
+  text_label_->SetText(l10n_util::GetStringUTF16(description_string_id_));
 
   if (chromeos::features::IsJellyrollEnabled()) {
     TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
@@ -205,8 +203,8 @@ void SubFeatureOptInView::InitLayout() {
           IDS_ASH_PHONE_HUB_SUB_FEATURE_OPT_IN_DISMISS_BUTTON),
       PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr));
   dismiss_button_->SetID(kSubFeatureOptInDismissButton);
-  dismiss_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      dismiss_button_accessible_name_string_id_, ui::GetChromeOSDeviceName()));
+  dismiss_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(dismiss_button_accessible_name_string_id_));
   set_up_button_ = button_container->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&SubFeatureOptInView::SetUpButtonPressed,
                           base::Unretained(this)),
@@ -214,8 +212,8 @@ void SubFeatureOptInView::InitLayout() {
           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
       PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr));
   set_up_button_->SetID(kSubFeatureOptInConfirmButton);
-  set_up_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      set_up_button_accessible_name_string_id_, ui::GetChromeOSDeviceName()));
+  set_up_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(set_up_button_accessible_name_string_id_));
 
   // By default, the description will be set to the tooltip text, but the title
   // is already announced in the accessible name.
