@@ -393,25 +393,29 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                 profile));
 
 #if BUILDFLAG(IS_ANDROID)
-    // If enabled, save sensitivity data for each non-incognito android tab
+    // If enabled, save sensitivity data for each non-incognito non-custom
+    // android tab
     // TODO(crbug.com/1466970): Consider moving check conditions or the
     // registration logic to sensitivity_persisted_tab_data_android.*
     if (!profile->IsOffTheRecord() &&
         base::FeatureList::IsEnabled(
             chrome::android::kAndroidAppIntegrationSafeSearch)) {
-      SensitivityPersistedTabDataAndroid::From(
-          TabAndroid::FromWebContents(web_contents),
-          base::BindOnce(
-              [](optimization_guide::PageContentAnnotationsService*
-                     page_content_annotations_service,
-                 PersistedTabDataAndroid* persisted_tab_data) {
-                auto* sensitivity_persisted_tab_data_android =
-                    static_cast<SensitivityPersistedTabDataAndroid*>(
-                        persisted_tab_data);
-                sensitivity_persisted_tab_data_android->RegisterPCAService(
-                    page_content_annotations_service);
-              },
-              page_content_annotations_service));
+      if (auto* tab = TabAndroid::FromWebContents(web_contents);
+          (tab && !tab->IsCustomTab())) {
+        SensitivityPersistedTabDataAndroid::From(
+            tab,
+            base::BindOnce(
+                [](optimization_guide::PageContentAnnotationsService*
+                       page_content_annotations_service,
+                   PersistedTabDataAndroid* persisted_tab_data) {
+                  auto* sensitivity_persisted_tab_data_android =
+                      static_cast<SensitivityPersistedTabDataAndroid*>(
+                          persisted_tab_data);
+                  sensitivity_persisted_tab_data_android->RegisterPCAService(
+                      page_content_annotations_service);
+                },
+                page_content_annotations_service));
+      }
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
