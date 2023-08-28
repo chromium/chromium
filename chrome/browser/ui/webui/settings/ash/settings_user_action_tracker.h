@@ -9,8 +9,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/per_session_settings_user_action_tracker.h"
-#include "chrome/browser/ui/webui/settings/ash/search/mojom/user_action_recorder.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

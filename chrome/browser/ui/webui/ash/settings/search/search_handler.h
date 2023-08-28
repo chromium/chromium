@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_HANDLER_H_
 
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -117,4 +117,4 @@ class SearchHandler : public mojom::SearchHandler,
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_HANDLER_H_

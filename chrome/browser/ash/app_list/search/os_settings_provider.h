@@ -15,7 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
-#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"

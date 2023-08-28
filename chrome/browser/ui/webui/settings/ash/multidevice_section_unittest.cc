@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"

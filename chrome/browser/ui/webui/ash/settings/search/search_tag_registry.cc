@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 
 #include <algorithm>
 #include <sstream>
@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,8 +25,9 @@ std::vector<int> GetMessageIds(const SearchConcept* search_concept) {
   // Add alternate IDs, if they exist.
   for (size_t i = 0; i < SearchConcept::kMaxAltTagsPerConcept; ++i) {
     int curr_alt_tag_message_id = search_concept->alt_tag_ids[i];
-    if (curr_alt_tag_message_id == SearchConcept::kAltTagEnd)
+    if (curr_alt_tag_message_id == SearchConcept::kAltTagEnd) {
       break;
+    }
     alt_tag_message_ids.push_back(curr_alt_tag_message_id);
   }
 
@@ -59,16 +60,20 @@ SearchTagRegistry::ScopedTagUpdater::~ScopedTagUpdater() {
     // Only add concepts which are intended to be added and have not yet been
     // added; only remove concepts which are intended to be removed and have
     // already been added.
-    if (is_pending_add && !is_concept_already_added)
+    if (is_pending_add && !is_concept_already_added) {
       pending_adds.push_back(search_concept);
-    if (!is_pending_add && is_concept_already_added)
+    }
+    if (!is_pending_add && is_concept_already_added) {
       pending_removals.push_back(search_concept);
+    }
   }
 
-  if (!pending_adds.empty())
+  if (!pending_adds.empty()) {
     registry_->AddSearchTags(pending_adds);
-  if (!pending_removals.empty())
+  }
+  if (!pending_removals.empty()) {
     registry_->RemoveSearchTags(pending_removals);
+  }
 }
 
 void SearchTagRegistry::ScopedTagUpdater::AddSearchTags(
@@ -125,9 +130,10 @@ void SearchTagRegistry::AddSearchTags(
   // Add each concept to the map. Note that it is safe to take the address of
   // each concept because all concepts are allocated via static
   // base::NoDestructor objects in the Get*SearchConcepts() helper functions.
-  for (const auto* search_concept : search_tags)
+  for (const auto* search_concept : search_tags) {
     result_id_to_metadata_list_map_[ToResultId(*search_concept)] =
         search_concept;
+  }
 
   index_remote_->AddOrUpdate(
       ConceptVectorToDataVector(search_tags),
@@ -152,8 +158,9 @@ void SearchTagRegistry::RemoveSearchTags(
 const SearchConcept* SearchTagRegistry::GetTagMetadata(
     const std::string& result_id) const {
   const auto it = result_id_to_metadata_list_map_.find(result_id);
-  if (it == result_id_to_metadata_list_map_.end())
+  if (it == result_id_to_metadata_list_map_.end()) {
     return nullptr;
+  }
   return it->second;
 }
 
@@ -200,8 +207,9 @@ SearchTagRegistry::ConceptVectorToDataVector(
 }
 
 void SearchTagRegistry::NotifyRegistryUpdated() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnRegistryUpdated();
+  }
 }
 
 void SearchTagRegistry::NotifyRegistryAdded() {

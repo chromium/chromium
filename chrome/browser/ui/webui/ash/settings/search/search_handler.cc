@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/ash/search/mojom/search_result_icon.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,8 +92,9 @@ void SearchHandler::Observe(
 }
 
 void SearchHandler::OnRegistryUpdated() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer->OnSearchResultsChanged();
+  }
 }
 
 std::vector<mojom::SearchResultPtr> SearchHandler::GenerateSearchResultsArray(
@@ -104,8 +105,9 @@ std::vector<mojom::SearchResultPtr> SearchHandler::GenerateSearchResultsArray(
   std::vector<mojom::SearchResultPtr> search_results;
   for (const auto& result : local_search_service_results) {
     mojom::SearchResultPtr result_ptr = ResultToSearchResult(result);
-    if (result_ptr)
+    if (result_ptr) {
       search_results.push_back(std::move(result_ptr));
+    }
   }
 
   std::sort(search_results.begin(), search_results.end(), CompareSearchResults);
@@ -203,8 +205,9 @@ SearchHandler::AddSectionResultIfPossible(
     mojom::Section section,
     std::vector<mojom::SearchResultPtr>* results) const {
   // If |results| already includes |section|, do not add it again.
-  if (ContainsSectionResult(*results, section))
+  if (ContainsSectionResult(*results, section)) {
     return curr_position;
+  }
 
   mojom::SearchResultPtr section_result =
       hierarchy_->GetSectionMetadata(section).ToSearchResult(
@@ -212,8 +215,9 @@ SearchHandler::AddSectionResultIfPossible(
 
   // Don't add a result for a parent section if it has the exact same text as
   // the child result, since this results in a broken-looking UI.
-  if (section_result->text == child_result->text)
+  if (section_result->text == child_result->text) {
     return curr_position;
+  }
 
   return results->insert(curr_position + 1, std::move(section_result));
 }
@@ -226,8 +230,9 @@ SearchHandler::AddSubpageResultIfPossible(
     double relevance_score,
     std::vector<mojom::SearchResultPtr>* results) const {
   // If |results| already includes |subpage|, do not add it again.
-  if (ContainsSubpageResult(*results, subpage))
+  if (ContainsSubpageResult(*results, subpage)) {
     return curr_position;
+  }
 
   mojom::SearchResultPtr subpage_result =
       hierarchy_->GetSubpageMetadata(subpage).ToSearchResult(
@@ -235,8 +240,9 @@ SearchHandler::AddSubpageResultIfPossible(
 
   // Don't add a result for a parent subpage if it has the exact same text as
   // the child result, since this results in a broken-looking UI.
-  if (subpage_result->text == child_result->text)
+  if (subpage_result->text == child_result->text) {
     return curr_position;
+  }
 
   return results->insert(
       curr_position + 1,
@@ -251,14 +257,16 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
   // If the concept was not registered, no metadata is available. This can occur
   // if the search tag was dynamically unregistered during the asynchronous
   // Find() call.
-  if (!search_concept)
+  if (!search_concept) {
     return nullptr;
+  }
 
   // |result| is expected to have one position, whose ID is a stringified int.
   DCHECK_EQ(1u, result.positions.size());
   int content_id;
-  if (!base::StringToInt(result.positions[0].content_id, &content_id))
+  if (!base::StringToInt(result.positions[0].content_id, &content_id)) {
     return nullptr;
+  }
 
   std::string url;
   mojom::SearchResultIdentifierPtr result_id;
@@ -317,18 +325,22 @@ bool SearchHandler::CompareSearchResults(const mojom::SearchResultPtr& first,
   // positive value indicates that |second| is ranked higher than |first|.
   int32_t default_rank_diff = static_cast<int32_t>(first->default_rank) -
                               static_cast<int32_t>(second->default_rank);
-  if (default_rank_diff < 0)
+  if (default_rank_diff < 0) {
     return true;
-  if (default_rank_diff > 0)
+  }
+  if (default_rank_diff > 0) {
     return false;
+  }
 
   // At this point, the default ranks are equal, so compare relevance scores. A
   // higher relevance score indicates a better text match, so the reverse is
   // true this time.
-  if (first->relevance_score > second->relevance_score)
+  if (first->relevance_score > second->relevance_score) {
     return true;
-  if (first->relevance_score < second->relevance_score)
+  }
+  if (first->relevance_score < second->relevance_score) {
     return false;
+  }
 
   // Default rank and relevance scores are equal, so prefer the result which is
   // higher on the hierarchy. kSection is declared before kSubpage which is

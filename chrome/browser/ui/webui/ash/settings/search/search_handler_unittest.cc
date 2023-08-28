@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/ash/search/mojom/search.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "mojo/public/cpp/bindings/remote.h"
