@@ -358,6 +358,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _readingListModelBridge.reset();
   _authenticationService = nullptr;
   _authServiceObserverBridge.reset();
+  _syncObserverBridge.reset();
   _identityObserverBridge.reset();
   _syncedSessionsObserver.reset();
   if (_prefObserverBridge) {
