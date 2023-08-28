@@ -386,6 +386,10 @@ class IntegrationTest : public ::testing::Test {
     return test_commands_->WaitForUpdaterExit();
   }
 
+  void ExpectUpdateCheckRequest(ScopedServer* test_server) {
+    test_commands_->ExpectUpdateCheckRequest(test_server);
+  }
+
   void ExpectUpdateCheckSequence(ScopedServer* test_server,
                                  const std::string& app_id,
                                  UpdateService::Priority priority,
@@ -1724,6 +1728,52 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId1));
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId2));
+  ExpectAppInstalled(kAppId1, kApp1Version);
+  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kAppId2));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
+  const base::Version kApp1Version = base::Version("1.2.3.4");
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  // Force-install app1, enable install app2.
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_install_default(
+      enterprise_management::INSTALL_DEFAULT_DISABLED);
+  ApplicationSettings app1;
+  app1.set_app_guid(kAppId1);
+  app1.set_install(enterprise_management::INSTALL_FORCED);
+  omaha_settings.mutable_application_settings()->Add(std::move(app1));
+  ApplicationSettings app2;
+  app2.set_app_guid(kAppId2);
+  app2.set_install(enterprise_management::INSTALL_ENABLED);
+  omaha_settings.mutable_application_settings()->Add(std::move(app2));
+
+  PushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  const base::FilePath crx_path = GetInstallerPath(kAppCRX);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          // TODO(crbug.com/1476655): change `is_install` to `true` after
+          // the issue is fixed.
+          AppUpdateExpectation({kAppId1, base::Version({0, 0, 0, 0}),
+                                kApp1Version,
+                                /*is_install=*/false,
+                                /*should_update=*/true, false, "", crx_path}),
+      });
+  ExpectUpdateCheckRequest(test_server_.get());
+
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
   ExpectAppInstalled(kAppId1, kApp1Version);
   ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kAppId2));
 

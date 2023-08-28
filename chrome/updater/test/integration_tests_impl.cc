@@ -875,6 +875,13 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
                           ")]}'\n");
 }
 
+void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server) {
+  test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
+                           request::GetContentMatcher({R"("updatecheck":{})"}),
+                           request::GetScopeMatcher(scope)},
+                          GetUpdateResponse({}));
+}
+
 void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer* test_server,
                                const std::string& app_id,

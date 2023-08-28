@@ -118,6 +118,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     updater::test::ExpectUninstallPing(updater_scope_, test_server);
   }
 
+  void ExpectUpdateCheckRequest(ScopedServer* test_server) const override {
+    updater::test::ExpectUpdateCheckRequest(updater_scope_, test_server);
+  }
+
   void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,
