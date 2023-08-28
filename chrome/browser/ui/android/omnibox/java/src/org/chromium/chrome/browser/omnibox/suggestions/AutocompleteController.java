@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -12,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -184,6 +184,14 @@ public class AutocompleteController implements Destroyable {
         AutocompleteControllerJni.get().resetSession(mNativeController);
     }
 
+    private boolean hasValidNativeObjectRef(
+            AutocompleteMatch match, @VerificationPoint int reason) {
+        // Skip suggestions from cache.
+        OmniboxMetrics.recordUsedSuggestionFromCache(match.getNativeObjectRef() == 0L);
+        if (match.getNativeObjectRef() == 0L) return false;
+        return mAutocompleteResult.verifyCoherency(AutocompleteResult.NO_SUGGESTION_INDEX, reason);
+    }
+
     /**
      * Partially deletes an omnibox suggestion.
      * This call should be used by compound suggestion types (such as carousel) that host multiple
@@ -194,10 +202,8 @@ public class AutocompleteController implements Destroyable {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void deleteMatchElement(AutocompleteMatch match, int elementIndex) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(
-                    AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.DELETE_MATCH)) {
-            return;
-        }
+        if (!hasValidNativeObjectRef(match, VerificationPoint.DELETE_MATCH)) return;
+
         // Skip suggestions from cache.
         if (match.getNativeObjectRef() == 0L) return;
         AutocompleteControllerJni.get().deleteMatchElement(
@@ -211,10 +217,8 @@ public class AutocompleteController implements Destroyable {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void deleteMatch(AutocompleteMatch match) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(
-                    AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.DELETE_MATCH)) {
-            return;
-        }
+        if (!hasValidNativeObjectRef(match, VerificationPoint.DELETE_MATCH)) return;
+
         // Skip suggestions from cache.
         if (match.getNativeObjectRef() == 0L) return;
         AutocompleteControllerJni.get().deleteMatch(mNativeController, match.getNativeObjectRef());
@@ -258,8 +262,8 @@ public class AutocompleteController implements Destroyable {
             @NonNull GURL currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
-        // Skip suggestions from cache.
-        if (match.getNativeObjectRef() == 0L) return;
+        if (!hasValidNativeObjectRef(match, VerificationPoint.SELECT_MATCH)) return;
+
         AutocompleteControllerJni.get().onSuggestionSelected(mNativeController,
                 match.getNativeObjectRef(), suggestionLine, disposition, currentPageUrl.getSpec(),
                 pageClassification, elapsedTimeSinceModified, completedLength, webContents);
@@ -268,17 +272,18 @@ public class AutocompleteController implements Destroyable {
     /**
      * Called when the user touches down on a suggestion. Only called for search suggestions.
      *
-     * @param matchIndex The position at which the match is located.
-     * @param webContents The web contents for the tab where suggestion could be used.
-     * @return Whether or not a prefetch was started.
+     * @param match the match that received the touch
+     * @param matchIndex the vertical position at which the match is located
+     * @param webContents the web contents for the tab where suggestion could be used
+     * @return whether or not a prefetch was started
      */
-    public boolean onSuggestionTouchDown(int matchIndex, @Nullable WebContents webContents) {
+    public boolean onSuggestionTouchDown(
+            AutocompleteMatch match, int matchIndex, @Nullable WebContents webContents) {
         if (mNativeController == 0) return false;
-        if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.ON_TOUCH_MATCH)) {
-            return false;
-        }
+        if (!hasValidNativeObjectRef(match, VerificationPoint.ON_TOUCH_MATCH)) return false;
+
         return AutocompleteControllerJni.get().onSuggestionTouchDown(
-                mNativeController, matchIndex, webContents);
+                mNativeController, match.getNativeObjectRef(), matchIndex, webContents);
     }
 
     /**
@@ -340,10 +345,8 @@ public class AutocompleteController implements Destroyable {
             long elapsedTimeSinceInputChange, @Nullable String newQueryText,
             @Nullable List<String> newQueryParams) {
         if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency(
-                    AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.UPDATE_MATCH)) {
-            return null;
-        }
+        if (!hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH)) return null;
+
         // Skip suggestions from cache.
         if (match.getNativeObjectRef() == 0) return null;
         return AutocompleteControllerJni.get()
@@ -356,17 +359,16 @@ public class AutocompleteController implements Destroyable {
 
     /**
      * Retrieves matching tab for suggestion at specific index.
-     * TODO(crbug.com/1266558): move this to AutocompleteMatch object when Tab is no longer part
-     * of the //chrome/browser directory.
      *
-     * @param matchIndex Index of the suggestion to retrieve Tab info for.
-     * @return Tab that hosts matching URL.
+     * @param match the AutocompleteMatch to retrieve Tab info for
+     * @return tab that hosts matching URL
      */
     @Nullable
-    Tab getMatchingTabForSuggestion(int matchIndex) {
+    Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
         if (mNativeController == 0) return null;
+        if (!hasValidNativeObjectRef(match, VerificationPoint.GET_MATCHING_TAB)) return null;
         return AutocompleteControllerJni.get().getMatchingTabForSuggestion(
-                mNativeController, matchIndex);
+                mNativeController, match.getNativeObjectRef());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -384,8 +386,8 @@ public class AutocompleteController implements Destroyable {
                 long nativeAutocompleteMatch, int matchIndex, int disposition,
                 String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
                 int completedLength, WebContents webContents);
-        boolean onSuggestionTouchDown(
-                long nativeAutocompleteControllerAndroid, int matchIndex, WebContents webContents);
+        boolean onSuggestionTouchDown(long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch, int matchIndex, WebContents webContents);
         void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,
                 String currentUrl, int pageClassification, String currentTitle);
         void deleteMatchElement(long nativeAutocompleteControllerAndroid,
@@ -394,7 +396,8 @@ public class AutocompleteController implements Destroyable {
         GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
                 long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange, String newQueryText, String[] newQueryParams);
-        Tab getMatchingTabForSuggestion(long nativeAutocompleteControllerAndroid, int matchIndex);
+        Tab getMatchingTabForSuggestion(
+                long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
                 float[] confidenceScores);
 

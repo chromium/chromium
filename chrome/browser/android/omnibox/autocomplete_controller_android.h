@@ -69,7 +69,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       const base::android::JavaParamRef<jobject>& j_web_contents);
   jboolean OnSuggestionTouchDown(
       JNIEnv* env,
-      jint match_index,
+      uintptr_t match_ptr,
+      int match_index,
       const base::android::JavaParamRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
@@ -82,7 +83,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
-      jint match_index);
+      uintptr_t match_ptr);
 
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(

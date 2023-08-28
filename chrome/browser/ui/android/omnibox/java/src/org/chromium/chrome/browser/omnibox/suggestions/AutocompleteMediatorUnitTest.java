@@ -693,8 +693,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
 
         // There is no Tab to switch to.
-        doReturn(null).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
-        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+        doReturn(null).when(mAutocompleteController).getMatchingTabForSuggestion(any());
+        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -703,8 +703,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
 
         // We have a tab, but no tab manager.
-        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
-        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
+        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -713,11 +713,11 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
 
         // We have a tab, and tab manager. The tab is part of the stopped activity.
-        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
         doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.STOPPED).when(mMockWindowAndroid).getActivityState();
-        Assert.assertTrue(mMediator.maybeSwitchToTab(0));
+        Assert.assertTrue(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -728,12 +728,12 @@ public class AutocompleteMediatorUnitTest {
         // We have a tab, and tab manager. The tab is part of the running activity.
         // The tab is not a part of the model though (eg. it has just been closed).
         // https://crbug.com/1300447
-        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
         doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
         doReturn(null).when(mTabManager).getTabModelForTab(any());
-        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -744,7 +744,7 @@ public class AutocompleteMediatorUnitTest {
         // We have a tab, and tab manager. The tab is part of the running activity.
         // The tab reports association with an existing model, but the model thinks otherwise.
         // https://crbug.com/1300447
-        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
         doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
@@ -753,7 +753,7 @@ public class AutocompleteMediatorUnitTest {
         // Make sure that this indeed returns no association.
         Assert.assertEquals(
                 TabModel.INVALID_TAB_INDEX, TabModelUtils.getTabIndexById(mTabModel, mTab.getId()));
-        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+        Assert.assertFalse(mMediator.maybeSwitchToTab(null));
     }
 
     @Test
@@ -763,14 +763,14 @@ public class AutocompleteMediatorUnitTest {
 
         // We have a tab, and tab manager. The tab is part of the running activity.
         // The tab reports association with an existing model; the model confirms this.
-        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(any());
         mTabWindowManagerSupplier.set(mTabManager);
         doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
         doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
         doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
         doReturn(1).when(mTabModel).getCount();
         doReturn(mTab).when(mTabModel).getTabAt(anyInt());
-        Assert.assertTrue(mMediator.maybeSwitchToTab(0));
+        Assert.assertTrue(mMediator.maybeSwitchToTab(null));
     }
 
     /**
@@ -1010,7 +1010,8 @@ public class AutocompleteMediatorUnitTest {
                         .build();
         mMediator.setAutocompleteProfile(mProfile);
         when(mLocationBarDataProvider.hasTab()).thenReturn(false);
-        when(mAutocompleteController.onSuggestionTouchDown(0, null)).thenReturn(true);
+        when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
+                .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
 
@@ -1018,7 +1019,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController, times(1)).onSuggestionTouchDown(anyInt(), any());
+        verify(mAutocompleteController, times(1))
+                .onSuggestionTouchDown(mSuggestionsList.get(0), 0, null);
 
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -1046,7 +1048,8 @@ public class AutocompleteMediatorUnitTest {
                         .build();
         mMediator.setAutocompleteProfile(mProfile);
         when(mLocationBarDataProvider.hasTab()).thenReturn(false);
-        when(mAutocompleteController.onSuggestionTouchDown(0, null)).thenReturn(true);
+        when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
+                .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
 
@@ -1054,7 +1057,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController, times(1)).onSuggestionTouchDown(anyInt(), any());
+        verify(mAutocompleteController, times(1))
+                .onSuggestionTouchDown(mSuggestionsList.get(0), 0, null);
 
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
@@ -1086,13 +1090,15 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
 
         // This will simulate the touch down trigger not starting a prefetch.
-        when(mAutocompleteController.onSuggestionTouchDown(0, null)).thenReturn(false);
+        when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
+                .thenReturn(false);
 
         // Simulate a suggestion being touched down.
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController, times(1)).onSuggestionTouchDown(anyInt(), any());
+        verify(mAutocompleteController, times(1))
+                .onSuggestionTouchDown(mSuggestionsList.get(0), 0, null);
 
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
@@ -1121,7 +1127,8 @@ public class AutocompleteMediatorUnitTest {
                         .build();
         mMediator.setAutocompleteProfile(mProfile);
         when(mLocationBarDataProvider.hasTab()).thenReturn(false);
-        when(mAutocompleteController.onSuggestionTouchDown(anyInt(), any())).thenReturn(true);
+        when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
+                .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
 
@@ -1136,7 +1143,7 @@ public class AutocompleteMediatorUnitTest {
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController,
                 times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION))
-                .onSuggestionTouchDown(anyInt(), any());
+                .onSuggestionTouchDown(any(), anyInt(), any());
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onUrlFocusChange(false);
@@ -1145,7 +1152,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0);
         verify(mAutocompleteController,
                 times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
-                .onSuggestionTouchDown(anyInt(), any());
+                .onSuggestionTouchDown(any(), anyInt(), any());
         mMediator.onUrlFocusChange(false);
 
         histogramWatcher.assertExpected();

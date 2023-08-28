@@ -52,6 +52,7 @@ enum class MatchVerificationPoint {
   GROUP_BY_SEARCH_VS_URL_BEFORE = 4,
   GROUP_BY_SEARCH_VS_URL_AFTER = 5,
   ON_TOUCH_MATCH = 6,
+  GET_MATCHING_TAB = 7,
 };
 
 const char* MatchVerificationPointToString(int verification_point) {
@@ -68,9 +69,12 @@ const char* MatchVerificationPointToString(int verification_point) {
       return "Group/After";
     case MatchVerificationPoint::ON_TOUCH_MATCH:
       return "OnTouch";
+    case MatchVerificationPoint::GET_MATCHING_TAB:
+      return "GetMatchingTab";
     case MatchVerificationPoint::INVALID:
       return "Invalid";
   }
+  NOTREACHED();
 }
 
 bool sInvalidMatchMetricsUploaded = false;

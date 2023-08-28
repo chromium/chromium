@@ -461,7 +461,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mNumTouchDownEventForwardedInOmniboxSession++;
         WebContents webContents =
                 mDataProvider.hasTab() ? mDataProvider.getTab().getWebContents() : null;
-        boolean wasPrefetchStarted = mAutocomplete.onSuggestionTouchDown(matchIndex, webContents);
+        boolean wasPrefetchStarted =
+                mAutocomplete.onSuggestionTouchDown(suggestion, matchIndex, webContents);
         if (wasPrefetchStarted) {
             mNumPrefetchesStartedInOmniboxSession++;
             mLastPrefetchStartedSuggestion = suggestion;
@@ -503,17 +504,17 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     }
 
     @Override
-    public void onSwitchToTab(AutocompleteMatch suggestion, int matchIndex) {
-        if (maybeSwitchToTab(matchIndex)) {
-            recordMetrics(suggestion, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
+    public void onSwitchToTab(AutocompleteMatch match, int matchIndex) {
+        if (maybeSwitchToTab(match)) {
+            recordMetrics(match, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
         } else {
-            onSuggestionClicked(suggestion, matchIndex, suggestion.getUrl());
+            onSuggestionClicked(match, matchIndex, match.getUrl());
         }
     }
 
     @VisibleForTesting
-    public boolean maybeSwitchToTab(int matchIndex) {
-        Tab tab = mAutocomplete.getMatchingTabForSuggestion(matchIndex);
+    public boolean maybeSwitchToTab(AutocompleteMatch match) {
+        Tab tab = mAutocomplete.getMatchingTabForSuggestion(match);
         if (tab == null || !mTabWindowManagerSupplier.hasValue()) return false;
 
         // When invoked directly from a browser, we want to trigger switch to tab animation.
@@ -584,7 +585,18 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     public void showDeleteDialog(@NonNull AutocompleteMatch suggestion, @NonNull String titleText,
             Runnable deleteAction) {
         RecordUserAction.record("MobileOmniboxDeleteGesture");
+
+        // Prevent updates to the shown omnibox suggestions list while the dialog is open.
+        // Each update invalidates previous result set, making it impossible to perform the delete
+        // action (there is no native match to delete). Calling `stopAutocomplete()` here will
+        // ensure that suggestions don't change the moment the User is presented with the dialog,
+        // allowing us to complete the deletion.
+        stopAutocomplete(/*clear=*/false);
         if (!suggestion.isDeletable()) return;
+        // Do not attempt to delete matches that have been detached from their native counterpart.
+        // These matches likely come from cache, or the delete request came for a previous set of
+        // matches.
+        if (suggestion.getNativeObjectRef() == 0) return;
 
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         if (manager == null) {
@@ -630,8 +642,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
 
-        // Prevent updates to the shown omnibox suggestions list while the dialog is open.
-        stopAutocomplete(false);
         manager.showDialog(mDeleteDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 

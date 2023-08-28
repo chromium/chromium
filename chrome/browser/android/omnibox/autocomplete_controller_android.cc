@@ -381,9 +381,10 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
 
 jboolean AutocompleteControllerAndroid::OnSuggestionTouchDown(
     JNIEnv* env,
-    jint match_index,
+    uintptr_t match_ptr,
+    int match_index,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
+  const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
 
   if (SearchPrefetchService* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
@@ -446,10 +447,10 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
 }
 
 ScopedJavaLocalRef<jobject>
-AutocompleteControllerAndroid::GetMatchingTabForSuggestion(JNIEnv* env,
-                                                           jint match_index) {
-  const AutocompleteMatch& match =
-      autocomplete_controller_->result().match_at(match_index);
+AutocompleteControllerAndroid::GetMatchingTabForSuggestion(
+    JNIEnv* env,
+    uintptr_t match_ptr) {
+  const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
   return match.GetMatchingJavaTab().get(env);
 }
 

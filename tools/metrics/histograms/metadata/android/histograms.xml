@@ -2198,20 +2198,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
-    expires_after="2024-01-14">
+    expires_after="2024-08-14">
   <owner>ender@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Recorded every time AutocompleteController.java interacts with
     autocomplete_controller_android.cc. Indicates how often matches referenced
     by Java are different from the matches referenced by C++ at any position.
 
-    Note: Chrome M91 and before only increased this histogram for specific Match
-    objects that the user interacted with. As of M92, this histogram is
-    increased for every case where at least one Match referenced by Java was
-    different from its corresponding C++ match at the same exact position.
+    Note: starting Chrome 118, this is recorded every time we detect a
+    non-cached match, when Native and Java AutocompleteResult objects differ.
   </summary>
 </histogram>
 
@@ -2645,10 +2641,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
-    expires_after="2024-01-14">
+    expires_after="2024-08-14">
   <owner>ender@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records whether users interacted with suggestion originating from Java
     cache.
@@ -2662,6 +2657,9 @@ chromium-metrics-reviews@google.com.
 
     Recorded every time the User initiates navigation using the Omnibox or the
     Suggestions list, regardless of context.
+
+    Note: starting Chrome 118 this is recorded for every Autocomplete action
+    requiring native AutocompleteMatch instance.
   </summary>
 </histogram>
 
