@@ -1116,8 +1116,7 @@ void TabContainerImpl::StartInsertTabAnimation(int model_index) {
   ExitTabClosingMode();
 
   gfx::Rect bounds = GetTabAtModelIndex(model_index)->bounds();
-  bounds.set_height(GetLayoutConstant(TAB_HEIGHT));
-  bounds.set_y(GetLayoutConstant(TAB_STRIP_PADDING));
+  bounds.set_height(GetLayoutConstant(TAB_STRIP_HEIGHT));
 
   // Adjust the starting bounds of the new tab.
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
@@ -1425,15 +1424,6 @@ bool TabContainerImpl::IsPointInTab(
 
   const gfx::Point point_in_tab_coords =
       View::ConvertPointToTarget(this, tab, point_in_tabstrip_coords);
-
-  if (point_in_tab_coords.y() < tab->bounds().y() &&
-      (GetWidget()->IsMaximized() || GetWidget()->IsFullscreen())) {
-    // In maximized and fullscreen windows, tab hit tests should reach the top
-    // of the screen to make it easier to click on tabs quickly (Fitt's law).
-    return tab->HitTestPoint(
-        gfx::Point(point_in_tab_coords.x(), tab->bounds().y()));
-  }
-
   return tab->HitTestPoint(point_in_tab_coords);
 }
 
