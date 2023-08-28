@@ -131,7 +131,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
   // and reports the crash.
@@ -143,6 +142,18 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // continue to function.
   ScopedIPCSupportWrapper ipc_support;
 #endif
+  // TODO(crbug.com/1476296) - eliminate the need to have a UI message type
+  // on the main sequence by refactoring the splash screen and the rest of UI.
+  const bool is_app_install_mode = command_line->HasSwitch(kInstallSwitch) ||
+                                   command_line->HasSwitch(kTagSwitch) ||
+                                   command_line->HasSwitch(kRuntimeSwitch) ||
+                                   command_line->HasSwitch(kHandoffSwitch);
+  base::SingleThreadTaskExecutor main_task_executor(
+      is_app_install_mode ? base::MessagePumpType::UI
+                          : base::MessagePumpType::DEFAULT);
+  if (is_app_install_mode) {
+    return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
+  }
 
   if (command_line->HasSwitch(kServerSwitch)) {
     return MakeAppServer()->Run();
@@ -159,13 +170,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return kErrorOk;
   }
 #endif  // BUILDFLAG(IS_WIN)
-
-  if (command_line->HasSwitch(kInstallSwitch) ||
-      command_line->HasSwitch(kTagSwitch) ||
-      command_line->HasSwitch(kRuntimeSwitch) ||
-      command_line->HasSwitch(kHandoffSwitch)) {
-    return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
-  }
 
   if (command_line->HasSwitch(kUninstallSwitch) ||
       command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
