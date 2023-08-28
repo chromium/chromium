@@ -2273,9 +2273,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
     cache->NodeIsConnected(this);
-    // TODO(accessibility) NodeIsAttached() calls ChildrenChanged(), so we may
-    // not need this.
-    cache->ChildrenChanged(&insertion_point);
   }
   return kInsertionDone;
 }
