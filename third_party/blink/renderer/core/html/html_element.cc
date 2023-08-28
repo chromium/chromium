@@ -3173,6 +3173,13 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
 
   bool is_old_auto = SelfOrAncestorHasDirAutoAttribute();
   bool is_new_auto = HasDirectionAuto();
+
+  if (is_new_auto) {
+    if (auto* input_element = DynamicTo<HTMLInputElement>(*this)) {
+      input_element->EnsureShadowSubtree();
+    }
+  }
+
   bool needs_slot_assignment_recalc = false;
   auto* parent =
       GetParentForDirectionality(*this, needs_slot_assignment_recalc);
