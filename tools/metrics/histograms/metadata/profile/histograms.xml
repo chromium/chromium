@@ -467,6 +467,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.ProfilesOrderChanged" enum="BooleanHit"
+    expires_after="2023-12-31">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts the number of times the user reorders profiles by drag and drop in
+    the profile picker. Recorded every time the profile ordering changes.
+  </summary>
+</histogram>
+
 <histogram name="Profile.SessionDuration.PerProfile" enum="Profile"
     expires_after="2024-02-11">
   <owner>msarda@chromium.org</owner>

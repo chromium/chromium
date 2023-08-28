@@ -2101,11 +2101,15 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
   AddSimpleTestingProfileWithName(u"C");
   AddSimpleTestingProfileWithName(u"D");
 
+  base::HistogramTester histogram_tester;
+
   {
     std::vector<std::string> expected_keys{"A", "B", "C", "D"};
     ASSERT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
         expected_keys);
+    histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true,
+                                        0u);
   }
 
   {
@@ -2114,6 +2118,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
     EXPECT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
         expected_keys);
+    histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true,
+                                        1u);
   }
 
   {
@@ -2122,6 +2128,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
     EXPECT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
         expected_keys);
+    histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true,
+                                        2u);
   }
 }
 
@@ -2135,6 +2143,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefIsSymetric) {
   AddSimpleTestingProfileWithName(u"B");
   AddSimpleTestingProfileWithName(u"C");
   AddSimpleTestingProfileWithName(u"D");
+
+  base::HistogramTester histogram_tester;
 
   std::vector<std::string> initial_keys_order{"A", "B", "C", "D"};
   ASSERT_EQ(
@@ -2157,6 +2167,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefIsSymetric) {
   EXPECT_EQ(
       EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
       initial_keys_order);
+
+  histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true, 2u);
 }
 
 TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
@@ -2165,6 +2177,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
   AddSimpleTestingProfileWithName(u"A");
   AddSimpleTestingProfileWithName(u"B");
   AddSimpleTestingProfileWithName(u"C");
+
+  base::HistogramTester histogram_tester;
 
   std::vector<std::string> initial_keys_order{"A", "B", "C"};
   ASSERT_EQ(
@@ -2179,6 +2193,7 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
   EXPECT_EQ(
       EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
       initial_keys_order);
+  histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true, 0u);
 }
 
 class ProfileAttributesStorageTestWithProfileReorderingParam

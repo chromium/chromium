@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -588,6 +589,10 @@ void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
 
 void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
                                                        size_t to_index) {
+  if (from_index == to_index) {
+    return;
+  }
+
   ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
   base::Value::List& profile_keys_order = update.Get();
 
@@ -595,6 +600,8 @@ void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
   // Element at `from_index` will be placed at `to_index` and the rest will
   // shift left or right based on the index comparison.
   Rotate(profile_keys_order, from_index, to_index);
+
+  base::UmaHistogramBoolean("Profile.ProfilesOrderChanged", true);
 }
 
 base::flat_map<std::string, ProfileAttributesEntry*>
