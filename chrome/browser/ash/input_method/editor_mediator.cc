@@ -17,10 +17,10 @@ EditorMediator* g_instance_ = nullptr;
 
 }  // namespace
 
-EditorMediator::EditorMediator(Profile* profile)
+EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
       editor_instance_impl_(this),
-      editor_switch_(std::make_unique<EditorSwitch>(profile)),
+      editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
   DCHECK(!g_instance_);

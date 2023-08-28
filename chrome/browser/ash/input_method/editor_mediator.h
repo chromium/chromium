@@ -29,7 +29,9 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
                        public EditorEventSink,
                        public ProfileObserver {
  public:
-  explicit EditorMediator(Profile* profile);
+  // country_code that determines the country/territory in which the device is
+  // situated.
+  EditorMediator(Profile* profile, std::string_view country_code);
   ~EditorMediator() override;
 
   // Fetch the current instance of this class. Note that this class MUST be
@@ -63,7 +65,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
 
   ConsentStatus GetConsentStatus();
 
-  // ProfileObserver:
+  // ProfileObserver overrides:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:

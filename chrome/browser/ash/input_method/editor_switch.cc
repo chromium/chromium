@@ -15,6 +15,8 @@
 namespace ash::input_method {
 namespace {
 
+constexpr std::string_view kCountryAllowlist[] = {"allowed_country"};
+
 constexpr ui::TextInputType kTextInputTypeAllowlist[] = {
     ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
     ui::TEXT_INPUT_TYPE_TEXT_AREA};
@@ -39,6 +41,10 @@ constexpr AppType kAppTypeAllowlist[] = {
     AppType::LACROS,
 };
 
+bool IsCountryAllowed(std::string_view country_code) {
+  return base::Contains(kCountryAllowlist, country_code);
+}
+
 bool IsInputTypeAllowed(ui::TextInputType type) {
   return base::Contains(kTextInputTypeAllowlist, type);
 }
@@ -59,12 +65,17 @@ bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
 
 }  // namespace
 
-EditorSwitch::EditorSwitch(Profile* profile) : profile_(profile) {
+EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
+    : profile_(profile) {
   bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
 
   is_allowed_for_use_ =
+      // Conditions required for dogfooding.
       (base::FeatureList::IsEnabled(features::kOrcaDogfood) && is_managed) ||
-      (chromeos::features::IsOrcaEnabled() && !is_managed);
+      // Conditions required for the feature to be enabled for non-dogfood
+      // population.
+      (chromeos::features::IsOrcaEnabled() && !is_managed &&
+       IsCountryAllowed(country_code));
 }
 
 EditorSwitch::~EditorSwitch() = default;

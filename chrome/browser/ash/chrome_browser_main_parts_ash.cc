@@ -253,6 +253,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1246,8 +1247,10 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     misconfigured_user_cleaner_->ScheduleCleanup();
 
     if (chromeos::features::IsOrcaEnabled()) {
-      editor_mediator_ =
-          std::make_unique<input_method::EditorMediator>(profile);
+      editor_mediator_ = std::make_unique<input_method::EditorMediator>(
+          /*profile=*/profile,
+          /*country_code=*/g_browser_process->variations_service()
+              ->GetLatestCountry());
     }
 
     g_browser_process->platform_part()->session_manager()->Initialize(

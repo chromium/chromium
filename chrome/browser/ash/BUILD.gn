@@ -3719,6 +3719,7 @@ source_set("ash") {
     "//components/sync/service",
     "//components/sync_preferences",
     "//components/user_manager",
+    "//components/variations/service",
     "//components/version_info",
     "//components/viz/common",
     "//components/web_modal",

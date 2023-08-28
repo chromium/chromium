@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +21,9 @@
 
 namespace ash::input_method {
 namespace {
+
+constexpr std::string_view kAllowedTestCountry = "allowed_country";
+constexpr std::string_view kDeniedTestCountry = "denied_country";
 
 TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
     ash::AppType app_type) {
@@ -40,7 +45,8 @@ TEST_F(EditorSwitchTest,
        FeatureWillNotBeAvailableForUseWithoutReceivingOrcaFlag) {
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
@@ -50,7 +56,8 @@ TEST_F(EditorSwitchTest,
   base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
@@ -60,7 +67,18 @@ TEST_F(EditorSwitchTest,
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
+
+  EXPECT_FALSE(editor_switch.IsAllowedForUse());
+}
+
+TEST_F(EditorSwitchTest, FeatureWillNotBeAvailableForACountryNotApprovedYet) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kDeniedTestCountry);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
 }
@@ -70,7 +88,8 @@ TEST_F(EditorSwitchTest,
   base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
 }
@@ -79,7 +98,8 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
@@ -97,7 +117,8 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
@@ -115,7 +136,8 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
@@ -133,7 +155,8 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
@@ -152,7 +175,8 @@ TEST_F(EditorSwitchTest,
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, false);
   profile_.GetPrefs()->SetInteger(
@@ -172,7 +196,8 @@ TEST_F(
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(prefs::kOrcaConsentStatus,
@@ -192,7 +217,8 @@ TEST_F(
   base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
 
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(

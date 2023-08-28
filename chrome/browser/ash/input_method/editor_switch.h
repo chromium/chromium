@@ -17,7 +17,9 @@ namespace ash::input_method {
 // should be popped up given a particular input context.
 class EditorSwitch {
  public:
-  explicit EditorSwitch(Profile* profile);
+  // country_code in the lowercase ISO 3166-1 alpha-2 format to determine
+  // the country where the device is situated.
+  EditorSwitch(Profile* profile, std::string_view country_code);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
   ~EditorSwitch();
