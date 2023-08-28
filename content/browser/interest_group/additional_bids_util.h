@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_ADDITIONAL_BIDS_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
@@ -30,6 +31,12 @@ struct CONTENT_EXPORT AdditionalBidDecodeResult {
 
   std::unique_ptr<InterestGroupAuction::BidState> bid_state;
   std::unique_ptr<InterestGroupAuction::Bid> bid;
+
+  // `negative_target_joining_origin` is required if there is more than one
+  // entry in `negative_target_interest_group_names` (and DecodeAdditionalBid
+  // ensures it's set in that case).
+  absl::optional<url::Origin> negative_target_joining_origin;
+  std::vector<std::string> negative_target_interest_group_names;
 };
 
 // Tries to parse a "bid" object `bid_in` specified as part of "additionalBids",

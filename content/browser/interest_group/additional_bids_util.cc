@@ -227,6 +227,71 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   }
 
   AdditionalBidDecodeResult result;
+
+  const base::Value* single_negative_ig =
+      result_dict->Find("negativeInterestGroup");
+  const base::Value* multiple_negative_ig =
+      result_dict->Find("negativeInterestGroups");
+
+  if (single_negative_ig && multiple_negative_ig) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected due to specifying both 'negativeInterestGroup' and "
+         "'negativeInterestGroups'."}));
+  }
+
+  if (single_negative_ig) {
+    const std::string* negative_ig_name = single_negative_ig->GetIfString();
+    if (!negative_ig_name) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to non-string 'negativeInterestGroup'."}));
+    }
+    result.negative_target_interest_group_names.push_back(*negative_ig_name);
+  }
+
+  if (multiple_negative_ig) {
+    const base::Value::Dict* multiple_negative_ig_dict =
+        multiple_negative_ig->GetIfDict();
+    if (!multiple_negative_ig_dict) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to non-dictionary 'negativeInterestGroups'."}));
+    }
+    const std::string* joining_origin_str =
+        multiple_negative_ig_dict->FindString("joiningOrigin");
+    GURL joining_origin_url;
+    if (joining_origin_str) {
+      joining_origin_url = GURL(*joining_origin_str);
+    }
+    if (!joining_origin_url.is_valid() ||
+        !joining_origin_url.SchemeIs("https")) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to invalid or missing 'joiningOrigin'."}));
+    }
+    result.negative_target_joining_origin =
+        url::Origin::Create(joining_origin_url);
+
+    const base::Value::List* interest_group_names =
+        multiple_negative_ig_dict->FindList("interestGroupNames");
+    if (!interest_group_names) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to missing or invalid 'interestGroupNames' within "
+           "'negativeInterestGroups'."}));
+    }
+    for (const base::Value& negative_ig : *interest_group_names) {
+      const std::string* negative_ig_str = negative_ig.GetIfString();
+      if (!negative_ig_str) {
+        return base::unexpected(base::StrCat(
+            {"Additional bid on auction with seller '", seller.Serialize(),
+             "' rejected due to non-string 'interestGroupNames' entry."}));
+      }
+      result.negative_target_interest_group_names.push_back(*negative_ig_str);
+    }
+  }
+
   result.bid_state = std::make_unique<InterestGroupAuction::BidState>();
   result.bid_state->additional_bid_buyer =
       synth_interest_group->interest_group.owner;
@@ -250,7 +315,6 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       result.bid_state.get(), auction);
 
   // TODO(http://crbug.com/1464874): Do we need to fill in any k-anon info?
-  // TODO(http://crbug.com/1464874): Parse the actual negative targeting info.
 
   return result;
 }
