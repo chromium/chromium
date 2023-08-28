@@ -1243,6 +1243,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="36224234498066874">Cancella dati di navigazione...</translation>
 <translation id="362276910939193118">Mostra cronologia completa</translation>
 <translation id="3624292976554877583">Etichette (opache)</translation>
+<translation id="3625929652356389713">Può chiedere l'autorizzazione ad aprire automaticamente finestre Picture in picture</translation>
 <translation id="3628905806504633297">{0,plural, =1{Il criterio dell'amministratore sconsiglia di trasferire questo file su <ph name="DESTINATION_NAME" />}other{Il criterio dell'amministratore sconsiglia di trasferire questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Se è già elencato come programma autorizzato ad accedere alla rete, prova a
       rimuoverlo dall'elenco e ad aggiungerlo di nuovo.</translation>
@@ -1376,6 +1377,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="388632593194507180">Monitoraggio rilevato</translation>
 <translation id="3886948180919384617">Fascicolatore 3</translation>
 <translation id="3890664840433101773">Aggiungi email</translation>
+<translation id="3893306401511601929">Funzionalità Picture in picture automatica</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carta è scaduta</translation>
 <translation id="390391808978419508">Timeout dell'apertura</translation>
@@ -2155,6 +2157,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5512812358367123529">Arredamento per ufficio</translation>
 <translation id="5513528801833998679">Usa accesso al dispositivo</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5516095341424241911">Utilizzo della tecnologia di sicurezza di Google per proteggere i tuoi dati di pagamento in corso…</translation>
 <translation id="5518670652865028077">Arti e intrattenimento</translation>
 <translation id="5519516356611866228">Con le tue modifiche</translation>
 <translation id="5519696598216267194">Carta (preforata)</translation>
@@ -3984,5 +3987,6 @@ Ulteriori dettagli:
     &lt;li&gt;Prova a collegarti a un'altra rete&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">funzionalità Picture in picture automatica</translation>
 <translation id="997986563973421916">Da Google Pay</translation>
 </translationbundle>

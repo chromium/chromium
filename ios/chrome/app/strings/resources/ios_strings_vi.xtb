@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2178545675770638239">Chọn mật khẩu</translation>
 <translation id="2195124168004379331">Trình duyệt của bạn có vẻ an toàn</translation>
+<translation id="2213327331203157297">Để vô hiệu hoá Chế độ khoá trong Chrome, hãy tắt chế độ này trên iPhone của bạn.</translation>
 <translation id="2218443599109088993">Thu nhỏ</translation>
 <translation id="2230173723195178503">Đã tải trang web</translation>
 <translation id="2239626343334228536">Đang xóa dữ liệu duyệt web...</translation>
@@ -656,6 +657,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4854345657858711387">Đặt mật mã</translation>
 <translation id="4856498338299082007">Trong Tài khoản Google của bạn</translation>
+<translation id="4856841893565072365">Thanh trình đơn sắp xếp thông minh</translation>
 <translation id="4858786880085262208">Nâng cấp lên HTTPS (khi có thể). Các trang web an toàn có thể nhúng nội dung không an toàn.</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4872323082491632254">Kiểm tra mật khẩu</translation>
@@ -1360,6 +1362,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8843129975935593190">Tổ chức của bạn giới hạn những nội dung bạn có thể đồng bộ hóa.</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>
 <translation id="8855242995793521265">Gần như không ảnh hưởng đến tốc độ của trình duyệt hoặc thiết bị.</translation>
+<translation id="8855781063981781621">Để vô hiệu hoá Chế độ khoá trong Chrome, hãy tắt chế độ này trên iPad của bạn.</translation>
 <translation id="8863431381414769983">Xem đường đi và thông tin về địa phương từ Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} thẻ}other{{count} thẻ}}</translation>
 <translation id="8870413625673593573">Các thẻ đã Đóng gần đây</translation>

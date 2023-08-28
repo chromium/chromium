@@ -557,6 +557,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3386978599540877378">tam ekran büyüteci</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Dikte etkinleştirilsin mi?</translation>
+<translation id="3394432020929931914">, genişletildi</translation>
 <translation id="3400357268283240774">Ek ayarlar</translation>
 <translation id="3405101454990027959">Mikrofon erişimini aç</translation>
 <translation id="3408735331120433841">Şu anda ekranınızı yayınlıyorsunuz.</translation>
@@ -781,6 +782,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="425364040945105958">SIM kart yok</translation>
 <translation id="4261870227682513959">Bildirim ayarlarını göster. Bildirimler kapalı</translation>
+<translation id="4264977415328155183">, daraltıldı</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ok klavye kısayolu değişti. End tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sağ Ok tuşlarına basın.</translation>
 <translation id="4275283744500212192">Pencere düzeni seçeneklerini açın</translation>
@@ -1480,6 +1482,8 @@ Yeni yüklenmiş</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144942256906679589">Pil durumu</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>

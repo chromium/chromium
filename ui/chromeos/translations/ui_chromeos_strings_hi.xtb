@@ -170,6 +170,7 @@
 <translation id="23721837607121582">मोबाइल प्रोफ़ाइल डाउनलोड करें. यह <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="2377319039870049694">'सूची की तरह देखें' पर स्विच करें</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> फ़ोल्डर Linux के साथ शेयर किए गए</translation>
+<translation id="2379576081295865700">स्टोरेज के लिए बची जगह की जांच की जा रही है… 1 आइटम मिला</translation>
 <translation id="2383454254762599978">ट्रैश में भेजें</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2389832672041313158">बर्मीज़/म्यांमार</translation>
@@ -662,6 +663,7 @@
 <translation id="6164412158936057769">तितलियां</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
+<translation id="6177854567773392726">स्टोरेज के लिए बची जगह की जांच की जा रही है… <ph name="ITEMS_FOUND" /> आइटम मिले</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6198252989419008588">पिन बदलें</translation>
 <translation id="6199801702437275229">स्थान जानकारी की प्रतीक्षा कर रहा है...</translation>

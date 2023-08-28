@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS autentifikavimo raktas</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Įgalinti tamsių spalvų režimą</translation>
+<translation id="2728460467788544679">Išvalyti visą spaudinių istoriją</translation>
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2744221223678373668">Bendrinama</translation>
 <translation id="2751739896257479635">EAP 2 tapatybės nustatymo etapas</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6439505561246192797">Silpnas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Eiti į paskyros nustatymus</translation>
+<translation id="6461047516875166066">Noriu sužinoti daugiau</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Vaizdų nėra</translation>
 <translation id="8329018942023753850">skaičiuotuvo programa</translation>
 <translation id="8336739000755212683">Keisti įrenginio paskyros vaizdą</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> arba <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="8351855506390808906">Klavišų schemų lietimo taškas</translation>
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>

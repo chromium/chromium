@@ -1244,6 +1244,7 @@
 <translation id="1974043046396539880">CRL 發布點</translation>
 <translation id="1974060860693918893">進階</translation>
 <translation id="1974159333077206889">所有揚聲器都播放相同音效</translation>
+<translation id="1974216844776165821">Chrome 已將你的密碼儲存至這個裝置，但你可以改將密碼儲存到 Google 帳戶。這樣一來，只要登入 Google 帳戶，也就能使用帳戶中的所有密碼和密碼金鑰。</translation>
 <translation id="1974821797477522211">連線至網路</translation>
 <translation id="1975841812214822307">移除...</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
@@ -1465,6 +1466,7 @@
 <translation id="2143915448548023856">顯示設定</translation>
 <translation id="2144536955299248197">憑證檢視者：<ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android 應用程式開發</translation>
+<translation id="2144873026585036769">要使用 Google 帳戶儲存及填入密碼和密碼金鑰嗎？</translation>
 <translation id="2146263598007866206">網站可能會自動一併下載相關檔案，為你節省時間</translation>
 <translation id="2147151613919729065">如要清除訪客模式的歷史記錄，請關閉所有訪客模式視窗。</translation>
 <translation id="2147218225094845757">隱藏側邊面板</translation>
@@ -1600,6 +1602,7 @@
 <translation id="2252017960592955005">檢視防護 (Beta 版)</translation>
 <translation id="2253318212986772520">無法擷取「<ph name="PRINTER_NAME" />」的 PPD。</translation>
 <translation id="2253927598983295051">選擇要與「<ph name="APP_NAME" />」分享的內容</translation>
+<translation id="2254263139042585032">顯示 Google 帳戶中的密碼和密碼金鑰</translation>
 <translation id="2255077166240162850">這個裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
@@ -2386,6 +2389,7 @@
 <translation id="2850672011315104382">標點符號樣式</translation>
 <translation id="2852385257476173980">瀏覽網路時，你造訪的網站清單可能會顯示在這裡</translation>
 <translation id="285241945869362924">自動建立音訊和視訊的字幕。音訊和字幕絕不會外洩。</translation>
+<translation id="2853415089995957805">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
@@ -3637,6 +3641,7 @@
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設為會在新的瀏覽器分頁中開啟，支援的連結也會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
+<translation id="3880513902716032002">系統會預先載入你要造訪的某些網頁</translation>
 <translation id="3883482240657453056">取得 <ph name="MERCHANT_NAME_1" /> 和 <ph name="MERCHANT_NAME_2" /> 的折扣</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新作業由管理員負責管理。</translation>
@@ -3908,6 +3913,7 @@
 <translation id="4093955363990068916">本機檔案：</translation>
 <translation id="4094647278880271855">你使用了系統不支援的環境變數 (<ph name="BAD_VAR" />)，這會影響穩定性與安全性。</translation>
 <translation id="4095264805865317199">開啟行動網路啟用 UI</translation>
+<translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快了</translation>
 <translation id="4095507791297118304">主要顯示畫面</translation>
 <translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
 <translation id="4096797685681362305">過去一週看過</translation>
@@ -4266,6 +4272,7 @@
 <translation id="4403266582403435904">隨時可以輕鬆還原資料或改用其他裝置。備份內容會上傳到 Google，並使用貴子女的 Google 帳戶密碼加密。</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
 <translation id="4404136731284211429">重新掃描</translation>
+<translation id="4404619268534288383">儲存及同步分頁群組</translation>
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
@@ -5469,6 +5476,7 @@
 <translation id="5417353542809767994">快速套用高強度密碼</translation>
 <translation id="541737483547792035">放大畫面</translation>
 <translation id="5419405654816502573">Voice Match</translation>
+<translation id="5420061891386124792">啟用儲存及恢復分頁群組的功能。如要儲存分頁群組，請在群組上按一下滑鼠右鍵；如要恢復分頁群組，請使用書籤列。</translation>
 <translation id="5420274697768050645">需要使用密碼解鎖裝置以提升安全性</translation>
 <translation id="5420438158931847627">決定文字和圖片的銳利度</translation>
 <translation id="5420935737933866496">複製連結(&amp;L)</translation>
@@ -6691,6 +6699,7 @@
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438475350605608554">你已在其他分頁中匯入密碼</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 音訊播放中</translation>
+<translation id="6440291723980579689">網頁只會在開啟後載入</translation>
 <translation id="6441377161852435370">將分頁新增至閱讀清單</translation>
 <translation id="6442187272350399447">真正讚</translation>
 <translation id="6442445294758185945">無法下載更新。請稍後再試。</translation>
@@ -6940,6 +6949,7 @@
 <translation id="6644513150317163574">網址格式無效。使用單一登入 (SSO) 驗證時，必須將伺服器指定為主機名稱。</translation>
 <translation id="6644846457769259194">正在更新你的裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">關閉快速配對</translation>
+<translation id="6646696210740573446">透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能也會將網址 (包括部分網頁內容) 傳送給 Google。</translation>
 <translation id="6647228709620733774">Netscape 憑證授權撤銷網址</translation>
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重大更新。登入即可開始更新。</translation>
@@ -7736,6 +7746,7 @@
 <translation id="730515362922783851">與區域網路或網際網路中的任何裝置交換資料</translation>
 <translation id="7306521477691455105">開啟「設定」頁面即可將「<ph name="USB_DEVICE_NAME" />」連接到「<ph name="USB_VM_NAME" />」</translation>
 <translation id="7307129035224081534">已暫停</translation>
+<translation id="7307647374092371434">登入 Google 帳戶後，你也可以在這部裝置上使用帳戶中的密碼和密碼金鑰</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7310598146671372464">無法登入，伺服器不支援指定的 Kerberos 加密類型。請與你的管理員聯絡。</translation>
 <translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
@@ -9134,6 +9145,7 @@
 <translation id="84098433273647700">目前安裝的主題。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">已允許：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="8414249071344507766">回憶集錦已隱藏兩天</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>

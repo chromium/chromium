@@ -197,6 +197,7 @@
 <translation id="1153636665119721804">Google को सुरक्षासम्बन्धी उन्नत सुविधा कार्यक्रम</translation>
 <translation id="1155545602507378023">अहँ, यो डिभाइसमा मात्र</translation>
 <translation id="1155816283571436363">तपाईंको फोनसँग कनेक्ट गरिँदै छ</translation>
+<translation id="1156684356635483618">प्रिन्टर तथा स्क्यानरहरू</translation>
 <translation id="1157952955648710254">Google Search को साइड प्यानल बन्द गर्नुहोस्</translation>
 <translation id="1158080958325422608">सानो अक्षरमा बदल्नुहोस्</translation>
 <translation id="1158238185437008462">स्मरणमाहरू हेर्नुहोस्</translation>
@@ -3165,6 +3166,7 @@
 <translation id="3551320343578183772">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">बाहिर निस्कदा खालि गरिएको</translation>
+<translation id="3553487194781590058">तपाईं एउटाबाट अर्को ट्याबमा जाँदा picture-in-picture विन्डो खोल्ने अनुमति दिइएको छैन</translation>
 <translation id="3554493885489666172"><ph name="PROFILE_NAME" /> ले तपाईंको डिभाइसको व्यवस्थापन गर्छ। एड्मिनहरू यस यन्त्रमा रहेका जुनसुकै प्रोफाइलमा भएका डेटा हेर्न तथा प्रयोग गर्न सक्छन्।</translation>
 <translation id="3555812735919707620">एक्सटेन्सन हटाउनुहोस्</translation>
 <translation id="3556000484321257665">तपाईंको खोज इन्जिनलाई <ph name="URL" /> मा परिवर्तन गरिएको छ।</translation>
@@ -3951,6 +3953,7 @@
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="4176864026061939326">एड्मिन यो डिभाइस व्यवस्थापन गर्नुहुन्छ। तपाईंको डिभाइसका एड्मिनका अनुसार <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा नयाँ प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="4177501066905053472">विज्ञापनका विषयहरू</translation>
+<translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> खोल्नुहोस्</translation>
 <translation id="4178220097446335546">यो सदस्यता र यससँग सम्बन्धित नेटवर्कहरू हटाउन पासपोइन्टको "सदस्यता" पेजमा जानुहोस् र सदस्यता हटाउनुहोस्।</translation>
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटाउने?</translation>
 <translation id="4181602000363099176">२० गुणा</translation>
@@ -5298,6 +5301,7 @@
 <translation id="5327912693242073631">जुन सुविधा चल्न सूचना पठाइनु पर्ने हुन्छ ती सुविधाले काम गर्ने छैनन्</translation>
 <translation id="532943162177641444">यो यन्त्रले प्रयोग गर्न सक्ने मोबाइल हटस्पट सेटअप गर्न तपाईंको <ph name="PHONE_NAME" /> मा रहेको सूचनामा ट्याप गर्नुहोस्।</translation>
 <translation id="5329858601952122676">&amp;मेट्नुहोस्</translation>
+<translation id="5330592967519769658">तपाईं एउटाबाट अर्को ट्याबमा जाँदा picture-in-picture विन्डो खोल्ने अनुमति दिइएको छ</translation>
 <translation id="5331069282670671859">तपाईंसँग यो कोटिको कुनै पनि प्रमाणपत्र छैन</translation>
 <translation id="5331568967879689647">ChromeOS सिस्टम एप</translation>
 <translation id="5331975486040154427">USB-C यन्त्र (पछाडिको पोर्टको बायाँ)</translation>
@@ -5339,6 +5343,7 @@
 <translation id="536638840841140142">कुनै पनि होइन</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> बाट प्राप्त गरिएको '<ph name="NETWORK_NAME" />' को पासवर्ड सेभ गरियो</translation>
 <translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> को पासवर्ड बनाउनुहोस्</translation>
+<translation id="5368441245151140827">यो एक्स्टेन्सनले साइटको जानकारी पढ्न र बदल्न सक्दैन वा यो ब्याकग्राउन्डमा चल्न सक्दैन</translation>
 <translation id="5368720394188453070">तपाईंको फोन लक गरिएको छ। प्रवेश गर्न यसलाई अनलक गर्नुहोस्।</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="536882527576164740">{0,plural, =1{इन्कोग्निटो}other{इन्कोग्निटो (#)}}</translation>
@@ -5471,6 +5476,7 @@
 <translation id="5473099001878321374">तपाईंले जारी राख्नुभयो भने तपाईं यो डिभाइसले Google, तपाईंका बच्चाको मोबाइल सेवा प्रदायक र यो डिभाइसको निर्माताबाट सम्भवतः मोबाइल डेटा प्रयोग गरी अपडेट र एपहरू स्वतः डाउनलोड तथा इन्स्टल गर्न सक्छ भन्ने कुरामा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ। यीमध्ये केही एपहरूले एपभित्र किनमेल गर्ने सुविधा उपलब्ध गराउन सक्छन्।</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN कम्तीमा पनि एक वर्णको हुनु पर्छ}other{PIN कम्तीमा पनि # वर्णको हुनु पर्छ}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> का अनुसार तपाईंले अहिले नै Wi-Fi मार्फत अपडेट डाउनलोड गर्नु पर्ने हुन्छ। अथवा, डेटाको सीमा तोकिएको इन्टरनेटबाट डाउनलोड गर्नुहोस् (शुल्क लाग्न सक्छ)।</translation>
+<translation id="5478520208448702555">तपाईं एउटाबाट अर्को ट्याबमा जाँदा साइटहरूले picture-in-picture विन्डो खोल्न सक्छन्</translation>
 <translation id="5481273127572794904">धेरै फाइलहरू स्वतः डाउनलोड गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="5481941284378890518">नजिकैका प्रिन्टरहरू थप्नुहोस्</translation>
 <translation id="5484462543003267273">पारिवारिक समूह व्यवस्थापन गर्नुहोस्</translation>
@@ -5748,6 +5754,7 @@
 <translation id="5707185214361380026">यहाँबाट विस्तार लोड गर्न असफल भयो।</translation>
 <translation id="5708171344853220004">Microsoft</translation>
 <translation id="5709557627224531708">Chrome लाई आफ्नो डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
+<translation id="5710122160114032242">तपाईं एउटाबाट अर्को ट्याबमा जाँदा picture-in-picture विन्डो खोल्ने अनुमति दिइएको छैन</translation>
 <translation id="5711010025974903573">सेवासम्बन्धी लगहरू</translation>
 <translation id="5711983031544731014">अनलक गर्न सकिएन। आप्नो पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="5712153969432126546">साइटहरूले कहिलेकाहीँ कागजात, करार तथा फाराम जस्ता PDF फाइलहरू प्रकाशित गर्छन्</translation>
@@ -5764,6 +5771,7 @@
 <translation id="5723508132121499792">कुनै पृष्ठभूमि एप्लिकेसनहरू चालू छैनन्</translation>
 <translation id="5723967018671998714">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइन्छ</translation>
 <translation id="5727728807527375859">एक्सटेन्सनहरू, एप्स, र थिमहरूले तपाईंको कम्प्युटरलाई हानि गर्न सक्छ। के तपाईं जारी राख्न चाहनुहुन्छ भनि निश्चित हुनुहुन्छ?</translation>
+<translation id="5728290366864286776">यो एक्स्टेन्सनले साइटको जानकारी पढ्न र बदल्न सक्छ वा यो ब्याकग्राउन्डमा चल्न सक्छ</translation>
 <translation id="5728450728039149624">Smart Lock का स्क्रिन लकसम्बन्धी विकल्पहरू</translation>
 <translation id="572914206753951782">तपाईंको Chromebook नवीनतम संस्करणमा चलिरहेको छ भन्ने कुरा सुनिश्चित गर्नुहोस्। त्यसपछि आफ्नो Chromebook रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5729712731028706266">&amp;हेर्नुहोस्</translation>
@@ -8339,6 +8347,7 @@
 <translation id="7853747251428735">थप उपकरणहरू</translation>
 <translation id="7853999103056713222">अझ सुरक्षित पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="7855678561139483478">ट्याब नयाँ विन्डोमा सार्नुहोस्</translation>
+<translation id="7855729579456690716">तपाईं एउटाबाट अर्को ट्याबमा जाँदा साइटहरूले picture-in-picture विन्डो खोल्न सक्छन्</translation>
 <translation id="7857004848504343806">तपाईंको कम्प्युटरमा सुरक्षित मोड्युल समावेश छ। ChromeOS Flex मा सुरक्षासम्बन्धी थुप्रै महत्त्वपूर्ण सुविधाहरू लागू गर्नका लागि उक्त मोड्युल प्रयोग गरिन्छ। तपाईं यसका सम्बन्धमा थप जान्न चाहनुहुन्छ भने Chromebook को मद्दत केन्द्रमा जानुहोस्: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">पाठसम्बन्धी सुझावहरू</translation>
 <translation id="7857949311770343000">के यो नै तपाईंले अपेक्षा गर्नुभएको नयाँ ट्याब पृष्ठ हो?</translation>
@@ -9495,6 +9504,7 @@
 <translation id="8808686172382650546">बिरालो</translation>
 <translation id="8809147117840417135">हल्का निलो-हरियो मिश्रित रङ्ग</translation>
 <translation id="8811862054141704416">Crostini लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
+<translation id="8811923271770626905">यो एक्स्टेन्सन ब्याकग्राउन्डमा चल्न सक्छ</translation>
 <translation id="8812593354822910461">ब्राउजिङ डेटा (<ph name="URL" />) पनि हटाउनुहोस्। यस कार्यले तपाईंलाई <ph name="DOMAIN" /> बाट साइन आउट गराउने छ। <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> मा साइन इन गर्न सकिँदैन</translation>
 <translation id="8813872945700551674">अभिभावकलाई "<ph name="EXTENSION_NAME" />" अनुमोदन गर्न अनुरोध गर्नुहोस्</translation>

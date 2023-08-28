@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Клуч за TLS-проверка</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2717139507051041123">Овозможете режим во темна боја</translation>
+<translation id="2728460467788544679">Избриши ја сета историја на печатење</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2744221223678373668">Споделени</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
+<translation id="6461047516875166066">Кажи ми повеќе</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се скенира страницата пак?}=1{Да се скенира страницата {PAGE_NUMBER} пак?}one{Да се скенира страницата {PAGE_NUMBER} пак?}other{Да се скенира страницата {PAGE_NUMBER} пак?}}</translation>
 <translation id="6472207088655375767">ОТП</translation>
 <translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Нема слики</translation>
 <translation id="8329018942023753850">апликација „Калкулатор“</translation>
 <translation id="8336739000755212683">Променете ја сликата за сметката на уредот</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> или <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8351855506390808906">Мапирање клуч на точка на допир</translation>
 <translation id="8352772353338965963">Додајте сметка за повеќекратно најавување. Сите најавени сметки се достапни без лозинка, така што оваа можност треба да се користи само со сметки на кои им се верува.</translation>

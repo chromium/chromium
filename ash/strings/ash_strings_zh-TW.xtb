@@ -151,6 +151,7 @@
 <translation id="1571697193564730395">切換零打擾模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1586324912145647027">前往桌面 1 到 8</translation>
+<translation id="158838227375272121">Google Classroom 網站</translation>
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
 <translation id="1592682369233288537">下一個桌面：<ph name="NEXT_DESK_NAME" />，使用搜尋鍵 + 空格鍵即可啟用。</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + 向下鍵</translation>
@@ -557,6 +558,7 @@
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">要開啟語音輸入功能嗎？</translation>
+<translation id="3394432020929931914">，已展開</translation>
 <translation id="3400357268283240774">其他設定</translation>
 <translation id="3405101454990027959">允許存取麥克風</translation>
 <translation id="3408735331120433841">你目前正在投放螢幕畫面。</translation>
@@ -778,6 +780,7 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="425364040945105958">沒有 SIM 卡</translation>
 <translation id="4261870227682513959">顯示通知設定。已關閉所有通知</translation>
+<translation id="4264977415328155183">，已收合</translation>
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
@@ -1161,6 +1164,7 @@
 <translation id="5790085346892983794">成功</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟動「<ph name="NETWORK_NAME" />」</translation>
+<translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">設定已連結的裝置</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="5841296711770970362">播放下一首曲目</translation>
@@ -1476,6 +1480,8 @@
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144942256906679589">電池狀態</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />，
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解析度</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7188494361780961876">已將選單移至畫面左上角。</translation>

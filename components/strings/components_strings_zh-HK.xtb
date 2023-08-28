@@ -1245,6 +1245,7 @@
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
 <translation id="3624292976554877583">標籤 (啞面)</translation>
+<translation id="3625929652356389713">可要求自動開啟畫中畫視窗</translation>
 <translation id="3628905806504633297">{0,plural, =1{管理員政策不建議傳輸此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議傳輸這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網絡的清單中，建議您
       從清單中移除該程式，然後重新加入。</translation>
@@ -1378,6 +1379,7 @@
 <translation id="388632593194507180">偵測到監控</translation>
 <translation id="3886948180919384617">堆疊器 3</translation>
 <translation id="3890664840433101773">新增電郵</translation>
+<translation id="3893306401511601929">自動顯示畫中畫</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">卡片已過期</translation>
 <translation id="390391808978419508">開啟逾時</translation>
@@ -2157,6 +2159,7 @@
 <translation id="5512812358367123529">辦公室傢私</translation>
 <translation id="5513528801833998679">使用裝置登入</translation>
 <translation id="5515388687005870733">55 x 85 毫米</translation>
+<translation id="5516095341424241911">使用 Google 的安全技術，確保付款資料安全無虞</translation>
 <translation id="5518670652865028077">藝術和娛樂</translation>
 <translation id="5519516356611866228">包括您所作的變更</translation>
 <translation id="5519696598216267194">紙 (打孔紙)</translation>
@@ -3989,5 +3992,6 @@
     &lt;li&gt;嘗試連接至其他 Wi-Fi 網絡&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">自動顯示畫中畫</translation>
 <translation id="997986563973421916">來自 Google Pay</translation>
 </translationbundle>

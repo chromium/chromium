@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS autentifikazio-gakoa</translation>
 <translation id="2713444072780614174">Zuria</translation>
 <translation id="2717139507051041123">Gaitu kolore ilunaren modua</translation>
+<translation id="2728460467788544679">Garbitu inprimatze-historia osoa</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2744221223678373668">Partekatutakoak</translation>
 <translation id="2751739896257479635">EAP 2. fasearen autentifikazioa</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">VPN irekia</translation>
 <translation id="6439505561246192797">Ahula (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Joan kontuaren ezarpenetara</translation>
+<translation id="6461047516875166066">Konta iezadazu</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Berriro eskaneatu nahi duzu orria?}=1{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}other{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}}</translation>
 <translation id="6472207088655375767">EBP</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>

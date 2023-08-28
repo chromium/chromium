@@ -1245,6 +1245,7 @@
 <translation id="36224234498066874">Серепчиден көрүлгөн нерселерди тазалоо…</translation>
 <translation id="362276910939193118">Толук таржымалды көрсөтүү</translation>
 <translation id="3624292976554877583">Энбелгилер (жылтырабаган кагаз)</translation>
+<translation id="3625929652356389713">Сүрөттөгү сүрөт терезелерин автоматтык түрдө ачууга уруксат сурай алат</translation>
 <translation id="3628905806504633297">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө өткөрүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө өткөрүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Эгер ал тармакка кире алган программа катары мурунтан эле тизмеленген
       болсо, аны тизмеден алып салып, кайра кошуп көрүңүз.</translation>
@@ -1378,6 +1379,7 @@
 <translation id="388632593194507180">Көзөмөлдөө аныкталды</translation>
 <translation id="3886948180919384617">3-төшөгүч</translation>
 <translation id="3890664840433101773">Электрондук почта дарегин кошуу</translation>
+<translation id="3893306401511601929">Автоматтык сүрөттөгү сүрөт</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Картанын мөөнөтү бүткөн</translation>
 <translation id="390391808978419508">Ачуу убакыты аяктады</translation>
@@ -2157,6 +2159,7 @@
 <translation id="5512812358367123529">Кеңсе эмереги</translation>
 <translation id="5513528801833998679">Түзмөккө кирүү</translation>
 <translation id="5515388687005870733">55 x 85 мм.</translation>
+<translation id="5516095341424241911">Төлөм маалыматын коопсуз кылуу үчүн Google’дун коопсуздукту камсыздоо технологиясы колдонулууда</translation>
 <translation id="5518670652865028077">Көркөм өнөр жана көңүл ачуу</translation>
 <translation id="5519516356611866228">Өзгөртүүлөрүңүз бар</translation>
 <translation id="5519696598216267194">Кагаз (перфорацияланган)</translation>
@@ -2223,6 +2226,7 @@
 <translation id="5633259641094592098">Культтук жана инди фильмдери</translation>
 <translation id="563371367637259496">Мобилдик</translation>
 <translation id="5635237618724097525">Смартфондор</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео тутумдары жана компоненттери</translation>
 <translation id="5644090287519800334">1-тараптын X сүрөтүн жылдыруу</translation>
 <translation id="5645132789250840550">Пластик (жарым жылтырак)</translation>
@@ -3773,6 +3777,7 @@
 <translation id="885730110891505394">Google менен бөлүшүү</translation>
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chrome аны өзгөртүүнү сунуштайт.</translation>
 <translation id="885906927438988819">Эгер туура жазылса, <ph name="BEGIN_LINK" />Windows тармагындагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
+<translation id="8863218129525348270">Кийинки жолу тезирээк төлөө үчүн картаңызды түзмөккө сактаңыз</translation>
 <translation id="8864939224504814334">Костюмдар жана бизнес кийимдер</translation>
 <translation id="8866132857352163524">Саундтректер</translation>
 <translation id="8866481888320382733">Саясат параметрлерин талдоо катасы</translation>
@@ -3950,6 +3955,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Кайсы маалымат колдонулат:<ph name="END_BOLD" /> Жарнама темаларыңыз соңку көрүлгөн вебсайттар, бул түзмөктө Chrome аркылуу баш баккан сайттарыңыздын тизмесинин негизинде көрсөтүлөт.</translation>
 <translation id="939736085109172342">Жаңы папка</translation>
 <translation id="940053046584497293">Саякат жана транспорт</translation>
+<translation id="944540589955480312">Google аккаунтуңузда сакталган сырсөздөрдү жана киргизүүчү ачкычтарды колдонуу</translation>
 <translation id="945855313015696284">Төмөнкү маалыматты текшерип, жараксыз карталарды өчүрүңүз</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Сайттарда жаңы сайтты тез түзүү үчүн Tab, андан кийин Enter баскычын басыңыз.</translation>
 <translation id="949314938206378263">Бул сайтка кирүүгө уруксат сурадың. Ата-энең Family Link кызматында жооп бере алат.</translation>
@@ -3986,5 +3992,6 @@
     &lt;li&gt;Башка тармакка туташып көрүңүз&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1 (728mm x 1030mm)</translation>
+<translation id="995240771322213706">автоматтык сүрөттөгү сүрөт</translation>
 <translation id="997986563973421916">Google Pay'ден</translation>
 </translationbundle>

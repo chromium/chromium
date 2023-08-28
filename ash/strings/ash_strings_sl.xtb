@@ -64,6 +64,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1217633719248931900">Odpri aplikacijo</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacija Trgovina Play</translation>
 <translation id="1225748608451425081">Chromebook je zaklenjen zaradi znane težave. Prijavili se boste lahko čez toliko časa: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">neaktivno namizje</translation>
 <translation id="1229194443904279055">Ustavi izbiranje</translation>
 <translation id="1235458158152011030">Znana omrežja</translation>
 <translation id="1239161794459865856">Povezava s funkcijo <ph name="FEATURE_NAME" /> je vzpostavljena.</translation>
@@ -557,6 +558,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3386978599540877378">celozaslonska lupa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Želite vklopiti narek?</translation>
+<translation id="3394432020929931914">, razširjeno</translation>
 <translation id="3400357268283240774">Dodatne nastavitve</translation>
 <translation id="3405101454990027959">Vklopi dostop do mikrofona</translation>
 <translation id="3408735331120433841">Trenutno predvajate zaslon.</translation>
@@ -781,6 +783,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="425364040945105958">Ni kartice SIM</translation>
 <translation id="4261870227682513959">Prikaz nastavitev obvestil. Obvestila so izklopljena.</translation>
+<translation id="4264977415328155183">, strnjeno</translation>
 <translation id="4269883910223712419">Skrbniku te naprave je omogočeno to:</translation>
 <translation id="4274537685965975248">Bližnjica na tipkovnici ctrl + alt + puščica dol je spremenjena. Če želite uporabiti tipko End, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico desno.</translation>
 <translation id="4275283744500212192">Odpiranje možnosti postavitve okna</translation>
@@ -1008,6 +1011,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, dogodki (<ph name="NUMBER" />)</translation>
 <translation id="5198715732953550718">Zaradi ustvarjanja nove mape je bila aplikacija <ph name="MOVED_APP_NAME" /> združena z aplikacijo <ph name="IN_PLACE_APP" />.</translation>
+<translation id="5203299837691351876">aktivno namizje</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 drugo obvestilo}one{# drugo obvestilo}two{# drugi obvestili}few{# druga obvestila}other{# drugih obvestil}}</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
@@ -1406,6 +1410,7 @@ Nova namestitev</translation>
 <translation id="6819327813400217281">Fotoaparat je pripet v spodnji levi kot</translation>
 <translation id="6820676911989879663">Čas za odmor!</translation>
 <translation id="6827049576281411231">Zapri podokno dogodka</translation>
+<translation id="6831561626108366035">Pomaknite se do gumba <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Nevarna datoteka</translation>
 <translation id="6852052252232534364">Klik. za akt.</translation>
 <translation id="6855029042976311970">Pravkar urejeno</translation>
@@ -1442,6 +1447,7 @@ Nova namestitev</translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="698231206551913481">Vse datoteke in lokalni podatki, povezani s tem uporabnikom, bodo trajno izbrisani, ko odstranite uporabnika.</translation>
 <translation id="6985306450422696113">Pomnilnik: <ph name="USED_MEMORY" /> je na voljo od skupno <ph name="TOTAL_MEMORY" /></translation>
+<translation id="6989752354829085073">V kratki predstavitvi si oglejte, kako uporabljati Chromebook. Uporabljati ga lahko začnete v 6 korakih.</translation>
 <translation id="7004910047186208204">Povezava z mobilnim podatkovnim omrežjem</translation>
 <translation id="7005239792648594238">Če želite začeti, odprite aplikacijo</translation>
 <translation id="7007983414944123363">Vaše kode PIN ali gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
@@ -1480,6 +1486,8 @@ Nova namestitev</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144942256906679589">Stanje baterije</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ponastavitev na prejšnjo ločljivost čez <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
@@ -1565,6 +1573,7 @@ Nova namestitev</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno uporablja vaš mikrofon.</translation>
 <translation id="7561982940498449837">Zapri meni</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
+<translation id="7567950130372125778">Pozdravljeni. Chromebook je nekoliko drugačen.</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" /> % baterije | še <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Aktivno okno je zasidrano na desni.</translation>

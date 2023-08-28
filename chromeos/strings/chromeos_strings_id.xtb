@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Kunci autentikasi TLS</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2717139507051041123">Aktifkan mode warna gelap</translation>
+<translation id="2728460467788544679">Hapus semua histori pencetakan</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2744221223678373668">Dibagikan</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
+<translation id="6461047516875166066">Beri tahu selengkapnya</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pindai ulang halaman?}=1{Pindai ulang halaman {PAGE_NUMBER}?}other{Pindai ulang halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8329018942023753850">aplikasi kalkulator</translation>
 <translation id="8336739000755212683">Ubah gambar akun perangkat</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> atau <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Pencetakan</translation>
 <translation id="8351855506390808906">Titik sentuh konfigurasi tombol</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>

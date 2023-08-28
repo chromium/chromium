@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Kunci pengesahan TLS</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2717139507051041123">Dayakan mod warna gelap</translation>
+<translation id="2728460467788544679">Kosongkan semua sejarah cetak</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Dikongsi</translation>
 <translation id="2751739896257479635">Pengesahan Fasa 2 EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pergi ke tetapan akaun</translation>
+<translation id="6461047516875166066">Beritahu lebih lanjut</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Imbas semula halaman?}=1{Imbas semula halaman {PAGE_NUMBER}?}other{Imbas semula halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>

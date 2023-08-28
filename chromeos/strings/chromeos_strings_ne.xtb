@@ -231,6 +231,7 @@
 <translation id="2712812801627182647">TLS प्रमाणीकरण की</translation>
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2717139507051041123">अँध्यारो रङ मोड अन गर्नुहोस्</translation>
+<translation id="2728460467788544679">प्रिन्टसम्बन्धी सबै हिस्ट्री हटाउनुहोस्</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2744221223678373668">साझा गरिएको</translation>
 <translation id="2751739896257479635">EAP दोस्रो चरणको प्रमाणीकरण</translation>
@@ -701,6 +702,7 @@
 <translation id="6423239382391657905">खुल्लाVPN</translation>
 <translation id="6439505561246192797">कमजोर (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाताका सेटिङमा जानुहोस्</translation>
+<translation id="6461047516875166066">मलाई थप कुरा बताउनुहोस्</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज पुनः स्क्यान गर्ने हो?}=1{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्ने हो?}other{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्ने हो?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>

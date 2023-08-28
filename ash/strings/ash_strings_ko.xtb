@@ -557,6 +557,7 @@
 <translation id="3386978599540877378">전체 화면 돋보기</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">음성기록을 사용 설정하시겠습니까?</translation>
+<translation id="3394432020929931914">펼침</translation>
 <translation id="3400357268283240774">추가 설정</translation>
 <translation id="3405101454990027959">마이크 액세스를 사용 설정합니다.</translation>
 <translation id="3408735331120433841">현재 화면을 전송하고 있습니다.</translation>
@@ -781,6 +782,7 @@
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="425364040945105958">SIM 없음</translation>
 <translation id="4261870227682513959">알림 설정을 표시합니다. 알림이 사용 중지되어 있습니다.</translation>
+<translation id="4264977415328155183">접힘</translation>
 <translation id="4269883910223712419">이 기기의 관리자는 다음과 같은 작업을 할 수 있습니다.</translation>
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4275283744500212192">창 레이아웃 옵션 열기</translation>
@@ -1480,6 +1482,8 @@
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144942256906679589">배터리 상태</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />초 후 기존 해상도로 돌아갑니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7188494361780961876">메뉴가 화면 왼쪽 상단으로 이동했습니다.</translation>

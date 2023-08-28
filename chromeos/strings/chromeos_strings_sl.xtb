@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Ključ za preverjanje pristnost TLS</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2717139507051041123">Omogoči način temne barve</translation>
+<translation id="2728460467788544679">Brisanje celotne zgodovine tiskanja</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2744221223678373668">V skupni rabi</translation>
 <translation id="2751739896257479635">2. faza preverjanja pristnosti EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Šibka (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odpri nastavitve računa</translation>
+<translation id="6461047516875166066">Želim izvedeti več</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite znova optično prebrati stran?}=1{Želite znova optično prebrati {PAGE_NUMBER}. stran?}one{Želite znova optično prebrati {PAGE_NUMBER}. stran?}two{Želite znova optično prebrati {PAGE_NUMBER}. stran?}few{Želite znova optično prebrati {PAGE_NUMBER}. stran?}other{Želite znova optično prebrati {PAGE_NUMBER}. stran?}}</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Ni slik</translation>
 <translation id="8329018942023753850">aplikacija računalo</translation>
 <translation id="8336739000755212683">Spremeni sliko računa v napravi</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ali <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
 <translation id="8351855506390808906">Točka dotika pri razporejanju tipk</translation>
 <translation id="8352772353338965963">Dodajte račun za prijavo z več računi. Do vseh prijavljenih računov je mogoče dostopati brez gesla, zato to funkcijo uporabljajte samo z zaupanja vrednimi računi.</translation>

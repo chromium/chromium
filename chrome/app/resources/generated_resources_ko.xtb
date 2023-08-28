@@ -1257,6 +1257,7 @@
 <translation id="1974043046396539880">CRL 배포 지점</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1974159333077206889">모든 스피커에서 동일한 오디오</translation>
+<translation id="1974216844776165821">Chrome에서 비밀번호를 이 기기에 저장했으나, 기기가 아닌 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호 및 패스키를 사용할 수도 있습니다.</translation>
 <translation id="1974821797477522211">네트워크에 연결</translation>
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
@@ -1478,6 +1479,7 @@
 <translation id="2143915448548023856">디스플레이 설정</translation>
 <translation id="2144536955299248197">인증서 뷰어: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android 앱 개발</translation>
+<translation id="2144873026585036769">Google 계정을 사용하여 비밀번호와 패스키를 저장하고 채우시겠습니까?</translation>
 <translation id="2146263598007866206">시간 절약을 위해 사이트에서 자동으로 여러 관련 파일을 한꺼번에 다운로드할 수 있습니다.</translation>
 <translation id="2147151613919729065">게스트 모드 기록을 삭제하려면 게스트 창을 모두 닫으세요.</translation>
 <translation id="2147218225094845757">측면 패널 숨기기</translation>
@@ -1613,6 +1615,7 @@
 <translation id="2252017960592955005">사생활 보호(베타)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" />의 PPD를 가져올 수 없습니다.</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" />님과 공유할 항목을 선택하세요</translation>
+<translation id="2254263139042585032">Google 계정의 비밀번호 및 패스키 표시</translation>
 <translation id="2255077166240162850">이 기기가 다른 도메인 또는 모드로 잠겼습니다.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">지금 다시 시작</translation>
@@ -2403,6 +2406,7 @@
 <translation id="2850672011315104382">구두점 스타일</translation>
 <translation id="2852385257476173980">웹을 탐색하면 여기에 방문한 사이트 목록이 표시될 수 있습니다.</translation>
 <translation id="285241945869362924">오디오 및 동영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
+<translation id="2853415089995957805">Chrome은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />로 비밀번호 가져오기</translation>
 <translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
@@ -3654,6 +3658,7 @@
 <translation id="3875815154304214043"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">공유에 <ph name="USER_EMAIL" /> 계정을 사용하는 <ph name="USER_NAME" />님의 기기에 관한 Nearby Share 설정입니다.</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
+<translation id="3880513902716032002">방문한 페이지 중 일부가 미리 로드되었습니다.</translation>
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> 및 <ph name="MERCHANT_NAME_2" />에서 할인받기</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
@@ -3924,6 +3929,7 @@
 <translation id="4093955363990068916">로컬 파일:</translation>
 <translation id="4094647278880271855">지원되지 않는 환경 변수(<ph name="BAD_VAR" />)를 사용 중이므로 안정성 및 보안에 문제가 발생할 수 있습니다.</translation>
 <translation id="4095264805865317199">모바일 활성화 UI 열기</translation>
+<translation id="4095425503313512126">탐색과 검색이 더 빨라집니다.</translation>
 <translation id="4095507791297118304">기본 디스플레이</translation>
 <translation id="4096508467498758490">개발자 모드 확장 프로그램 사용 중지</translation>
 <translation id="4096797685681362305">지난주에 확인함</translation>
@@ -4282,6 +4288,7 @@
 <translation id="4403266582403435904">언제든지 간편하게 데이터를 복원하거나 새 기기로 데이터를 이전하세요. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="4403775189117163360">다른 폴더 선택</translation>
 <translation id="4404136731284211429">다시 검색</translation>
+<translation id="4404619268534288383">탭 그룹 저장 및 동기화</translation>
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
@@ -5486,6 +5493,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5417353542809767994">안전한 비밀번호를 빠르게 사용하기</translation>
 <translation id="541737483547792035">화면 확대</translation>
 <translation id="5419405654816502573">Voice Match</translation>
+<translation id="5420061891386124792">탭 그룹 저장 및 리콜을 사용 설정합니다. 탭 그룹을 마우스 오른쪽 버튼으로 클릭하여 저장합니다. 북마크바에서 그룹을 불러옵니다.</translation>
 <translation id="5420274697768050645">보안 강화를 위해 비밀번호로 기기를 잠금 해제하도록 설정합니다.</translation>
 <translation id="5420438158931847627">텍스트와 이미지의 선명도를 결정합니다.</translation>
 <translation id="5420935737933866496">링크 복사(&amp;L)</translation>
@@ -6712,6 +6720,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6438234780621650381">설정 초기화</translation>
 <translation id="6438475350605608554">이미 다른 탭에서 비밀번호를 가져오고 있습니다.</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 오디오 재생</translation>
+<translation id="6440291723980579689">사용자가 페이지를 열어야 페이지가 로드됩니다.</translation>
 <translation id="6441377161852435370">읽기 목록에 탭 추가</translation>
 <translation id="6442187272350399447">멋쟁이</translation>
 <translation id="6442445294758185945">업데이트를 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
@@ -7757,6 +7766,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="730515362922783851">로컬 네트워크 또는 인터넷의 모든 기기와 데이터 교환</translation>
 <translation id="7306521477691455105">설정을 열어 <ph name="USB_DEVICE_NAME" /> 기기를 <ph name="USB_VM_NAME" />에 연결하세요.</translation>
 <translation id="7307129035224081534">일시중지됨</translation>
+<translation id="7307647374092371434">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호와 패스키를 사용할 수 있습니다.</translation>
 <translation id="7308643132139167865">웹사이트 언어</translation>
 <translation id="7310598146671372464">로그인하지 못했습니다. 서버가 지정된 Kerberos 암호화 유형을 지원하지 않습니다. 관리자에게 문의하세요.</translation>
 <translation id="7311005168897771689">오프라인 상태에서 Google Drive 파일에 액세스</translation>

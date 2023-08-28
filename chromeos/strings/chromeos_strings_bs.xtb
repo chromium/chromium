@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
 <translation id="2713444072780614174">Bijela</translation>
 <translation id="2717139507051041123">Omogućavanje načina rada u tamnoj boji</translation>
+<translation id="2728460467788544679">Obrišite cijelu historiju štampanja</translation>
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2744221223678373668">Dijeljeno</translation>
 <translation id="2751739896257479635">EAP faza 2 autentifikacije</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odlazak u postavke računa</translation>
+<translation id="6461047516875166066">Pogledajte više informacija</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>

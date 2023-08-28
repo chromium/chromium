@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Изберете лозинка</translation>
 <translation id="2195124168004379331">Вашиот прелистувач изгледа безбедно</translation>
+<translation id="2213327331203157297">За да го оневозможите режимот на заклучување во Chrome, исклучете го на вашиот iPhone.</translation>
 <translation id="2218443599109088993">Одзумирај</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
@@ -1360,6 +1361,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8843129975935593190">Вашата организација ограничува што може да синхронизирате.</translation>
 <translation id="8849001918648564819">Скриен</translation>
 <translation id="8855242995793521265">Не го забавува значително прелистувачот или уредот.</translation>
+<translation id="8855781063981781621">За да го оневозможите режимот на заклучување во Chrome, исклучете го на вашиот iPad.</translation>
 <translation id="8863431381414769983">Добивање насоки и локални податоци од „Карти на Google“</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} картичка}one{{count} картичка}other{{count} картички}}</translation>
 <translation id="8870413625673593573">Неодамна затворено</translation>

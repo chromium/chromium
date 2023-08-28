@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS аутентификация ачкычы</translation>
 <translation id="2713444072780614174">Ак</translation>
 <translation id="2717139507051041123">Караңгы түс режимин иштетүү</translation>
+<translation id="2728460467788544679">Бардык басып чыгаруу таржымалын өчүрүү</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Бөлүшүлгөн</translation>
 <translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Начар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунттун параметрлерине өтүү</translation>
+<translation id="6461047516875166066">Кененирээк маалымат</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Бет кайра скандалсынбы?}=1{{PAGE_NUMBER} бет кайра скандалсынбы?}other{{PAGE_NUMBER} бет кайра скандалсынбы?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> башкарат</translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Сүрөттөр жок</translation>
 <translation id="8329018942023753850">эсептегич колдонмосу</translation>
 <translation id="8336739000755212683">Түзмөктөгү аккаунттун сүрөтүн өзгөртүү</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> же <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="8351855506390808906">Баскычтарды дайындоо үчүн тийүү чекити</translation>
 <translation id="8352772353338965963">Бир нече профиль менен кирүү үчүн каттоо эсебин кошуңуз. Катталган бардык аккаунттарына кирүүдө сырсөз талап кылынбагандыктан, бул мүмкүнчүлүктү ишенимдүү каттоо эсептери гана колдонушу керек.</translation>

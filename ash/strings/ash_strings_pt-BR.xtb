@@ -64,6 +64,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1217633719248931900">Ir para o app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app da Play Store</translation>
 <translation id="1225748608451425081">Seu Chromebook está bloqueado devido a um problema conhecido. Você poderá fazer login em <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">espaço de trabalho inativo</translation>
 <translation id="1229194443904279055">Parar de selecionar</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
@@ -557,6 +558,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3386978599540877378">a lupa de tela cheia</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Ativar o Ditado?</translation>
+<translation id="3394432020929931914">, expandido</translation>
 <translation id="3400357268283240774">Configurações avançadas</translation>
 <translation id="3405101454990027959">Ativar o acesso ao microfone</translation>
 <translation id="3408735331120433841">Você está transmitindo a tela no momento.</translation>
@@ -781,6 +783,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="425364040945105958">Sem chip</translation>
 <translation id="4261870227682513959">Mostrar configurações de notificação. As notificações estão desativadas</translation>
+<translation id="4264977415328155183">, recolhido</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo mudou. Para usar a tecla End, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4275283744500212192">Abrir opções de layout da janela</translation>
@@ -1008,6 +1011,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinado com <ph name="IN_PLACE_APP" /> para criar uma nova pasta.</translation>
+<translation id="5203299837691351876">espaço de trabalho ativo</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}one{Mais # notificação}other{Mais # notificações}}</translation>
 <translation id="5207949376430453814">Destacar cursor de texto</translation>
@@ -1406,6 +1410,7 @@ Nova instalação</translation>
 <translation id="6819327813400217281">Câmera alinhada ao canto esquerdo de baixo</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
 <translation id="6827049576281411231">Fechar painel do evento</translation>
+<translation id="6831561626108366035">Acesse o botão <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Arquivo perigoso</translation>
 <translation id="6852052252232534364">Clique para ativar</translation>
 <translation id="6855029042976311970">Editado agora há pouco</translation>
@@ -1442,6 +1447,7 @@ Nova instalação</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="698231206551913481">Todos os arquivos e dados locais associados a este usuário serão excluídos permanentemente quando o usuário for removido.</translation>
 <translation id="6985306450422696113">Memória disponível: <ph name="USED_MEMORY" /> de um total de <ph name="TOTAL_MEMORY" /></translation>
+<translation id="6989752354829085073">Faça um tour rápido para aprender a usar seu Chromebook. Comece a trabalhar em seis etapas.</translation>
 <translation id="7004910047186208204">Conectar-se aos dados móveis</translation>
 <translation id="7005239792648594238">Abra um app para começar</translation>
 <translation id="7007983414944123363">Não foi possível verificar seu PIN ou sua senha. Tente novamente.</translation>
@@ -1480,6 +1486,8 @@ Nova instalação</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144942256906679589">Status da bateria</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Revertendo para resolução anterior em <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo da tela.</translation>
@@ -1565,6 +1573,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando seu microfone</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outra área de trabalho pode resultar em comportamentos inesperados. Notificações posteriores, janelas e caixas de diálogo podem ser divididas entre as áreas de trabalho.</translation>
+<translation id="7567950130372125778">Olá! O Chromebook é um pouco diferente.</translation>
 <translation id="7569509451529460200">Braille e ChromeVox estão ativados</translation>
 <translation id="7571361473021531288">Bateria em <ph name="BATTERY_PERCENTAGE" />% | Tempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Janela ativa fixada à direita.</translation>
