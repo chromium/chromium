@@ -395,6 +395,208 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
           .ExtractBool());
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveFileReportsModifiedType) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // TODO(https://crbug.com/1425601): Support change types. For now, just
+  // confirm that "modified" is plumbed through properly.
+  EXPECT_TRUE(EvalJs(shell(),
+                     "(async () => {"
+                     "let promiseResolve, promiseReject;"
+                     "let promise = new Promise(function(resolve, reject) {"
+                     "  promiseResolve = resolve;"
+                     "  promiseReject = reject;"
+                     "});"
+                     "async function onChange(records, observer) {"
+                     "  const record = records[0];"
+                     "  promiseResolve(record.type === 'modified');"
+                     "};"
+                     "const [file] = await self.showOpenFilePicker();"
+                     "const observer = new FileSystemObserver(onChange);"
+                     "await observer.observe(file);"
+                     "const writable = await file.createWritable();"
+                     "await writable.write('blah');"
+                     "await writable.close();"
+                     "return await promise; })()")
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveFileReportsCorrectHandle) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // The `changedHandle` should the same as `root`, which is the same as the
+  // handle passed to `observe()`.
+  EXPECT_TRUE(
+      EvalJs(shell(),
+             "(async () => {"
+             "let promiseResolve, promiseReject;"
+             "let promise = new Promise(function(resolve, reject) {"
+             "  promiseResolve = resolve;"
+             "  promiseReject = reject;"
+             "});"
+             "async function onChange(records, observer) {"
+             "  const record = records[0];"
+             "  promiseResolve(await file.isSameEntry(record.root) &&"
+             "                 await file.isSameEntry(record.changedHandle));"
+             "};"
+             "const [file] = await self.showOpenFilePicker();"
+             "const observer = new FileSystemObserver(onChange);"
+             "await observer.observe(file);"
+             "const writable = await file.createWritable();"
+             "await writable.write('blah');"
+             "await writable.close();"
+             "return await promise; })()")
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveFileReportsCorrectRelativePathComponents) {
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // The `relativePathComponents` should be an empty array, since the change
+  // occurred on the path corresponding to the handle passed to `observe()`.
+  EXPECT_TRUE(
+      EvalJs(shell(),
+             "(async () => {"
+             "let promiseResolve, promiseReject;"
+             "let promise = new Promise(function(resolve, reject) {"
+             "  promiseResolve = resolve;"
+             "  promiseReject = reject;"
+             "});"
+             "async function onChange(records, observer) {"
+             "  const record = records[0];"
+             "  promiseResolve(record.relativePathComponents.length === 0);"
+             "};"
+             "const [file] = await self.showOpenFilePicker();"
+             "const observer = new FileSystemObserver(onChange);"
+             "await observer.observe(file);"
+             "const writable = await file.createWritable();"
+             "await writable.write('blah');"
+             "await writable.close();"
+             "return await promise; })()")
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryReportsCorrectHandle) {
+  base::FilePath dir_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("test"), &dir_path));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // TODO(https://crbug.com/1425601): Don't assume the type of the changed
+  // handle is the same as the type of the handle passed into observe().
+  EXPECT_TRUE(
+      EvalJs(shell(),
+             "(async () => {"
+             "let promiseResolve, promiseReject;"
+             "let promise = new Promise(function(resolve, reject) {"
+             "  promiseResolve = resolve;"
+             "  promiseReject = reject;"
+             "});"
+             "async function onChange(records, observer) {"
+             "  const record = records[0];"
+             "  promiseResolve(await dir.isSameEntry(record.root) &&"
+  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
+  // path. In these cases, `changedHandle` will always be the same as `root`.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+             "                 await subDir.isSameEntry(record.changedHandle));"
+#else
+             "                 await dir.isSameEntry(record.changedHandle));"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+             "};"
+             "const dir = await self.showDirectoryPicker();"
+             "const observer = new FileSystemObserver(onChange);"
+             "await observer.observe(dir);"
+             "const subDir = await dir.getDirectoryHandle('subdir', { "
+             "create:true });"
+             "return await promise; })()")
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryReportsCorrectRelativePathComponents) {
+  base::FilePath dir_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("test"), &dir_path));
+  }
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_path}));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  EXPECT_TRUE(
+      EvalJs(shell(),
+             "(async () => {"
+             "let promiseResolve, promiseReject;"
+             "let promise = new Promise(function(resolve, reject) {"
+             "  promiseResolve = resolve;"
+             "  promiseReject = reject;"
+             "});"
+             "async function onChange(records, observer) {"
+             "  const record = records[0];"
+  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
+  // path. In these cases, `relativePathComponents` will always be empty.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+             "  promiseResolve(record.relativePathComponents.length === 1);"
+#else
+             "  promiseResolve(record.relativePathComponents.length === 0);"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+             "};"
+             "const dir = await self.showDirectoryPicker();"
+             "const observer = new FileSystemObserver(onChange);"
+             "await observer.observe(dir);"
+             "const subDir = await dir.getDirectoryHandle('subdir', { "
+             "create:true });"
+             "return await promise; })()")
+          .ExtractBool());
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #endif  // !BUILDFLAG(IS_ANDROID)

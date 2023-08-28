@@ -47,6 +47,15 @@ void SpinEventLoopForABit() {
       FROM_HERE, loop.QuitClosure(), TestTimeouts::tiny_timeout());
   loop.Run();
 }
+
+// TODO(https://crbug.com/1425601): Report the modified path on more platforms.
+bool ReportsModifiedPathForLocalObservations() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 // Accumulates changes it receives from the given `observation`.
@@ -511,9 +520,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   // Delete a file in the directory. This should be reported to `accumulator`.
   base::DeleteFile(file_path);
 
-  // TODO(https://crbug.com/1019297): Report the affected path, not that of the
-  // watched directory.
-  std::list<Change> expected_changes = {{dir_url, /*error=*/false}};
+  auto expected_url =
+      ReportsModifiedPathForLocalObservations()
+          ? manager_->CreateFileSystemURLFromPath(
+                FileSystemAccessEntryFactory::PathType::kLocal, file_path)
+          : dir_url;
+  std::list<Change> expected_changes = {{expected_url, /*error=*/false}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_changes))(
         accumulator.changes());
@@ -593,8 +605,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   // `accumulator`.
   base::DeleteFile(file_path);
 
-  // TODO(https://crbug.com/1019297): Report the affected path, not that of the
-  // watched directory.
+  auto expected_url =
+      ReportsModifiedPathForLocalObservations()
+          ? manager_->CreateFileSystemURLFromPath(
+                FileSystemAccessEntryFactory::PathType::kLocal, file_path)
+          : dir_url;
+  std::list<Change> expected_changes = {{expected_url, /*error=*/false}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::Not(testing::IsEmpty()))(
         accumulator.changes());

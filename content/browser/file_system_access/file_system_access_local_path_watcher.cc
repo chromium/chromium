@@ -53,11 +53,19 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
 
-  // TODO(https://crbug.com/1019297): Report the affected path.
-  base::FilePathWatcher::WatchOptions watch_options{
-      .type = scope().IsRecursive()
-                  ? base::FilePathWatcher::Type::kRecursive
-                  : base::FilePathWatcher::Type::kNonRecursive};
+  base::FilePathWatcher::WatchOptions watch_options {
+    .type = scope().IsRecursive() ? base::FilePathWatcher::Type::kRecursive
+                                  : base::FilePathWatcher::Type::kNonRecursive,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // Note: `report_modified_path` is also present on Android
+    // and Fuchsia. Update this switch if support for watching
+    // the local file system is added on those platforms.
+    //
+    // TODO(https://crbug.com/1425601): Report the affected
+    // path on more platforms.
+        .report_modified_path = true,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  };
 
   watcher_.AsyncCall(&base::FilePathWatcher::WatchWithOptions)
       .WithArgs(
