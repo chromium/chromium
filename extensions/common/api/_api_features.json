@@ -364,7 +364,8 @@
     "matches": [
       "chrome-untrusted://help-app/*",
       "chrome-untrusted://media-app/*",
-      "chrome-untrusted://projector/*"
+      "chrome-untrusted://projector/*",
+      "chrome-untrusted://read-anything-side-panel.top-chrome/*"
     ]
   }],
   "metricsPrivateIndividualApis": {

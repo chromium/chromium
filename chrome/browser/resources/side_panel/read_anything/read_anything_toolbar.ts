@@ -39,6 +39,22 @@ enum MenuStateValue {
   VERY_WIDE = 10,
 }
 
+// Enum for logging when a text style setting is changed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ReadAnythingSettingsChange {
+  FONT_CHANGE = 0,
+  FONT_SIZE_CHANGE = 1,
+  THEME_CHANGE = 2,
+  LINE_HEIGHT_CHANGE = 3,
+  LETTER_SPACING_CHANGE = 4,
+
+  // Must be last.
+  COUNT = 5,
+}
+
+const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
+
 
 const ReadAnythingToolbarBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
@@ -122,6 +138,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           // Do nothing;
       }
 
+      chrome.metricsPrivate.recordEnumerationValue(
+          SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
+          ReadAnythingSettingsChange.COUNT);
       if (this.contentPage && data) {
         this.contentPage.updateLineSpacing(
             chrome.readingMode.getLineSpacingValue(data));
@@ -150,6 +169,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           // Do nothing;
       }
 
+      chrome.metricsPrivate.recordEnumerationValue(
+          SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
+          ReadAnythingSettingsChange.COUNT);
       if (this.contentPage && data) {
         this.contentPage.updateLetterSpacing(
             chrome.readingMode.getLetterSpacingValue(data));
@@ -186,6 +208,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
           // Do nothing;
       }
 
+      chrome.metricsPrivate.recordEnumerationValue(
+          SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.THEME_CHANGE,
+          ReadAnythingSettingsChange.COUNT);
       if (this.contentPage && (colorSuffix !== undefined)) {
         this.contentPage.updateThemeFromWebUi(colorSuffix);
       }
@@ -278,6 +303,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onFontClick_(fontName: string) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
+        ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontChange(fontName);
     if (this.contentPage) {
       this.contentPage.updateFont(fontName);
@@ -294,6 +322,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.updateFontSize_(false);
   }
   private updateFontSize_(increase: boolean) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
+        ReadAnythingSettingsChange.COUNT);
     if (this.contentPage) {
       this.contentPage.updateFontSize(increase);
     }

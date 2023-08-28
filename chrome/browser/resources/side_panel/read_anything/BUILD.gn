@@ -31,6 +31,7 @@ build_webui("build") {
   ts_definitions = [
     "read_anything.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   ts_path_mappings =
       [ "//read-anything-side-panel.top-chrome/shared/*|" +
