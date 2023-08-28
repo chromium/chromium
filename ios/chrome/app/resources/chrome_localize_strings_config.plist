@@ -67,6 +67,30 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>NjxAwS</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_BOOKMARKS_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>Ey6EJ2</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_BOOKMARKS_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>UxPTe6</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_BOOKMARKS_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>oAHs9X</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_BOOKMARKS_DESCRIPTION</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>3GKDRh</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_OPEN_READING_LIST_TITLE</string>

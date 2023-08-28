@@ -88,6 +88,9 @@
     case OPEN_READING_LIST:
       [description appendString:@", should open reading list"];
       break;
+    case OPEN_BOOKMARKS:
+      [description appendString:@", should open bookmarks"];
+      break;
     default:
       break;
   }

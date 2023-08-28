@@ -2490,6 +2490,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf openReadingList];
       };
+    case OPEN_BOOKMARKS:
+      return ^{
+        [weakSelf openBookmarks];
+      };
     default:
       return nil;
   }
@@ -2572,6 +2576,16 @@ void InjectNTP(Browser* browser) {
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
   [browserCoordinatorCommandsHandler showReadingList];
+}
+
+- (void)openBookmarks {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  [browserCoordinatorCommandsHandler showBookmarksManager];
 }
 
 #pragma mark - TabOpening implementation.

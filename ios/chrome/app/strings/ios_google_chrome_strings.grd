@@ -721,6 +721,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_OPEN_READING_LIST_DESCRIPTION" desc="Shortcut description to open reading list in chrome [iOS only].">
         Opens the Chrome Reading List.
       </message>
+      <message name="IDS_IOS_INTENTS_OPEN_BOOKMARKS_TITLE" desc="Siri Shortcut for open bookmarks title [iOS only]">
+        See Chrome Bookmarks
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_BOOKMARKS_DESCRIPTION" desc="Shortcut description to open bookmarks in chrome [iOS only].">
+        Opens the Chrome bookmarks.
+      </message>
     </messages>
   </release>
 </grit>
