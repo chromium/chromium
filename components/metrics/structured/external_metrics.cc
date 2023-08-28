@@ -5,8 +5,8 @@
 #include "components/metrics/structured/external_metrics.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -86,16 +86,29 @@ EventsProto ReadAndDeleteEvents(
     return result;
   }
 
-  base::FileEnumerator enumerator(directory, false,
-                                  base::FileEnumerator::FILES);
+  base::DirReaderPosix dir_reader(directory.value().c_str());
+  if (!dir_reader.IsValid()) {
+    VLOG(2) << "Failed to load External Metrics directory: " << directory;
+    return result;
+  }
+
   int file_counter = 0;
   int dropped_events = 0;
 
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
-    std::string proto_str;
-    int64_t file_size;
-    EventsProto proto;
+  while (dir_reader.Next()) {
+    base::FilePath path = directory.Append(dir_reader.name());
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_OPEN_ALWAYS);
+
+    // This will fail on '.' and '..' files.
+    if (!file.IsValid()) {
+      continue;
+    }
+
+    // Ignore any directory.
+    base::File::Info info;
+    if (!file.GetInfo(&info) || info.is_directory) {
+      continue;
+    }
 
     ++file_counter;
 
@@ -111,6 +124,10 @@ EventsProto ReadAndDeleteEvents(
       ++dropped_events;
       continue;
     }
+
+    std::string proto_str;
+    int64_t file_size;
+    EventsProto proto;
 
     // If an event is abnormally large, ignore it to prevent OOM.
     bool fs_ok = base::GetFileSize(path, &file_size);
@@ -151,6 +168,7 @@ EventsProto ReadAndDeleteEvents(
 
   MaybeFilterBluetoothEvents(result.mutable_uma_events());
   MaybeFilterBluetoothEvents(result.mutable_non_uma_events());
+
   return result;
 }
 
