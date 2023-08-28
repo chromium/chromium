@@ -5813,6 +5813,7 @@ crbug.com/1466578 external/wpt/event-timing/event-click-visibilitychange.html [ 
 crbug.com/1445140 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 crbug.com/1445140 [ Win ] external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure ]
 crbug.com/1469111 [ Mac ] http/tests/inspector-protocol/page/frame-started-stopped-loading.js [ Failure ]
+crbug.com/1475028 [ Debug Linux ] virtual/single-threaded-tests/fast/forms/datetimelocal/datetimelocal-picker-step2.html [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
