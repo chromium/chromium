@@ -184,7 +184,7 @@ public class StripLayoutTabTest {
                 mIncognitoTab.getTint(true, false));
 
         // Incognito inactive tab color.
-        expectedColor = mContext.getColor(R.color.default_bg_color_dark_elev_5_gm3_baseline);
+        expectedColor = mContext.getColor(R.color.default_bg_color_dark_elev_5_baseline);
         assertEquals("Detached incognito inactive should be baseline Surface-5.", expectedColor,
                 mIncognitoTab.getTint(false, false));
 

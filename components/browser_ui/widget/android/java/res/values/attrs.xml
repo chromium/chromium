@@ -139,11 +139,4 @@ found in the LICENSE file.
     <!-- Surface color resources. See https://crbug.com/1410537. -->
     <attr name="tileViewIconBackgroundModern" format="reference"/>
     <attr name="cardElevation" format="reference|dimension"/>
-    <attr name="defaultBgColorDarkElev1Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev1Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev2Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev3Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev4Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev5Baseline" format="reference|color"/>
-    <attr name="defaultChipRippleColor" format="reference|color"/>
 </resources>

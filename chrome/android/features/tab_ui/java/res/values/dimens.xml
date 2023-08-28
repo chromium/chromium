@@ -67,7 +67,7 @@ found in the LICENSE file.
     <dimen name="tab_grid_dialog_app_bar_padding">8dp</dimen>
 
     <!-- Elevation -->
-    <dimen name="tab_bg_elevation">@dimen/default_elevation_4</dimen>
+    <dimen name="tab_bg_elevation">@dimen/default_elevation_5</dimen>
 
     <integer name="tab_thumbnail_placeholder_color_alpha">255</integer>
     <integer name="tab_thumbnail_placeholder_selected_color_alpha">38</integer>

@@ -19,7 +19,6 @@ import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
@@ -40,17 +39,12 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             // Incognito does not use dynamic colors, so it can use colors from resources.
-            int incognitoTabBgColorRes = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? R.color.default_bg_color_dark_elev_4_gm3_baseline
-                    : R.color.incognito_tab_bg_color;
             @ColorRes
-            int colorRes =
-                    isSelected ? R.color.incognito_tab_bg_selected_color : incognitoTabBgColorRes;
+            int colorRes = isSelected ? R.color.incognito_tab_bg_selected_color
+                                      : R.color.incognito_tab_bg_color;
             return ContextCompat.getColor(context, colorRes);
         } else {
-            float tabElevation = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? context.getResources().getDimension(R.dimen.default_elevation_5)
-                    : context.getResources().getDimension(R.dimen.tab_bg_elevation);
+            float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
             @ColorInt
             int colorInt = isSelected
                     ? MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG)
@@ -261,13 +255,9 @@ public class TabUiThemeProvider {
     public static ColorStateList getHoveredCardBackgroundTintList(
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
-            int incognitoTabGroupHoveredBgColorRes =
-                    ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? R.color.default_bg_color_dark_elev_1_gm3_baseline
-                    : R.color.incognito_tab_group_hovered_bg_color;
             @ColorRes
             int colorRes = isSelected ? R.color.incognito_tab_group_hovered_bg_selected_color
-                                      : incognitoTabGroupHoveredBgColorRes;
+                                      : R.color.incognito_tab_group_hovered_bg_color;
             return AppCompatResources.getColorStateList(context, colorRes);
         } else {
             if (isSelected) {

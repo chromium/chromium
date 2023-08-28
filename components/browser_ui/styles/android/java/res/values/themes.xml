@@ -29,12 +29,6 @@ found in the LICENSE file.
         <item name="elevationOverlayAccentColor">@android:color/transparent</item>
         <item name="tileViewIconBackgroundModern">@drawable/oval_surface_2</item>
         <item name="cardElevation">@dimen/default_elevation_2</item>
-        <item name="defaultBgColorDarkElev1Baseline">@color/default_bg_color_dark_elev_1_gm3_baseline</item>
-        <item name="defaultBgColorElev1Baseline">@color/default_bg_color_elev_1_gm3_baseline</item>
-        <item name="defaultBgColorElev2Baseline">@color/default_bg_color_elev_2_gm3_baseline</item>
-        <item name="defaultBgColorElev3Baseline">@color/default_bg_color_elev_3_gm3_baseline</item>
-        <item name="defaultBgColorElev4Baseline">@color/default_bg_color_elev_4_gm3_baseline</item>
-        <item name="defaultBgColorElev5Baseline">@color/default_bg_color_elev_5_gm3_baseline</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">

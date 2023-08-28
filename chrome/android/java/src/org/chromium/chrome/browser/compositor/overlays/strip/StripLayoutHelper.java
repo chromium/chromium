@@ -343,40 +343,25 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     (int) (NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY * 255));
 
             // Surface-2 baseline for folio, surface-3 baseline for detached incognito bg color.
-            int defaultBgColorDarkElev2 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? R.color.default_bg_color_dark_elev_2_gm3_baseline
-                    : R.color.default_bg_color_dark_elev_2_baseline;
-            int defaultBgColorDarkElev3 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? R.color.default_bg_color_dark_elev_3_gm3_baseline
-                    : R.color.default_bg_color_dark_elev_3_baseline;
             int incognitoBackgroundTint = TabManagementFieldTrial.isTabStripFolioEnabled()
-                    ? context.getResources().getColor(defaultBgColorDarkElev2)
-                    : context.getResources().getColor(defaultBgColorDarkElev3);
+                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                    : context.getResources().getColor(
+                            R.color.default_bg_color_dark_elev_3_baseline);
 
             // Surface-5 baseline for incognito pressed bg color
-            int defaultBgColorDarkElev5 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                    ? R.color.default_bg_color_dark_elev_5_gm3_baseline
-                    : R.color.default_bg_color_dark_elev_5_baseline;
             int incognitoBackgroundPressedTint =
-                    context.getResources().getColor(defaultBgColorDarkElev5);
+                    context.getResources().getColor(R.color.default_bg_color_dark_elev_5_baseline);
 
             // Tab strip redesign new tab button night mode bg color.
             if (ColorUtils.inNightMode(context)) {
-                // Surface 1 for folio night mode bg color.
+                // Surface-1 for folio night mode bg color.
                 if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                     defaultNTBBackgroundTint =
                             ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
                 } else {
-                    // Primary @ 15% for detached night mode bg color.
-                    if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
-                        defaultNTBBackgroundTint =
-                                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
-                    } else {
-                        defaultNTBBackgroundTint =
-                                androidx.core.graphics.ColorUtils.setAlphaComponent(
-                                        SemanticColorUtils.getDefaultIconColorAccent1(context),
-                                        (int) (NEW_TAB_BUTTON_DARK_DETACHED_OPACITY * 255));
-                    }
+                    // Surface-2 for detached night mode bg color.
+                    defaultNTBBackgroundTint =
+                            ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
                 }
                 // Surface 5 for pressed night mode bg color.
                 pressedBackgroundTint =

@@ -432,12 +432,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int getToolbarDefaultColor() {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
             if (mDropdownListScrolled) {
-                int colorRes = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                        ? R.color.default_bg_color_dark_elev_2_gm3_baseline
-                        : R.color.default_bg_color_dark_elev_2_baseline;
-                return isIncognito() ? getContext().getColor(colorRes)
-                                     : ChromeColors.getSurfaceColor(
-                                             getContext(), R.dimen.toolbar_text_box_elevation);
+                return isIncognito()
+                        ? getContext().getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                        : ChromeColors.getSurfaceColor(
+                                getContext(), R.dimen.toolbar_text_box_elevation);
             }
             return mLocationBar.getDropdownBackgroundColor(isIncognito());
         }

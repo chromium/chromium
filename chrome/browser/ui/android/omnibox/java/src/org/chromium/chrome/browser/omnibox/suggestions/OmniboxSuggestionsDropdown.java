@@ -26,7 +26,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
@@ -212,9 +211,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 ? ChromeColors.getSurfaceColor(
                         context, R.dimen.omnibox_suggestion_dropdown_bg_elevation)
                 : ChromeColors.getDefaultThemeColor(context, false);
-        int incognitoBgColorRes = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                ? R.color.default_bg_color_dark_elev_1_gm3_baseline
-                : R.color.omnibox_dropdown_bg_incognito;
+        int incognitoBgColorRes = R.color.omnibox_dropdown_bg_incognito;
         mIncognitoBgColor = shouldShowModernizeVisualUpdate
                 ? context.getColor(incognitoBgColorRes)
                 : ChromeColors.getDefaultThemeColor(context, true);

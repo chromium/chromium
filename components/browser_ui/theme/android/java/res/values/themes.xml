@@ -51,13 +51,6 @@ found in the LICENSE file.
         <!-- Current Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
         <item name="tileViewIconBackgroundModern">@drawable/oval_surface_1</item>
         <item name="cardElevation">@dimen/card_elevation</item>
-        <item name="defaultBgColorDarkElev1Baseline">@color/default_bg_color_dark_elev_1_baseline</item>
-        <item name="defaultBgColorElev1Baseline">@color/default_bg_color_elev_1_baseline</item>
-        <item name="defaultBgColorElev2Baseline">@color/default_bg_color_elev_2_baseline</item>
-        <item name="defaultBgColorElev3Baseline">@color/default_bg_color_elev_3_baseline</item>
-        <item name="defaultBgColorElev4Baseline">@color/default_bg_color_elev_4_baseline</item>
-        <item name="defaultBgColorElev5Baseline">@color/default_bg_color_elev_5_baseline</item>
-        <item name="defaultChipRippleColor">?attr/defaultBgColorElev2Baseline</item>
 
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
@@ -151,13 +144,6 @@ found in the LICENSE file.
         <!-- Current Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
         <item name="tileViewIconBackgroundModern">@drawable/oval_surface_1</item>
         <item name="cardElevation">@dimen/card_elevation</item>
-        <item name="defaultBgColorDarkElev1Baseline">@color/default_bg_color_dark_elev_1_baseline</item>
-        <item name="defaultBgColorElev1Baseline">@color/default_bg_color_elev_1_baseline</item>
-        <item name="defaultBgColorElev2Baseline">@color/default_bg_color_elev_2_baseline</item>
-        <item name="defaultBgColorElev3Baseline">@color/default_bg_color_elev_3_baseline</item>
-        <item name="defaultBgColorElev4Baseline">@color/default_bg_color_elev_4_baseline</item>
-        <item name="defaultBgColorElev5Baseline">@color/default_bg_color_elev_5_baseline</item>
-        <item name="defaultChipRippleColor">?attr/defaultBgColorElev2Baseline</item>
 
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
@@ -218,13 +204,6 @@ found in the LICENSE file.
         <!-- Current Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
         <item name="tileViewIconBackgroundModern">@drawable/oval_surface_1</item>
         <item name="cardElevation">@dimen/card_elevation</item>
-        <item name="defaultBgColorDarkElev1Baseline">@color/default_bg_color_dark_elev_1_baseline</item>
-        <item name="defaultBgColorElev1Baseline">@color/default_bg_color_elev_1_baseline</item>
-        <item name="defaultBgColorElev2Baseline">@color/default_bg_color_elev_2_baseline</item>
-        <item name="defaultBgColorElev3Baseline">@color/default_bg_color_elev_3_baseline</item>
-        <item name="defaultBgColorElev4Baseline">@color/default_bg_color_elev_4_baseline</item>
-        <item name="defaultBgColorElev5Baseline">@color/default_bg_color_elev_5_baseline</item>
-        <item name="defaultChipRippleColor">?attr/defaultBgColorElev2Baseline</item>
 
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>

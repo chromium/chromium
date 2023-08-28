@@ -24,22 +24,12 @@ found in the LICENSE file.
     <color name="baseline_primary_20">#062E6F</color>
     <color name="baseline_primary_10">#041E49</color>
     <color name="baseline_neutral_100">@android:color/white</color>
-    <color name="baseline_neutral_100_with_neutral_40_alpha_5_with_primary_40_2" tools:ignore="UnusedResources">#F2F4F6</color>
-    <color name="baseline_neutral_100_with_neutral_40_alpha_8_with_primary_40_2" tools:ignore="UnusedResources">#EDEFF1</color>
-    <color name="baseline_neutral_100_with_neutral_40_alpha_11_with_primary_40_2" tools:ignore="UnusedResources">#E8EAEC</color>
-    <color name="baseline_neutral_100_with_neutral_40_alpha_12_with_primary_40_2" tools:ignore="UnusedResources">#E8E9EB</color>
-    <color name="baseline_neutral_100_with_neutral_40_alpha_14_with_primary_40_2" tools:ignore="UnusedResources">#E4E5E8</color>
-    <color name="baseline_neutral_100_with_neutral_40_alpha_20_with_primary_40_2" tools:ignore="UnusedResources">#DADBDE</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_5" tools:ignore="UnusedResources">#F7F9FC</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_8" tools:ignore="UnusedResources">#F2F5FB</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_11" tools:ignore="UnusedResources">#EFF3FA</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_12" tools:ignore="UnusedResources">#EDF2FA</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_14" tools:ignore="UnusedResources">#EAEFF9</color>
-    <color name="baseline_neutral_100_with_surface_tint_dark_alpha_5" tools:ignore="UnusedResources">#28282A</color>
-    <color name="baseline_neutral_100_with_surface_tint_dark_alpha_8" tools:ignore="UnusedResources">#2D2E31</color>
-    <color name="baseline_neutral_100_with_surface_tint_dark_alpha_11" tools:ignore="UnusedResources">#313336</color>
-    <color name="baseline_neutral_100_with_surface_tint_dark_alpha_12" tools:ignore="UnusedResources">#333539</color>
-    <color name="baseline_neutral_100_with_surface_tint_dark_alpha_14" tools:ignore="UnusedResources">#37393D</color>
+    <color name="baseline_neutral_100_with_surface_tint_light_alpha_20" tools:ignore="UnusedResources">#E1E9F6</color>
     <color name="baseline_neutral_99">#FDFCFB</color>
     <color name="baseline_neutral_95">#F2F2F2</color>
     <color name="baseline_neutral_90">#E3E3E3</color>
@@ -60,12 +50,12 @@ found in the LICENSE file.
     <color name="baseline_neutral_10_alpha_12">#1E1F1F1F</color>
     <color name="baseline_neutral_10_alpha_38">#611F1F1F</color>
     <color name="baseline_neutral_10_with_neutral_90_alpha_38">#696969</color>
-    <color name="baseline_neutral_10_with_neutral_80_alpha_5_with_primary_80_alpha_2">#2A2A2B</color>
-    <color name="baseline_neutral_10_with_neutral_80_alpha_8_with_primary_80_alpha_2">#2E2F30</color>
-    <color name="baseline_neutral_10_with_neutral_80_alpha_11_with_primary_80_alpha_2">#333435</color>
-    <color name="baseline_neutral_10_with_neutral_80_alpha_12_with_primary_80_alpha_2">#353637</color>
-    <color name="baseline_neutral_10_with_neutral_80_alpha_14_with_primary_80_alpha_2">#393A3B</color>
-    <color name="baseline_neutral_10_with_neutral_80_alpha_20_with_primary_80_alpha_2">#434445</color>
+    <color name="baseline_neutral_10_with_surface_tint_dark_alpha_5" tools:ignore="UnusedResources">#28282A</color>
+    <color name="baseline_neutral_10_with_surface_tint_dark_alpha_8" tools:ignore="UnusedResources">#2D2E31</color>
+    <color name="baseline_neutral_10_with_surface_tint_dark_alpha_11" tools:ignore="UnusedResources">#313336</color>
+    <color name="baseline_neutral_10_with_surface_tint_dark_alpha_12" tools:ignore="UnusedResources">#333539</color>
+    <color name="baseline_neutral_10_with_surface_tint_dark_alpha_14" tools:ignore="UnusedResources">#37393D</color>
+    <color name="baseline_neutral_10_with_surface_tint_dark_alpha_20" tools:ignore="UnusedResources">#42454B</color>
     <color name="baseline_neutral_10_with_neutral_0_alpha_30">#161616</color>
     <color name="baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_60_alpha_15">#282828</color>
     <color name="baseline_neutral_0">@android:color/black</color>
@@ -128,10 +118,6 @@ found in the LICENSE file.
     <color name="modern_grey_800_alpha_38">@color/baseline_neutral_20_alpha_38</color>
     <color name="modern_grey_900">@color/baseline_neutral_10</color>
     <color name="modern_grey_900_alpha_38">@color/baseline_neutral_10_alpha_38</color>
-    <!-- These colors are currently exclusively used for Sufrace-N on things with
-         elevation. They now add some primary color, and are no longer exactly
-        solid grey. -->
-    <color name="modern_grey_900_with_grey_200_alpha_11">@color/baseline_neutral_10_with_neutral_80_alpha_11_with_primary_80_alpha_2</color>
     <!-- Correct for most places to use 200 instead of 300 now. -->
     <color name="google_red_300">@color/baseline_error_80</color>
     <color name="google_red_600">@color/baseline_error_40</color>
