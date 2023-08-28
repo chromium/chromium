@@ -8,19 +8,32 @@
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "net/base/mac/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/gurl.h"
+
+namespace {
+static const char* kHost = "a.host";
+static const char* kEchoPath = "/echo";
+static const char* kEchoContent = "Echo";
+static const char* kInterstitialContent = "Ask your parent";
+static const char* kInterstitialWaitingContent = "Waiting for permission";
+}  // namespace
 
 // Tests the core user journeys of a supervised user with FamilyLink parental
 // control restrictions enabled.
 @interface SupervisedUserWithParentalControlsTestCase : ChromeTestCase
 @end
+
+// TODO(b/296996910): Add test cases for the option "Blocked Mature
+// Content".
 
 @implementation SupervisedUserWithParentalControlsTestCase
 
@@ -31,6 +44,14 @@
   return config;
 }
 
+- (void)signInSupervisedUser {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+}
+
 - (void)setUp {
   [super setUp];
   bool started = self.testServer->Start();
@@ -38,40 +59,210 @@
 }
 
 - (void)tearDown {
-  [SettingsAppInterface resetSupervisedUserURLFilterBehavior];
-
+  [ChromeEarlGrey closeCurrentTab];
+  [SupervisedUserSettingsAppInterface resetSupervisedUserURLFilterBehavior];
+  [SupervisedUserSettingsAppInterface resetManualUrlFiltering];
   [super tearDown];
 }
 
-- (void)testSupervisedUserSignin {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+- (void)checkRequestSentMessageVisibility:(BOOL)isVisible {
+  NSString* isRequestSentMessageVisible =
+      [NSString stringWithFormat:
+                    @"%sdocument.getElementById('request-sent-message').hidden",
+                    isVisible ? "!" : ""];
+  [ChromeEarlGrey waitForJavaScriptCondition:isRequestSentMessageVisible];
+}
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+- (void)checkBlockPageHeaderVisibility:(BOOL)isVisible {
+  NSString* isBlockPageHeaderVisible = [NSString
+      stringWithFormat:@"%sdocument.getElementById('block-page-header').hidden",
+                       isVisible ? "!" : ""];
+  [ChromeEarlGrey waitForJavaScriptCondition:isBlockPageHeaderVisible];
+}
+
+- (void)checkInterstitalIsShown {
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialContent];
+  // Originally the "Ask your parent" title is shown and the "Waiting
+  // for pemission" message is hidden.
+  [self checkBlockPageHeaderVisibility:YES];
+  [self checkRequestSentMessageVisibility:NO];
+}
+
+- (void)checkInterstitalIsShownInWaitingScreen {
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialWaitingContent];
+  // In waiting screen, the "Ask your parent" title is hidden and the "Waiting
+  // for pemission" message is visible instead.
+  [self checkBlockPageHeaderVisibility:NO];
+  [self checkRequestSentMessageVisibility:YES];
+}
+
+// Tests that the user is signed in.
+- (void)testSupervisedUserSignin {
+  [self signInSupervisedUser];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-- (void)testSupervisedUserWithAllSitesRestricted {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+#pragma mark - Filtering Behaviour
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+// Tests that users with "Allow Approved" filtering are shown the interstitial
+// when they navigate to a non-approved site.
+- (void)testSupervisedUserWithAllowApprovedSitesFilteringIsShownIntersitial {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
-  GURL safeURL = self.testServer->GetURL("/echo");
+  GURL blockedURL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
+  [self checkInterstitalIsShown];
+}
+
+// Tests that users with "Allow All" filtering are not blocked
+// when they navigate to a site (allowed by default).
+- (void)testSupervisedUserWithAllowAllSitesFilteringCanViewWebages {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  GURL allowedURL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:allowedURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+}
+
+// Tests that users with "Allow All" filtering are shown the interstitial
+// when they navigate to a site from the blocked list.
+- (void)
+    testSupervisedUserWithAllowAllSitesFilteringIsShownIntersitialOnBlockedSite {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedUrl)];
+
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+}
+
+// Tests that users with "Allow Approved" filtering are not blocked
+// when they navigate to an allow-listed website.
+- (void)testSupervisedUserWithAllowApprovedSitesFilteringCanViewAllowedWebages {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL url = self.testServer->GetURL(kEchoPath);
+  // The page is originally blocked.
+  [ChromeEarlGrey loadURL:url];
+  [self checkInterstitalIsShown];
+
+  // Navigate to another page to change the browser content (otherwise,
+  // allow-listing the site will trigger an immediate refresh - not the scope
+  // of this test, see
+  // `testSupervisedUserWithAllowAllFilteringIsBlockedOnUrlBlockListing`-).
+  GURL otherUrl = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:otherUrl];
+  [self checkInterstitalIsShown];
+
+  // Allow-list the page and re-visit it. It should now be unblocked.
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToAllowList:net::NSURLWithGURL(url)];
+
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+}
+
+// Tests that when an interstitial is displayed for a blocked site,
+// allow-listing it triggers an intestitial refresh and unblocks the page.
+- (void)
+    testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnUrlAllowListing {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL url = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:url];
+  [self checkInterstitalIsShown];
+
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToAllowList:net::NSURLWithGURL(url)];
+  // Ensure that the interstitial is refreshed and the un-blocked page is
+  // displayed.
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+}
+
+// Tests that block-listing a url, results in showing immediately the
+// interstitial if the user has the url open in a tab.
+- (void)testSupervisedUserWithAllowAllFilteringIsBlockedOnUrlBlockListing {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  GURL url = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToBlockList:net::NSURLWithGURL(url)];
+  // Ensure that the interstitial is triggered.
+  [self checkInterstitalIsShown];
+}
+
+// Tests that users who have the filtering behaviour changed from "Allow all"
+// to "Allow approved" websites, will be shown the interstitial as soon as
+// the filtering behaviour changes.
+- (void)
+    testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange {
+  [self signInSupervisedUser];
+  GURL safeURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:safeURL];
-  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 
-  // Select site filter option "only allow approved sites".
-  [SettingsAppInterface setSupervisedUserURLFilterBehavior:
-                            supervised_user::SupervisedUserURLFilter::BLOCK];
-  // Ensure that the supervised user block page interstitial is displayed.
-  [ChromeEarlGrey waitForWebStateContainingText:"Ask your parent"];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [self checkInterstitalIsShown];
 
   // Reloading the page should not affect the interstitial.
   [ChromeEarlGrey reload];
-  [ChromeEarlGrey waitForWebStateContainingText:"Ask your parent"];
+  [self checkInterstitalIsShown];
+}
+
+// Tests that for users who have the filtering behaviour changed from "Allow
+// approved" to "Allow all" websites, a blocked pages will be refreshed and
+// unblocks as soon as the filtering behaviour changes.
+- (void)testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL blockedURL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
+  [self checkInterstitalIsShown];
+
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  // Ensure that the interstitial is refreshed and the un-blocked page is
+  // displayed.
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+}
+
+// Tests that users who navigate to a blocked page can request that it is
+// unblocked and upon unblocking the page is refreshed and displayed.
+- (void)testSupervisedUserWithAllowAllSitesFilteringCanUnblockRequestedWebsite {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  GURL blockedUrl = self.testServer->GetURL(kEchoPath);
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedUrl)];
+
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+
+  // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
+  // displayed.
+  [ChromeEarlGrey tapWebStateElementWithID:@"remote-approvals-button"];
+  [self checkInterstitalIsShownInWaitingScreen];
+
+  // Approving the permission request for the blocked host
+  // should refresh the newly unblocked page.
+  [SupervisedUserSettingsAppInterface
+      approveWebsiteDomain:net::NSURLWithGURL(blockedUrl)];
+  [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 }
 
 @end

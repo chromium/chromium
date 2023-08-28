@@ -375,6 +375,8 @@ source_set("eg_app_support+eg2") {
     "settings_app_interface.mm",
     "signin_settings_app_interface.h",
     "signin_settings_app_interface.mm",
+    "supervised_user_settings_app_interface.h",
+    "supervised_user_settings_app_interface.mm",
   ]
   deps = [
     "//base",
@@ -384,6 +386,7 @@ source_set("eg_app_support+eg2") {
     "//components/prefs",
     "//components/search_engines",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:mocked",
     "//components/supervised_user/core/common",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings",
@@ -391,6 +394,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/supervised_user:sync_settings_factory",
     "//ios/chrome/test/app:test_support",
   ]
@@ -404,6 +408,8 @@ source_set("eg_test_support+eg2") {
     "settings_app_interface_stub.mm",
     "signin_settings_app_interface.h",
     "signin_settings_app_interface_stub.mm",
+    "supervised_user_settings_app_interface.h",
+    "supervised_user_settings_app_interface_stub.mm",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
   deps = [
