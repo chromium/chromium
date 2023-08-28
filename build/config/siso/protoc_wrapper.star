@@ -101,6 +101,7 @@ def __scandeps(ctx, args):
             continue
         protos.append(arg)
     proto_paths = [proto_in_dir] + inc_dirs
+    inputs.extend(inc_dirs)
     protos = [path.join(proto_in_dir, name) for name in protos]
     for proto in protos:
         inputs.extend(__protoc_scandeps(ctx, proto, proto_paths = proto_paths))
