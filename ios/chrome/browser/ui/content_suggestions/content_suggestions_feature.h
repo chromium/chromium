@@ -53,6 +53,9 @@ bool IsDiscoverFeedEnabled();
 // Whether the Magic Stack should be shown.
 bool IsMagicStackEnabled();
 
+// Whether the tab resumption feature is enabled.
+bool IsTabResumptionEnabled();
+
 // Whether the Most Visited Sites should be put into the Magic Stack.
 bool ShouldPutMostVisitedSitesInMagicStack();
 

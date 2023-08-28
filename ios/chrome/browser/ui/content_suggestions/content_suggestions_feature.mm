@@ -49,6 +49,11 @@ bool IsMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kMagicStack);
 }
 
+bool IsTabResumptionEnabled() {
+  CHECK(IsMagicStackEnabled());
+  return base::FeatureList::IsEnabled(kTabResumption);
+}
+
 bool ShouldPutMostVisitedSitesInMagicStack() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kMagicStack, kMagicStackMostVisitedModuleParam, false);

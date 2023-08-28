@@ -715,6 +715,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   return height;
 }
 
+- (void)showTabResumptionWithItem:(TabResumptionItem*)item {
+  CHECK(IsTabResumptionEnabled());
+  // TODO(crbug.com/1464185): Implement this.
+}
+
 #pragma mark - SetUpListItemViewTapDelegate methods
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {

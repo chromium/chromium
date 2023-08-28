@@ -71,7 +71,9 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/enterprise_utils.h"
+#import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/synced_sessions/synced_sessions_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
@@ -90,6 +92,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -132,10 +136,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                                           PrefObserverDelegate,
                                           SafetyCheckManagerObserver,
                                           SceneStateObserver,
-                                          SetUpListDelegate> {
+                                          SetUpListDelegate,
+                                          SyncedSessionsObserver> {
   std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
   std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
+  std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
+      _syncedSessionsObserver;
 }
 
 // Whether the contents section should be hidden completely.
@@ -225,6 +232,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       _authServiceObserverBridge;
   // Observer for Safety Check changes.
   std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
+  // Helper class for the tab resumption tile.
+  std::unique_ptr<TabResumptionHelper> _tabResumptionHelper;
+  // Item displayed in the tab resumption tile.
+  TabResumptionItem* _tabResumptionItem;
 }
 
 #pragma mark - Public
@@ -296,6 +307,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                                  syncService:syncService
                        authenticationService:authenticationService];
     }
+
+    if (IsMagicStackEnabled() && IsTabResumptionEnabled()) {
+      sync_sessions::SessionSyncService* sessionSyncService =
+          SessionSyncServiceFactory::GetForBrowserState(
+              browser->GetBrowserState());
+
+      _syncedSessionsObserver =
+          std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
+              self, sessionSyncService);
+
+      _tabResumptionHelper =
+          std::make_unique<TabResumptionHelper>(TabResumptionHelper(browser));
+    }
+
     SceneState* sceneState =
         SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
     [sceneState addObserver:self];
@@ -333,6 +358,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _authenticationService = nullptr;
   _authServiceObserverBridge.reset();
   _identityObserverBridge.reset();
+  _syncedSessionsObserver.reset();
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
@@ -655,6 +681,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     }
   }
 }
+
+#pragma mark - SyncedSessionsObserver
+
+- (void)onForeignSessionsChanged {
+  [self showTabResumptionTile];
+}
+
 #pragma mark - Private
 
 - (SafetyCheckState*)initialSafetyCheckState {
@@ -740,6 +773,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       [self fetchMagicStackModuleRankingFromSegmentationPlatform];
     } else {
       [self.consumer setMagicStackOrder:[self magicStackOrder]];
+    }
+    if (IsTabResumptionEnabled()) {
+      [self showTabResumptionTile];
     }
   }
   if (self.returnToRecentTabItem) {
@@ -1117,6 +1153,31 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   [self.consumer hideSetUpListWithAnimations:^{
     [self.feedDelegate contentSuggestionsWasUpdated];
   }];
+}
+
+// Shows the tab resumption tile if there is a `_tabResumptionItem` to present.
+- (void)showTabResumptionTile {
+  CHECK(IsTabResumptionEnabled());
+  if (!self.consumer) {
+    return;
+  }
+
+  // TODO(crbug.com/1464185): Add restrictions.
+  if (_tabResumptionItem) {
+    [self.consumer showTabResumptionWithItem:_tabResumptionItem];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  _tabResumptionHelper->LastTabResumptionItem(^(TabResumptionItem* item) {
+    [weakSelf showTabResumptionWithItem:item];
+  });
+}
+
+// Shows the tab resumption tile with the given `item` configuration.
+- (void)showTabResumptionWithItem:(TabResumptionItem*)item {
+  _tabResumptionItem = item;
+  [self.consumer showTabResumptionWithItem:_tabResumptionItem];
 }
 
 #pragma mark - Properties
