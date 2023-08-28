@@ -278,7 +278,7 @@ bool IsValidBid(double bid) {
 // {
 //  'seller': 'https://www.example-ssp.com/',
 //  'decisionLogicURL': 'https://www.example-ssp.com/seller.js',
-//  'trustedScoringSignalsUrl': ...,
+//  'trustedScoringSignalsURL': ...,
 //  'interestGroupBuyers': ['https://www.example-dsp.com', 'https://buyer2.com',
 //  ...], 'auctionSignals': {...}, 'sellerSignals': {...}, 'sellerTimeout': 100,
 //  'perBuyerSignals': {'https://www.example-dsp.com': {...},

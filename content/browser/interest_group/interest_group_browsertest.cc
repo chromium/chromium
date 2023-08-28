@@ -4478,7 +4478,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
-      trustedScoringSignalsUrl: 'https://invalid^&'
+      trustedScoringSignalsURL: 'https://invalid^&'
   })",
                                   origin, url)));
   WaitForAccessObserved({});
@@ -4542,7 +4542,7 @@ IN_PROC_BROWSER_TEST_F(
       RunAuctionAndWait(R"({
     seller: "https://a.test/",
     decisionLogicURL: "https://a.test/foo",
-    trustedScoringSignalsUrl: "https://b.test/foo",
+    trustedScoringSignalsURL: "https://b.test/foo",
     interestGroupBuyers: ["https://c.test/"],
                         })"));
   WaitForAccessObserved({});
@@ -8540,7 +8540,7 @@ function reportResult(
 {
   seller: $1,
   decisionLogicURL: $2,
-  trustedScoringSignalsUrl: $3,
+  trustedScoringSignalsURL: $3,
   interestGroupBuyers: [$4],
 }
                   )",
@@ -10349,7 +10349,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
   return await navigator.runAdAuction({
     seller: $1,
     decisionLogicURL: $2,
-    trustedScoringSignalsUrl: $3,
+    trustedScoringSignalsURL: $3,
     interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
     sellerSignals: {signals: 'from', the: ['seller']},
@@ -10499,7 +10499,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   return await navigator.runAdAuction({
     seller: $1,
     decisionLogicURL: $2,
-    trustedScoringSignalsUrl: $3,
+    trustedScoringSignalsURL: $3,
     interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
     sellerSignals: {signals: 'from', the: ['seller']},
@@ -12506,7 +12506,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   const char kAuctionConfigTemplate[] = R"({
     seller: $1,
     decisionLogicURL: $2,
-    trustedScoringSignalsUrl: $3,
+    trustedScoringSignalsURL: $3,
     interestGroupBuyers: [$4],
     sellerExperimentGroupId: 8349,
     perBuyerExperimentGroupIds: {'*': 3498},

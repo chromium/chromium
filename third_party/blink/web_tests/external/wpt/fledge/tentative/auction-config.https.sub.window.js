@@ -116,15 +116,15 @@ makeTest({
 });
 
 makeTest({
-  name: 'trustedScoringSignalsUrl is invalid',
+  name: 'trustedScoringSignalsURL is invalid',
   expect: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { trustedScoringSignalsUrl: "https://foo:99999999999" },
+  auctionConfigOverrides: { trustedScoringSignalsURL: "https://foo:99999999999" },
 });
 
 makeTest({
-  name: 'trustedScoringSignalsUrl is cross-origin with seller',
+  name: 'trustedScoringSignalsURL is cross-origin with seller',
   expect: EXPECT_EXCEPTION(TypeError),
-  auctionConfigOverrides: { trustedScoringSignalsUrl: "https://example.com" },
+  auctionConfigOverrides: { trustedScoringSignalsURL: "https://example.com" },
 });
 
 makeTest({
