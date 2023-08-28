@@ -2739,6 +2739,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL" translateable="false" desc="Label of no remapping option in the button remapping action dropdown menu.">
     None
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_TITLE" translateable="false" desc="Title of the button renaming dialog in customize device buttons page.">
+    Change button name
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CANCEL" translateable="false" desc="Label of cancel button on dialogs in customize device buttons pages.">
+    Cancel
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_SAVE" translateable="false" desc="Label of save button on dialogs in customize device buttons pages.">
+    Save
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_LABEL" translateable="false" desc="Label above renaming button input field on the dialog in customize device buttons pages.">
+    New button name
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">

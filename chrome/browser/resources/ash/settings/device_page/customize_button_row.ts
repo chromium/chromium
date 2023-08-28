@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * 'keyboard-remap-key-row' contains a key with icon label and dropdown menu to
- * allow users to customize the remapped key.
- */
-
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
@@ -71,6 +65,15 @@ function getKeyCombinationLabel(keyEvent: KeyEvent): string {
   }
   return combinationLabel;
 }
+
+
+/**
+ * @fileoverview
+ * 'keyboard-remap-key-row' contains a key with icon label and dropdown menu to
+ * allow users to customize the remapped key.
+ */
+
+export type ShowRenamingDialogEvent = CustomEvent<{buttonIndex: number}>;
 
 const CustomizeButtonRowElementBase = I18nMixin(PolymerElement);
 
@@ -249,7 +252,11 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
    * Pops out the dialog to edit button label.
    */
   private onEditButtonLabelClicked_(): void {
-    // TODO(yyhyyh@): Implement edit icon clicked function.
+    this.dispatchEvent(new CustomEvent('show-renaming-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: {buttonIndex: this.remappingIndex},
+    }));
   }
 }
 

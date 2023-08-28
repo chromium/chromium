@@ -50,3 +50,17 @@
 #keyLabel {
   padding-inline: 6px;
 }
+
+cr-dialog [slot='button-container'] {
+  padding: 0 32px 28px 32px;
+  display: flex;
+  gap: 8px;
+}
+
+cr-dialog [slot='body'] {
+  padding: 24px 32px;
+}
+
+cr-dialog [slot='title'] {
+  padding: 32px 32px 0 32px;
+}
