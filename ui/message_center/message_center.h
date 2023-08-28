@@ -182,6 +182,10 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // center observers.
   virtual void ClickOnSettingsButton(const std::string& id) = 0;
 
+  // Called when the snooze buttons is clicked to trigger the notification's
+  // delegate.
+  virtual void ClickOnSnoozeButton(const std::string& id) = 0;
+
   // This should be called by UI classes when a user select from notification
   // inline settings to disable notifications from the same origin of the
   // notification.

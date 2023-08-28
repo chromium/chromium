@@ -58,4 +58,9 @@ void ArcNotificationDelegate::ExpandStateChanged(bool expanded) {
   item_->SetExpandState(expanded);
 }
 
+void ArcNotificationDelegate::SnoozeButtonClicked() {
+  DCHECK(item_);
+  item_->OpenSnooze();
+}
+
 }  // namespace ash

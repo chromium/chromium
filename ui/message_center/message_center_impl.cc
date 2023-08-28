@@ -604,6 +604,17 @@ void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {
   }
 }
 
+void MessageCenterImpl::ClickOnSnoozeButton(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Notification* notification = notification_list_->GetNotificationById(id);
+
+  bool handled_by_delegate =
+      notification && notification_list_->GetNotificationDelegate(id);
+  if (handled_by_delegate) {
+    notification->delegate()->SnoozeButtonClicked();
+  }
+}
+
 void MessageCenterImpl::DisableNotification(const std::string& id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Notification* notification = notification_list_->GetNotificationById(id);

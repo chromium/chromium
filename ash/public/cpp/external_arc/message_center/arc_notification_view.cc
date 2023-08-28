@@ -187,7 +187,7 @@ bool ArcNotificationView::IsAutoExpandingAllowed() const {
   if (!item_)
     return false;
 
-  // Disallow auto-expanding if the notificaiton is bundled. This is consistent
+  // Disallow auto-expanding if the notification is bundled. This is consistent
   // behavior with Android since expanded height of bundle notification might be
   // too long vertically.
   return item_->GetNotificationType() !=
