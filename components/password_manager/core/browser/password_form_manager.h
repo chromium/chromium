@@ -142,9 +142,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password);
 
-  // Check if the |possible_username| field is present in the |observed_form()|.
-  bool FormHasPossibleUsername(
-      const PossibleUsernameData* possible_username) const;
+  // Check if the field identified by |driver_id| and |field_id| is present in
+  // the |observed_form()|.
+  bool ObservedFormHasField(int driver_id,
+                            autofill::FieldRendererId field_id) const;
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;

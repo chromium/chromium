@@ -913,18 +913,16 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   password_save_manager_->GeneratedPasswordAccepted(*parsed_form, driver_);
 }
 
-bool PasswordFormManager::FormHasPossibleUsername(
-    const PossibleUsernameData* possible_username) const {
-  if (!possible_username) {
+bool PasswordFormManager::ObservedFormHasField(int driver_id,
+                                               FieldRendererId field_id) const {
+  if (driver_id == driver_id_) {
     return false;
   }
   CHECK(observed_form());
-  if (possible_username->driver_id == driver_id_) {
-    for (const auto& field : observed_form()->fields) {
-      if (field.unique_renderer_id == possible_username->renderer_id) {
-        LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
-        return true;
-      }
+  for (const auto& field : observed_form()->fields) {
+    if (field.unique_renderer_id == field_id) {
+      LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
+      return true;
     }
   }
   return false;
@@ -1136,7 +1134,8 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
 
   // The username candidate field should not be in |observed_form()|, otherwise
   // that is a task of FormParser to choose it from |observed_form()|.
-  if (FormHasPossibleUsername(possible_username)) {
+  if (ObservedFormHasField(possible_username->driver_id,
+                           possible_username->renderer_id)) {
     return false;
   }
 

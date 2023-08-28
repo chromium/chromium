@@ -806,7 +806,8 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   // nonempty password field. If such |matched_manager| contains
   // |possible_username|, reset and do not consider for single username.
   if (possible_username &&
-      matched_manager->FormHasPossibleUsername(possible_username)) {
+      matched_manager->ObservedFormHasField(possible_username->driver_id,
+                                            possible_username->renderer_id)) {
     possible_username_.reset();
   }
 
