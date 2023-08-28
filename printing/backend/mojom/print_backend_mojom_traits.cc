@@ -123,6 +123,7 @@ bool StructTraits<printing::mojom::PaperDataView,
     return false;
   }
   int max_height_um = data.max_height_um();
+  bool has_borderless_variant = data.has_borderless_variant();
 
   // For backwards compatibility, allow printable area to be missing. Set the
   // default printable area to be the page size.
@@ -150,7 +151,8 @@ bool StructTraits<printing::mojom::PaperDataView,
     return false;
   }
   *out = printing::PrinterSemanticCapsAndDefaults::Paper(
-      display_name, vendor_id, size_um, printable_area_um, max_height_um);
+      display_name, vendor_id, size_um, printable_area_um, max_height_um,
+      has_borderless_variant);
   return true;
 }
 

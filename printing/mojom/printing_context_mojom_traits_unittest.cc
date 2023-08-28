@@ -131,6 +131,9 @@ constexpr gfx::Size kPrintSettingsDpi2(1200, 600);
 const char kPrintSettingsMediaTypeEmpty[] = "";
 const char kPrintSettingsMediaTypePlain[] = "stationery";
 
+constexpr bool kPrintSettingsBorderless1 = false;
+constexpr bool kPrintSettingsBorderless2 = true;
+
 constexpr double kPrintSettingsScaleFactor1 = 1.0;
 constexpr double kPrintSettingsScaleFactor2 = 1.25;
 
@@ -200,6 +203,7 @@ PrintSettings GenerateSamplePrintSettingsDefaultMargins() {
   settings.set_dpi(
       kPrintSettingsDpi1.width());  // Same resolution for both axes.
   settings.set_media_type(kPrintSettingsMediaTypeEmpty);
+  settings.set_borderless(kPrintSettingsBorderless1);
   settings.set_scale_factor(kPrintSettingsScaleFactor1);
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf1);
   settings.SetOrientation(kPrintSettingsLandscape1);
@@ -231,6 +235,7 @@ PrintSettings GenerateSamplePrintSettingsCustomMarginsWithParams(
   settings.set_duplex_mode(kPrintSettingsDuplexMode2);
   settings.set_dpi_xy(kPrintSettingsDpi2.width(), kPrintSettingsDpi2.height());
   settings.set_media_type(kPrintSettingsMediaTypePlain);
+  settings.set_borderless(kPrintSettingsBorderless2);
   settings.set_scale_factor(kPrintSettingsScaleFactor2);
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf2);
   settings.SetOrientation(kPrintSettingsLandscape2);
@@ -489,6 +494,8 @@ TEST(PrintingContextMojomTraitsTest,
   // upon all other parameters, so rely upon the value from the constant input.
   EXPECT_EQ(output.page_setup_device_units(), kInput.page_setup_device_units());
   EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi1);
+  EXPECT_EQ(output.media_type(), kPrintSettingsMediaTypeEmpty);
+  EXPECT_EQ(output.borderless(), kPrintSettingsBorderless1);
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor1);
   EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf1);
   EXPECT_EQ(output.landscape(), kPrintSettingsLandscape1);
@@ -544,6 +551,8 @@ TEST(PrintingContextMojomTraitsTest,
   // upon all other parameters, so rely upon the value from the constant input.
   EXPECT_EQ(output.page_setup_device_units(), kInput.page_setup_device_units());
   EXPECT_EQ(output.dpi_size(), kPrintSettingsDpi2);
+  EXPECT_EQ(output.media_type(), kPrintSettingsMediaTypePlain);
+  EXPECT_EQ(output.borderless(), kPrintSettingsBorderless2);
   EXPECT_EQ(output.scale_factor(), kPrintSettingsScaleFactor2);
   EXPECT_EQ(output.rasterize_pdf(), kPrintSettingsRasterizePdf2);
   EXPECT_EQ(output.landscape(), kPrintSettingsLandscape2);

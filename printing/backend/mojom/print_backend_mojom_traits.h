@@ -68,6 +68,10 @@ struct StructTraits<printing::mojom::PaperDataView,
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
     return p.max_height_um();
   }
+  static bool has_borderless_variant(
+      const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
+    return p.has_borderless_variant();
+  }
 
   static bool Read(printing::mojom::PaperDataView data,
                    printing::PrinterSemanticCapsAndDefaults::Paper* out);

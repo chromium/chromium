@@ -172,18 +172,38 @@ PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
                                              const gfx::Size& size_um,
                                              const gfx::Rect& printable_area_um,
                                              int max_height_um)
+    : Paper(display_name,
+            vendor_id,
+            size_um,
+            printable_area_um,
+            max_height_um,
+            false) {}
+
+PrinterSemanticCapsAndDefaults::Paper::Paper(const std::string& display_name,
+                                             const std::string& vendor_id,
+                                             const gfx::Size& size_um,
+                                             const gfx::Rect& printable_area_um,
+                                             int max_height_um,
+                                             bool has_borderless_variant)
     : display_name_(display_name),
       vendor_id_(vendor_id),
       size_um_(size_um),
       printable_area_um_(printable_area_um),
-      max_height_um_(max_height_um) {}
+      max_height_um_(max_height_um),
+      has_borderless_variant_(has_borderless_variant) {}
+
+PrinterSemanticCapsAndDefaults::Paper::Paper(const Paper& other) = default;
+
+PrinterSemanticCapsAndDefaults::Paper&
+PrinterSemanticCapsAndDefaults::Paper::operator=(const Paper& other) = default;
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {
   return display_name_ == other.display_name_ &&
          vendor_id_ == other.vendor_id_ && size_um_ == other.size_um_ &&
          printable_area_um_ == other.printable_area_um_ &&
-         max_height_um_ == other.max_height_um_;
+         max_height_um_ == other.max_height_um_ &&
+         has_borderless_variant_ == other.has_borderless_variant_;
 }
 
 bool PrinterSemanticCapsAndDefaults::Paper::SupportsCustomSize() const {

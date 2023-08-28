@@ -494,6 +494,7 @@ struct Media {
   // `is_continuous_feed` is false, `max_height_um` is not used.  This only
   // supports a variable height, not width, so the width is always fixed.
   int max_height_um;
+  bool has_borderless_variant;
 };
 
 // Builds `Media` structs. The caller must call at least one method that sets
@@ -522,6 +523,7 @@ class MediaBuilder {
   MediaBuilder& WithSizeAndPrintableArea(const gfx::Size& size_um,
                                          const gfx::Rect& printable_area_um);
   MediaBuilder& WithMaxHeight(int max_height_um);
+  MediaBuilder& WithBorderlessVariant(bool has_borderless_variant);
 
   // This is equivalent to calling WithCustomName(), except it also tries to
   // match the name to a standard `MediaSize`.
@@ -550,6 +552,7 @@ class MediaBuilder {
   gfx::Size size_um_;
   gfx::Rect printable_area_um_;
   int max_height_um_ = 0;
+  bool has_borderless_variant_ = false;
 };
 
 struct Interval {

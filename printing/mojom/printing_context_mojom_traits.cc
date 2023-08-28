@@ -132,6 +132,8 @@ bool StructTraits<
   }
   out->set_media_type(media_type);
 
+  out->set_borderless(data.borderless());
+
   gfx::Size dpi;
   if (!data.ReadDpi(&dpi))
     return false;

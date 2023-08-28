@@ -308,6 +308,7 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   device_name_ = settings.device_name_;
   requested_media_ = settings.requested_media_;
   page_setup_device_units_ = settings.page_setup_device_units_;
+  borderless_ = settings.borderless_;
   media_type_ = settings.media_type_;
   dpi_ = settings.dpi_;
   scale_factor_ = settings.scale_factor_;
@@ -398,6 +399,7 @@ void PrintSettings::Clear() {
   device_name_.clear();
   requested_media_ = RequestedMedia();
   page_setup_device_units_.Clear();
+  borderless_ = false;
   media_type_.clear();
   dpi_ = gfx::Size();
   scale_factor_ = 1.0f;

@@ -89,6 +89,7 @@ constexpr char kMediaImageableAreaRight[] = "imageable_area_right_microns";
 constexpr char kMediaImageableAreaTop[] = "imageable_area_top_microns";
 constexpr char kMediaMinHeight[] = "min_height_microns";
 constexpr char kMediaMaxHeight[] = "max_height_microns";
+constexpr char kMediaHasBorderlessVariant[] = "has_borderless_variant";
 
 constexpr char kPageRangeInterval[] = "interval";
 constexpr char kPageRangeEnd[] = "end";
@@ -950,7 +951,8 @@ bool Dpi::operator==(const Dpi& other) const {
 Media::Media()
     : size_name(MediaSize::CUSTOM_MEDIA),
       is_continuous_feed(false),
-      max_height_um(0) {}
+      max_height_um(0),
+      has_borderless_variant(false) {}
 
 Media::Media(const Media& other) = default;
 
@@ -1032,6 +1034,11 @@ MediaBuilder& MediaBuilder::WithMaxHeight(int max_height_um) {
   return *this;
 }
 
+MediaBuilder& MediaBuilder::WithBorderlessVariant(bool has_borderless_variant) {
+  has_borderless_variant_ = has_borderless_variant;
+  return *this;
+}
+
 Media MediaBuilder::Build() const {
   Media result;
   result.size_name = size_name_;
@@ -1041,6 +1048,7 @@ Media MediaBuilder::Build() const {
   result.vendor_id = vendor_id_;
   result.printable_area_um = printable_area_um_;
   result.max_height_um = max_height_um_;
+  result.has_borderless_variant = has_borderless_variant_;
   return result;
 }
 
@@ -1482,6 +1490,13 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
           gfx::Rect(imageable_area_left.value(), imageable_area_bottom.value(),
                     width, height);
     }
+
+    absl::optional<bool> has_borderless_variant =
+        dict.FindBool(kMediaHasBorderlessVariant);
+    if (has_borderless_variant) {
+      option->has_borderless_variant = has_borderless_variant.value();
+    }
+
     return true;
   }
 
@@ -1514,6 +1529,9 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
                                               option.printable_area_um.width());
       dict->Set(kMediaImageableAreaTop, option.printable_area_um.y() +
                                             option.printable_area_um.height());
+    }
+    if (option.has_borderless_variant) {
+      dict->Set(kMediaHasBorderlessVariant, true);
     }
   }
 };

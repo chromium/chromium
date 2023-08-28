@@ -88,6 +88,7 @@ printer::Media ConvertPaperToMedia(
   return printer::MediaBuilder()
       .WithSizeAndPrintableArea(paper_size, paper_printable_area)
       .WithNameMaybeBasedOnSize(paper.display_name(), paper.vendor_id())
+      .WithBorderlessVariant(paper.has_borderless_variant())
       .Build();
 }
 
@@ -104,6 +105,7 @@ printer::MediaCapability GetMediaCapabilities(
                                     default_paper.printable_area_um())
           .WithNameMaybeBasedOnSize(default_paper.display_name(),
                                     default_paper.vendor_id())
+          .WithBorderlessVariant(default_paper.has_borderless_variant())
           .Build();
 
   for (const auto& paper : semantic_info.papers) {

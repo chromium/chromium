@@ -112,6 +112,11 @@ TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
       "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
       /*max_height_um=*/200);
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
+      /*max_height_um=*/200, /*has_borderless_variant=*/true);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
 TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
@@ -130,7 +135,9 @@ TEST(PrintBackendMojomTraitsTest, TestPaperInvalidCustomSize) {
       /*vendor_id=*/"vendor_id",
       /*size_um=*/gfx::Size(4000, 7000),
       /*printable_area_um=*/gfx::Rect(0, 0, 4000, 7000),
-      /*max_height_um=*/6000};
+      /*max_height_um=*/6000,
+      /*has_borderless_variant=*/true,
+  };
   PrinterSemanticCapsAndDefaults::Paper output;
 
   EXPECT_FALSE(

@@ -625,8 +625,8 @@ TEST_F(PrintBackendCupsIppHelperTest, IncludePapersWithSizeRanges) {
 
 // Tests that when the media-col-database contains both bordered and borderless
 // versions of a size, CapsAndDefaultsFromPrinter() takes the bordered version
-// and drops the borderless version.
-TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
+// and marks it as having a borderless variant.
+TEST_F(PrintBackendCupsIppHelperTest, HandleBorderlessVariants) {
   PrinterSemanticCapsAndDefaults caps;
 
   printer_->SetMediaColDatabase(
@@ -638,6 +638,7 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
   ASSERT_EQ(1U, caps.papers.size());
   EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
             caps.papers[0].printable_area_um());
+  EXPECT_TRUE(caps.papers[0].has_borderless_variant());
 
   printer_->SetMediaColDatabase(
       MakeMediaColDatabase(ipp_, {
@@ -648,6 +649,7 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
   ASSERT_EQ(1U, caps.papers.size());
   EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
             caps.papers[0].printable_area_um());
+  EXPECT_TRUE(caps.papers[0].has_borderless_variant());
 
   // If the only available version of a size is borderless, go ahead and use it.
   // Not sure if any actual printers do this, but it's allowed by the IPP spec.
@@ -659,6 +661,20 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
   ASSERT_EQ(1U, caps.papers.size());
   EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000),
             caps.papers[0].printable_area_um());
+  EXPECT_FALSE(caps.papers[0].has_borderless_variant());
+
+  // If the only available versions of a size are bordered, there shouldn't be
+  // a borderless variant.
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 100, 100, 100, 100, {}},
+                                     {21000, 29700, 200, 200, 200, 200, {}},
+                                 }));
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  ASSERT_EQ(1U, caps.papers.size());
+  EXPECT_EQ(gfx::Rect(1000, 1000, 210000 - 1000 - 1000, 297000 - 1000 - 1000),
+            caps.papers[0].printable_area_um());
+  EXPECT_FALSE(caps.papers[0].has_borderless_variant());
 }
 
 // At the time of this writing, there are no media-source or media-type

@@ -81,7 +81,8 @@ constexpr char kExpectedMediaSize[] = R"json({
       "imageable_area_right_microns": 600,
       "imageable_area_top_microns": 1000,
       "vendor_id": "12",
-      "width_microns": 4961
+      "width_microns": 4961,
+      "has_borderless_variant": true
     }, {
       "custom_display_name": "Letter",
       "height_microns": 6600,
@@ -147,7 +148,8 @@ constexpr char kExpectedMediaSizeWithWiderPaper[] = R"json({
       "imageable_area_right_microns": 600,
       "imageable_area_top_microns": 1000,
       "vendor_id": "12",
-      "width_microns": 4961
+      "width_microns": 4961,
+      "has_borderless_variant": true
     }, {
       "custom_display_name": "Letter",
       "height_microns": 6600,

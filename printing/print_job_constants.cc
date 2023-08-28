@@ -19,6 +19,9 @@ const char kPreviewRequestID[] = "requestID";
 // Unique ID to identify a print preview UI.
 const char kPreviewUIID[] = "previewUIID";
 
+// If true, tell the printer to print without margins.
+const char kSettingBorderless[] = "borderless";
+
 // Capabilities option. Contains the capabilities in CDD format.
 const char kSettingCapabilities[] = "capabilities";
 

@@ -135,6 +135,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   }
   const std::u16string& device_name() const { return device_name_; }
 
+  void set_borderless(bool borderless) { borderless_ = borderless; }
+  bool borderless() const { return borderless_; }
+
   void set_media_type(const std::string& media_type) {
     media_type_ = media_type;
   }
@@ -346,6 +349,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // Page setup in device units.
   PageSetup page_setup_device_units_;
+
+  // Whether the user has requested borderless (zero margin) printing.
+  bool borderless_;
 
   // Media type requested by the user.
   std::string media_type_;

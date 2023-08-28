@@ -337,14 +337,23 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
     }
 
     const auto& paper = paper_opt.value();
-    if (auto existing_entry = paper_map.find(paper.size_um());
-        existing_entry != paper_map.end()) {
-      // Prefer non-borderless versions of paper sizes.
-      if (PaperIsBorderless(existing_entry->second)) {
-        existing_entry->second = paper;
-      }
-    } else {
+    auto existing_entry = paper_map.find(paper.size_um());
+
+    if (existing_entry == paper_map.end()) {
       paper_map.emplace(paper.size_um(), paper);
+      continue;
+    }
+
+    // When a paper size has both bordered and borderless variants, set the
+    // printable area according to the bordered variant, and set the flag
+    // indicating that a borderless variant exists.
+    if (PaperIsBorderless(existing_entry->second)) {
+      if (!PaperIsBorderless(paper)) {
+        existing_entry->second = paper;
+        existing_entry->second.set_has_borderless_variant(true);
+      }
+    } else if (PaperIsBorderless(paper)) {
+      existing_entry->second.set_has_borderless_variant(true);
     }
   }
 

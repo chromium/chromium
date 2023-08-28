@@ -202,6 +202,17 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
           const gfx::Size& size_um,
           const gfx::Rect& printable_area_um,
           int max_height_um);
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um,
+          const gfx::Rect& printable_area_um,
+          int max_height_um,
+          bool has_borderless_variant);
+
+    // The compiler has decided that this class is now "complex" and thus
+    // requires an explicit, out-of-line copy constructor.
+    Paper(const Paper& other);
+    Paper& operator=(const Paper& other);
 
     bool operator==(const Paper& other) const;
 
@@ -210,11 +221,15 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
     const gfx::Size& size_um() const { return size_um_; }
     const gfx::Rect& printable_area_um() const { return printable_area_um_; }
     int max_height_um() const { return max_height_um_; }
+    bool has_borderless_variant() const { return has_borderless_variant_; }
 
     void set_display_name(const std::string& display_name) {
       display_name_ = display_name;
     }
     void set_vendor_id(const std::string& vendor_id) { vendor_id_ = vendor_id; }
+    void set_has_borderless_variant(bool has_borderless_variant) {
+      has_borderless_variant_ = has_borderless_variant;
+    }
 
     void set_printable_area_to_paper_size() {
       printable_area_um_ = gfx::Rect(size_um_);
@@ -240,6 +255,12 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
     // indicates the height can be anywhere in that range).  Note that
     // `printable_area_um` is always based on `size_um`.
     int max_height_um_ = 0;
+
+    // True if this paper size can be used borderless (with the printable area
+    // covering the entire page) in addition to bordered. If a paper size
+    // *only* supports borderless and has no variant with margins, this field
+    // will be false and `printable_area_um` will cover the entire page.
+    bool has_borderless_variant_ = false;
   };
   using Papers = std::vector<Paper>;
   Papers papers;

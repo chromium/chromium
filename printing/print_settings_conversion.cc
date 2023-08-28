@@ -269,6 +269,11 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   }
   settings->set_requested_media(requested_media);
 
+  absl::optional<bool> borderless = job_settings.FindBool(kSettingBorderless);
+  if (borderless.has_value()) {
+    settings->set_borderless(borderless.value());
+  }
+
   const std::string* media_type = job_settings.FindString(kSettingMediaType);
   if (media_type && !media_type->empty()) {
     settings->set_media_type(*media_type);

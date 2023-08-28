@@ -142,7 +142,8 @@ const char kCdd[] = R"(
             "imageable_area_top_microns": 5555,
             "name": "ISO_A6",
             "width_microns": 4444,
-            "height_microns": 5555
+            "height_microns": 5555,
+            "has_borderless_variant": true
           }, {
             "imageable_area_bottom_microns": 0,
             "imageable_area_left_microns": 0,
@@ -839,6 +840,7 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   media.AddOption(MediaBuilder()
                       .WithStandardName(MediaSize::ISO_A6)
                       .WithSizeAndDefaultPrintableArea({4444, 5555})
+                      .WithBorderlessVariant(true)
                       .Build());
   media.AddOption(MediaBuilder()
                       .WithStandardName(MediaSize::JPN_YOU4)
@@ -848,6 +850,7 @@ TEST(PrinterDescriptionTest, CddSetAll) {
                       .WithCustomName("Feed", "FEED")
                       .WithSizeAndDefaultPrintableArea({1111, 2222})
                       .WithMaxHeight(9999)
+                      .WithBorderlessVariant(false)
                       .Build());
 
   media_type.AddDefaultOption(MediaType("stationery", "Plain Paper"), true);
