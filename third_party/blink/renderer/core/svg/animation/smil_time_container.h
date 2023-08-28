@@ -80,6 +80,8 @@ class CORE_EXPORT SMILTimeContainer final
 
   void Trace(Visitor*) const;
 
+  void DidAttachLayoutObject();
+
  private:
   enum FrameSchedulingState {
     // No frame scheduled.
@@ -117,6 +119,8 @@ class CORE_EXPORT SMILTimeContainer final
 
   SVGSVGElement& OwnerSVGElement() const;
   Document& GetDocument() const;
+
+  bool ShouldThrottleSVGAnimation() const;
 
   // The latest "restart" time for the time container's timeline. If the
   // timeline has not been manipulated (seeked, paused) this will be zero.

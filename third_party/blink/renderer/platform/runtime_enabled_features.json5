@@ -2115,6 +2115,10 @@
       status: "experimental",
     },
     {
+      name: "InvisibleSVGAnimationThrottling",
+      status: "stable",
+    },
+    {
       name: "JavaScriptCompileHintsMagicRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsMagic",

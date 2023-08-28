@@ -370,6 +370,13 @@ void SMILTimeContainer::ScheduleAnimationFrame(base::TimeDelta delay_time) {
   DCHECK(!wakeup_timer_.IsActive());
   DCHECK(GetDocument().IsActive());
 
+  // Skip the comparison against kLocalMinimumDelay if an animation is
+  // not visible.
+  if (ShouldThrottleSVGAnimation()) {
+    ScheduleWakeUp(delay_time, kFutureAnimationFrame);
+    return;
+  }
+
   const base::TimeDelta kLocalMinimumDelay =
       base::Seconds(DocumentTimeline::kMinimumDelay);
   if (delay_time < kLocalMinimumDelay) {
@@ -494,6 +501,13 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
 SMILTime SMILTimeContainer::NextProgressTime(SMILTime presentation_time) const {
   if (presentation_time == max_presentation_time_)
     return SMILTime::Unresolved();
+
+  // If the element is not rendered, skip any updates within the active
+  // intervals and step to the next "event" time (begin, repeat or end).
+  if (ShouldThrottleSVGAnimation()) {
+    return priority_queue_.Min();
+  }
+
   SMILTime next_progress_time = SMILTime::Unresolved();
   for (const auto& entry : priority_queue_) {
     next_progress_time = std::min(
@@ -613,6 +627,26 @@ void SMILTimeContainer::Trace(Visitor* visitor) const {
   visitor->Trace(animated_targets_);
   visitor->Trace(priority_queue_);
   visitor->Trace(owner_svg_element_);
+}
+
+void SMILTimeContainer::DidAttachLayoutObject() {
+  if (!IsTimelineRunning()) {
+    return;
+  }
+  // If we're waiting on a scheduled timer to fire, trigger an animation
+  // update on the next visual update.
+  if (frame_scheduling_state_ != kFutureAnimationFrame) {
+    return;
+  }
+  CancelAnimationFrame();
+  ServiceOnNextFrame();
+}
+
+bool SMILTimeContainer::ShouldThrottleSVGAnimation() const {
+  if (!RuntimeEnabledFeatures::InvisibleSVGAnimationThrottlingEnabled()) {
+    return false;
+  }
+  return !OwnerSVGElement().GetLayoutObject();
 }
 
 }  // namespace blink
