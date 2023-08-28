@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_
 
 #include <memory>
+#include <utility>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
@@ -74,6 +76,10 @@ class ChromeShelfControllerInitializer;
 // intitialization (e.g. initialization of chrome/browser/ui/ash classes).
 class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
  public:
+  // Returns the single instance. Returns null early in startup and late in
+  // shutdown.
+  static ChromeBrowserMainExtraPartsAsh* Get();
+
   ChromeBrowserMainExtraPartsAsh();
 
   ChromeBrowserMainExtraPartsAsh(const ChromeBrowserMainExtraPartsAsh&) =
@@ -89,6 +95,12 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PostBrowserStart() override;
   void PostMainMessageLoopRun() override;
+
+  void set_post_browser_start_callback(base::OnceClosure callback) {
+    post_browser_start_callback_ = std::move(callback);
+  }
+
+  bool did_post_browser_start() const { return did_post_browser_start_; }
 
  private:
   class UserProfileLoadedObserver;
@@ -154,6 +166,12 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
   std::unique_ptr<ash::NightLightClient> night_light_client_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
+
+  // Boolean that is set to true after PostBrowserStart() executes.
+  bool did_post_browser_start_ = false;
+
+  // Callback invoked at the end of PostBrowserStart().
+  base::OnceClosure post_browser_start_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_

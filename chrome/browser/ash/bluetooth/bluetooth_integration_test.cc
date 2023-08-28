@@ -255,13 +255,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       WaitForToggleState(kOsSettingsElementId, kBluetoothToggleQuery, true),
 
       Log("Test complete"));
-
-  // Allow exploring the UI if --test-launcher-interactive is passed.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherInteractive)) {
-    base::RunLoop loop;
-    loop.Run();
-  }
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -19,6 +20,10 @@
 
 class GURL;
 class Profile;
+
+namespace base {
+class CommandLine;
+}
 
 namespace content {
 class NavigationHandle;
@@ -75,6 +80,21 @@ class InteractiveAshTest
   // browser_navigator.h.
   base::WeakPtr<content::NavigationHandle> CreateBrowserWindow(const GURL& url);
 
+  // Sets up the command line and environment variables to support Lacros (by
+  // enabling the Wayland server in ash). Call this from SetUpCommandLine() if
+  // your test starts Lacros.
+  void SetUpCommandLineForLacros(base::CommandLine* command_line);
+
+  // Waits for Ash to be ready for Lacros, including starting the "Exo" Wayland
+  // server. Call this method if your test starts Lacros, otherwise Exo may not
+  // be ready and Lacros may not start.
+  // TODO(http://b/297930282): Ensure we compile ToT Lacros and use it when
+  // testing ToT ash. The rootfs Lacros may be too old to run with ToT ash.
+  void WaitForAshFullyStarted();
+
+  // MixinBasedInProcessBrowserTest:
+  void TearDownOnMainThread() override;
+
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
@@ -88,6 +108,9 @@ class InteractiveAshTest
   std::unique_ptr<FakeSessionManagerClientBrowserHelper>
       fake_session_manager_client_helper_;
 #endif
+
+  // Directory used by Wayland/Lacros in environment variable XDG_RUNTIME_DIR.
+  base::ScopedTempDir scoped_temp_dir_xdg_;
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_

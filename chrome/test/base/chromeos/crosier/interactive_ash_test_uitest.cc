@@ -2,20 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/test_switches.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace {
 
-using InteractiveAshTestUITest = InteractiveAshTest;
+class InteractiveAshTestUITest : public InteractiveAshTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveAshTest::SetUpCommandLine(command_line);
+    SetUpCommandLineForLacros(command_line);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(InteractiveAshTestUITest, Basics) {
   SetupContextWidget();
 
   // Verify that installing system apps doesn't crash or flake.
   InstallSystemApps();
+
+  // Verify that the Wayland server starts and doesn't crash or flake.
+  WaitForAshFullyStarted();
 
   // Verify an active user exists.
   ASSERT_TRUE(GetActiveUserProfile());
@@ -27,14 +35,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveAshTestUITest, Basics) {
   // Open a second browser window.
   GURL blank_url("about:blank");
   ASSERT_TRUE(CreateBrowserWindow(blank_url));
-
-  // You don't need this for your tests. This is just to prevent the test from
-  // exiting so you can play with the browser windows.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherInteractive)) {
-    base::RunLoop loop;
-    loop.Run();
-  }
 }
 
 }  // namespace

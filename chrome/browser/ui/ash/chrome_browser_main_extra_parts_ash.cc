@@ -15,7 +15,10 @@
 #include "ash/shell.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -97,6 +100,10 @@
 #include "chrome/browser/exo_parts.h"
 #endif
 
+namespace {
+ChromeBrowserMainExtraPartsAsh* g_instance = nullptr;
+}  // namespace
+
 namespace internal {
 
 // Creates a ChromeShelfController on the first active session notification.
@@ -147,9 +154,20 @@ class ChromeShelfControllerInitializer
 
 }  // namespace internal
 
-ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh() = default;
+// static
+ChromeBrowserMainExtraPartsAsh* ChromeBrowserMainExtraPartsAsh::Get() {
+  return g_instance;
+}
 
-ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() = default;
+ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
   user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>();
@@ -352,6 +370,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
   mobile_data_notifications_ = std::make_unique<MobileDataNotifications>();
+
+  did_post_browser_start_ = true;
+  if (post_browser_start_callback_) {
+    std::move(post_browser_start_callback_).Run();
+  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
