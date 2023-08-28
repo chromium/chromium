@@ -332,6 +332,14 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
+    # chromium has junit lib in third_party/junit and third_party/android_sdk
+    # which causes r8 to print "info" level diagnostic for duplicates.
+    # So turn it off explicitly.
+    # TODO(crbug.com/1476663): Fix the duplicates and remove this setting.
+    cmd += [
+        '--map-diagnostics:DuplicateTypeInProgramAndLibraryDiagnostic', 'info',
+        'none'
+    ]
     cmd += ['--map-diagnostics', 'info', 'warning']
     # An "error" level diagnostic causes r8 to return an error exit code. Doing
     # this allows our filter to decide what should/shouldn't break our build.
