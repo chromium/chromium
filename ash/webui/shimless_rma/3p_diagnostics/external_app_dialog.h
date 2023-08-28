@@ -13,6 +13,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace views {
+class WebDialogView;
+}  // namespace views
+
 namespace ash::shimless_rma {
 
 // Provides a dialog to show external apps on shimless rma screen. It creates a
@@ -31,6 +35,10 @@ class ExternalAppDialog : public ui::WebDialogDelegate {
   // Shows the dialog. Shouldn't be called if last dialog opened by this
   // function is still open.
   static void Show(const InitParams& params);
+
+  // Returns the WebContents of the dialog. Could be `nullptr` if WebContents is
+  // not ready.
+  static content::WebContents* GetWebContents();
 
  protected:
   explicit ExternalAppDialog(const InitParams& params);
@@ -59,6 +67,8 @@ class ExternalAppDialog : public ui::WebDialogDelegate {
 
   // The url of the content.
   GURL content_url_;
+  // views::WebDialogView that owns this delegate.
+  raw_ptr<views::WebDialogView> web_dialog_view_;
 };
 
 }  // namespace ash::shimless_rma

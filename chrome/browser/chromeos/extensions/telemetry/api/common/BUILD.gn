@@ -64,6 +64,13 @@ source_set("util") {
     "//components/security_state/core",
     "//extensions/common",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/constants",
+      "//ash/webui/shimless_rma/3p_diagnostics",
+    ]
+  }
 }
 
 source_set("remote_probe_strategy") {

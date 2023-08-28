@@ -94,6 +94,11 @@ void ExternalAppDialog::Show(const InitParams& params) {
   new ExternalAppDialog(params);
 }
 
+// static
+content::WebContents* ExternalAppDialog::GetWebContents() {
+  return g_instance ? g_instance->web_dialog_view_->web_contents() : nullptr;
+}
+
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
     : content_url_(params.content_url) {
   CHECK_EQ(g_instance, nullptr);
@@ -103,8 +108,9 @@ ExternalAppDialog::ExternalAppDialog(const InitParams& params)
 
   views::Widget::InitParams widget_params{};
   widget_params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  widget_params.delegate = new views::WebDialogView(
+  web_dialog_view_ = new views::WebDialogView(
       params.context, this, std::make_unique<WebContentsHandler>());
+  widget_params.delegate = web_dialog_view_;
   widget_params.parent =
       ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                ash::kShellWindowId_LockSystemModalContainer);

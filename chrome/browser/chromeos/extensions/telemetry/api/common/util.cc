@@ -16,6 +16,11 @@
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/url_pattern_set.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace content {
 class BrowserContext;
 }
@@ -40,6 +45,12 @@ bool IsWebContentsSecure(content::WebContents* contents) {
          security_state::SecurityLevel::SECURE;
 }
 
+bool IsWebContentsSecureAppUi(const extensions::URLPatternSet& pattern_set,
+                              content::WebContents* contents) {
+  return pattern_set.MatchesURL(contents->GetLastCommittedURL()) &&
+         IsWebContentsSecure(contents);
+}
+
 }  // namespace
 
 content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
@@ -49,6 +60,17 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   const auto& pattern_set =
       extensions::ExternallyConnectableInfo::Get(extension)->matches;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsShimlessRMA3pDiagnosticsEnabled()) {
+    content::WebContents* contents =
+        ash::shimless_rma::ExternalAppDialog::GetWebContents();
+    if (contents && contents->GetBrowserContext() == context &&
+        IsWebContentsSecureAppUi(pattern_set, contents)) {
+      return contents;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   for (auto* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() != profile) {
       continue;
@@ -57,8 +79,7 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
     TabStripModel* target_tab_strip = target_browser->tab_strip_model();
     for (int i = 0; i < target_tab_strip->count(); ++i) {
       content::WebContents* contents = target_tab_strip->GetWebContentsAt(i);
-      if (pattern_set.MatchesURL(contents->GetLastCommittedURL()) &&
-          IsWebContentsSecure(contents)) {
+      if (IsWebContentsSecureAppUi(pattern_set, contents)) {
         return contents;
       }
     }
