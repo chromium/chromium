@@ -138,16 +138,6 @@ void FCMInvalidationListener::Acknowledge(const Topic& topic,
   lookup->second.Acknowledge(handle);
 }
 
-void FCMInvalidationListener::Drop(const Topic& topic,
-                                   const AckHandle& handle) {
-  auto lookup = unacked_invalidations_map_.find(topic);
-  if (lookup == unacked_invalidations_map_.end()) {
-    DLOG(WARNING) << "Received drop for untracked topic";
-    return;
-  }
-  lookup->second.Drop(handle);
-}
-
 void FCMInvalidationListener::DoSubscriptionUpdate() {
   if (!per_user_topic_subscription_manager_ || instance_id_token_.empty() ||
       !topics_update_requested_) {

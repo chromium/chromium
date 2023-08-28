@@ -64,33 +64,6 @@ void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
   DLOG_IF(WARNING, !handle_found) << "Unrecognized to ack for topic " << topic_;
 }
 
-// Erase the invalidation with matching ack handle from the list.  Also creates
-// an 'UnknownVersion' invalidation with the same ack handle and places it at
-// the beginning of the list.  If an unknown version invalidation currently
-// exists, it is replaced.
-void UnackedInvalidationSet::Drop(const AckHandle& handle) {
-  SingleTopicInvalidationSet::const_iterator it;
-  for (it = invalidations_.begin(); it != invalidations_.end(); ++it) {
-    if (it->ack_handle().Equals(handle)) {
-      break;
-    }
-  }
-  if (it == invalidations_.end()) {
-    DLOG(WARNING) << "Unrecognized drop request for topic " << topic_;
-    return;
-  }
-
-  Invalidation unknown_version = Invalidation::InitFromDroppedInvalidation(*it);
-  invalidations_.erase(*it);
-
-  // If an unknown version is in the list, we remove it so we can replace it.
-  if (!invalidations_.empty() && invalidations_.begin()->is_unknown_version()) {
-    invalidations_.erase(*invalidations_.begin());
-  }
-
-  invalidations_.insert(unknown_version);
-}
-
 void UnackedInvalidationSet::Truncate(size_t max_size) {
   DCHECK_GT(max_size, 0U);
 

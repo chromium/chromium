@@ -51,7 +51,7 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   //
   // The contents of the UnackedInvalidationSet are not directly modified by
   // this procedure, but the AckHandles stored in those exported invalidations
-  // are likely to end up back here in calls to Acknowledge() or Drop().
+  // are likely to end up back here in calls to Acknowledge().
   void ExportInvalidations(
       base::WeakPtr<AckHandler> ack_handler,
       scoped_refptr<base::SingleThreadTaskRunner> ack_handler_task_runner,
@@ -61,11 +61,6 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   // the invalidation and drops it from the list.  It is considered to be
   // acknowledged, so there is no need to continue maintaining its state.
   void Acknowledge(const AckHandle& handle);
-
-  // Given an AckHandle belonging to one of the contained invalidations, finds
-  // the invalidation, drops it from the list, and adds additional state to
-  // indicate that this invalidation has been lost without being acted on.
-  void Drop(const AckHandle& handle);
 
  private:
 

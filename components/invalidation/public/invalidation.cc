@@ -53,13 +53,6 @@ Invalidation Invalidation::InitUnknownVersion(const Topic& topic) {
                       std::string(), AckHandle::CreateUnique());
 }
 
-// static
-Invalidation Invalidation::InitFromDroppedInvalidation(
-    const Invalidation& dropped) {
-  return Invalidation(dropped.topic(), /*is_unknown_version=*/true,
-                      kInvalidVersion, std::string(), dropped.ack_handle_);
-}
-
 Invalidation::Invalidation(const Invalidation& other) = default;
 
 Invalidation& Invalidation::operator=(const Invalidation& other) = default;
@@ -104,14 +97,6 @@ void Invalidation::Acknowledge() const {
     ack_handler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AckHandler::Acknowledge, ack_handler_,
                                   topic(), ack_handle_));
-  }
-}
-
-void Invalidation::Drop() {
-  if (SupportsAcknowledgement()) {
-    ack_handler_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AckHandler::Drop, ack_handler_, topic(), ack_handle_));
   }
 }
 

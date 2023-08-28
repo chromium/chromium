@@ -68,7 +68,6 @@ class FCMInvalidationListener
 
   // AckHandler implementation.
   void Acknowledge(const Topic& topic, const AckHandle& handle) override;
-  void Drop(const Topic& topic, const AckHandle& handle) override;
 
   // FCMSyncNetworkChannel::Observer implementation.
   void OnFCMChannelStateChanged(FcmChannelState state) override;

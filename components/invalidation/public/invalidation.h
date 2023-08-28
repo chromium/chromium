@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -30,7 +29,6 @@ class INVALIDATION_EXPORT Invalidation {
                            int64_t version,
                            const std::string& payload);
   static Invalidation InitUnknownVersion(const Topic& topic);
-  static Invalidation InitFromDroppedInvalidation(const Invalidation& dropped);
 
   Invalidation(const Invalidation& other);
   Invalidation& operator=(const Invalidation& other);
@@ -77,17 +75,6 @@ class INVALIDATION_EXPORT Invalidation {
   // function is called, the invalidations system is under no obligation to
   // re-deliver this invalidation in the event of a crash or restart.
   void Acknowledge() const;
-
-  // Informs the ack tracker that this invalidation will not be serviced.
-  //
-  // If a client's buffer reaches its limit and it is forced to start dropping
-  // invalidations, it should call this function before dropping its
-  // invalidations in order to allow the ack tracker to drop the invalidation,
-  // too.
-  //
-  // To indicate recovery from a drop event, the client should call
-  // Acknowledge() on the most recently dropped inavlidation.
-  void Drop();
 
   base::Value::Dict ToValue() const;
   std::string ToString() const;

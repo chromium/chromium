@@ -145,26 +145,6 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
   EXPECT_TRUE(set.StartsWithUnknownVersion());
 }
 
-// Test drops.
-TEST_F(UnackedInvalidationSetTest, Drop) {
-  // inv2 is included in this test just to make sure invalidations that
-  // are supposed to be unaffected by this operation will be unaffected.
-
-  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
-  Invalidation inv2 = Invalidation::Init(kTopic, 15, "payload");
-  AckHandle inv1_handle = inv1.ack_handle();
-
-  unacked_invalidations_.Add(inv1);
-  unacked_invalidations_.Add(inv2);
-
-  unacked_invalidations_.Drop(inv1_handle);
-
-  SingleTopicInvalidationSet set = GetStoredInvalidations();
-  ASSERT_EQ(2U, set.GetSize());
-  EXPECT_TRUE(set.StartsWithUnknownVersion());
-  EXPECT_EQ(15, set.rbegin()->version());
-}
-
 }  // namespace
 
 }  // namespace invalidation
