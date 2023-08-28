@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 
-#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,9 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "content/public/browser/visibility.h"
-#include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

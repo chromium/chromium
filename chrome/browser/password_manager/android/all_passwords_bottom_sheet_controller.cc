@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 
 using autofill::mojom::FocusedFieldType;

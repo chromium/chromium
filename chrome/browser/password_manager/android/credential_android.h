@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/password_manager/core/browser/password_form.h"
 

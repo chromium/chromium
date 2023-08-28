@@ -7,14 +7,10 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
-#include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "ui/android/window_android.h"
-#include "url/android/gurl_android.h"
 
 using password_manager::CreateDialogTraits;
 using password_manager::PasswordCheckReferrerAndroid;

@@ -18,17 +18,13 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/core/common/credential_manager_types.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/range/range.h"
 
 using password_manager::metrics_util::AccountChooserUserAction;
 

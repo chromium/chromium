@@ -20,7 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/range/range.h"
+#include "ui/gfx/native_widget_types.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
