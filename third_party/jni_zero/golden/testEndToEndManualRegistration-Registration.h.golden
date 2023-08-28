@@ -24,75 +24,75 @@
 // Step 2: Forward declarations (methods).
 
 JNI_GENERATOR_EXPORT jobject
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1bar(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
 JNI_GENERATOR_EXPORT void
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1foo(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jboolean
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1hasPhalange(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jclass
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnClass(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnClasses(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobject
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnObject(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnObjects(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jstring
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnString(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStrings(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobject
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStruct(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStruct(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStructs(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jthrowable
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnThrowable(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnThrowables(
     JNIEnv* env,
     jclass jcaller);
 JNI_GENERATOR_EXPORT jstring
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1revString(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1sendSamplesToNative(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1sendToNative(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
 JNI_GENERATOR_EXPORT jintArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1testAllPrimitives(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -112,7 +112,7 @@ JNI_GENERATOR_EXPORT jintArray
     jboolean zbool,
     jbooleanArray bools);
 JNI_GENERATOR_EXPORT void
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes(
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1testSpecialTypes(
     JNIEnv* env,
     jclass jcaller,
     jclass clazz,
@@ -130,90 +130,82 @@ JNI_GENERATOR_EXPORT void
 // Step 3: Method declarations.
 
 
-static const JNINativeMethod kMethods_org_chromium_base_natives_GEN_1JNI[] = {
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_bar",
+static const JNINativeMethod kMethods_org_jni_1zero_GEN_1JNI[] = {
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_bar",
         "(Ljava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1bar)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_foo", "()V",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_foo", "()V",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1foo)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_hasPhalange", "()Z",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_hasPhalange", "()Z",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1hasPhalange)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClass",
-        "()Ljava/lang/Class;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnClass", "()Ljava/lang/Class;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnClass)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClasses",
-        "()[Ljava/lang/Class;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnClasses", "()[Ljava/lang/Class;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnClasses)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObject",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnObject", "()Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnObject)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObjects",
-        "()[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnObjects", "()[Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnObjects)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnString",
-        "()Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnString", "()Ljava/lang/String;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnString)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnStrings",
-        "()[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnStrings", "()[Ljava/lang/String;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStrings)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnStruct",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStruct)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnStruct", "()Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStruct)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnStructs",
-        "()[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs)
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnStructs", "()[Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnStructs)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowable",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnThrowable",
         "()Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnThrowable)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowables",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_returnThrowables",
         "()[Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1returnThrowables)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_revString",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_revString",
         "(Ljava/lang/String;)Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1revString)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendSamplesToNative",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_sendSamplesToNative",
         "([Ljava/lang/Object;)[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1sendSamplesToNative)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendToNative",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_sendToNative",
         "([Ljava/lang/String;)[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1sendToNative)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testAllPrimitives",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_testAllPrimitives",
         "(I[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1testAllPrimitives)
         },
-    { "org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testSpecialTypes",
+    { "org_jni_1zero_samples_SampleForAnnotationProcessor_testSpecialTypes",
         "(Ljava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
-        reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes)
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForAnnotationProcessor_1testSpecialTypes)
         },
 
 };
 
 namespace {
 
-JNI_REGISTRATION_EXPORT bool RegisterNative_org_chromium_base_natives_GEN_1JNI(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_org_chromium_base_natives_GEN_1JNI);
+JNI_REGISTRATION_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
+  const int number_of_methods = std::size(kMethods_org_jni_1zero_GEN_1JNI);
 
   base::android::ScopedJavaLocalRef<jclass> native_clazz =
-      base::android::GetClass(env, "org/chromium/base/natives/GEN_JNI");
+      base::android::GetClass(env, "org/jni_zero/GEN_JNI");
   if (env->RegisterNatives(
       native_clazz.obj(),
-      kMethods_org_chromium_base_natives_GEN_1JNI,
+      kMethods_org_jni_1zero_GEN_1JNI,
       number_of_methods) < 0) {
 
     jni_generator::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
@@ -232,7 +224,7 @@ namespace  {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
-  if (!RegisterNative_org_chromium_base_natives_GEN_1JNI(env)) {
+  if (!RegisterNative_org_jni_1zero_GEN_1JNI(env)) {
     return false;
   }
 

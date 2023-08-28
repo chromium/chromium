@@ -11,8 +11,8 @@ package J;
 public class module_N {
 
 
-      // Original name: org_chromium_example_jni_1generator_SampleModule_bar
-    public static native boolean Mc2WZLnF(int a);
-      // Original name: org_chromium_example_jni_1generator_SampleModule_foo
-    public static native void M$$EIl9t();
+      // Original name: org_jni_1zero_samples_SampleModule_bar
+    public static native boolean MaOHChCD(int a);
+      // Original name: org_jni_1zero_samples_SampleModule_foo
+    public static native void MF1ZO_It();
 }

@@ -7,16 +7,16 @@ import("//testing/test.gni")
 
 generate_jni("jni_sample_header") {
   sources = [
-    "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
-    "java/src/org/chromium/example/jni_generator/SampleForTests.java",
+    "java/src/org/jni_zero/samples/SampleForAnnotationProcessor.java",
+    "java/src/org/jni_zero/samples/SampleForTests.java",
   ]
 }
 
 android_library("jni_sample_java") {
   srcjar_deps = [ ":jni_sample_header" ]
   sources = [
-    "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
-    "java/src/org/chromium/example/jni_generator/SampleForTests.java",
+    "java/src/org/jni_zero/samples/SampleForAnnotationProcessor.java",
+    "java/src/org/jni_zero/samples/SampleForTests.java",
   ]
 
   deps = [

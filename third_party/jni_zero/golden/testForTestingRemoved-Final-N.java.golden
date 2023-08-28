@@ -11,26 +11,26 @@ package J;
 public class N {
 
 
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB
-    public static native int MyOkSBQ0(Object caller, Object b);
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes1
-    public static native String[][] MrisBOFT(int[] a, Object[][] b);
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes2
-    public static native int[] ML5jr$Tu(int[] a, Throwable[][] b);
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTest
-    public static native void M3dXOemX_ForTesting();
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTesting
-    public static native void MCNruAwI_ForTesting();
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTests
-    public static native void MpToXM8I_ForTesting();
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1
-    public static native void MV9YSTxh();
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_genericsWithNestedClassArray
-    public static native Object[] MfODWEgT(Object[] arg);
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool
-    public static native void MPgXV$mN(Object b, Object i);
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder
-    public static native boolean MD8PmkAP(Object sb);
-      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder
-    public static native int MD8PmkAP(int sb);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_addStructB
+    public static native int MyLYIXSG(Object caller, Object b);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_arrayTypes1
+    public static native String[][] M4tCs4sR(int[] a, Object[][] b);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_arrayTypes2
+    public static native int[] Mfw$B7iJ(int[] a, Throwable[][] b);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_fooForTest
+    public static native void M01DKxMA_ForTesting();
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_fooForTesting
+    public static native void MdPg5w5a_ForTesting();
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_fooForTests
+    public static native void Mfc_XrOy_ForTesting();
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1
+    public static native void MDx0XFh$();
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_genericsWithNestedClassArray
+    public static native Object[] MPuD3r24(Object[] arg);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_setBool
+    public static native void MYc9Cume(Object b, Object i);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_setStringBuilder
+    public static native boolean MoYVNDqu(Object sb);
+      // Original name: org_jni_1zero_samples_SampleProxyEdgeCases_setStringBuilder
+    public static native int MoYVNDqu(int sb);
 }

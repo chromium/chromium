@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.example.jni_generator;
+package org.jni_zero.samples;
 
 // To regenerate .class file:
-//   javac java/src/org/chromium/example/jni_generator/JavapClass.java
+//   javac java/src/org/jni_zero/samples/JavapClass.java
 public class JavapClass<T> {
     public static final int CONST_INT = 3;
     public static boolean sBoolValue = true;

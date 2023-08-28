@@ -28,7 +28,7 @@ _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
 _EXTRA_INCLUDES = 'base/android/jni_generator/jni_generator_helper.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'samples', 'java', 'src', 'org',
-                             'chromium', 'example', 'jni_generator')
+                             'jni_zero', 'samples')
 
 # Set this environment variable in order to regenerate the golden text
 # files.
@@ -131,9 +131,9 @@ class BaseTest(unittest.TestCase):
     if srcjar:
       dir_prefix, file_prefix = _MakePrefixes(options)
       name_to_goldens = {
-          f'{dir_prefix}org/chromium/base/natives/{file_prefix}GEN_JNI.java':
+          f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
           f'{golden_name}-Placeholder-GEN_JNI.java.golden',
-          f'{dir_prefix}org/chromium/example/jni_generator/{basename}Jni.java':
+          f'{dir_prefix}org/jni_zero/samples/{basename}Jni.java':
           f'{golden_name}-{basename}Jni.java.golden',
       }
 
@@ -173,7 +173,7 @@ class BaseTest(unittest.TestCase):
     options = CliOptions(is_final=True, **kwargs)
     dir_prefix, file_prefix = _MakePrefixes(options)
     name_to_goldens = {
-        f'{dir_prefix}org/chromium/base/natives/{file_prefix}GEN_JNI.java':
+        f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
         f'{golden_name}-Final-GEN_JNI.java.golden',
     }
     if options.use_proxy_hash:

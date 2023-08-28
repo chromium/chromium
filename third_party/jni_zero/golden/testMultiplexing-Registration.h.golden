@@ -23,59 +23,59 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT jobject Java_J_N_MHuqnmXT(
+JNI_GENERATOR_EXPORT jobject Java_J_N_MxkAf2fl(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_GENERATOR_EXPORT void Java_J_N_MygCV2jQ(
+JNI_GENERATOR_EXPORT void Java_J_N_Md6LK1o9(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jboolean Java_J_N_MW0aEs4h(
+JNI_GENERATOR_EXPORT jboolean Java_J_N_M_000244zYzAg(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jclass Java_J_N_M_00024ZgOi4g(
+JNI_GENERATOR_EXPORT jclass Java_J_N_M4l0zJba(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M_00024hL1577(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MKH66mnL(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject Java_J_N_M_00024hPywjv(
+JNI_GENERATOR_EXPORT jobject Java_J_N_Mvc7ImXr(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPpCU1l5(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MocgXEXX(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring Java_J_N_M0k1OjBK(
+JNI_GENERATOR_EXPORT jstring Java_J_N_M3yd9YCr(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_Mssfs54E(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M_1qL1Hyw(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject Java_J_N_MSzcel_1H(
+JNI_GENERATOR_EXPORT jobject Java_J_N_MxvVNTxJ(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MIBrQLK4(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MJLr_000245QK(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jthrowable Java_J_N_MuZc76Vt(
+JNI_GENERATOR_EXPORT jthrowable Java_J_N_MXcljN68(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAD53J7V(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M1FJFJy5(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring Java_J_N_MM5Xkwyy(
+JNI_GENERATOR_EXPORT jstring Java_J_N_MGrgOT84(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MGhRh4Nd(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MMtgBdva(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAC2QhR9(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPVz5ily(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jintArray Java_J_N_MlVFI4RX(
+JNI_GENERATOR_EXPORT jintArray Java_J_N_MHRNkgW8(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -94,7 +94,7 @@ JNI_GENERATOR_EXPORT jintArray Java_J_N_MlVFI4RX(
     jfloatArray floats,
     jboolean zbool,
     jbooleanArray bools);
-JNI_GENERATOR_EXPORT void Java_J_N_MqOnlud7(
+JNI_GENERATOR_EXPORT void Java_J_N_MEbp5PPc(
     JNIEnv* env,
     jclass jcaller,
     jclass clazz,
@@ -115,8 +115,8 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
     jlong switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobjectArray object_array_param2) {
         switch (switch_num) {
           
-          case -6275232019293411879:
-            return Java_J_N_MqOnlud7(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, object_param1, object_array_param1, object_param2, object_array_param2);
+          case 1277466747063181146:
+            return Java_J_N_MEbp5PPc(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, object_param1, object_array_param1, object_param2, object_array_param2);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA was called with an invalid switch number: " << switch_num;
@@ -129,8 +129,8 @@ JNI_GENERATOR_EXPORT jintArray Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABB
     jlong switch_num, jint int_param1, jintArray int_array_param1, jlong long_param1, jlongArray long_array_param1, jshort short_param1, jshortArray short_array_param1, jchar char_param1, jcharArray char_array_param1, jbyte byte_param1, jbyteArray byte_array_param1, jdouble double_param1, jdoubleArray double_array_param1, jfloat float_param1, jfloatArray float_array_param1, jboolean boolean_param1, jbooleanArray boolean_array_param1) {
         switch (switch_num) {
           
-          case -7687282957371512872:
-            return Java_J_N_MlVFI4RX(env, jcaller, int_param1, int_array_param1, long_param1, long_array_param1, short_param1, short_array_param1, char_param1, char_array_param1, byte_param1, byte_array_param1, double_param1, double_array_param1, float_param1, float_array_param1, boolean_param1, boolean_array_param1);
+          case 2095128758736799674:
+            return Java_J_N_MHRNkgW8(env, jcaller, int_param1, int_array_param1, long_param1, long_array_param1, short_param1, short_array_param1, char_param1, char_array_param1, byte_param1, byte_array_param1, double_param1, double_array_param1, float_param1, float_array_param1, boolean_param1, boolean_array_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA was called with an invalid switch number: " << switch_num;
@@ -143,8 +143,8 @@ JNI_GENERATOR_EXPORT jclass Java_J_N_resolve_1for_1class(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -461602969360398827:
-            return Java_J_N_M_00024ZgOi4g(env, jcaller);
+          case -2135494411232619400:
+            return Java_J_N_M4l0zJba(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1class was called with an invalid switch number: " << switch_num;
@@ -157,11 +157,11 @@ JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -426730623629742951:
-            return Java_J_N_M_00024hPywjv(env, jcaller);
+          case -4769654393820622682:
+            return Java_J_N_Mvc7ImXr(env, jcaller);
           
-          case 5419834314509580268:
-            return Java_J_N_MSzcel_1H(env, jcaller);
+          case -4110294082898514797:
+            return Java_J_N_MxvVNTxJ(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object was called with an invalid switch number: " << switch_num;
@@ -174,8 +174,8 @@ JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -3292889389021976364:
-            return Java_J_N_M0k1OjBK(env, jcaller);
+          case -2366785227171092261:
+            return Java_J_N_M3yd9YCr(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string was called with an invalid switch number: " << switch_num;
@@ -188,8 +188,8 @@ JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string_1R(
     jlong switch_num, jstring string_param1) {
         switch (switch_num) {
           
-          case 3717128594383367634:
-            return Java_J_N_MM5Xkwyy(env, jcaller, string_param1);
+          case 1925304576625325361:
+            return Java_J_N_MGrgOT84(env, jcaller, string_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1R was called with an invalid switch number: " << switch_num;
@@ -202,8 +202,8 @@ JNI_GENERATOR_EXPORT jthrowable Java_J_N_resolve_1for_1throwable(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -5073520581764159162:
-            return Java_J_N_MuZc76Vt(env, jcaller);
+          case 6758041806660001267:
+            return Java_J_N_MXcljN68(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1throwable was called with an invalid switch number: " << switch_num;
@@ -216,8 +216,8 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1class_1array(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -427008638958312484:
-            return Java_J_N_M_00024hL1577(env, jcaller);
+          case 2917974781097758672:
+            return Java_J_N_MKH66mnL(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1class_1array was called with an invalid switch number: " << switch_num;
@@ -230,11 +230,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
     jlong switch_num) {
         switch (switch_num) {
           
-          case 4508266875426191279:
-            return Java_J_N_MPpCU1l5(env, jcaller);
+          case -6789151074502104874:
+            return Java_J_N_MocgXEXX(env, jcaller);
           
-          case 2313390248928530514:
-            return Java_J_N_MIBrQLK4(env, jcaller);
+          case 2646707990576644715:
+            return Java_J_N_MJLr_000245QK(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1array was called with an invalid switch number: " << switch_num;
@@ -247,8 +247,8 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
     jlong switch_num, jobjectArray object_array_param1) {
         switch (switch_num) {
           
-          case 1879234562834588228:
-            return Java_J_N_MGhRh4Nd(env, jcaller, object_array_param1);
+          case 3663679907322354778:
+            return Java_J_N_MMtgBdva(env, jcaller, object_array_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1array_1OA was called with an invalid switch number: " << switch_num;
@@ -261,8 +261,8 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -5564218335546380707:
-            return Java_J_N_Mssfs54E(env, jcaller);
+          case -98246727617655206:
+            return Java_J_N_M_1qL1Hyw(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1array was called with an invalid switch number: " << switch_num;
@@ -275,8 +275,8 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array_1RA(
     jlong switch_num, jobjectArray string_array_param1) {
         switch (switch_num) {
           
-          case 12825275381484104:
-            return Java_J_N_MAC2QhR9(env, jcaller, string_array_param1);
+          case 4421683306824100923:
+            return Java_J_N_MPVz5ily(env, jcaller, string_array_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1array_1RA was called with an invalid switch number: " << switch_num;
@@ -289,8 +289,8 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1throwable_1array(
     jlong switch_num) {
         switch (switch_num) {
           
-          case 17582460986153510:
-            return Java_J_N_MAD53J7V(env, jcaller);
+          case -3147377154995757672:
+            return Java_J_N_M1FJFJy5(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1throwable_1array was called with an invalid switch number: " << switch_num;
@@ -303,8 +303,8 @@ JNI_GENERATOR_EXPORT jboolean Java_J_N_resolve_1for_1boolean(
     jlong switch_num) {
         switch (switch_num) {
           
-          case 6577090212445038314:
-            return Java_J_N_MW0aEs4h(env, jcaller);
+          case -320643102627558484:
+            return Java_J_N_M_000244zYzAg(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1boolean was called with an invalid switch number: " << switch_num;
@@ -317,8 +317,8 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void(
     jlong switch_num) {
         switch (switch_num) {
           
-          case -3890945313637314700:
-            return Java_J_N_MygCV2jQ(env, jcaller);
+          case 8620675659615840065:
+            return Java_J_N_Md6LK1o9(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1void was called with an invalid switch number: " << switch_num;
@@ -331,8 +331,8 @@ JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object_1O(
     jlong switch_num, jobject object_param1) {
         switch (switch_num) {
           
-          case 2227777243221232668:
-            return Java_J_N_MHuqnmXT(env, jcaller, object_param1);
+          case -4161291034639552194:
+            return Java_J_N_MxkAf2fl(env, jcaller, object_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1O was called with an invalid switch number: " << switch_num;

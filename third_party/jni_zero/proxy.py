@@ -19,7 +19,7 @@ _MAX_CHARS_FOR_HASHED_NATIVE_METHODS = 8
 
 def get_gen_jni_class(*, short=False, name_prefix=None, package_prefix=None):
   """Returns the JavaClass for GEN_JNI."""
-  package = 'J' if short else 'org/chromium/base/natives'
+  package = 'J' if short else 'org/jni_zero'
   name_prefix = name_prefix + '_' if name_prefix else ''
   name = name_prefix + ('N' if short else 'GEN_JNI')
 

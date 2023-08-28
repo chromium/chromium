@@ -20,71 +20,68 @@
 
 // Step 1: Forward declarations (classes).
 
-extern const char kClassPath_org_chromium_example_jni_1generator_SampleProxyEdgeCases[];
-extern std::atomic<jclass> g_org_chromium_example_jni_1generator_SampleProxyEdgeCases_clazz;
-#ifndef org_chromium_example_jni_1generator_SampleProxyEdgeCases_clazz_defined
-#define org_chromium_example_jni_1generator_SampleProxyEdgeCases_clazz_defined
-inline jclass org_chromium_example_jni_1generator_SampleProxyEdgeCases_clazz(JNIEnv* env) {
-  return base::android::LazyGetClass(env,
-      kClassPath_org_chromium_example_jni_1generator_SampleProxyEdgeCases,
-      &g_org_chromium_example_jni_1generator_SampleProxyEdgeCases_clazz);
+extern const char kClassPath_org_jni_1zero_samples_SampleProxyEdgeCases[];
+extern std::atomic<jclass> g_org_jni_1zero_samples_SampleProxyEdgeCases_clazz;
+#ifndef org_jni_1zero_samples_SampleProxyEdgeCases_clazz_defined
+#define org_jni_1zero_samples_SampleProxyEdgeCases_clazz_defined
+inline jclass org_jni_1zero_samples_SampleProxyEdgeCases_clazz(JNIEnv* env) {
+  return base::android::LazyGetClass(env, kClassPath_org_jni_1zero_samples_SampleProxyEdgeCases,
+      &g_org_jni_1zero_samples_SampleProxyEdgeCases_clazz);
 }
 #endif
 
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT jint Java_J_N_MyOkSBQ0(
+JNI_GENERATOR_EXPORT jint Java_J_N_MyLYIXSG(
     JNIEnv* env,
     jclass jcaller,
     jobject caller,
     jobject b);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MrisBOFT(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M4tCs4sR(
     JNIEnv* env,
     jclass jcaller,
     jintArray a,
     jobjectArray b);
-JNI_GENERATOR_EXPORT jintArray Java_J_N_ML5jr_00024Tu(
+JNI_GENERATOR_EXPORT jintArray Java_J_N_Mfw_00024B7iJ(
     JNIEnv* env,
     jclass jcaller,
     jintArray a,
     jobjectArray b);
-JNI_GENERATOR_EXPORT void Java_J_N_M3dXOemX_1ForTesting(
+JNI_GENERATOR_EXPORT void Java_J_N_M01DKxMA_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT void Java_J_N_MCNruAwI_1ForTesting(
+JNI_GENERATOR_EXPORT void Java_J_N_MdPg5w5a_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT void Java_J_N_MpToXM8I_1ForTesting(
+JNI_GENERATOR_EXPORT void Java_J_N_Mfc_1XrOy_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT void Java_J_N_MV9YSTxh(
+JNI_GENERATOR_EXPORT void Java_J_N_MDx0XFh_00024(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MfODWEgT(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPuD3r24(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray arg);
-JNI_GENERATOR_EXPORT void Java_J_N_MPgXV_00024mN(
+JNI_GENERATOR_EXPORT void Java_J_N_MYc9Cume(
     JNIEnv* env,
     jclass jcaller,
     jobject b,
     jobject i);
-JNI_GENERATOR_EXPORT jboolean Java_J_N_MD8PmkAP(
+JNI_GENERATOR_EXPORT jboolean Java_J_N_MoYVNDqu(
     JNIEnv* env,
     jclass jcaller,
     jobject sb);
-JNI_GENERATOR_EXPORT jint Java_J_N_MD8PmkAP(
+JNI_GENERATOR_EXPORT jint Java_J_N_MoYVNDqu(
     JNIEnv* env,
     jclass jcaller,
     jint sb);
-JNI_GENERATOR_EXPORT void
-    Java_org_chromium_example_jni_1generator_SampleProxyEdgeCases_nativeInstanceMethod(
+JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeInstanceMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeInstance);
-JNI_GENERATOR_EXPORT void
-    Java_org_chromium_example_jni_1generator_SampleProxyEdgeCases_nativeStaticMethod(
+JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller);
 

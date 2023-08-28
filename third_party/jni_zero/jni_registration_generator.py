@@ -130,7 +130,7 @@ def _Generate(options, native_sources, java_sources):
             srcjar,
             f'{short_gen_jni_class.full_name_with_slashes}.java',
             data=CreateProxyJavaFromDict(options, gen_jni_class, combined_dict))
-        # org/chromium/base/natives/GEN_JNI.java
+        # org/jni_zero/GEN_JNI.java
         zip_helpers.add_to_zip_hermetic(
             srcjar,
             f'{full_gen_jni_class.full_name_with_slashes}.java',
@@ -140,7 +140,7 @@ def _Generate(options, native_sources, java_sources):
                                          stub_methods=stub_methods_string,
                                          forwarding=True))
       else:
-        # org/chromium/base/natives/GEN_JNI.java
+        # org/jni_zero/GEN_JNI.java
         zip_helpers.add_to_zip_hermetic(
             srcjar,
             f'{full_gen_jni_class.full_name_with_slashes}.java',
