@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -727,6 +729,25 @@ void WebAppCommandScheduler::LaunchApp(
   LaunchApp(WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
                 app_id, command_line, current_directory, url_handler_launch_url,
                 protocol_handler_launch_url, file_launch_url, launch_files),
+            LaunchWebAppWindowSetting::kOverrideWithWebAppConfig,
+            std::move(callback), location);
+}
+
+void WebAppCommandScheduler::LaunchUrlInApp(const AppId& app_id,
+                                            const GURL& url,
+                                            LaunchWebAppCallback callback,
+                                            const base::Location& location) {
+  CHECK(url.is_valid());
+  apps::AppLaunchParams params =
+      WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
+          app_id, *base::CommandLine::ForCurrentProcess(),
+          /*current_directory=*/base::FilePath(),
+          /*url_handler_launch_url=*/absl::nullopt,
+          /*protocol_handler_launch_url=*/absl::nullopt,
+          /*file_launch_url=*/absl::nullopt, /*launch_files=*/{});
+  params.override_url = url;
+
+  LaunchApp(std::move(params),
             LaunchWebAppWindowSetting::kOverrideWithWebAppConfig,
             std::move(callback), location);
 }

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"

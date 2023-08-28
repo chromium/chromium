@@ -972,6 +972,43 @@ bool WebAppRegistrar::CapturesLinksInScope(const AppId& app_id) const {
   return web_app->is_user_selected_app_for_capturing_links();
 }
 
+absl::optional<AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
+    const GURL& url) const {
+  // Nested apps remove that URL space from the parent app, so links from a
+  // nested app cannot be captured by a parent app. Even so, there can be
+  // multiple apps with the same score, but the only one that matters is the
+  // first one that also captures links.
+  size_t top_score = 0;
+  std::vector<AppId> top_apps;
+  for (const AppId& app_id : GetAppIds()) {
+    if (!IsLocallyInstalled(app_id)) {
+      continue;
+    }
+    // TODO(dmurph): Switch to GetAppExtendedScopeScore if the
+    // kWebAppEnableScopeExtensions feature is enabled. b/294079334
+    size_t score = GetUrlInAppScopeScore(url.spec(), app_id);
+    // A score of 0 means it doesn't apply at all.
+    if (score == 0 || score < top_score) {
+      continue;
+    }
+    if (score == top_score) {
+      top_apps.push_back(app_id);
+      continue;
+    }
+    top_score = score;
+    top_apps = {app_id};
+  }
+  if (top_apps.empty()) {
+    return absl::nullopt;
+  }
+  for (const AppId& app_id : top_apps) {
+    if (CapturesLinksInScope(app_id)) {
+      return app_id;
+    }
+  }
+  return absl::nullopt;
+}
+
 std::vector<AppId> WebAppRegistrar::GetOverlappingAppsMatchingScope(
     const AppId& app_id) const {
   std::vector<AppId> all_apps_with_supported_links;

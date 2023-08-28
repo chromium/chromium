@@ -559,8 +559,10 @@
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#endif
-#endif
+#else
+#include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
@@ -5062,13 +5064,26 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   if (disabled_app_throttle) {
     throttles.push_back(std::move(disabled_app_throttle));
   }
-  auto url_to_apps_throttle =
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<apps::LinkCapturingNavigationThrottle::Delegate>
+      link_capturing_delegate;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  link_capturing_delegate =
+      std::make_unique<apps::ChromeOsLinkCapturingDelegate>();
+#else
+  link_capturing_delegate =
+      std::make_unique<web_app::WebAppLinkCapturingDelegate>();
+#endif
+  std::unique_ptr<content::NavigationThrottle> url_to_apps_throttle =
       apps::LinkCapturingNavigationThrottle::MaybeCreate(
-          handle, std::make_unique<apps::ChromeOsLinkCapturingDelegate>());
+          handle, std::move(link_capturing_delegate));
   if (url_to_apps_throttle) {
     throttles.push_back(std::move(url_to_apps_throttle));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   Profile* profile = Profile::FromBrowserContext(
       handle->GetWebContents()->GetBrowserContext());
