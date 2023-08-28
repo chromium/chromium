@@ -684,6 +684,7 @@ TEST(StringPieceTest, ConstexprCtor) {
   }
 }
 
+#if defined(_LIBCPP_ENABLE_ASSERTIONS)
 TEST(StringPieceTest, OutOfBoundsDeath) {
   {
     constexpr StringPiece piece;
@@ -725,6 +726,7 @@ TEST(StringPieceTest, InvalidLengthDeath) {
   int length = -1;
   ASSERT_DEATH_IF_SUPPORTED({ StringPiece piece("hello", length); }, "");
 }
+#endif  // defined(_LIBCPP_ENABLE_ASSERTIONS)
 
 TEST(StringPieceTest, ConstexprData) {
   {
