@@ -11,6 +11,7 @@
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/app_constants/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
@@ -30,13 +31,27 @@ void LacrosAppsPublisher::Initialize() {
 }
 
 bool LacrosAppsPublisher::InitializeCrosapi() {
-  // TODO(crbug.com/1431065) Implement the InitializeCrosapi function.
-  return false;
+  auto* service = chromeos::LacrosService::Get();
+  if (!service) {
+    return false;
+  }
+
+  // Ash is too old to support the Lacros publisher interface.
+  if (service->GetInterfaceVersion<crosapi::mojom::AppServiceProxy>() <
+      int{crosapi::mojom::Crosapi::kBindLacrosAppPublisherMinVersion}) {
+    return false;
+  }
+
+  service->BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
+      &crosapi::mojom::Crosapi::BindLacrosAppPublisher>(
+      publisher_.BindNewPipeAndPassReceiver());
+  return true;
 }
 
 void LacrosAppsPublisher::PublishCapabilityAccesses(
     std::vector<apps::CapabilityAccessPtr> accesses) {
-  // TODO(crbug.com/1431065) Implement the PublishCapabilityAccesses function.
+  publisher_->OnCapabilityAccesses(std::move(accesses));
 }
 
 void LacrosAppsPublisher::OnIsCapturingVideoChanged(

@@ -259,6 +259,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
+  void BindLacrosAppPublisher(
+      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;

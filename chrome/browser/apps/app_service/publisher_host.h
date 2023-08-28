@@ -44,6 +44,8 @@ class PublisherHost {
   ~PublisherHost();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::StandaloneBrowserApps* StandaloneBrowserApps();
+
   void SetArcIsRegistered();
 
   void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
@@ -67,7 +69,7 @@ class PublisherHost {
   std::unique_ptr<ExtensionAppsChromeOs> chrome_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
-  std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
+  std::unique_ptr<apps::StandaloneBrowserApps> standalone_browser_apps_;
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<web_app::BrowserShortcuts> browser_shortcuts_;
 #else

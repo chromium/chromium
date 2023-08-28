@@ -10,7 +10,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -61,6 +63,9 @@ class LacrosAppsPublisher : public MediaStreamCaptureIndicator::Observer {
 
   void ModifyCapabilityAccess(absl::optional<bool> accessing_camera,
                               absl::optional<bool> accessing_microphone);
+
+  // Mojo endpoint that's responsible for sending app publisher messages to Ash.
+  mojo::Remote<crosapi::mojom::AppPublisher> publisher_;
 
   // Scoped observer for the MediaStreamCaptureIndicator.
   base::ScopedObservation<MediaStreamCaptureIndicator,

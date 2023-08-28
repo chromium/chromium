@@ -62,7 +62,7 @@ std::string GetStandaloneBrowserName() {
 namespace apps {
 
 StandaloneBrowserApps::StandaloneBrowserApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy),
+    : apps::AppPublisher(proxy),
       profile_(proxy->profile()),
       browser_app_instance_registry_(proxy->BrowserAppInstanceRegistry()) {
   DCHECK(crosapi::browser_util::IsLacrosEnabled());
@@ -70,8 +70,18 @@ StandaloneBrowserApps::StandaloneBrowserApps(AppServiceProxy* proxy)
 
 StandaloneBrowserApps::~StandaloneBrowserApps() = default;
 
+void StandaloneBrowserApps::RegisterCrosapiHost(
+    mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
+  if (receiver_.is_bound()) {
+    return;
+  }
+  receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &StandaloneBrowserApps::OnCrosapiDisconnected, base::Unretained(this)));
+}
+
 AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
-  auto app = AppPublisher::MakeApp(
+  auto app = apps::AppPublisher::MakeApp(
       AppType::kStandaloneBrowser, app_constants::kLacrosAppId,
       Readiness::kReady, GetStandaloneBrowserName(), InstallReason::kSystem,
       InstallSource::kSystem);
@@ -100,8 +110,8 @@ void StandaloneBrowserApps::Initialize() {
 
   std::vector<AppPtr> apps;
   apps.push_back(CreateStandaloneBrowserApp());
-  AppPublisher::Publish(std::move(apps), AppType::kStandaloneBrowser,
-                        /*should_notify_initialized=*/true);
+  apps::AppPublisher::Publish(std::move(apps), AppType::kStandaloneBrowser,
+                              /*should_notify_initialized=*/true);
 }
 
 void StandaloneBrowserApps::Launch(const std::string& app_id,
@@ -166,9 +176,27 @@ void StandaloneBrowserApps::OnLoadComplete(bool success,
   std::vector<AppPtr> standalone_browser_app_vector;
   standalone_browser_app_vector.push_back(std::move(app));
 
-  AppPublisher::Publish(std::move(standalone_browser_app_vector),
-                        AppType::kStandaloneBrowser,
-                        /*should_notify_initialized=*/true);
+  apps::AppPublisher::Publish(std::move(standalone_browser_app_vector),
+                              AppType::kStandaloneBrowser,
+                              /*should_notify_initialized=*/true);
+}
+
+void StandaloneBrowserApps::OnApps(std::vector<AppPtr> deltas) {
+  NOTIMPLEMENTED();
+}
+
+void StandaloneBrowserApps::RegisterAppController(
+    mojo::PendingRemote<crosapi::mojom::AppController> controller) {
+  NOTIMPLEMENTED();
+}
+
+void StandaloneBrowserApps::OnCapabilityAccesses(
+    std::vector<CapabilityAccessPtr> deltas) {
+  proxy()->OnCapabilityAccesses(std::move(deltas));
+}
+
+void StandaloneBrowserApps::OnCrosapiDisconnected() {
+  receiver_.reset();
 }
 
 }  // namespace apps

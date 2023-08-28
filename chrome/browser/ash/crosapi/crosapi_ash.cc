@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
@@ -622,6 +623,18 @@ void CrosapiAsh::BindKeystoreService(
 void CrosapiAsh::BindKioskSessionService(
     mojo::PendingReceiver<mojom::KioskSessionService> receiver) {
   kiosk_session_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindLacrosAppPublisher(
+    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  apps::StandaloneBrowserApps* lacros_apps =
+      app_service_proxy->StandaloneBrowserApps();
+  if (lacros_apps) {
+    lacros_apps->RegisterCrosapiHost(std::move(receiver));
+  }
 }
 
 void CrosapiAsh::BindLocalPrinter(

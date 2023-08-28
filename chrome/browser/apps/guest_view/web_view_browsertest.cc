@@ -144,6 +144,10 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -580,6 +584,13 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
                                     "--expose-gc");
 
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Since LacrosAppsPublisherTest run without Ash, Lacros won't get
+    // the Ash extension keeplist data from Ash (passed via crosapi). Therefore,
+    // set empty ash keeplist for test.
+    extensions::SetEmptyAshKeeplistForTest();
+#endif
   }
 
   // Handles |request| by serving a redirect response if the |User-Agent| is

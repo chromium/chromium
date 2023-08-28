@@ -294,7 +294,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 115,
+static_assert(crosapi::mojom::Crosapi::Version_ == 116,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 

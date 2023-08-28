@@ -58,6 +58,7 @@ class PromiseAppRegistryCache;
 class PromiseAppService;
 class ShortcutPublisher;
 class ShortcutRegistryCache;
+class StandaloneBrowserApps;
 class UninstallDialog;
 
 struct PromiseApp;
@@ -91,6 +92,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
   apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
+
+  apps::StandaloneBrowserApps* StandaloneBrowserApps();
 
   // Registers `crosapi_subscriber_`.
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);

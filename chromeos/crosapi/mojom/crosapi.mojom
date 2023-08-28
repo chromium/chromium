@@ -145,8 +145,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 116
-// Next method id: 119
+// Next version: 117
+// Next method id: 120
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -434,6 +434,12 @@ interface Crosapi {
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
+
+  // Binds the Lacros app publisher service, which allows Lacros to connect the
+  // Lacros app to the app service.
+  // Added in M118.
+  [MinVersion=116]
+  BindLacrosAppPublisher@119(pending_receiver<AppPublisher> receiver);
 
   // Binds the LocalPrinter interface for printing.
   // Added in M91.

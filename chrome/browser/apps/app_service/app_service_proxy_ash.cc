@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
@@ -188,6 +189,10 @@ AppServiceProxyAsh::BrowserAppInstanceTracker() {
 apps::BrowserAppInstanceRegistry*
 AppServiceProxyAsh::BrowserAppInstanceRegistry() {
   return browser_app_instance_registry_.get();
+}
+
+apps::StandaloneBrowserApps* AppServiceProxyAsh::StandaloneBrowserApps() {
+  return publisher_host_ ? publisher_host_->StandaloneBrowserApps() : nullptr;
 }
 
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
