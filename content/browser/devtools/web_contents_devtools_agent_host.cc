@@ -5,6 +5,7 @@
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 
 #include "base/unguessable_token.h"
+#include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
@@ -435,6 +436,7 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session,
       GetId(), auto_attacher_.get(), session);
   DevToolsSession* root_session = session->GetRootSession();
   CHECK(root_session);
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::TracingHandler>(this, GetIOContext(),
                                                          root_session);
   return true;

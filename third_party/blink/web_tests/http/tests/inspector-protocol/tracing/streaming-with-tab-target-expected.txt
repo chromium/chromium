@@ -1,0 +1,5 @@
+Tests IO streams are available in the tab target.
+Recording started
+Tracing complete
+Has tracing data: true
+
