@@ -136,8 +136,6 @@ bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& types,
   return any_suggestion_added;
 }
 
-// TODO(crbug.com/1459990): Implement this method and the one below.
-//
 // Given an address `type` and `sub_type`, returns whether the `sub_type` info
 // stored in `profile` is a substring of the info stored in `profile` for
 // `type`.
@@ -145,7 +143,13 @@ bool CheckIfTypeContainsSubtype(ServerFieldType type,
                                 ServerFieldType sub_type,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale) {
-  return type == ADDRESS_HOME_LINE1;
+  if (!profile.HasInfo(type) || !profile.HasInfo(sub_type)) {
+    return false;
+  }
+
+  std::u16string value = profile.GetInfo(type, app_locale);
+  std::u16string sub_value = profile.GetInfo(sub_type, app_locale);
+  return value.find(sub_value) != std::u16string::npos;
 }
 
 // Adds name related child suggestions to build autofill popup submenu.
