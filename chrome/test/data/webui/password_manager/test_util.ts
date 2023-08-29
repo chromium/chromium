@@ -53,6 +53,7 @@ export interface PasswordEntryParams {
   inAccountStore?: boolean;
   inProfileStore?: boolean;
   note?: string;
+  changePasswordUrl?: string;
   affiliatedDomains?: chrome.passwordsPrivate.DomainInfo[];
 }
 
@@ -96,6 +97,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     id: id,
     storedIn: storeType,
     note: note,
+    changePasswordUrl: params.changePasswordUrl,
     password: params.password || '',
     affiliatedDomains: params.affiliatedDomains || [domain],
   };

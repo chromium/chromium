@@ -248,7 +248,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #if BUILDFLAG(IS_WIN)
     {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
 #elif BUILDFLAG(IS_MAC)
-    {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
+    {"managePasskeysLabel",
+     IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
 #endif
     {"menu", IDS_MENU},
     {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
@@ -311,6 +312,14 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CANCELED_TITLE},
     {"sharePasswordFamilyPickerDescription",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_FAMILY_PICKER_DESCRIPTION},
+    {"sharePasswordConfirmationDescriptionSingleRecipient",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_DESCRIPTION_SINGLE},
+    {"sharePasswordConfirmationDescriptionMultipleRecipients",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_DESCRIPTION_MULTIPLE},
+    {"sharePasswordConfirmationFooterWebsite",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_FOOTER_WEBSITE},
+    {"sharePasswordConfirmationFooterAndroidApp",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_FOOTER_ANDROID_APP},
     {"sharePasswordManageFamily",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MANAGE_FAMILY},
     {"sharePasswordMemeberUnavailable",

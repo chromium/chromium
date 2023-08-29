@@ -1153,6 +1153,10 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
 
     entry.federation_text = base::UTF16ToUTF8(formatted_origin);
   }
+  absl::optional<GURL> change_password_url = credential.GetChangePasswordURL();
+  if (change_password_url.has_value()) {
+    entry.change_password_url = change_password_url->spec();
+  }
   entry.id = credential_id_generator_.GenerateId(std::move(credential));
   return entry;
 }

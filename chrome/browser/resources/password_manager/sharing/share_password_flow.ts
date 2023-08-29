@@ -43,7 +43,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   static get properties() {
     return {
       passwordName: String,
-      passwordId: Number,
+      password: Object,
 
       flowState: Number,
 
@@ -63,7 +63,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   }
 
   passwordName: string;
-  passwordId: number;
+  password: chrome.passwordsPrivate.PasswordUiEntry;
   flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
   private recipients_: chrome.passwordsPrivate.RecipientInfo[];
   private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|null = null;

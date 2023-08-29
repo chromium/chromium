@@ -21,6 +21,10 @@ export interface SharePasswordConfirmationDialogElement {
     header: HTMLElement,
     cancel: HTMLElement,
     done: HTMLElement,
+    senderAvatar: HTMLImageElement,
+    recipientAvatar: HTMLElement,
+    description: HTMLElement,
+    footerDescription: HTMLElement,
   };
 }
 
@@ -50,7 +54,8 @@ export class SharePasswordConfirmationDialogElement extends
     return {
       dialogStage_: Number,
 
-      passwordId: Number,
+      password: Object,
+      passwordName: String,
 
       recipients: {
         type: Array,
@@ -65,8 +70,9 @@ export class SharePasswordConfirmationDialogElement extends
     };
   }
 
+  password: chrome.passwordsPrivate.PasswordUiEntry;
+  passwordName: string;
   recipients: chrome.passwordsPrivate.RecipientInfo[];
-  passwordId: number;
   private dialogStage_: ConfirmationDialogStage =
       ConfirmationDialogStage.LOADING;
   private passwordManager_: PasswordManagerProxy =
@@ -81,7 +87,7 @@ export class SharePasswordConfirmationDialogElement extends
       if (this.isStage_(ConfirmationDialogStage.CANCELED)) {
         return;
       }
-      this.passwordManager_.sharePassword(this.passwordId, this.recipients);
+      this.passwordManager_.sharePassword(this.password.id, this.recipients);
       this.dialogStage_ = ConfirmationDialogStage.SUCCESS;
     }, FIVE_SECONDS);
   }
@@ -102,6 +108,40 @@ export class SharePasswordConfirmationDialogElement extends
       default:
         assertNotReached();
     }
+  }
+
+  private getSuccessDescription_(): TrustedHTML {
+    if (this.recipients.length > 1) {
+      return this.i18nAdvanced(
+          'sharePasswordConfirmationDescriptionMultipleRecipients', {
+            substitutions: [
+              this.passwordName,
+              this.i18n('passwordManagerLearnMoreURL'),
+            ],
+          });
+    }
+    return this.i18nAdvanced(
+        'sharePasswordConfirmationDescriptionSingleRecipient', {
+          substitutions: [
+            this.recipients[0].displayName,
+            this.passwordName,
+            this.i18n('passwordManagerLearnMoreURL'),
+          ],
+        });
+  }
+
+  private getFooterDescription_(): TrustedHTML {
+    // Only for Android Apps that don't have affiliated website, change password
+    // url can't be generated.
+    if (!this.password.changePasswordUrl) {
+      return this.i18nAdvanced('sharePasswordConfirmationFooterAndroidApp');
+    }
+    return this.i18nAdvanced('sharePasswordConfirmationFooterWebsite', {
+      substitutions: [
+        this.password.changePasswordUrl,
+        this.passwordName,
+      ],
+    });
   }
 
   private onClickDone_() {
