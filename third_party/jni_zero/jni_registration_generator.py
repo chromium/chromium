@@ -567,7 +567,7 @@ JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
         jni_generator.GetRegistrationFunctionName(self.fully_qualified_class)
     }
     register_body = template.substitute(value)
-    self._SetDictValue('REGISTER_NON_NATIVES', register_body)
+    self._SetDictValue('REGISTER_NATIVES', register_body)
 
   def _AddJNINativeMethodsArrays(self):
     """Returns the implementation of the array of native methods."""

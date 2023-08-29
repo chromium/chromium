@@ -302,6 +302,10 @@ class Tests(BaseTest):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    manual_jni_registration=True)
 
+  def testEndToEndManualRegistration_NonProxy(self):
+    self._TestEndToEndRegistration(['SampleNonProxy.java'],
+                                   manual_jni_registration=True)
+
   def testEndToEndProxyJniWithModules(self):
     self._TestEndToEndGeneration('SampleModule.java',
                                  srcjar=True,
