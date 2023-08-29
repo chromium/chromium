@@ -23,6 +23,7 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -30,9 +31,12 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/drag_download_item.h"
+#include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/fileicon_source.h"
 #include "chrome/common/chrome_switches.h"
@@ -87,6 +91,19 @@ void CountDownloadsDOMEvents(DownloadsDOMEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Download.DOMEvent",
                             event,
                             DOWNLOADS_DOM_EVENT_MAX);
+}
+
+void PromptForScanningInBubble(content::WebContents* web_contents,
+                               download::DownloadItem* download) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser) {
+    return;
+  }
+  browser->window()
+      ->GetDownloadBubbleUIController()
+      ->GetDownloadDisplayController()
+      ->OpenSecuritySubpage(
+          OfflineItemUtils::GetContentIdForDownload(download));
 }
 
 }  // namespace
@@ -422,7 +439,17 @@ void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
 void DownloadsDOMHandler::DeepScan(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DEEP_SCAN);
   download::DownloadItem* download = GetDownloadByStringId(id);
-  if (download) {
+  if (!download) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningEncryptedArchives) &&
+      DownloadItemWarningData::IsEncryptedArchive(download)) {
+    // For encrypted archives, we need a password from the user. We will request
+    // this in the download bubble.
+    PromptForScanningInBubble(GetWebUIWebContents(), download);
+  } else {
     DownloadItemModel model(download);
     DownloadCommands commands(model.GetWeakPtr());
     commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
