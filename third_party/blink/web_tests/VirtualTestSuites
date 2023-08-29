@@ -2438,6 +2438,26 @@
     ]
   },
   {
+    "prefix": "lcp-script-observer",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/lcp-script-observer"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=LCPCriticalPathPredictor,LCPScriptObserver"
+    ],
+    "expires": "Sep 10, 2024",
+    "owners": [
+      "alexnj@chromium.org",
+      "kouhei@chromium.org"
+    ]
+  },
+  {
     "prefix": "fetch-later",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
