@@ -207,6 +207,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang-cl",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang-cl/cc",
@@ -215,6 +216,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang-cl",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang-coverage/cxx",
@@ -227,6 +229,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang-cl",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang-coverage/cc",
@@ -239,6 +242,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang-cl",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
         ])
     return step_config
