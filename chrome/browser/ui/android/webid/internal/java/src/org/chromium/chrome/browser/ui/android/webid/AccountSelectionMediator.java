@@ -62,15 +62,16 @@ class AccountSelectionMediator {
      * as well as with FedCmSheetType in tools/metrics/histograms/enums.xml.
      */
     @IntDef({SheetType.ACCOUNT_SELECTION, SheetType.VERIFYING, SheetType.AUTO_REAUTHN,
-            SheetType.SIGN_IN_TO_IDP_STATIC, SheetType.NUM_ENTRIES})
+            SheetType.SIGN_IN_TO_IDP_STATIC, SheetType.SIGN_IN_ERROR, SheetType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     private @interface SheetType {
         int ACCOUNT_SELECTION = 0;
         int VERIFYING = 1;
         int AUTO_REAUTHN = 2;
         int SIGN_IN_TO_IDP_STATIC = 3;
+        int SIGN_IN_ERROR = 4;
 
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     private boolean mRegisteredObservers;
@@ -282,6 +283,8 @@ class AccountSelectionMediator {
                 return SheetType.AUTO_REAUTHN;
             case SIGN_IN_TO_IDP_STATIC:
                 return SheetType.SIGN_IN_TO_IDP_STATIC;
+            case SIGN_IN_ERROR:
+                return SheetType.SIGN_IN_ERROR;
         }
         assert false; // NOTREACHED
         return SheetType.ACCOUNT_SELECTION;

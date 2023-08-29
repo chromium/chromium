@@ -46,6 +46,10 @@ bool IsFedCmAutoReauthnFlagEnabled();
 
 // Whether the HostedDomain feature is enabled.
 bool IsFedCmHostedDomainEnabled();
+
+// Whether the Error API is enabled.
+bool IsFedCmErrorEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

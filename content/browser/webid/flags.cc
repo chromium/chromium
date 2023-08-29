@@ -64,4 +64,8 @@ bool IsFedCmHostedDomainEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmHostedDomain);
 }
 
+bool IsFedCmErrorEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmError);
+}
+
 }  // namespace content

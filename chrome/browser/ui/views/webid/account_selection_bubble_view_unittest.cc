@@ -399,6 +399,44 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                   IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE));
   }
 
+  void TestErrorDialog(const std::u16string expected_title,
+                       const absl::optional<std::u16string> expected_subtitle,
+                       bool expect_idp_brand_icon_in_header) {
+    CreateAccountSelectionBubble(
+        /*exclude_title=*/false,
+        /*exclude_iframe=*/!expected_subtitle.has_value(),
+        /*show_auto_reauthn_checkbox=*/false);
+    dialog_->ShowErrorDialog(
+        kTopFrameETLDPlusOne,
+        expected_subtitle.has_value()
+            ? absl::make_optional<std::u16string>(kIframeETLDPlusOne)
+            : absl::nullopt,
+        kIdpETLDPlusOne, content::IdentityProviderMetadata());
+
+    const std::vector<views::View*> children = dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    PerformHeaderChecks(children[0], expected_title, expected_subtitle,
+                        expect_idp_brand_icon_in_header);
+
+    const views::View* error_dialog = children[2];
+    const std::vector<views::View*> error_dialog_children =
+        error_dialog->children();
+    ASSERT_EQ(error_dialog_children.size(), 2u);
+
+    // Check the summary shown.
+    views::Label* summary =
+        static_cast<views::Label*>(error_dialog_children[0]);
+    ASSERT_TRUE(summary);
+    EXPECT_EQ(summary->GetText(), u"Cannot continue with idp-example.com.");
+
+    // Check the description shown.
+    views::Label* description =
+        static_cast<views::Label*>(error_dialog_children[1]);
+    ASSERT_TRUE(description);
+    EXPECT_EQ(description->GetText(), u"Something went wrong.");
+  }
+
   // Checks the account rows starting at `accounts[accounts_index]`. Updates
   // `accounts_index` to the first unused index in `accounts`, or to
   // `accounts.size()` if done.
@@ -846,4 +884,10 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   // Check the second IDP.
   CheckIdpRow(accounts[accounts_index++], u"idp2.com");
   CheckAccountRows(accounts, kAccountSuffixes2, accounts_index);
+}
+
+TEST_F(AccountSelectionBubbleViewTest, Error) {
+  TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
+                  /*expected_subtitle=*/absl::nullopt,
+                  /*expect_idp_brand_icon_in_header=*/true);
 }

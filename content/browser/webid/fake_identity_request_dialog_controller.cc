@@ -80,6 +80,14 @@ void FakeIdentityRequestDialogController::ShowFailureDialog(
   title_ = "Confirm IDP Signin";
 }
 
+void FakeIdentityRequestDialogController::ShowErrorDialog(
+    const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
+    const std::string& idp_for_display,
+    const blink::mojom::RpContext& rp_context,
+    const IdentityProviderMetadata& idp_metadata,
+    DismissCallback dismiss_callback) {}
+
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
 }

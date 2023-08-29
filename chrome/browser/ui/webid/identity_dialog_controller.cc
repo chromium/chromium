@@ -62,6 +62,22 @@ void IdentityDialogController::ShowFailureDialog(
                                    idp_for_display, rp_context, idp_metadata);
 }
 
+void IdentityDialogController::ShowErrorDialog(
+    const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
+    const std::string& idp_for_display,
+    const blink::mojom::RpContext& rp_context,
+    const content::IdentityProviderMetadata& idp_metadata,
+    DismissCallback dismiss_callback) {
+  on_dismiss_ = std::move(dismiss_callback);
+  if (!account_view_) {
+    account_view_ = AccountSelectionView::Create(this);
+  }
+
+  account_view_->ShowErrorDialog(top_frame_for_display, iframe_for_display,
+                                 idp_for_display, rp_context, idp_metadata);
+}
+
 void IdentityDialogController::OnSigninToIdP() {
   std::move(on_signin_).Run();
 }

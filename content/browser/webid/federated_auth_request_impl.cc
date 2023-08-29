@@ -1422,8 +1422,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr(),
                      FederatedAuthRequestResult::kError,
-                     TokenStatus::kNotSignedInWithIdp,
-                     /*should_delay_callback=*/false),
+                     TokenStatus::kNotSignedInWithIdp),
       base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                      weak_ptr_factory_.GetWeakPtr(), signin_url_));
   fedcm_metrics_->RecordMismatchDialogShown();
@@ -1659,9 +1658,17 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 void FederatedAuthRequestImpl::OnDismissFailureDialog(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
-    bool should_delay_callback,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  CompleteRequestWithError(result, token_status, should_delay_callback);
+  CompleteRequestWithError(result, token_status,
+                           /*should_delay_callback=*/false);
+}
+
+void FederatedAuthRequestImpl::OnDismissErrorDialog(
+    blink::mojom::FederatedAuthRequestResult result,
+    absl::optional<TokenStatus> token_status,
+    IdentityRequestDialogController::DismissReason dismiss_reason) {
+  CompleteRequestWithError(result, token_status,
+                           /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
@@ -1754,10 +1761,36 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   ShowModalDialog(continue_on);
 }
 
+void FederatedAuthRequestImpl::ShowErrorDialog(const GURL& idp_config_url) {
+  CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
+
+  absl::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
+      GetEmbeddingOrigin(), origin(),
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  request_dialog_controller_->ShowErrorDialog(
+      GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+      FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
+      idp_infos_[idp_config_url]->rp_context,
+      idp_infos_[idp_config_url]->metadata,
+      base::BindOnce(
+          &FederatedAuthRequestImpl::OnDismissErrorDialog,
+          weak_ptr_factory_.GetWeakPtr(),
+          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+          TokenStatus::kIdTokenInvalidResponse));
+}
+
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
     IdentityProviderConfigPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& id_token) {
+  if (IsFedCmErrorEnabled() &&
+      status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    ShowErrorDialog(idp->config_url);
+    return;
+  }
+
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
   // takes a long time due to latency etc.. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
@@ -2254,7 +2287,6 @@ void FederatedAuthRequestImpl::DismissConfirmIdpSigninDialogForDevtools() {
   // These values match what HandleAccountsFetchFailure passes.
   OnDismissFailureDialog(
       FederatedAuthRequestResult::kError, TokenStatus::kNotSignedInWithIdp,
-      /*should_delay_callback=*/true,
       IdentityRequestDialogController::DismissReason::kOther);
 }
 

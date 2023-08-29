@@ -582,6 +582,8 @@ class TestDialogController
     size_t num_show_idp_signin_status_mismatch_dialog_requests{0u};
     // State related to ShowIdpSigninFailureDialog().
     bool did_show_idp_signin_failure_dialog{false};
+    // State related to ShowErrorDialog().
+    bool did_show_error_dialog{false};
   };
 
   explicit TestDialogController(MockConfiguration config)
@@ -663,6 +665,23 @@ class TestDialogController
       case IdpSigninStatusMismatchDialogAction::kNone:
         break;
     }
+  }
+
+  void ShowErrorDialog(const std::string& top_frame_for_display,
+                       const absl::optional<std::string>& iframe_for_display,
+                       const std::string& idp_for_display,
+                       const blink::mojom::RpContext& rp_context,
+                       const IdentityProviderMetadata& idp_metadata,
+                       IdentityRequestDialogController::DismissCallback
+                           dismiss_callback) override {
+    if (!state_) {
+      return;
+    }
+
+    state_->did_show_error_dialog = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(dismiss_callback),
+                                  DismissReason::kCloseButton));
   }
 
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override {
@@ -4925,6 +4944,45 @@ TEST_F(FederatedAuthRequestImplTest, RecordNumRequestsPerDocumentMetric) {
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
   CheckAllFedCmSessionIDs();
+}
+
+// Test that an error dialog is shown when the token response is invalid.
+TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+}
+
+// Test that an error dialog is not shown when the token response is invalid but
+// the Error API is disabled.
+TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_FALSE(dialog_controller_state_.did_show_error_dialog);
 }
 
 }  // namespace content

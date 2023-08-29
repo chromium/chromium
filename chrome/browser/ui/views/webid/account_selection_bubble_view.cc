@@ -616,6 +616,57 @@ void AccountSelectionBubbleView::ShowFailureDialog(
   has_sheet_ = true;
 }
 
+void AccountSelectionBubbleView::ShowErrorDialog(
+    const std::u16string& top_frame_for_display,
+    const absl::optional<std::u16string>& iframe_for_display,
+    const std::u16string& idp_for_display,
+    const content::IdentityProviderMetadata& idp_metadata) {
+  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
+                                  idp_for_display, rp_context_);
+  UpdateHeader(idp_metadata, title, subtitle_,
+               /*show_back_button=*/false);
+
+  RemoveNonHeaderChildViews();
+  AddChildView(std::make_unique<views::Separator>());
+  auto row = std::make_unique<views::View>();
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(kVerticalSpacing, kLeftRightPadding)));
+
+  // Add error summary.
+  views::Label* const summary =
+      row->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringFUTF16(IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY,
+                                     idp_for_display),
+          views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  summary->SetMultiLine(true);
+  summary->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  constexpr int kSummaryLineHeight = 20;
+  summary->SetLineHeight(kSummaryLineHeight);
+
+  // Add error description.
+  views::Label* const description =
+      row->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(
+              IDS_SIGNIN_GENERIC_ERROR_DIALOG_DESCRIPTION),
+          views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+  description->SetMultiLine(true);
+  description->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  constexpr int kDescriptionLineHeight = 20;
+  description->SetLineHeight(kDescriptionLineHeight);
+
+  // Add space between the summary and the description.
+  summary->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kVerticalSpacing, 0)));
+  AddChildView(std::move(row));
+
+  SizeToContents();
+  PreferredSizeChanged();
+
+  has_sheet_ = true;
+}
+
 void AccountSelectionBubbleView::AddIdpImage(const GURL& image_url,
                                              gfx::ImageSkia image) {
   idp_images_[image_url] = image;

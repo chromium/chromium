@@ -40,6 +40,13 @@ class MockIdentityRequestDialogController
                     const content::IdentityProviderMetadata&,
                     DismissCallback,
                     SigninToIdPCallback));
+  MOCK_METHOD6(ShowErrorDialog,
+               void(const std::string&,
+                    const absl::optional<std::string>&,
+                    const std::string&,
+                    const blink::mojom::RpContext& rp_context,
+                    const content::IdentityProviderMetadata&,
+                    DismissCallback));
   MOCK_METHOD2(ShowModalDialog, WebContents*(const GURL&, DismissCallback));
   MOCK_METHOD0(CloseModalDialog, void());
 };

@@ -221,6 +221,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void MaybeShowAccountsDialog();
   void ShowModalDialog(const GURL& url);
+  void ShowErrorDialog(const GURL& idp_config_url);
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
@@ -240,7 +241,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnDismissFailureDialog(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
-      bool should_delay_callback,
+      IdentityRequestDialogController::DismissReason dismiss_reason);
+  void OnDismissErrorDialog(
+      blink::mojom::FederatedAuthRequestResult result,
+      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);

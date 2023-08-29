@@ -44307,6 +44307,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Verifying"/>
   <int value="2" label="Auto re-authn"/>
   <int value="3" label="Sign in to IDP static"/>
+  <int value="4" label="Sign in error"/>
 </enum>
 
 <enum name="FedCmShowPopupWindowResult">

@@ -135,6 +135,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       DismissCallback dismiss_callback,
       SigninToIdPCallback signin_callback);
 
+  // Shows an error UI when the user's sign-in attempt failed.
+  virtual void ShowErrorDialog(
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      const blink::mojom::RpContext& rp_context,
+      const IdentityProviderMetadata& idp_metadata,
+      DismissCallback dismiss_callback);
+
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;
   virtual absl::optional<std::string> GetSubtitle() const;

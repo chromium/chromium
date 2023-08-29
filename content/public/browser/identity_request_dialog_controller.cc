@@ -79,6 +79,18 @@ void IdentityRequestDialogController::ShowFailureDialog(
   }
 }
 
+void IdentityRequestDialogController::ShowErrorDialog(
+    const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
+    const std::string& idp_for_display,
+    const blink::mojom::RpContext& rp_context,
+    const IdentityProviderMetadata& idp_metadata,
+    DismissCallback dismiss_callback) {
+  if (!is_interception_enabled_) {
+    std::move(dismiss_callback).Run(DismissReason::kOther);
+  }
+}
+
 std::string IdentityRequestDialogController::GetTitle() const {
   return std::string();
 }

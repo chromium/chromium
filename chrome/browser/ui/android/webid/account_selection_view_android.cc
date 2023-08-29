@@ -201,6 +201,15 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
       ConvertRpContextToJavaString(env, rp_context));
 }
 
+void AccountSelectionViewAndroid::ShowErrorDialog(
+    const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
+    const std::string& idp_for_display,
+    const blink::mojom::RpContext& rp_context,
+    const content::IdentityProviderMetadata& idp_metadata) {
+  // TODO(crbug.com/1420642): Implement error dialog on Android.
+}
+
 std::string AccountSelectionViewAndroid::GetTitle() const {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> title =
