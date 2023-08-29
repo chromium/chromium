@@ -21,6 +21,10 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop {
   ~EmbeddedPermissionPrompt() override;
   EmbeddedPermissionPrompt(const EmbeddedPermissionPrompt&) = delete;
   EmbeddedPermissionPrompt& operator=(const EmbeddedPermissionPrompt&) = delete;
+
+  // permissions::PermissionPrompt:
+  permissions::PermissionPromptDisposition GetPromptDisposition()
+      const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_

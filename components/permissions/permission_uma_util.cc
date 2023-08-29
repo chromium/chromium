@@ -1445,6 +1445,8 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "AnchoredBubble";
     case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
       return "CustomModalDialog";
+    case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
+      return "ElementAnchoredBubble";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
       return "LocationBarLeftChip";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
@@ -1510,6 +1512,7 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::MESSAGE_UI:
       return true;
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
+    case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
     case PermissionPromptDisposition::MODAL_DIALOG:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
@@ -1525,6 +1528,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     PermissionPromptDisposition prompt_disposition) {
   switch (prompt_disposition) {
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
+    case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
     case PermissionPromptDisposition::MODAL_DIALOG:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:

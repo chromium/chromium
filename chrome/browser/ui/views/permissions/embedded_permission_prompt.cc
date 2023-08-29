@@ -39,3 +39,8 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
     : PermissionPromptDesktop(browser, web_contents, delegate) {}
 
 EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() = default;
+
+permissions::PermissionPromptDisposition
+EmbeddedPermissionPrompt::GetPromptDisposition() const {
+  return permissions::PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE;
+}

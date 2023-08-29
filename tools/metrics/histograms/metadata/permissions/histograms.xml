@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
 <variants name="PromptDisposition">
   <variant name="AnchoredBubble"/>
   <variant name="CustomModalDialog"/>
+  <variant name="ElementAnchoredBubble"/>
   <variant name="LocationBarLeftChip"/>
   <variant name="LocationBarLeftChipAutoBubble"/>
   <variant name="LocationBarLeftQuietAbusiveChip"/>
@@ -158,6 +159,9 @@ chromium-metrics-reviews@google.com.
     <variant name="AnchoredBubble"
         summary="A bubble under the site settings padlock"/>
     <variant name="CustomModalDialog" summary="Other custom modal dialogs"/>
+    <variant name="ElementAnchoredBubble"
+        summary="A bubble shown near the embedded permission element, when
+                 the element is clicked."/>
     <variant name="LocationBarLeftChip"
         summary="A chip on the left-hand side of the location bar that shows
                  a bubble when clicked"/>

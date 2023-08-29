@@ -220,6 +220,10 @@ enum class PermissionPromptDisposition {
   // Only used on desktop, a chip on the left-hand side of the location bar that
   // automatically shows a bubble.
   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE = 12,
+
+  // Only used on desktop, a bubble shown near the embedded permission element,
+  // after the user clicks on the element.
+  ELEMENT_ANCHORED_BUBBLE = 13,
 };
 
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
