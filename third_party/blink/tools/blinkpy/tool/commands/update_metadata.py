@@ -797,6 +797,17 @@ class MetadataUpdater:
                                  'across retries')
             report.update(retry_report)
             for result in retry_report['results']:
+                # The upstream tool `wpt update-expectations` has a quirk where,
+                # for flaky tests with `known_intermittent`, the `expected`
+                # status is preserved as another `known_intermittent`, even if
+                # it didn't occur during any test run [0].
+                #
+                # Since Chromium uses retries, we can narrow expectations more
+                # aggressively (unless `--keep-statuses` is passed). Therefore,
+                # discard `expected` here.
+                #
+                # [0]: https://github.com/web-platform-tests/wpt/blob/78a04906/tools/wptrunner/wptrunner/metadata.py#L260
+                result.pop('expected', None)
                 results_by_test[result['test']].append(result)
         report['results'] = []
         for test_id, results in results_by_test.items():
@@ -844,8 +855,10 @@ class MetadataUpdater:
                 continue
             enabled_configs = self._configs.enabled_configs(
                 test, test_file.metadata_path)
-            missing_configs = enabled_configs - updated_configs
-            for config in missing_configs:
+            configs_to_preserve = enabled_configs
+            if not self._keep_statuses:
+                configs_to_preserve -= updated_configs
+            for config in configs_to_preserve:
                 self._updater.suite_start({'run_info': config.data})
                 self._updater.test_start({'test': test.id})
                 for subtest_id, subtest in test.subtests.items():
@@ -894,7 +907,7 @@ class MetadataUpdater:
         expected = test_file.expected(
             (self._primary_properties, self._dependent_properties),
             update_intermittent=(not self._disable_intermittent),
-            remove_intermittent=(not self._keep_statuses))
+            remove_intermittent=False)
         expected.set('type', test_file.item_type)
         for test_id in test_file.data:
             test = expected.get_test(test_id)
@@ -956,8 +969,7 @@ class MetadataUpdater:
             # `disable_intermittent` becomes a no-op when `update_intermittent`
             # is set, so always force them to be opposites. See:
             #   https://github.com/web-platform-tests/wpt/blob/merge_pr_35624/tools/wptrunner/wptrunner/manifestupdate.py#L422-L436
-            update_intermittent=(not self._disable_intermittent),
-            remove_intermittent=(not self._keep_statuses))
+            update_intermittent=(not self._disable_intermittent))
         if expected:
             self._remove_orphaned_tests(expected)
             self._mark_slow_timeouts_for_disabling(test_file, expected)

@@ -1143,18 +1143,18 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         self.write_contents(
             'external/wpt/fail.html.ini', """\
             [fail.html]
-              expected: [OK, FAIL]
+              expected: [PASS, FAIL]
             """)
         self.update({
             'results': [{
                 'test': '/fail.html',
                 'status': 'FAIL',
-                'expected': 'OK',
+                'expected': 'PASS',
                 'known_intermittent': ['FAIL'],
             }, {
                 'test': '/fail.html',
                 'status': 'CRASH',
-                'expected': 'OK',
+                'expected': 'PASS',
                 'known_intermittent': ['FAIL'],
             }],
         })
@@ -1169,14 +1169,14 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         self.write_contents(
             'external/wpt/fail.html.ini', """\
             [fail.html]
-              expected: [OK, FAIL]
+              expected: [PASS, FAIL]
             """)
         self.update(
             {
                 'results': [{
                     'test': '/fail.html',
                     'status': 'CRASH',
-                    'expected': 'OK',
+                    'expected': 'PASS',
                     'known_intermittent': ['FAIL'],
                 }],
             },
@@ -1185,7 +1185,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         self.assert_contents(
             'external/wpt/fail.html.ini', """\
             [fail.html]
-              expected: [CRASH, OK, FAIL]
+              expected: [PASS, CRASH, FAIL]
             """)
 
     def test_disable_intermittent(self):
@@ -1414,6 +1414,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               [subtest]
                 expected:
                   if (product == "content_shell") and (os == "win"): PASS
+                  if product == "chrome": [FAIL, PASS]
                   FAIL
             """)
         self.update(
@@ -1465,6 +1466,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               [subtest]
                 expected:
                   if (product == "content_shell") and (os == "win"): TIMEOUT
+                  if product == "chrome": [FAIL, PASS]
                   FAIL
             """)
 
@@ -1707,11 +1709,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'run_info': {
                     'product': 'content_shell',
                 },
-                'results': [{
-                    'test': '/variant.html?foo=baz',
-                    'status': 'OK',
-                    'known_intermittent': ['TIMEOUT'],
-                }],
+                'results': [],
             }, {
                 'run_info': {
                     'product': 'chrome',
