@@ -22,6 +22,7 @@ source_set("password_sharing") {
     "password_sharing_mediator_delegate.h",
   ]
   deps = [
+    ":password_sharing_constants",
     ":password_sharing_ui",
     "//components/password_manager/core/browser",
     "//components/strings",
@@ -32,6 +33,7 @@ source_set("password_sharing") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin",
@@ -47,6 +49,7 @@ source_set("password_sharing_ui") {
     "family_picker_view_controller.h",
     "family_picker_view_controller.mm",
     "family_picker_view_controller_presentation_delegate.h",
+    "family_promo_action_handler.h",
     "family_promo_view_controller.h",
     "family_promo_view_controller.mm",
     "password_picker_view_controller.h",
