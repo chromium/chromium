@@ -124,10 +124,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
     base::OnceClosure disconnect_callback_;
   };
 
-  template <typename Interface>
+  template <typename Impl>
   class InstanceHolder : public InstanceHolderBase {
    public:
-    explicit InstanceHolder(std::unique_ptr<Interface> instance)
+    explicit InstanceHolder(std::unique_ptr<Impl> instance)
         : instance_(std::move(instance)) {}
 
     InstanceHolder(const InstanceHolder&) = delete;
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
     ~InstanceHolder() override = default;
 
    private:
-    const std::unique_ptr<Interface> instance_;
+    const std::unique_ptr<Impl> instance_;
   };
 
   template <typename Func>
@@ -144,11 +144,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
       Func fn,
       GenericPendingReceiver receiver) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
+    using Impl = typename internal::ServiceFactoryTraits<Func>::Impl;
     auto impl = fn(receiver.As<Interface>());
     if (!impl)
       return nullptr;
 
-    return std::make_unique<InstanceHolder<Interface>>(std::move(impl));
+    return std::make_unique<InstanceHolder<Impl>>(std::move(impl));
   }
 
   void OnInstanceDisconnected(InstanceHolderBase* instance);
@@ -166,10 +167,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
 
 namespace internal {
 
-template <typename Impl, typename InterfaceType>
-struct ServiceFactoryTraits<std::unique_ptr<Impl> (*)(
+template <typename ImplType, typename InterfaceType>
+struct ServiceFactoryTraits<std::unique_ptr<ImplType> (*)(
     PendingReceiver<InterfaceType>)> {
   using Interface = InterfaceType;
+  using Impl = ImplType;
 };
 
 }  // namespace internal
