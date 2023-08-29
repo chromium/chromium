@@ -396,19 +396,44 @@ TEST_F(MandatoryReauthManagerTest,
 }
 
 // Test that the MandatoryReauthManager returns that we should offer re-auth
-// opt-in if we have a matching local card for a server card submitted in the
-// form.
-TEST_F(MandatoryReauthManagerTest,
-       ShouldOfferOptin_ServerCardWithMatchingLocalCard) {
+// opt-in if we have a matching local card for a server card extracted from the
+// form, and the matching local card was the last filled card. This also tests
+// that the metrics logged correctly.
+TEST_F(
+    MandatoryReauthManagerTest,
+    ShouldOfferOptin_ServerCardWithMatchingLocalCard_LastFilledCardWasLocalCard) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
 
+  // Test that if the last filled card is the matching local card, we offer
+  // re-auth opt-in.
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
       server_card_, FormDataImporter::CardGuid(local_card_.guid()),
       FormDataImporter::kServerCard));
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
+}
+
+// Test that the MandatoryReauthManager returns that we should not offer re-auth
+// opt-in if we have a matching local card for a server card extracted from the
+// form, and the matching local card was not the last filled card. This also
+// tests that the metrics logged correctly.
+TEST_F(
+    MandatoryReauthManagerTest,
+    ShouldOfferOptin_ServerCardWithMatchingLocalCard_LastFilledCardWasServerCard) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+
+  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+
+  // Test that if the last filled card is not the matching local card, we do not
+  // offer re-auth opt-in.
+  EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
+      server_card_, FormDataImporter::CardGuid(server_card_.guid()),
+      FormDataImporter::kServerCard));
+  ExpectUniqueOfferOptInDecision(
+      MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
 }
 
 // Test that the MandatoryReauthManager returns that we should not offer re-auth
