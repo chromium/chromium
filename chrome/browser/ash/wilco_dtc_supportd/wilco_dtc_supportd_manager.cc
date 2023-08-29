@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/browser_process.h"
@@ -135,6 +136,7 @@ const std::string& WilcoDtcSupportdManager::GetConfigurationDataForTesting()
 }
 
 void WilcoDtcSupportdManager::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "WilcoDtcSupportdManager::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
   // The user is logged-in and the affiliation is set.
