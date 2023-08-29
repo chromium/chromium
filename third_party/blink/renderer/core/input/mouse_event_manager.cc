@@ -529,10 +529,11 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   for (; element; element = element->ParentOrShadowHostElement()) {
     if (element->IsFocusable() && element->IsFocusedElementInDocument())
       return WebInputEventResult::kNotHandled;
-    if (element->IsMouseFocusable() || element->DelegatesFocus())
+    if (element->IsFocusable() || element->DelegatesFocus()) {
       break;
+    }
   }
-  DCHECK(!element || element->IsMouseFocusable() || element->DelegatesFocus());
+  DCHECK(!element || element->IsFocusable() || element->DelegatesFocus());
 
   // To fix <rdar://problem/4895428> Can't drag selected ToDo, we don't focus
   // a node on mouse down if it's selected and inside a focused node. It will
@@ -563,9 +564,10 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If focus shift is blocked, we eat the event. Note we should never
   // clear swallowEvent if the page already set it (e.g., by canceling
   // default behavior).
-  if (element && !element->IsMouseFocusable() &&
-      SlideFocusOnShadowHostIfNecessary(*element))
+  if (element && !element->IsFocusable() &&
+      SlideFocusOnShadowHostIfNecessary(*element)) {
     return WebInputEventResult::kHandledSystem;
+  }
 
   // We call setFocusedElement even with !element in order to blur
   // current focus element when a link is clicked; this is expected by

@@ -128,11 +128,10 @@ HTMLAnchorElement::HTMLAnchorElement(const QualifiedName& tag_name,
 HTMLAnchorElement::~HTMLAnchorElement() = default;
 
 bool HTMLAnchorElement::SupportsFocus() const {
-  if (IsEditable(*this))
-    return HTMLElement::SupportsFocus();
-  // If not a link we should still be able to focus the element if it has
-  // tabIndex.
-  return IsLink() || HTMLElement::SupportsFocus();
+  if (IsLink() && !IsEditable(*this)) {
+    return true;
+  }
+  return HTMLElement::SupportsFocus();
 }
 
 bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
@@ -140,13 +139,13 @@ bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
          HTMLElement::SupportsFocus();
 }
 
-bool HTMLAnchorElement::IsMouseFocusable() const {
+bool HTMLAnchorElement::IsFocusable() const {
   if (!IsFocusableStyleAfterUpdate())
     return false;
   if (IsLink())
     return SupportsFocus();
 
-  return HTMLElement::IsMouseFocusable();
+  return HTMLElement::IsFocusable();
 }
 
 bool HTMLAnchorElement::IsKeyboardFocusable() const {
@@ -154,8 +153,9 @@ bool HTMLAnchorElement::IsKeyboardFocusable() const {
     return false;
 
   // Anchor is focusable if the base element supports focus and is focusable.
-  if (IsBaseElementFocusable() && Element::SupportsFocus())
+  if (Element::SupportsFocus() && IsFocusable()) {
     return HTMLElement::IsKeyboardFocusable();
+  }
 
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
     return false;

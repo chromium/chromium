@@ -990,7 +990,7 @@ void FrameSelection::SetFocusedNodeIfNeeded() {
       // frame, so add the !isFrameElement check here. There's probably a better
       // way to make this work in the long term, but this is the safest fix at
       // this time.
-      if (target->IsMouseFocusable() && !IsFrameElement(target)) {
+      if (target->IsFocusable() && !IsFrameElement(target)) {
         frame_->GetPage()->GetFocusController().SetFocusedElement(target,
                                                                   frame_);
         return;

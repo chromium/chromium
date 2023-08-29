@@ -726,15 +726,16 @@ bool HTMLMediaElement::SupportsFocus() const {
   return ShouldShowControls() || HTMLElement::SupportsFocus();
 }
 
-bool HTMLMediaElement::IsMouseFocusable() const {
+bool HTMLMediaElement::IsFocusable() const {
   if (!SupportsFocus()) {
     return false;
   }
-  return !IsFullscreen() || HTMLElement::IsMouseFocusable();
+  return !IsFullscreen() || HTMLElement::IsFocusable();
 }
 
 bool HTMLMediaElement::IsKeyboardFocusable() const {
-  return IsMouseFocusable();
+  // Media elements are keyboard focusable if they are focusable at all.
+  return IsFocusable();
 }
 
 void HTMLMediaElement::ParseAttribute(

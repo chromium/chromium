@@ -189,18 +189,10 @@ bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {
          SVGGraphicsElement::IsURLAttribute(attribute);
 }
 
-bool SVGAElement::IsMouseFocusable() const {
-  if (IsLink())
-    return SupportsFocus();
-
-  return SVGElement::IsMouseFocusable();
-}
-
 bool SVGAElement::IsKeyboardFocusable() const {
-  if (IsBaseElementFocusable() && Element::SupportsFocus())
-    return SVGElement::IsKeyboardFocusable();
-  if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
+  if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks()) {
     return false;
+  }
   return SVGElement::IsKeyboardFocusable();
 }
 

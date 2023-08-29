@@ -496,7 +496,7 @@ class CORE_EXPORT HTMLMediaElement
   bool AreAuthorShadowsAllowed() const final { return false; }
 
   bool SupportsFocus() const final;
-  bool IsMouseFocusable() const final;
+  bool IsFocusable() const final;
   bool IsKeyboardFocusable() const final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

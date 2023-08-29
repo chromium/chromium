@@ -602,8 +602,7 @@ bool HTMLPlugInElement::IsKeyboardFocusable() const {
   }
 
   return GetDocument().IsActive() && embedded_content_view &&
-         embedded_content_view->SupportsKeyboardFocus() &&
-         IsBaseElementFocusable();
+         embedded_content_view->SupportsKeyboardFocus() && IsFocusable();
 }
 
 bool HTMLPlugInElement::HasCustomFocusLogic() const {

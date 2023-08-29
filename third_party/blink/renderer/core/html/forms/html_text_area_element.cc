@@ -306,7 +306,7 @@ bool HTMLTextAreaElement::HasCustomFocusLogic() const {
 bool HTMLTextAreaElement::IsKeyboardFocusable() const {
   // If a given text area can be focused at all, then it will always be keyboard
   // focusable.
-  return IsBaseElementFocusable();
+  return IsFocusable();
 }
 
 bool HTMLTextAreaElement::MayTriggerVirtualKeyboard() const {

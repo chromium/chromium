@@ -853,9 +853,8 @@ TEST_P(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   ASSERT_TRUE(GetDocument()
                   .getElementById(AtomicString("textfield"))
                   ->IsKeyboardFocusable());
-  ASSERT_TRUE(GetDocument()
-                  .getElementById(AtomicString("textfield"))
-                  ->IsMouseFocusable());
+  ASSERT_TRUE(
+      GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   ASSERT_TRUE(
       GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   EXPECT_EQ(
@@ -883,9 +882,8 @@ TEST_P(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   EXPECT_FALSE(GetDocument()
                    .getElementById(AtomicString("textfield"))
                    ->IsKeyboardFocusable());
-  EXPECT_FALSE(GetDocument()
-                   .getElementById(AtomicString("textfield"))
-                   ->IsMouseFocusable());
+  EXPECT_FALSE(
+      GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   EXPECT_FALSE(
       GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
 
@@ -911,9 +909,8 @@ TEST_P(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   EXPECT_TRUE(GetDocument()
                   .getElementById(AtomicString("textfield"))
                   ->IsKeyboardFocusable());
-  EXPECT_TRUE(GetDocument()
-                  .getElementById(AtomicString("textfield"))
-                  ->IsMouseFocusable());
+  EXPECT_TRUE(
+      GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   EXPECT_TRUE(
       GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
 
@@ -1052,7 +1049,6 @@ TEST_P(DisplayLockContextTest,
 
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(text_field->IsKeyboardFocusable());
-  ASSERT_TRUE(text_field->IsMouseFocusable());
   ASSERT_TRUE(text_field->IsFocusable());
 
   auto* element = shadow_root.getElementById(AtomicString("container"));
@@ -1071,7 +1067,6 @@ TEST_P(DisplayLockContextTest,
 
   // The input should not be focusable now.
   EXPECT_FALSE(text_field->IsKeyboardFocusable());
-  EXPECT_FALSE(text_field->IsMouseFocusable());
   EXPECT_FALSE(text_field->IsFocusable());
 
   // Calling explicit focus() should also not focus the element.

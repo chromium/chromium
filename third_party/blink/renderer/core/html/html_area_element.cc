@@ -185,11 +185,13 @@ HTMLImageElement* HTMLAreaElement::ImageElement() const {
 }
 
 bool HTMLAreaElement::IsKeyboardFocusable() const {
-  return IsBaseElementFocusable();
+  // Explicitly skip over the HTMLAnchorElement's keyboard focus behavior.
+  return Element::IsKeyboardFocusable();
 }
 
-bool HTMLAreaElement::IsMouseFocusable() const {
-  return IsBaseElementFocusable();
+bool HTMLAreaElement::IsFocusable() const {
+  // Explicitly skip over the HTMLAnchorElement's mouse focus behavior.
+  return HTMLElement::IsFocusable();
 }
 
 bool HTMLAreaElement::IsFocusableStyle() const {

@@ -301,8 +301,9 @@ bool HTMLFormControlElement::IsKeyboardFocusable() const {
   if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled())
     return HTMLElement::IsKeyboardFocusable();
 
-  // Skip tabIndex check in a parent class.
-  return IsBaseElementFocusable();
+  // Form control elements are always keyboard focusable if they are focusable
+  // at all.
+  return IsFocusable();
 }
 
 bool HTMLFormControlElement::MayTriggerVirtualKeyboard() const {

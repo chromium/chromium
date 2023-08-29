@@ -5093,7 +5093,7 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
   // focus candidate for a dialog element in which case we are looking for a
   // keyboard focusable element and will be calling this for mouse focusable
   // elements.
-  DCHECK(!IsMouseFocusable() || !IsKeyboardFocusable() ||
+  DCHECK(!IsKeyboardFocusable() ||
          FocusController::AdjustedTabIndex(*this) < 0);
 
   // TODO(crbug.com/1018619): Support AREA -> IMG delegation.
@@ -5486,17 +5486,17 @@ bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
 }
 
 bool Element::IsKeyboardFocusable() const {
-  if (!Element::IsMouseFocusable()) {
+  if (!Element::IsFocusable()) {
     return false;
   }
   // Note that IsScrollableContainerThatShouldBeKeyboardFocusable() will get
-  // called twice, once in IsMouseFocusable (via SupportsFocus) and the other
+  // called twice, once in IsFocusable (via SupportsFocus) and the other
   // here. Note that IsScrollableContainerThatShouldBeKeyboardFocusable is slow.
   return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0 ||
          IsScrollableContainerThatShouldBeKeyboardFocusable();
 }
 
-bool Element::IsMouseFocusable() const {
+bool Element::IsFocusable() const {
   return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
 }
 

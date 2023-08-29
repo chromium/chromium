@@ -1716,7 +1716,7 @@ Element* ContainerNode::GetAutofocusDelegate() const {
     // focusable_area is not click-focusable and the call was initiated by the
     // user clicking. I don't believe this is currently possible, so DCHECK
     // instead.
-    DCHECK(focusable_area->IsMouseFocusable());
+    DCHECK(focusable_area->IsFocusable());
 
     return focusable_area;
   }
