@@ -534,7 +534,7 @@
     'identifier': 'TROGDOR_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-public/R118-15585.0.0',
+      'cros_img': 'trogdor-public/R118-15594.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },

@@ -40544,7 +40544,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R118-15585.0.0",
+        "cros_img": "trogdor-public/R118-15594.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -40604,7 +40604,7 @@
       {
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R118-15585.0.0",
+        "cros_img": "trogdor-public/R118-15594.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
