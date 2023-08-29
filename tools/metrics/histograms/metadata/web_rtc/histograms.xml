@@ -1647,7 +1647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SpeedLimit" units="%"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>handellm@google.com</owner>
   <owner>hbos@chromium.org</owner>
   <summary>

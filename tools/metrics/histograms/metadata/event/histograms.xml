@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2"
-    enum="JankyBoolean" expires_after="2023-12-24">
+    enum="JankyBoolean" expires_after="2024-02-25">
   <owner>nuskos@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollJank" enum="Boolean"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>

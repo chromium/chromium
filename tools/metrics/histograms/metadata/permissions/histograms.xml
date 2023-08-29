@@ -1465,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>

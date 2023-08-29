@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
-    enum="Boolean" expires_after="2023-12-24">
+    enum="Boolean" expires_after="2024-02-25">
   <owner>amanvr@chromium.org</owner>
   <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

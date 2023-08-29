@@ -2447,7 +2447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordReuse.PasswordFieldDetected"
-    enum="PasswordReusePasswordFieldDetected" expires_after="2023-12-24">
+    enum="PasswordReusePasswordFieldDetected" expires_after="2024-02-25">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3379,7 +3379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SyncPasswordHashChange"
-    enum="GaiaPasswordHashChange" expires_after="2023-12-24">
+    enum="GaiaPasswordHashChange" expires_after="2024-02-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ActivityStop.PercentageOfTabsUsed" units="%"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>gauravjj@google.com</owner>
   <owner>skavuluru@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildMismatch.AppInfoError2" enum="ChildAppInfoError"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>torne@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -632,7 +632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildMismatch.BrowserVersionChanged2"
-    enum="BooleanChanged" expires_after="2023-12-24">
+    enum="BooleanChanged" expires_after="2024-02-25">
   <owner>torne@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -1579,7 +1579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.GridTabSwitcher.ThumbnailFetchingResult"
-    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2023-12-24">
+    enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2024-02-25">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-isochron-team@google.com</owner>
   <summary>
@@ -2400,7 +2400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.RequestToUiModel.First"
-    units="ms" expires_after="2023-12-24">
+    units="ms" expires_after="2024-02-25">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>

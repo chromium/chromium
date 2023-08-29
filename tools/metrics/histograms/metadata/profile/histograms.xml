@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Guest.TypeCreated" enum="GuestProfileCreatedType"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

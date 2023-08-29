@@ -3451,7 +3451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->

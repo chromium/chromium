@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.UploadSize" units="bytes"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1737,7 +1737,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse"
-    enum="BooleanCompleted" expires_after="2023-12-24">
+    enum="BooleanCompleted" expires_after="2024-02-25">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2029,7 +2029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-24">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-25">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2240,7 +2240,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2"
     enum="SafeBrowsingTailoredSecurityNotificationResult"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2756,7 +2756,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4StoreRead.Result"
-    enum="SafeBrowsingV4StoreReadResult" expires_after="2023-12-24">
+    enum="SafeBrowsingV4StoreReadResult" expires_after="2024-02-25">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2795,7 +2795,7 @@ security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-12-24">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-25">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2820,7 +2820,7 @@ risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.ResponseSizeKB" units="KB"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

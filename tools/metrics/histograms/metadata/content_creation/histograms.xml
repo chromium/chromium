@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error"
-    enum="LinkGenerationError" expires_after="2023-12-24">
+    enum="LinkGenerationError" expires_after="2024-02-25">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
