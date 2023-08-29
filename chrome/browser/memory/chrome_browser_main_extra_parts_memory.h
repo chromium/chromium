@@ -19,7 +19,6 @@ class SystemMemoryPressureEvaluator;
 #endif
 
 namespace memory {
-class MemoryAblationStudy;
 class EnterpriseMemoryLimitPrefObserver;
 }  // namespace memory
 
@@ -52,8 +51,6 @@ class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::memory::SystemMemoryPressureEvaluator> cros_evaluator_;
 #endif
-
-  std::unique_ptr<memory::MemoryAblationStudy> memory_ablation_study_;
 };
 
 #endif  // CHROME_BROWSER_MEMORY_CHROME_BROWSER_MAIN_EXTRA_PARTS_MEMORY_H_

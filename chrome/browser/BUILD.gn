@@ -803,8 +803,6 @@ static_library("browser") {
     "memory/enterprise_memory_limit_evaluator.h",
     "memory/enterprise_memory_limit_pref_observer.cc",
     "memory/enterprise_memory_limit_pref_observer.h",
-    "memory/memory_ablation_study.cc",
-    "memory/memory_ablation_study.h",
     "memory_details.cc",
     "memory_details.h",
     "metrics/chrome_browser_main_extra_parts_metrics.cc",
