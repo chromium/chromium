@@ -23,9 +23,6 @@ class AccessibilityState {
     // Called when the display inversion state changes.
     virtual void OnDisplayInversionEnabledChanged(bool enabled) = 0;
 
-    // Called when the contrast level changes.
-    virtual void OnContrastLevelChanged(bool highContrastEnabled) = 0;
-
     // Called during browser startup and any time enabled services change.
     virtual void RecordAccessibilityServiceInfoHistograms() = 0;
   };
@@ -41,9 +38,6 @@ class AccessibilityState {
 
   // Notifies all delegates of a display inversion state change.
   static void NotifyDisplayInversionEnabledObservers(bool enabled);
-
-  // Notifies all delegates of a contrast level change.
-  static void NotifyContrastLevelObservers(bool highContrastEnabled);
 
   // Notifies all delegates to record service info histograms.
   static void NotifyRecordAccessibilityServiceInfoHistogram();
