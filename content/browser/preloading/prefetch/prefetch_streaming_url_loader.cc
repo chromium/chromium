@@ -16,23 +16,22 @@
 namespace content {
 
 PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
-    network::mojom::URLLoaderFactory* url_loader_factory,
-    const network::ResourceRequest& request,
-    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    base::TimeDelta timeout_duration,
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-    base::OnceClosure on_received_head_callback,
-    base::WeakPtr<PrefetchResponseReader> response_reader)
+    base::OnceClosure on_received_head_callback)
     : on_prefetch_response_started_callback_(
           std::move(on_prefetch_response_started_callback)),
       on_prefetch_response_completed_callback_(
           std::move(on_prefetch_response_completed_callback)),
       on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)),
-      on_received_head_callback_(std::move(on_received_head_callback)) {
-  SetResponseReader(std::move(response_reader));
+      on_received_head_callback_(std::move(on_received_head_callback)) {}
 
+void PrefetchStreamingURLLoader::Start(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    const network::ResourceRequest& request,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    base::TimeDelta timeout_duration) {
   url_loader_factory->CreateLoaderAndStart(
       prefetch_url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
@@ -56,6 +55,33 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
 }
 
 PrefetchStreamingURLLoader::~PrefetchStreamingURLLoader() = default;
+
+// static
+std::unique_ptr<PrefetchStreamingURLLoader> PrefetchStreamingURLLoader::Create(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    const network::ResourceRequest& request,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    base::TimeDelta timeout_duration,
+    OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
+    OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
+    OnPrefetchRedirectCallback on_prefetch_redirect_callback,
+    base::OnceClosure on_received_head_callback,
+    base::WeakPtr<PrefetchResponseReader> response_reader) {
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
+      std::make_unique<PrefetchStreamingURLLoader>(
+          std::move(on_prefetch_response_started_callback),
+          std::move(on_prefetch_response_completed_callback),
+          std::move(on_prefetch_redirect_callback),
+          std::move(on_received_head_callback));
+
+  streaming_loader->SetResponseReader(std::move(response_reader));
+
+  streaming_loader->Start(url_loader_factory, request,
+                          network_traffic_annotation,
+                          std::move(timeout_duration));
+
+  return streaming_loader;
+}
 
 void PrefetchStreamingURLLoader::SetResponseReader(
     base::WeakPtr<PrefetchResponseReader> response_reader) {

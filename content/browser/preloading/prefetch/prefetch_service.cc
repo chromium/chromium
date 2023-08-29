@@ -1125,20 +1125,17 @@ void PrefetchService::MakePrefetchRequest(
             policy_exception_justification: "Not implemented."
         })");
 
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          GetURLLoaderFactoryForCurrentPrefetch(prefetch_container), *request,
-          traffic_annotation, PrefetchTimeoutDuration(),
-          base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
-                         base::Unretained(this), prefetch_container),
-          base::BindOnce(&PrefetchService::OnPrefetchResponseCompleted,
-                         base::Unretained(this), prefetch_container),
-          base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
-                              base::Unretained(this), prefetch_container),
-          base::BindOnce(&PrefetchContainer::OnReceivedHead,
-                         prefetch_container),
-          prefetch_container->GetResponseReaderForCurrentPrefetch());
-
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      GetURLLoaderFactoryForCurrentPrefetch(prefetch_container), *request,
+      traffic_annotation, PrefetchTimeoutDuration(),
+      base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
+                     base::Unretained(this), prefetch_container),
+      base::BindOnce(&PrefetchService::OnPrefetchResponseCompleted,
+                     base::Unretained(this), prefetch_container),
+      base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
+                          base::Unretained(this), prefetch_container),
+      base::BindOnce(&PrefetchContainer::OnReceivedHead, prefetch_container),
+      prefetch_container->GetResponseReaderForCurrentPrefetch());
   prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";

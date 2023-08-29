@@ -204,32 +204,28 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates receiving the head and body for the prefetch.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
@@ -317,32 +313,28 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates receiving the head for the prefetch, receiving part of the body
   // data, start to serve the prefetch, and then getting the rest of the body
@@ -444,32 +436,28 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates a successful prefetch that is not used.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
@@ -507,30 +495,27 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                // This will cause the prefetch to be marked as not servable.
-                return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](const network::URLLoaderCompletionStatus& completion_status) {
-                NOTREACHED();
-              }),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            // This will cause the prefetch to be marked as not servable.
+            return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](const network::URLLoaderCompletionStatus& completion_status) {
+            NOTREACHED();
+          }),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates a prefetch with a non-2XX response. This should be marked as not
   // servable.
@@ -566,32 +551,28 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates a prefetch with a non-OK net error.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
@@ -632,28 +613,25 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce([](network::mojom::URLResponseHead* head) {
-            NOTREACHED();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
-          }),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce([](network::mojom::URLResponseHead* head) {
+        NOTREACHED();
+        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+      }),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulate getting a non-OK net error.
   test_url_loader_factory()->SimulateResponseComplete(net::ERR_FAILED);
@@ -688,32 +666,28 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates receiving the head for the prefetch, receiving part of the body
   // data, start to serve the prefetch, and then getting a net error. The error
@@ -816,29 +790,26 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto redirect_response_reader =
       base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                                &redirect_info, &redirect_head),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          redirect_response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
+                                            &redirect_info, &redirect_head),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      redirect_response_reader->GetWeakPtr());
 
   ASSERT_TRUE(test_url_loader_factory()->test_url_loader());
   test_url_loader_factory()->test_url_loader()->SetOnFollowRedirectClosure(
@@ -977,23 +948,21 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce([](network::mojom::URLResponseHead* head) {
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce([](network::mojom::URLResponseHead* head) {
+        NOTREACHED();
+        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+      }),
+      base::BindOnce(
+          [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
           }),
-          base::BindOnce(
-              [](const network::URLLoaderCompletionStatus& completion_status) {
-                NOTREACHED();
-              }),
-          CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                                &redirect_info, &redirect_head),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
+                                            &redirect_info, &redirect_head),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulate a redirect that should not be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
@@ -1033,27 +1002,25 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce([](network::mojom::URLResponseHead* head) {
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce([](network::mojom::URLResponseHead* head) {
+        NOTREACHED();
+        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+      }),
+      base::BindOnce(
+          [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
           }),
-          base::BindOnce(
-              [](const network::URLLoaderCompletionStatus& completion_status) {
-                NOTREACHED();
-              }),
-          CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                                &redirect_info, &redirect_head),
-          // When a redirect causes a change in network context, the
-          // on_receive_head_callback_ is not called, and is passed to the
-          // follow up PrefetchStreamingURLLoader that will follow the redirect
-          // in the other network context.
-          GetParam() ? base::BindOnce([]() { NOTREACHED(); })
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
+                                            &redirect_info, &redirect_head),
+      // When a redirect causes a change in network context, the
+      // on_receive_head_callback_ is not called, and is passed to the
+      // follow up PrefetchStreamingURLLoader that will follow the redirect
+      // in the other network context.
+      GetParam() ? base::BindOnce([]() { NOTREACHED(); }) : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulate a redirect that should not be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
@@ -1136,23 +1103,21 @@ TEST_P(PrefetchStreamingURLLoaderTest,
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce([](network::mojom::URLResponseHead* head) {
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce([](network::mojom::URLResponseHead* head) {
+        NOTREACHED();
+        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+      }),
+      base::BindOnce(
+          [](const network::URLLoaderCompletionStatus& completion_status) {
             NOTREACHED();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
           }),
-          base::BindOnce(
-              [](const network::URLLoaderCompletionStatus& completion_status) {
-                NOTREACHED();
-              }),
-          CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                                &redirect_info, &redirect_head),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+      CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
+                                            &redirect_info, &redirect_head),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulate a redirect that should be followed by the URL loader. The URL
   // loader needs to pause until the eligibility check is complete.
@@ -1199,31 +1164,28 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   // Simulates a successful prefetch that is not used. However, since the
   // prefetch is marked as a decoy, it cannot be served.
@@ -1262,29 +1224,26 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
-          base::BindOnce([](network::mojom::URLResponseHead* head) {
-            NOTREACHED();
-            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
-          }),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                EXPECT_EQ(completion_status.error_code, net::ERR_TIMED_OUT);
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          GetParam() ? on_head_received_loop.QuitClosure()
-                     : base::OnceClosure(),
-          response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
+      base::BindOnce([](network::mojom::URLResponseHead* head) {
+        NOTREACHED();
+        return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+      }),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            EXPECT_EQ(completion_status.error_code, net::ERR_TIMED_OUT);
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      GetParam() ? on_head_received_loop.QuitClosure() : base::OnceClosure(),
+      response_reader->GetWeakPtr());
 
   task_environment()->FastForwardBy(base::Seconds(1));
   on_response_complete_loop.Run();
@@ -1317,31 +1276,28 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                EXPECT_EQ(completion_status.error_code, net::OK);
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          base::OnceClosure(), response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::Seconds(1),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            EXPECT_EQ(completion_status.error_code, net::OK);
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      base::OnceClosure(), response_reader->GetWeakPtr());
 
   // Simulates receiving the head of the prefetch response.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
@@ -1426,30 +1382,27 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          base::OnceClosure(), response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      base::OnceClosure(), response_reader->GetWeakPtr());
 
   // Simulates a successful prefetch that is not used.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
@@ -1497,30 +1450,27 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::make_unique<PrefetchStreamingURLLoader>(
-          test_url_loader_factory(), *prefetch_request,
-          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
-          base::BindOnce(
-              [](base::RunLoop* on_response_received_loop,
-                 network::mojom::URLResponseHead* head) {
-                on_response_received_loop->Quit();
-                return PrefetchStreamingURLLoaderStatus::
-                    kHeadReceivedWaitingOnBody;
-              },
-              &on_response_received_loop),
-          base::BindOnce(
-              [](base::RunLoop* on_response_complete_loop,
-                 const network::URLLoaderCompletionStatus& completion_status) {
-                on_response_complete_loop->Quit();
-              },
-              &on_response_complete_loop),
-          base::BindRepeating(
-              [](const net::RedirectInfo& redirect_info,
-                 network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
-              }),
-          base::OnceClosure(), response_reader->GetWeakPtr());
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      test_url_loader_factory(), *prefetch_request,
+      TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce(
+          [](base::RunLoop* on_response_received_loop,
+             network::mojom::URLResponseHead* head) {
+            on_response_received_loop->Quit();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          },
+          &on_response_received_loop),
+      base::BindOnce(
+          [](base::RunLoop* on_response_complete_loop,
+             const network::URLLoaderCompletionStatus& completion_status) {
+            on_response_complete_loop->Quit();
+          },
+          &on_response_complete_loop),
+      base::BindRepeating([](const net::RedirectInfo& redirect_info,
+                             network::mojom::URLResponseHeadPtr response_head) {
+        NOTREACHED();
+      }),
+      base::OnceClosure(), response_reader->GetWeakPtr());
 
   // Simulates receiving the head for the prefetch, receiving part of the body
   // data, start to serve the prefetch, and then getting the rest of the body

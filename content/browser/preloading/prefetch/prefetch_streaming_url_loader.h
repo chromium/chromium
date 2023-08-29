@@ -221,7 +221,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head)>;
 
-  PrefetchStreamingURLLoader(
+  static std::unique_ptr<PrefetchStreamingURLLoader> Create(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const network::ResourceRequest& request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
@@ -232,6 +232,15 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
       base::OnceClosure on_received_head_callback,
       base::WeakPtr<PrefetchResponseReader> response_reader);
+
+  // Must be called only from `Create()`.
+  PrefetchStreamingURLLoader(
+      OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
+      OnPrefetchResponseCompletedCallback
+          on_prefetch_response_completed_callback,
+      OnPrefetchRedirectCallback on_prefetch_redirect_callback,
+      base::OnceClosure on_received_head_callback);
+
   ~PrefetchStreamingURLLoader() override;
 
   PrefetchStreamingURLLoader(const PrefetchStreamingURLLoader&) = delete;
@@ -269,6 +278,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void OnStartServing();
 
  private:
+  void Start(network::mojom::URLLoaderFactory* url_loader_factory,
+             const network::ResourceRequest& request,
+             const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+             base::TimeDelta timeout_duration);
+
   void DisconnectPrefetchURLLoaderMojo();
 
   // network::mojom::URLLoaderClient
