@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_list_part_traversal.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -51,7 +52,8 @@ class PreviewPopoverInnerElement : public HTMLDivElement {
       const StyleRecalcContext& style_recalc_context) override {
     HTMLSelectListElement* selectlist =
         DynamicTo<HTMLSelectListElement>(OwnerShadowHost());
-    if (!selectlist || !selectlist->ButtonPart()) {
+    if (!selectlist || !selectlist->ButtonPart() ||
+        !selectlist->ButtonPart()->GetComputedStyle()) {
       return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
     }
 
@@ -267,16 +269,28 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   IncrementImplicitlyAnchoredElementCount();
 }
 
+namespace {
+bool HasOptionElementDescendant(Element* element) {
+  for (auto& descendant : ElementTraversal::DescendantsOf(*element)) {
+    if (DynamicTo<HTMLOptionElement>(descendant)) {
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
+
 void HTMLSelectListElement::ManuallyAssignSlots() {
-  Element* button = nullptr;
+  Element* explicit_button = nullptr;
+  VectorOf<Node> button_nodes;
   Element* listbox = nullptr;
   Element* selected_value = nullptr;
   Element* marker = nullptr;
   VectorOf<Node> options;
   for (Node& node : NodeTraversal::ChildrenOf(*this)) {
     if (auto* element = DynamicTo<Element>(node)) {
-      if (!button && element->SlotName() == kButtonPartName) {
-        button = element;
+      if (!explicit_button && element->SlotName() == kButtonPartName) {
+        explicit_button = element;
       } else if (!listbox && element->SlotName() == kListboxPartName) {
         listbox = element;
       } else if (!selected_value &&
@@ -284,15 +298,27 @@ void HTMLSelectListElement::ManuallyAssignSlots() {
         selected_value = element;
       } else if (!marker && element->SlotName() == kMarkerPartName) {
         marker = element;
+      } else if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+        options.push_back(option);
+      } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(element)) {
+        options.push_back(optgroup);
+      } else if (HasOptionElementDescendant(element)) {
+        options.push_back(element);
+      } else {
+        button_nodes.push_back(element);
       }
-      if (element->SlotName() == g_empty_atom) {
-        options.push_back(node);
+    } else if (auto* text = DynamicTo<Text>(node)) {
+      if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+        button_nodes.push_back(node);
       }
-    } else if (node.IsSlotable()) {
-      options.push_back(node);
     }
   }
-  button_slot_->Assign(button);
+
+  if (explicit_button) {
+    button_slot_->Assign(explicit_button);
+  } else {
+    button_slot_->Assign(button_nodes);
+  }
   listbox_slot_->Assign(listbox);
   selected_value_slot_->Assign(selected_value);
   marker_slot_->Assign(marker);
