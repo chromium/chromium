@@ -124,6 +124,12 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   bool ShouldCollectSlice() const;
 
+  // If this is called, CollectSlice() and CollectPageResourceUsage() will not
+  // be called on a timer. Tests can call them manually.
+  void SetTriggerCollectionManuallyForTesting();
+
+  // If this is called, the given callback will be called instead of
+  // ShouldCollectSlice().
   void SetShouldCollectSliceCallbackForTesting(base::RepeatingCallback<bool()>);
 
   // CHECK's that `page_node` and `info` are in the right state to be
@@ -140,6 +146,10 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   // Timer which is used to trigger CollectSlice(), which records the UKM.
   base::RepeatingTimer collect_slice_timer_;
+
+  // Timer which is used to trigger CollectPageResourceUsage().
+  base::RepeatingTimer collect_page_resource_usage_timer_;
+
   // Pointer to this process' graph.
   raw_ptr<Graph> graph_ = nullptr;
 

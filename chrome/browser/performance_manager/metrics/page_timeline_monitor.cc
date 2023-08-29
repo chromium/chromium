@@ -78,6 +78,11 @@ PageTimelineMonitor::PageTimelineMonitor()
       FROM_HERE,
       performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
       &PageTimelineMonitor::CollectSlice);
+
+  // PageResourceUsage is collected on a different schedule from PageTimeline.
+  collect_page_resource_usage_timer_.Start(
+      FROM_HERE, base::Minutes(2), this,
+      &PageTimelineMonitor::CollectPageResourceUsage);
 }
 
 PageTimelineMonitor::~PageTimelineMonitor() = default;
@@ -121,7 +126,7 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
   const auto now = base::TimeTicks::Now();
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
-    ukm::builders::PerformanceManager_PageResourceUsage(source_id)
+    ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
         .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
         .SetPrivateFootprintEstimate(page_node->EstimatePrivateFootprintSize())
         .SetRecentCPUUsage(kCPUUsageFactor * cpu_usage)
@@ -135,11 +140,6 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
 }
 
 void PageTimelineMonitor::CollectSlice() {
-  // Whether or not we record a full PageTimelineState slice, record the
-  // PageResourceUsage, which has fewer privacy implications so can be recorded
-  // more often.
-  CollectPageResourceUsage();
-
   // We only collect a slice randomly every ~20 times this gets called for
   // privacy purposes. Always fall through when we're in a test.
   if (!ShouldCollectSlice()) {
@@ -245,6 +245,11 @@ bool PageTimelineMonitor::ShouldCollectSlice() const {
 
   // The default if not overridden by tests is to report ~1 out of 20 slices.
   return base::RandInt(0, 19) == 1;
+}
+
+void PageTimelineMonitor::SetTriggerCollectionManuallyForTesting() {
+  collect_slice_timer_.Stop();
+  collect_page_resource_usage_timer_.Stop();
 }
 
 void PageTimelineMonitor::SetShouldCollectSliceCallbackForTesting(

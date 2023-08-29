@@ -35,6 +35,7 @@ class PageTimelineMonitorBrowserTest : public InProcessBrowserTest {
     PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindOnce([](Graph* graph) {
           auto* monitor = graph->GetRegisteredObjectAs<PageTimelineMonitor>();
+          monitor->SetTriggerCollectionManuallyForTesting();
           monitor->SetShouldCollectSliceCallbackForTesting(
               base::BindRepeating([]() { return true; }));
         }));

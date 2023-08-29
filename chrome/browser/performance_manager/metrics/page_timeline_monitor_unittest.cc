@@ -80,6 +80,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     std::unique_ptr<PageTimelineMonitor> monitor =
         std::make_unique<PageTimelineMonitor>();
     monitor_ = monitor.get();
+    monitor_->SetTriggerCollectionManuallyForTesting();
     monitor_->SetShouldCollectSliceCallbackForTesting(
         base::BindRepeating([]() { return true; }));
     monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
@@ -102,6 +103,10 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
   void TriggerCollectSlice() { monitor_->CollectSlice(); }
 
+  void TriggerCollectPageResourceUsage() {
+    monitor_->CollectPageResourceUsage();
+  }
+
   void ResetUkmRecorder() {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -118,9 +123,9 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
 void PageTimelineMonitorUnitTest::TestBackgroundStates(
     std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states) {
-  TriggerCollectSlice();
+  TriggerCollectPageResourceUsage();
   auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
   // Expect 1 entry per page.
   EXPECT_EQ(entries.size(), expected_states.size());
   for (const ukm::mojom::UkmEntry* entry : entries) {
@@ -145,10 +150,32 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
   EXPECT_EQ(entries.size(), 1UL);
 
-  // Unsliced resource usage metrics should be collected along with the slice.
+  // Unsliced resource usage metrics should not be collected along with the
+  // slice.
   auto entries2 = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
-  EXPECT_EQ(entries2.size(), 1UL);
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
+  EXPECT_TRUE(entries2.empty());
+}
+
+TEST_F(PageTimelineMonitorUnitTest, TestPageResourceUsage) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetIsVisible(true);
+  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
+
+  TriggerCollectPageResourceUsage();
+
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
+  EXPECT_EQ(entries.size(), 1UL);
+
+  // Sliced resource usage metrics should not be collected along with
+  // PageResourceUsage.
+  auto entries2 = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_TRUE(entries2.empty());
 }
 
 TEST_F(PageTimelineMonitorUnitTest,
@@ -167,12 +194,6 @@ TEST_F(PageTimelineMonitorUnitTest,
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
   EXPECT_EQ(entries.size(), 0UL);
-
-  // Unsliced resource usage metrics should be collected even when the slice is
-  // not.
-  auto entries2 = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
-  EXPECT_EQ(entries2.size(), 1UL);
 }
 
 TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {
@@ -187,21 +208,25 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {
   mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
 
   TriggerCollectSlice();
+  TriggerCollectPageResourceUsage();
+
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
   EXPECT_EQ(entries.size(), 1UL);
   auto entries2 = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
   EXPECT_EQ(entries2.size(), 1UL);
 
   mock_graph.page->SetUkmSourceId(mock_source_id_2);
 
   TriggerCollectSlice();
+  TriggerCollectPageResourceUsage();
+
   entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
   EXPECT_EQ(entries.size(), 2UL);
   entries2 = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
   EXPECT_EQ(entries2.size(), 2UL);
 
   std::vector<ukm::SourceId> ids;
@@ -220,12 +245,13 @@ TEST_F(PageTimelineMonitorUnitTest, TestOnlyRecordTabs) {
   mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
 
   TriggerCollectSlice();
+  TriggerCollectPageResourceUsage();
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
   EXPECT_EQ(entries.size(), 0UL);
   auto entries2 = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
   EXPECT_EQ(entries2.size(), 0UL);
 }
 
@@ -526,10 +552,10 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
   // Let an arbitrary amount of time pass so there's some CPU usage to measure.
   task_env().FastForwardBy(base::Minutes(1));
 
-  TriggerCollectSlice();
+  TriggerCollectPageResourceUsage();
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+      ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
   // Expect 1 entry per page.
   EXPECT_EQ(entries.size(), 2UL);
 
