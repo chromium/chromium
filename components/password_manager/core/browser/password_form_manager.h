@@ -329,14 +329,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsPossibleSingleUsernameAvailable(
       const PossibleUsernameData* possible_username) const;
 
-  // Returns true if the form is a candidate to send single username vote.
-  // Given that function returns true, |password_form_had_username| is an
-  // output parameter indicating whether password form had same username value
-  // as single username form.
-  bool IsPasswordFormAfterSingleUsernameForm(
-      const PossibleUsernameData* possible_username,
-      bool& password_form_had_username);
-
   // Updates the predictions stored in `parser_` with predictions relevant for
   // `observed_form_or_digest_`.
   void UpdatePredictionsForObservedForm(
