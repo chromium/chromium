@@ -611,10 +611,6 @@ class MetadataUpdater:
             #
             # https://chromium-review.googlesource.com/c/chromium/src/+/4749449/comment/43744bf3_eaa0fdd2/
             # sketches out a proposed solution.
-            #
-            # TODO(crbug.com/1466002): See if we can speed up updates when a
-            # test is run in few or no virtual suites. See also:
-            # https://chromium-review.googlesource.com/c/chromium/src/+/4749449/comment/d30d43e6_50cf4045/
             'product': ['os', 'virtual_suite'],
             'os': ['port', 'flag_specific'],
         }
@@ -972,7 +968,7 @@ class MetadataUpdater:
             update_intermittent=(not self._disable_intermittent))
         if expected:
             self._remove_orphaned_tests(expected)
-            self._mark_slow_timeouts_for_disabling(test_file, expected)
+            self._mark_slow_timeouts_for_disabling(expected)
             for section, test_info in self._sections_to_annotate(expected):
                 self._migrate_disables(section, test_info)
                 self._migrate_comments(section, test_info)
@@ -986,8 +982,7 @@ class MetadataUpdater:
         return modified
 
     def _mark_slow_timeouts_for_disabling(
-            self, test_file: metadata.TestFileData,
-            expected: manifestupdate.ExpectedManifest):
+            self, expected: manifestupdate.ExpectedManifest):
         """Disable tests that are simultaneously slow and consistently time out.
 
         Such tests provide too little value for the large amount of time/compute
@@ -996,18 +991,10 @@ class MetadataUpdater:
         for test in expected.iterchildren():
             if not self._test_info[test.id].slow:
                 continue
-            results = test_file.data.get(test.id, {}).get(None, [])
-            statuses_by_config = collections.defaultdict(set)
-            for prop, config, value in results:
-                if prop == 'status':
-                    status, known_intermittent = metadata.unpack_result(value)
-                    statuses_by_config[config].add(status)
-                    if known_intermittent:
-                        statuses_by_config[config].update(known_intermittent)
-
+            status_counts_by_config = test.update_properties.expected.results
             disabled_configs = self._test_info[test.id].disabled_configs
-            for config, statuses in statuses_by_config.items():
-                if statuses == {'TIMEOUT'}:
+            for config, status_counts in status_counts_by_config.items():
+                if set(status_counts) == {'TIMEOUT'}:
                     disabled_configs[config] = DisableType.SLOW_TIMEOUT
 
     def _remove_orphaned_tests(self,

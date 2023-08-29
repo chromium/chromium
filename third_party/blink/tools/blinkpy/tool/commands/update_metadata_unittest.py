@@ -1293,18 +1293,13 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 }],
             },
             overwrite_conditions='yes')
-        path = self.finder.path_from_web_tests('external', 'wpt',
-                                               'fail.html.ini')
-        lines = self.tool.filesystem.read_text_file(path).splitlines()
-        expected = textwrap.dedent("""\
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
             [fail.html]
               expected:
                 if (product == "content_shell") and (os == "win"): FAIL
                 if (product == "content_shell") and (os == "mac"): TIMEOUT
             """)
-        # TODO(crbug.com/1299650): The branch order appears unstable, which we
-        # should fix upstream to avoid create spurious diffs.
-        self.assertEqual(sorted(lines, reverse=True), expected.splitlines())
 
     def test_condition_split_on_virtual_suite(self):
         # The test relies on a feature only enabled by `fake-vts`.
