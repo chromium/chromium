@@ -1377,6 +1377,7 @@ component("platform") {
     "region_capture_crop_id.cc",
     "region_capture_crop_id.h",
     "resolution_units.h",
+    "restriction_target_id.h",
     "search_engine_utils.cc",
     "search_engine_utils.h",
     "storage/blink_storage_key.cc",

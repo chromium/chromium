@@ -318,6 +318,21 @@ void ElementRareDataVector::SetRegionCaptureCropId(
       FieldId::kRegionCaptureCropId, std::move(crop_id));
 }
 
+const RestrictionTargetId* ElementRareDataVector::GetRestrictionTargetId()
+    const {
+  auto* value = GetWrappedField<std::unique_ptr<RestrictionTargetId>>(
+      FieldId::kRestrictionTargetId);
+  return value ? value->get() : nullptr;
+}
+void ElementRareDataVector::SetRestrictionTargetId(
+    std::unique_ptr<RestrictionTargetId> id) {
+  CHECK(!GetRestrictionTargetId());
+  CHECK(id);
+  CHECK(!id->value().is_zero());
+  SetWrappedField<std::unique_ptr<RestrictionTargetId>>(
+      FieldId::kRestrictionTargetId, std::move(id));
+}
+
 ElementRareDataVector::ResizeObserverDataMap*
 ElementRareDataVector::ResizeObserverData() const {
   return GetWrappedField<ElementRareDataVector::ResizeObserverDataMap>(

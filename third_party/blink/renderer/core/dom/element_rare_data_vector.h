@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -94,8 +95,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kImplicitlyAnchoredElementCount = 27,
     kLastRememberedBlockSize = 28,
     kLastRememberedInlineSize = 29,
+    kRestrictionTargetId = 30,
 
-    kNumFields = 30,
+    kNumFields = 31,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -255,6 +257,15 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   // Sets a crop-ID on the item. Must be called at most once. Cannot be used
   // to unset a previously set crop-ID.
   void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id);
+
+  // Returns the ID backing a RestrictionTarget if one was set on the Element,
+  // or nullptr otherwise.
+  const RestrictionTargetId* GetRestrictionTargetId() const;
+  // Returns the ID backing a RestrictionTarget if one was set on the Element,
+  // or nullptr otherwise.
+  // Sets an ID backing a RestrictionTarget associated with the Element.
+  // Must be called at most once. Cannot be used to unset a previously set IDs.
+  void SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id);
 
   using ResizeObserverDataMap =
       HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>;
