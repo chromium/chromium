@@ -75,8 +75,11 @@ bool WallpaperInfo::MatchesSelection(const WallpaperInfo& other) const {
       return location == other.location && layout == other.layout &&
              collection_id == other.collection_id;
     case WallpaperType::kCustomized:
+      // |location| is skipped for customized wallpaper as it includes files id
+      // which is different between devices even it refers to the same file.
+      // Comparing |user_file_path| that contains the absolute path should be
+      // enough.
       return type == other.type && layout == other.layout &&
-             location == other.location &&
              user_file_path == other.user_file_path;
     case WallpaperType::kDefault:
     case WallpaperType::kPolicy:

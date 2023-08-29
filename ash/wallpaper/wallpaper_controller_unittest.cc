@@ -4465,14 +4465,14 @@ TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
 }
 
 TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
-  WallpaperInfo local_info =
-      WallpaperInfo("a_url", WALLPAPER_LAYOUT_CENTER_CROPPED,
-                    WallpaperType::kCustomized, DayBeforeYesterdayish());
+  WallpaperInfo local_info = WallpaperInfo(
+      "a_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
+      DayBeforeYesterdayish(), "/test/a_url");
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
 
   WallpaperInfo synced_info = WallpaperInfo(
       "b_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
-      base::Time::Now().LocalMidnight());
+      base::Time::Now().LocalMidnight(), "/test/b_url");
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
   SimulateUserLogin(kAccountId1);
 
@@ -4483,12 +4483,12 @@ TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
 TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
   WallpaperInfo local_info = WallpaperInfo(
       "a_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
-      base::Time::Now().LocalMidnight());
+      base::Time::Now().LocalMidnight(), "/test/a_url");
   pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
 
-  WallpaperInfo synced_info =
-      WallpaperInfo("b_url", WALLPAPER_LAYOUT_CENTER_CROPPED,
-                    WallpaperType::kCustomized, DayBeforeYesterdayish());
+  WallpaperInfo synced_info = WallpaperInfo(
+      "b_url", WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kCustomized,
+      DayBeforeYesterdayish(), "/test/b_url");
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
   SimulateUserLogin(kAccountId1);
