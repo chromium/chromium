@@ -488,7 +488,7 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryAdded) {
 }
 
 // Test that removing an entry generates an event.
-TEST_F(ReadingListApiUnitTest, ReadingListOnEntryWillBeRemoved) {
+TEST_F(ReadingListApiUnitTest, ReadingListOnEntryRemoved) {
   ReadingListModel* const reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile());
 
@@ -506,9 +506,8 @@ TEST_F(ReadingListApiUnitTest, ReadingListOnEntryWillBeRemoved) {
   EXPECT_EQ(reading_list_model->size(), 0u);
 
   EXPECT_EQ(event_observer.events().size(), 1u);
-  EXPECT_TRUE(
-      base::Contains(event_observer.events(),
-                     api::reading_list::OnEntryWillBeRemoved::kEventName));
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::reading_list::OnEntryRemoved::kEventName));
 }
 
 // Test that updating an entry generates an event.

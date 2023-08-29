@@ -110,12 +110,16 @@ void ReadingListEventRouter::ReadingListDidAddEntry(
 void ReadingListEventRouter::ReadingListWillRemoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  auto args(api::reading_list::OnEntryWillBeRemoved::Create(
+  auto args(api::reading_list::OnEntryRemoved::Create(
       reading_list_util::ParseEntry(*model->GetEntryByURL(url))));
 
-  DispatchEvent(events::READING_LIST_ON_ENTRY_WILL_BE_REMOVED,
-                api::reading_list::OnEntryWillBeRemoved::kEventName,
-                std::move(args));
+  // Even though we dispatch the event in ReadingListWillRemoveEntry() (i.e.,
+  // the entry is still in the model at this point), we can safely dispatch it
+  // as `onEntryRemoved` (past tense) to the extension. The entry is removed
+  // synchronously after this, so there's no way the extension could still
+  // see the entry in the list.
+  DispatchEvent(events::READING_LIST_ON_ENTRY_REMOVED,
+                api::reading_list::OnEntryRemoved::kEventName, std::move(args));
 }
 
 void ReadingListEventRouter::ReadingListDidUpdateEntry(

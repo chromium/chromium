@@ -102,10 +102,9 @@ namespace readingList{
     // |entry|: The entry that was added.
     static void onEntryAdded(ReadingListEntry entry);
 
-    // Triggered when a ReadingListEntry is about to be removed from the
-    // reading list.
-    // |entry|: The entry that will be removed.
-    static void onEntryWillBeRemoved(ReadingListEntry entry);
+    // Triggered when a ReadingListEntry is removed from the reading list.
+    // |entry|: The entry that was removed.
+    static void onEntryRemoved(ReadingListEntry entry);
 
     // Triggered when a ReadingListEntry was updated in the reading list.
     // |entry|: The entry that was updated.
