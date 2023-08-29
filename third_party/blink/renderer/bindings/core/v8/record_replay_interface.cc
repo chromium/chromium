@@ -1768,6 +1768,14 @@ function DOM_getDocument() {
  * {@link DOM_getAllBoundingClientRects}
  * ##########################################################################*/
 
+const DefaultTransform = { scale: 1 };
+
+function getContextTransformScale(transform) {
+  transform ||= DefaultTransform;
+  return transform.scale === undefined ? 1 : transform.scale;
+}
+
+
 function getLastBoundingClientRect(nodeRrpId) {
   return gLastBoundingClientRectsByNodeRrpId.get(nodeRrpId);
 }
@@ -1786,7 +1794,8 @@ function DOM_getAllBoundingClientRects() {
   const elements = entries
     .map((elem, i) => {
       const id = registerPlainObject(elem.raw) || i;
-      const scale = elem.context?.transform?.scale || 1;
+      // TODO: handle scaleX/Y/Z
+      const scale = getContextTransformScale(elem?.context?.transform);
 
       // Use the bounding client rect as a fallback.
       let { left, top, right, bottom } =
@@ -2448,7 +2457,7 @@ function StackingContext(window, options) {
 
   // Transform scale - accumulation of all transform scaling factors
   // applied to this or parent stacking contexts.
-  this.transform = transform;
+  this.transform = transform || DefaultTransform;
 
   // The arrays below are filled in tree order (preorder depth first traversal).
 
@@ -2535,23 +2544,20 @@ StackingContext.prototype = {
       const opacity = elem.style.getPropertyValue("opacity");
       const opacityVal = opacity.length > 0 ? +opacity : 1;
       contextAttrs.opacity = opacityVal;
-
-      // Elements with a nonempty transform get their own stacking context.
-      const transformStr = elem.style.getPropertyValue("transform");
-      const transform = parseCssTransform(transformStr);
-      contextAttrs.transform = transform;
     }
 
-    // If scale=0, skip the element and its children.
-    if (this.transform?.scale === 0) {
-      return;
-    }
+    // Elements with a nonempty transform get their own stacking context.
+    const transformStr = elem.style?.getPropertyValue("transform");
+    const transform = parseCssTransform(transformStr);
+    contextAttrs.transform = transform;
 
     // Create a new stacking context for any iframes.
     if (elem.raw.tagName == "IFRAME" && elem.raw.contentWindow?.document) {
       const { left, top } = elem.raw.getBoundingClientRect();
-      contextAttrs.left = left * (this.transform.scale || 1);
-      contextAttrs.top = top * (this.transform.scale || 1);
+      // TODO: handle scaleX/Y/Z
+      // TODO: computation of derived dependencies of `contextAttrs` should be moved to addContext.
+      contextAttrs.left = left * getContextTransformScale(this.transform);
+      contextAttrs.top = top * getContextTransformScale(this.transform);
       this.addContext(elem, undefined, contextAttrs);
       elem.context.addChildren(elem.raw.contentWindow.document);
     }
@@ -2563,7 +2569,7 @@ StackingContext.prototype = {
     }
 
     if ((contextAttrs.opacity !== undefined && contextAttrs.opacity < 1) ||
-        (contextAttrs.transform !== undefined)
+        (contextAttrs.transform !== DefaultTransform)
     ) {
       // Elements with opacity < 1, or non-empty transforms, get their own
       // stacking context.
@@ -2628,9 +2634,13 @@ StackingContext.prototype = {
     left = left || 0;
     top = top || 0;
     opacity = opacity || 1;
-    transform = transform || {};
-    if (this.transform.scale !== undefined) {
-      transform.scale = (transform.scale || 1) * this.transform.scale;
+    transform = transform || DefaultTransform;
+
+    // TODO: handle scaleX/Y/Z
+    if (transform !== DefaultTransform || this.transform !== DefaultTransform) {
+      transform = {
+        scale: getContextTransformScale(transform) * getContextTransformScale(this.transform)
+      };
     }
 
     if (elem.context) {
@@ -2752,18 +2762,25 @@ function shiftRect(rect, offset, scale) {
  * ```
  * ##########################################################################*/
 function parseCssTransform(transform) {
-  // Parse a string of the form "scale(1.2)"
-  if (!transform || !transform.startsWith("scale(")) {
-    if (transform.length > 0) {
-      // TODO: if we have command error reporting, we might want to attach
-      // this warning there.
-      log(`[RuntimeWarning] parseCssTransform: unsupported transform: ${transform}`);
+  let cssScale;
+  if (transform) {
+    try {
+      // see https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleValue/parse_static
+      const css = CSSStyleValue.parse(
+        "transform",
+        transform,
+      );
+
+      cssScale = Array.from(css).find(entry => entry instanceof CSSScale);
+    } catch (err) {
+      // could not parse CSS transform
     }
-    return;
   }
 
-  const scale = +transform.substring(6, transform.length - 1);
-  return { scale };
+  // TODO: handle scaleX/Y/Z
+  return {
+    scale: cssScale?.x?.value !== undefined ? cssScale?.x?.value : DefaultTransform.scale
+  };
 }
 
 /** ###########################################################################
