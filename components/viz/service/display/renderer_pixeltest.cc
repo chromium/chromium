@@ -206,13 +206,17 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
                                   AggregatedRenderPass* render_pass) {
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+  // The full `rect` is drawn (visible_rect == rect) but texture coords
+  // are relative to the underlying image.
+  gfx::RectF tex_coords{static_cast<float>(rect.width()),
+                        static_cast<float>(rect.height())};
   quad->SetNew(shared_state, rect, rect, pass_id,
                kInvalidResourceId,    // mask_resource_id
                gfx::RectF(),          // mask_uv_rect
                gfx::Size(),           // mask_texture_size
                gfx::Vector2dF(1, 1),  // filters scale
                gfx::PointF(),         // filter origin
-               gfx::RectF(rect),      // tex_coord_rect
+               tex_coords,            // tex_coord_rect
                false,                 // force_anti_aliasing_off
                1.0f);                 // backdrop_filter_quality
 }
