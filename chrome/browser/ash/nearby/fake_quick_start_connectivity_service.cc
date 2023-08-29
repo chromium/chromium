@@ -30,6 +30,10 @@ FakeQuickStartConnectivityService::GetQuickStartDecoder() {
       fake_quick_start_decoder_->GetRemote());
 }
 
+void FakeQuickStartConnectivityService::Cleanup() {
+  is_cleanup_called_ = true;
+}
+
 raw_ptr<FakeNearbyConnectionsManager>
 FakeQuickStartConnectivityService::GetFakeNearbyConnectionsManager() {
   return &fake_nearby_connections_manager_;

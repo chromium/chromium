@@ -19,6 +19,7 @@ source_set("oobe_quick_start") {
     "connectivity",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chrome/browser/nearby_sharing/public/cpp:cpp",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/attestation:attestation",

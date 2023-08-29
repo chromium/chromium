@@ -57,6 +57,8 @@ class MockNearbyProcessManager : public NearbyProcessManager {
               GetNearbyProcessReference,
               (NearbyProcessStoppedCallback on_process_stopped_callback),
               (override));
+
+  MOCK_METHOD(void, ShutDownProcess, (), (override));
 };
 
 }  // namespace nearby

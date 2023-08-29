@@ -37,6 +37,8 @@ class QuickStartConnectivityServiceImpl : public QuickStartConnectivityService {
 
   mojo::SharedRemote<mojom::QuickStartDecoder> GetQuickStartDecoder() override;
 
+  void Cleanup() override;
+
  private:
   void OnNearbyProcessStopped(
       nearby::NearbyProcessManager::NearbyProcessShutdownReason

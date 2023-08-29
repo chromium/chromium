@@ -105,7 +105,7 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
     if (bootstrap_controller_) {
-      bootstrap_controller_->MaybeCloseOpenConnections();
+      bootstrap_controller_->CloseOpenConnections();
       bootstrap_controller_->StopAdvertising();
     }
     switch (entry_point_) {

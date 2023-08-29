@@ -153,6 +153,11 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
 
   PrefService* GetLocalState() { return local_state_.Get(); }
 
+  void ExpectQuickStartConnectivityServiceCleanupCalled() {
+    EXPECT_TRUE(
+        fake_quick_start_connectivity_service_->get_is_cleanup_called());
+  }
+
  protected:
   absl::optional<FidoAssertionInfo> assertion_info_;
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -203,6 +208,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::START_ADVERTISING_FAILED);
+  ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -238,6 +244,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, StopAdvertising) {
 
   fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
   EXPECT_EQ(fake_observer_->last_status.step, Step::NONE);
+  ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_QRCode) {
@@ -329,6 +336,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
+  ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
@@ -627,6 +635,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       quick_start_metrics::WifiTransferResultFailureReason::
           kConnectionDroppedDuringAttempt,
       1);
+  ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 
 }  // namespace ash::quick_start

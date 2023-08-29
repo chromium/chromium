@@ -22,6 +22,8 @@ class QuickStartConnectivityService : public KeyedService {
 
   virtual mojo::SharedRemote<mojom::QuickStartDecoder>
   GetQuickStartDecoder() = 0;
+
+  virtual void Cleanup() = 0;
 };
 
 }  // namespace ash::quick_start

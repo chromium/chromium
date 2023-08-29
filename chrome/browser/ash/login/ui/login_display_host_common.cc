@@ -785,6 +785,10 @@ void LoginDisplayHostCommon::NotifyWizardCreated() {
 }
 
 void LoginDisplayHostCommon::Cleanup() {
+  if (wizard_context_->quick_start_enabled) {
+    bootstrap_controller_.reset();
+  }
+
   SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
   app_terminating_subscription_ = {};
   BrowserList::RemoveObserver(this);

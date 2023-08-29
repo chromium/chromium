@@ -44,6 +44,7 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
   // NearbyProcessManager:
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
       NearbyProcessStoppedCallback on_process_stopped_callback) override;
+  void ShutDownProcess() override;
 
  private:
   class FakeNearbyProcessReference

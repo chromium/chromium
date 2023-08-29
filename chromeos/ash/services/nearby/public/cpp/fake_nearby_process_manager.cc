@@ -121,6 +121,10 @@ FakeNearbyProcessManager::GetNearbyProcessReference(
                      weak_ptr_factory_.GetWeakPtr(), id));
 }
 
+void FakeNearbyProcessManager::ShutDownProcess() {
+  NOTIMPLEMENTED();
+}
+
 void FakeNearbyProcessManager::OnReferenceDeleted(
     const base::UnguessableToken& reference_id) {
   auto it = id_to_process_stopped_callback_map_.find(reference_id);

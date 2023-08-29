@@ -144,6 +144,10 @@ NearbyProcessManagerImpl::GetNearbyProcessReference(
                      weak_ptr_factory_.GetWeakPtr(), reference_id));
 }
 
+void NearbyProcessManagerImpl::ShutDownProcess() {
+  DoShutDownProcess(NearbyProcessShutdownReason::kNormal);
+}
+
 void NearbyProcessManagerImpl::Shutdown() {
   if (shut_down_) {
     return;
@@ -154,7 +158,7 @@ void NearbyProcessManagerImpl::Shutdown() {
   NearbyProcessShutdownReason shutdown_reason =
       NearbyProcessShutdownReason::kNormal;
 
-  ShutDownProcess(shutdown_reason);
+  DoShutDownProcess(shutdown_reason);
   NotifyProcessStopped(shutdown_reason);
 }
 
@@ -240,7 +244,7 @@ void NearbyProcessManagerImpl::OnSharingProcessCrash() {
   NearbyProcessShutdownReason shutdown_reason =
       NearbyProcessShutdownReason::kCrash;
 
-  ShutDownProcess(shutdown_reason);
+  DoShutDownProcess(shutdown_reason);
   NotifyProcessStopped(shutdown_reason);
 }
 
@@ -250,7 +254,7 @@ void NearbyProcessManagerImpl::OnMojoPipeDisconnect(
                    "disconnected from a mojo pipe. ["
                 << shutdown_reason << "]";
 
-  ShutDownProcess(shutdown_reason);
+  DoShutDownProcess(shutdown_reason);
   NotifyProcessStopped(shutdown_reason);
 }
 
@@ -279,12 +283,12 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
   // TODO(https://crbug.com/1152892): Remove this timeout.
   shutdown_debounce_timer_->Start(
       FROM_HERE, kProcessCleanupTimeout,
-      base::BindOnce(&NearbyProcessManagerImpl::ShutDownProcess,
+      base::BindOnce(&NearbyProcessManagerImpl::DoShutDownProcess,
                      weak_ptr_factory_.GetWeakPtr(),
                      NearbyProcessShutdownReason::kNormal));
 }
 
-void NearbyProcessManagerImpl::ShutDownProcess(
+void NearbyProcessManagerImpl::DoShutDownProcess(
     NearbyProcessShutdownReason shutdown_reason) {
   if (!sharing_ && !connections_ && !decoder_) {
     return;

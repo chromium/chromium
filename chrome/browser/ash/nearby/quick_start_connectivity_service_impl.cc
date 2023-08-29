@@ -54,10 +54,15 @@ QuickStartConnectivityServiceImpl::GetQuickStartDecoder() {
   return nearby_process_reference_->GetQuickStartDecoder();
 }
 
+void QuickStartConnectivityServiceImpl::Cleanup() {
+  nearby_process_reference_ = nullptr;
+  nearby_process_manager_->ShutDownProcess();
+  nearby_connections_manager_.reset();
+}
+
 void QuickStartConnectivityServiceImpl::OnNearbyProcessStopped(
     nearby::NearbyProcessManager::NearbyProcessShutdownReason shutdown_reason) {
-  // TODO: b/280308935: Handle nearby process shutdown
-  nearby_process_reference_ = nullptr;
+  Cleanup();
 }
 
 }  // namespace ash::quick_start

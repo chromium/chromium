@@ -97,6 +97,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   // NearbyProcessManagerImpl:
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
       NearbyProcessStoppedCallback on_process_stopped_callback) override;
+  void ShutDownProcess() override;
 
   // KeyedService:
   void Shutdown() override;
@@ -107,7 +108,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   void OnSharingProcessCrash();
   void OnMojoPipeDisconnect(NearbyProcessShutdownReason shutdown_reason);
   void OnReferenceDeleted(const base::UnguessableToken& reference_id);
-  void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
+  void DoShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
   void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
   raw_ptr<NearbyDependenciesProvider, ExperimentalAsh>

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -125,7 +126,7 @@ class TargetDeviceBootstrapController
   void StartAdvertisingAndMaybeGetQRCode();
 
   void StopAdvertising();
-  void MaybeCloseOpenConnections();
+  void CloseOpenConnections();
 
   // A user may initiate Quick Start then have to download an update and reboot.
   // This function persists necessary data and notifies the source device so
@@ -170,6 +171,9 @@ class TargetDeviceBootstrapController
   void OnChallengeBytesReceived(
       quick_start::SecondDeviceAuthBroker::ChallengeBytesOrError);
 
+  // If we're not advertising, connecting, or connected, perform cleanup.
+  void CleanupIfNeeded();
+
   void set_connection_broker_for_testing(
       std::unique_ptr<TargetDeviceConnectionBroker> connection_broker) {
     connection_broker_ = std::move(connection_broker);
@@ -195,6 +199,8 @@ class TargetDeviceBootstrapController
   SessionContext session_context_;
 
   std::unique_ptr<AccessibilityManagerWrapper> accessibility_manager_wrapper_;
+
+  raw_ptr<QuickStartConnectivityService> quick_start_connectivity_service_;
 
   base::WeakPtrFactory<TargetDeviceBootstrapController>
       weak_ptr_factory_for_clients_{this};
