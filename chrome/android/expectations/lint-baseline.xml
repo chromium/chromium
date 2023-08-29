@@ -1680,17 +1680,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ActionType.DISMISSED_CANCEL_BUTTON, ActionType.DISMISSED_SYSTEM_BACK, ActionType.OK_CHANGE_LANGUAGE, ActionType.OK_SAME_LANGUAGE, ActionType.OTHER"
-        errorLine1="                &quot;LanguageSettings.AppLanguagePrompt.Action&quot;, actionType, ActionType.NUM_ENTRIES);"
-        errorLine2="                                                                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java"
-            line="625"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Status.PENDING, Status.RUNNING, Status.FINISHED"
         errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
         errorLine2="                                                             ~~~~~~~~~~~">

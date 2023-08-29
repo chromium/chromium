@@ -71,7 +71,8 @@ public class AppLanguagePromoDialog {
      * Keep in sync with LanguageSettingsAppLanguagePromptAction from enums.xml.
      */
     @IntDef({ActionType.DISMISSED_CANCEL_BUTTON, ActionType.DISMISSED_SYSTEM_BACK,
-            ActionType.OK_CHANGE_LANGUAGE, ActionType.OK_SAME_LANGUAGE, ActionType.OTHER})
+            ActionType.OK_CHANGE_LANGUAGE, ActionType.OK_SAME_LANGUAGE, ActionType.OTHER,
+            ActionType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ActionType {
         int DISMISSED_CANCEL_BUTTON = 0;
