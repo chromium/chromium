@@ -1786,14 +1786,16 @@ function DOM_getAllBoundingClientRects() {
   const elements = entries
     .map((elem, i) => {
       const id = registerPlainObject(elem.raw) || i;
+      const scale = elem.context?.transform?.scale || 1;
 
       // Use the bounding client rect as a fallback.
       let { left, top, right, bottom } =
-        shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
+        shiftRect(elem.raw.getBoundingClientRect(), elem.offset, scale);
 
       // Get all client rects.
       const clientRects = [...elem.raw.getClientRects()].map(r => {
-        const { left, top, right, bottom } = shiftRect(r, elem.offset)
+        const { left, top, right, bottom } =
+          shiftRect(r, elem.offset, scale);
         return [left, top, right, bottom];
       });
 
@@ -2540,11 +2542,16 @@ StackingContext.prototype = {
       contextAttrs.transform = transform;
     }
 
+    // If scale=0, skip the element and its children.
+    if (this.transform?.scale === 0) {
+      return;
+    }
+
     // Create a new stacking context for any iframes.
     if (elem.raw.tagName == "IFRAME" && elem.raw.contentWindow?.document) {
       const { left, top } = elem.raw.getBoundingClientRect();
-      contextAttrs.left = left;
-      contextAttrs.top = top;
+      contextAttrs.left = left * (this.transform.scale || 1);
+      contextAttrs.top = top * (this.transform.scale || 1);
       this.addContext(elem, undefined, contextAttrs);
       elem.context.addChildren(elem.raw.contentWindow.document);
     }
@@ -2622,6 +2629,9 @@ StackingContext.prototype = {
     top = top || 0;
     opacity = opacity || 1;
     transform = transform || {};
+    if (this.transform.scale !== undefined) {
+      transform.scale = (transform.scale || 1) * this.transform.scale;
+    }
 
     if (elem.context) {
       assert(!left && !top);
@@ -2713,12 +2723,24 @@ StackingContext.prototype = {
 /** ###########################################################################
  * {@link shiftRect}
  * ##########################################################################*/
-function shiftRect(rect, offset) {
+function shiftRect(rect, offset, scale) {
   return {
-    left: rect.left !== undefined ? offset.left + rect.left : undefined,
-    top: rect.top !== undefined ? offset.top + rect.top : undefined,
-    right: rect.right !== undefined ? offset.left + rect.right : undefined,
-    bottom: rect.bottom !== undefined ? offset.top + rect.bottom : undefined,
+    left:
+      rect.left !== undefined ?
+        offset.left + (rect.left * scale) :
+        undefined,
+    top:
+      rect.top !== undefined ?
+        offset.top + (rect.top * scale) :
+        undefined,
+    right:
+      rect.right !== undefined ?
+        offset.left + (rect.right * scale):
+        undefined,
+    bottom:
+      rect.bottom !== undefined ?
+        offset.top + (rect.bottom * scale) :
+        undefined,
   };
 }
 
