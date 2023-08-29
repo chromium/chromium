@@ -15,7 +15,10 @@ enum class PermissionPromptStyle {
   kLocationBarRightIcon,
   // The less prominent (quiet) version of permission chip view in the location
   // bar.
-  kQuietChip
+  kQuietChip,
+  // The prompt triggered by the user clicking on the page embedded permission
+  // element.
+  kEmbeddedElementSecondaryUI
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_STYLE_H_

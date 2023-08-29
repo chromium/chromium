@@ -391,10 +391,27 @@ void PermissionPromptBubbleBaseView::RecordDecision(
     permissions::PermissionAction action) {
   const std::string uma_suffix =
       permissions::PermissionUmaUtil::GetPermissionActionString(action);
-  std::string time_to_decision_uma_name =
-      prompt_style_ == PermissionPromptStyle::kBubbleOnly
-          ? "Permissions.Prompt.TimeToDecision"
-          : "Permissions.Chip.TimeToDecision";
+
+  std::string time_to_decision_uma_name = std::string();
+
+  switch (prompt_style_) {
+    case PermissionPromptStyle::kBubbleOnly:
+      time_to_decision_uma_name = "Permissions.Prompt.TimeToDecision";
+      break;
+    case PermissionPromptStyle::kEmbeddedElementSecondaryUI:
+      time_to_decision_uma_name =
+          "Permissions.kEmbeddedElementSecondaryUI.TimeToDecision";
+      break;
+    case PermissionPromptStyle::kChip:
+      time_to_decision_uma_name = "Permissions.Chip.TimeToDecision";
+      break;
+    default:
+      // |PermissionPromptStyle::kQuietChip| and
+      // |PermissionPromptStyle::kLocationBarRightIcon| do not use
+      // PermissionPromptBubbleBaseView and will reach this case.
+      NOTREACHED();
+  }
+
   base::UmaHistogramLongTimes(
       time_to_decision_uma_name + "." + uma_suffix,
       base::TimeTicks::Now() - permission_requested_time_);
