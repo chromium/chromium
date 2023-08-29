@@ -19,6 +19,7 @@
 #import "ios/chrome/common/x_callback_url.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/mac/url_conversions.h"
+#import "net/base/url_util.h"
 #import "url/gurl.h"
 
 using base::UmaHistogramEnumeration;
@@ -222,6 +223,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
     const char* command = "";
     NSString* sourceWidget = completeURL.host;
+    NSString* externalText = nil;
 
     if ([completeURL.path isEqualToString:kWidgetKitActionSearch]) {
       command = app_group::kChromeAppGroupFocusOmniboxCommand;
@@ -235,6 +237,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       command = app_group::kChromeAppGroupLensCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionOpenURL]) {
       command = app_group::kChromeAppGroupOpenURLCommand;
+      std::string urlQueryParam;
+      if (net::GetValueForKeyInQuery(net::GURLWithNSURL(completeURL), "url",
+                                     &urlQueryParam)) {
+        externalText = base::SysUTF8ToNSString(urlQueryParam);
+      }
     } else if ([completeURL.path isEqual:kWidgetKitActionSearchPasswords]) {
       command = app_group::kChromeAppGroupSearchPasswordsCommand;
     } else if ([completeURL.path isEqualToString:kWidgetKitActionGame]) {
@@ -262,7 +269,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
     NSString* commandString = base::SysUTF8ToNSString(command);
     return [self newAppStartupParametersForCommand:commandString
-                                  withExternalText:nil
+                                  withExternalText:externalText
                                   withExternalData:nil
                                          withIndex:0
                                            withURL:nil
