@@ -441,6 +441,23 @@ suite('SettingsSectionTest', function() {
   });
   // </if>
 
+  test('iCloudKeychainToggleNotShown', async function() {
+    // The control for iCloud Keychain should appear only on macOS.
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    flush();
+    const element = settings.shadowRoot!.querySelector<HTMLElement>(
+                        '#createPasskeysInICloudKeychainRow') as HTMLElement;
+
+    // <if expr="not is_macosx">
+    assertFalse(!!element);
+    // </if>
+
+    // <if expr="is_macosx">
+    assertTrue(!!element);
+    // </if>
+  });
+
   test('blockedSites section hidden when no blocked sites', async function() {
     passwordManager.data.blockedSites = [];
     const settings = document.createElement('settings-section');

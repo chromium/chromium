@@ -77,6 +77,16 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
+      // <if expr="is_macosx">
+      createPasskeysInICloudKeychainToggleVisible_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'createPasskeysInICloudKeychainToggleVisible');
+        },
+      },
+      // </if>
+
       hasPasskeys_: {
         type: Boolean,
         value: false,

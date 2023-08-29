@@ -293,6 +293,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       [password_manager::prefs::kBiometricAuthenticationBeforeFilling] =
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
+#if BUILDFLAG(IS_MAC)
+  (*s_allowlist)[::prefs::kCreatePasskeysInICloudKeychain] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#endif
 
   // Privacy page
   (*s_allowlist)[::prefs::kSigninAllowedOnNextStartup] =

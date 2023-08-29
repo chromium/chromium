@@ -40,6 +40,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "device/fido/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -248,6 +249,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #if BUILDFLAG(IS_WIN)
     {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
 #elif BUILDFLAG(IS_MAC)
+    {"createPasskeysInICloudKeychainLabel",
+     IDS_PASSWORD_MANAGER_UI_CREATE_PASSKEYS_IN_ICLOUD_KEYCHAIN_LABEL},
+    {"createPasskeysInICloudKeychainSubLabel",
+     IDS_PASSWORD_MANAGER_UI_CREATE_PASSKEYS_IN_ICLOUD_KEYCHAIN_SUBLABEL},
     {"managePasskeysLabel",
      IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_FROM_PROFILE_LABEL},
 #endif
@@ -408,6 +413,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                      password_manager_util::
                          ShouldBiometricAuthenticationForFillingToggleBeVisible(
                              g_browser_process->local_state()));
+#endif
+#if BUILDFLAG(IS_MAC)
+  source->AddBoolean(
+      "createPasskeysInICloudKeychainToggleVisible",
+      base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));
 #endif
 
   source->AddBoolean("enablePasswordsImportM2",
