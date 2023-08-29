@@ -5,15 +5,11 @@
 #include <jni.h>
 
 #include "base/android/jni_array.h"
-#include "components/cbor/reader.h"
-#include "components/cbor/writer.h"
+#include "components/cbor/values.h"
 #include "components/webauthn/android/jni_headers/Fido2Api_jni.h"
 #include "device/fido/attestation_object.h"
-#include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/public_key.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
