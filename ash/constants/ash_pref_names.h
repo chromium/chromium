@@ -1796,6 +1796,15 @@ inline constexpr char kHandsFreeProfileInputSuperResolution[] =
 inline constexpr char kShortcutCustomizationAllowed[] =
     "ash.shortcut_customization_allowed";
 
+// A `TimeDelta` pref for the session duration Focus Mode should default to.
+// Based off of the last session, if any.
+inline constexpr char kFocusModeSessionDuration[] =
+    "ash.focus_mode.session_duration";
+// A boolean pref of whether Focus Mode should default to turning on DND. Based
+// off of the last session, if any.
+inline constexpr char kFocusModeDoNotDisturb[] =
+    "ash.focus_mode.do_not_disturb";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

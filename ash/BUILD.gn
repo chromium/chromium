@@ -3392,6 +3392,7 @@ test("ash_unittests") {
     "system/eche/eche_tray_unittest.cc",
     "system/federated/federated_service_controller_impl_unittest.cc",
     "system/firmware_update/firmware_update_notification_controller_unittest.cc",
+    "system/focus_mode/focus_mode_controller_unittest.cc",
     "system/focus_mode/focus_mode_tray_unittest.cc",
     "system/geolocation/geolocation_controller_test_util.cc",
     "system/geolocation/geolocation_controller_test_util.h",

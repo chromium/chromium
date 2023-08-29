@@ -41,6 +41,7 @@
 #include "ash/system/camera/autozoom_nudge_controller.h"
 #include "ash/system/camera/camera_app_prefs.h"
 #include "ash/system/camera/camera_effects_controller.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
@@ -118,6 +119,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   saved_desk_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
+  FocusModeController::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
   GestureEducationNotificationController::RegisterProfilePrefs(registry,

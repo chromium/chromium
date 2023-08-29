@@ -4,10 +4,13 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -16,8 +19,8 @@ namespace {
 
 FocusModeController* g_instance = nullptr;
 
-// The default Focus Mode session duration, in minutes.
-constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(30);
+// The default Focus Mode session duration.
+constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
 
 }  // namespace
 
@@ -26,11 +29,12 @@ FocusModeController::FocusModeController()
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
-  // TODO(b/286932458): Get the Focus Mode session duration and DND setting from
-  // user prefs.
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
 FocusModeController::~FocusModeController() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+
   if (in_focus_session_) {
     ToggleFocusMode();
   }
@@ -43,6 +47,14 @@ FocusModeController::~FocusModeController() {
 FocusModeController* FocusModeController::Get() {
   CHECK(g_instance);
   return g_instance;
+}
+
+// static
+void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimeDeltaPref(prefs::kFocusModeSessionDuration,
+                                  /*default_value=*/kDefaultSessionDuration);
+  registry->RegisterBooleanPref(prefs::kFocusModeDoNotDisturb,
+                                /*default_value=*/true);
 }
 
 void FocusModeController::AddObserver(Observer* observer) {
@@ -65,7 +77,10 @@ void FocusModeController::ToggleFocusMode() {
     // Restore previous DND state.
     message_center->SetQuietMode(previous_do_not_disturb_state_);
   } else {
-    // Turn on DND.
+    SaveSettingsToUserPrefs();
+
+    // Update DND to the user selected state, and keep track of the state we
+    // want to revert back to after the Focus Mode session ends.
     previous_do_not_disturb_state_ = message_center->IsQuietMode();
     message_center->SetQuietMode(turn_on_do_not_disturb_);
 
@@ -84,6 +99,15 @@ void FocusModeController::ToggleFocusMode() {
   }
 }
 
+void FocusModeController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  if (in_focus_session_) {
+    ToggleFocusMode();
+  }
+
+  UpdateFromUserPrefs();
+}
+
 void FocusModeController::OnTimerTick() {
   if (in_focus_session_ && base::Time::Now() >= end_time_) {
     ToggleFocusMode();
@@ -92,6 +116,34 @@ void FocusModeController::OnTimerTick() {
 
   for (auto& observer : observers_) {
     observer.OnTimerTick();
+  }
+}
+
+void FocusModeController::UpdateFromUserPrefs() {
+  PrefService* primary_user_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!primary_user_prefs) {
+    // Can be null in tests.
+    return;
+  }
+
+  session_duration_ =
+      primary_user_prefs->GetTimeDelta(prefs::kFocusModeSessionDuration);
+  turn_on_do_not_disturb_ =
+      primary_user_prefs->GetBoolean(prefs::kFocusModeDoNotDisturb);
+
+  if (session_duration_ <= base::TimeDelta()) {
+    session_duration_ = kDefaultSessionDuration;
+  }
+}
+
+void FocusModeController::SaveSettingsToUserPrefs() {
+  if (PrefService* primary_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    primary_user_prefs->SetTimeDelta(prefs::kFocusModeSessionDuration,
+                                     session_duration_);
+    primary_user_prefs->SetBoolean(prefs::kFocusModeDoNotDisturb,
+                                   turn_on_do_not_disturb_);
   }
 }
 
