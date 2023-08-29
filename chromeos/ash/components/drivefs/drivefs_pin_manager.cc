@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <locale>
 #include <sstream>
+#include <string_view>
 #include <type_traits>
 
 #include "base/files/file_path.h"
@@ -31,7 +32,6 @@ namespace {
 
 using ash::SpacedClient;
 using base::SequencedTaskRunner;
-using base::StringPiece;
 using base::TimeDelta;
 using base::UmaHistogramBoolean;
 using mojom::FileMetadata;
@@ -94,7 +94,7 @@ ostream& operator<<(ostream& out, Quoter<T> q) {
   // Does the string start with 'k'?
   if (!s.empty() && s.front() == 'k') {
     // Skip the 'k' prefix.
-    return out << StringPiece(s).substr(1);
+    return out << std::string_view(s).substr(1);
   }
 
   // No 'k' prefix. Print between parentheses.
@@ -126,7 +126,25 @@ ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<Path> q) {
-  return out << "'" << (*q.value) << "'";
+  const std::string& s = q.value->value();
+  if (VLOG_IS_ON(1)) {
+    return out << "'" << s << "'";
+  }
+
+  for (const std::string_view prefix :
+       {"/root", "/.files-by-id", "/.shortcuts-by-id"}) {
+    if (s.starts_with(prefix)) {
+      if (s.size() == prefix.size()) {
+        return out << "'" << prefix << "'";
+      }
+      DCHECK_GT(s.size(), prefix.size());
+      if (s[prefix.size()] == '/') {
+        return out << "'" << prefix << "/***'";
+      }
+    }
+  }
+
+  return out << "'***'";
 }
 
 ostream& operator<<(ostream& out, Quoter<std::string> q) {
