@@ -35,9 +35,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardGlideTyping.tablet_floating",
   "inputs.VirtualKeyboardHandwriting.floating",
 
-  # b/251833060
-  "ui.GuestModeExtension",
-
   # crbug.com/1259127
   "ui.TabletOperations",
 
