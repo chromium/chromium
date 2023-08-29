@@ -33,7 +33,8 @@ OfflineItemModelManagerFactory::OfflineItemModelManagerFactory()
 
 OfflineItemModelManagerFactory::~OfflineItemModelManagerFactory() = default;
 
-KeyedService* OfflineItemModelManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OfflineItemModelManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OfflineItemModelManager(context);
+  return std::make_unique<OfflineItemModelManager>(context);
 }
