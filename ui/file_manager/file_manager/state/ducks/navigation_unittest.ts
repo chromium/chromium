@@ -12,8 +12,8 @@ import {TrashRootEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
+import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
-import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState} from '../store.js';
 
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';

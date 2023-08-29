@@ -319,16 +319,12 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsProducer) {
   RunTestURL("lib/actions_producer_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsProducerAllEntries) {
-  RunTestURL("state/actions_producers/all_entries_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BaseStore) {
   RunTestURL("lib/base_store_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAllEntries) {
-  RunTestURL("state/reducers/all_entries_unittest.js");
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksAllEntries) {
+  RunTestURL("state/ducks/all_entries_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAndroidApps) {

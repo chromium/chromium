@@ -9,7 +9,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileKey, State} from '../../externs/ts/state.js';
 import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
-import {getMyFiles} from '../reducers/all_entries.js';
+import {cacheEntries, getMyFiles} from '../ducks/all_entries.js';
 import {getEntry, getFileData} from '../store.js';
 
 /**
@@ -41,6 +41,9 @@ export interface AddUiEntryAction extends BaseAction {
 
 export function addUiEntryReducer(
     currentState: State, payload: AddUiEntryAction['payload']): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  cacheEntries(currentState, [payload.entry]);
+
   const {entry} = payload;
   const key = entry.toURL();
 

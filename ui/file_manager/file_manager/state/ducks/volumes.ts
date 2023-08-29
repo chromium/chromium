@@ -11,7 +11,7 @@ import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
-import {getMyFiles} from '../reducers/all_entries.js';
+import {cacheEntries, getMyFiles, volumeNestingEntries} from '../ducks/all_entries.js';
 import {getEntry} from '../store.js';
 
 /** Map of actions to reducers for the volumes slice. */
@@ -100,6 +100,10 @@ export interface AddVolumeAction extends BaseAction {
 
 function addVolumeReducer(
     currentState: State, payload: AddVolumeAction['payload']): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  cacheEntries(currentState, [new VolumeEntry(payload.volumeInfo)]);
+  volumeNestingEntries(
+      currentState, payload.volumeInfo, payload.volumeMetadata);
   const volumeMetadata = payload.volumeMetadata;
   const volumeInfo = payload.volumeInfo;
   if (!volumeInfo.fileSystem) {
