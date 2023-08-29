@@ -2847,7 +2847,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityParam) {
   RunHtmlTest(FILE_PATH_LITERAL("param.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
+// TODO(crbug.com/1476950) Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_AccessibilityPopoverApi) {
   RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
 }
 
