@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/v4l2_stateless_video_decoder.h"
+#include "media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.h"
 
 #include "base/notreached.h"
 

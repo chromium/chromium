@@ -36,8 +36,8 @@
 #include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 #elif BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
-#include "media/gpu/v4l2/v4l2_stateless_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 #else
 #error Either VA-API or V4L2 must be used for decode acceleration on Chrome OS.
