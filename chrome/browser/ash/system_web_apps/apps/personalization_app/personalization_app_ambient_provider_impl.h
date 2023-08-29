@@ -53,7 +53,7 @@ class PersonalizationAppAmbientProviderImpl
       mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
           observer) override;
   void SetAmbientModeEnabled(bool enabled) override;
-  void SetAnimationTheme(ash::AmbientTheme animation_theme) override;
+  void SetAmbientTheme(ash::AmbientTheme ambient_theme) override;
   void SetScreenSaverDuration(int minutes) override;
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
   void SetTemperatureUnit(

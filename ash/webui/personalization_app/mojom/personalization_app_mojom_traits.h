@@ -127,11 +127,11 @@ struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
 };
 
 template <>
-struct EnumTraits<ash::personalization_app::mojom::AnimationTheme,
+struct EnumTraits<ash::personalization_app::mojom::AmbientTheme,
                   ash::AmbientTheme> {
-  using MojomAnimationTheme = ::ash::personalization_app::mojom::AnimationTheme;
-  static MojomAnimationTheme ToMojom(ash::AmbientTheme input);
-  static bool FromMojom(MojomAnimationTheme input, ash::AmbientTheme* output);
+  using MojomAmbientTheme = ::ash::personalization_app::mojom::AmbientTheme;
+  static MojomAmbientTheme ToMojom(ash::AmbientTheme input);
+  static bool FromMojom(MojomAmbientTheme input, ash::AmbientTheme* output);
 };
 
 template <>

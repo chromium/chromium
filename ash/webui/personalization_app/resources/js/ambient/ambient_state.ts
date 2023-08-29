@@ -4,7 +4,7 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 
 /**
  * Stores ambient related states.
@@ -12,7 +12,7 @@ import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, 
 export interface AmbientState {
   albums: AmbientModeAlbum[]|null;
   ambientModeEnabled: boolean|null;
-  ambientTheme: AnimationTheme|null;
+  ambientTheme: AmbientTheme|null;
   duration: number|
       null;  // number of minutes to run screen saver. 0 means forever.
   previews: Url[]|null;

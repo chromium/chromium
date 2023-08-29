@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientThemeItem, AmbientUiVisibility, AnimationTheme, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientTheme, AmbientThemeItem, AmbientUiVisibility, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -62,9 +62,8 @@ suite('AmbientSubpageTest', function() {
 
   async function displayMainSettings(
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
-      ambientModeEnabled: boolean|null,
-      ambientTheme = AnimationTheme.kSlideshow, previews: Url[] = [],
-      duration: number|null = 10,
+      ambientModeEnabled: boolean|null, ambientTheme = AmbientTheme.kSlideshow,
+      previews: Url[] = [], duration: number|null = 10,
       queryParams: QueryParams = {}): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.ambientTheme = ambientTheme;
@@ -297,7 +296,7 @@ suite('AmbientSubpageTest', function() {
     const action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
-    assertEquals(AnimationTheme.kSlideshow, action.ambientTheme);
+    assertEquals(AmbientTheme.kSlideshow, action.ambientTheme);
   });
 
   test('sets ambient theme when ambient theme item is clicked', async () => {
@@ -316,8 +315,8 @@ suite('AmbientSubpageTest', function() {
     assertEquals(3, AmbientThemeItems!.length);
     const slideshow = AmbientThemeItems[0] as AmbientThemeItem;
     const feelTheBreeze = AmbientThemeItems[1] as AmbientThemeItem;
-    assertEquals(AnimationTheme.kSlideshow, slideshow.ambientTheme);
-    assertEquals(AnimationTheme.kFeelTheBreeze, feelTheBreeze.ambientTheme);
+    assertEquals(AmbientTheme.kSlideshow, slideshow.ambientTheme);
+    assertEquals(AmbientTheme.kFeelTheBreeze, feelTheBreeze.ambientTheme);
 
     assertEquals(feelTheBreeze.ariaChecked, 'false');
     assertEquals(slideshow.ariaChecked, 'true');
@@ -327,13 +326,13 @@ suite('AmbientSubpageTest', function() {
     let action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
-    assertEquals(AnimationTheme.kFeelTheBreeze, action.ambientTheme);
+    assertEquals(AmbientTheme.kFeelTheBreeze, action.ambientTheme);
 
     personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
     slideshow!.click();
     action = await personalizationStore.waitForAction(
                  AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
-    assertEquals(AnimationTheme.kSlideshow, action.ambientTheme);
+    assertEquals(AmbientTheme.kSlideshow, action.ambientTheme);
   });
 
   test('has correct topic sources on load', async () => {
@@ -512,7 +511,7 @@ suite('AmbientSubpageTest', function() {
   test('scroll to image source when clicked from thumbnail', async () => {
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit, true,
-        AnimationTheme.kSlideshow, [], 10,
+        AmbientTheme.kSlideshow, [], 10,
         {scrollTo: ScrollableTarget.TOPIC_SOURCE_LIST});
 
     await ambientProvider.whenCalled('setAmbientObserver');
@@ -912,7 +911,7 @@ suite('AmbientSubpageTest', function() {
             'ambient-theme-item:not([hidden])');
     assertEquals(4, ambientThemeItems.length);
     const videoTheme = ambientThemeItems[3] as AmbientThemeItem;
-    assertEquals(AnimationTheme.kVideo, videoTheme.ambientTheme);
+    assertEquals(AmbientTheme.kVideo, videoTheme.ambientTheme);
     assertEquals('false', videoTheme.ariaChecked);
 
     personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
@@ -920,7 +919,7 @@ suite('AmbientSubpageTest', function() {
     const action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
-    assertEquals(AnimationTheme.kVideo, action.ambientTheme);
+    assertEquals(AmbientTheme.kVideo, action.ambientTheme);
   });
 
   test('disables non-video topic sources for video animation', async () => {
@@ -929,7 +928,7 @@ suite('AmbientSubpageTest', function() {
 
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
-        /*ambientModeEnabled=*/ true, AnimationTheme.kVideo);
+        /*ambientModeEnabled=*/ true, AmbientTheme.kVideo);
 
     const topicSourceList =
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');

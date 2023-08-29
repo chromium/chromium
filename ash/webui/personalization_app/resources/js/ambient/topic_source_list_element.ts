@@ -11,7 +11,7 @@ import '../../css/common.css.js';
 import './topic_source_item_element.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {AnimationTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {isTimeOfDayScreenSaverEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -43,7 +43,7 @@ export class TopicSourceList extends WithPersonalizationStore {
         },
       },
 
-      selectedAmbientTheme: AnimationTheme,
+      selectedAmbientTheme: AmbientTheme,
 
       selectedTopicSource: TopicSource,
 
@@ -52,7 +52,7 @@ export class TopicSourceList extends WithPersonalizationStore {
   }
 
   topicSources: TopicSource[];
-  selectedAmbientTheme: AnimationTheme;
+  selectedAmbientTheme: AmbientTheme;
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
 
@@ -65,7 +65,7 @@ export class TopicSourceList extends WithPersonalizationStore {
   }
 
   private isTopicSourceDisabled_(
-      topicSource: TopicSource, selectedAmbientTheme: AnimationTheme): boolean {
+      topicSource: TopicSource, selectedAmbientTheme: AmbientTheme): boolean {
     return !isValidTopicSourceAndTheme(topicSource, selectedAmbientTheme);
   }
 

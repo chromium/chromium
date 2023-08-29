@@ -30,7 +30,7 @@ namespace mojo {
 using MojomWallpaperLayout = ash::personalization_app::mojom::WallpaperLayout;
 using MojomWallpaperType = ash::personalization_app::mojom::WallpaperType;
 using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
-using MojomAnimationTheme = ash::personalization_app::mojom::AnimationTheme;
+using MojomAmbientTheme = ash::personalization_app::mojom::AmbientTheme;
 using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
 using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
 using MojomAmbientUiVisibility =
@@ -371,34 +371,34 @@ bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
          data.ReadSourceInfo(&out->source_info);
 }
 
-MojomAnimationTheme EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::ToMojom(
+MojomAmbientTheme EnumTraits<MojomAmbientTheme, ash::AmbientTheme>::ToMojom(
     ash::AmbientTheme input) {
   switch (input) {
     case ash::AmbientTheme::kSlideshow:
-      return MojomAnimationTheme::kSlideshow;
+      return MojomAmbientTheme::kSlideshow;
     case ash::AmbientTheme::kFeelTheBreeze:
-      return MojomAnimationTheme::kFeelTheBreeze;
+      return MojomAmbientTheme::kFeelTheBreeze;
     case ash::AmbientTheme::kFloatOnBy:
-      return MojomAnimationTheme::kFloatOnBy;
+      return MojomAmbientTheme::kFloatOnBy;
     case ash::AmbientTheme::kVideo:
-      return MojomAnimationTheme::kVideo;
+      return MojomAmbientTheme::kVideo;
   }
 }
 
-bool EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::FromMojom(
-    MojomAnimationTheme input,
+bool EnumTraits<MojomAmbientTheme, ash::AmbientTheme>::FromMojom(
+    MojomAmbientTheme input,
     ash::AmbientTheme* output) {
   switch (input) {
-    case MojomAnimationTheme::kSlideshow:
+    case MojomAmbientTheme::kSlideshow:
       *output = ash::AmbientTheme::kSlideshow;
       return true;
-    case MojomAnimationTheme::kFeelTheBreeze:
+    case MojomAmbientTheme::kFeelTheBreeze:
       *output = ash::AmbientTheme::kFeelTheBreeze;
       return true;
-    case MojomAnimationTheme::kFloatOnBy:
+    case MojomAmbientTheme::kFloatOnBy:
       *output = ash::AmbientTheme::kFloatOnBy;
       return true;
-    case MojomAnimationTheme::kVideo:
+    case MojomAmbientTheme::kVideo:
       *output = ash::AmbientTheme::kVideo;
       return true;
   }

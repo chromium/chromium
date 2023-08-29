@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/js/store_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change ambient state.
@@ -48,7 +48,7 @@ export interface SetAmbientModeEnabledAction extends Action {
 
 export interface SetAmbientThemeAction extends Action {
   name: AmbientActionName.SET_AMBIENT_THEME;
-  ambientTheme: AnimationTheme;
+  ambientTheme: AmbientTheme;
 }
 
 
@@ -110,7 +110,7 @@ export function setAmbientModeEnabledAction(enabled: boolean):
 /**
  * Sets the current value of the ambient theme.
  */
-export function setAmbientThemeAction(ambientTheme: AnimationTheme):
+export function setAmbientThemeAction(ambientTheme: AmbientTheme):
     SetAmbientThemeAction {
   return {name: AmbientActionName.SET_AMBIENT_THEME, ambientTheme};
 }

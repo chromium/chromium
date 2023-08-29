@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The element for displaying an animation theme.
+ * @fileoverview The element for displaying an ambient theme.
  */
 
 import '../../css/common.css.js';
@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {AnimationTheme} from '../../personalization_app.mojom-webui.js';
+import {AmbientTheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
 
@@ -31,7 +31,7 @@ export class AmbientThemeItem extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      ambientTheme: AnimationTheme,
+      ambientTheme: AmbientTheme,
       itemDescription_: {
         type: String,
         computed: 'computeItemDescription_(ambientTheme)',
@@ -49,7 +49,7 @@ export class AmbientThemeItem extends WithPersonalizationStore {
     };
   }
 
-  ambientTheme: AnimationTheme;
+  ambientTheme: AmbientTheme;
   private itemDescription_: string;
   private imgSrc_: string;
 
@@ -60,36 +60,36 @@ export class AmbientThemeItem extends WithPersonalizationStore {
     this.addEventListener('keydown', this.onItemSelected_.bind(this));
   }
 
-  /** Compute the animation theme description. */
+  /** Compute the ambient theme description. */
   private computeItemDescription_(): string {
     switch (this.ambientTheme) {
-      case AnimationTheme.kSlideshow:
+      case AmbientTheme.kSlideshow:
         return this.i18n('ambientModeAnimationSlideshowLabel');
-      case AnimationTheme.kFeelTheBreeze:
+      case AmbientTheme.kFeelTheBreeze:
         return this.i18n('ambientModeAnimationFeelTheBreezeLabel');
-      case AnimationTheme.kFloatOnBy:
+      case AmbientTheme.kFloatOnBy:
         return this.i18n('ambientModeAnimationFloatOnByLabel');
-      case AnimationTheme.kVideo:
+      case AmbientTheme.kVideo:
         return this.i18n('ambientModeAnimationVideoLabel');
       default:
         assertNotReached('Invalid AmbientTheme value: ${this.ambientTheme}');
     }
   }
 
-  /** Return the display image for animation theme option. */
+  /** Return the display image for ambient theme option. */
   private computeImgSrc_(ambientTheme: AmbientThemeItem['ambientTheme']):
       string {
     switch (ambientTheme) {
-      case AnimationTheme.kSlideshow:
+      case AmbientTheme.kSlideshow:
         return 'chrome://personalization/images/slideshow.png';
-      case AnimationTheme.kFeelTheBreeze:
+      case AmbientTheme.kFeelTheBreeze:
         return 'chrome://personalization/images/feel_the_breeze.png';
-      case AnimationTheme.kFloatOnBy:
+      case AmbientTheme.kFloatOnBy:
         return 'chrome://personalization/images/float_on_by.png';
-      case AnimationTheme.kVideo:
+      case AmbientTheme.kVideo:
         return 'chrome://personalization/time_of_day/thumbnails/new_mexico.jpg';
       default:
-        assertNotReached('invalid animation theme value.');
+        assertNotReached('invalid ambient theme value.');
     }
   }
 

@@ -62,7 +62,7 @@ mojom("mojom") {
           move_only = true
         },
         {
-          mojom = "ash.personalization_app.mojom.AnimationTheme"
+          mojom = "ash.personalization_app.mojom.AmbientTheme"
           cpp = "::ash::AmbientTheme"
         },
         {

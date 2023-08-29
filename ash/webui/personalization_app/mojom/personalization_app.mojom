@@ -561,9 +561,9 @@ interface UserProvider {
   SelectLastExternalUserImage();
 };
 
-// The animation theme for screen saver. Should be kept in sync with
+// The ambient theme for screen saver. Should be kept in sync with
 // |ash::AmbientTheme|.
-enum AnimationTheme {
+enum AmbientTheme {
   kSlideshow = 0,
   kFeelTheBreeze = 1,
   kFloatOnBy = 2,
@@ -629,8 +629,8 @@ interface AmbientObserver {
   // Retrieves information whether ambient mode is enabled.
   OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
 
-  // Notifies the JS side the current state of AnimationTheme.
-  OnAnimationThemeChanged(AnimationTheme animation_theme);
+  // Notifies the JS side the current state of AmbientTheme.
+  OnAmbientThemeChanged(AmbientTheme ambient_theme);
 
   // Notifies the JS side about the current state of TopicSource.
   OnTopicSourceChanged(TopicSource topic_source);
@@ -665,8 +665,8 @@ interface AmbientProvider {
   // Binds a listener to start receiving updates on ambient mode pref changes.
   SetAmbientObserver(pending_remote<AmbientObserver> observer);
 
-  // Sets the ambient animation theme.
-  SetAnimationTheme(AnimationTheme animation_theme);
+  // Sets the ambient theme.
+  SetAmbientTheme(AmbientTheme ambient_theme);
 
   // Sets the screen saver running duration before put into sleep.
   //
@@ -675,7 +675,7 @@ interface AmbientProvider {
 
   // Sets the ambient mode topic source.
   //
-  // SPECIAL NOTE: If |SetAnimationTheme(kVideo)| is called, the provider's
+  // SPECIAL NOTE: If |SetAmbientTheme(kVideo)| is called, the provider's
   // topic source is automatically set to |kVideo| internally. Calling
   // |SetTopicSource()| with a non-video |topic_source| afterwards is an error.
   SetTopicSource(TopicSource topic_source);

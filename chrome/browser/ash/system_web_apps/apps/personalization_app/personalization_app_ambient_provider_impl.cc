@@ -174,7 +174,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, enabled);
 }
 
-void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
+void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
     ash::AmbientTheme to_theme) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
@@ -209,7 +209,7 @@ void PersonalizationAppAmbientProviderImpl::SetTopicSource(
   AmbientTheme current_theme = GetCurrentUiSettings().theme();
   // The presence of the `kVideo` theme in pref automatically means the `kVideo`
   // topic source is active. `settings_` should be kept as the server's view of
-  // the user's ambient settings, and `SetAnimationTheme(kVideo)` already
+  // the user's ambient settings, and `SetAmbientTheme(kVideo)` already
   // broadcasts an `OnTopicSourceChanged()`, so there's no work to do here.
   if (current_theme == AmbientTheme::kVideo) {
     if (topic_source != AmbientModeTopicSource::kVideo) {
@@ -391,7 +391,7 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientUiSettingsChanged() {
     return;
   }
 
-  ambient_observer_remote_->OnAnimationThemeChanged(
+  ambient_observer_remote_->OnAmbientThemeChanged(
       GetCurrentUiSettings().theme());
 }
 

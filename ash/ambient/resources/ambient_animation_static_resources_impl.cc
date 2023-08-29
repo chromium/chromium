@@ -21,16 +21,15 @@
 namespace ash {
 namespace {
 
-using AnimationThemeToResourceIdMap = base::flat_map<AmbientTheme, int>;
+using AmbientThemeToResourceIdMap = base::flat_map<AmbientTheme, int>;
 using AssetIdToResourceIdMap = base::flat_map<base::StringPiece, int>;
 
-const AnimationThemeToResourceIdMap& GetAnimationThemeToLottieResourceIdMap() {
-  static const AnimationThemeToResourceIdMap* m =
-      new AnimationThemeToResourceIdMap(
-          {{AmbientTheme::kFeelTheBreeze,
-            IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_ANIMATION_JSON},
-           {AmbientTheme::kFloatOnBy,
-            IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_ANIMATION_JSON}});
+const AmbientThemeToResourceIdMap& GetAmbientThemeToLottieResourceIdMap() {
+  static const AmbientThemeToResourceIdMap* m = new AmbientThemeToResourceIdMap(
+      {{AmbientTheme::kFeelTheBreeze,
+        IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_ANIMATION_JSON},
+       {AmbientTheme::kFloatOnBy,
+        IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_ANIMATION_JSON}});
   return *m;
 }
 
@@ -173,13 +172,13 @@ class AmbientAnimationStaticResourcesImpl
 std::unique_ptr<AmbientAnimationStaticResources>
 AmbientAnimationStaticResources::Create(AmbientUiSettings ui_settings,
                                         bool serializable) {
-  if (!GetAnimationThemeToLottieResourceIdMap().contains(ui_settings.theme())) {
+  if (!GetAmbientThemeToLottieResourceIdMap().contains(ui_settings.theme())) {
     return nullptr;
   }
 
   return std::make_unique<AmbientAnimationStaticResourcesImpl>(
       ui_settings,
-      GetAnimationThemeToLottieResourceIdMap().at(ui_settings.theme()),
+      GetAmbientThemeToLottieResourceIdMap().at(ui_settings.theme()),
       GetAssetIdToResourceIdMapForTheme(ui_settings.theme()), serializable);
 }
 

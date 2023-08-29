@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
@@ -30,9 +30,9 @@ export async function setAmbientModeEnabled(
 
 // Set the ambient theme.
 export function setAmbientTheme(
-    ambientTheme: AnimationTheme, provider: AmbientProviderInterface,
+    ambientTheme: AmbientTheme, provider: AmbientProviderInterface,
     store: PersonalizationStore): void {
-  provider.setAnimationTheme(ambientTheme);
+  provider.setAmbientTheme(ambientTheme);
 
   store.dispatch(setAmbientThemeAction(ambientTheme));
 }

@@ -38,8 +38,8 @@ class MockPersonalizationAppAmbientProvider
               (override));
   MOCK_METHOD(void, SetAmbientModeEnabled, (bool enabled), (override));
   MOCK_METHOD(void,
-              SetAnimationTheme,
-              (ash::AmbientTheme animation_theme),
+              SetAmbientTheme,
+              (ash::AmbientTheme ambient_theme),
               (override));
   MOCK_METHOD(void, SetScreenSaverDuration, (int minutes), (override));
   MOCK_METHOD(void,

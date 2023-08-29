@@ -8,7 +8,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {AnimationTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
 
 /**
  * Returns photo count string.
@@ -49,12 +49,12 @@ export function getZerosArray(x: number): number[] {
 /**
  * Returns whether the params represent a valid ambient state.
  *
- * Note: TopicSource.kVideo is exclusively paired with AnimationTheme.kVideo
+ * Note: TopicSource.kVideo is exclusively paired with AmbientTheme.kVideo
  */
 export function isValidTopicSourceAndTheme(
-    topicSource: TopicSource, ambientTheme: AnimationTheme|null) {
-  return (ambientTheme === AnimationTheme.kVideo &&
+    topicSource: TopicSource, ambientTheme: AmbientTheme|null) {
+  return (ambientTheme === AmbientTheme.kVideo &&
           topicSource === TopicSource.kVideo) ||
-      (ambientTheme !== AnimationTheme.kVideo &&
+      (ambientTheme !== AmbientTheme.kVideo &&
        topicSource !== TopicSource.kVideo);
 }
