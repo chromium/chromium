@@ -44,6 +44,12 @@ const int kModuleMaxHeight = 150;
 
 const CGFloat kSeparatorHeight = 0.5;
 
+// The horizontal trailing spacing between the top horizontal StackView
+// (containing the title and any subtitle/See More buttons) and the module's
+// overall vertical container StackView when there is none between the overall
+// vertical StackView and this container .
+const CGFloat kTitleStackViewTrailingMargin = 16.0f;
+
 }  // namespace
 
 @interface MagicStackModuleContainer () <UIContextMenuInteractionDelegate>
@@ -100,6 +106,8 @@ const CGFloat kSeparatorHeight = 0.5;
     _title.accessibilityTraits |= UIAccessibilityTraitHeader;
     _title.accessibilityIdentifier =
         [MagicStackModuleContainer titleStringForModule:type];
+    [_title setContentHuggingPriority:UILayoutPriorityDefaultLow
+                              forAxis:UILayoutConstraintAxisHorizontal];
     [titleStackView addArrangedSubview:_title];
     // `setContentHuggingPriority:` does not guarantee that titleStackView
     // completely resists vertical expansion since UIStackViews do not have
@@ -148,8 +156,12 @@ const CGFloat kSeparatorHeight = 0.5;
       _subtitle.lineBreakMode = NSLineBreakByWordWrapping;
       _subtitle.accessibilityTraits |= UIAccessibilityTraitHeader;
       _subtitle.accessibilityIdentifier = subtitle;
-      [_subtitle setContentHuggingPriority:UILayoutPriorityDefaultHigh
+      [_subtitle setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
+      [_subtitle
+          setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                          forAxis:
+                                              UILayoutConstraintAxisHorizontal];
 
       [titleStackView addArrangedSubview:_subtitle];
     }
@@ -163,11 +175,17 @@ const CGFloat kSeparatorHeight = 0.5;
     [stackView addSubview:contentView];
     if ([_title.text length] > 0) {
       [stackView addArrangedSubview:titleStackView];
-      // Add constraints to the title so that it doesn't grow wider than the
-      // content view when dynamic type is set very large.
+      // Ensure that there is horizontal trailing spacing between the title
+      // stackview content and the module. The overall StackView has no trailing
+      // spacing for kCompactedSetUpList.
+      CGFloat trailingSpacing =
+          _type == ContentSuggestionsModuleType::kCompactedSetUpList
+              ? -kTitleStackViewTrailingMargin
+              : 0;
       [NSLayoutConstraint activateConstraints:@[
-        [titleStackView.widthAnchor
-            constraintEqualToConstant:[self contentViewWidth]],
+        [titleStackView.trailingAnchor
+            constraintEqualToAnchor:stackView.trailingAnchor
+                           constant:trailingSpacing],
       ]];
     }
     if ([self shouldShowSeparator]) {
