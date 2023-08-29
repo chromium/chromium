@@ -32,8 +32,8 @@ class RTCEncodedVideoFrameDelegate
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame);
 
   String Type() const;
-  uint32_t Timestamp() const;
-  void SetTimestamp(uint32_t timestamp, ExceptionState& exception_state);
+  uint32_t RtpTimestamp() const;
+  void SetRtpTimestamp(uint32_t timestamp, ExceptionState& exception_state);
   absl::optional<webrtc::Timestamp> CaptureTimeIdentifier() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);

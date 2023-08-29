@@ -50,8 +50,8 @@ webrtc::VideoFrameMetadata MockVP9Metadata(MockTransformableVideoFrame* frame) {
 
 webrtc::VideoFrameMetadata MockVP8Metadata(MockTransformableVideoFrame* frame) {
   webrtc::VideoFrameMetadata webrtc_metadata;
-  webrtc_metadata.SetFrameId(1);
-  webrtc_metadata.SetFrameDependencies(std::vector<int64_t>{2});
+  webrtc_metadata.SetFrameId(2);
+  webrtc_metadata.SetFrameDependencies(std::vector<int64_t>{1});
   webrtc_metadata.SetWidth(800);
   webrtc_metadata.SetHeight(600);
   webrtc_metadata.SetSpatialIndex(3);
@@ -93,6 +93,7 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
 
   EXPECT_CALL(*frame, Metadata()).WillOnce(Return(webrtc_metadata));
   EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(13));
+  EXPECT_CALL(*frame, GetTimestamp()).WillRepeatedly(Return(17));
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
 
@@ -100,15 +101,16 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
       encoded_frame.getMetadata();
   EXPECT_EQ(7u, retrieved_metadata->synchronizationSource());
   EXPECT_EQ(13, retrieved_metadata->payloadType());
-  EXPECT_EQ(1, retrieved_metadata->frameId());
+  EXPECT_EQ(2, retrieved_metadata->frameId());
   ASSERT_EQ(1u, retrieved_metadata->dependencies().size());
-  EXPECT_EQ(2, retrieved_metadata->dependencies()[0]);
+  EXPECT_EQ(1, retrieved_metadata->dependencies()[0]);
   EXPECT_EQ(800, retrieved_metadata->width());
   EXPECT_EQ(600, retrieved_metadata->height());
   EXPECT_EQ(3, retrieved_metadata->spatialIndex());
   EXPECT_EQ(4, retrieved_metadata->temporalIndex());
   ASSERT_EQ(1u, retrieved_metadata->contributingSources().size());
   EXPECT_EQ(6u, retrieved_metadata->contributingSources()[0]);
+  EXPECT_EQ(17u, retrieved_metadata->rtpTimestamp());
 }
 
 TEST_F(RTCEncodedVideoFrameTest, ClosedFramesFailToClone) {
@@ -185,6 +187,7 @@ RTCEncodedVideoFrameMetadata* CreateMetadata() {
   new_metadata->setSynchronizationSource(10);
   new_metadata->setContributingSources({11, 12, 13});
   new_metadata->setPayloadType(14);
+  new_metadata->setRtpTimestamp(1);
   return new_metadata;
 }
 
@@ -347,6 +350,30 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooManyDependencies) {
   encoded_frame.setMetadata(new_metadata, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(), "Too many dependencies.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataModifiesRtpTimestamp) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  const uint32_t new_timestamp = 7;
+
+  EXPECT_CALL(*frame, GetTimestamp()).WillRepeatedly(Return(1));
+
+  EXPECT_CALL(*frame, SetMetadata(_));
+  EXPECT_CALL(*frame, SetRTPTimestamp(new_timestamp));
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* metadata = encoded_frame.getMetadata();
+  metadata->setRtpTimestamp(new_timestamp);
+
+  DummyExceptionStateForTesting exception_state;
+
+  encoded_frame.setMetadata(metadata, exception_state);
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 }
 
 }  // namespace blink

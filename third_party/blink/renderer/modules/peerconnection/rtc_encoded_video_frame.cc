@@ -58,7 +58,8 @@ bool IsAllowedSetMetadataChange(
 bool ValidateMetadata(const RTCEncodedVideoFrameMetadata* metadata,
                       String& error_message) {
   if (!metadata->hasWidth() || !metadata->hasHeight() ||
-      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex()) {
+      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex() ||
+      !metadata->hasRtpTimestamp()) {
     error_message = "Member(s) missing in RTCEncodedVideoFrameMetadata.";
     return false;
   }
@@ -109,12 +110,12 @@ String RTCEncodedVideoFrame::type() const {
 }
 
 uint32_t RTCEncodedVideoFrame::timestamp() const {
-  return delegate_->Timestamp();
+  return delegate_->RtpTimestamp();
 }
 
 void RTCEncodedVideoFrame::setTimestamp(uint32_t timestamp,
                                         ExceptionState& exception_state) {
-  delegate_->SetTimestamp(timestamp, exception_state);
+  delegate_->SetRtpTimestamp(timestamp, exception_state);
 }
 
 DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
@@ -135,6 +136,7 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
     if (delegate_->CaptureTimeIdentifier()) {
       metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
     }
+    metadata->setRtpTimestamp(delegate_->RtpTimestamp());
   }
 
   const absl::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
@@ -234,6 +236,7 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   }
 
   delegate_->SetMetadata(webrtc_metadata);
+  delegate_->SetRtpTimestamp(metadata->rtpTimestamp(), exception_state);
 }
 
 void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {

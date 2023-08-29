@@ -28,12 +28,12 @@ String RTCEncodedVideoFrameDelegate::Type() const {
   return webrtc_frame_->IsKeyFrame() ? "key" : "delta";
 }
 
-uint32_t RTCEncodedVideoFrameDelegate::Timestamp() const {
+uint32_t RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
 
-void RTCEncodedVideoFrameDelegate::SetTimestamp(
+void RTCEncodedVideoFrameDelegate::SetRtpTimestamp(
     uint32_t timestamp,
     ExceptionState& exception_state) {
   base::AutoLock lock(lock_);
