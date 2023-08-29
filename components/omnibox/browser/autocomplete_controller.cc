@@ -1211,6 +1211,12 @@ void AutocompleteController::AttachActions() {
 #endif
   }
   result_.TrimOmniboxActions(input_.IsZeroSuggest());
+
+  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+    result_.SplitActionsToSuggestions();
+    // TODO(crbug.com/1473162): Trim result length again;
+    //  may require refactoring SortAndCull.
+  }
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(

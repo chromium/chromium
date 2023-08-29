@@ -622,6 +622,10 @@ struct AutocompleteMatch {
     return it != actions.end() ? it->get() : nullptr;
   }
 
+  // Change this match's `contents` and other members to more accurately
+  // represent the `takeover_action` on this match.
+  void ConvertFromTakeoverAction();
+
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
   // no provider (or memory of the user's selection).

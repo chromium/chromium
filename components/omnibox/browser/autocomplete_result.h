@@ -150,6 +150,9 @@ class AutocompleteResult {
   // Filter and remove OmniboxActions according to Platform-specific rules.
   void TrimOmniboxActions(bool is_zero_suggest);
 
+  // Split some `actions` on matches out to become their own matches.
+  void SplitActionsToSuggestions();
+
   // Sets |action| in matches that have Pedal-triggering text.
   void AttachPedalsToMatches(const AutocompleteInput& input,
                              const AutocompleteProviderClient& client);

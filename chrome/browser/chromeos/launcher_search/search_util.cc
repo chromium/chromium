@@ -62,7 +62,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
-    case AutocompleteMatchType::PEDAL_DEPRECATED:
+    case AutocompleteMatchType::PEDAL:
     case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::STARTER_PACK:
       return SearchResult::OmniboxType::kDomain;

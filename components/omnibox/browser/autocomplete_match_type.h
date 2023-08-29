@@ -73,9 +73,7 @@ struct AutocompleteMatchType {
     TAB_SEARCH_DEPRECATED       = 23,  // A suggested open tab, based on its
                                        // URL or title, via HQP (deprecated).
     DOCUMENT_SUGGESTION         = 24,  // A suggested document.
-    PEDAL_DEPRECATED            = 25,  // An omnibox pedal match (deprecated).
-                                       // Pedals are now just action buttons
-                                       // attached to search matches.
+    PEDAL                       = 25,  // An omnibox pedal match.
     CLIPBOARD_TEXT              = 26,  // Text based on the clipboard.
     CLIPBOARD_IMAGE             = 27,  // An image based on the clipboard.
     TILE_SUGGESTION             = 28,  // A suggestion containing query tiles.

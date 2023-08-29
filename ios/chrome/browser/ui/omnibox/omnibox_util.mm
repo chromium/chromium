@@ -37,7 +37,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::NAVSUGGEST:
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
     case AutocompleteMatchType::OPEN_TAB:
-    case AutocompleteMatchType::PEDAL_DEPRECATED:
+    case AutocompleteMatchType::PEDAL:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::STARTER_PACK:

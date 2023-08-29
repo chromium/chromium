@@ -2848,7 +2848,91 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     VerifyTriggeredFeatures(triggered_feature_service(), {});
   }
 }
-#endif
+
+TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
+  FakeAutocompleteProviderClient client;
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(
+        std::make_pair(pedal->PedalId(), base::WrapRefCounted(pedal)));
+  };
+  add(new TestOmniboxPedalClearBrowsingData());
+  client.set_pedal_provider(
+      std::make_unique<OmniboxPedalProvider>(client, std::move(pedals)));
+  EXPECT_NE(nullptr, client.GetPedalProvider());
+
+  AutocompleteResult result;
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+
+  {
+    ACMatches matches;
+    struct TestData : AutocompleteMatchTestData {
+      std::string contents;
+      TestData(std::string url,
+               AutocompleteMatch::Type type,
+               std::string contents)
+          : AutocompleteMatchTestData{url, type}, contents(contents) {}
+    };
+    const TestData data[] = {
+        {"http://clear-history/", AutocompleteMatchType::SEARCH_SUGGEST,
+         "clear history"},
+        {"http://search-what-you-typed/",
+         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, "search what you typed"},
+        {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY,
+         "search history"},
+        {"http://history-url/", AutocompleteMatchType::HISTORY_URL,
+         "history url"},
+    };
+    PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
+    for (size_t i = 0; i < std::size(data); i++) {
+      matches[i].contents = base::UTF8ToUTF16(data[i].contents);
+    }
+    result.AppendMatches(matches);
+  }
+
+  // First, the pedal is attached as normal.
+  result.AttachPedalsToMatches(input, client);
+  EXPECT_TRUE(!result.begin()->actions.empty());
+  EXPECT_EQ(nullptr, result.match_at(1)->takeover_action);
+  EXPECT_EQ(result.size(), 4u);
+
+  // Then pedals are split out to dedicated suggestions with takeover action.
+  result.SplitActionsToSuggestions();
+  EXPECT_TRUE(result.begin()->actions.empty());
+  EXPECT_NE(nullptr, result.match_at(1)->takeover_action);
+  EXPECT_EQ(result.size(), 5u);
+
+  // Now for an artifically exaggerated case with two pedals on one match,
+  // which doesn't happen naturally but is useful for testing the method.
+  static_cast<FakeTabMatcher&>(const_cast<TabMatcher&>(client.GetTabMatcher()))
+      .set_url_substring_match("clear-history");
+  result.AttachPedalsToMatches(input, client);
+  EXPECT_EQ(result.match_at(0)->actions.size(), 1u);
+  result.match_at(0)->has_tab_match.reset();
+  result.ConvertOpenTabMatches(&client, &input);
+  EXPECT_EQ(result.match_at(0)->actions.size(), 2u);
+  EXPECT_EQ(result.match_at(0)->GetActionAt(1u)->ActionId(),
+            OmniboxActionId::TAB_SWITCH);
+  result.match_at(0)->actions.push_back(result.match_at(0)->GetActionAt(0u));
+  EXPECT_EQ(result.match_at(0)->actions.size(), 3u);
+  // We have three actions: pedal, tab-switch, pedal. Split and ensure
+  // both pedals became dedicated suggestions. The first one from above
+  // is still there and is not affected by splitting again.
+  result.SplitActionsToSuggestions();
+  EXPECT_EQ(result.match_at(0)->actions.size(), 1u);
+  EXPECT_EQ(result.match_at(0)->GetActionAt(0u)->ActionId(),
+            OmniboxActionId::TAB_SWITCH);
+  EXPECT_EQ(result.match_at(1)->takeover_action->ActionId(),
+            OmniboxActionId::PEDAL);
+  EXPECT_EQ(result.match_at(2)->takeover_action->ActionId(),
+            OmniboxActionId::PEDAL);
+  EXPECT_EQ(result.match_at(3)->takeover_action->ActionId(),
+            OmniboxActionId::PEDAL);
+  EXPECT_EQ(result.size(), 7u);
+}
+
+#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteResultTest, Android_InspireMe) {

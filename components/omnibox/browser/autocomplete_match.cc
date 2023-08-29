@@ -499,6 +499,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                                     : omnibox::kBookmarkIcon;
   if (answer.has_value())
     return AnswerTypeToAnswerIcon(answer->type());
+
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
     case Type::HISTORY_URL:
@@ -525,13 +526,18 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                                       : vector_icons::kSearchIcon;
     }
 
+    case Type::PEDAL: {
+      if (takeover_action) {
+        return takeover_action->GetVectorIcon();
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    }
     case Type::SEARCH_WHAT_YOU_TYPED:
     case Type::SEARCH_SUGGEST_ENTITY:
     case Type::SEARCH_SUGGEST_PROFILE:
     case Type::SEARCH_OTHER_ENGINE:
     case Type::CONTACT_DEPRECATED:
     case Type::VOICE_SUGGEST:
-    case Type::PEDAL_DEPRECATED:
     case Type::CLIPBOARD_TEXT:
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
@@ -1243,11 +1249,12 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::STARTER_PACK;
     case AutocompleteMatchType::VOICE_SUGGEST:
       return OmniboxEventProto::Suggestion::SEARCH_SUGGEST;
+    case AutocompleteMatchType::PEDAL:
+      return OmniboxEventProto::Suggestion::PEDAL;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
-    case AutocompleteMatchType::PEDAL_DEPRECATED:
     // NULL_RESULT_MESSAGE suggestions cannot be acted upon, so no need to
     // log.
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
@@ -1882,6 +1889,27 @@ void AutocompleteMatch::WriteIntoTrace(perfetto::TracedValue context) const {
 
 OmniboxAction* AutocompleteMatch::GetActionAt(size_t index) const {
   return index >= actions.size() ? nullptr : actions[index].get();
+}
+
+void AutocompleteMatch::ConvertFromTakeoverAction() {
+  CHECK(takeover_action);
+  CHECK(takeover_action->ActionId() == OmniboxActionId::PEDAL);
+
+  swap_contents_and_description = false;
+  transition = ui::PAGE_TRANSITION_GENERATED;
+  type = AutocompleteMatchType::PEDAL;
+  suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+
+  // Use the pedal text as primary match `contents`.
+  contents = takeover_action->GetLabelStrings().hint;
+  contents_class = {{0, ACMatchClassification::NONE}};
+
+  // TODO(crbug.com/1473162): May use a shorter description here, like
+  //  a new grit string for "Chrome action", or maybe no string at all.
+  //  Consider also providing a tooltip with `suggestion_contents`, as
+  //  pedals did support this detailed educational string in the past.
+  description = takeover_action->GetLabelStrings().suggestion_contents;
+  description_class = {{0, ACMatchClassification::DIM}};
 }
 
 #if DCHECK_IS_ON()
