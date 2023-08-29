@@ -21,6 +21,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -45,7 +46,8 @@ constexpr char16_t kDescriptionTextPlaceholder[] =
 
 constexpr int kPromoCardIconSizeDip = 48;
 
-constexpr int kContainerPaddingDip = 16;
+constexpr gfx::Insets kPromoCardInsets = gfx::Insets::VH(12, 16);
+
 constexpr int kContainerMinWidthDip = 368;
 
 // Spacing between this view and the anchor view (context menu).
@@ -141,7 +143,7 @@ void EditorMenuPromoCardView::InitLayout() {
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey, gfx::Insets(kContainerPaddingDip));
+      .SetDefault(views::kMarginsKey, kPromoCardInsets);
 
   // Icon.
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
@@ -152,43 +154,43 @@ void EditorMenuPromoCardView::InitLayout() {
   // The main view, which shows the promo card text and buttons.
   auto* main_view = AddChildView(std::make_unique<views::FlexLayoutView>());
   main_view->SetOrientation(views::LayoutOrientation::kVertical);
-  main_view->SetCollapseMargins(true);
-  main_view->SetIgnoreDefaultMainAxisMargins(true);
-  main_view->SetDefault(views::kMarginsKey,
-                        gfx::Insets::VH(kContainerPaddingDip, 0));
+  main_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
-  InitTextContainer(main_view);
-  InitButtonBar(main_view);
+  AddTitle(main_view);
+  AddDescription(main_view);
+  AddButtonBar(main_view);
 }
 
-void EditorMenuPromoCardView::InitTextContainer(views::View* main_view) {
-  // Text container layout.
-  auto* text_container =
-      main_view->AddChildView(std::make_unique<views::FlexLayoutView>());
-  text_container->SetOrientation(views::LayoutOrientation::kVertical);
-  text_container->SetCollapseMargins(true);
-  text_container->SetIgnoreDefaultMainAxisMargins(true);
-
-  const int vertical_spacing = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  text_container->SetDefault(views::kMarginsKey,
-                             gfx::Insets::VH(vertical_spacing, 0));
-
-  // Title.
-  auto* title = text_container->AddChildView(std::make_unique<views::Label>(
-      kTitleTextPlaceholder, views::style::CONTEXT_DIALOG_TITLE));
+void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
+  auto* title = main_view->AddChildView(std::make_unique<views::Label>(
+      kTitleTextPlaceholder, views::style::CONTEXT_DIALOG_TITLE,
+      views::style::STYLE_HEADLINE_5));
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title->SetMultiLine(true);
-
-  // Description.
-  auto* description =
-      text_container->AddChildView(std::make_unique<views::Label>(
-          kDescriptionTextPlaceholder, views::style::CONTEXT_DIALOG_BODY_TEXT));
-  description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description->SetMultiLine(true);
+  title->SetEnabledColorId(ui::kColorSysOnSurface);
 }
 
-void EditorMenuPromoCardView::InitButtonBar(views::View* main_view) {
+void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
+  auto* description = main_view->AddChildView(std::make_unique<views::Label>(
+      kDescriptionTextPlaceholder, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_BODY_3));
+  description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description->SetMultiLine(true);
+  description->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  description->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
+                        0,
+                        views::LayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT),
+                        0));
+}
+
+void EditorMenuPromoCardView::AddButtonBar(views::View* main_view) {
   // Button bar layout.
   auto* button_bar =
       main_view->AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -196,26 +198,29 @@ void EditorMenuPromoCardView::InitButtonBar(views::View* main_view) {
   button_bar->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
   button_bar->SetCollapseMargins(true);
   button_bar->SetIgnoreDefaultMainAxisMargins(true);
-
-  const int button_spacing = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-  button_bar->SetDefault(views::kMarginsKey,
-                         gfx::Insets::VH(0, button_spacing));
+  button_bar->SetDefault(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, views::LayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   // Dismiss button.
   dismiss_button_ =
-      button_bar->AddChildView(std::make_unique<views::LabelButton>(
+      button_bar->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&EditorMenuPromoCardView::OnDismissButtonPressed,
                               weak_factory_.GetWeakPtr()),
           l10n_util::GetStringUTF16(
               IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
+  dismiss_button_->SetStyle(ui::ButtonStyle::kText);
 
   // Tell me more button.
-  button_bar->AddChildView(std::make_unique<views::LabelButton>(
-      base::BindRepeating(&EditorMenuPromoCardView::OnTellMeMoreButtonPressed,
-                          weak_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(
-          IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON)));
+  tell_me_more_button_ =
+      button_bar->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &EditorMenuPromoCardView::OnTellMeMoreButtonPressed,
+              weak_factory_.GetWeakPtr()),
+          l10n_util::GetStringUTF16(
+              IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON)));
+  tell_me_more_button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
 void EditorMenuPromoCardView::OnDismissButtonPressed() {

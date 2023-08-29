@@ -13,7 +13,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
-class LabelButton;
+class MdTextButton;
 }
 
 namespace chromeos::editor_menu {
@@ -52,8 +52,9 @@ class EditorMenuPromoCardView : public views::View,
 
  private:
   void InitLayout();
-  void InitTextContainer(views::View* main_view);
-  void InitButtonBar(views::View* main_view);
+  void AddTitle(views::View* main_view);
+  void AddDescription(views::View* main_view);
+  void AddButtonBar(views::View* main_view);
 
   void OnDismissButtonPressed();
   void OnTellMeMoreButtonPressed();
@@ -63,7 +64,8 @@ class EditorMenuPromoCardView : public views::View,
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
 
-  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
+  raw_ptr<views::MdTextButton> dismiss_button_ = nullptr;
+  raw_ptr<views::MdTextButton> tell_me_more_button_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
