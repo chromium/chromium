@@ -1007,6 +1007,7 @@ chrome.fileManagerPrivate.ParsedTrashInfoFile;
  *   bytesToPin: number,
  *   pinnedBytes: number,
  *   filesToPin: number,
+ *   listedFiles: number,
  *   remainingSeconds: number,
  *   emptiedQueue: boolean
  * }}

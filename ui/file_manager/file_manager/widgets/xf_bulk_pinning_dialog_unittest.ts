@@ -7,7 +7,8 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 
 import {mockUtilVisitURL} from '../common/js/mock_util.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {getEmptyState} from '../state/store.js';
+import {updateBulkPinProgress} from '../state/actions/bulk_pinning.js';
+import {getEmptyState, getStore} from '../state/store.js';
 
 import {BulkPinStage, XfBulkPinningDialog} from './xf_bulk_pinning_dialog.js';
 
@@ -36,6 +37,11 @@ function getFooter(dialog: XfBulkPinningDialog, id: string): HTMLDivElement {
 // Gets a button of the given dialog.
 function getButton(dialog: XfBulkPinningDialog, id: string): HTMLButtonElement {
   return dialog.shadowRoot!.querySelector(`#${id}`)!;
+}
+
+// Gets the `innerText` of the <span> element of the given dialog.
+function getSpanText(dialog: XfBulkPinningDialog, id: string): string {
+  return dialog.shadowRoot!.querySelector<HTMLSpanElement>(`#${id}`)!.innerText;
 }
 
 // Tests that XfBulkPinningDialog.onStateChanged() correctly reacts to app State
@@ -382,4 +388,36 @@ export async function testViewStorage() {
   };
   link.click();
   assertEquals('storage', gotPage);
+}
+
+// Test when listed files has a count, it appears in the footer dialog.
+export async function testFileCountUpdates() {
+  const store = getStore();
+  store.init(getEmptyState());
+
+  const dialog = await getDialog();
+  assertNotEquals(null, dialog);
+  assertFalse(dialog.is_open);
+
+  // Show the dialog.
+  await dialog.show();
+  assertTrue(dialog.is_open);
+
+  // Dispatch the listing files state with 100 files listed.
+  const bulkPinning: chrome.fileManagerPrivate.BulkPinProgress = {
+    stage: BulkPinStage.LISTING_FILES,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 0,
+    pinnedBytes: 0,
+    filesToPin: 100,
+    remainingSeconds: 0,
+    emptiedQueue: false,
+    listedFiles: 100,
+  };
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  await waitForElementUpdate(dialog);
+  assertEquals(
+      'Checking storage space… 100 items found',
+      getSpanText(dialog, 'listing-files-text'));
 }

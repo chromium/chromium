@@ -1788,6 +1788,12 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_LISTING" desc="Information message displayed when the Google Drive bulk pinning feature is computing the space requirements">
     Checking storage space…
   </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_LISTING_WITH_MULTIPLE_ITEMS" desc="Information message displayed when the Google Drive bulk pinning feature is computing the space requirements and it knows how many files have currently been enumerated">
+    Checking storage space… <ph name="ITEMS_FOUND">$1<ex>1,072</ex></ph> items found
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_LISTING_WITH_SINGLE_ITEM" desc="Information message displayed when the Google Drive bulk pinning feature is computing the space requirements and it knows how many files have currently been enumerated">
+    Checking storage space… 1 item found
+  </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_ERROR" desc="Error message displayed when the Google Drive bulk pinning feature could not compute the space requirements">
     Something went wrong.
   </message>

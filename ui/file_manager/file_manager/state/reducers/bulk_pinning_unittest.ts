@@ -21,6 +21,7 @@ export async function testUpdateBulkPinProgress(done: () => void) {
     filesToPin: 100,
     remainingSeconds: 500,
     emptiedQueue: false,
+    listedFiles: 100,
   };
 
   // Dispatch an action to update bulk pin progress.

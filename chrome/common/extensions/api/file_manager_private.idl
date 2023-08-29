@@ -1283,6 +1283,9 @@ dictionary BulkPinProgress {
   // Total number of files to pin.
   long filesToPin;
 
+  // Show the total number of files enumerated during the Listing files stage.
+  long listedFiles;
+
   // Estimated time remaining to pin all the `bytesToPin`.
   double remainingSeconds;
 
