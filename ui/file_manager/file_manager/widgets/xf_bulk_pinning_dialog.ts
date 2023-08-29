@@ -66,16 +66,15 @@ export class XfBulkPinningDialog extends XfBase {
       new RateLimiter(() => this.updateListedFiles_(), 5000);
 
   private updateListedFiles_() {
-    const {bulkPinning} = this.store_.getState();
-    if (bulkPinning?.listedFiles &&
-        this.listedFiles_ !== bulkPinning!.listedFiles) {
-      this.listedFiles_ = bulkPinning!.listedFiles;
-      this.$listingFilesText_.innerText = this.listedFiles_ === 1 ?
-          str('BULK_PINNING_LISTING_WITH_SINGLE_ITEM') :
-          strf(
-              'BULK_PINNING_LISTING_WITH_MULTIPLE_ITEMS',
-              this.listedFiles_.toLocaleString(
-                  util.getCurrentLocaleOrDefault()));
+    if (this.listedFiles_ === 0) {
+      this.$listingFilesText_.innerText = str('BULK_PINNING_LISTING');
+    } else if (this.listedFiles_ === 1) {
+      this.$listingFilesText_.innerText =
+          str('BULK_PINNING_LISTING_WITH_SINGLE_ITEM');
+    } else {
+      this.$listingFilesText_.innerText = strf(
+          'BULK_PINNING_LISTING_WITH_MULTIPLE_ITEMS',
+          this.listedFiles_.toLocaleString(util.getCurrentLocaleOrDefault()));
     }
   }
 
@@ -103,8 +102,9 @@ export class XfBulkPinningDialog extends XfBase {
           util.bytesToString(this.freeBytes_));
     }
 
-    if (bpp.stage === BulkPinStage.LISTING_FILES &&
+    if (bpp.stage === BulkPinStage.LISTING_FILES && bpp.listedFiles > 0 &&
         bpp.listedFiles !== this.listedFiles_) {
+      this.listedFiles_ = bpp.listedFiles;
       this.updateListedFilesDebounced_.run();
     }
 
@@ -188,6 +188,8 @@ export class XfBulkPinningDialog extends XfBase {
 
   private onClose(_: Event) {
     this.state = DialogState.CLOSED;
+    this.listedFiles_ = 0;
+    this.updateListedFilesDebounced_.runImmediately();
     this.store_.unsubscribe(this);
   }
 
