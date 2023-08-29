@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "content/public/common/process_type.h"
 
 namespace base {
@@ -87,6 +88,10 @@ class ProcessNode : public Node {
   // Returns the base::Process backing this process. This will be an invalid
   // process if it has not yet started, or if it has exited.
   virtual const base::Process& GetProcess() const = 0;
+
+  // Gets the unique token identifying this node for resource attribution. This
+  // token will not be reused after the node is destroyed.
+  virtual resource_attribution::ProcessContext GetResourceContext() const = 0;
 
   // Returns a time captured as early as possible after the process is launched.
   virtual base::TimeTicks GetLaunchTime() const = 0;

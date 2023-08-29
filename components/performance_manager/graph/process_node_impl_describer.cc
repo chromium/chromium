@@ -160,6 +160,7 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
 
   ret.Set("launch_time", base::TimeFormatTimeOfDayWithMilliseconds(
                              TicksToTime(impl->launch_time())));
+  ret.Set("resource_context", impl->resource_context().ToString());
 
   if (impl->exit_status()) {
     ret.Set("exit_status", impl->exit_status().value());
