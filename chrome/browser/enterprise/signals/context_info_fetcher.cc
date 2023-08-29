@@ -187,8 +187,6 @@ ContextInfoFetcher::~ContextInfoFetcher() = default;
 std::unique_ptr<ContextInfoFetcher> ContextInfoFetcher::CreateInstance(
     content::BrowserContext* browser_context,
     enterprise_connectors::ConnectorsService* connectors_service) {
-  // TODO(domfc): Add platform overrides of the class once they are needed for
-  // an attribute.
   return std::make_unique<ContextInfoFetcher>(browser_context,
                                               connectors_service);
 }
