@@ -49,7 +49,9 @@
     "instance": "rbe-chromium-trusted",
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
-      "RBE_compare": "true"
+      "RBE_compare": "true",
+      "RBE_num_local_reruns": "1",
+      "RBE_num_remote_reruns": "1"
     },
     "scandeps_server": true
   },

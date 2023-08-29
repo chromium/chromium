@@ -541,7 +541,11 @@ ci.builder(
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = None,
-    reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_rewrapper_env = {
+        "RBE_compare": "true",
+        "RBE_num_local_reruns": "1",
+        "RBE_num_remote_reruns": "1",
+    },
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
@@ -576,6 +580,8 @@ ci.builder(
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
+        "RBE_num_local_reruns": "1",
+        "RBE_num_remote_reruns": "1",
         "RBE_compression_threshold": "4000000",
         "RBE_canonicalize_working_dir": "true",
         "RBE_cache_silo": "Linux Builder (canonical wd) (reclient compare)",

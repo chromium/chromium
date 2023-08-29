@@ -1664,6 +1664,8 @@ ci.builder(
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
+        "RBE_num_local_reruns": "1",
+        "RBE_num_remote_reruns": "1",
     },
     shadow_reclient_instance = None,
 )
@@ -1725,6 +1727,8 @@ ci.builder(
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
+        "RBE_num_local_reruns": "1",
+        "RBE_num_remote_reruns": "1",
     },
     shadow_reclient_instance = None,
 )
@@ -1761,6 +1765,8 @@ fyi_mac_builder(
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
+        "RBE_num_local_reruns": "1",
+        "RBE_num_remote_reruns": "1",
     },
     shadow_reclient_instance = None,
 )
@@ -1967,7 +1973,11 @@ ci.builder(
     execution_timeout = 14 * time.hour,
     reclient_ensure_verified = True,
     reclient_jobs = None,
-    reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_rewrapper_env = {
+        "RBE_compare": "true",
+        "RBE_num_local_reruns": "1",
+        "RBE_num_remote_reruns": "1",
+    },
 )
 
 ci.builder(
