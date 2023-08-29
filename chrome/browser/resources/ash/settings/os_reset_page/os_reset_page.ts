@@ -16,7 +16,7 @@ import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {getTemplate} from './os_reset_page.html.js';
 
-class OsSettingsResetPageElement extends PolymerElement {
+export class OsSettingsResetPageElement extends PolymerElement {
   static get is() {
     return 'os-settings-reset-page' as const;
   }

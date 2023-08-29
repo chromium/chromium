@@ -754,6 +754,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsPrivacyPageSmartPrivacySubpage',
    'os_privacy_page/smart_privacy_subpage_test.js'
  ],
+ ['OsResetPage', 'os_reset_page/os_reset_page_test.js'],
  [
    'OsResetPageResetCard',
    'os_reset_page/reset_card_test.js',
@@ -840,7 +841,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'PersonalizationPageWithPersonalizationHub',
    'personalization_page_with_personalization_hub_test.js',
  ],
- ['ResetPage', 'os_reset_page_test.js'],
  [
    'SettingsSchedulerSlider',
    'settings_scheduler_slider/settings_scheduler_slider_test.js'

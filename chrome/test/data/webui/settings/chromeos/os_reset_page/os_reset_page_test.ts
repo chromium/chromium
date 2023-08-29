@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsResetBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {OsResetBrowserProxyImpl, OsSettingsResetPageElement} from 'chrome://os-settings/lazy_load.js';
 import {LifetimeBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
@@ -13,20 +13,15 @@ import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.js';
+import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
+
 import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';
 
 suite('<os-settings-reset-page>', () => {
-  let resetPage = null;
-
-  /** @type {!settings.ResetPageBrowserProxy} */
-  let resetPageBrowserProxy = null;
-
-  /** @type {!LifetimeBrowserProxy} */
-  let lifetimeBrowserProxy = null;
-
-  /** @type {!ESimManagerRemote|undefined} */
-  let eSimManagerRemote;
+  let resetPage: OsSettingsResetPageElement;
+  let resetPageBrowserProxy: TestOsResetBrowserProxy;
+  let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
+  let eSimManagerRemote: FakeESimManagerRemote;
 
   suiteSetup(() => {
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
@@ -38,10 +33,10 @@ suite('<os-settings-reset-page>', () => {
 
   setup(async () => {
     eSimManagerRemote = new FakeESimManagerRemote();
-    setESimManagerRemoteForTesting(eSimManagerRemote);
+    setESimManagerRemoteForTesting(
+        eSimManagerRemote as unknown as ESimManagerRemote);
 
     Router.getInstance().navigateTo(routes.OS_RESET);
-    PolymerTest.clearBody();
     resetPage = document.createElement('os-settings-reset-page');
     document.body.appendChild(resetPage);
     await flushTasks();
@@ -55,7 +50,8 @@ suite('<os-settings-reset-page>', () => {
   });
 
   test('Reset card should be visible', () => {
-    const resetCard = resetPage.shadowRoot.querySelector('settings-reset-card');
+    const resetCard =
+        resetPage.shadowRoot!.querySelector('settings-reset-card');
     assertTrue(isVisible(resetCard));
   });
 });

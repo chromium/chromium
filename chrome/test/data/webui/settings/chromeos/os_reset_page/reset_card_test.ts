@@ -16,7 +16,8 @@ import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
-import {TestOsResetBrowserProxy} from '../test_os_reset_browser_proxy.js';
+
+import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';
 
 suite('<reset-card>', () => {
   const isRevampWayfindingEnabled =
