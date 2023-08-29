@@ -133,29 +133,15 @@ CastPermissionManager::CastPermissionManager() {}
 
 CastPermissionManager::~CastPermissionManager() {}
 
-void CastPermissionManager::RequestPermission(
-    blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  blink::mojom::PermissionStatus permission_status =
-      GetPermissionStatusInternal(permission, render_frame_host,
-                                  requesting_origin);
-  std::move(callback).Run(permission_status);
-}
-
 void CastPermissionManager::RequestPermissions(
-    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   std::vector<blink::mojom::PermissionStatus> permission_statuses;
-  for (auto permission : permissions) {
+  for (auto permission : request_description.permissions) {
     permission_statuses.push_back(GetPermissionStatusInternal(
-        permission, render_frame_host, requesting_origin));
+        permission, render_frame_host, request_description.requesting_origin));
   }
   std::move(callback).Run(permission_statuses);
 }
@@ -165,13 +151,12 @@ void CastPermissionManager::ResetPermission(blink::PermissionType permission,
                                             const GURL& embedding_origin) {}
 
 void CastPermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   std::vector<blink::mojom::PermissionStatus> permission_statuses;
-  for (auto permission : permissions) {
+  for (auto permission : request_description.permissions) {
     permission_statuses.push_back(GetPermissionStatusInternal(
         permission, render_frame_host,
         render_frame_host->GetLastCommittedOrigin().GetURL()));

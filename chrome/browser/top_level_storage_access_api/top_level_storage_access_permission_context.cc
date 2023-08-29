@@ -53,30 +53,24 @@ TopLevelStorageAccessPermissionContext::
     ~TopLevelStorageAccessPermissionContext() = default;
 
 void TopLevelStorageAccessPermissionContext::DecidePermissionForTesting(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
-  DecidePermission(id, requesting_origin, embedding_origin, user_gesture,
-                   std::move(callback));
+  DecidePermission(std::move(request_data), std::move(callback));
 }
 
 void TopLevelStorageAccessPermissionContext::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data.id.global_render_frame_host_id());
   CHECK(rfh);
-  if (!user_gesture ||
+  if (!request_data.user_gesture ||
       !base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension) ||
-      !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
-    if (!user_gesture) {
+      !request_data.requesting_origin.is_valid() ||
+      !request_data.embedding_origin.is_valid()) {
+    if (!request_data.user_gesture) {
       rfh->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "requestStorageAccessFor: Must be handling a user gesture to use.");
@@ -95,23 +89,21 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     return;
   }
 
-  net::SchemefulSite embedding_site(embedding_origin);
+  net::SchemefulSite embedding_site(request_data.embedding_origin);
+  net::SchemefulSite requesting_site(request_data.requesting_origin);
 
   first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
       browser_context())
       ->ComputeFirstPartySetMetadata(
-          net::SchemefulSite(requesting_origin), &embedding_site,
+          requesting_site, &embedding_site,
           base::BindOnce(&TopLevelStorageAccessPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
-                         weak_factory_.GetWeakPtr(), id, requesting_origin,
-                         embedding_origin, user_gesture, std::move(callback)));
+                         weak_factory_.GetWeakPtr(), std::move(request_data),
+                         std::move(callback)));
 }
 
 void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
   if (metadata.AreSitesInSameFirstPartySet()) {
@@ -119,7 +111,8 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
     // of other domains, even in the same First-Party Set.
     if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
       NotifyPermissionSetInternal(
-          id, requesting_origin, embedding_origin, std::move(callback),
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
           /*persist=*/true, CONTENT_SETTING_BLOCK,
           TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
       return;
@@ -127,13 +120,15 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
     // Since the sites are in the same First-Party Set, risk of abuse due to
     // allowing access is considered to be low.
     NotifyPermissionSetInternal(
-        id, requesting_origin, embedding_origin, std::move(callback),
+        request_data.id, request_data.requesting_origin,
+        request_data.embedding_origin, std::move(callback),
         /*persist=*/true, CONTENT_SETTING_ALLOW,
         TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet);
     return;
   }
   NotifyPermissionSetInternal(
-      id, requesting_origin, embedding_origin, std::move(callback),
+      request_data.id, request_data.requesting_origin,
+      request_data.embedding_origin, std::move(callback),
       /*persist=*/true, CONTENT_SETTING_BLOCK,
       TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet);
 }

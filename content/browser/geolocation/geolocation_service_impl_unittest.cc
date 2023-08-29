@@ -14,6 +14,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -50,15 +51,15 @@ class TestPermissionManager : public MockPermissionManager {
   ~TestPermissionManager() override = default;
 
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permissions,
-      content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      RenderFrameHost* render_frame_host,
+      const PermissionRequestDescription& request_description,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override {
-    ASSERT_EQ(permissions.size(), 1u);
-    EXPECT_EQ(permissions[0], blink::PermissionType::GEOLOCATION);
-    EXPECT_TRUE(user_gesture);
+    ASSERT_EQ(request_description.permissions.size(), 1u);
+    EXPECT_EQ(request_description.permissions[0],
+              blink::PermissionType::GEOLOCATION);
+    EXPECT_TRUE(request_description.user_gesture);
     request_callback_.Run(std::move(callback));
   }
 
@@ -84,7 +85,7 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(GURL("https://www.google.com/maps"));
-    browser_context_ = std::make_unique<content::TestBrowserContext>();
+    browser_context_ = std::make_unique<TestBrowserContext>();
     browser_context_->SetPermissionControllerDelegate(
         std::make_unique<TestPermissionManager>());
 

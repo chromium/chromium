@@ -19,6 +19,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -34,6 +35,17 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
+
+namespace {
+
+void PermissionRequestResponseCallbackWrapper(
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
+    const std::vector<blink::mojom::PermissionStatus>& vector) {
+  DCHECK_EQ(vector.size(), 1ul);
+  std::move(callback).Run(vector.at(0));
+}
+
+}  // namespace
 
 MATCHER(IsFrameVisible,
         base::StrCat({"Frame is", negation ? " not" : "", " visible"})) {
@@ -182,9 +194,12 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
 
     base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
     EXPECT_CALL(callback, Run(permission_status));
-    permission_controller_delegate->RequestPermission(
-        permission_type, current_frame_host(), GURL("127.0.0.1"),
-        /*user_gesture=*/true, callback.Get());
+    permission_controller_delegate->RequestPermissions(
+        current_frame_host(),
+        PermissionRequestDescription(permission_type,
+                                     /*user_gesture=*/true, GURL("127.0.0.1")),
+        base::BindOnce(&PermissionRequestResponseCallbackWrapper,
+                       callback.Get()));
   }
 
   const base::HistogramTester& histogram_tester() { return *histogram_tester_; }

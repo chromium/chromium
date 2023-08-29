@@ -43,19 +43,16 @@ class MockManagerWithRequests : public MockPermissionManager {
   MOCK_METHOD(
       void,
       RequestPermissionsFromCurrentDocument,
-      (const std::vector<PermissionType>& permission,
-       RenderFrameHost* render_frame_host,
-       bool user_gesture,
+      (RenderFrameHost * render_frame_host,
+       const PermissionRequestDescription& request_description,
        const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
            callback),
       (override));
   MOCK_METHOD(
       void,
       RequestPermissions,
-      (const std::vector<PermissionType>& permission,
-       RenderFrameHost* render_frame_host,
-       const GURL& requesting_origin,
-       bool user_gesture,
+      (RenderFrameHost * render_frame_host,
+       const PermissionRequestDescription& request_description,
        const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
            callback),
       (override));
@@ -158,23 +155,19 @@ class PermissionControllerImplTest : public ::testing::Test {
   }
 
   void PermissionControllerRequestPermissionsFromCurrentDocument(
-      const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
     permission_controller()->RequestPermissionsFromCurrentDocument(
-        permission, render_frame_host, user_gesture, std::move(callback));
+        render_frame_host, std::move(request_description), std::move(callback));
   }
 
   void PermissionControllerRequestPermissions(
-      const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      const url::Origin& requested_origin,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
-    permission_controller()->RequestPermissions(permission, render_frame_host,
-                                                requested_origin, user_gesture,
-                                                std::move(callback));
+    permission_controller()->RequestPermissions(
+        render_frame_host, std::move(request_description), std::move(callback));
   }
 
   PermissionStatus GetPermissionStatusForWorker(
@@ -229,7 +222,7 @@ TEST_F(PermissionControllerImplTest,
     // Expect request permission from current document calls if override are
     // missing.
     if (!test_case.delegated_permissions.empty()) {
-      auto forward_callbacks = testing::WithArg<3>(
+      auto forward_callbacks = testing::WithArg<2>(
           [&test_case](
               base::OnceCallback<void(const std::vector<PermissionStatus>&)>
                   callback) {
@@ -240,17 +233,21 @@ TEST_F(PermissionControllerImplTest,
       if (test_case.expect_death) {
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
-        ON_CALL(*mock_manager(),
-                RequestPermissionsFromCurrentDocument(
-                    testing::ElementsAreArray(test_case.delegated_permissions),
-                    rfh, true, testing::_))
+        ON_CALL(*mock_manager(), RequestPermissionsFromCurrentDocument(
+                                     rfh,
+                                     PermissionRequestDescription(
+                                         test_case.delegated_permissions,
+                                         /*user_gesture*/ true, GURL(kTestUrl)),
+                                     testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
-        EXPECT_CALL(
-            *mock_manager(),
-            RequestPermissionsFromCurrentDocument(
-                testing::ElementsAreArray(test_case.delegated_permissions), rfh,
-                true, testing::_))
+        EXPECT_CALL(*mock_manager(),
+                    RequestPermissionsFromCurrentDocument(
+                        rfh,
+                        PermissionRequestDescription(
+                            test_case.delegated_permissions,
+                            /*user_gesture*/ true, GURL(kTestUrl)),
+                        testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
       }
     } else {
@@ -264,16 +261,19 @@ TEST_F(PermissionControllerImplTest,
       base::MockCallback<RequestsCallback> callback;
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissionsFromCurrentDocument(
-              kTypesToQuery, rfh,
-              /*user_gesture=*/true, callback.Get()),
+              rfh,
+              PermissionRequestDescription(kTypesToQuery,
+                                           /*user_gesture*/ true),
+              callback.Get()),
           "");
     } else {
       base::MockCallback<RequestsCallback> callback;
       EXPECT_CALL(callback,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
       PermissionControllerRequestPermissionsFromCurrentDocument(
-          kTypesToQuery, rfh,
-          /*user_gesture=*/true, callback.Get());
+          rfh,
+          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true),
+          callback.Get());
     }
   }
 }
@@ -309,7 +309,7 @@ TEST_F(PermissionControllerImplTest,
 
     // Expect request permission call if override are missing.
     if (!test_case.delegated_permissions.empty()) {
-      auto forward_callbacks = testing::WithArg<4>(
+      auto forward_callbacks = testing::WithArg<2>(
           [&test_case](
               base::OnceCallback<void(const std::vector<PermissionStatus>&)>
                   callback) {
@@ -321,15 +321,20 @@ TEST_F(PermissionControllerImplTest,
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
         ON_CALL(*mock_manager(),
-                RequestPermissions(
-                    testing::ElementsAreArray(test_case.delegated_permissions),
-                    rfh, testing::_, true, testing::_))
+                RequestPermissions(rfh,
+                                   PermissionRequestDescription(
+                                       test_case.delegated_permissions,
+                                       /*user_gesture*/ true, GURL(kTestUrl)),
+                                   testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
-        EXPECT_CALL(*mock_manager(),
-                    RequestPermissions(testing::ElementsAreArray(
-                                           test_case.delegated_permissions),
-                                       rfh, testing::_, true, testing::_))
+        EXPECT_CALL(
+            *mock_manager(),
+            RequestPermissions(rfh,
+                               PermissionRequestDescription(
+                                   test_case.delegated_permissions,
+                                   /*user_gesture*/ true, GURL(kTestUrl)),
+                               testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
       }
     } else {
@@ -341,17 +346,22 @@ TEST_F(PermissionControllerImplTest,
     if (test_case.expect_death) {
       ::testing::FLAGS_gtest_death_test_style = "threadsafe";
       base::MockCallback<RequestsCallback> callback;
-      EXPECT_DEATH_IF_SUPPORTED(PermissionControllerRequestPermissions(
-                                    kTypesToQuery, rfh, testing_origin,
-                                    /*user_gesture=*/true, callback.Get()),
-                                "");
+      EXPECT_DEATH_IF_SUPPORTED(
+          PermissionControllerRequestPermissions(
+              rfh,
+              PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
+                                           GURL(kTestUrl)),
+              callback.Get()),
+          "");
     } else {
       base::MockCallback<RequestsCallback> callback;
       EXPECT_CALL(callback,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
-      PermissionControllerRequestPermissions(kTypesToQuery, rfh, testing_origin,
-                                             /*user_gesture=*/true,
-                                             callback.Get());
+      PermissionControllerRequestPermissions(
+          rfh,
+          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
+                                       GURL(kTestUrl)),
+          callback.Get());
     }
   }
 }

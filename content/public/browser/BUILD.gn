@@ -301,6 +301,8 @@ source_set("browser_sources") {
     "permission_controller_delegate.h",
     "permission_overrides.cc",
     "permission_overrides.h",
+    "permission_request_description.cc",
+    "permission_request_description.h",
     "permission_result.cc",
     "permission_result.h",
     "picture_in_picture_window_controller.h",

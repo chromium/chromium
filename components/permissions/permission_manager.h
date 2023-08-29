@@ -34,6 +34,7 @@ class BrowserContext;
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
+struct PermissionRequestDescription;
 }
 
 class GeolocationPermissionContextDelegateTests;
@@ -99,32 +100,21 @@ class PermissionManager : public KeyedService,
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
   // content::PermissionControllerDelegate implementation.
-  void RequestPermission(
-      blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(PermissionStatus)> callback) override;
   void RequestPermissions(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   void RequestPermissionsInternal(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   PermissionStatus GetPermissionStatus(blink::PermissionType permission,

@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_overrides.h"
+#include "content/public/browser/permission_request_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -138,23 +139,22 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const url::Origin& embedding_origin) override;
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/1363094): Migrate to `std::set`.
+  // TODO(crbug.com/1462930): `RequestPermissions` and
+  // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
+  // them together.
   void RequestPermissions(
-      const std::vector<blink::PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
-      const url::Origin& requested_origin,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
   void RequestPermissionFromCurrentDocument(
-      PermissionType permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(PermissionStatus)> callback) override;
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/1363094): Migrate to `std::set`.
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   void ResetPermission(blink::PermissionType permission,

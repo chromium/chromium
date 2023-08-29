@@ -1506,7 +1506,8 @@ void FrameImpl::RequestMediaAccessPermission(
   DCHECK(permission_controller);
 
   permission_controller->RequestPermissionsFromCurrentDocument(
-      permissions, render_frame_host, request.user_gesture,
+      render_frame_host,
+      content::PermissionRequestDescription(permissions, request.user_gesture),
       base::BindOnce(&HandleMediaPermissionsRequestResult, request,
                      std::move(callback)));
 }

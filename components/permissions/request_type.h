@@ -68,6 +68,9 @@ typedef const gfx::VectorIcon& IconId;
 
 bool IsRequestablePermissionType(ContentSettingsType content_settings_type);
 
+absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
+    ContentSettingsType content_settings_type);
+
 RequestType ContentSettingsTypeToRequestType(
     ContentSettingsType content_settings_type);
 

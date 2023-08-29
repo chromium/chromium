@@ -69,10 +69,7 @@ ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
 }
 
 void BackgroundFetchPermissionContext::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize Background Fetch
   // from BackgroundFetchPermissionContext.

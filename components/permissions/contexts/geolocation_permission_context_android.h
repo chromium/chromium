@@ -75,9 +75,7 @@ class GeolocationPermissionContextAndroid
 
  private:
   // GeolocationPermissionContext:
-  void RequestPermission(const PermissionRequestID& id,
-                         const GURL& requesting_frame_origin,
-                         bool user_gesture,
+  void RequestPermission(PermissionRequestData request_data,
                          BrowserPermissionCallback callback) override;
   void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,

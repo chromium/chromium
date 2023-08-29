@@ -32,17 +32,6 @@ using RequestPermissionsCallback =
 
 namespace android_webview {
 
-namespace {
-
-void PermissionRequestResponseCallbackWrapper(
-    base::OnceCallback<void(PermissionStatus)> callback,
-    const std::vector<PermissionStatus>& vector) {
-  DCHECK_EQ(vector.size(), 1ul);
-  std::move(callback).Run(vector.at(0));
-}
-
-}  // namespace
-
 class LastRequestResultCache {
  public:
   LastRequestResultCache() = default;
@@ -246,30 +235,18 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
-void AwPermissionManager::RequestPermission(
-    PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(PermissionStatus)> callback) {
-  RequestPermissions(std::vector<PermissionType>(1, permission),
-                     render_frame_host, requesting_origin, user_gesture,
-                     base::BindOnce(&PermissionRequestResponseCallbackWrapper,
-                                    std::move(callback)));
-}
-
 void AwPermissionManager::RequestPermissions(
-    const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+  auto const& permissions = request_description.permissions;
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
     return;
   }
 
   const GURL& embedding_origin = LastCommittedOrigin(render_frame_host);
+  const GURL& requesting_origin = request_description.requesting_origin;
 
   auto pending_request = std::make_unique<PendingRequest>(
       permissions, requesting_origin, embedding_origin,
@@ -343,8 +320,9 @@ void AwPermissionManager::RequestPermissions(
         // the CLIPBOARD_READ_WRITE permission, and that requires an explicit
         // user approval, which is not implemented yet. See crbug.com/1271620
         pending_request_raw->SetPermissionStatus(
-            permissions[i], user_gesture ? PermissionStatus::GRANTED
-                                         : PermissionStatus::DENIED);
+            permissions[i], request_description.user_gesture
+                                ? PermissionStatus::GRANTED
+                                : PermissionStatus::DENIED);
         break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
@@ -465,13 +443,11 @@ void AwPermissionManager::ResetPermission(PermissionType permission,
 }
 
 void AwPermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
-  RequestPermissions(permissions, render_frame_host,
-                     LastCommittedOrigin(render_frame_host), user_gesture,
+  RequestPermissions(render_frame_host, request_description,
                      std::move(callback));
 }
 

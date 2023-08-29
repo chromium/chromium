@@ -1282,8 +1282,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   content::PermissionController* permission_controller =
       browser()->profile()->GetPermissionController();
   permission_controller->RequestPermissionFromCurrentDocument(
-      blink::PermissionType::SENSORS, fenced_frame_host,
-      /* user_gesture = */ true, callback.Get());
+      fenced_frame_host,
+      content::PermissionRequestDescription(blink::PermissionType::SENSORS,
+                                            /* user_gesture = */ true),
+      callback.Get());
   ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
 }

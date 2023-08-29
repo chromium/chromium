@@ -36,6 +36,11 @@ class PermissionRequestID {
   PermissionRequestID(const PermissionRequestID&);
   PermissionRequestID& operator=(const PermissionRequestID&);
 
+  void set_global_render_frame_host_id(
+      const content::GlobalRenderFrameHostId& id) {
+    global_render_frame_host_id_ = id;
+  }
+
   const content::GlobalRenderFrameHostId& global_render_frame_host_id() const {
     return global_render_frame_host_id_;
   }

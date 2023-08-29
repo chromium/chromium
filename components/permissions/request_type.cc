@@ -171,6 +171,12 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+}  // namespace
+
+bool IsRequestablePermissionType(ContentSettingsType content_settings_type) {
+  return !!ContentSettingsTypeToRequestTypeIfExists(content_settings_type);
+}
+
 absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     ContentSettingsType content_settings_type) {
   switch (content_settings_type) {
@@ -227,12 +233,6 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     default:
       return absl::nullopt;
   }
-}
-
-}  // namespace
-
-bool IsRequestablePermissionType(ContentSettingsType content_settings_type) {
-  return !!ContentSettingsTypeToRequestTypeIfExists(content_settings_type);
 }
 
 RequestType ContentSettingsTypeToRequestType(

@@ -282,9 +282,11 @@ TEST_F(NotificationPermissionContextTest, WebNotificationsTopLevelOriginOnly) {
       permissions::PermissionRequestID::RequestLocalId());
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
-  context.DecidePermission(request_id, requesting_origin, embedding_origin,
-                           true /* user_gesture */,
-                           base::BindOnce(&StoreContentSetting, &result));
+  context.DecidePermission(
+      permissions::PermissionRequestData(&context, request_id,
+                                         /*user_gesture=*/true,
+                                         requesting_origin, embedding_origin),
+      base::BindOnce(&StoreContentSetting, &result));
 
   ASSERT_EQ(result, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(PermissionStatus::ASK,
@@ -358,8 +360,10 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
   ASSERT_EQ(CONTENT_SETTING_DEFAULT,
             permission_context.last_permission_set_setting());
 
-  permission_context.RequestPermission(id, url, true /* user_gesture */,
-                                       base::DoNothing());
+  permission_context.RequestPermission(
+      permissions::PermissionRequestData(&permission_context, id,
+                                         /*user_gesture=*/true, url),
+      base::DoNothing());
 
   // Should be blocked after 1-2 seconds, but the timer is reset whenever the
   // tab is not visible, so these 500ms never add up to >= 1 second.
@@ -428,10 +432,14 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   ASSERT_EQ(CONTENT_SETTING_DEFAULT,
             permission_context.last_permission_set_setting());
 
-  permission_context.RequestPermission(id1, url, true /* user_gesture */,
-                                       base::DoNothing());
-  permission_context.RequestPermission(id2, url, true /* user_gesture */,
-                                       base::DoNothing());
+  permission_context.RequestPermission(
+      permissions::PermissionRequestData(&permission_context, id1,
+                                         /*user_gesture=*/true, url),
+      base::DoNothing());
+  permission_context.RequestPermission(
+      permissions::PermissionRequestData(&permission_context, id2,
+                                         /*user_gesture=*/true, url),
+      base::DoNothing());
 
   EXPECT_EQ(0, permission_context.permission_set_count());
   EXPECT_EQ(CONTENT_SETTING_ASK,

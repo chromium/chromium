@@ -63,19 +63,13 @@ class TopLevelStorageAccessPermissionContext
 
   // Exposes `DecidePermission` for tests.
   void DecidePermissionForTesting(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback);
 
  private:
   // PermissionContextBase:
   void DecidePermission(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback) override;
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
@@ -107,10 +101,7 @@ class TopLevelStorageAccessPermissionContext
   // Checks First-Party Sets metadata to determine whether the request should be
   // auto-rejected or auto-denied.
   void CheckForAutoGrantOrAutoDenial(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
 

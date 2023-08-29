@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -58,6 +59,10 @@ class PermissionRequest {
                     PermissionDecidedCallback permission_decided_callback,
                     base::OnceClosure delete_callback);
 
+  PermissionRequest(PermissionRequestData request_data,
+                    PermissionDecidedCallback permission_decided_callback,
+                    base::OnceClosure delete_callback);
+
   PermissionRequest(const PermissionRequest&) = delete;
   PermissionRequest& operator=(const PermissionRequest&) = delete;
 
@@ -74,8 +79,8 @@ class PermissionRequest {
 
   virtual ~PermissionRequest();
 
-  GURL requesting_origin() const { return requesting_origin_; }
-  RequestType request_type() const { return request_type_; }
+  GURL requesting_origin() const { return data_.requesting_origin; }
+  RequestType request_type() const;
 
   // Whether |this| and |other_request| are duplicates and therefore don't both
   // need to be shown in the UI.
@@ -148,24 +153,15 @@ class PermissionRequest {
   ContentSettingsType GetContentSettingsType() const;
 
   void set_requesting_frame_id(content::GlobalRenderFrameHostId id) {
-    request_frame_id_ = id;
+    data_.id.set_global_render_frame_host_id(id);
   }
 
-  content::GlobalRenderFrameHostId& get_requesting_frame_id() {
-    return request_frame_id_;
+  const content::GlobalRenderFrameHostId& get_requesting_frame_id() {
+    return data_.id.global_render_frame_host_id();
   }
 
  private:
-  content::GlobalRenderFrameHostId request_frame_id_;
-
-  // The origin on whose behalf this permission request is being made.
-  GURL requesting_origin_;
-
-  // The type of this request.
-  RequestType request_type_;
-
-  // Whether the request was associated with a user gesture.
-  bool has_gesture_;
+  PermissionRequestData data_;
 
   // Called once a decision is made about the permission.
   PermissionDecidedCallback permission_decided_callback_;

@@ -122,8 +122,10 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIDisabledTest,
 
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
+      permissions::PermissionRequestData(&permission_context, fake_id,
+                                         /*user_gesture=*/true,
+                                         GetRequesterURL(), GetTopLevelURL()),
+      future.GetCallback());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
 }
 
@@ -158,8 +160,11 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
 
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/false, future.GetCallback());
+      permissions::PermissionRequestData(&permission_context, fake_id,
+                                         /*user_gesture=*/true,
+                                         GetRequesterURL(), GetTopLevelURL()),
+      future.GetCallback());
+
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
@@ -227,8 +232,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
+      permissions::PermissionRequestData(&permission_context, fake_id,
+                                         /*user_gesture=*/true,
+                                         GetRequesterURL(), GetTopLevelURL()),
+      future.GetCallback());
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -262,8 +269,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
+      permissions::PermissionRequestData(&permission_context, fake_id,
+                                         /*user_gesture=*/true,
+                                         GetRequesterURL(), GetTopLevelURL()),
+      future.GetCallback());
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
 
@@ -307,10 +316,12 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_EQ(0u, non_restorable_grants.size());
 
   base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetDummyEmbeddingUrl(),
-      /*user_gesture=*/true, future.GetCallback());
 
+  permission_context.DecidePermissionForTesting(
+      permissions::PermissionRequestData(
+          &permission_context, fake_id,
+          /*user_gesture=*/true, GetRequesterURL(), GetDummyEmbeddingUrl()),
+      future.GetCallback());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
@@ -344,8 +355,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetDummyEmbeddingUrl(),
-      /*user_gesture=*/true, future.GetCallback());
+      permissions::PermissionRequestData(
+          &permission_context, fake_id,
+          /*user_gesture=*/true, GetRequesterURL(), GetDummyEmbeddingUrl()),
+      future.GetCallback());
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
 
@@ -399,8 +412,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
 
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
-      fake_id, GetRequesterURL(), GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
+      permissions::PermissionRequestData(&permission_context, fake_id,
+                                         /*user_gesture=*/true,
+                                         GetRequesterURL(), GetTopLevelURL()),
+      future.GetCallback());
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(

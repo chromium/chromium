@@ -40,10 +40,7 @@ void IdleDetectionPermissionContext::UpdateTabContext(
 }
 
 void IdleDetectionPermissionContext::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
   // Idle detection permission is always denied in incognito. To prevent sites
   // from using that to detect whether incognito mode is active, we deny after a
@@ -53,8 +50,8 @@ void IdleDetectionPermissionContext::DecidePermission(
   // PermissionMenuModel::PermissionMenuModel which prevents users from manually
   // allowing the permission.
   if (browser_context()->IsOffTheRecord()) {
-    content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+        request_data.id.global_render_frame_host_id());
 
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(rfh);
@@ -66,15 +63,15 @@ void IdleDetectionPermissionContext::DecidePermission(
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
             base::BindOnce(&IdleDetectionPermissionContext::NotifyPermissionSet,
-                           weak_factory_.GetWeakPtr(), id, requesting_origin,
-                           embedding_origin, std::move(callback),
+                           weak_factory_.GetWeakPtr(), request_data.id,
+                           request_data.requesting_origin,
+                           request_data.embedding_origin, std::move(callback),
                            /*persist=*/true, CONTENT_SETTING_BLOCK,
                            /*is_one_time=*/false, /*is_final_decision=*/true),
             base::Seconds(delay_seconds));
     return;
   }
 
-  PermissionContextBase::DecidePermission(id, requesting_origin,
-                                          embedding_origin, user_gesture,
+  PermissionContextBase::DecidePermission(std::move(request_data),
                                           std::move(callback));
 }

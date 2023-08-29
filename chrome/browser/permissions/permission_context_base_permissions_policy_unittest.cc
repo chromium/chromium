@@ -123,7 +123,9 @@ class PermissionContextBasePermissionsPolicyTest
     permissions::PermissionRequestID id(
         rfh, permission_request_id_generator_.GenerateNextId());
     pcb->RequestPermission(
-        id, rfh->GetLastCommittedURL(), /*user_gesture=*/true,
+        permissions::PermissionRequestData(pcb, id,
+                                           /*user_gesture=*/true,
+                                           rfh->GetLastCommittedURL()),
         base::BindOnce(&PermissionContextBasePermissionsPolicyTest::
                            RequestPermissionForFrameFinished,
                        base::Unretained(this)));

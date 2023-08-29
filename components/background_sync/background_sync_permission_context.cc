@@ -16,10 +16,7 @@ BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
 }
 
 void BackgroundSyncPermissionContext::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_Data,
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize background sync.
   NOTREACHED();

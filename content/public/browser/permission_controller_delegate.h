@@ -26,6 +26,7 @@ namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
+struct PermissionRequestDescription;
 
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
@@ -34,28 +35,17 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   virtual ~PermissionControllerDelegate() = default;
 
-  // Requests a permission on behalf of a frame identified by
-  // render_frame_host.
-  // When the permission request is handled, whether it failed, timed out or
-  // succeeded, the |callback| will be run.
-  virtual void RequestPermission(
-      blink::PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(PermissionStatus)> callback) = 0;
-
   // Requests multiple permissions on behalf of a frame identified by
-  // render_frame_host.
-  // When the permission request is handled, whether it failed, timed out or
-  // succeeded, the |callback| will be run. The order of statuses in the
-  // returned vector will correspond to the order of requested permission
-  // types.
+  // |render_frame_host|. When the permission request is handled, whether it
+  // failed, timed out or succeeded, the |callback| will be run. The order of
+  // statuses in the returned vector will correspond to the order of requested
+  // permission types.
+  // TODO(crbug.com/1462930): `RequestPermissions` and
+  // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
+  // them together.
   virtual void RequestPermissions(
-      const std::vector<blink::PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 
@@ -65,9 +55,8 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // whether it's in back-forward cache or being prerendered) in addition to its
   // origin.
   virtual void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      const PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 

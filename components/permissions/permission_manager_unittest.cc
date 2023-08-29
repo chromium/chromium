@@ -21,6 +21,7 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -137,7 +138,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     base::RunLoop loop;
     quit_closure_ = loop.QuitClosure();
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
-        std::vector(1, type), rfh, true,
+        rfh,
+        std::move(content::PermissionRequestDescription(
+            std::vector(1, type),
+            /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL())),
         base::BindOnce(
             [](base::OnceCallback<void(PermissionStatus)> callback,
                const std::vector<PermissionStatus>& state) {
@@ -153,7 +157,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       PermissionType type,
       content::RenderFrameHost* rfh) {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
-        std::vector(1, type), rfh, true,
+        rfh,
+        content::PermissionRequestDescription(
+            type, /*user_gesture=*/true,
+            rfh->GetLastCommittedOrigin().GetURL()),
         base::BindOnce(
             [](base::OnceCallback<void(PermissionStatus)> callback,
                const std::vector<PermissionStatus>& state) {

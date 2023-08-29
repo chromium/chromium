@@ -813,7 +813,9 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
   // `render_frame_host` and we always use `requesting_origin` for
   // NOTIFICATIONS.
   profile_->GetPermissionController()->RequestPermissionFromCurrentDocument(
-      blink::PermissionType::NOTIFICATIONS, render_frame_host, user_gesture,
+      render_frame_host,
+      content::PermissionRequestDescription(
+          blink::PermissionType::NOTIFICATIONS, user_gesture),
       base::BindOnce(&PushMessagingServiceImpl::DoSubscribe,
                      weak_factory_.GetWeakPtr(), std::move(app_identifier),
                      std::move(options), std::move(callback), render_process_id,

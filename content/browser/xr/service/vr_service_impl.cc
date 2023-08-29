@@ -28,6 +28,7 @@
 #include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -540,7 +541,9 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
       GetRequiredPermissionsForMode(request.options->mode);
 
   permission_controller->RequestPermissionsFromCurrentDocument(
-      permissions_for_mode, render_frame_host_, true,
+      render_frame_host_,
+      PermissionRequestDescription(permissions_for_mode,
+                                   /*user_gesture=*/true),
       base::BindOnce(&VRServiceImpl::OnPermissionResultsForMode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
                      permissions_for_mode));
@@ -585,7 +588,9 @@ void VRServiceImpl::OnPermissionResultsForMode(
                                         request.optional_features);
 
   permission_controller->RequestPermissionsFromCurrentDocument(
-      permissions_for_features, render_frame_host_, true,
+      render_frame_host_,
+      PermissionRequestDescription(permissions_for_features,
+                                   /* user_gesture = */ true),
       base::BindOnce(&VRServiceImpl::OnPermissionResultsForFeatures,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
                      permissions_for_features));

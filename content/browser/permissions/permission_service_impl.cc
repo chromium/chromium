@@ -17,6 +17,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/features.h"
@@ -70,6 +71,30 @@ void EmbeddedPermissionRequestCallbackWrapper(
       PermissionStatusToEmbeddedPermissionControlResult(statuses[0]));
 }
 
+// Helper converts the given vector `PermissionDescriptorPtr` to vector
+// `PermissionType`. Checks and returns empty vector if there's duplicate
+// permission in the input vector.
+std::vector<blink::PermissionType> GetPermissionTypesAndCheckDuplicates(
+    const std::vector<PermissionDescriptorPtr>& permissions) {
+  std::vector<blink::PermissionType> types(permissions.size());
+  std::set<blink::PermissionType> duplicates_check;
+  for (size_t i = 0; i < types.size(); ++i) {
+    auto type = blink::PermissionDescriptorToPermissionType(permissions[i]);
+    if (!type) {
+      return std::vector<blink::PermissionType>();
+    }
+
+    types[i] = *type;
+
+    bool inserted = duplicates_check.insert(types[i]).second;
+    if (!inserted) {
+      return std::vector<blink::PermissionType>();
+    }
+  }
+
+  return types;
+}
+
 }  // anonymous namespace
 
 class PermissionServiceImpl::PendingRequest {
@@ -115,9 +140,19 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
   }
 
   if (auto* browser_context = context_->GetBrowserContext()) {
+    std::vector<blink::PermissionType> permission_types =
+        GetPermissionTypesAndCheckDuplicates(descriptor->permissions);
+    if (permission_types.empty()) {
+      ReceivedBadMessage();
+      return;
+    }
+
     RequestPermissionsInternal(
         browser_context, descriptor->permissions,
-        /*user_gesture=*/true,
+        PermissionRequestDescription(
+            permission_types, /*user_gesture=*/true,
+            /*requesting_origin=*/GURL(),
+            /*embedded_permission_element_initiated=*/true),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
                        std::move(callback)));
   }
@@ -159,58 +194,50 @@ void PermissionServiceImpl::RequestPermissions(
     return;
   }
 
-  RequestPermissionsInternal(browser_context, permissions, user_gesture,
-                             std::move(callback));
+  std::vector<blink::PermissionType> permission_types =
+      GetPermissionTypesAndCheckDuplicates(permissions);
+  if (permission_types.empty()) {
+    ReceivedBadMessage();
+    return;
+  }
+
+  RequestPermissionsInternal(
+      browser_context, permissions,
+      PermissionRequestDescription(permission_types, user_gesture),
+      std::move(callback));
 }
 
 void PermissionServiceImpl::RequestPermissionsInternal(
     BrowserContext* browser_context,
     const std::vector<PermissionDescriptorPtr>& permissions,
-    bool user_gesture,
+    PermissionRequestDescription request_description,
     RequestPermissionsCallback callback) {
-  std::vector<blink::PermissionType> types(permissions.size());
-  std::set<blink::PermissionType> duplicates_check;
-  for (size_t i = 0; i < types.size(); ++i) {
-    auto type = blink::PermissionDescriptorToPermissionType(permissions[i]);
-    if (!type) {
-      ReceivedBadMessage();
-      return;
-    }
-
-    types[i] = *type;
-
-    // Each permission should appear at most once in the message.
-    bool inserted = duplicates_check.insert(types[i]).second;
-    if (!inserted) {
-      ReceivedBadMessage();
-      return;
-    }
-  }
-
   std::unique_ptr<PendingRequest> pending_request =
-      std::make_unique<PendingRequest>(types, std::move(callback));
+      std::make_unique<PendingRequest>(request_description.permissions,
+                                       std::move(callback));
 
   int pending_request_id = pending_requests_.Add(std::move(pending_request));
 
   if (!permissions.empty() &&
       PermissionUtil::IsDomainOverride(permissions[0])) {
-    if (!PermissionUtil::ValidateDomainOverride(
-            types, context_->render_frame_host(), permissions[0])) {
+    if (!PermissionUtil::ValidateDomainOverride(request_description.permissions,
+                                                context_->render_frame_host(),
+                                                permissions[0])) {
       ReceivedBadMessage();
       return;
     }
     const url::Origin& requesting_origin =
         PermissionUtil::ExtractDomainOverride(permissions[0]);
+    request_description.requesting_origin = requesting_origin.GetURL();
     PermissionControllerImpl::FromBrowserContext(browser_context)
         ->RequestPermissions(
-            types, context_->render_frame_host(), requesting_origin,
-            user_gesture,
+            context_->render_frame_host(), request_description,
             base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
                            weak_factory_.GetWeakPtr(), pending_request_id));
   } else {
     PermissionControllerImpl::FromBrowserContext(browser_context)
         ->RequestPermissionsFromCurrentDocument(
-            types, context_->render_frame_host(), user_gesture,
+            context_->render_frame_host(), std::move(request_description),
             base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
                            weak_factory_.GetWeakPtr(), pending_request_id));
   }

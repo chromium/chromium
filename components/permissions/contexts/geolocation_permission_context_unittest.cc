@@ -230,7 +230,8 @@ void GeolocationPermissionContextTests::RequestGeolocationPermission(
     const GURL& requesting_frame,
     bool user_gesture) {
   geolocation_permission_context_->RequestPermission(
-      id, requesting_frame, user_gesture,
+      permissions::PermissionRequestData(geolocation_permission_context_, id,
+                                         user_gesture, requesting_frame),
       base::BindOnce(&GeolocationPermissionContextTests::PermissionResponse,
                      base::Unretained(this), id));
   content::RunAllTasksUntilIdle();

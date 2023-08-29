@@ -8,6 +8,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -78,22 +79,20 @@ class CONTENT_EXPORT PermissionController
   // RenderFrameHost. This API takes into account the lifecycle state of a given
   // document (i.e. whether it's in back-forward cache or being prerendered) in
   // addition to its origin.
+  // TODO(crbug.com/1462930): Remove this function.
   virtual void RequestPermissionFromCurrentDocument(
-      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(PermissionStatus)> callback) = 0;
 
-  // Requests permissions from the current document in the given
   // RenderFrameHost. This API takes into account the lifecycle state of a given
   // document (i.e. whether it's in back-forward cache or being prerendered) in
   // addition to its origin.
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/1363094): Migrate to `std::set`.
   virtual void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      PermissionRequestDescription request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 

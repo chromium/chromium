@@ -24,10 +24,7 @@ class DurableStoragePermissionContext
   // PermissionContextBase implementation.
   // Grant if requesting_origin is bookmarked.
   void DecidePermission(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
-      bool user_gesture,
+      permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback) override;
   void UpdateContentSetting(const GURL& requesting_origin,
                             const GURL& embedding_origin,

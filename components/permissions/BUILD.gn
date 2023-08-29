@@ -78,6 +78,8 @@ source_set("permissions") {
     "permission_recovery_success_rate_tracker.h",
     "permission_request.cc",
     "permission_request.h",
+    "permission_request_data.cc",
+    "permission_request_data.h",
     "permission_request_id.cc",
     "permission_request_id.h",
     "permission_request_manager.cc",

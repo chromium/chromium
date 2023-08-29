@@ -182,7 +182,9 @@ class StorageAccessGrantPermissionContextTest
       bool user_gesture) {
     auto future = std::make_unique<base::test::TestFuture<ContentSetting>>();
     permission_context_->DecidePermissionForTesting(
-        CreateFakeID(), GetRequesterURL(), GetTopLevelURL(), user_gesture,
+        permissions::PermissionRequestData(permission_context(), CreateFakeID(),
+                                           user_gesture, GetRequesterURL(),
+                                           GetTopLevelURL()),
         future->GetCallback());
     return future;
   }
@@ -193,8 +195,11 @@ class StorageAccessGrantPermissionContextTest
 
   ContentSetting RequestPermissionSync() {
     base::test::TestFuture<ContentSetting> future;
-    permission_context()->RequestPermission(CreateFakeID(), GetRequesterURL(),
-                                            true, future.GetCallback());
+    permission_context()->RequestPermission(
+        permissions::PermissionRequestData(permission_context(), CreateFakeID(),
+                                           /*user_gesture=*/true,
+                                           GetRequesterURL()),
+        future.GetCallback());
 
     return future.Get();
   }
@@ -571,8 +576,11 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
                                                          future.GetCallback());
     for (int grant_id = 0; grant_id < implicit_grant_limit; grant_id++) {
       permission_context()->DecidePermissionForTesting(
-          fake_id, requesting_origin, GetDummyEmbeddingUrl(grant_id),
-          /*user_gesture=*/true, barrier);
+          permissions::PermissionRequestData(permission_context(), fake_id,
+                                             /*user_gesture=*/true,
+                                             requesting_origin,
+                                             GetDummyEmbeddingUrl(grant_id)),
+          barrier);
     }
     ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(request_manager()->IsRequestInProgress());
@@ -626,8 +634,10 @@ TEST_P(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
   // it gets auto-granted as the limit has not been reached for it yet.
   base::test::TestFuture<ContentSetting> future;
   permission_context()->DecidePermissionForTesting(
-      CreateFakeID(), alternate_requester_url, GetTopLevelURL(),
-      /*user_gesture=*/true, future.GetCallback());
+      permissions::PermissionRequestData(
+          permission_context(), CreateFakeID(), /*user_gesture=*/true,
+          alternate_requester_url, GetTopLevelURL()),
+      future.GetCallback());
 
   // We should have no prompts still and our latest result should be an allow.
   EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
