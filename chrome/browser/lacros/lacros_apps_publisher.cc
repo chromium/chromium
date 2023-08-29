@@ -37,7 +37,7 @@ bool LacrosAppsPublisher::InitializeCrosapi() {
   }
 
   // Ash is too old to support the Lacros publisher interface.
-  if (service->GetInterfaceVersion<crosapi::mojom::AppServiceProxy>() <
+  if (service->GetInterfaceVersion<crosapi::mojom::Crosapi>() <
       int{crosapi::mojom::Crosapi::kBindLacrosAppPublisherMinVersion}) {
     return false;
   }
