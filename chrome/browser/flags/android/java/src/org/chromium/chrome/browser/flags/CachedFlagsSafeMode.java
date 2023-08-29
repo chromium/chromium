@@ -18,6 +18,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.version_info.VersionInfo;
@@ -204,6 +205,12 @@ public class CachedFlagsSafeMode {
     }
 
     private boolean shouldEnterSafeMode() {
+        if (BuildConfig.IS_FOR_TEST
+                && (mSafeModeExperimentForcedForTesting == null
+                        || !mSafeModeExperimentForcedForTesting)) {
+            return false;
+        }
+
         int safeModeRunsLeft = SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.FLAGS_SAFE_MODE_RUNS_LEFT, 0);
         assert safeModeRunsLeft <= 2;
