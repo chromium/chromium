@@ -113,22 +113,18 @@ void AffiliationServiceImpl::Init(
     network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& db_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_ = new AffiliationBackend(backend_task_runner_,
-                                    base::DefaultClock::GetInstance(),
-                                    base::DefaultTickClock::GetInstance());
+  backend_ = std::make_unique<AffiliationBackend>(
+      backend_task_runner_, base::DefaultClock::GetInstance(),
+      base::DefaultTickClock::GetInstance());
 
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AffiliationBackend::Initialize,
-                     base::Unretained(backend_), url_loader_factory_->Clone(),
-                     base::Unretained(network_connection_tracker), db_path));
+  PostToBackend(&AffiliationBackend::Initialize, url_loader_factory_->Clone(),
+                base::Unretained(network_connection_tracker), db_path);
 }
 
 void AffiliationServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, backend_.get());
-    backend_ = nullptr;
+    backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
   }
 }
 
@@ -226,63 +222,35 @@ void AffiliationServiceImpl::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
     ResultCallback result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AffiliationBackend::GetAffiliationsAndBranding,
-                     base::Unretained(backend_), facet_uri, cache_miss_strategy,
-                     std::move(result_callback),
-                     base::SequencedTaskRunner::GetCurrentDefault()));
+  PostToBackend(&AffiliationBackend::GetAffiliationsAndBranding, facet_uri,
+                cache_miss_strategy, std::move(result_callback),
+                base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 void AffiliationServiceImpl::Prefetch(const FacetURI& facet_uri,
                                       const base::Time& keep_fresh_until) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AffiliationBackend::Prefetch, base::Unretained(backend_),
-                     facet_uri, keep_fresh_until));
+  PostToBackend(&AffiliationBackend::Prefetch, facet_uri, keep_fresh_until);
 }
 
 void AffiliationServiceImpl::CancelPrefetch(
     const FacetURI& facet_uri,
     const base::Time& keep_fresh_until) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AffiliationBackend::CancelPrefetch,
-                     base::Unretained(backend_), facet_uri, keep_fresh_until));
+  PostToBackend(&AffiliationBackend::CancelPrefetch, facet_uri,
+                keep_fresh_until);
 }
 
 void AffiliationServiceImpl::KeepPrefetchForFacets(
     std::vector<FacetURI> facet_uris) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AffiliationBackend::KeepPrefetchForFacets,
-                     base::Unretained(backend_), std::move(facet_uris)));
+  PostToBackend(&AffiliationBackend::KeepPrefetchForFacets,
+                std::move(facet_uris));
 }
 
 void AffiliationServiceImpl::TrimCacheForFacetURI(const FacetURI& facet_uri) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AffiliationBackend::TrimCacheForFacetURI,
-                                base::Unretained(backend_), facet_uri));
+  PostToBackend(&AffiliationBackend::TrimCacheForFacetURI, facet_uri);
 }
 
 void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AffiliationBackend::TrimUnusedCache,
-                     base::Unretained(backend_), std::move(facet_uris)));
+  PostToBackend(&AffiliationBackend::TrimUnusedCache, std::move(facet_uris));
 }
 
 void AffiliationServiceImpl::GetGroupingInfo(std::vector<FacetURI> facet_uris,
@@ -293,7 +261,7 @@ void AffiliationServiceImpl::GetGroupingInfo(std::vector<FacetURI> facet_uris,
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&AffiliationBackend::GetGroupingInfo,
-                     base::Unretained(backend_), std::move(facet_uris)),
+                     base::Unretained(backend_.get()), std::move(facet_uris)),
       std::move(callback));
 }
 
@@ -304,7 +272,7 @@ void AffiliationServiceImpl::GetPSLExtensions(
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&AffiliationBackend::GetPSLExtensions,
-                     base::Unretained(backend_)),
+                     base::Unretained(backend_.get())),
       std::move(callback));
 }
 
