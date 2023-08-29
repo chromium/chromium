@@ -136,7 +136,7 @@ UINT g_rgb10a2_overlay_support_flags = 0;
 bool g_enable_bgra8_overlays_with_yuv_overlay_support = false;
 
 // Force enabling DXGI_FORMAT_R10G10B10A2_UNORM format for overlay. Intel
-// celake and Tigerlake fail to report the cap of this HDR overlay format.
+// Icelake and Tigerlake fail to report the cap of this HDR overlay format.
 // TODO(magchen@): Remove this workaround when this cap is fixed in the Intel
 // drivers.
 bool g_force_rgb10a2_overlay_support = false;
