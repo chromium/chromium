@@ -779,7 +779,10 @@ public class AccessibilityState {
     private static void onActivityStateChange(Activity activity, int newState) {
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers and query state when Chrome is brought back to the foreground.
-        if (newState == ActivityState.RESUMED) processServicesChange();
+        if (newState == ActivityState.RESUMED) {
+            processServicesChange();
+            processExtraStateChange();
+        }
     }
 
     private static void onApplicationStateChange(int newState) {
