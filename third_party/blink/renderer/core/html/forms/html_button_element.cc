@@ -29,11 +29,13 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -74,6 +76,12 @@ const AtomicString& HTMLButtonElement::FormControlType() const {
       DEFINE_STATIC_LOCAL(const AtomicString, reset, ("reset"));
       return reset;
     }
+    case kSelectlist: {
+      if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
+        DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
+        return selectlist;
+      }
+    }
   }
 
   NOTREACHED();
@@ -94,12 +102,16 @@ bool HTMLButtonElement::IsPresentationAttribute(
 void HTMLButtonElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
-    if (EqualIgnoringASCIICase(params.new_value, "reset"))
+    if (EqualIgnoringASCIICase(params.new_value, "reset")) {
       type_ = kReset;
-    else if (EqualIgnoringASCIICase(params.new_value, "button"))
+    } else if (EqualIgnoringASCIICase(params.new_value, "button")) {
       type_ = kButton;
-    else
+    } else if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled() &&
+               EqualIgnoringASCIICase(params.new_value, "selectlist")) {
+      type_ = kSelectlist;
+    } else {
       type_ = kSubmit;
+    }
     UpdateWillValidateCache();
     if (formOwner() && isConnected())
       formOwner()->InvalidateDefaultButtonStyle();
@@ -120,6 +132,16 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       if (Form() && type_ == kReset) {
         Form()->reset();
         event.SetDefaultHandled();
+      }
+    }
+  }
+
+  if (type_ == kSelectlist) {
+    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+    for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
+      if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
+        selectlist->HandleButtonEvent(event);
+        break;
       }
     }
   }

@@ -46,7 +46,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
                          InputDeviceCapabilities*) override;
 
  private:
-  enum Type { kSubmit, kReset, kButton };
+  enum Type { kSubmit, kReset, kButton, kSelectlist };
 
   const AtomicString& FormControlType() const override;
 

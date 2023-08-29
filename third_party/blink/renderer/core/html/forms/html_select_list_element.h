@@ -106,6 +106,8 @@ class CORE_EXPORT HTMLSelectListElement final
 
   void ResetTypeAheadSessionForTesting();
 
+  void HandleButtonEvent(Event&);
+
  private:
   class SelectMutationCallback;
 
@@ -176,6 +178,8 @@ class CORE_EXPORT HTMLSelectListElement final
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
 
+  bool HandleButtonKeyboardEvent(KeyboardEvent&);
+
   class ButtonPartEventListener : public NativeEventListener {
    public:
     explicit ButtonPartEventListener(HTMLSelectListElement* select_list_element)
@@ -189,7 +193,6 @@ class CORE_EXPORT HTMLSelectListElement final
 
     void AddEventListeners(HTMLElement* button_part);
     void RemoveEventListeners(HTMLElement* button_part);
-    bool HandleKeyboardEvent(const KeyboardEvent& event);
 
    private:
     Member<HTMLSelectListElement> select_list_element_;

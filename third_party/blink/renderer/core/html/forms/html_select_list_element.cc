@@ -1214,27 +1214,30 @@ HTMLOptionElement* HTMLSelectListElement::OptionAtListIndex(
 
 void HTMLSelectListElement::ButtonPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
-  if (event->defaultPrevented())
-    return;
+  select_list_element_->HandleButtonEvent(*event);
+}
 
-  if (event->type() == event_type_names::kClick &&
-      !select_list_element_->IsDisabledFormControl()) {
-    if (!select_list_element_->open()) {
-      select_list_element_->OpenListbox();
+void HTMLSelectListElement::HandleButtonEvent(Event& event) {
+  if (event.defaultPrevented()) {
+    return;
+  }
+
+  if (event.type() == event_type_names::kClick && !IsDisabledFormControl()) {
+    if (!open()) {
+      OpenListbox();
     }
     // TODO(crbug.com/1408838) Close list box if dialog is open.
-  } else if (event->type() == event_type_names::kBlur) {
-    select_list_element_->type_ahead_.ResetSession();
-  } else if (event->IsKeyboardEvent()) {
+  } else if (event.type() == event_type_names::kBlur) {
+    type_ahead_.ResetSession();
+  } else if (event.IsKeyboardEvent()) {
     auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
     if (!keyboard_event) {
       return;
     }
 
-    if (!select_list_element_->open() &&
-        !select_list_element_->IsDisabledFormControl() &&
-        HandleKeyboardEvent(*keyboard_event)) {
-      event->SetDefaultHandled();
+    if (!open() && !IsDisabledFormControl() &&
+        HandleButtonKeyboardEvent(*keyboard_event)) {
+      event.SetDefaultHandled();
     }
   }
 }
@@ -1270,14 +1273,13 @@ void HTMLSelectListElement::ButtonPartEventListener::RemoveEventListeners(
                                    /*use_capture=*/false);
 }
 
-bool HTMLSelectListElement::ButtonPartEventListener::HandleKeyboardEvent(
-    const KeyboardEvent& event) {
+bool HTMLSelectListElement::HandleButtonKeyboardEvent(KeyboardEvent& event) {
   if (event.keyCode() == VKEY_SPACE) {
     if (event.type() == event_type_names::kKeydown) {
-      if (select_list_element_->type_ahead_.HasActiveSession(event)) {
-        select_list_element_->TypeAheadFind(event, ' ');
+      if (type_ahead_.HasActiveSession(event)) {
+        TypeAheadFind(event, ' ');
       } else {
-        select_list_element_->OpenListbox();
+        OpenListbox();
       }
     }
     // Override default HTMLButtonElement handling in
@@ -1288,13 +1290,13 @@ bool HTMLSelectListElement::ButtonPartEventListener::HandleKeyboardEvent(
       event.type() == event_type_names::kKeydown) {
     // Handle <RETURN> because not all HTML elements synthesize a click when
     // <RETURN> is pressed.
-    select_list_element_->OpenListbox();
+    OpenListbox();
     return true;
   }
   // Handled in event_type_names::kKeypress event handler because
   // KeyboardEvent::charCode() == 0 for event_type_names::kKeydown.
   return event.type() == event_type_names::kKeypress &&
-         select_list_element_->TypeAheadFind(event, event.charCode());
+         TypeAheadFind(event, event.charCode());
 }
 
 void HTMLSelectListElement::OptionPartEventListener::Invoke(ExecutionContext*,

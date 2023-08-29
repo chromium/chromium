@@ -74,7 +74,18 @@ WebString WebFormControlElement::FormControlTypeForAutofill() const {
       return input_type_names::kPassword;
   }
 
-  return ConstUnwrap<HTMLFormControlElement>()->type();
+  auto* form_control = ConstUnwrap<HTMLFormControlElement>();
+  const AtomicString& type = form_control->type();
+  if (form_control->HasTagName(html_names::kButtonTag) &&
+      type == "selectlist") {
+    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+    // <selectlist>'s type() will return "selectlist". In order to prevent
+    // autofill from thinking that <button type=selectlist> is actually a
+    // <selectlist>, let's just say that <button type=selectlist> is just a
+    // "button".
+    return "button";
+  }
+  return type;
 }
 
 WebAutofillState WebFormControlElement::GetAutofillState() const {

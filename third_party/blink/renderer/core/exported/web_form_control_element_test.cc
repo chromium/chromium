@@ -140,4 +140,19 @@ INSTANTIATE_TEST_SUITE_P(
     Values("<input type='text' id=testElement value='test value'>",
            "<textarea id=testElement>test value</textarea>"));
 
+// <button type=selectlist> should not be confused with <selectlist> for
+// autofill.
+TEST_F(WebFormControlElementTest, ButtonTypeSelectlist) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<button id=selectbutton type=selectlist>button</button>"
+      "<button id=normalbutton type=button>button</button>");
+  auto selectbutton = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("selectbutton"))));
+  auto normalbutton = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("normalbutton"))));
+  EXPECT_EQ(selectbutton.FormControlTypeForAutofill().Utf8(),
+            normalbutton.FormControlTypeForAutofill().Utf8());
+  EXPECT_EQ(selectbutton.FormControlTypeForAutofill().Utf8(), "button");
+}
+
 }  // namespace blink
