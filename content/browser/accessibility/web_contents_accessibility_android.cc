@@ -873,13 +873,17 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
 
   // If we are not doing performance testing, then use the cache.
+  bool is_link = ui::IsLink(node->GetRole());
   if (!base::FeatureList::IsEnabled(
           ::features::kAccessibilityPerformanceTesting)) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
         env, obj, info,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetTextContentUTF16()),
-        ui::IsLink(node->GetRole()), node->IsTextField(),
+        is_link
+            ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+            : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+        is_link, node->IsTextField(),
         GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
                                        ax::mojom::StringAttribute::kLanguage)),
         suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
@@ -890,7 +894,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         env, obj, info,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetTextContentUTF16()),
-        ui::IsLink(node->GetRole()), node->IsTextField(),
+        is_link
+            ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+            : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+        is_link, node->IsTextField(),
         base::android::ConvertUTF16ToJavaString(
             env, node->GetInheritedString16Attribute(
                      ax::mojom::StringAttribute::kLanguage)),
