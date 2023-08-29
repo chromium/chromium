@@ -776,7 +776,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightInitiated"
     enum="Boolean" expires_after="2024-05-01">
-  <owner>jsaul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
     Logs the number of times that we initiate the card unmask preflight flow.
@@ -854,7 +854,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.BetterAuth.OptInPromoNotOfferedReason"
     enum="WebauthnOptInPromoNotOfferedReason" expires_after="2024-05-01">
-  <owner>jsaul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>shgar@google.com</owner>
   <summary>
     Records when the Better Auth (FIDO) opt-in promo could have been offered on
@@ -1080,6 +1080,7 @@ chromium-metrics-reviews@google.com.
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>siashah@chromium.org</owner>
+  <owner>vinnypersky@google.com</owner>
   <summary>
     On every show of the card unmask challenge option selection dialog, this
     histogram records a count (with a maximum of 10) for the number of challenge
@@ -1450,7 +1451,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.CvcAuth.{CardType}.Attempt" enum="BooleanAttempted"
     expires_after="2024-02-20">
-  <owner>jsaul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true when a CVC authentication starts and does not emit any value
@@ -1462,7 +1463,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.CvcAuth.{CardType}.Result"
     enum="AutofillCvcAuthEvent" expires_after="2024-02-20">
-  <owner>jsaul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the result of the OTP authentication, broken down into sub-histograms
@@ -1476,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.CvcAuth.{CardType}.RetryableError"
     enum="AutofillCvcAuthEvent" expires_after="2023-11-01">
-  <owner>jsaul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs any retryable failure that occurs during the CVC authentication flow.
@@ -1627,8 +1628,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.ErrorDialogShown.WithServerText"
     enum="AutofillErrorDialogType" expires_after="2023-09-01">
+  <owner>vinnypersky@google.com</owner>
   <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs when an autofill error dialog is shown to the user with server returned
@@ -3112,6 +3113,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Deprecated August 2022. Subsumed by Autofill.Offer.Suggestion2.{OfferType}.
   </obsolete>
+  <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3125,6 +3127,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Offer.Suggestion2.{OfferType}"
     enum="OffersSuggestionsEvent" expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3149,6 +3152,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Deprecated August 2022. Subsumed by Autofill.Offer.SuggestionsPopupShown2.
   </obsolete>
+  <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3161,6 +3165,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Offer.SuggestionsPopupShown2"
     enum="OffersSuggestionsPopupEvent" expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -5052,6 +5057,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.UnmaskPrompt.{CardType}.Events"
     enum="AutofillUnmaskPromptEvent" expires_after="2024-02-20">
+  <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -5338,6 +5344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.VirtualCardEnrollBubble.LatencySinceUpstream"
     units="ms" expires_after="2024-04-01">
+  <owner>vinnypersky@google.com</owner>
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -5352,6 +5359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached"
     enum="AutofillVirtualCardEnrollmentSource" expires_after="2024-04-01">
+  <owner>vinnypersky@google.com</owner>
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>

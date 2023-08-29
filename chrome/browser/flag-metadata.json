@@ -598,7 +598,7 @@
   },
   {
     "name": "autofill-enable-merchant-opt-out-client-side-url-filtering",
-    "owners": [ "siyua"],
+    "owners": [ "vinnypersky@google.com"],
     "expiry_milestone": 123
   },
   {
@@ -628,7 +628,7 @@
   },
   {
     "name": "autofill-enable-payments-mandatory-reauth",
-    "owners": [ "sujiezhu@google.com", "koulvipul@google.com" ],
+    "owners": [ "vinnypersky@google.com", "sujiezhu@google.com", "koulvipul@google.com" ],
     "expiry_milestone": 125
   },
   {
@@ -673,7 +673,7 @@
   },
   {
     "name": "autofill-enable-virtual-card-fido-enrollment",
-    "owners": [ "siyua", "jsaul@google.com"],
+    "owners": [ "vinnypersky@google.com", "siyua", "jsaul@google.com"],
     "expiry_milestone": 120
   },
     {

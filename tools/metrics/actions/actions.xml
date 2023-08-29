@@ -27594,6 +27594,7 @@ should be able to be added at any place in this file.
 
 <action name="PaymentsUserAuthSuccessfulForMandatoryAuthToggle">
   <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>sujiezhu@google.com</owner>
   <description>
     Recorded when user completes a successful auth after trying to change the
@@ -27603,6 +27604,7 @@ should be able to be added at any place in this file.
 
 <action name="PaymentsUserAuthSuccessfulToShowEditLocalCardDialog">
   <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>sujiezhu@google.com</owner>
   <description>
     Recorded when user completes a successful auth after trying to edit a local
@@ -27613,6 +27615,7 @@ should be able to be added at any place in this file.
 
 <action name="PaymentsUserAuthTriggeredForMandatoryAuthToggle">
   <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>sujiezhu@google.com</owner>
   <description>
     Recorded when user is asked for an auth after trying to change the mandatory
@@ -27622,6 +27625,7 @@ should be able to be added at any place in this file.
 
 <action name="PaymentsUserAuthTriggeredToShowEditLocalCardDialog">
   <owner>koulvipul@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>sujiezhu@google.com</owner>
   <description>
     Recorded when user is asked for an auth after trying to edit a local card
