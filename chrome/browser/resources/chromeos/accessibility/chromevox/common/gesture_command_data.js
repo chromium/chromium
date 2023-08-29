@@ -4,7 +4,7 @@
 
 import {KeyCode} from '../../common/key_code.js';
 
-import {Command} from './command_store.js';
+import {Command} from './command.js';
 
 export const GestureCommandData = {};
 

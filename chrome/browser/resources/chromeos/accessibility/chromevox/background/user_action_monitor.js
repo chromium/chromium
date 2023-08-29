@@ -8,7 +8,7 @@
 import {KeyCode} from '../../common/key_code.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {Command} from '../common/command_store.js';
+import {Command} from '../common/command.js';
 import {KeySequence, SerializedKeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';

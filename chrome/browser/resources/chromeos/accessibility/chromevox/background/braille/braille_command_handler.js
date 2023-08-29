@@ -14,7 +14,7 @@ import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_k
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
-import {Command} from '../../common/command_store.js';
+import {Command} from '../../common/command.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {Spannable} from '../../common/spannable.js';
 import {QueueMode} from '../../common/tts_types.js';

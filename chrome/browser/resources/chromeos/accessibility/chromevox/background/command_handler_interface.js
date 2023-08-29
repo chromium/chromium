@@ -4,7 +4,7 @@
 
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
-import {Command} from '../common/command_store.js';
+import {Command} from '../common/command.js';
 
 export class CommandHandlerInterface {
   /**

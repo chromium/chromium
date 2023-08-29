@@ -11,7 +11,7 @@ import {constants} from '../../common/constants.js';
 
 import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
-import {Command} from './command_store.js';
+import {Command} from './command.js';
 import {EarconId} from './earcon_id.js';
 import {SerializableLog} from './log_types.js';
 import {QueueMode, TtsSpeechProperties} from './tts_types.js';
