@@ -165,8 +165,17 @@ void AddOpenInNewCanvas(NSMutableArray* menu) {
 // Modify the expected menu for partial translate
 void AddPartialTranslate(NSMutableArray* menu) {
   for (unsigned int i = 0; i < menu.count; i++) {
+    if ([menu[i] isEqualToString:@"0:m:com.apple.menu.lookup"]) {
+      [menu insertObject:@"0:m:chromecommand.menu" atIndex:i];
+      // Deferred action.
+      [menu insertObject:@"1:d" atIndex:i + 1];
+      break;
+    }
+  }
+  for (unsigned int i = 0; i < menu.count; i++) {
     if ([menu[i] isEqualToString:@"1:c:_translate:"]) {
-      menu[i] = @"1:d";
+      [menu removeObjectAtIndex:i];
+      break;
     }
   }
 }

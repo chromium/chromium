@@ -72,6 +72,16 @@ source_set("ui") {
   ]
 }
 
+source_set("edit_menu_utils") {
+  sources = [
+    "browser_edit_menu_constants.h",
+    "browser_edit_menu_constants.mm",
+    "browser_edit_menu_utils.h",
+    "browser_edit_menu_utils.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("edit_menu_alert_delegate") {
   sources = [
     "edit_menu_alert_delegate.h",

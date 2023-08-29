@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/browser_container/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -215,7 +216,6 @@ void LogTrigger(bool incognito, bool search_engine_google) {
   if (![self canPerformSearch]) {
     return;
   }
-  NSString* searchWithMenuId = @"chromeMenu.searchWith";
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlockWithBlockWithItemArray provider =
@@ -224,14 +224,7 @@ void LogTrigger(bool incognito, bool search_engine_google) {
       };
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
-
-  UIMenu* searchWithMenu = [UIMenu menuWithTitle:@""
-                                           image:nil
-                                      identifier:searchWithMenuId
-                                         options:UIMenuOptionsDisplayInline
-                                        children:@[ deferredMenuElement ]];
-  [builder insertSiblingMenu:searchWithMenu
-      afterMenuForIdentifier:UIMenuLookup];
+  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement);
 }
 
 @end

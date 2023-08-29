@@ -11,6 +11,7 @@
 #import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/browser_container/edit_menu_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -285,13 +286,9 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                             selectorWithElementID:kSimpleTextElementId],
                         true)];
 
-  // TODO(crbug.com/1233056): Xcode 13 gesture recognizers seem to get stuck
-  // when the user longs presses on plain text.  For this test, disable EG
-  // synchronization.
-  ScopedSynchronizationDisabler disabler;
-  id<GREYMatcher> copyButton =
-      chrome_test_util::SystemSelectionCalloutCopyButton();
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:copyButton];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:[EditMenuAppInterface
+                                                       editMenuMatcher]];
 
   // Make sure the Link to Text button is not visible.
   [[EarlGrey selectElementWithMatcher:

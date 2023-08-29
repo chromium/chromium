@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/browser_container/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
@@ -328,9 +329,6 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   if (![self shouldInstallPartialTranslate]) {
     return;
   }
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
-  NSString* partialTranslateId = @"chromecommand.menu.partialTranslate";
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlockWithBlockWithItemArray provider =
@@ -341,51 +339,24 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   // selection and updated on selection change.
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
+  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement);
 
-  // Translate command is in the lookup menu.
-  // Retrieve the menu so it can be replaced with partial translate.
-  UIMenu* lookupMenu = [builder menuForIdentifier:UIMenuLookup];
-  NSArray* children = lookupMenu.children;
-  NSInteger translateIndex = -1;
-  for (NSUInteger index = 0; index < children.count; index++) {
-    UIMenuElement* element = children[index];
-    // Translate is a command.
-    if (![element isKindOfClass:[UICommand class]]) {
-      continue;
-    }
-    UICommand* command = base::mac::ObjCCast<UICommand>(element);
-    if (command.action != NSSelectorFromString(@"_translate:")) {
-      continue;
-    }
-    translateIndex = index;
-    break;
-  }
+  auto childrenTransformBlock =
+      ^NSArray<UIMenuElement*>*(NSArray<UIMenuElement*>* oldElements) {
+    return [oldElements
+        filteredArrayUsingPredicate:
+            [NSPredicate predicateWithBlock:^BOOL(
+                             id object, NSDictionary<NSString*, id>* bindings) {
+              if (![object isKindOfClass:[UICommand class]]) {
+                return YES;
+              }
+              UICommand* command = base::mac::ObjCCast<UICommand>(object);
+              return command.action != NSSelectorFromString(@"_translate:");
+            }]];
+  };
 
-  if (translateIndex == -1) {
-    // Translate command not found. Fallback adding the partial translate before
-    // the lookup menu.
-    // TODO(crbug.com/1417639): Catch this so it can be fixed.
-    UIMenu* partialTranslateMenu =
-        [UIMenu menuWithTitle:title
-                        image:nil
-                   identifier:partialTranslateId
-                      options:UIMenuOptionsDisplayInline
-                     children:@[ deferredMenuElement ]];
-    [builder insertSiblingMenu:partialTranslateMenu
-        beforeMenuForIdentifier:UIMenuLookup];
-    return;
-  }
-
-  // Rebuild the lookup menu with partial translate
-  NSMutableArray* newChildren = [NSMutableArray arrayWithArray:children];
-  newChildren[translateIndex] = deferredMenuElement;
-  UIMenu* newPartialTranslate = [UIMenu menuWithTitle:lookupMenu.title
-                                                image:lookupMenu.image
-                                           identifier:lookupMenu.identifier
-                                              options:lookupMenu.options
-                                             children:newChildren];
-
-  [builder replaceMenuForIdentifier:UIMenuLookup withMenu:newPartialTranslate];
+  [builder replaceChildrenOfMenuForIdentifier:UIMenuLookup
+                            fromChildrenBlock:childrenTransformBlock];
 }
 
 @end
