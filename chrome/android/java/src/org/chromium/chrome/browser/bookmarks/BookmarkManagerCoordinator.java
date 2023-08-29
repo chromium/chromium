@@ -222,8 +222,8 @@ public class BookmarkManagerCoordinator
         dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.IMPROVED_BOOKMARK_COMPACT,
                 this::buildAndInitCompactImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind,
                 (viewHolder, itemTouchHelper) -> {}, mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerType(
-                ViewType.SEARCH_BOX, this::buildSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.SEARCH_BOX,
+                this::buildSearchBoxRow, BookmarkSearchBoxRowViewBinder.createViewBinder());
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {

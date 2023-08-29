@@ -14,25 +14,61 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Binds model properties to view methods for {@link BookmarkSearchBoxRow}. */
 class BookmarkSearchBoxRowViewBinder {
-    static void bind(PropertyModel model, View view, PropertyKey key) {
+    /** Allows raising a flag that will automatically lower when exiting scoped context. */
+    private static class AutoFlag {
+        public boolean isActive;
+        public ScopedNoException raiseFlag() {
+            return new ScopedNoException();
+        }
+
+        private class ScopedNoException implements AutoCloseable {
+            public ScopedNoException() {
+                isActive = true;
+            }
+
+            @Override
+            public void close() {
+                isActive = false;
+            }
+        }
+    }
+
+    public static ViewBinder<PropertyModel, View, PropertyKey> createViewBinder() {
+        return new BookmarkSearchBoxRowViewBinder()::bind;
+    }
+
+    private AutoFlag mBindFlag = new AutoFlag();
+
+    private void bind(PropertyModel model, View view, PropertyKey key) {
+        try (AutoFlag.ScopedNoException ignored = mBindFlag.raiseFlag()) {
+            bindInternal(model, view, key);
+        }
+    }
+
+    private void bindInternal(PropertyModel model, View view, PropertyKey key) {
         BookmarkSearchBoxRow row = (BookmarkSearchBoxRow) view;
         ChipView shoppingChip = view.findViewById(R.id.shopping_filter_chip);
         if (key == BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK) {
-            row.setSearchTextCallback(
-                    model.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK));
+            Callback<String> callback =
+                    wrapCallback(model, BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+            row.setSearchTextCallback(callback);
         } else if (key == BookmarkSearchBoxRowProperties.SEARCH_TEXT) {
             row.setSearchText(model.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
         } else if (key == BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK) {
-            row.setFocusChangeCallback(
-                    model.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK));
+            Callback<Boolean> callback =
+                    wrapCallback(model, BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK);
+            row.setFocusChangeCallback(callback);
         } else if (key == BookmarkSearchBoxRowProperties.HAS_FOCUS) {
             row.setHasFocus(model.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
         } else if (key == BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE) {
-            row.setClearSearchTextButtonRunnable(
-                    model.get(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE));
+            Runnable runnable =
+                    wrapRunnable(model, BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE);
+            row.setClearSearchTextButtonRunnable(runnable);
         } else if (key == BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY) {
             row.setClearSearchTextButtonVisibility(
                     model.get(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
@@ -40,8 +76,8 @@ class BookmarkSearchBoxRowViewBinder {
             boolean isVisible = model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY);
             ((View) shoppingChip.getParent()).setVisibility(isVisible ? View.VISIBLE : View.GONE);
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK) {
-            Callback<Boolean> onToggle =
-                    model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK);
+            Callback<Boolean> onToggle = wrapCallback(
+                    model, BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK);
             shoppingChip.setOnClickListener((View v) -> {
                 onToggle.onResult(
                         !model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED));
@@ -52,13 +88,31 @@ class BookmarkSearchBoxRowViewBinder {
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES) {
             final @DrawableRes int res =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES);
-            // TODO(https://crbug.com/1466583): Use tintWithTextColor because the drawable tint is
-            // broken.
+            // TODO(https://crbug.com/1466583): Use tintWithTextColor because the drawable tint
+            // is broken.
             shoppingChip.setIcon(res, /*tintWithTextColor*/ true);
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES) {
             final @StringRes int res =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES);
             shoppingChip.getPrimaryTextView().setText(res);
         }
+    }
+
+    private Runnable wrapRunnable(
+            PropertyModel model, ReadableObjectPropertyKey<Runnable> propertyKey) {
+        return () -> {
+            if (!mBindFlag.isActive) {
+                model.get(propertyKey).run();
+            }
+        };
+    }
+
+    private <T> Callback<T> wrapCallback(
+            PropertyModel model, ReadableObjectPropertyKey<Callback<T>> propertyKey) {
+        return result -> {
+            if (!mBindFlag.isActive) {
+                model.get(propertyKey).onResult(result);
+            }
+        };
     }
 }

@@ -888,7 +888,7 @@ class BookmarkManagerMediator
 
     private void clearSearchBoxFocus() {
         assertIsAndroidImprovedBookmarksEnabled();
-        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, false);
+        onSearchBoxFocusChange(false);
     }
 
     private PropertyModel getSearchBoxPropertyModel() {

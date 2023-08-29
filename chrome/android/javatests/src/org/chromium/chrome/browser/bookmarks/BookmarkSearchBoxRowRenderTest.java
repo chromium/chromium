@@ -96,8 +96,8 @@ public class BookmarkSearchBoxRowRenderTest {
                             .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
                             .build();
 
-            PropertyModelChangeProcessor.create(
-                    mPropertyModel, bookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+            PropertyModelChangeProcessor.create(mPropertyModel, bookmarkSearchBoxRow,
+                    BookmarkSearchBoxRowViewBinder.createViewBinder());
         });
     }
 
