@@ -28,6 +28,8 @@ namespace {
 constexpr char kSmdsGsma[] = "1$lpa.ds.gsma.com$";
 // The activation code for the Stork SM-DS server.
 constexpr char kSmdsStork[] = "1$prod.smds.rsp.goog$";
+// The activation code for the Android production SM-DS server.
+constexpr char kSmdsAndroidProduction[] = "1$lpa.live.esimdiscovery.com$";
 // The activation code for the Android staging SM-DS server.
 constexpr char kSmdsAndroidStaging[] = "1$lpa.live.esimdiscovery.dev$";
 
@@ -204,6 +206,9 @@ std::vector<std::string> GetSmdsActivationCodes() {
     activation_codes.push_back(kSmdsAndroidStaging);
   }
   if (activation_codes.empty()) {
+    if (features::IsSmdsSupportEnabled()) {
+      activation_codes.push_back(kSmdsAndroidProduction);
+    }
     activation_codes.push_back(kSmdsGsma);
   }
   return activation_codes;

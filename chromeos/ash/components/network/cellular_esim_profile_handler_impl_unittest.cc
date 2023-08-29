@@ -42,7 +42,6 @@ const char kDisableProfileResultHistogram[] =
     "Network.Cellular.ESim.DisableProfile.Result";
 
 constexpr base::TimeDelta kInteractiveDelay = base::Seconds(30);
-constexpr base::TimeDelta kInteractiveDelayHalf = kInteractiveDelay / 2;
 
 std::string CreateTestEuiccPath(int euicc_num) {
   return base::StringPrintf("%s%d", kTestEuiccBasePath, euicc_num);
@@ -1089,7 +1088,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
             run_loop.Quit();
           }));
 
-  task_environment()->FastForwardBy(kInteractiveDelayHalf);
+  task_environment()->FastForwardBy(kInteractiveDelay);
 
   const absl::optional<CellularInhibitor::InhibitReason> inhibit_reason =
       GetInhibitReason();
@@ -1099,7 +1098,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
 
   EXPECT_FALSE(profile_list.has_value());
 
-  task_environment()->FastForwardBy(kInteractiveDelayHalf);
+  task_environment()->FastForwardBy(kInteractiveDelay);
   run_loop.Run();
 
   EXPECT_FALSE(GetInhibitReason());
