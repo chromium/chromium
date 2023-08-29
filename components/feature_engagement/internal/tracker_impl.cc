@@ -124,7 +124,8 @@ Tracker* Tracker::Create(
 
   auto event_storage_validator =
       std::make_unique<FeatureConfigEventStorageValidator>();
-  event_storage_validator->InitializeFeatures(GetAllFeatures(), *configuration);
+  event_storage_validator->InitializeFeatures(GetAllFeatures(), GetAllGroups(),
+                                              *configuration);
 
   auto raw_event_model = std::make_unique<EventModelImpl>(
       std::move(event_store), std::move(event_storage_validator));
@@ -200,9 +201,13 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
   }
 
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
+  std::vector<GroupConfig> group_configs;
+  for (auto group : feature_config.groups) {
+    group_configs.push_back(configuration_->GetGroupConfigByName(group));
+  }
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, feature_config, {}, *event_model_, *availability_model_,
-      *display_lock_controller_, configuration_.get(),
+      feature, feature_config, group_configs, *event_model_,
+      *availability_model_, *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
   if (result.NoErrors()) {
     condition_validator_->NotifyIsShowing(
@@ -254,9 +259,13 @@ bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
   }
 
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
+  std::vector<GroupConfig> group_configs;
+  for (auto group : feature_config.groups) {
+    group_configs.push_back(configuration_->GetGroupConfigByName(group));
+  }
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, feature_config, {}, *event_model_, *availability_model_,
-      *display_lock_controller_, configuration_.get(),
+      feature, feature_config, group_configs, *event_model_,
+      *availability_model_, *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
   DVLOG(2) << "Would trigger result for " << feature.name
            << ": trigger=" << result.NoErrors()
@@ -288,10 +297,15 @@ Tracker::TriggerState TrackerImpl::GetTriggerState(
     return Tracker::TriggerState::NOT_READY;
   }
 
+  FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
+  std::vector<GroupConfig> group_configs;
+  for (auto group : feature_config.groups) {
+    group_configs.push_back(configuration_->GetGroupConfigByName(group));
+  }
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, configuration_->GetFeatureConfig(feature), {}, *event_model_,
-      *availability_model_, *display_lock_controller_, configuration_.get(),
-      time_provider_->GetCurrentDay());
+      feature, configuration_->GetFeatureConfig(feature), group_configs,
+      *event_model_, *availability_model_, *display_lock_controller_,
+      configuration_.get(), time_provider_->GetCurrentDay());
 
   if (result.trigger_ok) {
     DVLOG(2) << "TriggerState for " << feature.name << ": "

@@ -11,13 +11,16 @@
 
 #include "components/feature_engagement/internal/event_storage_validator.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_list.h"
 
 namespace feature_engagement {
 class Configuration;
 struct EventConfig;
 struct FeatureConfig;
+struct GroupConfig;
 
-// A EventStorageValidator that uses the FeatureConfig as the source of truth.
+// A EventStorageValidator that uses the FeatureConfig and GroupConfig as the
+// source of truth.
 class FeatureConfigEventStorageValidator : public EventStorageValidator {
  public:
   FeatureConfigEventStorageValidator();
@@ -35,8 +38,10 @@ class FeatureConfigEventStorageValidator : public EventStorageValidator {
                   uint32_t event_day,
                   uint32_t current_day) const override;
 
-  // Set up internal configuration required for the given |features|.
-  void InitializeFeatures(FeatureVector features,
+  // Set up internal configuration required for the given |features| and
+  // |groups|.
+  void InitializeFeatures(const FeatureVector& features,
+                          const GroupVector& groups,
                           const Configuration& configuration);
 
   // Resets the full state of this EventStorageValidator. After calling this
@@ -47,6 +52,10 @@ class FeatureConfigEventStorageValidator : public EventStorageValidator {
   // Updates the internal configuration with conditions from the given
   // |feature_config|.
   void InitializeFeatureConfig(const FeatureConfig& feature_config);
+
+  // Updates the internal configuration with conditions from the given
+  // |group_config|.
+  void InitializeGroupConfig(const GroupConfig& group_config);
 
   // Updates the internal configuration with conditions from the given
   // |event_config|.
