@@ -163,7 +163,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
     @CalledByNative
     static void setUp() {
-        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 

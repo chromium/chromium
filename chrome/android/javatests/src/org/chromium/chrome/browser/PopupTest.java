@@ -63,7 +63,7 @@ public class PopupTest {
 
     @Before
     public void setUp() throws Exception {
-        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         mActivityTestRule.startMainActivityOnBlankPage();
 
         PostTask.runOrPostTask(

@@ -79,7 +79,7 @@ public final class SafeBrowsingTest {
 
     @Before
     public void setUp() {
-        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
     }
 
     @After

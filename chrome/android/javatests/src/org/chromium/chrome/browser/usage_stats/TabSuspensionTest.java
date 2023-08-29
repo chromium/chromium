@@ -324,7 +324,7 @@ public class TabSuspensionTest {
         startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
 
-        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         MockSafetyNetApiHandler.addMockResponse(
                 mDifferentUrl, "{\"matches\":[{\"threat_type\":\"5\"}]}");
         startLoadingUrl(mTab, mDifferentUrl);

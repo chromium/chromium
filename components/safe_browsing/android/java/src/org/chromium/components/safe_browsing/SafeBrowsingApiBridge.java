@@ -56,17 +56,6 @@ public final class SafeBrowsingApiBridge {
 
     /**
      * Sets the {@link SafetyNetApiHandler} object once and for the lifetime of this process.
-     * TODO(crbug.com/1444511): Remove this function once downstream has moved to
-     * setSafetyNetApiHandler.
-     *
-     * @param handler An instance that has not been initialized.
-     */
-    public static void setHandler(SafetyNetApiHandler handler) {
-        setSafetyNetApiHandler(handler);
-    }
-
-    /**
-     * Sets the {@link SafetyNetApiHandler} object once and for the lifetime of this process.
      *
      * @param handler An instance that has not been initialized.
      */
