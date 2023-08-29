@@ -43,6 +43,11 @@ base::flat_set<std::string> EngineIdsToHandwritingLocales(
 // one using `ResolveLocale`.
 absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale);
 
+// Given a DLC ID, returns whether it is a DLC for handwriting recognition.
+// Intended to be used to filter a list of DLCs that a user has installed to
+// only the relevant handwriting recognition ones.
+bool IsHandwritingDlc(std::string_view dlc_id);
+
 }  // namespace ash::language_packs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_HANDWRITING_H_

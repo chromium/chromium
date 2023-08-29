@@ -106,6 +106,39 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<HandwritingLocaleToDlcTest::ParamType>&
            info) { return info.param.test_name; });
 
+struct IsHandwritingDlcTestCase {
+  std::string test_name;
+  std::string_view dlc_id;
+  bool expected;
+};
+
+class IsHandwritingDlcTest
+    : public HandwritingTest,
+      public testing::WithParamInterface<IsHandwritingDlcTestCase> {};
+
+TEST_P(IsHandwritingDlcTest, Test) {
+  const IsHandwritingDlcTestCase& test_case = GetParam();
+
+  EXPECT_EQ(IsHandwritingDlc(test_case.dlc_id), test_case.expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    IsHandwritingDlcTests,
+    IsHandwritingDlcTest,
+    testing::ValuesIn<IsHandwritingDlcTestCase>(
+        {{"InvalidEmpty", "", false},
+         {"InvalidEn", "handwriting-en", false},
+         {"InvalidCy", "handwriting-cy", false},
+         {"InvalidDeDe", "handwriting-de-DE", false},
+         {"InvalidTypoDe", "handwritting-de", false},
+         {"InvalidTtsEnUs", "tts-en-us", false},
+         {"InvalidDeWithoutPrefix", "de", false},
+         {"ValidDe", "handwriting-de", true},
+         {"ValidZhHk", "handwriting-zh-HK", true}}),
+    [](const testing::TestParamInfo<IsHandwritingDlcTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
 }  // namespace
 
 }  // namespace ash::language_packs

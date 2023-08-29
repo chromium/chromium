@@ -22,6 +22,105 @@
 namespace ash::language_packs {
 namespace {
 
+const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
+  // Map of all features and corresponding Base Pack DLC IDs.
+  static const base::NoDestructor<base::flat_map<std::string, std::string>>
+      all_dlc_ids({
+          {kHandwritingFeatureId, "handwriting-base"},
+      });
+
+  return *all_dlc_ids;
+}
+
+// Finds the ID of the DLC corresponding to the Base Pack for a feature.
+// Returns the DLC ID if the feature has a Base Pack or absl::nullopt
+// otherwise.
+absl::optional<std::string> GetDlcIdForBasePack(const std::string& feature_id) {
+  // We search in the static list for the given |feature_id|.
+  const auto it = GetAllBasePackDlcIds().find(feature_id);
+
+  if (it == GetAllBasePackDlcIds().end()) {
+    return absl::nullopt;
+  }
+
+  return it->second;
+}
+
+void InstallDlc(const std::string& dlc_id,
+                DlcserviceClient::InstallCallback install_callback) {
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(dlc_id);
+  DlcserviceClient::Get()->Install(install_request, std::move(install_callback),
+                                   base::DoNothing());
+}
+
+void OnInstallDlcComplete(OnInstallCompleteCallback callback,
+                          const std::string& feature_id,
+                          const std::string& locale,
+                          const DlcserviceClient::InstallResult& dlc_result) {
+  PackResult result = ConvertDlcInstallResultToPackResult(dlc_result);
+  result.language_code = locale;
+
+  const bool success = result.operation_error == PackResult::ErrorCode::kNone;
+  if (!success) {
+    if (feature_id == kHandwritingFeatureId) {
+      base::UmaHistogramEnumeration(
+          "ChromeOS.LanguagePacks.InstallError.Handwriting",
+          GetDlcErrorTypeForUma(dlc_result.error));
+    } else if (feature_id == kTtsFeatureId) {
+      base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallError.Tts",
+                                    GetDlcErrorTypeForUma(dlc_result.error));
+    }
+  }
+
+  base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallPack.Success",
+                                GetSuccessValueForUma(feature_id, success));
+
+  std::move(callback).Run(result);
+}
+
+void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
+                            const std::string& locale,
+                            const std::string& err) {
+  PackResult result;
+  result.language_code = locale;
+  result.operation_error = ConvertDlcErrorToErrorCode(err);
+
+  const bool success = err == dlcservice::kErrorNone;
+  if (success) {
+    result.pack_state = PackResult::StatusCode::kNotInstalled;
+  } else {
+    result.pack_state = PackResult::StatusCode::kUnknown;
+  }
+
+  base::UmaHistogramBoolean("ChromeOS.LanguagePacks.UninstallComplete.Success",
+                            success);
+
+  std::move(callback).Run(result);
+}
+
+void OnGetDlcState(GetPackStateCallback callback,
+                   const std::string& locale,
+                   const std::string& err,
+                   const dlcservice::DlcState& dlc_state) {
+  PackResult result;
+  // GetDlcState() returns 2 errors:
+  // one for the DBus call and one for the actual DLC.
+  // If the first error is set we can ignore the DLC state.
+  if (err.empty() || err == dlcservice::kErrorNone) {
+    result = ConvertDlcStateToPackResult(dlc_state);
+  } else {
+    result.operation_error = ConvertDlcErrorToErrorCode(err);
+    result.pack_state = PackResult::StatusCode::kUnknown;
+  }
+
+  result.language_code = locale;
+
+  std::move(callback).Run(result);
+}
+
+}  // namespace
+
 const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   // Map of all DLCs and corresponding IDs.
   // It's a map from PackSpecPair to DLC ID. The pair is <feature id, locale>.
@@ -137,105 +236,6 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
 
   return *all_dlc_ids;
 }
-
-const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
-  // Map of all features and corresponding Base Pack DLC IDs.
-  static const base::NoDestructor<base::flat_map<std::string, std::string>>
-      all_dlc_ids({
-          {kHandwritingFeatureId, "handwriting-base"},
-      });
-
-  return *all_dlc_ids;
-}
-
-// Finds the ID of the DLC corresponding to the Base Pack for a feature.
-// Returns the DLC ID if the feature has a Base Pack or absl::nullopt
-// otherwise.
-absl::optional<std::string> GetDlcIdForBasePack(const std::string& feature_id) {
-  // We search in the static list for the given |feature_id|.
-  const auto it = GetAllBasePackDlcIds().find(feature_id);
-
-  if (it == GetAllBasePackDlcIds().end()) {
-    return absl::nullopt;
-  }
-
-  return it->second;
-}
-
-void InstallDlc(const std::string& dlc_id,
-                DlcserviceClient::InstallCallback install_callback) {
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(dlc_id);
-  DlcserviceClient::Get()->Install(install_request, std::move(install_callback),
-                                   base::DoNothing());
-}
-
-void OnInstallDlcComplete(OnInstallCompleteCallback callback,
-                          const std::string& feature_id,
-                          const std::string& locale,
-                          const DlcserviceClient::InstallResult& dlc_result) {
-  PackResult result = ConvertDlcInstallResultToPackResult(dlc_result);
-  result.language_code = locale;
-
-  const bool success = result.operation_error == PackResult::ErrorCode::kNone;
-  if (!success) {
-    if (feature_id == kHandwritingFeatureId) {
-      base::UmaHistogramEnumeration(
-          "ChromeOS.LanguagePacks.InstallError.Handwriting",
-          GetDlcErrorTypeForUma(dlc_result.error));
-    } else if (feature_id == kTtsFeatureId) {
-      base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallError.Tts",
-                                    GetDlcErrorTypeForUma(dlc_result.error));
-    }
-  }
-
-  base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallPack.Success",
-                                GetSuccessValueForUma(feature_id, success));
-
-  std::move(callback).Run(result);
-}
-
-void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
-                            const std::string& locale,
-                            const std::string& err) {
-  PackResult result;
-  result.language_code = locale;
-  result.operation_error = ConvertDlcErrorToErrorCode(err);
-
-  const bool success = err == dlcservice::kErrorNone;
-  if (success) {
-    result.pack_state = PackResult::StatusCode::kNotInstalled;
-  } else {
-    result.pack_state = PackResult::StatusCode::kUnknown;
-  }
-
-  base::UmaHistogramBoolean("ChromeOS.LanguagePacks.UninstallComplete.Success",
-                            success);
-
-  std::move(callback).Run(result);
-}
-
-void OnGetDlcState(GetPackStateCallback callback,
-                   const std::string& locale,
-                   const std::string& err,
-                   const dlcservice::DlcState& dlc_state) {
-  PackResult result;
-  // GetDlcState() returns 2 errors:
-  // one for the DBus call and one for the actual DLC.
-  // If the first error is set we can ignore the DLC state.
-  if (err.empty() || err == dlcservice::kErrorNone) {
-    result = ConvertDlcStateToPackResult(dlc_state);
-  } else {
-    result.operation_error = ConvertDlcErrorToErrorCode(err);
-    result.pack_state = PackResult::StatusCode::kUnknown;
-  }
-
-  result.language_code = locale;
-
-  std::move(callback).Run(result);
-}
-
-}  // namespace
 
 // TODO: b/294162606 - Calling this function with a `std::string_view` or a
 // `const char*` argument causes two string copies per argument - one to call

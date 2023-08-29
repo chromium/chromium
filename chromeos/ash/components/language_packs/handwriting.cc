@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/no_destructor.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,6 +40,31 @@ absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {
   // locale) and concatenation (to produce the DLC ID) to eventually deprecate
   // `GetAllLanguagePackDlcIds`.
   return GetDlcIdForLanguagePack(kHandwritingFeatureId, std::string(locale));
+}
+
+bool IsHandwritingDlc(std::string_view dlc_id) {
+  // TODO: b/285993323 - Statically create this instead of at runtime to be
+  // shared with the implementation of `HandwritingLocaleToDlc`.
+  static const base::NoDestructor<const base::flat_set<std::string>>
+      handwriting_dlcs([] {
+        std::vector<std::string> handwriting_dlcs;
+
+        const base::flat_map<PackSpecPair, std::string>& all_ids =
+            GetAllLanguagePackDlcIds();
+
+        // Relies on the fact that handwriting `PackSpecPair`s are "grouped
+        // together" in the sorted `flat_map`.
+        auto it = all_ids.upper_bound({kHandwritingFeatureId, ""});
+        while (it != all_ids.end() &&
+               it->first.feature_id == kHandwritingFeatureId) {
+          handwriting_dlcs.push_back(it->second);
+          it++;
+        }
+
+        return handwriting_dlcs;
+      }());
+
+  return handwriting_dlcs->contains(dlc_id);
 }
 
 }  // namespace ash::language_packs
