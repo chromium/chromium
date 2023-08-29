@@ -1090,6 +1090,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
         ],
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
         },
@@ -1174,6 +1175,7 @@
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
+        'retry_only_failed_tests': True,
         'swarming': {
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
@@ -1212,6 +1214,7 @@
         },
       },
       'linux-chromeos-rel': {
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 60,
           'dimensions': {
@@ -1251,6 +1254,7 @@
         ],
       },
       'linux-lacros-tester-rel': {
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
         },
