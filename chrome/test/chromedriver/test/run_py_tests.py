@@ -13,6 +13,7 @@
 
 import base64
 import codecs
+import http.client
 import imghdr
 import json
 import math
@@ -4961,6 +4962,20 @@ class ChromeSwitchesCapabilityTest(ChromeDriverBaseTest):
   Makes sure the switches are passed to Chrome.
   """
 
+  def assertDebuggerAddressIsConfigured(self, driver):
+    self.assertIsNotNone(driver.debuggerAddress)
+    self.assertIsInstance(driver.debuggerAddress, str)
+    self.assertNotEqual('', driver.debuggerAddress)
+    # The check detects the regression of https://crbug.com/chromedriver/4533
+    self.assertNotEqual(':-1', driver.debuggerAddress)
+    components = driver.debuggerAddress.split(':')
+    conn = http.client.HTTPConnection(components[0], components[1])
+    conn.request('GET', '/json/version')
+    resp = conn.getresponse()
+    resp = json.loads(resp.read())
+    self.assertIn('Browser', resp)
+    self.assertIn('webSocketDebuggerUrl', resp)
+
   def testSwitchWithoutArgument(self):
     """Tests that switch --dom-automation can be passed to Chrome.
 
@@ -5017,6 +5032,42 @@ class ChromeSwitchesCapabilityTest(ChromeDriverBaseTest):
     with self.assertRaisesRegex(chromedriver.ChromeDriverException,
                                 "only ASCIIZ protocol mode is supported"):
       self.CreateDriver(chrome_switches=["remote-debugging-pipe=xyz"])
+
+  def testDebuggerAddressByDefault(self):
+    """Tests that capabilities returned by the "New Session" command contain
+    a workable debuggerAddress url.
+    """
+    driver = self.CreateDriver()
+    self.assertDebuggerAddressIsConfigured(driver)
+
+  def testDebuggerAddressForRemoteDebuggingPort(self):
+    """Tests that capabilities returned by the "New Session" command contain
+    a workable debuggerAddress url. This modification explicitly enables
+    communication over web sockets.
+    """
+    driver = self.CreateDriver(chrome_switches=['remote-debugging-port=0'])
+    self.assertDebuggerAddressIsConfigured(driver)
+
+  def testDebuggerAddressForRemoteDebuggingPipe(self):
+    """Tests that capabilities returned by the "New Session" command do not
+    contain a debuggerAddress url. This modification explicitly enables
+    communication over pipes.
+    The requirement of no debuggerAddress in the capabilities can be changed in
+    the future if we decide to mimic the http endpoint of the browser on the
+    ChromeDriver side.
+    """
+    driver = self.CreateDriver(chrome_switches=['remote-debugging-pipe'])
+    self.assertIsNone(driver.debuggerAddress)
+
+  def testDebuggerAddressForRemoteDebuggingPortAndPipe(self):
+    """Tests that capabilities returned by the "New Session" command contain
+    a valid debuggerAddress url. This modification explicitly enables
+    communication over web sockets and pipes.
+    """
+    driver = self.CreateDriver(chrome_switches=[
+        'remote-debugging-pipe',
+        'remote-debugging-port=0'])
+    self.assertDebuggerAddressIsConfigured(driver)
 
 
 class ChromeDesiredCapabilityTest(ChromeDriverBaseTest):
