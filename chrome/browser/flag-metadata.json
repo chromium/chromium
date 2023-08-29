@@ -7662,6 +7662,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "support-f11-and-f12-shortcuts",
+    "owners": [ "michaelcheco", "cros-peripherals@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "support-tool",
     "owners": [ "//chrome/browser/support_tool/OWNERS" ],
     "expiry_milestone": 120

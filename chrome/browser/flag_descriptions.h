@@ -3942,6 +3942,9 @@ extern const char kSystemLiveCaptionDescription[];
 extern const char kSystemNudgeV2Name[];
 extern const char kSystemNudgeV2Description[];
 
+extern const char kSupportF11AndF12ShortcutsName[];
+extern const char kSupportF11AndF12ShortcutsDescription[];
+
 extern const char kCaptivePortalErrorPageName[];
 extern const char kCaptivePortalErrorPageDescription[];
 

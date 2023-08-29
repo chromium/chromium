@@ -6866,6 +6866,13 @@ const char kSystemNudgeV2Name[] = "New System Nudges";
 const char kSystemNudgeV2Description[] =
     "Enables the use of the new System Nudges";
 
+const char kSupportF11AndF12ShortcutsName[] = "F11/F12 Shortcuts";
+const char kSupportF11AndF12ShortcutsDescription[] =
+    "Enables settings that "
+    "allow users to use shortcuts to remap to the F11 and F12 keys in the "
+    "Customize keyboard keys "
+    "page.";
+
 const char kCaptivePortalErrorPageName[] =
     "Enables Captive Portal error page suggestions.";
 const char kCaptivePortalErrorPageDescription[] =
