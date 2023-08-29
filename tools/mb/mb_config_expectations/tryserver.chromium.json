@@ -4,7 +4,7 @@
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "is_official_build": true,
-      "symbol_level": 1,
+      "symbol_level": 2,
       "target_os": "android",
       "use_remoteexec": true
     }

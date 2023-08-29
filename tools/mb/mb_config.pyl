@@ -1724,11 +1724,11 @@
     ],
 
     'android_official_optimize_reclient': [
-      'official_optimize_reclient', 'android_without_codecs',
+      'official_optimize_reclient', 'android_without_codecs', 'full_symbols',
     ],
 
     'android_official_optimize_reclient_trybot': [
-      'official_optimize_reclient_trybot', 'android_without_codecs',
+      'official_optimize_reclient_trybot', 'android_without_codecs', 'full_symbols',
     ],
 
     'android_release_bot_minimal_symbols': [
