@@ -9,7 +9,7 @@ import {KeyCode} from '../../common/key_code.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command_store.js';
-import {KeySequence} from '../common/key_sequence.js';
+import {KeySequence, SerializedKeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {QueueMode} from '../common/tts_types.js';
@@ -295,9 +295,10 @@ UserActionMonitor.Action = class {
     }
 
     const type = info.type;
-    const value = (typeof info.value === 'object') ?
-        KeySequence.deserialize(info.value) :
-        info.value;
+    const value = (typeof info.value === 'string') ?
+        info.value :
+        KeySequence.deserialize(
+            /** @type {!SerializedKeySequence} */ (info.value));
     const shouldPropagate = info.shouldPropagate;
     const beforeActionMsg = info.beforeActionMsg;
     const afterActionMsg = info.afterActionMsg;
