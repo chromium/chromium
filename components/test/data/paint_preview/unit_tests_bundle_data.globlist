@@ -1,0 +1,13 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# See build/ios/update_bundle_filelist.py for details on how .globlist
+# files are used to update their .filelist counterparts.
+
+//components/test/data/paint_preview/**
+-//components/test/data/paint_preview/*.globlist
+-//components/test/data/paint_preview/*.filelist
+-//components/test/data/paint_preview/**OWNERS
+-//components/test/data/paint_preview/**README.md
+-//components/test/data/paint_preview/**/README

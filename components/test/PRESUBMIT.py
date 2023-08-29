@@ -33,6 +33,9 @@ def CheckChange(input_api, output_api):
                 'data/language/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/paint_preview/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/password_manager/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
