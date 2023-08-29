@@ -4378,6 +4378,11 @@ extern const char kThirdPartyProfileManagementName[];
 extern const char kThirdPartyProfileManagementDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+extern const char kEnableBuiltinHlsName[];
+extern const char kEnableBuiltinHlsDescription[];
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

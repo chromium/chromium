@@ -7562,6 +7562,12 @@ const char kThirdPartyProfileManagementDescription[] =
     "Enables profile management triggered by third-party sign-ins.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+const char kEnableBuiltinHlsName[] = "Builtin HLS player";
+const char kEnableBuiltinHlsDescription[] =
+    "Enables chrome's builtin HLS player instead of Android's MediaPlayer";
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

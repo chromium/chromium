@@ -10892,6 +10892,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kAdvancedDocumentScanAPI)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+    {"enable-builtin-hls", flag_descriptions::kEnableBuiltinHlsName,
+     flag_descriptions::kEnableBuiltinHlsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kBuiltInHlsPlayer)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
