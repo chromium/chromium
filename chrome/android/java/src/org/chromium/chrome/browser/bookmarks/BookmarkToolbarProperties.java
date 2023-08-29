@@ -11,6 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -46,6 +47,10 @@ class BookmarkToolbarProperties {
     // Can change within SelectableListToolbar which makes the model value to become stale.
     static final WritableObjectPropertyKey<Integer> NAVIGATION_BUTTON_STATE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+    static final WritableObjectPropertyKey<List<Integer>> SORT_MENU_IDS =
+            new WritableObjectPropertyKey<>();
+    static final WritableBooleanPropertyKey SORT_MENU_IDS_ENABLED =
+            new WritableBooleanPropertyKey();
     static final WritableIntPropertyKey CHECKED_SORT_MENU_ID = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CHECKED_VIEW_MENU_ID = new WritableIntPropertyKey();
 
@@ -65,7 +70,7 @@ class BookmarkToolbarProperties {
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
             SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NEW_FOLDER_BUTTON_VISIBLE,
-            NEW_FOLDER_BUTTON_ENABLED, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
-            CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID, MENU_ID_CLICKED_FUNCTION,
-            NAVIGATE_BACK_RUNNABLE, FAKE_SELECTION_STATE_CHANGE};
+            NEW_FOLDER_BUTTON_ENABLED, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER, SORT_MENU_IDS,
+            SORT_MENU_IDS_ENABLED, CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID,
+            MENU_ID_CLICKED_FUNCTION, NAVIGATE_BACK_RUNNABLE, FAKE_SELECTION_STATE_CHANGE};
 }

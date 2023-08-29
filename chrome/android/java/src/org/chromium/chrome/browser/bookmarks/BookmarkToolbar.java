@@ -50,6 +50,9 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mNewFolderButtonVisible;
     private boolean mNewFolderButtonEnabled;
 
+    private List<Integer> mSortMenuIds;
+    private boolean mSortMenuIdsEnabled;
+
     private Runnable mNavigateBackRunnable;
     private Function<Integer, Boolean> mMenuIdClickedFunction;
 
@@ -150,6 +153,19 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         getMenu().findItem(id).setChecked(true);
     }
 
+    void setSortMenuIds(List<Integer> sortMenuIds) {
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
+        mSortMenuIds = sortMenuIds;
+    }
+
+    void setSortMenuIdsEnabled(boolean enabled) {
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
+        mSortMenuIdsEnabled = enabled;
+        for (Integer id : mSortMenuIds) {
+            getMenu().findItem(id).setEnabled(enabled);
+        }
+    }
+
     void setCheckedViewMenuId(@IdRes int id) {
         getMenu().findItem(id).setChecked(true);
     }
@@ -200,6 +216,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setEditButtonVisible(mEditButtonVisible);
         setNewFolderButtonVisible(mNewFolderButtonVisible);
         setNewFolderButtonEnabled(mNewFolderButtonEnabled);
+        setSortMenuIdsEnabled(mSortMenuIdsEnabled);
     }
 
     @Override

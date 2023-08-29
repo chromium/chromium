@@ -164,6 +164,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                 R.id.selection_mode_menu_group, false);
         mBookmarkToolbar.initializeSearchView(
                 mSearchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
+        mBookmarkToolbar.setSortMenuIds(BookmarkToolbarMediator.SORT_MENU_IDS);
         mBookmarkToolbar.setBookmarkModel(mBookmarkModel);
         mBookmarkToolbar.setBookmarkOpener(mBookmarkOpener);
         mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
@@ -202,6 +203,16 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
             assertNotNull(menuId);
             assertEquals("Mismatched visibility for menu item " + menuItem, isVisible,
                     menuItem.isVisible());
+        }
+    }
+
+    private void verifyMenuEnabled(List<Integer> applicableMenuIds, List<Integer> disabledIds) {
+        for (int menuId : applicableMenuIds) {
+            boolean isEnabled = !disabledIds.contains(menuId);
+            MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(menuId);
+            assertNotNull(menuId);
+            assertEquals("Mismatched enabled state for menu item " + menuItem, isEnabled,
+                    menuItem.isEnabled());
         }
     }
 
@@ -404,5 +415,27 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         initializeNormal();
         mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.SEARCHING);
         assertFalse(mBookmarkToolbar.isSearching());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSortButtonsDisabled_throughSelection() {
+        initializeNormal();
+        mBookmarkToolbar.setSortMenuIdsEnabled(false);
+        verifyMenuEnabled(
+                BookmarkToolbarMediator.SORT_MENU_IDS, BookmarkToolbarMediator.SORT_MENU_IDS);
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        mBookmarkToolbar.onSelectionStateChange(Collections.singletonList(BOOKMARK_ID_ONE));
+        verifySelectionMenuVisibility();
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());
+
+        // The filter button visibility should be carried over through a selection event.
+        verifyMenuEnabled(
+                BookmarkToolbarMediator.SORT_MENU_IDS, BookmarkToolbarMediator.SORT_MENU_IDS);
     }
 }

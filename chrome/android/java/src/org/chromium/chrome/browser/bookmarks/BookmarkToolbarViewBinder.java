@@ -48,6 +48,11 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE) {
             bookmarkToolbar.setNavigationButtonState(
                     model.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
+        } else if (key == BookmarkToolbarProperties.SORT_MENU_IDS) {
+            bookmarkToolbar.setSortMenuIds(model.get(BookmarkToolbarProperties.SORT_MENU_IDS));
+        } else if (key == BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED) {
+            bookmarkToolbar.setSortMenuIdsEnabled(
+                    model.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
         } else if (key == BookmarkToolbarProperties.CHECKED_SORT_MENU_ID) {
             bookmarkToolbar.setCheckedSortMenuId(
                     model.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));

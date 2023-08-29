@@ -8,11 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -509,5 +511,29 @@ public class BookmarkToolbarMediatorTest {
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
+    }
+
+    @Test
+    public void testDisableSortOptionsInReadingList() {
+        doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertEquals(
+                R.id.sort_by_manual, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
+
+        doReturn(mBookmarkId).when(mBookmarkModel).getReadingListFolder();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertFalse(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
+        assertEquals(
+                R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs, times(0)).setBookmarkRowSortOrder(anyInt());
+
+        // Verify  we go back to manual sort order and don't actually update the sorting prefs.
+        doReturn(null).when(mBookmarkModel).getReadingListFolder();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertTrue(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
+        assertEquals(
+                R.id.sort_by_manual, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs, times(0)).setBookmarkRowSortOrder(anyInt());
     }
 }
