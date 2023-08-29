@@ -195,7 +195,10 @@ const std::vector<SearchConcept>& GetOnStartupSearchConcepts() {
 }
 
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
       {"appManagementAppDetailsTitle", IDS_APP_MANAGEMENT_APP_DETAILS_TITLE},
       {"appManagementAppDetailsTooltipCrosSystem",
        IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_CROS_SYSTEM},
@@ -261,6 +264,9 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_INTENT_SETTINGS_TITLE},
       {"appManagementIntentSharingOpenAppLabel",
        IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
+      {"appManagementIntentSharingOpenAppLabel",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_OPEN_IN_APP_TITLE
+                        : IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
       {"appManagementIntentSharingOpenBrowserLabel",
        IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN},
       {"appManagementIntentSharingTabExplanation",
@@ -268,10 +274,18 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},
       {"appManagementMorePermissionsLabel", IDS_APP_MANAGEMENT_MORE_SETTINGS},
+      {"appManagementMorePermissionsLabelAndroidApp",
+       IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_ANDROID},
+      {"appManagementMorePermissionsLabelWebApp",
+       IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_WEB_APP},
+      {"appManagementMorePermissionsLabelChromeApp",
+       IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_CHROME_APP},
       {"appManagementNoAppsFound", IDS_APP_MANAGEMENT_NO_APPS_FOUND},
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
-      {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+      {"appManagementNotificationsLabel",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_TITLE
+                        : IDS_APP_MANAGEMENT_NOTIFICATIONS},
       {"appManagementParentAppPermissionExplanation",
        IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION},
       {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
@@ -415,18 +429,25 @@ AppsSection::~AppsSection() {
 }
 
 void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
       {"appManagementTitle", IDS_SETTINGS_APPS_LINK_TEXT},
       {"appNotificationsTitle", IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT},
       {"doNotDisturbToggleTitle",
        IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE},
       {"doNotDisturbToggleDescription",
-       IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION
+           : IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
       {"appNotificationsLinkToBrowserSettingsDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
       {"appNotificationsCountDescription",
-       IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION
+           : IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
       {"appNotificationsDoNotDisturbDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT},
       {"appBadgingToggleLabel", IDS_SETTINGS_APP_BADGING_TOGGLE_LABEL},
@@ -654,8 +675,14 @@ void AppsSection::AddPluginVmLoadTimeData(
 }
 
 void AppsSection::AddOnStartupTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"onStartupTitle", IDS_OS_SETTINGS_ON_STARTUP_TITLE},
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"onStartupTitle", kIsRevampEnabled
+                             ? IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE
+                             : IDS_OS_SETTINGS_ON_STARTUP_TITLE},
+      {"onStartupDescription", IDS_OS_SETTINGS_REVAMP_ON_STARTUP_DESCRIPTION},
       {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
       {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
       {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},

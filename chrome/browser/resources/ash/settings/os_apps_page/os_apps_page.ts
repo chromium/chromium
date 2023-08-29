@@ -36,7 +36,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {androidAppsVisible, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -180,6 +180,14 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
           Setting.kRestoreAppsAndPages,
         ]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -198,6 +206,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;
   private showStartup_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();
@@ -325,6 +334,11 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         this.i18n(
             'appNotificationsCountDescription',
             this.appsWithNotifications_.length);
+  }
+
+  private getStartupSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ? this.i18n('onStartupDescription') :
+                                             null;
   }
 }
 

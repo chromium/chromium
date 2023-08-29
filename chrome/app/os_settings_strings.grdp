@@ -5591,17 +5591,38 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_APPS_LINK_TEXT" desc="The label for the button which links to the App Management page.">
     Manage your apps
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_TITLE" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
+    Allow notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_ANDROID" desc="Label for a link to more settings and permissions for an app with type Android.">
+    More Android settings and permissions
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_WEB_APP" desc="Label for a link to more settings and permissions for an app with type web app.">
+    More web app settings and permissions
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_CHROME_APP" desc="Label for a link to more settings and permissions for an app with type Chrome app.">
+    More Chrome app settings and permissions
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_OPEN_IN_APP_TITLE" desc="Label for the intent sharing option to open in a specified app.">
+    Open in <ph name="APP_NAME">$1<ex>Calculator</ex></ph> app
+  </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
     Notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION" desc="The description for the settings row button in the App section of OS Settings which links to the App Notifications page.">
+    Manage app notifications, Do not disturb, and app badging
   </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of ChromeOS apps installed.">
     <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
   </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do Not Disturb is on.">
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do not disturb is on.">
     Do not disturb enabled
   </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications DoNotDisturb toggle that lets the user silence all app notifications.">
     Do not disturb
+  </message>
+   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
+    Notifications won't pop up on the screen. You can still see notifications by clicking the Do not disturb icon on the bottom right of your screen.
   </message>
    <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
     When turned on, all notifications will be silenced
@@ -5878,6 +5899,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <!-- On Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
     Restore apps on startup
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
+    Restore session on startup
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_ON_STARTUP_DESCRIPTION" desc="The description of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
+    After restarting, continue where you left off with apps, websites, and open windows
   </message>
   <message name="IDS_OS_SETTINGS_ON_STARTUP_ALWAYS" desc="Label for the dropdown menu which enables the always restore apps and pages option on startup.">
     Always restore

@@ -66,7 +66,7 @@
   <app-management-more-permissions-item id="moreSettings"
       hidden$="[[hasReadOnlyPermissions_]]"
       class="permission-card-row separated-row" app="[[app_]]"
-      more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
+      more-permissions-label="[[getAppManagementMorePermissionsLabel_()]]">
   </app-management-more-permissions-item>
   <app-management-supported-links-item
       id="supportedLinksSetting"

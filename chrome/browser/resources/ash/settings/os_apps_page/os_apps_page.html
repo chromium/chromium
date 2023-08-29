@@ -67,17 +67,33 @@
         </template>
       </template>
       <template is="dom-if" if="[[showStartup_]]">
-        <div class="settings-box">
-          <div class="start settings-box-text" aria-hidden="true">
+        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+          <div class="settings-box two-line">
+            <div class="settings-box-text start" aria-hidden="true">
               $i18n{onStartupTitle}
+              <div class="secondary">[[getStartupSublabel_()]]</div>
+            </div>
+            <settings-dropdown-menu id="onStartupDropdown"
+                label="$i18n{onStartupTitle}"
+                pref="{{prefs.settings.restore_apps_and_pages}}"
+                menu-options="[[onStartupOptions_]]"
+                deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+            </settings-dropdown-menu>
           </div>
-          <settings-dropdown-menu id="onStartupDropdown"
-              label="$i18n{onStartupTitle}"
-              pref="{{prefs.settings.restore_apps_and_pages}}"
-              menu-options="[[onStartupOptions_]]"
-              deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
-          </settings-dropdown-menu>
-        </div>
+        </template>
+        <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+          <div class="settings-box">
+            <div class="start settings-box-text" aria-hidden="true">
+                $i18n{onStartupTitle}
+            </div>
+            <settings-dropdown-menu id="onStartupDropdown"
+                label="$i18n{onStartupTitle}"
+                pref="{{prefs.settings.restore_apps_and_pages}}"
+                menu-options="[[onStartupOptions_]]"
+                deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+            </settings-dropdown-menu>
+          </div>
+        </template>
       </template>
     </settings-card>
   </div>

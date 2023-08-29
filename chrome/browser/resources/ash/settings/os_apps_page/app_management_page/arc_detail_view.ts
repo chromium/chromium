@@ -21,6 +21,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
+
 import {getTemplate} from './arc_detail_view.html.js';
 import {AppManagementStoreMixin} from './store_mixin.js';
 
@@ -95,6 +97,14 @@ export class AppManagementArcDetailViewElement extends
             loadTimeData.getBoolean('appManagementArcReadOnlyPermissions'),
         readOnly: true,
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -102,6 +112,7 @@ export class AppManagementArcDetailViewElement extends
   private apps_: AppMap;
   private permissionDefinitions_: PermissionDefinition[];
   private hasReadOnlyPermissions_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -127,6 +138,12 @@ export class AppManagementArcDetailViewElement extends
       }
     }
     return true;
+  }
+
+  private getAppManagementMorePermissionsLabel_(): string {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('appManagementMorePermissionsLabelAndroidApp') :
+        this.i18n('appManagementMorePermissionsLabel');
   }
 }
 
