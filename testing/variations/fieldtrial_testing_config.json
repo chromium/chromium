@@ -6997,25 +6997,6 @@
             ]
         }
     ],
-    "GoogleLensHybridIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableLensInHomeScreenWidget",
-                        "EnableLensInKeyboard",
-                        "EnableLensInNTP",
-                        "LensMobileWebDirectUpload",
-                        "kNewNTPOmniboxLayout"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleLensTabletIntegration": [
         {
             "platforms": [
