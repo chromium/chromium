@@ -87,7 +87,7 @@ cbor::Value SerializeInterestGroup(base::Time start_time,
               blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
     }
     if (group.interest_group.ad_components) {
-      group_obj[cbor::Value("adComponents")] = SerializeAds(
+      group_obj[cbor::Value("components")] = SerializeAds(
           *group.interest_group.ad_components,
           group.interest_group.auction_server_request_flags.Has(
               blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
