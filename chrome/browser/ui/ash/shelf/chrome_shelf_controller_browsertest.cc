@@ -1391,12 +1391,11 @@ class FilesManagerExtensionTest : public ShelfPlatformAppBrowserTest {
 IN_PROC_BROWSER_TEST_F(FilesManagerExtensionTest, VerifyFirstItem) {
   const std::string top_level_item_label("New window");
 
-  CreateAppShortcutItem(ash::ShelfID(file_manager::kFileManagerSwaAppId));
-
-  const int item_count = shelf_model()->item_count();
-  ash::ShelfItem item = shelf_model()->items()[item_count - 1];
+  auto shelf_id =
+      CreateAppShortcutItem(ash::ShelfID(file_manager::kFileManagerSwaAppId));
+  const ash::ShelfItem* item = shelf_model()->ItemByID(shelf_id);
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  auto menu = ShelfContextMenu::Create(controller_, &item, display_id);
+  auto menu = ShelfContextMenu::Create(controller_, item, display_id);
 
   // Fetch |extension|'s shelf context menu model and verify that the top level
   // menu item should be the first one.
