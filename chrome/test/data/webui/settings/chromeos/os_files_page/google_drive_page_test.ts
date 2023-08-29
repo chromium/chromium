@@ -444,7 +444,8 @@ suite('<settings-google-drive-subpage>', function() {
         });
 
     test(
-        'attempting to enable bulk pinning when no free space shows dialog',
+        'attempting to enable bulk pinning when' +
+            'unknown error occurs show dialog',
         async () => {
           page.setPrefValue('drivefs.bulk_pinning_enabled', false);
 
