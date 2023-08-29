@@ -44,6 +44,10 @@ class SlimLayerTest : public testing::TestWithParam<bool> {
     }
   }
 
+  static bool HasNonTrivialMaskFilterInfo(const Layer* layer) {
+    return layer->HasNonTrivialMaskFilterInfo();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -149,10 +153,34 @@ TEST_P(SlimLayerTest, LayerProperties) {
   filters.push_back(Filter::CreateBrightness(0.5f));
   layer->SetFilters(std::move(filters));
 
-  EXPECT_FALSE(layer->HasRoundedCorner());
+  if (GetParam()) {
+    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
+  }
   layer->SetRoundedCorner(gfx::RoundedCornersF(50));
   EXPECT_EQ(layer->corner_radii(), gfx::RoundedCornersF(50));
-  EXPECT_TRUE(layer->HasRoundedCorner());
+  if (GetParam()) {
+    EXPECT_TRUE(HasNonTrivialMaskFilterInfo(layer.get()));
+  }
+  layer->SetRoundedCorner(gfx::RoundedCornersF());
+  if (GetParam()) {
+    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
+  }
+
+  gfx::LinearGradient gradient;
+  gradient.AddStep(0.0f, 0);
+  gradient.AddStep(1.0f, 255);
+  if (GetParam()) {
+    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
+  }
+  layer->SetGradientMask(gradient);
+  EXPECT_EQ(layer->gradient_mask(), gradient);
+  if (GetParam()) {
+    EXPECT_TRUE(HasNonTrivialMaskFilterInfo(layer.get()));
+  }
+  layer->SetGradientMask(gfx::LinearGradient());
+  if (GetParam()) {
+    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
+  }
 }
 
 TEST_P(SlimLayerTest, SurfaceLayerProperties) {

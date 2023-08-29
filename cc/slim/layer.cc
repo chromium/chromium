@@ -413,9 +413,24 @@ const gfx::RoundedCornersF& Layer::corner_radii() const {
   return cc_layer() ? cc_layer()->corner_radii() : rounded_corners_;
 }
 
-bool Layer::HasRoundedCorner() const {
-  return cc_layer() ? cc_layer()->HasRoundedCorner()
-                    : !rounded_corners_.IsEmpty();
+void Layer::SetGradientMask(const gfx::LinearGradient& gradient_mask) {
+  if (cc_layer()) {
+    cc_layer()->SetGradientMask(gradient_mask);
+    return;
+  }
+  if (gradient_mask_ == gradient_mask) {
+    return;
+  }
+  gradient_mask_ = gradient_mask;
+  NotifySubtreeChanged();
+}
+
+const gfx::LinearGradient& Layer::gradient_mask() const {
+  return cc_layer() ? cc_layer()->gradient_mask() : gradient_mask_;
+}
+
+bool Layer::HasNonTrivialMaskFilterInfo() const {
+  return !rounded_corners_.IsEmpty() || !gradient_mask_.IsEmpty();
 }
 
 bool Layer::masks_to_bounds() const {

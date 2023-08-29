@@ -16,6 +16,7 @@
 #include "cc/slim/frame_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -197,14 +198,26 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // is applied to the layer and its subtree. Setting this to non-empty also has
   // similar effect as `SetMasksToBounds(true)` that the subtree is clipped to
   // its bounds (with rounded corner).
+  // This is stored in the same structure as `SetGradientMask`. It is more
+  // efficient to avoid setting multiple rounded corner or linear gradient in
+  // the same subtree.
   void SetRoundedCorner(const gfx::RoundedCornersF& corner_radii);
   const gfx::RoundedCornersF& corner_radii() const;
-  // Returns true if any of the corner has a non-zero radius set.
-  bool HasRoundedCorner() const;
+
+  // Set the linear gradient mask, applied to this layer's bounds. It is applied
+  // to the layer and its subtree. Setting this to non-empty also has similar
+  // effect as `SetMasksToBounds(true)` that the subtree is clipped to its
+  // bounds.
+  // This is stored in the same structure as `SetRoundedCorner`. It is more
+  // efficient to avoid setting multiple rounded corner or linear gradient in
+  // the same subtree.
+  void SetGradientMask(const gfx::LinearGradient& gradient_mask);
+  const gfx::LinearGradient& gradient_mask() const;
 
  protected:
   friend class LayerTreeCcWrapper;
   friend class LayerTreeImpl;
+  friend class SlimLayerTest;
 
   explicit Layer(scoped_refptr<cc::Layer> cc_layer);
   virtual ~Layer();
@@ -214,6 +227,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   absl::optional<gfx::Transform> ComputeTransformFromParent() const;
   bool HasFilters() const;
   cc::FilterOperations GetFilters() const;
+  bool HasNonTrivialMaskFilterInfo() const;
   // This method counts this layer, This is different from
   // `NumDescendantsThatDrawContent` which counts descendent layers only.
   int GetNumDrawingLayersInSubtree() const;
@@ -284,6 +298,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
   std::vector<Filter> filters_;
   gfx::RoundedCornersF rounded_corners_;
+  gfx::LinearGradient gradient_mask_;
 
   SkColor4f background_color_ = SkColors::kTransparent;
   float opacity_ = 1.0f;

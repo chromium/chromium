@@ -35,6 +35,7 @@
 #include "components/viz/test/draw_quad_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -2116,6 +2117,127 @@ TEST_F(SlimLayerTreeCompositorFrameTest, RoundedCornerOnParentAndChild) {
     EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
     EXPECT_EQ(shared_quad_state->mask_filter_info.rounded_corner_bounds(),
               expected_rounded_conrer_in_target);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, GradientMaskWithChild) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  gfx::LinearGradient gradient;
+  gradient.AddStep(0.0f, 255);
+  gradient.AddStep(1.0f, 0);
+
+  auto gradient_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  gradient_layer->SetGradientMask(gradient);
+  gradient_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
+  root_layer->AddChild(gradient_layer);
+
+  auto child = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kBlue);
+  child->SetPosition(gfx::PointF(10.0f, 10.0f));
+  gradient_layer->AddChild(child);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(
+          AllOf(
+              viz::IsSolidColorQuad(SkColors::kBlue),
+              viz::HasRect(gfx::Rect(50, 50)),
+              viz::HasVisibleRect(gfx::Rect(40, 40)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(20.0f, 20.0f))),
+          AllOf(
+              viz::IsSolidColorQuad(SkColors::kRed),
+              viz::HasRect(gfx::Rect(50, 50)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(10.0f, 10.0f))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGray), viz::HasRect(viewport_),
+                viz::HasVisibleRect(viewport_),
+                viz::HasTransform(gfx::Transform()))));
+  {
+    auto* quad = pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(shared_quad_state->mask_filter_info.gradient_mask(), gradient);
+  }
+
+  {
+    auto* quad = pass->quad_list.ElementAt(1u);
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(shared_quad_state->mask_filter_info.gradient_mask(), gradient);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, GradientMaskOnParentAndChild) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  gfx::LinearGradient parent_gradient;
+  parent_gradient.AddStep(0.0f, 255);
+  parent_gradient.AddStep(1.0f, 0);
+  auto parent = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  parent->SetGradientMask(parent_gradient);
+  parent->SetPosition(gfx::PointF(10.0f, 10.0f));
+  root_layer->AddChild(parent);
+
+  gfx::LinearGradient child_gradient;
+  child_gradient.AddStep(0.0f, 0);
+  child_gradient.AddStep(1.0f, 255);
+  auto child = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kBlue);
+  child->SetPosition(gfx::PointF(10.0f, 10.0f));
+  child->SetGradientMask(child_gradient);
+  parent->AddChild(child);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 2u);
+
+  auto& child_pass = frame.render_pass_list.front();
+  ASSERT_THAT(child_pass->quad_list,
+              ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                                viz::HasRect(gfx::Rect(50, 50)),
+                                viz::HasVisibleRect(gfx::Rect(40, 40)),
+                                viz::HasTransform(gfx::Transform()))));
+  {
+    auto* quad = child_pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(shared_quad_state->mask_filter_info.gradient_mask(),
+              child_gradient);
+  }
+
+  auto& root_pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      root_pass->quad_list,
+      ElementsAre(
+          AllOf(
+              viz::IsCompositorRenderPassQuad(child_pass->id),
+              viz::HasRect(gfx::Rect(40, 40)),
+              viz::HasVisibleRect(gfx::Rect(40, 40)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(20.0f, 20.0f))),
+          AllOf(
+              viz::IsSolidColorQuad(SkColors::kRed),
+              viz::HasRect(gfx::Rect(50, 50)),
+              viz::HasTransform(gfx::Transform::MakeTranslation(10.0f, 10.0f))),
+          AllOf(viz::IsSolidColorQuad(SkColors::kGray), viz::HasRect(viewport_),
+                viz::HasVisibleRect(viewport_),
+                viz::HasTransform(gfx::Transform()))));
+  {
+    auto* quad = root_pass->quad_list.front();
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(shared_quad_state->mask_filter_info.gradient_mask(),
+              parent_gradient);
+  }
+
+  {
+    auto* quad = root_pass->quad_list.ElementAt(1u);
+    auto* shared_quad_state = quad->shared_quad_state;
+    EXPECT_TRUE(shared_quad_state->mask_filter_info.HasGradientMask());
+    EXPECT_EQ(shared_quad_state->mask_filter_info.gradient_mask(),
+              parent_gradient);
   }
 }
 
