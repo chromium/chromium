@@ -53,7 +53,6 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
 absl::optional<base::Value> ExtractDataElementsFromText(
     const std::string& text,
     NSTextCheckingType handled_types,
-    ukm::SourceId source_id,
     const base::FilePath& model_path) {
   return absl::nullopt;
 }

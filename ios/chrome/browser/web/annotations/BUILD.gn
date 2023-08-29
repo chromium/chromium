@@ -26,6 +26,7 @@ source_set("annotations") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
 
