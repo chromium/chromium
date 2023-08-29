@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function assert<T>(predicate: T): asserts predicate {
+export function assert<T>(predicate: T, message?: string): asserts predicate {
   if (!predicate) {
-    throw new Error('Internal assertion failed.');
+    throw new Error(message ?? 'Internal assertion failed.');
   }
 }

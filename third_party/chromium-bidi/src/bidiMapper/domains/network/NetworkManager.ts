@@ -43,6 +43,14 @@ export class NetworkManager {
     return this.#cdpTarget;
   }
 
+  #forgetNetworkRequest(requestId: Network.Request): void {
+    this.#networkStorage.deleteRequest(requestId);
+  }
+
+  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
+    return this.#networkStorage.getRequest(requestId);
+  }
+
   static create(
     cdpTarget: CdpTarget,
     networkStorage: NetworkStorage
@@ -111,29 +119,17 @@ export class NetworkManager {
         networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onLoadingFailedEvent(params);
-        networkManager.#forgetRequest(params.requestId);
+        networkManager.#forgetNetworkRequest(params.requestId);
       }
     );
 
     cdpTarget.cdpClient.on(
       'Network.loadingFinished',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        networkManager.#forgetRequest(params.requestId);
+        networkManager.#forgetNetworkRequest(params.requestId);
       }
     );
 
     return networkManager;
-  }
-
-  #forgetRequest(requestId: Network.Request): void {
-    const request = this.#networkStorage.requestMap.get(requestId);
-    if (request) {
-      request.dispose();
-      this.#networkStorage.requestMap.delete(requestId);
-    }
-  }
-
-  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
-    return this.#networkStorage.requestMap.get(requestId);
   }
 }

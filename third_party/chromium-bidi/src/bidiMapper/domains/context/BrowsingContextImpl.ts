@@ -65,6 +65,8 @@ export class BrowsingContextImpl {
         DOMContentLoaded: new Deferred<Protocol.Page.LifecycleEventEvent>(),
         load: new Deferred<Protocol.Page.LifecycleEventEvent>(),
       },
+      frameStartedLoading:
+        new Deferred<Protocol.Page.FrameStartedLoadingEvent>(),
     },
   };
 
@@ -588,7 +590,7 @@ export class BrowsingContextImpl {
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
     try {
-      void new URL(url);
+      new URL(url);
     } catch {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
@@ -596,11 +598,13 @@ export class BrowsingContextImpl {
     await this.targetUnblocked();
 
     // TODO: handle loading errors.
-    const cdpNavigateResult: Protocol.Page.NavigateResponse =
-      await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
+    const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.navigate',
+      {
         url,
         frameId: this.id,
-      });
+      }
+    );
 
     if (cdpNavigateResult.errorText) {
       throw new UnknownErrorException(cdpNavigateResult.errorText);
@@ -631,7 +635,8 @@ export class BrowsingContextImpl {
 
     return {
       navigation: cdpNavigateResult.loaderId ?? null,
-      url,
+      // Url can change due to redirect get the latest one.
+      url: wait === BrowsingContext.ReadinessState.None ? url : this.#url,
     };
   }
 

@@ -58,11 +58,6 @@ export class NetworkStorage {
     this.#blockedRequestMap = new Map();
   }
 
-  // XXX: Replace getters with custom operations, follow suit of Browsing Context Storage.
-  get requestMap() {
-    return this.#requestMap;
-  }
-
   disposeRequestMap() {
     for (const request of this.#requestMap.values()) {
       request.dispose();
@@ -133,6 +128,19 @@ export class NetworkStorage {
         return param.phases.includes(Network.InterceptPhase.AuthRequired);
       }),
     };
+  }
+
+  getRequest(id: Network.Request) {
+    return this.#requestMap.get(id);
+  }
+
+  deleteRequest(id: Network.Request) {
+    const request = this.#requestMap.get(id);
+    if (request) {
+      request.dispose();
+    }
+
+    this.#requestMap.delete(id);
   }
 
   /** Converts a URL pattern from the spec to a CDP URL pattern. */
