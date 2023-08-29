@@ -290,7 +290,7 @@ class TimePrinter(object):
     timet_offset = gdb.parse_and_eval('base::Time::kTimeTToMicrosecondsOffset')
     self._datetime = (
         datetime.datetime.fromtimestamp(0) + datetime.timedelta(
-            microseconds=int(val['us_']['value']) - int(timet_offset)))
+            microseconds=int(val['us_']['value_']) - int(timet_offset)))
 
   def datetime(self):
     return self._datetime
