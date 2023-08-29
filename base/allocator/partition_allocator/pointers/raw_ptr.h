@@ -915,12 +915,6 @@ struct RawPtrGlobalSettings {
     internal::BackupRefPtrGlobalSettings::EnableExperimentalAsh();
 #endif
   }
-
-  static void DisableExperimentalAshForTest() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
-#endif
-  }
 };
 
 }  // namespace base
