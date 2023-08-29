@@ -1,65 +1,35 @@
 <!DOCTYPE html>
-<style>
+<script src="../../resources/testharness.js"></script>
+<title>Tests that overflow scrolls are animated.</title>
 
-#container {
-  width: 200px;
-  height: 200px;
-  overflow: scroll;
-}
-
-#content {
-  width: 750px;
-  height: 10000px;
-  background-color: blue;
-}
-
-</style>
-<script src="../../resources/js-test.js"></script>
-<script src="../../resources/run-after-layout-and-paint.js"></script>
-<div id="container">
-  <div id="content"></div>
+<div id="container" style="overflow: scroll;width: 200px;height: 200px;">
+  <div id="content" style="width: 750px;height: 10000px;background-color: blue;"></div>
 </div>
-<div id="console"></div>
+
 <script>
-
-jsTestIsAsync = true;
-element = document.getElementById("container");
-
-var prevScrollTop;
-var scrollStart;
-
-function runTest() {
-    internals.settings.setScrollAnimatorEnabled(true);
-
-    element.addEventListener("scroll", onElementScroll);
-
-    runAfterLayoutAndPaint(function() {
-        // Give the container focus.
-        eventSender.mouseMoveTo(100, 100);
-        eventSender.mouseDown();
-        eventSender.mouseUp();
-
-        eventSender.keyDown('End');
-    });
+if (!window.eventSender || !window.internals || !window.testRunner) {
+  assert_unreached("This test must be run in the test harness");
 }
+internals.settings.setScrollAnimatorEnabled(true);
+testRunner.waitUntilDone();
+testRunner.dumpAsText();
 
-function onElementScroll() {
-    if (prevScrollTop === undefined) {
-        shouldNotBe("element.scrollTop",
-                    "element.scrollHeight - element.clientHeight");
-        shouldBeGreaterThan("element.scrollTop", "0");
-        prevScrollTop = element.scrollTop;
-    } else {
-        shouldBeGreaterThan("element.scrollTop", "prevScrollTop");
-        finishJSTest();
-    }
-}
+const container = document.getElementById("container");
 
-description("Tests that overflow scrolls are animated.");
+let prevScrollTop;
+container.addEventListener("scroll", function onElementScroll() {
+  if (prevScrollTop === undefined) {
+    assert_not_equals(container.scrollTop,container.scrollHeight - container.clientHeight);
+    prevScrollTop = container.scrollTop;
+  } else {
+    assert_true(container.scrollTop > prevScrollTop);
+    console.log('PASS');
+    testRunner.notifyDone();
+  }
+});
 
-if (window.eventSender)
-    runTest();
-else
-    debug("FAIL: This test requires window.eventSender.");
-
+eventSender.mouseMoveTo(100, 100);
+eventSender.mouseDown();
+eventSender.mouseUp();
+eventSender.keyDown('End');
 </script>

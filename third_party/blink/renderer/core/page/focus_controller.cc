@@ -1505,8 +1505,7 @@ int FocusController::AdjustedTabIndex(const Element& element) {
   }
   bool default_focusable =
       element.SupportsFocus() ||
-      (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-       IsScrollableNode(&element));
+      element.IsScrollableContainerThatShouldBeKeyboardFocusable();
   return element.GetIntegralAttribute(html_names::kTabindexAttr,
                                       default_focusable ? 0 : -1);
 }

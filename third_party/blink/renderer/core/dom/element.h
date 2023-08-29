@@ -784,22 +784,39 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                       const FocusOptions*);
   virtual void blur();
 
-  // Whether this element can receive focus at all. Most elements are not
-  // focusable but some elements, such as form controls and links, are. Unlike
-  // layoutObjectIsFocusable(), this method may be called when layout is not up
-  // to date, so it must not use the layoutObject to determine focusability.
+  // SupportsFocus is true if the element is *capable* of being focused. An
+  // element supports focus if, e.g. it has a tabindex attribute, or it is
+  // editable, or other conditions. Note that the element might *support* focus
+  // while not *being focusable*, for example if the element is disconnected
+  // from the document. This method can be called when layout is not clean, and
+  // it will *not* update layout itself.
   virtual bool SupportsFocus() const;
-  // IsFocusable(), IsKeyboardFocusable(), and IsMouseFocusable() check
-  // whether the element can actually be focused. Callers should ensure
-  // ComputedStyle is up to date;
-  // e.g. by calling Document::UpdateStyleAndLayoutTree().
-  bool IsFocusable() const;
-  virtual bool HasNoFocusableChildren() const;
-  virtual bool IsKeyboardFocusable() const;
+
+  // IsMouseFocusable is true if the element SupportsFocus(), and is currently
+  // focusable using the mouse. This method can be called when layout is not
+  // clean, but the method might trigger a lifecycle update in that case. This
+  // method will not trigger a lifecycle update if layout is already clean.
   virtual bool IsMouseFocusable() const;
+
+  // IsKeyboardFocusable is true for the subset of mouse focusable elements (for
+  // which IsMouseFocusable() is true) that are in the tab cycle. This method
+  // can be called when layout is not clean, but the method might trigger a
+  // lifecycle update in that case. This method will not trigger a lifecycle
+  // update if layout is already clean.
+  virtual bool IsKeyboardFocusable() const;
+
+  // An element is focusable iff it is mouse focusable.
+  bool IsFocusable() const { return IsMouseFocusable(); }
+
+  // This checks whether the element is a scrollable container that should be
+  // made keyboard focusable. Note that this is slow, because it must do a tree
+  // walk to look for descendant focusable nodes.
+  bool IsScrollableContainerThatShouldBeKeyboardFocusable() const;
+
   // IsBaseElementFocusable() is used by some subclasses to check if the base
   // element is focusable. This is used to avoid infinite recursion.
-  bool IsBaseElementFocusable() const;
+  bool IsBaseElementFocusable() const { return Element::IsMouseFocusable(); }
+
   bool IsFocusedElementInDocument() const;
   Element* AdjustedFocusedElementInTreeScope() const;
   bool IsAutofocusable() const;

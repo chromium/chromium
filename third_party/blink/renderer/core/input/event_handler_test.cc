@@ -3187,7 +3187,7 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScroll) {
       </style>
       <body>
         <p id='log'></p> <br>
-        <div id="scroller">
+        <div id="scroller" tabindex=0>
           <div id="spacer"></div>
         </div>
       </body>
@@ -3259,7 +3259,7 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
       </style>
       <body>
         <p id='log'></p> <br>
-        <div id="scroller">
+        <div id="scroller" tabindex=0>
           <div id="spacer"></div>
         </div>
       </body>
@@ -3270,6 +3270,7 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
         });
       </script>
       )HTML");
+
   Compositor().BeginFrame();
   WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
                      WebInputEvent::kNoModifiers,
@@ -3330,7 +3331,7 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
       </style>
       <body>
         <p id='log'></p> <br>
-        <div id="scroller">
+        <div id="scroller" tabindex=0>
           <div id="spacer"></div>
         </div>
       </body>

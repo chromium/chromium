@@ -83,7 +83,6 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   friend class MediaControlInputElementTest;
   friend class MediaControlPopupMenuElementTest;
 
-  bool IsMouseFocusable() const override;
   bool IsMediaControlElement() const final;
 
   // Returns a string representation of the media control element. Used for

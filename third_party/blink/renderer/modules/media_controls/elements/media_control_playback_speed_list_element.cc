@@ -181,7 +181,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
                                       keywords::kTrue);
     checked_item_ = playback_speed_item;
   }
-  // Allows to focus the list entry instead of the button.
+  // Allows to focus the list entry label instead of the checkbox.
   playback_speed_item->setTabIndex(0);
   playback_speed_item_input->setTabIndex(-1);
 

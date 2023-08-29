@@ -207,6 +207,12 @@ void MediaControlPopupMenuElement::Trace(Visitor* visitor) const {
 MediaControlPopupMenuElement::MediaControlPopupMenuElement(
     MediaControlsImpl& media_controls)
     : MediaControlDivElement(media_controls) {
+  // When clicking the scroll bar, chrome will find its first focusable parent
+  // and focus on it. In order to prevent popup menu from losing focus (which
+  // will close the menu), we make the popup menu focusable.
+  // TODO(media) There is currently no test for this behavior.
+  setTabIndex(0);
+
   setAttribute(html_names::kPopoverAttr, keywords::kAuto);
   SetElementAttribute(html_names::kAnchorAttr, PopupAnchor());
   SetIsWanted(false);

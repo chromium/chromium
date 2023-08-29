@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
@@ -5390,25 +5391,6 @@ void Element::blur() {
   }
 }
 
-bool Element::SupportsFocus() const {
-  // FIXME: supportsFocus() can be called when layout is not up to date.
-  // Logic that deals with the layoutObject should be moved to
-  // layoutObjectIsFocusable().
-  // But supportsFocus must return true when the element is editable, or else
-  // it won't be focusable. Furthermore, supportsFocus cannot just return true
-  // always or else tabIndex() will change for all HTML elements.
-  if (DelegatesFocus()) {
-    return false;
-  }
-  auto has_toggle_trigger = [&]() -> bool {
-    const ComputedStyle* style = GetComputedStyle();
-    return style && style->ToggleTrigger();
-  };
-  return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
-         IsRootEditableElementWithCounting(*this) ||
-         SupportsSpatialNavigationFocus() || has_toggle_trigger();
-}
-
 bool Element::SupportsSpatialNavigationFocus() const {
   // This function checks whether the element satisfies the extended criteria
   // for the element to be focusable, introduced by spatial navigation feature,
@@ -5453,14 +5435,6 @@ bool Element::SupportsSpatialNavigationFocus() const {
           HasEventListeners(event_type_names::kFocusout));
 }
 
-bool Element::IsBaseElementFocusable() const {
-  return Element::IsMouseFocusable() || Element::IsKeyboardFocusable();
-}
-
-bool Element::IsFocusable() const {
-  return IsMouseFocusable() || IsKeyboardFocusable();
-}
-
 bool Element::IsFocusableStyleAfterUpdate() const {
   // In order to check focusable style, we use the existence of LayoutObjects
   // as a proxy for determining whether the element would have a display mode
@@ -5490,7 +5464,16 @@ bool Element::IsFocusableStyleAfterUpdate() const {
   return IsFocusableStyle();
 }
 
-bool Element::HasNoFocusableChildren() const {
+// This can be slow, because it can require a tree walk. It might be
+// a good idea to cache this bit on the element to avoid having to
+// recompute it. That would require marking that bit dirty whenever
+// a node in the subtree was mutated, or when styles for the subtree
+// were recomputed.
+bool Element::IsScrollableContainerThatShouldBeKeyboardFocusable() const {
+  if (!RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() ||
+      !IsScrollableNode(this)) {
+    return false;
+  }
   for (Node* node = FlatTreeTraversal::FirstChild(*this); node;
        node = FlatTreeTraversal::Next(*node, this)) {
     if (Element* element = DynamicTo<Element>(node)) {
@@ -5503,15 +5486,41 @@ bool Element::HasNoFocusableChildren() const {
 }
 
 bool Element::IsKeyboardFocusable() const {
-  return isConnected() && IsFocusableStyleAfterUpdate() &&
-         ((SupportsFocus() &&
-           GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0) ||
-          (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-           IsScrollableNode(this) && HasNoFocusableChildren()));
+  if (!Element::IsMouseFocusable()) {
+    return false;
+  }
+  // Note that IsScrollableContainerThatShouldBeKeyboardFocusable() will get
+  // called twice, once in IsMouseFocusable (via SupportsFocus) and the other
+  // here. Note that IsScrollableContainerThatShouldBeKeyboardFocusable is slow.
+  return GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0 ||
+         IsScrollableContainerThatShouldBeKeyboardFocusable();
 }
 
 bool Element::IsMouseFocusable() const {
   return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
+}
+
+bool Element::SupportsFocus() const {
+  // FIXME: supportsFocus() can be called when layout is not up to date.
+  // Logic that deals with the layoutObject should be moved to
+  // layoutObjectIsFocusable().
+  // But supportsFocus must return true when the element is editable, or else
+  // it won't be focusable. Furthermore, supportsFocus cannot just return true
+  // always or else tabIndex() will change for all HTML elements.
+  DocumentLifecycle::DisallowTransitionScope scope(GetDocument().Lifecycle());
+  if (DelegatesFocus()) {
+    return false;
+  }
+  auto has_toggle_trigger = [&]() -> bool {
+    const ComputedStyle* style = GetComputedStyle();
+    return style && style->ToggleTrigger();
+  };
+
+  return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
+         IsRootEditableElementWithCounting(*this) ||
+         // TODO(crbug.com/1444450) This breaks a11y:
+         // IsScrollableContainerThatShouldBeKeyboardFocusable() ||
+         SupportsSpatialNavigationFocus() || has_toggle_trigger();
 }
 
 bool Element::IsAutofocusable() const {

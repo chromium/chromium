@@ -1,11 +1,2 @@
-Tests that overflow scrolls are animated.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS element.scrollTop is not element.scrollHeight - element.clientHeight
-PASS element.scrollTop is > 0
-PASS element.scrollTop is > prevScrollTop
-PASS successfullyParsed is true
-
-TEST COMPLETE
+CONSOLE MESSAGE: PASS
 

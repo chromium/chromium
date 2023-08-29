@@ -727,7 +727,14 @@ bool HTMLMediaElement::SupportsFocus() const {
 }
 
 bool HTMLMediaElement::IsMouseFocusable() const {
-  return !IsFullscreen() && SupportsFocus();
+  if (!SupportsFocus()) {
+    return false;
+  }
+  return !IsFullscreen() || HTMLElement::IsMouseFocusable();
+}
+
+bool HTMLMediaElement::IsKeyboardFocusable() const {
+  return IsMouseFocusable();
 }
 
 void HTMLMediaElement::ParseAttribute(
