@@ -1318,10 +1318,6 @@ inline constexpr char kUseAshProxy[] = "lacros.proxy.use_ash_proxy";
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Linux specific preference on whether we should match the system theme.
-// TODO(crbug.com/1476487): The pref `kUsesSystemThemeDeprecated` is still in
-// use. Please remove once code is cleaned up.
-inline constexpr char kUsesSystemThemeDeprecated[] =
-    "extensions.theme.use_system";
 inline constexpr char kSystemTheme[] = "extensions.theme.system_theme";
 #endif
 inline constexpr char kCurrentThemePackFilename[] = "extensions.theme.pack";

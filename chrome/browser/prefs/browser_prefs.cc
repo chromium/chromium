@@ -1042,13 +1042,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_LINUX)
-  // Deprecated 08/2022.
-  // TODO(crbug.com/1476487): The pref `kUsesSystemThemeDeprecated` is still in
-  // use. Please remove once code is cleaned up.
-  registry->RegisterBooleanPref(prefs::kUsesSystemThemeDeprecated, false);
-#endif
-
   // Deprecated 09/2022
   registry->RegisterBooleanPref(kPrivacySandboxFirstPartySetsDataAccessAllowed,
                                 true);
@@ -2138,20 +2131,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // TODO(crbug.com/1476489): Remove when unit test code is updated.
   profile_prefs->ClearPref(kTokenServiceDiceCompatible);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-#if BUILDFLAG(IS_LINUX)
-  // Added 08/2022.
-  // TODO(crbug.com/1476487): The pref `kUsesSystemThemeDeprecated` is still in
-  // use. Please remove once code is cleaned up.
-  if (profile_prefs->HasPrefPath(prefs::kUsesSystemThemeDeprecated)) {
-    auto migrated_theme =
-        profile_prefs->GetBoolean(prefs::kUsesSystemThemeDeprecated)
-            ? ui::SystemTheme::kGtk
-            : ui::SystemTheme::kDefault;
-    profile_prefs->SetInteger(prefs::kSystemTheme,
-                              static_cast<int>(migrated_theme));
-  }
-  profile_prefs->ClearPref(prefs::kUsesSystemThemeDeprecated);
-#endif
 
   // Added 09/2022.
   profile_prefs->ClearPref(kPrivacySandboxFirstPartySetsDataAccessAllowed);

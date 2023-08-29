@@ -211,8 +211,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kPolicyThemeColor] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
 #if BUILDFLAG(IS_LINUX)
-  (*s_allowlist)[::prefs::kUsesSystemThemeDeprecated] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kSystemTheme] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
 #endif
