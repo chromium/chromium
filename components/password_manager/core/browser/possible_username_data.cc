@@ -9,6 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
 
@@ -47,7 +48,12 @@ PossibleUsernameData::PossibleUsernameData(const PossibleUsernameData&) =
 PossibleUsernameData::~PossibleUsernameData() = default;
 
 bool PossibleUsernameData::IsStale() const {
-  return base::Time::Now() - last_change > kPossibleUsernameExpirationTimeout;
+  return base::Time::Now() - last_change >
+         (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kUsernameFirstFlowWithIntermediateValues)
+              ? kPossibleUsernameExtendedExpirationTimeout
+              : kPossibleUsernameExpirationTimeout);
 }
 
 bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
