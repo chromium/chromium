@@ -160,7 +160,7 @@ class blinkKURLPrinter(StringPrinter):
     "Print a blink::KURL"
 
     def to_string(self):
-        return WTFStringPrinter(self.val['string_']).to_string()
+        return WTFAtomicStringPrinter(self.val['string_']).to_string()
 
 
 class blinkLayoutUnitPrinter:
