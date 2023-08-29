@@ -42,8 +42,9 @@ TemplateURLFetcherFactory::TemplateURLFetcherFactory()
 
 TemplateURLFetcherFactory::~TemplateURLFetcherFactory() = default;
 
-KeyedService* TemplateURLFetcherFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TemplateURLFetcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new TemplateURLFetcher(
+  return std::make_unique<TemplateURLFetcher>(
       TemplateURLServiceFactory::GetForProfile(static_cast<Profile*>(profile)));
 }
