@@ -303,8 +303,9 @@ template("generate_runner_script") {
                            "test_exe",
                          ])
 
-  if (!defined(skip_generating_board_args) && !is_skylab) {
-    skip_generating_board_args = false
+  if (!defined(skip_generating_board_args)) {
+    # --board should be assigned by the autotest wrapper on skylab builders
+    skip_generating_board_args = is_skylab
   }
 
   if (skip_generating_board_args) {
