@@ -89,7 +89,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             personal_data(),
-            /*coupon_service_delegate=*/nullptr));
+            /*coupon_service_delegate=*/nullptr, /*shopping_service=*/nullptr));
   }
 
   CreditCard CreateServerCard(

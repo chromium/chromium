@@ -83,6 +83,14 @@ absl::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_history_data = false,
     PriceBucket price_bucket = PriceBucket::kUnknown);
 
+DiscountInfo CreateValidDiscountInfo(const std::string& detail,
+                                     const std::string& terms_and_conditions,
+                                     const std::string& value_in_text,
+                                     const std::string& discount_code,
+                                     int64_t id,
+                                     bool is_merchant_wide,
+                                     double expiry_time_sec);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_TEST_UTILS_H_

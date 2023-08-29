@@ -167,6 +167,45 @@ enum class ShoppingPageType {
 using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
     void(const base::Uuid&, const GURL&, absl::optional<ProductInfo>)>;
 
+// Under Desktop browser test or interactive ui test, use
+// ShoppingServiceFactory::SetTestingFactory to create a
+// MockShoppingService for testing. The test should use
+// BrowserContextDependencyManager to register a callback to create the
+// MockShoppingService when the BrowserContext is created.
+//
+// Example of an InteractiveBrowserTest setup for using a MockShoppingService:
+//
+// clang-format off
+// #include "components/commerce/core/mock_shopping_service.h"
+// #include "components/keyed_service/content/browser_context_dependency_manager.h"
+//
+// class MyTest : public InteractiveBrowserTest {
+//   void SetUpInProcessBrowserTestFixture() override {
+//     create_services_subscription_ =
+//         BrowserContextDependencyManager::GetInstance()
+//             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+//                 &MyTest::OnWillCreateBrowserContextServices,
+//                 weak_ptr_factory_.GetWeakPtr()));
+//   }
+//
+//   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+//     commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
+//         context, base::BindRepeating([](content::BrowserContext* context) {
+//           return commerce::MockShoppingService::Build();
+//         }));
+//   }
+//
+//  private:
+//   base::CallbackListSubscription create_services_subscription_;
+//   base::WeakPtrFactory<MyTest> weak_ptr_factory_{this};
+// };
+//
+// To get the MockShoppingService:
+// auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+//     commerce::ShoppingServiceFactory::GetForBrowserContext(
+//         browser()->profile()));
+// clang-format on
+
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
   ShoppingService(

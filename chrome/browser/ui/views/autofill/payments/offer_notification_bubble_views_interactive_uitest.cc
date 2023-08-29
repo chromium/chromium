@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -27,6 +28,9 @@
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,6 +78,22 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       const OfferNotificationBubbleViewsInteractiveUiTest&) = delete;
   OfferNotificationBubbleViewsInteractiveUiTest& operator=(
       const OfferNotificationBubbleViewsInteractiveUiTest&) = delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &OfferNotificationBubbleViewsInteractiveUiTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context) {
+          return commerce::MockShoppingService::Build();
+        }));
+  }
 
   void ShowBubbleForOfferAndVerify() {
     switch (test_offer_type_) {
@@ -170,6 +190,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   TestAutofillClock test_clock_;
   const AutofillOfferData::OfferType test_offer_type_;
   base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 // TODO(https://crbug.com/1334806): Split parameterized tests that are
@@ -717,6 +738,50 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       GetOfferNotificationIconView()->GetTextForTooltipAndAccessibleName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+}
+
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       ShowShoppingServiceFreeListingOffer) {
+  const std::string domain_url = "www.merchantsite1.com";
+  const GURL with_offer_url = GetUrl(domain_url, "/product1");
+  const GURL without_offer_url = GetUrl(domain_url, "/product2");
+  const std::string detail = "Discount description detail";
+  const std::string discount_code = "discount-code";
+  const int64_t discount_id = 123;
+  const double expiry_time_sec =
+      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(
+          browser()->profile()));
+  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
+  // Expect to call this once on every navigation, this test is navigated 3
+  // times.
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
+      .Times(3);
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls).Times(3);
+
+  NavigateToAndWaitForForm(GetUrl(domain_url, "/"));
+  EXPECT_FALSE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+
+  // Simulate FreeListingOffer for a product page on the `domain_url`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*is_merchant_wide=*/false, expiry_time_sec)}}});
+
+  NavigateToAndWaitForForm(with_offer_url);
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+
+  // Navigates to URL without offers will dismiss the icon.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls({});
+  NavigateToAndWaitForForm(without_offer_url);
+  EXPECT_FALSE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
 }  // namespace autofill

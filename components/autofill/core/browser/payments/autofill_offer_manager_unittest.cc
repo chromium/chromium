@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -18,6 +19,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -62,8 +65,12 @@ class AutofillOfferManagerTest : public testing::Test {
                                 /*strike_database=*/nullptr,
                                 /*image_fetcher=*/nullptr);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
+    auto mock_shopping_service_delegate =
+        std::make_unique<MockShoppingServiceDelegate>();
+    mock_shopping_service_delegate_ = mock_shopping_service_delegate.get();
     autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
-        &personal_data_manager_, &coupon_service_delegate_);
+        &personal_data_manager_, &coupon_service_delegate_,
+        std::move(mock_shopping_service_delegate));
   }
 
   CreditCard CreateCreditCard(std::string guid,
@@ -130,6 +137,14 @@ class AutofillOfferManagerTest : public testing::Test {
     MOCK_METHOD1(IsUrlEligible, bool(const GURL& url));
   };
 
+  class MockShoppingServiceDelegate : public ShoppingServiceDelegate {
+   public:
+    MOCK_METHOD0(IsDiscountEligibleToShowOnNavigation, bool());
+    MOCK_METHOD2(GetDiscountInfoForUrls,
+                 void(const std::vector<GURL>&,
+                      commerce::DiscountInfoCallback));
+  };
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAutofillClient autofill_client_;
@@ -139,6 +154,7 @@ class AutofillOfferManagerTest : public testing::Test {
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   MockCouponServiceDelegate coupon_service_delegate_;
+  raw_ptr<MockShoppingServiceDelegate> mock_shopping_service_delegate_;
 };
 
 // Verify that a card linked offer is returned for an eligible url.
@@ -299,6 +315,65 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnOfferFromCouponDelegate) {
   AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(example_url);
   EXPECT_EQ(offer2, *result);
+}
+
+TEST_F(AutofillOfferManagerTest, GetShoppingServiceOfferForUrl_ReturnOffer) {
+  const GURL url("http://www.example.com");
+  const std::string detail = "Discount description detail";
+  const std::string discount_code = "discount-code";
+  const int64_t discount_id = 123;
+  const double expiry_time_sec =
+      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+
+  const AutofillOfferData expected_autofill_offer_data =
+      AutofillOfferData::FreeListingCouponOffer(
+          discount_id, base::Time::FromDoubleT(expiry_time_sec), {url}, url,
+          DisplayStrings{detail}, discount_code);
+
+  ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
+      .WillByDefault([&](const std::vector<GURL>& urls,
+                         commerce::DiscountInfoCallback callback) {
+        const commerce::DiscountsMap discounts_map{
+            {url,
+             {commerce::CreateValidDiscountInfo(
+                 detail, /*terms_and_conditions=*/"",
+                 /*value_in_text=*/"$10 off", discount_code, discount_id,
+                 /*is_merchant_wide=*/false, expiry_time_sec)}}};
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
+      });
+  EXPECT_CALL(*mock_shopping_service_delegate_,
+              IsDiscountEligibleToShowOnNavigation())
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls);
+
+  base::MockCallback<AutofillOfferManager::AsyncOfferCallback> callback;
+  EXPECT_CALL(callback, Run(url, expected_autofill_offer_data));
+
+  autofill_offer_manager_->GetShoppingServiceOfferForUrl(url, callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AutofillOfferManagerTest,
+       GetShoppingServiceOfferForUrl_ReturnEmptyResult) {
+  const GURL url("http://www.example.com");
+  ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
+      .WillByDefault([](const std::vector<GURL>& urls,
+                        commerce::DiscountInfoCallback callback) {
+        const commerce::DiscountsMap discounts_map{};
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
+      });
+  EXPECT_CALL(*mock_shopping_service_delegate_,
+              IsDiscountEligibleToShowOnNavigation())
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls);
+
+  base::MockCallback<AutofillOfferManager::AsyncOfferCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_, testing::_)).Times(0);
+
+  autofill_offer_manager_->GetShoppingServiceOfferForUrl(url, callback.Get());
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace autofill

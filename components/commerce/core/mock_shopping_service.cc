@@ -221,6 +221,12 @@ void MockShoppingService::SetIsPriceInsightsEligible(bool is_eligible) {
       .WillByDefault(testing::Return(is_eligible));
 }
 
+void MockShoppingService::SetIsDiscountEligibleToShowOnNavigation(
+    bool is_eligible) {
+  ON_CALL(*this, IsDiscountEligibleToShowOnNavigation)
+      .WillByDefault(testing::Return(is_eligible));
+}
+
 void MockShoppingService::SetResponseForGetDiscountInfoForUrls(
     const DiscountsMap& discounts_map) {
   ON_CALL(*this, GetDiscountInfoForUrls)

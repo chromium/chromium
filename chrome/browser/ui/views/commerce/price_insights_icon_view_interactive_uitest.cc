@@ -60,33 +60,44 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
     SetUpTabHelperAndShoppingService();
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&PriceInsightsIconViewInteractiveTest::
+                                        OnWillCreateBrowserContextServices,
+                                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    is_browser_context_services_created = false;
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    is_browser_context_services_created = true;
+    commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context) {
+          return commerce::MockShoppingService::Build();
+        }));
+  }
+
  protected:
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
   raw_ptr<MockShoppingListUiTabHelper, AcrossTasksDanglingUntriaged>
       mock_tab_helper_;
   absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  base::CallbackListSubscription create_services_subscription_;
+  bool is_browser_context_services_created{false};
 
  private:
   base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
 
   void SetUpTabHelperAndShoppingService() {
-    // Remove the original tab helper so we don't get into a bad situation when
-    // we go to replace the shopping service with the mock one. The old tab
-    // helper is still holding a reference to the original shopping service and
-    // other dependencies which we switch out below (leaving some dangling
-    // pointers on destruction).
-    browser()->tab_strip_model()->GetActiveWebContents()->RemoveUserData(
-        commerce::ShoppingListUiTabHelper::UserDataKey());
-
+    EXPECT_TRUE(is_browser_context_services_created);
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                browser()->profile(),
-                base::BindRepeating([](content::BrowserContext* context) {
-                  return commerce::MockShoppingService::Build();
-                })));
-
+        commerce::ShoppingServiceFactory::GetForBrowserContext(
+            browser()->profile()));
     MockShoppingListUiTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
     mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
@@ -127,6 +138,9 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
     mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
         price_insights_info);
   }
+
+  base::WeakPtrFactory<PriceInsightsIconViewInteractiveTest> weak_ptr_factory_{
+      this};
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,

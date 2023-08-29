@@ -65,7 +65,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
           /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
   autofill_client_->set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(
-          &personal_data(), /*coupon_service_delegate=*/nullptr));
+          &personal_data(), /*coupon_service_delegate=*/nullptr,
+          /*shopping_service=*/nullptr));
 
   auto browser_autofill_manager = std::make_unique<TestBrowserAutofillManager>(
       autofill_driver_.get(), autofill_client_.get());

@@ -68,6 +68,27 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     SetUpTabHelperAndShoppingService();
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &PriceTrackingEmailDialogConsentViewInteractiveTest::
+                    OnWillCreateBrowserContextServices,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    is_browser_context_services_created_ = false;
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    is_browser_context_services_created_ = true;
+    commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context) {
+          return commerce::MockShoppingService::Build();
+        }));
+  }
+
   void ApplyMetaToBookmark() {
     bookmarks::BookmarkModel* model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
@@ -82,24 +103,14 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
  private:
   base::test::ScopedFeatureList test_features_;
   feature_engagement::test::ScopedIphFeatureList test_iph_features_;
+  base::CallbackListSubscription create_services_subscription_;
+  bool is_browser_context_services_created_{false};
 
   void SetUpTabHelperAndShoppingService() {
-    // Remove the original tab helper so we don't get into a bad situation when
-    // we go to replace the shopping service with the mock one. The old tab
-    // helper is still holding a reference to the original shopping service and
-    // other dependencies which we switch out below (leaving some dangling
-    // pointers on destruction).
-    browser()->tab_strip_model()->GetActiveWebContents()->RemoveUserData(
-        commerce::ShoppingListUiTabHelper::UserDataKey());
-
+    EXPECT_TRUE(is_browser_context_services_created_);
     auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                browser()->profile(),
-                base::BindRepeating([](content::BrowserContext* context) {
-                  return commerce::MockShoppingService::Build();
-                })));
-
+        commerce::ShoppingServiceFactory::GetForBrowserContext(
+            browser()->profile()));
     MockShoppingListUiTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
     MockShoppingListUiTabHelper* mock_tab_helper =
@@ -121,6 +132,9 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     mock_shopping_service->SetIsSubscribedCallbackValue(true);
     mock_shopping_service->SetIsClusterIdTrackedByUserResponse(true);
   }
+
+  base::WeakPtrFactory<PriceTrackingEmailDialogConsentViewInteractiveTest>
+      weak_ptr_factory_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
