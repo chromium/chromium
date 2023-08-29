@@ -502,6 +502,8 @@ public abstract class ChromeFeatureList {
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
 
     /* Alphabetical: */
+    public static final CachedFlag sAndroidAppIntegration =
+            new CachedFlag(ANDROID_APP_INTEGRATION, false);
     public static final CachedFlag sAppMenuMobileSiteOption =
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
@@ -621,6 +623,7 @@ public abstract class ChromeFeatureList {
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser = List.of(
             // clang-format off
+        sAndroidAppIntegration,
         sAppMenuMobileSiteOption,
         sBackGestureActivityTabProvider,
         sBackGestureRefactorActivityAndroid,
