@@ -699,7 +699,7 @@ class MetadataUpdater:
                 if line.test:
                     base_test = default_port.lookup_virtual_test_base(
                         line.test) or line.test
-                    test_id = _exp_test_to_wpt_url(base_test)
+                    test_id = wpt_metadata.exp_test_to_wpt_url(base_test)
                     if not test_id:
                         continue
                     test_info = test_infos[test_id]
@@ -745,7 +745,7 @@ class MetadataUpdater:
                     if not line.test or not line.test.startswith(
                             virtual_prefix):
                         continue
-                    test_id = _exp_test_to_wpt_url(
+                    test_id = wpt_metadata.exp_test_to_wpt_url(
                         line.test[len(virtual_prefix):])
                     unsatisfied_tags = line.tags - port.get_platform_tags() - {
                         port.get_option('configuration').lower()
@@ -769,7 +769,7 @@ class MetadataUpdater:
 
             for test_id, test in test_info.items():
                 test_name = urljoin(virtual_prefix,
-                                    _wpt_url_to_exp_test(test_id))
+                                    wpt_metadata.wpt_url_to_exp_test(test_id))
                 if port.skipped_in_never_fix_tests(test_name):
                     test.disabled_configs[config] = DisableType.NEVER_FIX
                 elif expectations.matches_an_expected_result(
@@ -1059,27 +1059,6 @@ def _strip_comment(maybe_comment: str) -> str:
             maybe_comment.startswith(prefix) for prefix in SPECIAL_PREFIXES):
         return maybe_comment[1:]
     return ''
-
-
-def _exp_test_to_wpt_url(test: str) -> Optional[str]:
-    for wpt_dir, url_prefix in Port.WPT_DIRS.items():
-        if test.startswith(wpt_dir):
-            test = test.replace(wpt_dir + '/', url_prefix, 1)
-            # Directory globs in TestExpectations resolve to a "pseudo-test ID".
-            # Do not give an ID for non-directory globs.
-            if test.endswith('/*'):
-                test = test[:-len('*')] + '__dir__'
-            elif test.endswith('*'):
-                return None
-            return test
-    return None
-
-
-def _wpt_url_to_exp_test(test: str) -> str:
-    for wpt_dir, url_prefix in Port.WPT_DIRS.items():
-        if test.startswith(url_prefix):
-            return test.replace(url_prefix, wpt_dir + '/', 1)
-    raise ValueError('no matching WPT roots found')
 
 
 def sort_metadata_ast(node: wptnode.DataNode) -> None:

@@ -60,3 +60,23 @@ class WPTMetadataUnittest(unittest.TestCase):
         self.assertEqual(test.known_intermittent, ['OK'])
         self.assertEqual(test.get_subtest('subtest').expected, 'FAIL')
         self.assertEqual(test.get_subtest('subtest').known_intermittent, [])
+
+    def test_wpt_url_to_exp_test(self):
+        self.assertEqual(wpt_metadata.wpt_url_to_exp_test('/css/test.html?a'),
+                         'external/wpt/css/test.html?a')
+        self.assertEqual(
+            wpt_metadata.wpt_url_to_exp_test('/wpt_internal/test.html'),
+            'wpt_internal/test.html')
+
+    def test_exp_test_to_wptp_url(self):
+        self.assertEqual(
+            wpt_metadata.exp_test_to_wpt_url('external/wpt/css/test.html?a'),
+            '/css/test.html?a')
+        self.assertEqual(
+            wpt_metadata.exp_test_to_wpt_url('wpt_internal/test.html'),
+            '/wpt_internal/test.html')
+        self.assertEqual(
+            wpt_metadata.exp_test_to_wpt_url('external/wpt/css/*'),
+            '/css/__dir__')
+        self.assertIsNone(
+            wpt_metadata.exp_test_to_wpt_url('external/wpt/css/css-*'))

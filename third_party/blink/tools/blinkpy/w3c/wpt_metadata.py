@@ -221,3 +221,24 @@ def default_expected_by_type() -> Dict[Tuple[TestType, bool], str]:
 @memoized
 def can_have_subtests(test_type: TestType) -> bool:
     return (test_type, True) in default_expected_by_type()
+
+
+def exp_test_to_wpt_url(test: str) -> Optional[str]:
+    for wpt_dir, url_prefix in Port.WPT_DIRS.items():
+        if test.startswith(wpt_dir):
+            test = test.replace(wpt_dir + '/', url_prefix, 1)
+            # Directory globs in TestExpectations resolve to a "pseudo-test ID".
+            # Do not give an ID for non-directory globs.
+            if test.endswith('/*'):
+                test = test[:-len('*')] + '__dir__'
+            elif test.endswith('*'):
+                return None
+            return test
+    return None
+
+
+def wpt_url_to_exp_test(test: str) -> str:
+    for wpt_dir, url_prefix in Port.WPT_DIRS.items():
+        if test.startswith(url_prefix):
+            return test.replace(url_prefix, wpt_dir + '/', 1)
+    raise ValueError('no matching WPT roots found')
