@@ -7,6 +7,7 @@
 #include <objbase.h>
 #include <sysinfoapi.h>
 #include <wbemidl.h>
+#include <winbase.h>
 #include <wrl/client.h>
 
 #include "base/metrics/histogram_functions.h"
@@ -125,15 +126,34 @@ void RecordCetAvailability() {
   }
 }
 
+void RecordEnclaveAvailability() {
+  base::UmaHistogramBoolean("Windows.Enclave.SGX.Available",
+                            ::IsEnclaveTypeSupported(ENCLAVE_TYPE_SGX));
+  base::UmaHistogramBoolean("Windows.Enclave.SGX2.Available",
+                            ::IsEnclaveTypeSupported(ENCLAVE_TYPE_SGX2));
+  base::UmaHistogramBoolean("Windows.Enclave.VBS.Available",
+                            ::IsEnclaveTypeSupported(ENCLAVE_TYPE_VBS));
+  // This one is less documented, but appears to be used "when attestation
+  // evidence does not include VBS data.". This was added in Windows 19H1.
+  base::UmaHistogramBoolean("Windows.Enclave.VBSBasic.Available",
+                            ::IsEnclaveTypeSupported(ENCLAVE_TYPE_VBS_BASIC));
+}
+
 void RecordProcessorMetrics() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  ComPtr<IWbemServices> wmi_services;
-  if (!base::win::CreateLocalWmiConnection(true, &wmi_services))
-    return;
-  RecordProcessorMetricsFromWMI(wmi_services);
-  RecordHypervStatusFromWMI(wmi_services);
+  // These metrics do not require a WMI connection.
   RecordCetAvailability();
+  RecordEnclaveAvailability();
+
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    ComPtr<IWbemServices> wmi_services;
+    if (!base::win::CreateLocalWmiConnection(true, &wmi_services)) {
+      return;
+    }
+    RecordProcessorMetricsFromWMI(wmi_services);
+    RecordHypervStatusFromWMI(wmi_services);
+  }
 }
 
 }  // namespace

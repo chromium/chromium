@@ -76,6 +76,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
+    expires_after="2023-12-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Whether or not support for {Type} is/are available for use on the system, by
+    calling IsEnclaveTypeSupported. Reported once per browser session, on
+    startup.
+  </summary>
+  <token key="Type">
+    <variant name="SGX"
+        summary="an enclave for the Intel Software Guard Extensions (SGX)
+                 architecture extension"/>
+    <variant name="SGX2"
+        summary="SGX2 and SGX1 enclaves (the platform and OS support SGX2
+                 instructions with EDMM on this platform - in addition to
+                 other SGX2 constructs)"/>
+    <variant name="VBS"
+        summary="a virtualization-based security (VBS) enclave"/>
+    <variant name="VBSBasic"
+        summary="a virtualization-based security (VBS) basic enclave"/>
+  </token>
+</histogram>
+
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
     expires_after="2023-12-19">
   <owner>brucedawson@chromium.org</owner>
