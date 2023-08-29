@@ -1550,6 +1550,26 @@ AuthenticatorMultiSourcePickerSheetModel::
 AuthenticatorMultiSourcePickerSheetModel::
     ~AuthenticatorMultiSourcePickerSheetModel() = default;
 
+bool AuthenticatorMultiSourcePickerSheetModel::IsManageDevicesButtonVisible()
+    const {
+  using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
+  // If any phones or passkeys from a phone are shown then also show a button
+  // that goes to the settings page to manage them.
+  return base::ranges::any_of(
+      dialog_model()->mechanisms(), [](const Mechanism& mech) {
+        return absl::holds_alternative<Mechanism::Phone>(mech.type) ||
+               (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
+                absl::get<Mechanism::Credential>(mech.type).value().source ==
+                    device::AuthenticatorType::kPhone);
+      });
+}
+
+void AuthenticatorMultiSourcePickerSheetModel::OnManageDevices() {
+  if (dialog_model()) {
+    dialog_model()->ManageDevices();
+  }
+}
+
 std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepTitle() const {
   return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE,
                                     GetRelyingPartyIdString(dialog_model()));

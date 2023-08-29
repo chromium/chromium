@@ -664,6 +664,8 @@ class AuthenticatorMultiSourcePickerSheetModel
 
  private:
   // AuthenticatorSheetModelbase:
+  bool IsManageDevicesButtonVisible() const override;
+  void OnManageDevices() override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
 
