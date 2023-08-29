@@ -1602,6 +1602,24 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
       "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 0);
 }
 
+// Tests that OptimizationGuideWebContentsObserver limits the results for SRP.
+//
+// Note that `OptimizationGuideWebContentsObserver::FetchHintsUsingManager`
+// limits the urls to `optimization_guide::features::MaxResultsForSRPFetch()`.
+// In this test, this method is called with the following URLs but the order
+// varies:
+//
+// - https://example.com/bar.html
+// - https://example.com/baz.html
+// - https://example.com/foo.html
+// - https://example2.com/foo.html
+// - https://example3.com/foo.html
+// - https://foo.com/
+// - https://foo.com/simple_page_with_anchors.html
+//
+// If we use `max_urls_for_srp_fetch > 1`, the result of
+// `OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount` varies. So, we use
+// `max_urls_for_srp_fetch = 1`.
 class HintsFetcherSearchPageLimitedURLsBrowserTest
     : public HintsFetcherDisabledBrowserTest {
  public:
@@ -1619,7 +1637,7 @@ class HintsFetcherSearchPageLimitedURLsBrowserTest
          },
          {
              optimization_guide::features::kOptimizationGuideFetchingForSRP,
-             {{"max_urls_for_srp_fetch", "2"}},
+             {{"max_urls_for_srp_fetch", "1"}},
          }},
         // Disabled.
         {});
@@ -1673,9 +1691,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageLimitedURLsBrowserTest,
       1);
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 2, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 2, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 1);
 }
