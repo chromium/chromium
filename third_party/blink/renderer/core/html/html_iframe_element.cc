@@ -297,8 +297,14 @@ void HTMLIFrameElement::ParseAttribute(
           mojom::blink::ConsoleMessageLevel::kError,
           WebString::FromUTF8("sharedStorageWritable: sharedStorage operations "
                               "are only available in secure contexts.")));
-    } else if (params.new_value.IsNull() != params.old_value.IsNull()) {
-      should_call_did_change_attributes = true;
+    } else {
+      if (params.new_value.IsNull() != params.old_value.IsNull()) {
+        should_call_did_change_attributes = true;
+      }
+      if (!params.new_value.IsNull()) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kSharedStorageAPI_Iframe_Attribute);
+      }
     }
   } else if (name == html_names::kCredentiallessAttr &&
              RuntimeEnabledFeatures::AnonymousIframeEnabled()) {

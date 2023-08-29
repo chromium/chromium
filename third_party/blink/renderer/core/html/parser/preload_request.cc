@@ -127,6 +127,10 @@ Resource* PreloadRequest::Start(Document* document) {
           document->domWindow()) &&
       document->domWindow()->IsSecureContext();
   resource_request.SetSharedStorageWritable(shared_storage_writable);
+  if (shared_storage_writable) {
+    CHECK_EQ(resource_type_, ResourceType::kImage);
+    UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);
+  }
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;

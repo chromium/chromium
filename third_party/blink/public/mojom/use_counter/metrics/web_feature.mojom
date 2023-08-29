@@ -3974,6 +3974,9 @@ enum WebFeature {
   kXPathMissingVariableEvaluated = 4634,
   kClientHintsPrefersReducedTransparency = 4635,
   kElementCapture = 4636,
+  kSharedStorageAPI_Fetch_Attribute = 4637,
+  kSharedStorageAPI_Image_Attribute = 4638,
+  kSharedStorageAPI_Iframe_Attribute = 4639,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

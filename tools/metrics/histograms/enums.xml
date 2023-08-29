@@ -44000,6 +44000,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4634" label="XPathMissingVariableEvaluated"/>
   <int value="4635" label="ClientHintsPrefersReducedTransparency"/>
   <int value="4636" label="ElementCapture"/>
+  <int value="4637" label="SharedStorageAPI_Fetch_Attribute"/>
+  <int value="4638" label="SharedStorageAPI_Image_Attribute"/>
+  <int value="4639" label="SharedStorageAPI_Iframe_Attribute"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

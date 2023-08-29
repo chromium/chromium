@@ -572,6 +572,11 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
     }
     request->SetSharedStorageWritable(init->sharedStorageWritable());
+    if (init->sharedStorageWritable()) {
+      UseCounter::Count(
+          execution_context,
+          mojom::blink::WebFeature::kSharedStorageAPI_Fetch_Attribute);
+    }
   }
 
   // "If |init|'s method member is present, let |method| be it and run these
