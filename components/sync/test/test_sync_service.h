@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -71,6 +72,8 @@ class TestSyncService : public SyncService {
   void SetDownloadStatusFor(const ModelTypeSet& types,
                             ModelTypeDownloadStatus download_status);
   void SetTypesWithUnsyncedData(const ModelTypeSet& types);
+  void SetLocalDataDescriptions(
+      const std::map<ModelType, LocalDataDescription>& local_data_descriptions);
 
   void FireStateChanged();
   void FirePaymentsIntegrationEnabledChanged();
@@ -132,6 +135,11 @@ class TestSyncService : public SyncService {
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
+  void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) override;
+  void TriggerLocalDataMigration(ModelTypeSet types) override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -166,6 +174,8 @@ class TestSyncService : public SyncService {
   GURL sync_service_url_;
 
   ModelTypeSet unsynced_types_;
+
+  std::map<ModelType, LocalDataDescription> local_data_descriptions_;
 };
 
 }  // namespace syncer

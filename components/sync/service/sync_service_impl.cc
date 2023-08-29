@@ -2395,4 +2395,17 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
   engine_->GetTypesWithUnsyncedData(std::move(callback));
 }
 
+void SyncServiceImpl::GetLocalDataDescriptions(
+    ModelTypeSet types,
+    base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+        callback) {
+  // TODO(crbug.com/1451508): Implement this.
+  NOTIMPLEMENTED();
+}
+
+void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
+  // TODO(crbug.com/1451508): Implement this.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace syncer

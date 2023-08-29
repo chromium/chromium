@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SYNC_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -80,6 +81,11 @@ class FakeSyncService : public SyncService {
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
+  void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) override;
+  void TriggerLocalDataMigration(ModelTypeSet types) override;
 
   // KeyedService implementation.
   void Shutdown() override;

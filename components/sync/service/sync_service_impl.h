@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_IMPL_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -155,6 +156,11 @@ class SyncServiceImpl : public SyncService,
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> callback) const override;
+  void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) override;
+  void TriggerLocalDataMigration(ModelTypeSet types) override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,

@@ -370,4 +370,25 @@ void TestSyncService::GetTypesWithUnsyncedData(
   std::move(cb).Run(unsynced_types_);
 }
 
+void TestSyncService::SetLocalDataDescriptions(
+    const std::map<ModelType, LocalDataDescription>& local_data_descriptions) {
+  local_data_descriptions_ = local_data_descriptions;
+}
+
+void TestSyncService::GetLocalDataDescriptions(
+    ModelTypeSet types,
+    base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+        callback) {
+  std::map<ModelType, LocalDataDescription> result;
+  for (ModelType type : types) {
+    if (auto it = local_data_descriptions_.find(type);
+        it != local_data_descriptions_.end()) {
+      result.insert(*it);
+    }
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+void TestSyncService::TriggerLocalDataMigration(ModelTypeSet types) {}
+
 }  // namespace syncer

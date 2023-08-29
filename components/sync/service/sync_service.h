@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ class GURL;
 
 namespace syncer {
 
+struct LocalDataDescription;
 class ProtocolEventObserver;
 class SyncCycleSnapshot;
 struct TypeEntitiesCount;
@@ -428,6 +430,23 @@ class SyncService : public KeyedService {
   // Note: This includes deletions as well.
   virtual void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> callback) const = 0;
+
+  // Queries the count and description/preview of existing local data for
+  // `types` data types. This is an asynchronous method which returns the result
+  // via the callback `callback` once the information for all the data types in
+  // `types` is available.
+  // Note: Only data types that are enabled and support this functionality are
+  // part of the response.
+  virtual void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) = 0;
+
+  // Requests sync service to move all local data to account for `types` data
+  // types. This is an asynchronous method which moves the local data for all
+  // `types` to the account store locally. Upload to the server will happen as
+  // part of the regular commit process, and is NOT part of this method.
+  virtual void TriggerLocalDataMigration(ModelTypeSet types) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
