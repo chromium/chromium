@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -113,6 +114,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // Module Container for the `mostVisitedViews` when being shown in Magic Stack.
 @property(nonatomic, strong)
     MagicStackModuleContainer* mostVisitedModuleContainer;
+// Module Container for the tab resumption tile.
+@property(nonatomic, strong)
+    MagicStackModuleContainer* tabResumptionModuleContainer;
 // Width Anchor of the Most Visited Tiles container.
 @property(nonatomic, strong)
     NSLayoutConstraint* mostVisitedContainerWidthAnchor;
@@ -136,6 +140,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // Module Container for the `safetyCheckView` when being shown in Magic Stack.
 @property(nonatomic, strong)
     MagicStackModuleContainer* safetyCheckModuleContainer;
+
 @end
 
 @implementation ContentSuggestionsViewController {
@@ -152,6 +157,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListAutofillItemView;
   SetUpListItemView* _setUpListAllSetItemView;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
+  TabResumptionView* _tabResumptionView;
 }
 
 - (instancetype)init {
@@ -717,7 +723,21 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
   CHECK(IsTabResumptionEnabled());
-  // TODO(crbug.com/1464185): Implement this.
+  [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                          kTabResumption];
+  _tabResumptionView = [[TabResumptionView alloc] initWithItem:item];
+  [_tabResumptionModuleContainer removeFromSuperview];
+  _tabResumptionModuleContainer = [[MagicStackModuleContainer alloc]
+      initWithContentView:_tabResumptionView
+                     type:ContentSuggestionsModuleType::kTabResumption
+                 delegate:self];
+
+  if (self.viewLoaded) {
+    [_magicStack insertArrangedSubview:_tabResumptionModuleContainer
+                               atIndex:[self indexForMagicStackModule:
+                                                 ContentSuggestionsModuleType::
+                                                     kTabResumption]];
+  }
 }
 
 #pragma mark - SetUpListItemViewTapDelegate methods
@@ -1050,6 +1070,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[moduleType intValue];
     switch (type) {
+      case ContentSuggestionsModuleType::kTabResumption: {
+        [_magicStack addArrangedSubview:_tabResumptionModuleContainer];
+        break;
+      }
       case ContentSuggestionsModuleType::kShortcuts: {
         self.shortcutsModuleContainer = [[MagicStackModuleContainer alloc]
             initWithContentView:self.shortcutsStackView

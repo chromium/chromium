@@ -128,10 +128,9 @@ void TabResumptionHelper::LastTabResumptionItem(
   }
 
   const synced_sessions::DistantSession* session;
+  auto const synced_sessions =
+      std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
   if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
-    auto const synced_sessions =
-        std::make_unique<synced_sessions::SyncedSessions>(
-            session_sync_service_);
     if (synced_sessions->GetSessionCount()) {
       // Get the last synced session and tab.
       session = synced_sessions->GetSession(0);

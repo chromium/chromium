@@ -13,6 +13,7 @@
 // Entries should always keep synced with the IOSMagicStackModuleType histogram
 // enum. Entries should not be renumbered and numeric values should never be
 // reused.
+// LINT.IfChange
 enum class ContentSuggestionsModuleType {
   kMostVisited = 0,
   kShortcuts = 1,
@@ -24,8 +25,10 @@ enum class ContentSuggestionsModuleType {
   kSafetyCheck = 7,
   kSafetyCheckMultiRow = 8,
   kSafetyCheckMultiRowOverflow = 9,
-  kMaxValue = kSafetyCheckMultiRowOverflow,
+  kTabResumption = 10,
+  kMaxValue = kTabResumption,
 };
+// LINT.ThenChange(tools/metrics/histograms/enums.xml)
 
 // Represents the content suggestions collection view.
 extern NSString* const kContentSuggestionsCollectionIdentifier;

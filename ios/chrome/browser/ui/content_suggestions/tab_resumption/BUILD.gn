@@ -6,9 +6,12 @@ source_set("tab_resumption") {
   sources = [
     "tab_resumption_item.h",
     "tab_resumption_item.mm",
+    "tab_resumption_view.h",
+    "tab_resumption_view.mm",
   ]
   deps = [
     "//base",
+    "//ui/base",
     "//url",
   ]
 }
@@ -62,4 +65,26 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_resumption_egtest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/ui/tabs/tests:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/tabs/tests:fake_distant_tab",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

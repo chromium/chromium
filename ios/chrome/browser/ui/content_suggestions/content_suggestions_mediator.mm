@@ -961,6 +961,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Magic Stack.
 - (NSArray<NSNumber*>*)magicStackOrder {
   NSMutableArray* magicStackModules = [NSMutableArray array];
+  if (IsTabResumptionEnabled() && _tabResumptionItem) {
+    [magicStackModules
+        addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
+  }
   if ([self shouldShowSetUpList]) {
     [self addSetUpListToMagicStackOrder:magicStackModules];
   }
@@ -1180,6 +1184,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Shows the tab resumption tile with the given `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
   _tabResumptionItem = item;
+  [self.consumer setMagicStackOrder:[self magicStackOrder]];
   [self.consumer showTabResumptionWithItem:_tabResumptionItem];
 }
 
