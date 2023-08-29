@@ -106,6 +106,12 @@ BASE_FEATURE(kUploadOfficeToCloud,
              "UploadOfficeToCloud",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Office files upload workflow for enterprise users to improve
+// Office files support.
+BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
+             "UploadOfficeToCloudForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsClipboardHistoryRefreshEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->EnableClipboardHistoryRefresh();
@@ -177,6 +183,16 @@ bool IsUploadOfficeToCloudEnabled() {
   return chromeos::BrowserParamsProxy::Get()->IsUploadOfficeToCloudEnabled();
 #else
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
+#endif
+}
+
+bool IsUploadOfficeToCloudForEnterpriseEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/296282654): Implement propagation if necessary.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kUploadOfficeToCloud) &&
+         base::FeatureList::IsEnabled(kUploadOfficeToCloudForEnterprise);
 #endif
 }
 

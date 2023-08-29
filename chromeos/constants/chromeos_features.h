@@ -47,6 +47,8 @@ BASE_DECLARE_FEATURE(kQuickAnswersRichCard);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kQuickAnswersV2SettingsSubToggle);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kUploadOfficeToCloud);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kUploadOfficeToCloudForEnterprise);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kRoundedWindows);
 
 // Keep alphabetized.
@@ -75,6 +77,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersAlwaysTriggerForSingleWord();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsUploadOfficeToCloudForEnterpriseEnabled();
 
 }  // namespace features
 }  // namespace chromeos
