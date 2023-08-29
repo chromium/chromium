@@ -306,10 +306,10 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   WebsiteMetrics* website_metrics() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     DCHECK(website_metrics_service_);
-    return website_metrics_service_->website_metrics_.get();
+    return website_metrics_service_->WebsiteMetrics();
 #else
     DCHECK(app_platform_metrics_service_);
-    return app_platform_metrics_service_->website_metrics_.get();
+    return app_platform_metrics_service_->WebsiteMetrics();
 #endif
   }
 

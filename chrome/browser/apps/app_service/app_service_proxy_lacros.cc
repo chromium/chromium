@@ -107,6 +107,11 @@ AppServiceProxyLacros::BrowserAppInstanceTracker() {
   return browser_app_instance_tracker_.get();
 }
 
+apps::WebsiteMetricsServiceLacros*
+AppServiceProxyLacros::WebsiteMetricsService() {
+  return metrics_service_.get();
+}
+
 absl::optional<IconKey> AppServiceProxyLacros::GetIconKey(
     const std::string& app_id) {
   return outer_icon_loader_.GetIconKey(app_id);

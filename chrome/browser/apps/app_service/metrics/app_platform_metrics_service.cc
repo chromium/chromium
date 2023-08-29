@@ -98,6 +98,7 @@ void AppPlatformMetricsService::Start(
   // Also notify observers.
   for (auto& observer : observers_) {
     observer.OnAppPlatformMetricsInit(app_platform_app_metrics_.get());
+    observer.OnWebsiteMetricsInit(website_metrics_.get());
   }
 }
 

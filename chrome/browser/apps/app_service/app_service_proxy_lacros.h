@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
@@ -100,6 +101,8 @@ class AppServiceProxyLacros : public KeyedService,
   apps::PreferredAppsListHandle& PreferredAppsList();
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
+
+  apps::WebsiteMetricsServiceLacros* WebsiteMetricsService();
 
   // apps::IconLoader overrides.
   absl::optional<IconKey> GetIconKey(const std::string& app_id) override;

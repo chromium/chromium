@@ -155,6 +155,11 @@ class MockObserver : public AppPlatformMetricsService::Observer {
               (AppPlatformMetrics * app_platform_metrics),
               (override));
 
+  MOCK_METHOD(void,
+              OnWebsiteMetricsInit,
+              (WebsiteMetrics * website_metrics),
+              (override));
+
   MOCK_METHOD(void, OnAppPlatformMetricsServiceWillBeDestroyed, (), (override));
 };
 
@@ -3367,6 +3372,22 @@ TEST_P(AppPlatformMetricsServiceObserverTest,
   EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsServiceWillBeDestroyed)
       .Times(1);
   app_platform_metrics_service.reset();
+}
+
+TEST_P(AppPlatformMetricsServiceObserverTest,
+       NotifyObserversOnWebsiteMetricsInit) {
+  MockObserver* const observer_ptr = observer();
+  AppPlatformMetricsService app_platform_metrics_service(profile());
+  app_platform_metrics_service.AddObserver(observer_ptr);
+
+  EXPECT_CALL(*observer_ptr, OnWebsiteMetricsInit)
+      .WillOnce([&](WebsiteMetrics* website_metrics) {
+        EXPECT_THAT(website_metrics,
+                    Eq(app_platform_metrics_service.WebsiteMetrics()));
+      });
+  app_platform_metrics_service.Start(
+      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
