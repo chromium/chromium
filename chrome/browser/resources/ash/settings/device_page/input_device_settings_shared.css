@@ -64,3 +64,8 @@ cr-dialog [slot='body'] {
 cr-dialog [slot='title'] {
   padding: 32px 32px 0 32px;
 }
+
+cr-dialog #cancelButton {
+  background-color: var(--cros-bg-color);
+  border: solid 1px var(--cros-button-stroke-color-secondary);
+}

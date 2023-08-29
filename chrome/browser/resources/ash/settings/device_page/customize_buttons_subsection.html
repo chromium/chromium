@@ -33,8 +33,7 @@
     <div slot="title">$i18n{buttonRenamingDialogTitle}</div>
     <div slot="body">
       <div id="inputContainer">
-        <span>$i18n{buttonRemappingDialogInputLabel}</span>
-        <cr-input
+        <cr-input label="$i18n{buttonRemappingDialogInputLabel}"
           value="{{selectedButtonName_}}"
           aria-label="$i18n{buttonRenamingDialogTitle}">
       </cr-input>
@@ -48,7 +47,7 @@
         </cr-button>
       </div>
       <div>
-        <cr-button id="saveButton"
+        <cr-button id="saveButton" class="action-button"
             on-click="saveRenamingDialogClicked_">
           $i18n{buttonRemappingDialogSaveLabel}
         </cr-button>
