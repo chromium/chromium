@@ -39,7 +39,10 @@ class CONTENT_EXPORT ContentMainDelegate {
 
   // Indicates the delegate is being invoked in a child process. The
   // `kProcessType` switch will hold the precise child process type.
-  struct InvokedInChildProcess {};
+  struct InvokedInChildProcess {
+    // True if the child process was forked from one of the browser's zygotes.
+    bool is_zygote_child = false;
+  };
 
   // The context in which a delegate method is invoked, including the process
   // type and whether it is in a test harness. Can distinguish between

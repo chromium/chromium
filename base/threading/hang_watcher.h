@@ -150,7 +150,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
   // Initializes HangWatcher. Must be called once on the main thread during
   // startup while single-threaded.
-  static void InitializeOnMainThread(ProcessType process_type);
+  static void InitializeOnMainThread(ProcessType process_type,
+                                     bool is_zygote_child);
 
   // Returns the values that were set through InitializeOnMainThread() to their
   // default value. Used for testing since in prod initialization should happen
@@ -243,6 +244,10 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
   // Begin executing the monitoring loop on the HangWatcher thread.
   void Start();
+
+  // Returns true if Start() has been called and Stop() has not been called
+  // since.
+  bool IsStarted() const { return thread_started_; }
 
   // Returns the value of the crash key with the time since last system power
   // resume.
@@ -377,6 +382,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
       GUARDED_BY_CONTEXT(hang_watcher_thread_checker_);
 
   base::DelegateSimpleThread thread_;
+  bool thread_started_ = false;
 
   RepeatingClosure after_monitor_closure_for_testing_;
   RepeatingClosure on_hang_closure_for_testing_;

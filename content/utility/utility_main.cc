@@ -7,10 +7,13 @@
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -300,6 +303,20 @@ int UtilityMain(MainFunctionParams parameters) {
     sandbox::policy::Sandbox::Initialize(
         sandbox_type, std::move(pre_sandbox_hook), sandbox_options);
   }
+
+  // Start the HangWatcher now that the sandbox is engaged, if it hasn't
+  // already been started.
+  if (base::HangWatcher::IsEnabled() &&
+      !base::HangWatcher::GetInstance()->IsStarted()) {
+    DCHECK(parameters.hang_watcher_not_started_time.has_value());
+    base::TimeDelta uncovered_hang_watcher_time =
+        base::TimeTicks::Now() -
+        parameters.hang_watcher_not_started_time.value();
+    base::UmaHistogramTimes("HangWatcher.UtilityProcess.UncoveredStartupTime",
+                            uncovered_hang_watcher_time);
+    base::HangWatcher::GetInstance()->Start();
+  }
+
 #elif BUILDFLAG(IS_WIN)
   g_utility_target_services = parameters.sandbox_info->target_services;
 
