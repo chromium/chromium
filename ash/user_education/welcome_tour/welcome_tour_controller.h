@@ -25,6 +25,7 @@
 namespace ash {
 
 class AccessibilityControllerImpl;
+class ScopedNudgePause;
 class ScopedToastPause;
 class SessionController;
 class Shell;
@@ -114,6 +115,10 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // notifications received during the tour will appear in the Notification
   // Center after the tour is over.
   std::unique_ptr<WelcomeTourNotificationBlocker> notification_blocker_;
+
+  // Suppresses all nudges during the Welcome Tour. Exists only while the
+  // Welcome Tour is in progress.
+  std::unique_ptr<ScopedNudgePause> nudge_pause_;
 
   // Used to apply a scrim to the help bubble container on all root windows
   // while the Welcome Tour is in progress. Exists only while the Welcome Tour

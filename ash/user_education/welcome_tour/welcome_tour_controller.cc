@@ -9,7 +9,9 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/system/scoped_nudge_pause.h"
 #include "ash/public/cpp/system/scoped_toast_pause.h"
+#include "ash/public/cpp/system/system_nudge_pause_manager.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/session_controller_impl.h"
@@ -440,7 +442,6 @@ void WelcomeTourController::MaybeAbortWelcomeTour(
 // TODO(http://b/277091733): Stabilize continue section in launcher.
 // TODO(http://b/277091715): Stabilize pods in shelf.
 // TODO(http://b/277091619): Stabilize wallpaper.
-// TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
   aborted_reason_ = welcome_tour_metrics::AbortedReason::kUnknown;
   accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>(
@@ -450,6 +451,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   notification_blocker_->Init();
+  nudge_pause_ = SystemNudgePauseManager::Get()->CreateScopedPause();
   scrim_ = std::make_unique<WelcomeTourScrim>();
   shell_observation_.Observe(Shell::Get());
   tablet_mode_observation_.Observe(TabletMode::Get());
@@ -485,13 +487,13 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091733): Restore continue section in launcher.
 // TODO(http://b/277091715): Restore pods in shelf.
 // TODO(http://b/277091619): Restore wallpaper.
-// TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded(
     bool completed,
     base::ElapsedTimer time_since_start) {
   accelerator_handler_.reset();
   accessibility_observation_.Reset();
   notification_blocker_.reset();
+  nudge_pause_.reset();
   scrim_.reset();
   shell_observation_.Reset();
   tablet_mode_observation_.Reset();

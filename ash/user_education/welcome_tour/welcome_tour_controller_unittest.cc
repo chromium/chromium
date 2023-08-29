@@ -15,6 +15,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/system_notification_builder.h"
@@ -670,6 +672,12 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 // Tour in order to assert expectations before, during, and/or after run time.
 class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
  public:
+  WelcomeTourControllerRunTest() {
+    // Enable the `AnchoredNudgeManager` as it has an easier to use syntax than
+    // the `SystemNudgeController` which is on its way out the door.
+    scoped_feature_list_.InitAndEnableFeature(features::kSystemNudgeV2);
+  }
+
   // Runs the Welcome Tour, invoking the specified `in_progress_callback` just
   // after the Welcome Tour has started. Note that this method will not return
   // until the Welcome Tour has ended.
@@ -732,6 +740,10 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     EXPECT_TRUE(ended_future.Wait());
     Mock::VerifyAndClearExpectations(user_education_delegate());
   }
+
+ private:
+  // Used to enable the `AnchoredNudgeManager`.
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests -----------------------------------------------------------------------
@@ -885,6 +897,44 @@ TEST_F(WelcomeTourControllerRunTest, NotificationBlocking) {
         /*visible_notifications=*/5u,
         /*popup_notifications=*/2u);
   }
+}
+
+// Verifies that nudges are suppressed while the Welcome Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, NudgePause) {
+  static constexpr char kNudgeId[] = "nudge_id";
+
+  // Verify nudge manager exists.
+  auto* const nudge_manager = AnchoredNudgeManager::Get();
+  ASSERT_TRUE(nudge_manager);
+
+  // Cache helper to check if a nudge matching `kNudgeId` is showing.
+  auto is_showing_nudge = [&]() {
+    return nudge_manager->IsNudgeShown(kNudgeId);
+  };
+
+  // Cache helper to show a toast matching `kNudgeId`.
+  auto show_nudge = [&]() {
+    AnchoredNudgeData nudge(kNudgeId, NudgeCatalogName::kMaxValue, u"text");
+    nudge_manager->Show(nudge);
+  };
+
+  // Case: Before Welcome Tour.
+  EXPECT_FALSE(is_showing_nudge());
+  show_nudge();
+  EXPECT_TRUE(is_showing_nudge());
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(is_showing_nudge());
+        show_nudge();
+        EXPECT_FALSE(is_showing_nudge());
+      })));
+
+  // Case: After Welcome Tour.
+  EXPECT_FALSE(is_showing_nudge());
+  show_nudge();
+  EXPECT_TRUE(is_showing_nudge());
 }
 
 // Verifies that scrims are added to all root windows only while the Welcome
