@@ -644,6 +644,10 @@ void CrasAudioHandler::RequestHfpMicSrSupported(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void CrasAudioHandler::SetHfpMicSrSupportedForTesting(bool supported) {
+  hfp_mic_sr_supported_ = supported;
+}
+
 void CrasAudioHandler::HandleGetHfpMicSrSupported(
     OnHfpMicSrSupportedCallback callback,
     absl::optional<bool> hfp_mic_sr_supported) {

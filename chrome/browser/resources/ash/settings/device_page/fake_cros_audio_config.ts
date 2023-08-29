@@ -18,6 +18,7 @@ export const defaultFakeMicJack: AudioDevice = {
   deviceType: AudioDeviceType.kInternalMic,
   noiseCancellationState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export const fakeSpeakerActive: AudioDevice = {
@@ -27,6 +28,7 @@ export const fakeSpeakerActive: AudioDevice = {
   deviceType: AudioDeviceType.kInternalSpeaker,
   noiseCancellationState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotSupported,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export const fakeMicJackInactive: AudioDevice = {
@@ -36,6 +38,7 @@ export const fakeMicJackInactive: AudioDevice = {
   deviceType: AudioDeviceType.kInternalSpeaker,
   noiseCancellationState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotSupported,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export const defaultFakeSpeaker: AudioDevice = {
@@ -45,6 +48,7 @@ export const defaultFakeSpeaker: AudioDevice = {
   deviceType: AudioDeviceType.kInternalSpeaker,
   noiseCancellationState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotSupported,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalFrontMic: AudioDevice = {
@@ -54,6 +58,7 @@ export const fakeInternalFrontMic: AudioDevice = {
   deviceType: AudioDeviceType.kFrontMic,
   noiseCancellationState: AudioEffectState.kNotEnabled,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export const fakeBluetoothMic: AudioDevice = {
@@ -63,6 +68,7 @@ export const fakeBluetoothMic: AudioDevice = {
   deviceType: AudioDeviceType.kBluetoothNbMic,
   noiseCancellationState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export const fakeInternalMicActive: AudioDevice = {
@@ -72,6 +78,7 @@ export const fakeInternalMicActive: AudioDevice = {
   deviceType: AudioDeviceType.kInternalMic,
   noiseCancellationState: AudioEffectState.kNotSupported,
   forceRespectUiGainsState: AudioEffectState.kNotEnabled,
+  hfpMicSrState: AudioEffectState.kNotSupported,
 };
 
 export interface FakePropertiesObserverInterface {
@@ -177,6 +184,25 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
         enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
     this.audioSystemProperties.inputDevices[activeIndex]
         .forceRespectUiGainsState = nextState;
+    this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /** Handle updating hfp mic sr state. */
+  setHfpMicSrEnabled(enabled: boolean): void {
+    if (!this.audioSystemProperties.inputDevices) {
+      return;
+    }
+
+    const activeIndex = this.audioSystemProperties.inputDevices.findIndex(
+        (device: AudioDevice) => device.isActive &&
+            device.hfpMicSrState !== AudioEffectState.kNotSupported);
+    if (activeIndex === -1) {
+      return;
+    }
+    const nextState: AudioEffectState =
+        enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
+    this.audioSystemProperties.inputDevices[activeIndex].hfpMicSrState =
+        nextState;
     this.notifyAudioSystemPropertiesUpdated();
   }
 

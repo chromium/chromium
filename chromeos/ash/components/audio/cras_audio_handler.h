@@ -388,6 +388,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Gets if hfp_mic_sr is supported by the board.
   void RequestHfpMicSrSupported(OnHfpMicSrSupportedCallback callback);
 
+  // Simulates hfp_mic_sr support in a test.
+  void SetHfpMicSrSupportedForTesting(bool supported);
+
   // Gets the pref state of hfp_mic_sr.
   bool GetHfpMicSrState() const;
 

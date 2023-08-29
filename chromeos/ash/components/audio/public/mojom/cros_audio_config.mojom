@@ -73,6 +73,10 @@ struct AudioDevice {
   // If ignore ui gains flag is set, users can force to respect ui gains by
   // setting it to true.
   AudioEffectState force_respect_ui_gains_state;
+
+  // The state of the Bluetooth hands-free profile(hfp) input super resolution
+  // audio effect.
+  AudioEffectState hfp_mic_sr_state;
 };
 
 // Represents the audio state of the Audio system.
@@ -145,4 +149,10 @@ interface CrosAudioConfig {
   // between different input devices, so changing the active input device will
   // keep the enabled state from the previous active input device.
   SetForceRespectUiGainsEnabled(bool enabled);
+
+  // Sets whether Bluetooth hands-free profile(hfp) input super resolution is
+  // enabled or not. This is shared between different bluetooth input devices,
+  // so changing the active input device will keep the enabled state from the
+  // previous active bluetooth input device.
+  SetHfpMicSrEnabled(bool enabled);
 };
