@@ -138,6 +138,10 @@ class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
     device_trust_test_environment_win_->SetExpectedDMToken(kBrowserDmToken);
     device_trust_test_environment_win_->SetExpectedClientID(kBrowserClientId);
 
+    // This will set up a key before DeviceTrustKeyManager initializes.
+    // DTKM should just try to load this key instead of creating one itself.
+    // If create_preexisting_key_ is False, then DTKM is responsible for
+    // creating the key and put it in storage.
     if (create_preexisting_key_) {
       device_trust_test_environment_win_->SetUpExistingKey();
     }
@@ -322,25 +326,38 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
 // To test "create key" flows, there should be no pre-existing persisted key.
+// Setting create_preexisting_key to false will result in no key existing
+// when DeviceTrustKeyManager initializes, and it should create a key
+// in storage.
 class DeviceTrustCreateKeyBrowserTest : public DeviceTrustDesktopBrowserTest {
  protected:
   DeviceTrustCreateKeyBrowserTest()
       : DeviceTrustDesktopBrowserTest(/*create_preexisting_key=*/false) {}
 };
 
-// Windows DT test environment mocks the registry and DT key does not exist by
-// default, in this test case a key will be created by DeviceTrustKeyManager.
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreation) {
+  std::vector<uint8_t> wrapped_key =
+      device_trust_test_environment_win_->GetWrappedKey();
   TriggerUrlNavigation();
   VerifyAttestationFlowSuccessful();
+  // Make sure DeviceTrustKeyManager successfully created a key in storage
+  // via no-nonce key rotation.
+  VerifyKeyRotationSuccess(/*with_nonce=*/false);
+
+  // Make sure key in storage remains unchanged.
+  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(), wrapped_key);
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreationV1) {
+  std::vector<uint8_t> wrapped_key =
+      device_trust_test_environment_win_->GetWrappedKey();
   SetChallengeValue(kChallengeV1);
   TriggerUrlNavigation();
   VerifyAttestationFlowFailure(test::kFailedToParseChallengeJsonResponse);
+  VerifyKeyRotationSuccess(/*with_nonce=*/false);
+  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(), wrapped_key);
 }
 
 // To test "create key" flows where the initial upload fails, the response code
@@ -350,18 +367,15 @@ class DeviceTrustCreateKeyUploadFailedBrowserTest
  protected:
   DeviceTrustCreateKeyUploadFailedBrowserTest()
       : DeviceTrustCreateKeyBrowserTest() {}
-
-  void SetUpOnMainThread() override {
-    DeviceTrustCreateKeyBrowserTest::SetUpOnMainThread();
-
-    // First attestation flow attempt fails when a DT attestation key does not
-    // exist, and KeyRotationCommand fails to upload the newly created key.
+  void SetUpInProcessBrowserTestFixture() override {
+    DeviceTrustCreateKeyBrowserTest::SetUpInProcessBrowserTestFixture();
     device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyUploadFailedBrowserTest,
                        AttestationFullFlowSucceedOnThirdAttempt) {
+  ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
   TriggerUrlNavigation();
   VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
   // DT attestation key should not be created if attestation fails.

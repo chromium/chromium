@@ -69,6 +69,11 @@ class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
   // Verifies that no attestation flow has occurred.
   void VerifyNoInlineFlowOccurred();
 
+  // Verifies that key rotation flow has succeeded. If `with_nonce` is false,
+  // the function verifies if a key creation was successful through logs,
+  // otherwise it checks for a successful key rotation instead.
+  void VerifyKeyRotationSuccess(bool with_nonce);
+
   // Can be used to reset the general state (e.g. capured requests, logged
   // histograms).
   void ResetState();

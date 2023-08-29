@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <map>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -69,6 +72,57 @@ class ScopedKeyPersistenceDelegateFactory
   // Next instance to be returned by `CreateKeyPersistenceDelegate`. Typically
   // set by tests to mock a persistence delegate fetched statically.
   std::unique_ptr<KeyPersistenceDelegate> next_instance_;
+};
+
+// Class used in tests to mock storing and retrieval of hardware signing key
+// pairs. Creating an instance of this will make tests use this class' own
+// in-memory storage for signing keys instead of the actual storage (registry,
+// file system etc.)
+class ScopedInMemoryKeyPersistenceDelegateFactory
+    : public KeyPersistenceDelegateFactory,
+      public KeyPersistenceDelegate {
+ public:
+  ScopedInMemoryKeyPersistenceDelegateFactory();
+  ~ScopedInMemoryKeyPersistenceDelegateFactory() override;
+
+  // The ScopedInMemoryKeyPersistenceDelegateFactory that creates
+  // KeyPersistenceDelegate using this function must outlive it.
+  // KeyPersistenceDelegateFactory:
+  std::unique_ptr<KeyPersistenceDelegate> CreateKeyPersistenceDelegate()
+      override;
+
+  // KeyPersistenceDelegate:
+  bool CheckRotationPermissions() override;
+  bool StoreKeyPair(KeyTrustLevel trust_level,
+                    std::vector<uint8_t> wrapped) override;
+  scoped_refptr<SigningKeyPair> LoadKeyPair(KeyStorageType type) override;
+  scoped_refptr<SigningKeyPair> CreateKeyPair() override;
+  bool PromoteTemporaryKeyPair() override;
+  bool DeleteKeyPair(KeyStorageType type) override;
+
+ private:
+  std::map<KeyStorageType, std::pair<KeyTrustLevel, std::vector<uint8_t>>>
+      key_map_;
+};
+
+// A KeyPersistenceDelegate that forwards all calls to another delegate.
+class KeyPersistenceDelegateStub : public KeyPersistenceDelegate {
+ public:
+  // `delegate` must outlive the KeyPersistenceDelegateStub object (this).
+  explicit KeyPersistenceDelegateStub(KeyPersistenceDelegate& delegate)
+      : delegate_(delegate) {}
+
+  // KeyPersistenceDelegate:
+  bool CheckRotationPermissions() override;
+  bool StoreKeyPair(KeyTrustLevel trust_level,
+                    std::vector<uint8_t> wrapped) override;
+  scoped_refptr<SigningKeyPair> LoadKeyPair(KeyStorageType type) override;
+  scoped_refptr<SigningKeyPair> CreateKeyPair() override;
+  bool PromoteTemporaryKeyPair() override;
+  bool DeleteKeyPair(KeyStorageType type) override;
+
+ private:
+  const raw_ref<KeyPersistenceDelegate> delegate_;
 };
 
 }  // namespace test

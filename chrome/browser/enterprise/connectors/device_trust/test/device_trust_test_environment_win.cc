@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
-#include "base/win/registry.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
@@ -94,7 +93,6 @@ DeviceTrustTestEnvironmentWin::DeviceTrustTestEnvironmentWin()
     : DeviceTrustTestEnvironment("device_trust_test_environment_win",
                                  kSuccessCode),
       install_details_(true) {
-  registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE);
   KeyRotationCommandFactory::SetFactoryInstanceForTesting(this);
 }
 
@@ -123,6 +121,13 @@ void DeviceTrustTestEnvironmentWin::SetUpExistingKey() {
   auto key_pair = key_persistence_delegate_->CreateKeyPair();
   EXPECT_TRUE(key_persistence_delegate_->StoreKeyPair(
       trust_level, key_pair->key()->GetWrappedKey()));
+}
+
+void DeviceTrustTestEnvironmentWin::ClearExistingKey() {
+  EXPECT_TRUE(key_persistence_delegate_->StoreKeyPair(
+      BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()));
+
+  EXPECT_FALSE(KeyExists());
 }
 
 std::vector<uint8_t> DeviceTrustTestEnvironmentWin::GetWrappedKey() {

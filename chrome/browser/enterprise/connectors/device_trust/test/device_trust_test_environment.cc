@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 
 namespace enterprise_connectors {
 
@@ -13,7 +12,9 @@ DeviceTrustTestEnvironment::DeviceTrustTestEnvironment(
     HttpResponseCode upload_response_code)
     : worker_thread_(std::string(thread_name)),
       upload_response_code_(upload_response_code) {
-  key_persistence_delegate_ = KeyPersistenceDelegateFactory::GetInstance()
+  scoped_in_memory_key_persistence_delegate_factory_.emplace();
+
+  key_persistence_delegate_ = scoped_in_memory_key_persistence_delegate_factory_
                                   ->CreateKeyPersistenceDelegate();
 }
 

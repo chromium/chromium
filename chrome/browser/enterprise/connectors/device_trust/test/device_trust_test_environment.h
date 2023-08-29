@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 
 namespace enterprise_connectors {
 
@@ -27,6 +29,10 @@ class DeviceTrustTestEnvironment {
   // Set up an existing device trust key on the device, to test the case where a
   // key already exists on the device.
   virtual void SetUpExistingKey() = 0;
+
+  // Clear a key on persistence delegate to test the cases where there's
+  // no key on the device.
+  virtual void ClearExistingKey() = 0;
 
   // Set up an existing device trust key on the device, to test the case where a
   // key already exists on the device.
@@ -61,8 +67,14 @@ class DeviceTrustTestEnvironment {
   // Expected client ID to be included in dm server URL when upload to dm server
   std::string expected_client_id_;
 
+  // In-memory scoped KeyPersistenceDelegateFactory to create
+  // `key_persistence_delegate_`.
+  absl::optional<test::ScopedInMemoryKeyPersistenceDelegateFactory>
+      scoped_in_memory_key_persistence_delegate_factory_;
+
   // Instance of platform-dependent KeyPersistenceDelegate to interact with
-  // Device Trust keys.
+  // Device Trust keys, this should keep the key in an in-memory storage
+  // instead of using the actual key storage.
   std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate_;
 };
 

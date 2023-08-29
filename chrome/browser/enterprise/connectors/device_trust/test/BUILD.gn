@@ -44,7 +44,11 @@ source_set("test_support") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:network",
     ]
 
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence" ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+    ]
   }
 
   if (is_win) {
@@ -61,7 +65,6 @@ source_set("test_support") {
 
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:rotate_util",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:constants",
