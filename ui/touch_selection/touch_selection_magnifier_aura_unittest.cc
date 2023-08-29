@@ -44,10 +44,10 @@ TEST_F(TouchSelectionMagnifierAuraTest, BoundsForVerticalCaret) {
   magnifier.ShowFocusBound(&magnifier_parent, kCaretTop, kCaretBottom);
 
   // Magnifier should be horizontally centered above the caret.
-  const gfx::Rect magnified_area_bounds =
-      magnifier.GetMagnifiedAreaBoundsForTesting();
-  EXPECT_EQ(magnified_area_bounds.CenterPoint().x(), kCaretTop.x());
-  EXPECT_LT(magnified_area_bounds.bottom(), kCaretBottom.y());
+  const gfx::Rect zoomed_contents_bounds =
+      magnifier.GetZoomedContentsBoundsForTesting();
+  EXPECT_EQ(zoomed_contents_bounds.CenterPoint().x(), kCaretTop.x());
+  EXPECT_LT(zoomed_contents_bounds.bottom(), kCaretBottom.y());
 }
 
 // Tests that the magnifier bounds are updated as a caret moves.
@@ -67,10 +67,10 @@ TEST_F(TouchSelectionMagnifierAuraTest, BoundsUpdate) {
                            kUpdatedCaretBottom);
 
   // Magnifier should be horizontally centered above the updated caret.
-  const gfx::Rect magnified_area_bounds =
-      magnifier.GetMagnifiedAreaBoundsForTesting();
-  EXPECT_EQ(magnified_area_bounds.CenterPoint().x(), kUpdatedCaretTop.x());
-  EXPECT_LT(magnified_area_bounds.bottom(), kUpdatedCaretBottom.y());
+  const gfx::Rect zoomed_contents_bounds =
+      magnifier.GetZoomedContentsBoundsForTesting();
+  EXPECT_EQ(zoomed_contents_bounds.CenterPoint().x(), kUpdatedCaretTop.x());
+  EXPECT_LT(zoomed_contents_bounds.bottom(), kUpdatedCaretBottom.y());
 }
 
 // Tests that the magnifier is adjusted to stay inside the parent layer when
@@ -87,7 +87,7 @@ TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentLeftEdge) {
 
   // Magnifier should be contained in the parent bounds.
   EXPECT_TRUE(
-      kParentBounds.Contains(magnifier.GetMagnifiedAreaBoundsForTesting()));
+      kParentBounds.Contains(magnifier.GetZoomedContentsBoundsForTesting()));
 }
 
 // Tests that the magnifier is adjusted to stay inside the parent layer when
@@ -104,7 +104,7 @@ TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentRightEdge) {
 
   // Magnifier should be contained in the parent bounds.
   EXPECT_TRUE(
-      kParentBounds.Contains(magnifier.GetMagnifiedAreaBoundsForTesting()));
+      kParentBounds.Contains(magnifier.GetZoomedContentsBoundsForTesting()));
 }
 
 // Tests that the magnifier is adjusted to stay inside the parent layer when
@@ -121,7 +121,7 @@ TEST_F(TouchSelectionMagnifierAuraTest, StaysInsideParentTopEdge) {
 
   // Magnifier should be contained in the parent bounds.
   EXPECT_TRUE(
-      kParentBounds.Contains(magnifier.GetMagnifiedAreaBoundsForTesting()));
+      kParentBounds.Contains(magnifier.GetZoomedContentsBoundsForTesting()));
 }
 
 // Tests that the magnifier remains the same size even at the edge of the
@@ -135,13 +135,13 @@ TEST_F(TouchSelectionMagnifierAuraTest, Size) {
   magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(300, 200),
                            gfx::Point(300, 210));
   const gfx::Size magnifier_size =
-      magnifier.GetMagnifiedAreaBoundsForTesting().size();
+      magnifier.GetZoomedContentsBoundsForTesting().size();
   // Move the caret near the edge of the parent container.
   magnifier.ShowFocusBound(&magnifier_parent, gfx::Point(10, 3),
                            gfx::Point(10, 13));
 
   // Magnifier should remain the same size.
-  EXPECT_EQ(magnifier.GetMagnifiedAreaBoundsForTesting().size(),
+  EXPECT_EQ(magnifier.GetZoomedContentsBoundsForTesting().size(),
             magnifier_size);
 }
 

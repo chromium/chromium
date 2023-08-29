@@ -39,9 +39,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura {
                       const gfx::Point& focus_start,
                       const gfx::Point& focus_end);
 
-  // Returns the bounds of the magnified area, in coordinates of the magnifier's
+  // Returns the bounds of the zoomed contents in coordinates of the magnifier's
   // parent layer.
-  gfx::Rect GetMagnifiedAreaBoundsForTesting() const;
+  gfx::Rect GetZoomedContentsBoundsForTesting() const;
 
   const Layer* GetMagnifierParentForTesting() const;
 
@@ -54,8 +54,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura {
   // layer bounds should be updated when selection updates occur.
   std::unique_ptr<Layer> magnifier_layer_;
 
-  // Draws the magnified area, i.e. the background with a zoom and offset filter
-  // applied.
+  // Draws the zoomed contents, i.e. the background with a zoom and offset
+  // filter applied.
   std::unique_ptr<Layer> zoom_layer_;
 
   // Draws the magnifier border and shadows. `border_layer_` must be ordered
