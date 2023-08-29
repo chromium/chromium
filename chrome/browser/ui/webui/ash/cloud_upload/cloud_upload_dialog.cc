@@ -129,13 +129,9 @@ enum class Microsoft365Availability {
 // DriveFS. Check the file was successfully uploaded to DriveFS.
 void OpenUploadedDriveUrl(const GURL& url,
                           const OfficeTaskResult task_result_uma) {
-  if (url.is_empty()) {
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveUploadResultMetricName,
-                              OfficeFilesUploadResult::kInvalidURL);
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToUpload);
-    return;
-  }
+  // TODO(b/296950967): This function logs both open result and task result (but
+  // only if open fails) metrics internally, pull them up to a higher level so
+  // all the metrics are logged in one place.
   bool opened = file_manager::util::OpenNewTabForHostedOfficeFile(url);
   if (opened) {
     UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
@@ -825,15 +821,20 @@ void CloudOpenTask::StartUpload() {
   }
 }
 
-void CloudOpenTask::FinishedDriveUpload(const GURL& url, int64_t size) {
+void CloudOpenTask::FinishedDriveUpload(absl::optional<GURL> url,
+                                        int64_t size) {
   DCHECK_GT(pending_uploads_, 0UL);
-  const OfficeTaskResult task_result_uma =
-      transfer_required_ == OfficeFilesTransferRequired::kCopy
-          ? OfficeTaskResult::kCopied
-          : OfficeTaskResult::kMoved;
-  OpenUploadedDriveUrl(url, task_result_uma);
-  if (size > 0) {
+  if (url.has_value()) {
     upload_total_size_ += size;
+    // Open the URL.
+    const OfficeTaskResult task_result_uma =
+        transfer_required_ == OfficeFilesTransferRequired::kCopy
+            ? OfficeTaskResult::kCopied
+            : OfficeTaskResult::kMoved;
+    OpenUploadedDriveUrl(url.value(), task_result_uma);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
+                              OfficeTaskResult::kFailedToUpload);
   }
   if (--pending_uploads_) {
     return;
@@ -844,32 +845,35 @@ void CloudOpenTask::FinishedDriveUpload(const GURL& url, int64_t size) {
 
 void CloudOpenTask::FinishedOneDriveUpload(
     base::WeakPtr<Profile> profile_weak_ptr,
-    const storage::FileSystemURL& url,
+    absl::optional<storage::FileSystemURL> url,
     int64_t size) {
   DCHECK_GT(pending_uploads_, 0UL);
-  Profile* profile = profile_weak_ptr.get();
-  if (!url.is_valid()) {
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveUploadResultMetricName,
-                              OfficeFilesUploadResult::kInvalidURL);
+  if (url.has_value()) {
+    upload_total_size_ += size;
+    Profile* profile = profile_weak_ptr.get();
+    if (!profile) {
+      // TODO(b/296950967): metric to log here?
+      return;
+    }
+    const OfficeTaskResult task_result_uma =
+        transfer_required_ == OfficeFilesTransferRequired::kCopy
+            ? OfficeTaskResult::kCopied
+            : OfficeTaskResult::kMoved;
+    OpenODFSUrl(profile, url.value(), task_result_uma);
+  } else {
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
                               OfficeTaskResult::kFailedToUpload);
-    return;
   }
-  if (!profile) {
-    return;
-  }
-  if (size > 0) {
-    upload_total_size_ += size;
-  }
-  const OfficeTaskResult task_result_uma =
-      transfer_required_ == OfficeFilesTransferRequired::kCopy
-          ? OfficeTaskResult::kCopied
-          : OfficeTaskResult::kMoved;
-  OpenODFSUrl(profile, url, task_result_uma);
+
   if (--pending_uploads_) {
     return;
   }
   RecordUploadLatencyUMA();
+  Profile* profile = profile_weak_ptr.get();
+  if (!profile) {
+    // TODO(b/296950967): metric to log here?
+    return;
+  }
   fm_tasks::SetOfficeFileMovedToOneDrive(profile, base::Time::Now());
 }
 

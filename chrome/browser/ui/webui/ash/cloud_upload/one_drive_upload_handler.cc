@@ -41,9 +41,9 @@ constexpr char kUploadResultMetricName[] =
 // Runs the callback provided to `OneDriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,
                   OneDriveUploadHandler::UploadCallback callback,
-                  const FileSystemURL& uploaded_file_url,
+                  absl::optional<FileSystemURL> uploaded_file_url,
                   int64_t upload_size) {
-  std::move(callback).Run(uploaded_file_url, upload_size);
+  std::move(callback).Run(std::move(uploaded_file_url), upload_size);
 }
 
 }  // namespace
@@ -152,26 +152,26 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
 }
 
 void OneDriveUploadHandler::OnEndUpload(
-    base::expected<storage::FileSystemURL, std::string> url_or_error,
+    base::expected<storage::FileSystemURL, std::string> url,
     OfficeFilesUploadResult result_metric) {
   UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result_metric);
-  if (result_metric != OfficeFilesUploadResult::kSuccess) {
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToUpload);
-  }
-  // Resolve notifications.
-  if (notification_manager_) {
-    if (url_or_error.has_value()) {
+  if (url.has_value()) {
+    // Resolve notifications.
+    if (notification_manager_) {
       notification_manager_->MarkUploadComplete();
-    } else if (const std::string& error_message = url_or_error.error();
-               !error_message.empty()) {
+    }
+    if (callback_) {
+      std::move(callback_).Run(url.value(), upload_size_);
+    }
+  } else {
+    if (const std::string& error_message = url.error();
+        notification_manager_ && !error_message.empty()) {
       LOG(ERROR) << "Upload to OneDrive: " << error_message;
       notification_manager_->ShowUploadError(error_message);
     }
-  }
-  if (callback_) {
-    std::move(callback_).Run(url_or_error.value_or(FileSystemURL()),
-                             upload_size_);
+    if (callback_) {
+      std::move(callback_).Run(absl::nullopt, 0);
+    }
   }
 }
 

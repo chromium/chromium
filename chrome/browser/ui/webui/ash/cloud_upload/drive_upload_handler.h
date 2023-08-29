@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -41,7 +42,8 @@ class DriveUploadHandler
       public drive::DriveIntegrationServiceObserver,
       public base::RefCounted<DriveUploadHandler> {
  public:
-  using UploadCallback = base::OnceCallback<void(const GURL&, int64_t)>;
+  using UploadCallback =
+      base::OnceCallback<void(absl::optional<GURL>, int64_t)>;
 
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,

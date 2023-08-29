@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
@@ -175,9 +176,12 @@ class CloudOpenTask : public BrowserListObserver,
   void ConfirmMoveOrStartUpload();
   void StartUpload();
 
-  void FinishedDriveUpload(const GURL& url, int64_t size);
+  // Callbacks from `DriveUploadHandler` and `OneDriveUploadHandler`. URL passed
+  // to these callbacks will be `absl::nullopt` and size will be 0 if upload
+  // fails.
+  void FinishedDriveUpload(absl::optional<GURL> url, int64_t size);
   void FinishedOneDriveUpload(base::WeakPtr<Profile> profile_weak_ptr,
-                              const storage::FileSystemURL& url,
+                              absl::optional<storage::FileSystemURL> url,
                               int64_t size);
 
   bool InitAndShowDialog(mojom::DialogPage dialog_page);

@@ -46,9 +46,9 @@ const int kAlternateUrlPollInterval = 200;
 // Runs the callback provided to `DriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
                   DriveUploadHandler::UploadCallback callback,
-                  const GURL& hosted_url,
+                  absl::optional<GURL> hosted_url,
                   int64_t upload_size) {
-  std::move(callback).Run(hosted_url, upload_size);
+  std::move(callback).Run(std::move(hosted_url), upload_size);
 }
 
 std::string GetTargetAppName(base::FilePath file_path) {
@@ -258,26 +258,27 @@ void DriveUploadHandler::OnEndUpload(
     base::expected<GURL, std::string> hosted_url,
     OfficeFilesUploadResult result_metric) {
   UMA_HISTOGRAM_ENUMERATION(kGoogleDriveUploadResultMetricName, result_metric);
-  if (result_metric != OfficeFilesUploadResult::kSuccess) {
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToUpload);
-  }
   // TODO (b/243095484) Define error behavior on invalid hosted URL.
   observed_relative_drive_path_.clear();
   // Stop suppressing Drive events for the observed file.
   scoped_suppress_drive_notifications_for_path_.reset();
-  // Resolve notifications.
-  if (notification_manager_) {
-    if (hosted_url.has_value()) {
+  if (hosted_url.has_value()) {
+    // Resolve notifications.
+    if (notification_manager_) {
       notification_manager_->MarkUploadComplete();
-    } else if (const std::string& error_message = hosted_url.error();
-               !error_message.empty()) {
-      LOG(ERROR) << "Cloud upload: " << error_message;
+    }
+    if (callback_) {
+      std::move(callback_).Run(hosted_url.value(), upload_size_);
+    }
+  } else {
+    if (const std::string& error_message = hosted_url.error();
+        notification_manager_ && !error_message.empty()) {
+      LOG(ERROR) << "Upload to Google Drive: " << error_message;
       notification_manager_->ShowUploadError(error_message);
     }
-  }
-  if (callback_) {
-    std::move(callback_).Run(hosted_url.value_or(GURL()), upload_size_);
+    if (callback_) {
+      std::move(callback_).Run(absl::nullopt, 0);
+    }
   }
 }
 

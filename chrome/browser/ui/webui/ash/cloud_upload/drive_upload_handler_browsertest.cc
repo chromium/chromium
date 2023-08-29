@@ -248,11 +248,11 @@ class DriveUploadHandlerTest
   }
 
   // `Wait` will not complete until this is called.
-  void OnUploadDone(const GURL& url, int64_t size) {
+  void OnUploadDone(absl::optional<GURL> url, int64_t size) {
     if (fail_sync_) {
-      ASSERT_TRUE(url.is_empty());
+      ASSERT_FALSE(url);
     } else {
-      ASSERT_FALSE(url.is_empty());
+      ASSERT_TRUE(url);
     }
     EndWait();
   }
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
 
   base::RunLoop run_loop;
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
-  EXPECT_CALL(upload_callback, Run(GURL(), _))
+  EXPECT_CALL(upload_callback, Run(absl::optional<GURL>(absl::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get());
   run_loop.Run();
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
 
   base::RunLoop run_loop;
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
-  EXPECT_CALL(upload_callback, Run(GURL(), _))
+  EXPECT_CALL(upload_callback, Run(absl::optional<GURL>(absl::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get());
   run_loop.Run();

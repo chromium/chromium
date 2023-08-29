@@ -207,9 +207,9 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   }
 
   // Watch for a valid `uploaded_file_url`.
-  void OnUploadDone(const storage::FileSystemURL& uploaded_file_url,
+  void OnUploadDone(absl::optional<storage::FileSystemURL> uploaded_file_url,
                     int64_t size) {
-    ASSERT_TRUE(uploaded_file_url.is_valid());
+    ASSERT_TRUE(uploaded_file_url.has_value());
     EndWait();
   }
 
