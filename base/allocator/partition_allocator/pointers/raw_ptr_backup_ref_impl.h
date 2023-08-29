@@ -42,6 +42,11 @@ class BackupRefPtrGlobalSettings {
     experimental_ash_raw_ptr_enabled_ = true;
   }
 
+  static void DisableExperimentalAshForTest() {
+    PA_CHECK(experimental_ash_raw_ptr_enabled_);
+    experimental_ash_raw_ptr_enabled_ = false;
+  }
+
   PA_ALWAYS_INLINE static bool IsExperimentalAshEnabled() {
     return experimental_ash_raw_ptr_enabled_;
   }

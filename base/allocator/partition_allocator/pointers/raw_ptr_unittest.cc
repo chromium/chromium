@@ -2258,6 +2258,12 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
 
 #if BUILDFLAG(PA_IS_CHROMEOS_ASH)
 TEST_F(BackupRefPtrTest, ExperimentalAsh) {
+  const bool feature_enabled_by_default =
+      BackupRefPtrGlobalSettings::IsExperimentalAshEnabled();
+  if (feature_enabled_by_default) {
+    BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
+  }
+
   // Allocate a slot so that a slot span doesn't get decommitted from memory,
   // while we allocate/deallocate/access the tested slot below.
   void* sentinel = allocator_.root()->Alloc(sizeof(unsigned int), "");
@@ -2268,7 +2274,7 @@ TEST_F(BackupRefPtrTest, ExperimentalAsh) {
   constexpr uint32_t kQuarantined4Bytes =
       kQuarantined2Bytes | (kQuarantined2Bytes << 16);
 
-  // Plain raw_ptr, BRP is expected to be on.
+  // Plain raw_ptr, with BRP for ExperimentalAsh pointer disabled.
   {
     raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
         allocator_.root()->Alloc(sizeof(unsigned int), ""));
@@ -2293,7 +2299,7 @@ TEST_F(BackupRefPtrTest, ExperimentalAsh) {
     EXPECT_NE(kQuarantined4Bytes, *ptr);
   }
 
-  RawPtrGlobalSettings::EnableExperimentalAsh();
+  BackupRefPtrGlobalSettings::EnableExperimentalAsh();
   // BRP should be on for both types of pointers.
   {
     raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
@@ -2320,6 +2326,11 @@ TEST_F(BackupRefPtrTest, ExperimentalAsh) {
   }
 
   allocator_.root()->Free(sentinel);
+
+  // Restore the feature state to avoid one test to "leak" into the next one.
+  if (!feature_enabled_by_default) {
+    BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
+  }
 }
 #endif  // BUILDFLAG(PA_IS_CHROMEOS_ASH)
 
