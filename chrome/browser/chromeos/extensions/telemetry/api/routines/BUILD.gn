@@ -1,6 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
 
 source_set("routines") {
   sources = [
@@ -10,6 +11,8 @@ source_set("routines") {
     "diagnostic_routine_converters.h",
     "diagnostic_routine_observation.cc",
     "diagnostic_routine_observation.h",
+    "remote_diagnostic_routines_service_strategy.cc",
+    "remote_diagnostic_routines_service_strategy.h",
   ]
 
   deps = [
@@ -22,6 +25,14 @@ source_set("routines") {
   ]
 
   public_deps = [ "//extensions/browser" ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/telemetry_extension/routines" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
 }
 
 source_set("unit_tests") {
