@@ -4,7 +4,10 @@
 
 #include "services/webnn/dml/platform_functions.h"
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/native_library.h"
+#include "base/path_service.h"
 
 namespace webnn::dml {
 
@@ -32,9 +35,19 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
-  // DirectML
-  base::ScopedNativeLibrary dml_library(
-      std::move(base::LoadSystemLibrary(L"directml.dll")));
+  // First try to Load DirectML.dll from the module folder. It would enable
+  // running unit tests which require DirectML feature level 4.0+ on Windows 10.
+  base::ScopedNativeLibrary dml_library;
+  base::FilePath module_path;
+  if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+    dml_library = base::ScopedNativeLibrary(
+        base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr));
+  }
+  // If it failed to load from module folder, try to load from system folder.
+  if (!dml_library.is_valid()) {
+    dml_library =
+        base::ScopedNativeLibrary(base::LoadSystemLibrary(L"directml.dll"));
+  }
   if (!dml_library.is_valid()) {
     DLOG(ERROR) << "Failed to load directml.dll.";
     return;
