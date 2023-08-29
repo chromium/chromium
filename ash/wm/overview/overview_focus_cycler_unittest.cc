@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -18,8 +18,8 @@
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
@@ -40,34 +40,31 @@ namespace ash {
 
 namespace {
 
-struct OverviewHighlightControllerTestParams {
+struct OverviewFocusCyclerTestParams {
   bool desk_templates_enabled = false;
 };
 
 }  // namespace
 
-class OverviewHighlightControllerTest
+class OverviewFocusCyclerTest
     : public OverviewTestBase,
-      public testing::WithParamInterface<
-          OverviewHighlightControllerTestParams> {
+      public testing::WithParamInterface<OverviewFocusCyclerTestParams> {
  public:
-  OverviewHighlightControllerTest() = default;
-  OverviewHighlightControllerTest(const OverviewHighlightControllerTest&) =
-      delete;
-  OverviewHighlightControllerTest& operator=(
-      const OverviewHighlightControllerTest&) = delete;
-  ~OverviewHighlightControllerTest() override = default;
+  OverviewFocusCyclerTest() = default;
+  OverviewFocusCyclerTest(const OverviewFocusCyclerTest&) = delete;
+  OverviewFocusCyclerTest& operator=(const OverviewFocusCyclerTest&) = delete;
+  ~OverviewFocusCyclerTest() override = default;
 
-  OverviewHighlightController* GetHighlightController() {
-    return GetOverviewSession()->highlight_controller();
+  OverviewFocusCycler* GetFocusCycler() {
+    return GetOverviewSession()->focus_cycler();
   }
 
-  // Press the key repeatedly until a window is highlighted, i.e. ignoring any
+  // Press the key repeatedly until a window is focused, i.e. ignoring any
   // desk items.
-  void SendKeyUntilOverviewItemIsHighlighted(ui::KeyboardCode key) {
+  void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key) {
     do {
       SendKey(key);
-    } while (!GetOverviewHighlightedWindow());
+    } while (!GetOverviewFocusedWindow());
   }
 
   // Helper to make tests more readable.
@@ -89,27 +86,27 @@ class OverviewHighlightControllerTest
 };
 
 // Tests traversing some windows in overview mode with the tab key.
-TEST_P(OverviewHighlightControllerTest, BasicTabKeyNavigation) {
+TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigation) {
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
 
   ToggleOverview();
   const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
       GetOverviewItemsForRoot(0);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_LEFT);
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_LEFT);
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
 }
 
 // Same as above but for tablet mode. Regression test for crbug.com/1036140.
-TEST_P(OverviewHighlightControllerTest, BasicTabKeyNavigationTablet) {
+TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigationTablet) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window3(CreateTestWindow());
@@ -118,30 +115,30 @@ TEST_P(OverviewHighlightControllerTest, BasicTabKeyNavigationTablet) {
   ToggleOverview();
   const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
       GetOverviewItemsForRoot(0);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(overview_windows[2]->GetWindow(), GetOverviewHighlightedWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_LEFT);
-  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(overview_windows[2]->GetWindow(), GetOverviewFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_LEFT);
+  EXPECT_EQ(overview_windows[1]->GetWindow(), GetOverviewFocusedWindow());
 }
 
 // Tests that pressing Ctrl+W while a window is selected in overview closes it.
-TEST_P(OverviewHighlightControllerTest, CloseWindowWithKey) {
+TEST_P(OverviewFocusCyclerTest, CloseWindowWithKey) {
   std::unique_ptr<views::Widget> widget(CreateTestWidget());
   ToggleOverview();
 
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(widget->GetNativeWindow(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(widget->GetNativeWindow(), GetOverviewFocusedWindow());
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(widget->IsClosed());
 }
 
 // Tests traversing some windows in overview mode with the arrow keys in every
 // possible direction.
-TEST_P(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
+TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
   const size_t test_windows = 9;
   UpdateDisplay("800x600");
   std::vector<std::unique_ptr<aura::Window>> windows;
@@ -166,11 +163,11 @@ TEST_P(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
     const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
         GetOverviewItemsForRoot(0);
     for (size_t i = 0; i < test_windows + 1; ++i) {
-      SendKeyUntilOverviewItemIsHighlighted(arrow_keys[key_index]);
+      SendKeyUntilOverviewItemIsFocused(arrow_keys[key_index]);
       // TODO(flackr): Add a more readable error message by constructing a
       // string from the window IDs.
       const int index = index_path_for_direction[key_index][i];
-      EXPECT_EQ(GetOverviewHighlightedWindow()->GetId(),
+      EXPECT_EQ(GetOverviewFocusedWindow()->GetId(),
                 overview_windows[index - 1]->GetWindow()->GetId());
     }
     ToggleOverview();
@@ -179,31 +176,31 @@ TEST_P(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
 
 // Tests that when an item is removed while highlighted, the highlight
 // disappears, and when we tab again we pick up where we left off.
-TEST_P(OverviewHighlightControllerTest, ItemClosed) {
+TEST_P(OverviewFocusCyclerTest, ItemClosed) {
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
   auto widget3 = CreateTestWidget();
   ToggleOverview();
 
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(widget2->GetNativeWindow(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(widget2->GetNativeWindow(), GetOverviewFocusedWindow());
 
   // Remove |widget2| by closing it with ctrl + W. Test that the highlight
   // becomes invisible (neither widget is highlighted).
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(widget2->IsClosed());
   widget2.reset();
-  EXPECT_FALSE(GetOverviewHighlightedWindow());
+  EXPECT_FALSE(GetOverviewFocusedWindow());
 
   // Tests that on pressing tab, the highlight becomes visible and we highlight
   // the window that comes after the deleted one.
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(widget1->GetNativeWindow(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(widget1->GetNativeWindow(), GetOverviewFocusedWindow());
 }
 
 // Tests basic selection across multiple monitors.
-TEST_P(OverviewHighlightControllerTest, BasicMultiMonitorArrowKeyNavigation) {
+TEST_P(OverviewFocusCyclerTest, BasicMultiMonitorArrowKeyNavigation) {
   UpdateDisplay("500x400,500x400");
   const gfx::Rect bounds1(100, 100);
   const gfx::Rect bounds2(550, 0, 100, 100);
@@ -218,19 +215,19 @@ TEST_P(OverviewHighlightControllerTest, BasicMultiMonitorArrowKeyNavigation) {
       GetOverviewItemsForRoot(0);
   const std::vector<std::unique_ptr<OverviewItemBase>>& overview_root2 =
       GetOverviewItemsForRoot(1);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(GetOverviewHighlightedWindow(), overview_root1[0]->GetWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(GetOverviewHighlightedWindow(), overview_root1[1]->GetWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(GetOverviewHighlightedWindow(), overview_root2[0]->GetWindow());
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(GetOverviewHighlightedWindow(), overview_root2[1]->GetWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(GetOverviewFocusedWindow(), overview_root1[0]->GetWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(GetOverviewFocusedWindow(), overview_root1[1]->GetWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(GetOverviewFocusedWindow(), overview_root2[0]->GetWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(GetOverviewFocusedWindow(), overview_root2[1]->GetWindow());
 }
 
 // Tests first monitor when display order doesn't match left to right screen
 // positions.
-TEST_P(OverviewHighlightControllerTest, MultiMonitorReversedOrder) {
+TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
   UpdateDisplay("500x400,500x400");
   Shell::Get()->display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(display_manager(),
@@ -246,8 +243,8 @@ TEST_P(OverviewHighlightControllerTest, MultiMonitorReversedOrder) {
 
   // Coming from the left to right, we should select window1 first being on the
   // display to the left.
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(GetOverviewHighlightedWindow(), window1.get());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(GetOverviewFocusedWindow(), window1.get());
 
   // Exit and reenter overview.
   ToggleOverview();
@@ -255,12 +252,12 @@ TEST_P(OverviewHighlightControllerTest, MultiMonitorReversedOrder) {
 
   // Coming from right to left, we should select window2 first being on the
   // display on the right.
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_LEFT);
-  EXPECT_EQ(GetOverviewHighlightedWindow(), window2.get());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_LEFT);
+  EXPECT_EQ(GetOverviewFocusedWindow(), window2.get());
 }
 
 // Tests three monitors where the grid becomes empty on one of the monitors.
-TEST_P(OverviewHighlightControllerTest, ThreeMonitor) {
+TEST_P(OverviewFocusCyclerTest, ThreeMonitor) {
   UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window3(
@@ -274,31 +271,31 @@ TEST_P(OverviewHighlightControllerTest, ThreeMonitor) {
 
   ToggleOverview();
 
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
 
   // If the selected window is closed, then nothing should be selected.
   window3.reset();
-  EXPECT_EQ(nullptr, GetOverviewHighlightedWindow());
+  EXPECT_EQ(nullptr, GetOverviewFocusedWindow());
   ToggleOverview();
 
   window3 = CreateTestWindow(gfx::Rect(1000, 0, 100, 100));
   ToggleOverview();
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT);
 
   // If the window on the second display is removed, the selected window should
   // remain window3.
-  EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
+  EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
   window2.reset();
-  EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
+  EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
 }
 
 // Tests selecting a window in overview mode with the return key.
-TEST_P(OverviewHighlightControllerTest, HighlightOverviewWindowWithReturnKey) {
+TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   ToggleOverview();
@@ -309,32 +306,32 @@ TEST_P(OverviewHighlightControllerTest, HighlightOverviewWindowWithReturnKey) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Highlight the first window.
-  ASSERT_TRUE(HighlightOverviewWindow(window1.get()));
+  ASSERT_TRUE(FocusOverviewWindow(window1.get()));
   SendKey(ui::VKEY_RETURN);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Highlight the second window.
   ToggleOverview();
-  ASSERT_TRUE(HighlightOverviewWindow(window2.get()));
+  ASSERT_TRUE(FocusOverviewWindow(window2.get()));
   SendKey(ui::VKEY_RETURN);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
-// Tests that the location of the overview highlight is as expected while
+// Tests that the location of the overview focus ring is as expected while
 // dragging an overview item.
-TEST_P(OverviewHighlightControllerTest, HighlightLocationWhileDragging) {
+TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window3(CreateTestWindow(gfx::Rect(200, 200)));
 
   ToggleOverview();
 
-  // Tab once to show the highlight.
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
-  auto* item = GetOverviewItemForWindow(window3.get());
+  // Tab once to show the focus ring.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
+  OverviewItemBase* item = GetOverviewItemForWindow(window3.get());
 
   // Tests that while dragging an item, tabbing does not change which item the
   // highlight is hovered over, but the highlight is hidden. Drag the item in a
@@ -344,40 +341,38 @@ TEST_P(OverviewHighlightControllerTest, HighlightLocationWhileDragging) {
   GetOverviewSession()->InitiateDrag(item, start_point,
                                      /*is_touch_dragging=*/true);
   GetOverviewSession()->Drag(item, end_point);
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
-  EXPECT_FALSE(GetHighlightController()->IsFocusHighlightVisible());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
+  EXPECT_FALSE(GetFocusCycler()->IsFocusVisible());
 
   // Tests that on releasing the item, the highlighted window remains the same.
   GetOverviewSession()->Drag(item, start_point);
   GetOverviewSession()->CompleteDrag(item, start_point);
-  EXPECT_EQ(window3.get(), GetOverviewHighlightedWindow());
-  EXPECT_TRUE(GetHighlightController()->IsFocusHighlightVisible());
+  EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
+  EXPECT_TRUE(GetFocusCycler()->IsFocusVisible());
 
   // Tests that on tabbing after releasing, the highlighted window is the next
   // one.
-  SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_TAB);
-  EXPECT_EQ(window2.get(), GetOverviewHighlightedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  EXPECT_EQ(window2.get(), GetOverviewFocusedWindow());
 }
 
 // ----------------------------------------------------------------------------
-// DesksOverviewHighlightControllerTest:
+// DesksOverviewFocusCyclerTest:
 
-class DesksOverviewHighlightControllerTest
-    : public OverviewHighlightControllerTest {
+class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
  public:
-  DesksOverviewHighlightControllerTest() = default;
+  DesksOverviewFocusCyclerTest() = default;
 
-  DesksOverviewHighlightControllerTest(
-      const DesksOverviewHighlightControllerTest&) = delete;
-  DesksOverviewHighlightControllerTest& operator=(
-      const DesksOverviewHighlightControllerTest&) = delete;
+  DesksOverviewFocusCyclerTest(const DesksOverviewFocusCyclerTest&) = delete;
+  DesksOverviewFocusCyclerTest& operator=(const DesksOverviewFocusCyclerTest&) =
+      delete;
 
-  ~DesksOverviewHighlightControllerTest() override = default;
+  ~DesksOverviewFocusCyclerTest() override = default;
 
-  // OverviewHighlightControllerTest:
+  // OverviewFocusCyclerTest:
   void SetUp() override {
-    OverviewHighlightControllerTest::SetUp();
+    OverviewFocusCyclerTest::SetUp();
 
     // All tests in this suite require the desks bar to be visible in overview,
     // which requires at least two desks.
@@ -391,8 +386,8 @@ class DesksOverviewHighlightControllerTest
     desk_controller->GetDeskAtIndex(1)->SetName(u"Desk 2", false);
   }
 
-  OverviewHighlightableView* GetHighlightedView() {
-    return GetHighlightController()->highlighted_view();
+  OverviewFocusableView* GetHighlightedView() {
+    return GetFocusCycler()->focused_view();
   }
 
   const LegacyDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
@@ -415,7 +410,7 @@ class DesksOverviewHighlightControllerTest
 // Tests that we can tab through the desk mini views, new desk button and
 // overview items in the correct order. Overview items will have the overview
 // highlight shown when highlighted, but desks items will not.
-TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
+TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
 
@@ -453,7 +448,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
 
   EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
                 ? desk_bar_view->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view->expanded_state_new_desk_button()
                           ->GetInnerButton()),
             GetHighlightedView());
@@ -482,7 +477,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
 
 // Tests that we can reverse tab through the desk mini views, new desk button
 // and overview items in the correct order.
-TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
+TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
 
@@ -510,7 +505,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
                 ? desk_bar_view->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view->expanded_state_new_desk_button()
                           ->GetInnerButton()),
             GetHighlightedView());
@@ -556,7 +551,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
 
 // Tests that we can tab and chromevox interchangeably through the desk mini
 // views and new desk button in the correct order.
-TEST_P(DesksOverviewHighlightControllerTest, TabbingChromevox) {
+TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
   ToggleOverview();
   const auto* desk_bar_view =
@@ -583,14 +578,14 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingChromevox) {
   SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
   EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
                 ? desk_bar_view->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view->expanded_state_new_desk_button()
                           ->GetInnerButton()),
             GetHighlightedView());
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
-TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
+TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   UpdateDisplay("600x400,600x400,600x400");
   std::vector<aura::Window*> roots = Shell::GetAllRootWindows();
   ASSERT_EQ(3u, roots.size());
@@ -643,7 +638,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
 
   EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
                 ? desk_bar_view1->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view1->expanded_state_new_desk_button()
                           ->GetInnerButton()),
             GetHighlightedView());
@@ -675,7 +670,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
                 ? desk_bar_view2->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view2->expanded_state_new_desk_button()
                           ->GetInnerButton()),
             GetHighlightedView());
@@ -707,7 +702,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
                 ? desk_bar_view3->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view3->expanded_state_new_desk_button()
                           ->GetInnerButton()),
             GetHighlightedView());
@@ -726,7 +721,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
 }
 
-TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnMiniView) {
+TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnMiniView) {
   // We are initially on desk 1.
   const auto* desks_controller = DesksController::Get();
   auto& desks = desks_controller->desks();
@@ -751,7 +746,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnMiniView) {
   EXPECT_EQ(desks_controller->active_desk(), desks[1].get());
 }
 
-TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
+TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   const auto* desks_controller = DesksController::Get();
   ASSERT_EQ(2u, desks_controller->desks().size());
   auto* desk1 = desks_controller->GetDeskAtIndex(0);
@@ -788,7 +783,7 @@ TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   }
 }
 
-TEST_P(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
+TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
@@ -836,7 +831,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 }
 
-TEST_P(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
+TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
@@ -866,15 +861,14 @@ TEST_P(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
 
   EXPECT_EQ(is_jellyroll_enabled
                 ? desk_bar_view->mini_views()[0]->desk_preview()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desk_bar_view->zero_state_default_desk_button()),
             GetHighlightedView());
 }
 
 // Tests the overview highlight controller behavior when a user uses the new
 // desk button.
-TEST_P(DesksOverviewHighlightControllerTest,
-       ActivateCloseHighlightOnNewDeskButton) {
+TEST_P(DesksOverviewFocusCyclerTest, ActivateCloseHighlightOnNewDeskButton) {
   // Make sure the display is large enough to hold the max number of desks.
   UpdateDisplay("1200x800");
   ToggleOverview();
@@ -895,8 +889,9 @@ TEST_P(DesksOverviewHighlightControllerTest,
     const auto* desk_name_view =
         desk_bar_view->mini_views()[index]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
-    if (desks_controller->CanCreateDesks())
+    if (desks_controller->CanCreateDesks()) {
       EXPECT_EQ(GetHighlightedView(), desk_name_view);
+    }
     EXPECT_EQ(std::u16string(), desk_name_view->GetText());
   };
 
@@ -922,7 +917,7 @@ TEST_P(DesksOverviewHighlightControllerTest,
             desks_controller->desks().size());
 }
 
-TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
+TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
   ToggleOverview();
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desks_bar_view->IsZeroState());
@@ -952,13 +947,13 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(is_jellyroll_enabled
                 ? desks_bar_view->mini_views()[0]->desk_preview()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desks_bar_view->zero_state_default_desk_button()),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(is_jellyroll_enabled
                 ? desks_bar_view->mini_views()[0]->desk_name_view()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desks_bar_view->zero_state_new_desk_button()),
             GetHighlightedView());
 
@@ -986,7 +981,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(is_jellyroll_enabled
                 ? desks_bar_view->new_desk_button()
-                : static_cast<OverviewHighlightableView*>(
+                : static_cast<OverviewFocusableView*>(
                       desks_bar_view->zero_state_new_desk_button()),
             GetHighlightedView());
   SendKey(ui::VKEY_RETURN);
@@ -994,7 +989,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
             GetHighlightedView());
 }
 
-TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnViewFocused) {
+TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnViewFocused) {
   // Set up an overview with 2 mini desk items.
   ToggleOverview();
   const auto* desk_bar_view =
@@ -1023,7 +1018,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnViewFocused) {
 
 // Tests that there is no crash when tabbing after we switch to the zero state
 // desks bar. Regression test for https://crbug.com/1301134.
-TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
+TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
   ToggleOverview();
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desks_bar_view->IsZeroState());
@@ -1057,15 +1052,13 @@ TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
   SendKey(ui::VKEY_TAB);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    OverviewHighlightControllerTest,
-    testing::Values(OverviewHighlightControllerTestParams{true},
-                    OverviewHighlightControllerTestParams{false}));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DesksOverviewHighlightControllerTest,
-    testing::Values(OverviewHighlightControllerTestParams{true},
-                    OverviewHighlightControllerTestParams{false}));
+INSTANTIATE_TEST_SUITE_P(All,
+                         OverviewFocusCyclerTest,
+                         testing::Values(OverviewFocusCyclerTestParams{true},
+                                         OverviewFocusCyclerTestParams{false}));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesksOverviewFocusCyclerTest,
+                         testing::Values(OverviewFocusCyclerTestParams{true},
+                                         OverviewFocusCyclerTestParams{false}));
 
 }  // namespace ash

@@ -5,7 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,7 +27,7 @@ class OverviewItem;
 // OverviewItemView covers the overview window, provides an overview only header
 // and handles events. It hosts a mirror view if the window is minimized.
 class ASH_EXPORT OverviewItemView : public WindowMiniView,
-                                    public OverviewHighlightableView {
+                                    public OverviewFocusableView {
  public:
   METADATA_HEADER(OverviewItemView);
 
@@ -77,15 +77,15 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   // WindowMiniViewBase:
   void RefreshItemVisuals() override;
 
-  // OverviewHighlightableView:
+  // OverviewFocusableView:
   views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  bool MaybeActivateHighlightedViewOnOverviewExit(
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  bool MaybeActivateFocusedViewOnOverviewExit(
       OverviewSession* overview_session) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
   gfx::Point GetMagnifierFocusPointInScreen() override;
 
   CloseButton* close_button() const { return close_button_; }

@@ -79,7 +79,7 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<CrOSNextDeskIconButton>(view);
           CHECK(v);
-          if (v->IsViewHighlighted()) {
+          if (v->is_focused()) {
             return true;
           }
           if (v->state_ != State::kActive) {
@@ -154,7 +154,7 @@ gfx::Size CrOSNextDeskIconButton::CalculatePreferredSize() const {
 void CrOSNextDeskIconButton::UpdateFocusState() {
   absl::optional<ui::ColorId> new_focus_color_id;
 
-  if (IsViewHighlighted() ||
+  if (is_focused() ||
       (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
        IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
     new_focus_color_id = ui::kColorAshFocusRing;

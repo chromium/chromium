@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -69,7 +69,7 @@ class WmHighlightItemBorder;
 // rather than one being a descendant of the other. Otherwise, this will trigger
 // a render surface.
 class ASH_EXPORT DeskPreviewView : public views::Button,
-                                   public OverviewHighlightableView {
+                                   public OverviewFocusableView {
  public:
   METADATA_HEADER(DeskPreviewView);
 
@@ -124,15 +124,15 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   void OnBlur() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
-  // OverviewHighlightableView:
+  // OverviewFocusableView:
   views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  bool MaybeActivateHighlightedViewOnOverviewExit(
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  bool MaybeActivateFocusedViewOnOverviewExit(
       OverviewSession* overview_session) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
 
  private:
   friend class DesksTestApi;

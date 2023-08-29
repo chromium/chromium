@@ -77,7 +77,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   gfx::RectF GetTargetBoundsInScreen() const override;
   gfx::RectF GetWindowTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
-  OverviewHighlightableView* GetFocusableView() const override;
+  OverviewFocusableView* GetFocusableView() const override;
   views::View* GetBackDropView() const override;
   void UpdateRoundedCornersAndShadow() override;
   void SetShadowBounds(absl::optional<gfx::RectF> bounds_in_screen) override;

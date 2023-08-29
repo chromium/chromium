@@ -43,7 +43,7 @@ void DeskNameView::OnFocus() {
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
-void DeskNameView::OnViewHighlighted() {
+void DeskNameView::OnFocusableViewFocused() {
   if (!HasFocus()) {
     // When the highlight is the result of tabbing, as opposed to clicking or
     // chromevoxing, the name view will not have focus, so the user should be
@@ -54,7 +54,7 @@ void DeskNameView::OnViewHighlighted() {
             IDS_ASH_DESKS_NAME_HIGHLIGHT_NOTIFICATION));
   }
 
-  DeskTextfield::OnViewHighlighted();
+  DeskTextfield::OnFocusableViewFocused();
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 

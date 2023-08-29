@@ -16,8 +16,8 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -39,7 +39,7 @@ bool InOverviewSession() {
 }
 
 const aura::Window* GetHighlightedWindow() {
-  return InOverviewSession() ? GetOverviewHighlightedWindow() : nullptr;
+  return InOverviewSession() ? GetOverviewFocusedWindow() : nullptr;
 }
 
 bool IsNaturalScrollOn() {
@@ -303,9 +303,9 @@ TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
           ->desks_bar_view()
           ->mini_views()[1];
 
-  overview_session->highlight_controller()->MoveHighlightToView(
+  overview_session->focus_cycler()->MoveFocusToView(
       mini_view_1->desk_preview());
-  EXPECT_TRUE(mini_view_1->desk_preview()->IsViewHighlighted());
+  EXPECT_TRUE(mini_view_1->desk_preview()->is_focused());
 
   // Exit overview with 3-fingers downward swipes.
   DeskSwitchAnimationWaiter waiter;

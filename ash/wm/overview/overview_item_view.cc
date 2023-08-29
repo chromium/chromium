@@ -260,30 +260,30 @@ views::View* OverviewItemView::GetView() {
   return this;
 }
 
-void OverviewItemView::MaybeActivateHighlightedView() {
+void OverviewItemView::MaybeActivateFocusedView() {
   if (overview_item_)
     overview_item_->OnHighlightedViewActivated();
 }
 
-void OverviewItemView::MaybeCloseHighlightedView(bool primary_action) {
+void OverviewItemView::MaybeCloseFocusedView(bool primary_action) {
   if (overview_item_ && primary_action)
     overview_item_->OnHighlightedViewClosed();
 }
 
-void OverviewItemView::MaybeSwapHighlightedView(bool right) {}
+void OverviewItemView::MaybeSwapFocusedView(bool right) {}
 
-bool OverviewItemView::MaybeActivateHighlightedViewOnOverviewExit(
+bool OverviewItemView::MaybeActivateFocusedViewOnOverviewExit(
     OverviewSession* overview_session) {
   DCHECK(overview_session);
   overview_session->SelectWindow(overview_item_);
   return true;
 }
 
-void OverviewItemView::OnViewHighlighted() {
+void OverviewItemView::OnFocusableViewFocused() {
   UpdateFocusState(/*focus=*/true);
 }
 
-void OverviewItemView::OnViewUnhighlighted() {
+void OverviewItemView::OnFocusableViewBlurred() {
   UpdateFocusState(/*focus=*/false);
 }
 
@@ -363,7 +363,7 @@ void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void OverviewItemView::OnThemeChanged() {
   WindowMiniView::OnThemeChanged();
-  UpdateFocusState(IsViewHighlighted());
+  UpdateFocusState(is_focused());
 }
 
 BEGIN_METADATA(OverviewItemView, WindowMiniView)

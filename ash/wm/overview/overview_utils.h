@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -87,7 +87,8 @@ bool ShouldUseTabletModeGridLayout();
 // returns the same size for SizeF regardless of its origin.
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
-void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view);
+// TODO(b/290377356): Rename this to something that doesn't use highlight.
+void UpdateOverviewHighlightForFocus(OverviewFocusableView* target_view);
 
 }  // namespace ash
 

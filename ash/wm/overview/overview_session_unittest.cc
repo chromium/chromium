@@ -48,9 +48,9 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -620,7 +620,7 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionRecorded) {
   // by pressing the return key.
   wm::ActivateWindow(window1.get());
   ToggleOverview();
-  ASSERT_TRUE(HighlightOverviewWindow(window2.get()));
+  ASSERT_TRUE(FocusOverviewWindow(window2.get()));
   SendKey(ui::VKEY_RETURN);
   EXPECT_EQ(
       3, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
@@ -653,7 +653,7 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionNotRecorded) {
   // |window1| remains active. Select using the keyboard.
   ASSERT_EQ(window1.get(), window_util::GetFocusedWindow());
   ToggleOverview();
-  ASSERT_TRUE(HighlightOverviewWindow(window1.get()));
+  ASSERT_TRUE(FocusOverviewWindow(window1.get()));
   SendKey(ui::VKEY_RETURN);
   EXPECT_EQ(
       0, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
@@ -2925,7 +2925,7 @@ TEST_P(OverviewSessionTest, PipWindowShownButExcludedFromOverview) {
 
   // PIP window should be visible but not in the overview.
   EXPECT_TRUE(pip_window->IsVisible());
-  EXPECT_FALSE(HighlightOverviewWindow(pip_window.get()));
+  EXPECT_FALSE(FocusOverviewWindow(pip_window.get()));
 }
 
 // Tests the PositionWindows function works as expected.

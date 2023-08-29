@@ -646,7 +646,7 @@ views::View* DeskPreviewView::GetView() {
   return this;
 }
 
-void DeskPreviewView::MaybeActivateHighlightedView() {
+void DeskPreviewView::MaybeActivateFocusedView() {
   DesksController::Get()->ActivateDesk(
       mini_view_->desk(),
       mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kDeskButton
@@ -654,26 +654,26 @@ void DeskPreviewView::MaybeActivateHighlightedView() {
           : DesksSwitchSource::kMiniViewButton);
 }
 
-void DeskPreviewView::MaybeCloseHighlightedView(bool primary_action) {
+void DeskPreviewView::MaybeCloseFocusedView(bool primary_action) {
   Close(primary_action);
 }
 
-void DeskPreviewView::MaybeSwapHighlightedView(bool right) {
+void DeskPreviewView::MaybeSwapFocusedView(bool right) {
   Swap(right);
 }
 
-bool DeskPreviewView::MaybeActivateHighlightedViewOnOverviewExit(
+bool DeskPreviewView::MaybeActivateFocusedViewOnOverviewExit(
     OverviewSession* overview_session) {
-  MaybeActivateHighlightedView();
+  MaybeActivateFocusedView();
   return true;
 }
 
-void DeskPreviewView::OnViewHighlighted() {
+void DeskPreviewView::OnFocusableViewFocused() {
   mini_view_->UpdateFocusColor();
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
-void DeskPreviewView::OnViewUnhighlighted() {
+void DeskPreviewView::OnFocusableViewBlurred() {
   mini_view_->UpdateFocusColor();
 }
 

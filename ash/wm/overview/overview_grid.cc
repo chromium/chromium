@@ -44,9 +44,9 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_types.h"
@@ -787,9 +787,9 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   // be cleaning up and its associated view may be nullptr. |overview_item|
   // needs to still be in |window_list_| so we can compute what the deleted
   // index is.
-  OverviewHighlightableView* focusable_view = (*iter)->GetFocusableView();
+  OverviewFocusableView* focusable_view = (*iter)->GetFocusableView();
   if (overview_session_ && focusable_view) {
-    overview_session_->highlight_controller()->OnViewDestroyingOrDisabling(
+    overview_session_->focus_cycler()->OnViewDestroyingOrDisabling(
         focusable_view);
   }
 

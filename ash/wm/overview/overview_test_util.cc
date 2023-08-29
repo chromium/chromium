@@ -8,8 +8,8 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "base/run_loop.h"
@@ -42,28 +42,26 @@ void SendKey(ui::KeyboardCode key, int flags) {
   generator.ReleaseKey(key, flags);
 }
 
-bool HighlightOverviewWindow(const aura::Window* window) {
-  if (GetOverviewHighlightedWindow() == nullptr) {
+bool FocusOverviewWindow(const aura::Window* window) {
+  if (GetOverviewFocusedWindow() == nullptr) {
     SendKey(ui::VKEY_TAB);
     SendKey(ui::VKEY_TAB);
   }
-  const aura::Window* start_window = GetOverviewHighlightedWindow();
+  const aura::Window* start_window = GetOverviewFocusedWindow();
   if (start_window == window)
     return true;
   aura::Window* window_it = nullptr;
   do {
     SendKey(ui::VKEY_TAB);
-    window_it = const_cast<aura::Window*>(GetOverviewHighlightedWindow());
+    window_it = const_cast<aura::Window*>(GetOverviewFocusedWindow());
   } while (window_it != window && window_it != start_window);
   return window_it == window;
 }
 
-const aura::Window* GetOverviewHighlightedWindow() {
-  auto* item =
-      GetOverviewSession()->highlight_controller()->GetHighlightedItem();
-  if (!item)
-    return nullptr;
-  return item->GetWindow();
+const aura::Window* GetOverviewFocusedWindow() {
+  OverviewItemBase* item =
+      GetOverviewSession()->focus_cycler()->GetFocusedItem();
+  return item ? item->GetWindow() : nullptr;
 }
 
 void ToggleOverview(OverviewEnterExitType type) {

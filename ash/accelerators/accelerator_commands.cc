@@ -893,7 +893,7 @@ void MoveActiveItem(bool going_left) {
   const bool in_overview = overview_controller->InOverviewSession();
   if (in_overview) {
     window_to_move =
-        overview_controller->overview_session()->GetHighlightedWindow();
+        overview_controller->overview_session()->GetFocusedWindow();
   } else {
     window_to_move = GetTargetWindow();
   }

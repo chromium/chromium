@@ -5,7 +5,7 @@
 #ifndef ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_BASE_H_
 #define ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_BASE_H_
 
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/label_button.h"
@@ -20,7 +20,7 @@ class DeskBarViewBase;
 // TODO(https://b/291622042): Remove `DeskButtonBase`, replace it with this
 // class and rename this class by removing the prefix CrOSNext.
 class CrOSNextDeskButtonBase : public views::LabelButton,
-                               public OverviewHighlightableView {
+                               public OverviewFocusableView {
  public:
   METADATA_HEADER(CrOSNextDeskButtonBase);
 
@@ -36,13 +36,13 @@ class CrOSNextDeskButtonBase : public views::LabelButton,
   void OnFocus() override;
   void OnBlur() override;
 
-  // OverviewHighlightableView:
+  // OverviewFocusableView:
   views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
 
  protected:
   virtual void UpdateFocusState();

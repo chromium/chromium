@@ -34,8 +34,8 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -138,8 +138,7 @@ class OverviewFocusButton : public views::Button {
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
       overview_start_time_(base::Time::Now()),
-      highlight_controller_(
-          std::make_unique<OverviewHighlightController>(this)),
+      focus_cycler_(std::make_unique<OverviewFocusCycler>(this)),
       chromevox_enabled_(Shell::Get()
                              ->accessibility_controller()
                              ->spoken_feedback()
@@ -392,7 +391,7 @@ void OverviewSession::IncrementSelection(bool forward) {
 
 bool OverviewSession::AcceptSelection() {
   // Activate selected window or desk.
-  return highlight_controller_->MaybeActivateHighlightedViewOnOverviewExit();
+  return focus_cycler_->MaybeActivateFocusedViewOnOverviewExit();
 }
 
 void OverviewSession::SelectWindow(OverviewItemBase* item) {
@@ -597,7 +596,7 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
     return;
   }
 
-  highlight_controller_->SetFocusHighlightVisibility(false);
+  focus_cycler_->SetFocusVisibility(false);
   window_drag_controller_ = std::make_unique<OverviewWindowDragController>(
       this, item, is_touch_dragging);
   window_drag_controller_->InitiateDrag(location_in_screen);
@@ -627,9 +626,9 @@ void OverviewSession::CompleteDrag(OverviewItemBase* item,
   DCHECK(window_drag_controller_);
   DCHECK_EQ(item, window_drag_controller_->item());
 
-  // Note: The highlight should be updated first as completing a drag may cause
-  // a selection which would destroy |item|.
-  highlight_controller_->SetFocusHighlightVisibility(true);
+  // Note: The focus ring should be updated first as completing a drag may cause
+  // a selection which would destroy `item`.
+  focus_cycler_->SetFocusVisibility(true);
   const bool snap = window_drag_controller_->CompleteDrag(location_in_screen) ==
                     OverviewWindowDragController::DragResult::kSnap;
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
@@ -938,20 +937,14 @@ bool OverviewSession::IsSavedDeskUiLosingActivation(aura::Window* lost_active) {
              lost_active;
 }
 
-aura::Window* OverviewSession::GetOverviewFocusWindow() {
-  if (overview_focus_widget_)
-    return overview_focus_widget_->GetNativeWindow();
-
-  return nullptr;
+aura::Window* OverviewSession::GetOverviewFocusWindow() const {
+  return overview_focus_widget_ ? overview_focus_widget_->GetNativeWindow()
+                                : nullptr;
 }
 
-aura::Window* OverviewSession::GetHighlightedWindow() {
-  OverviewItemBase* item = highlight_controller_->GetHighlightedItem();
-  if (!item) {
-    return nullptr;
-  }
-
-  return item->GetWindow();
+aura::Window* OverviewSession::GetFocusedWindow() const {
+  OverviewItemBase* item = focus_cycler_->GetFocusedItem();
+  return item ? item->GetWindow() : nullptr;
 }
 
 void OverviewSession::SuspendReposition() {
@@ -992,7 +985,7 @@ void OverviewSession::RestoreWindowActivation(bool restore) {
   active_window_before_overview_ = nullptr;
 }
 
-void OverviewSession::OnHighlightedItemActivated(OverviewItemBase* item) {
+void OverviewSession::OnFocusedItemActivated(OverviewItemBase* item) {
   UMA_HISTOGRAM_COUNTS_100("Ash.Overview.ArrowKeyPresses", num_key_presses_);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.Overview.KeyPressesOverItemsRatio",
                               (num_key_presses_ * 100) / num_items_, 1, 300,
@@ -1002,7 +995,7 @@ void OverviewSession::OnHighlightedItemActivated(OverviewItemBase* item) {
   SelectWindow(item);
 }
 
-void OverviewSession::OnHighlightedItemClosed(OverviewItemBase* item) {
+void OverviewSession::OnFocusedItemClosed(OverviewItemBase* item) {
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseKey"));
   item->CloseWindow();
@@ -1122,8 +1115,8 @@ void OverviewSession::ShowSavedDeskLibrary(
   // TODO(crbug.com/1307467): This doesn't need to be reset if it's an ancestor
   // of the desks bar view. Also, add testing for this. Note that this isn't
   // needed when hiding, because we either move the focus to the new desk, or
-  // delete all the grid templates items which would reset their highlights.
-  highlight_controller_->ResetHighlightedView();
+  // delete all the grid templates items which would reset their focus.
+  focus_cycler_->ResetFocusedView();
 
   // If not given anything to focus, focus the first saved desk.
   if (item_to_focus.is_valid())
@@ -1148,8 +1141,8 @@ void OverviewSession::ShowSavedDeskLibrary(
     return;
   }
 
-  highlight_controller_->MoveHighlightToView(
-      grid_items.front(), /*suppress_accessibility_event=*/false);
+  focus_cycler_->MoveFocusToView(grid_items.front(),
+                                 /*suppress_accessibility_event=*/false);
 }
 
 void OverviewSession::HideSavedDeskLibrary() {
@@ -1190,7 +1183,7 @@ void OverviewSession::UpdateAccessibilityFocus() {
     a11y_widgets.push_back(overview_focus_widget_.get());
 
   // Note that this order matches the order of the tab cycling in
-  // `OverviewHighlightController::GetTraversableViews`.
+  // `OverviewFocusCycler::GetTraversableViews()`.
   for (auto& grid : grid_list_) {
     if (grid->IsShowingSavedDeskLibrary()) {
       a11y_widgets.push_back(grid->saved_desk_library_widget());
@@ -1375,7 +1368,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     case ui::VKEY_RIGHT:
       ++num_key_presses_;
       if (!is_control_down ||
-          !highlight_controller_->MaybeSwapHighlightedView(/*right=*/true)) {
+          !focus_cycler_->MaybeSwapFocusedView(/*right=*/true)) {
         Move(/*reverse=*/false);
       }
       break;
@@ -1388,7 +1381,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     case ui::VKEY_LEFT:
       ++num_key_presses_;
       if (!is_control_down ||
-          !highlight_controller_->MaybeSwapHighlightedView(/*right=*/false)) {
+          !focus_cycler_->MaybeSwapFocusedView(/*right=*/false)) {
         Move(/*reverse=*/true);
       }
       break;
@@ -1397,8 +1390,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         return;
 
       const bool primary_action = !event->IsShiftDown();
-      if (!highlight_controller_->MaybeCloseHighlightedView(primary_action))
+      if (!focus_cycler_->MaybeCloseFocusedView(primary_action)) {
         return;
+      }
       break;
     }
     case ui::VKEY_Z: {
@@ -1413,8 +1407,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       break;
     }
     case ui::VKEY_RETURN: {
-      if (!highlight_controller_->MaybeActivateHighlightedView())
+      if (!focus_cycler_->MaybeActivateFocusedView()) {
         return;
+      }
       break;
     }
     default: {
@@ -1518,11 +1513,11 @@ void OverviewSession::OnTabletModeChanged() {
 }
 
 void OverviewSession::Move(bool reverse) {
-  // Do not allow moving the highlight while in the middle of a drag.
+  // Do not allow moving the focus ring while in the middle of a drag.
   if (window_util::IsAnyWindowDragged() || desks_util::IsDraggingAnyDesk())
     return;
 
-  highlight_controller_->MoveHighlight(reverse);
+  focus_cycler_->MoveFocus(reverse);
 }
 
 bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {

@@ -34,7 +34,7 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<SavedDeskSaveDeskButton>(view);
         CHECK(v);
-        return v->IsViewHighlighted();
+        return v->is_focused();
       }));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
@@ -52,31 +52,31 @@ views::View* SavedDeskSaveDeskButton::GetView() {
   return this;
 }
 
-void SavedDeskSaveDeskButton::MaybeActivateHighlightedView() {
+void SavedDeskSaveDeskButton::MaybeActivateFocusedView() {
   if (GetEnabled())
     callback_.Run();
 }
 
-void SavedDeskSaveDeskButton::MaybeCloseHighlightedView(bool primary_action) {}
+void SavedDeskSaveDeskButton::MaybeCloseFocusedView(bool primary_action) {}
 
-void SavedDeskSaveDeskButton::MaybeSwapHighlightedView(bool right) {}
+void SavedDeskSaveDeskButton::MaybeSwapFocusedView(bool right) {}
 
-void SavedDeskSaveDeskButton::OnViewHighlighted() {
+void SavedDeskSaveDeskButton::OnFocusableViewFocused() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-void SavedDeskSaveDeskButton::OnViewUnhighlighted() {
+void SavedDeskSaveDeskButton::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void SavedDeskSaveDeskButton::OnFocus() {
   UpdateOverviewHighlightForFocus(this);
-  OnViewHighlighted();
+  OnFocusableViewFocused();
   View::OnFocus();
 }
 
 void SavedDeskSaveDeskButton::OnBlur() {
-  OnViewUnhighlighted();
+  OnFocusableViewBlurred();
   View::OnBlur();
 }
 

@@ -160,7 +160,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   OverviewGridWindowFillMode type() const { return type_; }
 
  private:
-  friend class OverviewHighlightControllerTest;
+  friend class OverviewFocusCyclerTest;
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
   class LayerCachingAndFilteringObserver;

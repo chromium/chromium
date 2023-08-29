@@ -63,7 +63,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskButtonBase>(view);
           CHECK(v);
-          return v->IsViewHighlighted();
+          return v->is_focused();
         }));
   }
 }
@@ -107,15 +107,15 @@ views::View* DeskButtonBase::GetView() {
   return this;
 }
 
-void DeskButtonBase::MaybeActivateHighlightedView() {
+void DeskButtonBase::MaybeActivateFocusedView() {
   pressed_callback_.Run();
 }
 
-void DeskButtonBase::MaybeCloseHighlightedView(bool primary_action) {}
+void DeskButtonBase::MaybeCloseFocusedView(bool primary_action) {}
 
-void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
+void DeskButtonBase::MaybeSwapFocusedView(bool right) {}
 
-void DeskButtonBase::OnViewHighlighted() {
+void DeskButtonBase::OnFocusableViewFocused() {
   UpdateFocusState();
 
   views::View* view = this;
@@ -128,7 +128,7 @@ void DeskButtonBase::OnViewHighlighted() {
   }
 }
 
-void DeskButtonBase::OnViewUnhighlighted() {
+void DeskButtonBase::OnFocusableViewBlurred() {
   UpdateFocusState();
 }
 

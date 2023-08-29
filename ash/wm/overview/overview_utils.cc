@@ -18,8 +18,8 @@
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
@@ -342,14 +342,12 @@ gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {
                    gfx::ToRoundedSize(rect.size()));
 }
 
-void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view) {
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  DCHECK(highlight_controller);
+void UpdateOverviewHighlightForFocus(OverviewFocusableView* target_view) {
+  auto* focus_cycler =
+      Shell::Get()->overview_controller()->overview_session()->focus_cycler();
+  CHECK(focus_cycler);
 
-  highlight_controller->MoveHighlightToView(target_view);
+  focus_cycler->MoveFocusToView(target_view);
 }
 
 }  // namespace ash

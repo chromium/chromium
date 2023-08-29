@@ -44,8 +44,8 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
@@ -366,8 +366,8 @@ class SavedDeskTest : public OverviewTestBase {
     return overview_session->grid_list();
   }
 
-  OverviewHighlightableView* GetHighlightedView() {
-    return GetOverviewSession()->highlight_controller()->highlighted_view();
+  OverviewFocusableView* GetFocusedView() {
+    return GetOverviewSession()->focus_cycler()->focused_view();
   }
 
   // Opens overview mode and then clicks the save desk as template button. This
@@ -854,8 +854,7 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
 
   // Checks that pressing tab does not trigger overview keyboard traversal.
   SendKey(ui::VKEY_TAB);
-  EXPECT_FALSE(
-      GetOverviewSession()->highlight_controller()->IsFocusHighlightVisible());
+  EXPECT_FALSE(GetOverviewSession()->focus_cycler()->IsFocusVisible());
 
   // Fetch the widget for the dialog and test that it appears on the primary
   // root window.
@@ -1011,8 +1010,9 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   verify_save_desk_widget_bounds();
 }
 
-// Tests that the color of save desk button focus ring is as expected.
-TEST_F(SavedDeskTest, SaveDeskButtonHighlight) {
+// Tests that the focus ring of the save desk button focus ring is as shown as
+// expected.
+TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
   // Create a test window in the current desk.
   auto test_window = CreateAppWindow();
 
@@ -1022,24 +1022,24 @@ TEST_F(SavedDeskTest, SaveDeskButtonHighlight) {
       GetSaveDeskAsTemplateButtonForRoot(root_window);
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
 
-  // Both buttons are not highlighted.
-  ASSERT_FALSE(save_as_template_button->IsViewHighlighted());
-  ASSERT_FALSE(save_for_later_button->IsViewHighlighted());
+  // Both buttons are not focused.
+  ASSERT_FALSE(save_as_template_button->is_focused());
+  ASSERT_FALSE(save_for_later_button->is_focused());
 
-  // Reverse tab, then save desk for later button is highlighted.
+  // Reverse tab, then save desk for later button is focused.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_FALSE(save_as_template_button->IsViewHighlighted());
-  ASSERT_TRUE(save_for_later_button->IsViewHighlighted());
+  ASSERT_FALSE(save_as_template_button->is_focused());
+  ASSERT_TRUE(save_for_later_button->is_focused());
 
-  // Reverse tab, then save desk as template button is highlighted.
+  // Reverse tab, then save desk as template button is focused.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(save_as_template_button->IsViewHighlighted());
-  ASSERT_FALSE(save_for_later_button->IsViewHighlighted());
+  ASSERT_TRUE(save_as_template_button->is_focused());
+  ASSERT_FALSE(save_for_later_button->is_focused());
 
-  // Reverse tab, then both buttons are not highlighted.
+  // Reverse tab, then both buttons are not focused.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_FALSE(save_as_template_button->IsViewHighlighted());
-  ASSERT_FALSE(save_for_later_button->IsViewHighlighted());
+  ASSERT_FALSE(save_as_template_button->is_focused());
+  ASSERT_FALSE(save_for_later_button->is_focused());
 }
 
 // Tests that the save desk as template button and save for later button are
@@ -1165,7 +1165,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
 
   // Press `Enter` when `Save desk for later` button is highlighted.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(save_for_later_button->IsViewHighlighted());
+  ASSERT_TRUE(save_for_later_button->is_focused());
   ASSERT_FALSE(save_for_later_button->GetEnabled());
   SendKey(ui::VKEY_RETURN);
   SavedDeskPresenterTestApi(
@@ -1175,7 +1175,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
 
   // Press `Enter` when save desk as template button is highlighted.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(save_as_template_button->IsViewHighlighted());
+  ASSERT_TRUE(save_as_template_button->is_focused());
   ASSERT_FALSE(save_as_template_button->GetEnabled());
   SendKey(ui::VKEY_RETURN);
   SavedDeskPresenterTestApi(
@@ -2055,19 +2055,19 @@ TEST_F(SavedDeskTest, OverviewTabbing) {
   SavedDeskItemView* second_item = GetItemViewFromSavedDeskGrid(1);
 
   // Testing that we first traverse the views of the first item.
-  EXPECT_EQ(first_item, GetHighlightedView());
+  EXPECT_EQ(first_item, GetFocusedView());
 
   // Testing that we traverse to the `name_view` of the first item.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(first_item->name_view(), GetHighlightedView());
+  EXPECT_EQ(first_item->name_view(), GetFocusedView());
 
   // When we're done with the first item, we'll go on to the second.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(second_item, GetHighlightedView());
+  EXPECT_EQ(second_item, GetFocusedView());
 
   // Testing that we traverse to the `name_view` of the second item.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(second_item->name_view(), GetHighlightedView());
+  EXPECT_EQ(second_item->name_view(), GetFocusedView());
 }
 
 // Tests that if the templates button is invisible, it is not part of the
@@ -2083,7 +2083,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
 
   // Test that we do not highlight the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_NE(button, GetHighlightedView()->GetView());
+  EXPECT_NE(button, GetFocusedView()->GetView());
 
   // Test the case where it was visible at one point, but became invisible (last
   // template was deleted).
@@ -2119,7 +2119,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
 
   // Test that we do not highlight the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_NE(button, GetHighlightedView()->GetView());
+  EXPECT_NE(button, GetFocusedView()->GetView());
 }
 
 // Tests that the desks bar does not return to zero state if the second-to-last
@@ -2733,7 +2733,7 @@ TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
 
   // Tab until we focus the name view of the first saved desk item.
   SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(name_view, GetHighlightedView());
+  ASSERT_EQ(name_view, GetFocusedView());
 
   // Rename template "a" to template "d".
   SendKey(ui::VKEY_RETURN);
@@ -2764,7 +2764,7 @@ TEST_F(SavedDeskTest, EditSavedDeskNameShutdownNoCrash) {
 
   // Tab until we focus the name view of the first saved desk item.
   SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(name_view, GetHighlightedView());
+  ASSERT_EQ(name_view, GetFocusedView());
 
   // Rename template "a" to template "ddd".
   SendKey(ui::VKEY_RETURN);
@@ -4165,9 +4165,9 @@ TEST_F(SavedDeskTest, AdminTemplate) {
 
   // Tests that the name view cannot be tabbed into for admin templates, as they
   // aren't editable anyhow.
-  EXPECT_EQ(item_view, GetHighlightedView());
+  EXPECT_EQ(item_view, GetFocusedView());
   SendKey(ui::VKEY_TAB);
-  EXPECT_NE(name_view, GetHighlightedView());
+  EXPECT_NE(name_view, GetFocusedView());
 }
 
 // Tests that the scroll bar is hidden when there is enough space to show all
@@ -4253,13 +4253,13 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(i);
 
     // Verify item view is highlighted and fully visible.
-    EXPECT_TRUE(item_view->IsViewHighlighted());
+    EXPECT_TRUE(item_view->is_focused());
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
     SendKey(ui::VKEY_TAB);
 
     // Verify name view is highlighted and fully visible.
-    EXPECT_TRUE(item_view->name_view()->IsViewHighlighted());
+    EXPECT_TRUE(item_view->name_view()->is_focused());
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
     SendKey(ui::VKEY_TAB);

@@ -25,8 +25,8 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/i18n/time_formatting.h"
@@ -282,7 +282,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       base::BindRepeating([](const views::View* view) {
         const auto* v = views::AsViewClass<SavedDeskItemView>(view);
         CHECK(v);
-        return v->IsViewHighlighted();
+        return v->is_focused();
       }));
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
 
@@ -454,16 +454,14 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   hover_container_->layer()->SetOpacity(0.0f);
   icon_container_view_->layer()->SetOpacity(1.0f);
 
-  // Set the Overview highlight to move focus with the `name_view_`.
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  if (highlight_controller->IsFocusHighlightVisible()) {
-    highlight_controller->MoveHighlightToView(name_view_);
+  // Move the overview focus ring to `name_view_`.
+  auto* focus_cycler =
+      Shell::Get()->overview_controller()->overview_session()->focus_cycler();
+  if (focus_cycler->IsFocusVisible()) {
+    focus_cycler->MoveFocusToView(name_view_);
 
     // Update a11y focus window.
-    highlight_controller->UpdateA11yFocusWindow(name_view_);
+    focus_cycler->UpdateA11yFocusWindow(name_view_);
   }
 
   if (!defer_select_all_)
@@ -547,12 +545,12 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
 
 void SavedDeskItemView::OnFocus() {
   UpdateOverviewHighlightForFocus(this);
-  OnViewHighlighted();
+  OnFocusableViewFocused();
   View::OnFocus();
 }
 
 void SavedDeskItemView::OnBlur() {
-  OnViewUnhighlighted();
+  OnFocusableViewBlurred();
   View::OnBlur();
 }
 
@@ -747,24 +745,24 @@ views::View* SavedDeskItemView::GetView() {
   return this;
 }
 
-void SavedDeskItemView::MaybeActivateHighlightedView() {
+void SavedDeskItemView::MaybeActivateFocusedView() {
   MaybeLaunchSavedDesk();
 }
 
-void SavedDeskItemView::MaybeCloseHighlightedView(bool primary_action) {
+void SavedDeskItemView::MaybeCloseFocusedView(bool primary_action) {
   if (primary_action)
     OnDeleteButtonPressed();
 }
 
-void SavedDeskItemView::MaybeSwapHighlightedView(bool right) {}
+void SavedDeskItemView::MaybeSwapFocusedView(bool right) {}
 
-void SavedDeskItemView::OnViewHighlighted() {
+void SavedDeskItemView::OnFocusableViewFocused() {
   views::FocusRing::Get(this)->SchedulePaint();
 
   ScrollViewToVisible();
 }
 
-void SavedDeskItemView::OnViewUnhighlighted() {
+void SavedDeskItemView::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 

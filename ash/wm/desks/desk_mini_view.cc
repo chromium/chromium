@@ -147,8 +147,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
         switch (mini_view->owner_bar()->type()) {
           case DeskBarViewBase::Type::kOverview:
             // Show focus ring for the overview bar when:
-            //   1) it's highlighted via the customized highlight controller;
-            if (desk_preview->IsViewHighlighted()) {
+            //   1) it's focused via the customized focus cycler;
+            if (desk_preview->is_focused()) {
               return true;
             }
             //   2) dragging an overview item over this mini view;
@@ -325,7 +325,7 @@ absl::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
       if ((owner_bar_->dragged_item_over_bar() &&
            IsPointOnMiniView(
                owner_bar_->last_dragged_item_screen_location())) ||
-          desk_preview_->IsViewHighlighted()) {
+          desk_preview_->is_focused()) {
         return focused_desk_color_id;
       } else if (desk_->is_active() && owner_bar_->overview_grid() &&
                  !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {

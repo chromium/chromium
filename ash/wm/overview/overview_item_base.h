@@ -35,8 +35,8 @@ class Widget;
 
 namespace ash {
 
+class OverviewFocusableView;
 class OverviewGrid;
-class OverviewHighlightableView;
 class OverviewItem;
 class OverviewSession;
 class RoundedLabelWidget;
@@ -170,7 +170,7 @@ class OverviewItemBase {
   virtual void EnsureVisible() = 0;
 
   // Returns the focusable view of this.
-  virtual OverviewHighlightableView* GetFocusableView() const = 0;
+  virtual OverviewFocusableView* GetFocusableView() const = 0;
 
   // Returns the backdrop view of this.
   virtual views::View* GetBackDropView() const = 0;

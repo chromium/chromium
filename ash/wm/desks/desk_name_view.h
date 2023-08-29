@@ -29,7 +29,7 @@ class ASH_EXPORT DeskNameView : public DeskTextfield {
 
   // DeskTextfield:
   void OnFocus() override;
-  void OnViewHighlighted() override;
+  void OnFocusableViewFocused() override;
 
  private:
   // The mini view that associated with this name view.

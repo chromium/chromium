@@ -6,7 +6,7 @@
 #define ASH_WM_DESKS_DESK_BUTTON_BASE_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,7 +19,7 @@ class DeskBarViewBase;
 // The base class of buttons that appear in the desk bar view classes. It's
 // guaranteed this button always lives under a desk bar view.
 class ASH_EXPORT DeskButtonBase : public views::LabelButton,
-                                  public OverviewHighlightableView {
+                                  public OverviewFocusableView {
  public:
   METADATA_HEADER(DeskButtonBase);
 
@@ -43,13 +43,13 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  // OverviewHighlightableView:
+  // OverviewFocusableView:
   views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
 
   // Updates the label's text of the button. E.g, ZeroStateDefaultDeskButton
   // showing the desk's name, which should be updated on desk name changes.

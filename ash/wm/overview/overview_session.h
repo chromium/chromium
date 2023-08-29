@@ -47,7 +47,7 @@ namespace ash {
 
 class OverviewDelegate;
 class OverviewGrid;
-class OverviewHighlightController;
+class OverviewFocusCycler;
 class OverviewItem;
 class OverviewItemBase;
 class OverviewWindowDragController;
@@ -242,10 +242,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   bool IsSavedDeskUiLosingActivation(aura::Window* lost_active);
 
   // Gets the window which keeps focus for the duration of overview mode.
-  aura::Window* GetOverviewFocusWindow();
+  aura::Window* GetOverviewFocusWindow() const;
 
-  // Returns the window highlighted by the selector widget.
-  aura::Window* GetHighlightedWindow();
+  // Returns the window associated with the focused item. Returns null if no
+  // item has focus (i.e. desk mini view is focused, or nothing is focused).
+  aura::Window* GetFocusedWindow() const;
 
   // Suspends/Resumes window re-positiong in overview.
   void SuspendReposition();
@@ -261,9 +262,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // activation will not be restore when overview is ended.
   void RestoreWindowActivation(bool restore);
 
-  // Handles requests to active or close the currently highlighted |item|.
-  void OnHighlightedItemActivated(OverviewItemBase* item);
-  void OnHighlightedItemClosed(OverviewItemBase* item);
+  // Handles requests to active or close the currently focused `item`.
+  void OnFocusedItemActivated(OverviewItemBase* item);
+  void OnFocusedItemClosed(OverviewItemBase* item);
 
   // Called explicitly (with no list of observers) by the |RootWindowController|
   // of |root|, so that the associated grid is properly removed and destroyed.
@@ -389,9 +390,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return hide_windows_for_saved_desks_grid_.get();
   }
 
-  OverviewHighlightController* highlight_controller() {
-    return highlight_controller_.get();
-  }
+  OverviewFocusCycler* focus_cycler() { return focus_cycler_.get(); }
 
   SavedDeskPresenter* saved_desk_presenter() {
     return saved_desk_presenter_.get();
@@ -420,7 +419,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Called when tablet mode changes.
   void OnTabletModeChanged();
 
-  // Helper function that moves the highlight forward or backward on the
+  // Helper function that moves the focus ring forward or backward on the
   // corresponding window grid.
   void Move(bool reverse);
 
@@ -510,7 +509,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // windows are not shown via other events for saved desks grid.
   std::unique_ptr<ScopedOverviewHideWindows> hide_windows_for_saved_desks_grid_;
 
-  std::unique_ptr<OverviewHighlightController> highlight_controller_;
+  std::unique_ptr<OverviewFocusCycler> focus_cycler_;
 
   // The object responsible to talking to the desk model.
   std::unique_ptr<SavedDeskPresenter> saved_desk_presenter_;

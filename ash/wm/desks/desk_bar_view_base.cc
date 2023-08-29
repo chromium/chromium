@@ -27,7 +27,7 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -63,12 +63,12 @@ namespace {
 // Duration of delay when Bento Bar Desk Button is clicked.
 constexpr base::TimeDelta kAnimationDelayDuration = base::Milliseconds(100);
 
-OverviewHighlightController* GetHighlightController() {
+OverviewFocusCycler* GetFocusCycler() {
   auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller || !overview_controller->InOverviewSession()) {
     return nullptr;
   }
-  return overview_controller->overview_session()->highlight_controller();
+  return overview_controller->overview_session()->focus_cycler();
 }
 
 // Check whether there are any external keyboards.
@@ -1069,14 +1069,13 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
                                              !is_zero_state);
 
   if (type_ == Type::kOverview) {
-    if (auto* highlight_controller = GetHighlightController()) {
+    if (auto* focus_cycler = GetFocusCycler()) {
       // Remove the button from the tabbing order if it becomes invisible.
       if (!zero_state_library_button_->GetVisible()) {
-        highlight_controller->OnViewDestroyingOrDisabling(
-            zero_state_library_button_);
+        focus_cycler->OnViewDestroyingOrDisabling(zero_state_library_button_);
       }
       if (!expanded_state_library_button_->GetVisible()) {
-        highlight_controller->OnViewDestroyingOrDisabling(
+        focus_cycler->OnViewDestroyingOrDisabling(
             expanded_state_library_button_->GetInnerButton());
       }
     }
@@ -1485,18 +1484,16 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   }
 
   if (type_ == Type::kOverview) {
-    if (auto* highlight_controller = GetHighlightController()) {
-      // Let the highlight controller know the view is destroying before it is
-      // removed from the collection because it needs to know the index of the
-      // mini view, or the desk name view (if either is currently highlighted)
-      // relative to other traversable views.
+    if (auto* focus_cycler = GetFocusCycler()) {
+      // Let the focus cycler know the view is destroying before it is removed
+      // from the collection because it needs to know the index of the mini
+      // view, or the desk name view (if either is currently focused) relative
+      // to other traversable views.
       // The order here matters, we call it first on the desk_name_view since it
-      // comes later in the highlight order (See documentation of
+      // comes later in the focus order (See documentation of
       // `OnViewDestroyingOrDisabling()`).
-      highlight_controller->OnViewDestroyingOrDisabling(
-          (*iter)->desk_name_view());
-      highlight_controller->OnViewDestroyingOrDisabling(
-          (*iter)->desk_preview());
+      focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
+      focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_preview());
     }
   }
 
@@ -1681,11 +1678,11 @@ void DeskBarViewBase::SwitchToZeroState() {
   std::vector<DeskMiniView*> removed_mini_views = mini_views_;
   mini_views_.clear();
 
-  if (auto* highlight_controller = GetHighlightController()) {
-    OverviewHighlightableView* view = highlight_controller->highlighted_view();
-    // Reset the highlight if it is highlighted on a descendant of `this`.
+  if (auto* focus_cycler = GetFocusCycler()) {
+    OverviewFocusableView* view = focus_cycler->focused_view();
+    // Reset the focus if it is focused on a descendant of `this`.
     if (view && Contains(view->GetView())) {
-      highlight_controller->ResetHighlightedView();
+      focus_cycler->ResetFocusedView();
     }
   }
 

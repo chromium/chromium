@@ -18,14 +18,13 @@ class OverviewItemBase;
 
 void SendKey(ui::KeyboardCode key, int flags = ui::EF_NONE);
 
-// Highlights |window| in the active overview session by cycling through all
-// windows in overview until it is found. Returns true if |window| was found,
+// Focuses `window` in the active overview session by cycling through all
+// windows in overview until it is found. Returns true if `window` was found,
 // false otherwise.
-bool HighlightOverviewWindow(const aura::Window* window);
+bool FocusOverviewWindow(const aura::Window* window);
 
-// Gets the current highlighted window. Returns nullptr if no window is
-// highlighted.
-const aura::Window* GetOverviewHighlightedWindow();
+// Gets the current focused window. Returns nullptr if no window is focused.
+const aura::Window* GetOverviewFocusedWindow();
 
 void ToggleOverview(
     OverviewEnterExitType type = OverviewEnterExitType::kNormal);
