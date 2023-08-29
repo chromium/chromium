@@ -284,6 +284,65 @@ void ForceDawnTogglesForSkiaGraphite(
 #endif
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+
+void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
+  static BASE_FEATURE(kCollectDawnGpuMetrics, "CollectDawnGpuMetrics",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  if (!base::FeatureList::IsEnabled(kCollectDawnGpuMetrics)) {
+    return;
+  }
+  WGPULimits max_limits{};
+  wgpu::AdapterType adapter_type = wgpu::AdapterType::Unknown;
+
+  WGPURequestAdapterOptions adapter_options = {};
+  // Search for the backend used for core WebGPU.
+#if BUILDFLAG(IS_WIN)
+  adapter_options.backendType = WGPUBackendType_D3D12;
+#elif BUILDFLAG(IS_MAC)
+  adapter_options.backendType = WGPUBackendType_Metal;
+#else
+  adapter_options.backendType = WGPUBackendType_Vulkan;
+#endif
+  for (dawn::native::Adapter& adapter :
+       instance->EnumerateAdapters(&adapter_options)) {
+    adapter.SetUseTieredLimits(false);
+    wgpu::AdapterProperties props;
+    adapter.GetProperties(&props);
+    if (props.adapterType != wgpu::AdapterType::DiscreteGPU &&
+        props.adapterType != wgpu::AdapterType::IntegratedGPU) {
+      // We only care about GPU adapters and not CPU adapters.
+      continue;
+    }
+
+    WGPUSupportedLimits limits;
+    limits.nextInChain = nullptr;
+    if (!adapter.GetLimits(&limits)) {
+      continue;
+    }
+
+    // Prefer the adapter with larger buffer binding size.
+    if (limits.limits.maxStorageBufferBindingSize >
+        max_limits.maxStorageBufferBindingSize) {
+      max_limits = limits.limits;
+      adapter_type = props.adapterType;
+    }
+  }
+
+  bool has_gpu_adapter = adapter_type != wgpu::AdapterType::Unknown;
+  base::UmaHistogramBoolean("GPU.WebGPU.HasGpuAdapter", has_gpu_adapter);
+  if (has_gpu_adapter) {
+    std::string adapter_string = adapter_type == wgpu::AdapterType::DiscreteGPU
+                                     ? "Discrete"
+                                     : "Integrated";
+    base::UmaHistogramMemoryLargeMB(
+        "GPU.WebGPU.MaxStorageBufferBindingSize." + adapter_string,
+        max_limits.maxStorageBufferBindingSize / (1024 * 1024));
+    base::UmaHistogramCounts100000(
+        "GPU.WebGPU.MaxTextureDimension2D." + adapter_string,
+        max_limits.maxTextureDimension2D);
+  }
+}
+
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   // Note: These enum values should not change and should match those in
   // //tools/metrics/histograms/enums.xml
@@ -373,6 +432,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   }
 
   UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", tier);
+  ReportWebGPUAdapterMetrics(instance);
 }
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
