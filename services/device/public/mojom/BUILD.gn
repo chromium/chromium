@@ -148,6 +148,10 @@ mojom("generic_sensor") {
           mojom = "device.mojom.SensorConfiguration"
           cpp = "::device::PlatformSensorConfiguration"
         },
+        {
+          mojom = "device.mojom.SensorReadingRaw"
+          cpp = "::device::SensorReading"
+        },
       ]
       traits_headers = [
         "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.h",

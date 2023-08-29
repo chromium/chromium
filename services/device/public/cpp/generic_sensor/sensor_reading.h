@@ -7,7 +7,7 @@
 
 #include <type_traits>
 #include "device/base/synchronization/one_writer_seqlock.h"
-#include "services/device/public/mojom/sensor.mojom.h"
+#include "services/device/public/mojom/sensor.mojom-shared.h"
 
 namespace device {
 

@@ -26,6 +26,12 @@ enum SensorType {
   RELATIVE_ORIENTATION_QUATERNION,
 };
 
+// Mojo representation of the SensorReadingRaw C++ class.
+struct SensorReadingRaw {
+  double timestamp;
+  array<double, 4> values;
+};
+
 // Reporting mode supported by the Sensor.
 // ON_CHANGE  - client will be notified through OnSensorReadingChanged() signal
 //              whenever sensor reading is changed.
