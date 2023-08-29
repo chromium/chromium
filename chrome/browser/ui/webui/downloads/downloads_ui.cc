@@ -162,6 +162,13 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                                  : IDS_DOWNLOAD_BYPASS_DEEP_SCAN);
   source->AddBoolean("updateDeepScanningUX", update_deep_scanning_ux);
 
+  // New chrome://downloads icons, colors, strings, etc. to be consistent with
+  // download bubble.
+  bool improved_download_warnings_ux = base::FeatureList::IsEnabled(
+      safe_browsing::kImprovedDownloadPageWarnings);
+  source->AddBoolean("improvedDownloadWarningsUX",
+                     improved_download_warnings_ux);
+
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html
   // TODO(crbug/893033): de-duplicate shortcut by moving all shortcut

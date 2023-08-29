@@ -164,6 +164,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: () => loadTimeData.getBoolean('updateDeepScanningUX'),
       },
 
+      improvedDownloadWarningsUx_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('improvedDownloadWarningsUX'),
+      },
+
       useFileIcon_: Boolean,
     };
   }
@@ -190,6 +195,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
   private updateDeepScanningUx_: boolean;
+  private improvedDownloadWarningsUx_: boolean;
   private completelyOnDisk_: boolean;
   override overrideCustomEquivalent: boolean;
 
@@ -408,7 +414,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
     }
     if (this.isDangerous_) {
-      return 'cr:error';
+      return this.improvedDownloadWarningsUx_ ? 'downloads:dangerous' :
+                                                'cr:error';
     }
     if (!this.useFileIcon_) {
       return 'cr:insert-drive-file';
