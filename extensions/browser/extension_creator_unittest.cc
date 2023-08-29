@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -172,8 +173,8 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
   ASSERT_TRUE(base::WriteFile(de_messages_file, de_data));
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
-  EXPECT_NE(std::string::npos, extension_creator()->error_message().find(
-                                   "Variable $VAR$ used but not defined."));
+  EXPECT_THAT(extension_creator()->error_message(),
+              testing::HasSubstr("Variable $VAR$ used but not defined."));
 }
 
 }  // namespace extensions

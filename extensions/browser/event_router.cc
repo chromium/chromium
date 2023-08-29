@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -587,7 +588,7 @@ void EventRouter::RemoveEventListenerForURL(const std::string& event_name,
 void EventRouter::RegisterObserver(Observer* observer,
                                    const std::string& event_name) {
   // Observing sub-event names like "foo.onBar/123" is not allowed.
-  DCHECK(event_name.find('/') == std::string::npos);
+  DCHECK(!base::Contains(event_name, '/'));
   auto& observers = observer_map_[event_name];
   if (!observers) {
     observers = std::make_unique<Observers>();

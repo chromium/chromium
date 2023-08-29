@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/version.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/common/extension.h"
@@ -30,14 +31,14 @@ void MockExternalProvider::UpdateOrAddExtension(const ExtensionId& id,
 void MockExternalProvider::UpdateOrAddExtension(
     std::unique_ptr<ExternalInstallInfoFile> info) {
   const std::string& id = info->extension_id;
-  CHECK(url_extension_map_.find(id) == url_extension_map_.end());
+  CHECK(!base::Contains(url_extension_map_, id));
   file_extension_map_[id] = std::move(info);
 }
 
 void MockExternalProvider::UpdateOrAddExtension(
     std::unique_ptr<ExternalInstallInfoUpdateUrl> info) {
   const std::string& id = info->extension_id;
-  CHECK(file_extension_map_.find(id) == file_extension_map_.end());
+  CHECK(!base::Contains(file_extension_map_, id));
   url_extension_map_[id] = std::move(info);
 }
 
@@ -65,8 +66,8 @@ void MockExternalProvider::TriggerOnExternalExtensionFound() {
 }
 
 bool MockExternalProvider::HasExtension(const std::string& id) const {
-  return file_extension_map_.find(id) != file_extension_map_.end() ||
-         url_extension_map_.find(id) != url_extension_map_.end();
+  return base::Contains(file_extension_map_, id) ||
+         base::Contains(url_extension_map_, id);
 }
 
 bool MockExternalProvider::GetExtensionDetails(
