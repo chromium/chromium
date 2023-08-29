@@ -33,8 +33,6 @@ html {
   /* TODO(b/290239226): Remove hard-coded and google colors after print-preview
                         is configured to use dynamic colors. */
   --error-status-alert: var(--google-red-600);
-  /* TODO(b/283119650): Replace with correct orange hex code once
-                        available. */
   --error-status-warning: #e37400;
 </if>
 }
@@ -49,8 +47,6 @@ html {
     /* TODO(b/290239226): Remove hard-coded and google colors after
                           print-preview is configured to use dynamic colors. */
     --error-status-alert: var(--google-red-300);
-    /* TODO(b/283119650): Replace with correct orange hex code once
-                          available. */
     --error-status-warning: #fdd663;
 </if>
   }
