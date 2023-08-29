@@ -38,6 +38,7 @@ class ReadingListAddEntryFunction : public ExtensionFunction,
   raw_ptr<ReadingListModel> reading_list_model_;
   GURL url_;
   std::string title_;
+  bool has_been_read_;
 };
 
 class ReadingListRemoveEntryFunction : public ExtensionFunction,

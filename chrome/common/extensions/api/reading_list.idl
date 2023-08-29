@@ -14,6 +14,25 @@ namespace readingList{
 
     // True if the entry has been read.
     boolean hasBeenRead;
+
+    // The last update time of the entry.
+    // Recorded in milliseconds since Jan 1st 1970.
+    double lastUpdateTime;
+
+    // The creation time of the entry.
+    // Recorded in milliseconds since Jan 1st 1970.
+    double creationTime;
+  };
+
+  dictionary AddEntryOptions {
+    // The url of the entry.
+    DOMString url;
+
+    // The title of the entry.
+    DOMString title;
+
+    // True if the entry has been read.
+    boolean hasBeenRead;
   };
 
   dictionary RemoveOptions {
@@ -53,7 +72,7 @@ namespace readingList{
     // |entry|: The entry to add to the reading list.
     // |callback|: Invoked once the entry has been added.
     [supportsPromises] static void addEntry(
-                                      ReadingListEntry entry,
+                                      AddEntryOptions entry,
                                       optional AddEntryCallback callback);
 
     // Removes an entry from the reading list if it exists.
