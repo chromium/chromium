@@ -3232,6 +3232,12 @@
         <message name="IDS_SHIMLESS_RMA_DONE_BUTTON" translateable="false" desc="Default text for Done button when action is completed for closing a dialog.">
           Done
         </message>
+        <message name="IDS_SHIMLESS_RMA_INSTALL_BUTTON" translateable="false" desc="Default text for button to install things.">
+          Install
+        </message>
+        <message name="IDS_SHIMLESS_RMA_ACCEPT_BUTTON" translateable="false" desc="Default text for button to accept a request.">
+          Accept
+        </message>
         <!-- Exit dialog -->
         <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE" translateable="false" desc="Title for the exit dialog.">
           Exit repair?
@@ -3754,6 +3760,34 @@
         </message>
         <message name="IDS_SHIMLESS_RMA_UPDATE_OS_ALT_TEXT" translateable="false" desc="Alt text for illustration showing an hourglass representing updating the OS.">
           Update OS
+        </message>
+        <!-- 3p diagnostics -->
+        <message name="IDS_SHIMLESS_RMA_3P_FIND_INSTALLABLE_DIALOG_TITLE" translateable="false" desc="Dialog title for asking whether users want to install manufacturer diagnostics app.">
+          Install <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app?
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FIND_INSTALLABLE_DIALOG_MESSAGE" translateable="false" desc="Dialog message for asking whether users want to install manufacturer diagnostics app.">
+          There is an installable app at <ph name="APP_PATH">$1<ex>/usr/local/diag.swbn</ex></ph>
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_REVIEW_PERMISSION_DIALOG_TITLE" translateable="false" desc="Dialog title for users to review the permission of the manufacturer diagnostics app before install.">
+          Review <ph name="APP_NAME">$1<ex>Google's diagnostic reference app</ex></ph> permissions
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_REVIEW_PERMISSION_DIALOG_MESSAGE_PREFIX" translateable="false" desc="Dialog message prefix for users to review the permission of the manufacturer diagnostics app before install.">
+          It can:
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FAILED_TO_INSTALL_DIALOG_TITLE" translateable="false" desc="Dialog title for telling users that manufacturer diagnostics app couldn't be installed.">
+          Couldn't install <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_CHECK_WITH_OEM_DIALOG_MESSAGE" translateable="false" desc="Dialog message for telling users to check with the device manufacturer for errors related to manufacturer diagnostics app.">
+          Check with the device manufacturer
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_NOT_INSTALLED_DIALOG_TITLE" translateable="false" desc="Dialog title for telling users that manufacturer diagnostics app isn't installed.">
+          <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app is not installed
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FAILED_TO_LOAD_DIALOG_TITLE" translateable="false" desc="Dialog title for telling users that installed manufacturer diagnostics app couldn't be loaded.">
+          Couldn't load <ph name="OEM_NAME">$1<ex>Google</ex></ph> diagnostics app
+        </message>
+        <message name="IDS_SHIMLESS_RMA_3P_FAILED_TO_LOAD_DIALOG_MESSAGE" translateable="false" desc="Dialog message for telling users that installed manufacturer diagnostics app couldn't be loaded.">
+          Try installing the app again
         </message>
 
         <!-- Peripheral Firmware Update -->

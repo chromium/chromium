@@ -82,6 +82,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
     {"retryButtonLabel", IDS_SHIMLESS_RMA_RETRY_BUTTON},
     {"tryAgainButtonLabel", IDS_SHIMLESS_RMA_TRY_AGAIN_BUTTON},
     {"doneButtonLabel", IDS_SHIMLESS_RMA_DONE_BUTTON},
+    {"installButtonLabel", IDS_SHIMLESS_RMA_INSTALL_BUTTON},
+    {"acceptButtonLabel", IDS_SHIMLESS_RMA_ACCEPT_BUTTON},
     // Exit dialog
     {"exitDialogTitleText", IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE},
     {"exitDialogCancelButtonLabel",
@@ -374,6 +376,25 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
     {"repairStartAltText", IDS_SHIMLESS_RMA_REPAIR_START_ALT_TEXT},
     {"successAltText", IDS_SHIMLESS_RMA_SUCCESS_ALT_TEXT},
     {"updateOsAltText", IDS_SHIMLESS_RMA_UPDATE_OS_ALT_TEXT},
+    // 3p diagnostics
+    {"3pFindInstallalbeDialogTitle",
+     IDS_SHIMLESS_RMA_3P_FIND_INSTALLABLE_DIALOG_TITLE},
+    {"3pFindInstallalbeDialogMessage",
+     IDS_SHIMLESS_RMA_3P_FIND_INSTALLABLE_DIALOG_MESSAGE},
+    {"3pReviewPermissionDialogTitle",
+     IDS_SHIMLESS_RMA_3P_REVIEW_PERMISSION_DIALOG_TITLE},
+    {"3pReviewPermissionDialogMessagePrefix",
+     IDS_SHIMLESS_RMA_3P_REVIEW_PERMISSION_DIALOG_MESSAGE_PREFIX},
+    {"3pFailedToInstallDialogTitle",
+     IDS_SHIMLESS_RMA_3P_FAILED_TO_INSTALL_DIALOG_TITLE},
+    {"3pCheckWithOemDialogMessage",
+     IDS_SHIMLESS_RMA_3P_CHECK_WITH_OEM_DIALOG_MESSAGE},
+    {"3pNotInstalledDialogTitle",
+     IDS_SHIMLESS_RMA_3P_NOT_INSTALLED_DIALOG_TITLE},
+    {"3pFailedToLoadDialogTitle",
+     IDS_SHIMLESS_RMA_3P_FAILED_TO_LOAD_DIALOG_TITLE},
+    {"3pFailedToLoadDialogMessage",
+     IDS_SHIMLESS_RMA_3P_FAILED_TO_LOAD_DIALOG_MESSAGE},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -406,6 +427,8 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
                           features::IsShimlessRMADiagnosticPageEnabled());
   html_source->AddBoolean("complianceCheckEnabled",
                           features::IsShimlessRMAComplianceCheckEnabled());
+  html_source->AddBoolean("3pDiagnosticsEnabled",
+                          features::IsShimlessRMA3pDiagnosticsEnabled());
 }
 
 }  // namespace
