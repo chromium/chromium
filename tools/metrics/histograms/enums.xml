@@ -96486,9 +96486,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SegmentationSelectionFailureReason">
   <int value="0" label="DEPRECATED: Segmentation platform is disabled"/>
   <int value="1" label="Segment selection available in prefs"/>
-  <int value="2" label="At least one segment is not ready"/>
-  <int value="3"
-      label="At least one segment's signal collection is not complete"/>
+  <int value="2" label="Score from database for server model is not ready"/>
+  <int value="3" label="Signal collection for server model is not complete"/>
   <int value="4" label="Segment selection TTL has not expired"/>
   <int value="5"
       label="Deprecated since M101. At least one model failed to execute"/>
@@ -96499,18 +96498,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Failed to write model result to DB"/>
   <int value="9" label="Invalid selection result found in prefs"/>
   <int value="10" label="Database initialization failed"/>
-  <int value="11" label="At least one segment is not available"/>
-  <int value="12" label="At least one segment does not have default signals"/>
-  <int value="13" label="At least one segment default model execution failed"/>
-  <int value="14" label="At least one segment default model missing metadata"/>
-  <int value="15"
-      label="At least one segment on demand tflite model execution failed"/>
+  <int value="11" label="SegmentInfo is not available for server model"/>
+  <int value="12" label="Signal collection for default model is not complete"/>
+  <int value="13" label="Default model execution failed"/>
+  <int value="14" label="SegmentInfo is not available for default model"/>
+  <int value="15" label="Server model execution failed"/>
   <int value="16" label="Segment selection available in proto prefs"/>
   <int value="17" label="Invalid selection result found in proto prefs"/>
   <int value="18"
       label="Proto prefs result is valid and doesn't require update"/>
   <int value="19" label="Proto prefs result is updated"/>
-  <int value="20" label="Model execution score is obtained from database"/>
+  <int value="20"
+      label="Model execution score for server model is obtained from database"/>
   <int value="21"
       label="Model execution score is obtained from executing default model"/>
   <int value="22"
@@ -96519,6 +96518,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="24" label="Ondemand model not executed or failed."/>
   <int value="25" label="Classification API result returned from prefs."/>
   <int value="26" label="Classification API result not available in prefs."/>
+  <int value="27"
+      label="Model execution score for default model is obtained from
+             database"/>
+  <int value="28" label="Score from database for default model is not ready"/>
 </enum>
 
 <enum name="SelectedTheme">

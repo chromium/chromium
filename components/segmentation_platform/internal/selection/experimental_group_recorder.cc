@@ -30,6 +30,7 @@ ExperimentalGroupRecorder::ExperimentalGroupRecorder(
   options->callback = base::BindOnce(&ExperimentalGroupRecorder::OnGetSegment,
                                      weak_ptr_factory_.GetWeakPtr());
   options->ignore_db_scores = false;
+  options->save_results_to_db = true;
   result_provider->GetSegmentResult(std::move(options));
 }
 

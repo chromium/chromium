@@ -53,6 +53,7 @@ SegmentationPlatformServiceImplMultiClientTest.*
 SegmentationPlatformServiceImplTest.*
 SegmentationResultPrefsTest.*
 SegmentationUkmHelperTest.*
+SelectionUtilsTest.*
 ServiceProxyImplTest.*
 ShoppingUserModelTest.*
 SignalDatabaseImplTest.*

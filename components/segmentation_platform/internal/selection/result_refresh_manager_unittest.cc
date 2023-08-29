@@ -138,10 +138,10 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
-  ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
-                      result_from_db_for_client1,
-                      SegmentResultProvider::ResultState::kSuccessFromDatabase,
-                      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(
+      kSegmentId1, client1_result_provider_.get(), result_from_db_for_client1,
+      SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed,
+      /*ignore_db_scores=*/false);
 
   // Client 2 gets model result by running the model.
   proto::PredictionResult result_from_model_for_client2 =
@@ -150,10 +150,11 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
-  ExpectSegmentResult(kSegmentId2, client2_result_provider_.get(),
-                      result_from_model_for_client2,
-                      SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
-                      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(
+      kSegmentId2, client2_result_provider_.get(),
+      result_from_model_for_client2,
+      SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed,
+      /*ignore_db_scores=*/false);
 
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
@@ -174,10 +175,10 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
           /*model_scores=*/{},
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1);
-  ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
-                      result_for_client,
-                      SegmentResultProvider::ResultState::kSignalsNotCollected,
-                      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(
+      kSegmentId1, client1_result_provider_.get(), result_for_client,
+      SegmentResultProvider::ResultState::kServerModelSignalsNotCollected,
+      /*ignore_db_scores=*/false);
 
   // Client 2 tries gets model result by running the model and model execution
   // fails.

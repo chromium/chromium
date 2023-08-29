@@ -133,7 +133,8 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
             EXPECT_EQ(options->segment_id, kSegmentId);
             auto result =
                 std::make_unique<SegmentResultProvider::SegmentResult>(
-                    SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                    SegmentResultProvider::ResultState::
+                        kServerModelExecutionScoreUsed,
                     CreatePredictionResultWithBinaryClassifier(),
                     /*rank=*/2);
             std::move(options->callback).Run(std::move(result));
@@ -163,7 +164,8 @@ TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
             EXPECT_EQ(options->segment_id, kSegmentId);
             auto result =
                 std::make_unique<SegmentResultProvider::SegmentResult>(
-                    SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                    SegmentResultProvider::ResultState::
+                        kServerModelExecutionScoreUsed,
                     CreatePredictionResultWithGenericPredictor(),
                     /*rank=*/2);
             std::move(options->callback).Run(std::move(result));

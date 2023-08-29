@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 
+#include "components/segmentation_platform/internal/selection/selection_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 
@@ -98,18 +99,10 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
 
   // If the model result is available either from database or running the
   // model, update prefs if expired.
-  bool unexpired_score_from_db =
-      (result_state ==
-       SegmentResultProvider::ResultState::kSuccessFromDatabase);
-  bool expired_score_and_run_model =
-      ((result_state ==
-        SegmentResultProvider::ResultState::kTfliteModelScoreUsed) ||
-       (result_state ==
-        SegmentResultProvider::ResultState::kDefaultModelScoreUsed));
+  PredictionStatus status =
+      selection_utils::ResultStateToPredictionStatus(result_state);
 
-  bool success = (unexpired_score_from_db || expired_score_and_run_model);
-
-  if (!success) {
+  if (status != PredictionStatus::kSucceeded) {
     stats::RecordSegmentSelectionFailure(
         *config, stats::GetSuccessOrFailureReason(result_state));
     return;

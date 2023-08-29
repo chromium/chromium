@@ -32,32 +32,38 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     SegmentResultProvider::ResultState result_state) {
   switch (result_state) {
     case SegmentResultProvider::ResultState::kUnknown:
-    case SegmentResultProvider::ResultState::kSuccessFromDatabase:
-    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
-    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
+    case SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed:
+    case SegmentResultProvider::ResultState::kDefaultModelDatabaseScoreUsed:
+    case SegmentResultProvider::ResultState::kDefaultModelExecutionScoreUsed:
+    case SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed:
       NOTREACHED();
       return stats::SegmentationSelectionFailureReason::kMaxValue;
-    case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
+    case SegmentResultProvider::ResultState::kServerModelDatabaseScoreNotReady:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentNotReady;
-    case SegmentResultProvider::ResultState::kSegmentNotAvailable:
+          kServerModelDatabaseScoreNotReady;
+    case SegmentResultProvider::ResultState::kDefaultModelDatabaseScoreNotReady:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentNotAvailable;
-    case SegmentResultProvider::ResultState::kSignalsNotCollected:
+          kDefaultModelDatabaseScoreNotReady;
+    case SegmentResultProvider::ResultState::
+        kServerModelSegmentInfoNotAvailable:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentSignalsNotCollected;
-    case SegmentResultProvider::ResultState::kDefaultModelMetadataMissing:
+          kServerModelSegmentInfoNotAvailable;
+    case SegmentResultProvider::ResultState::
+        kDefaultModelSegmentInfoNotAvailable:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentDefaultMissingMetadata;
-    case SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected:
+          kDefaultModelSegmentInfoNotAvailable;
+    case SegmentResultProvider::ResultState::kServerModelSignalsNotCollected:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentDefaultSignalNotCollected;
+          kServerModelSignalsNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelSignalsNotCollected:
+      return stats::SegmentationSelectionFailureReason::
+          kDefaultModelSignalsNotCollected;
     case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentDefaultExecFailed;
-    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
+          kDefaultModelExecutionFailed;
+    case SegmentResultProvider::ResultState::kServerModelExecutionFailed:
       return stats::SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentTfliteExecFailed;
+          kServerModelExecutionFailed;
   }
 }
 
@@ -234,6 +240,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
       options->segment_id = needed_segment.first;
       options->discrete_mapping_key = config_->segmentation_key;
       options->ignore_db_scores = !config_->auto_execute_and_cache;
+      options->save_results_to_db = true;
       options->input_context = input_context;
       options->callback = base::BindOnce(
           &SegmentSelectorImpl::OnGetResultForSegmentSelection,

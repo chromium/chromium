@@ -264,7 +264,8 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
             int rank = options->segment_id == kSegmentId ? 3 : 4;
             auto result =
                 std::make_unique<SegmentResultProvider::SegmentResult>(
-                    SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                    SegmentResultProvider::ResultState::
+                        kServerModelExecutionScoreUsed,
                     proto::PredictionResult(), rank);
             std::move(options->callback).Run(std::move(result));
           }));

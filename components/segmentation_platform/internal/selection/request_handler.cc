@@ -10,6 +10,7 @@
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
+#include "components/segmentation_platform/internal/selection/selection_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -20,20 +21,6 @@
 
 namespace segmentation_platform {
 namespace {
-
-PredictionStatus ResultStateToPredictionStatus(
-    SegmentResultProvider::ResultState result_state) {
-  switch (result_state) {
-    case SegmentResultProvider::ResultState::kSuccessFromDatabase:
-    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
-    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
-      return PredictionStatus::kSucceeded;
-    case SegmentResultProvider::ResultState::kSignalsNotCollected:
-      return PredictionStatus::kNotReady;
-    default:
-      return PredictionStatus::kFailed;
-  }
-}
 
 class RequestHandlerImpl : public RequestHandler {
  public:
@@ -121,7 +108,8 @@ void RequestHandlerImpl::OnGetPredictionResult(
     std::unique_ptr<SegmentResultProvider::SegmentResult> segment_result) {
   RawResult result(PredictionStatus::kFailed);
   if (segment_result) {
-    auto status = ResultStateToPredictionStatus(segment_result->state);
+    auto status =
+        selection_utils::ResultStateToPredictionStatus(segment_result->state);
     result = PostProcessor().GetRawResult(segment_result->result, status);
     result.request_id = CollectTrainingData(input_context);
 

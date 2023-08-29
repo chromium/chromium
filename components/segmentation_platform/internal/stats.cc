@@ -641,31 +641,39 @@ SegmentationSelectionFailureReason GetSuccessOrFailureReason(
     case SegmentResultProvider::ResultState::kUnknown:
       NOTREACHED();
       return SegmentationSelectionFailureReason::kMaxValue;
-    case SegmentResultProvider::ResultState::kSuccessFromDatabase:
-      return SegmentationSelectionFailureReason::kScoreUsedFromDatabase;
-    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
-      return SegmentationSelectionFailureReason::kScoreComputedFromDefaultModel;
-    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
-      return SegmentationSelectionFailureReason::kScoreComputedFromTfliteModel;
-    case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
-      return SegmentationSelectionFailureReason::kAtLeastOneSegmentNotReady;
-    case SegmentResultProvider::ResultState::kSegmentNotAvailable:
-      return SegmentationSelectionFailureReason::kAtLeastOneSegmentNotAvailable;
-    case SegmentResultProvider::ResultState::kSignalsNotCollected:
+    case SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed:
+      return SegmentationSelectionFailureReason::kServerModelDatabaseScoreUsed;
+    case SegmentResultProvider::ResultState::kDefaultModelDatabaseScoreUsed:
+      return SegmentationSelectionFailureReason::kDefaultModelDatabaseScoreUsed;
+    case SegmentResultProvider::ResultState::kDefaultModelExecutionScoreUsed:
       return SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentSignalsNotCollected;
-    case SegmentResultProvider::ResultState::kDefaultModelMetadataMissing:
+          kDefaultModelExecutionScoreUsed;
+    case SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed:
+      return SegmentationSelectionFailureReason::kServerModelExecutionScoreUsed;
+    case SegmentResultProvider::ResultState::kDefaultModelDatabaseScoreNotReady:
       return SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentDefaultMissingMetadata;
-    case SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected:
+          kDefaultModelDatabaseScoreNotReady;
+    case SegmentResultProvider::ResultState::kServerModelDatabaseScoreNotReady:
       return SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentDefaultSignalNotCollected;
+          kServerModelDatabaseScoreNotReady;
+    case SegmentResultProvider::ResultState::
+        kDefaultModelSegmentInfoNotAvailable:
+      return SegmentationSelectionFailureReason::
+          kDefaultModelSegmentInfoNotAvailable;
+    case SegmentResultProvider::ResultState::
+        kServerModelSegmentInfoNotAvailable:
+      return SegmentationSelectionFailureReason::
+          kServerModelSegmentInfoNotAvailable;
+    case SegmentResultProvider::ResultState::kDefaultModelSignalsNotCollected:
+      return SegmentationSelectionFailureReason::
+          kDefaultModelSignalsNotCollected;
+    case SegmentResultProvider::ResultState::kServerModelSignalsNotCollected:
+      return SegmentationSelectionFailureReason::
+          kServerModelSignalsNotCollected;
     case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
-      return SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentDefaultExecFailed;
-    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
-      return SegmentationSelectionFailureReason::
-          kAtLeastOneSegmentTfliteExecFailed;
+      return SegmentationSelectionFailureReason::kDefaultModelExecutionFailed;
+    case SegmentResultProvider::ResultState::kServerModelExecutionFailed:
+      return SegmentationSelectionFailureReason::kServerModelExecutionFailed;
   }
 }
 
