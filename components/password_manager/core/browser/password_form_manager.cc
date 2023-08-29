@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -805,6 +806,7 @@ bool PasswordFormManager::ProvisionallySave(
     HandleUsernameFirstFlow(possible_username,
                             password_form_had_possible_username);
   }
+  HandleForgotPasswordFormData();
 
   CreatePendingCredentials();
   return true;
@@ -1234,6 +1236,58 @@ void PasswordFormManager::HandleUsernameFirstFlow(
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
     votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData());
+  }
+}
+
+void PasswordFormManager::HandleForgotPasswordFormData() {
+  FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
+  // FieldInfoManager may be null in incognito and tests.
+  if (!field_info_manager) {
+    return;
+  }
+
+  std::vector<FieldInfo> field_info =
+      field_info_manager->GetFieldInfo(parsed_submitted_form_->signon_realm);
+  // No info available for the current eTLD => no voting on potential username
+  // forms.
+  if (field_info.empty() &&
+      IsPasswordFormWithoutUsername(parsed_submitted_form_.get())) {
+    // Set empty vote data for the fallback classifier.
+    votes_uploader_.AddForgotPasswordVoteData(SingleUsernameVoteData());
+    return;
+  }
+
+  // Iterated over text fields that the user has interacted with recently to
+  // find possible username fields.
+  for (const auto& field : field_info) {
+    // Skip the field if the user has erased the value, or if the field is a
+    // part of the observed password form.
+    // TODO(crbug/1468297): Propagate is_likely_otp flag to FieldInfo struct and
+    // check for it too.
+    if (field.value.empty() ||
+        ObservedFormHasField(field.driver_id, field.field_id)) {
+      continue;
+    }
+
+    bool password_form_had_possible_username =
+        FormMatchesUsername(parsed_submitted_form_.get(), field.value);
+    // Consider possible username field for voting if either:
+    // 1) A password form without a username was submitted after the single
+    // username form. 2) The submitted password form contains the potential
+    // username.
+    // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
+    // 'password_form_had_possible_username', is used only to assess the impact
+    // of (2) with metrics. The variable can be removed once the metrics are not
+    // needed anymore.
+    if (IsPasswordFormWithoutUsername(
+            parsed_submitted_form_.get()) ||    // Case 1.
+        password_form_had_possible_username) {  // Case 2.
+      votes_uploader_.AddForgotPasswordVoteData(SingleUsernameVoteData(
+          field.field_id, field.value,
+          field.stored_predictions.value_or(FormPredictions()),
+          form_fetcher_->GetBestMatches(),
+          password_form_had_possible_username));
+    }
   }
 }
 

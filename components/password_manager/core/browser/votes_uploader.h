@@ -166,6 +166,11 @@ class VotesUploader {
   void CalculateUsernamePromptEditState(const std::u16string& saved_username);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // Cache the vote data for a form that is likely a forgot password form
+  // (a form, into which the user inputs their username to start the
+  // password recovery process).
+  void AddForgotPasswordVoteData(const SingleUsernameVoteData& vote_data);
+
   void set_generation_popup_was_shown(bool generation_popup_was_shown) {
     generation_popup_was_shown_ = generation_popup_was_shown;
   }
@@ -323,8 +328,18 @@ class VotesUploader {
   // form, is submitted.
   absl::optional<SingleUsernameVoteData> single_username_vote_data_;
 
-  // The username that is suggested in a save/update prompt.
+  // The username that is suggested in a save/update prompt. The user might
+  // modify it in the prompt before saving.
   std::u16string suggested_username_;
+
+  // The data for voting on potential forgot password forms (forms, into
+  // which the user inputs their username to start the password recovery
+  // process). These forms do not contain password fields, so voting requires
+  // the same information as for single username forms for username first flow.
+  // Populated when the password reset form, that follows the forgot password
+  // form, is submitted.
+  std::map<autofill::FieldRendererId, SingleUsernameVoteData>
+      forgot_password_vote_data_;
 };
 
 }  // namespace password_manager

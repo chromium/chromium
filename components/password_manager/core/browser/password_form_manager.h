@@ -346,10 +346,15 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // credentials available to use.
   bool WebAuthnCredentialsAvailable() const;
 
-  // Set voting data and update |parsed_submitted_form_| with the correct
+  // Sets voting data and update |parsed_submitted_form_| with the correct
   // username value for a password form without a username field.
   void HandleUsernameFirstFlow(const PossibleUsernameData* possible_username,
                                bool password_form_had_username);
+
+  // Sets voting data for a password form that is likely a forgot password form
+  // (a form, into which the user inputs their username to start the
+  // password recovery process).
+  void HandleForgotPasswordFormData();
 
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;

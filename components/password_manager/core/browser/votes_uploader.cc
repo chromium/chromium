@@ -679,6 +679,12 @@ void VotesUploader::CalculateUsernamePromptEditState(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void VotesUploader::AddForgotPasswordVoteData(
+    const SingleUsernameVoteData& vote_data) {
+  // TODO(crbug/1468297): Implement votes uploading based on this.
+  forgot_password_vote_data_[vote_data.renderer_id] = vote_data;
+}
+
 void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
   DCHECK(form_structure);
   DCHECK(generation_popup_was_shown_);
