@@ -68,10 +68,6 @@ KeyedService* ScanServiceFactory::BuildServiceInstanceFor(
   return BuildInstanceFor(context);
 }
 
-bool ScanServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
-}
-
 bool ScanServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
