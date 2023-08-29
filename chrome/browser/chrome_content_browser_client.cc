@@ -338,6 +338,7 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -768,12 +769,6 @@ const char kDEPRECATED_AllowlistedExtensionID[] = "whitelisted-extension-id";
 
 #if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
     !defined(ADDRESS_SANITIZER)
-// Enables pre-launch Code Integrity Guard (CIG) for Chrome renderers, when
-// running on Windows 10 1511 and above. See
-// https://blogs.windows.com/blog/tag/code-integrity-guard/.
-BASE_FEATURE(kRendererCodeIntegrity,
-             "RendererCodeIntegrity",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
 // process, when running on Windows 10 1511 and above. This has no effect if
 // NetworkServiceSandbox feature is disabled. See
@@ -4813,8 +4808,7 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kRenderer:
       enforce_code_integrity =
-          ((flags & ChildSpawnFlags::kChildSpawnFlagRendererCodeIntegrity) &&
-           base::FeatureList::IsEnabled(kRendererCodeIntegrity));
+          (flags & ChildSpawnFlags::kChildSpawnFlagRendererCodeIntegrity);
       break;
     case sandbox::mojom::Sandbox::kNetwork:
       enforce_code_integrity =
@@ -4885,16 +4879,20 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 }
 
 bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
+  // Emergency 'on switch' to re-enable the policy if force-disabling it causes
+  // issues.
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxForceRendererCodeIntegrity)) {
+    return true;
+  }
+
   PrefService* local_state = g_browser_process->local_state();
 
-  // Code integrity defaults to enabled, unless specifically overridden by a
-  // policy controlled pref being set to false.
-  const bool is_code_integrity_enabled =
-      !local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) ||
-      local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled);
-  base::UmaHistogramBoolean("Windows.RendererCodeIntegrityEnabled",
-                            is_code_integrity_enabled);
-  return is_code_integrity_enabled;
+  // If kWinSboxForceRendererCodeIntegrity is set to disabled, then code
+  // integrity defaults to enabled, unless specifically overridden by a policy
+  // controlled pref being set to false.
+  return !local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) ||
+         local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled);
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.

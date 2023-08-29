@@ -295,17 +295,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.RendererCodeIntegrityEnabled" enum="BooleanEnabled"
-    expires_after="2024-02-25">
-  <owner>ajgo@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Records whether or not Renderer code integrity is enabled. This is enabled
-    by default but can be overridden by policy. This is recorded each time a new
-    renderer process starts.
-  </summary>
-</histogram>
-
 <histogram name="Windows.UnpinShortcut.ProcessError" enum="BooleanError"
     expires_after="2023-10-08">
   <owner>davidbienvenu@chromium.org</owner>

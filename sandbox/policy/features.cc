@@ -88,6 +88,14 @@ BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
              "WinSboxNetworkServiceSandboxIsLPAC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, always launch the renderer process with Code Integrity Guard
+// enabled, regardless of the local policy configuration. If disabled, then
+// policy is respected. This acts as an emergency "off switch" for the
+// deprecation of the RendererCodeIntegrityEnabled policy.
+BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
+             "WinSboxForceRendererCodeIntegrity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

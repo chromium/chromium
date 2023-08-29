@@ -1,8 +1,11 @@
 caption: Enable Renderer Code Integrity
+deprecated: true
 desc: |-
   Setting the policy to Enabled or leaving it unset turns Renderer Code Integrity on.
 
         Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security and stability as unknown and potentially hostile code can load inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s renderer processes. Only turn off the policy if there are compatibility issues with third-party software that must run inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s renderer processes.
+
+        This policy was removed in Chrome 118 and is ignored if set.
 
         Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).
 example_value: false
