@@ -1,7 +1,6 @@
 "use strict;"
 
-const FULL_URL = window.location.href;
-const BASE_URL = FULL_URL.substring(0, FULL_URL.lastIndexOf('/') + 1);
+const BASE_URL = document.baseURI.substring(0, document.baseURI.lastIndexOf('/') + 1);
 const BASE_PATH = (new URL(BASE_URL)).pathname;
 
 const DEFAULT_INTEREST_GROUP_NAME = 'default name';
