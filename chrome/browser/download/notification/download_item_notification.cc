@@ -37,6 +37,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -366,8 +367,20 @@ void DownloadItemNotification::Click(
     }
 
     if (command == DownloadCommands::REVIEW) {
-      item_->ReviewScanningVerdict(
-          GetBrowser()->tab_strip_model()->GetActiveWebContents());
+      content::WebContents* contents =
+          GetBrowser()->tab_strip_model()->GetActiveWebContents();
+
+      // If there is no currently active web contents, just show the user the
+      // downloads page so they get more context on the warned download needing
+      // to be reviewed.
+      // TODO(b/285119059): Expand this solution by having the review dialog
+      // also open immediately after the download page is available.
+      if (!contents) {
+        chrome::ShowDownloads(GetBrowser());
+        return;
+      }
+
+      item_->ReviewScanningVerdict(contents);
       in_review_ = true;
       Update();
     }
