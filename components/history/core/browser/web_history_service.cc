@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/history_status.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -162,13 +163,20 @@ class RequestImpl : public WebHistoryService::Request {
     signin::ScopeSet oauth_scopes;
     oauth_scopes.insert(kHistoryOAuthScope);
 
+    signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
+#if BUILDFLAG(IS_IOS)
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      consent_level = signin::ConsentLevel::kSignin;
+    }
+#endif
     access_token_fetcher_ =
         std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
             "web_history", identity_manager_, oauth_scopes,
             base::BindOnce(&RequestImpl::OnAccessTokenFetchComplete,
                            base::Unretained(this)),
             signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            signin::ConsentLevel::kSync);
+            consent_level);
     is_pending_ = true;
   }
 
