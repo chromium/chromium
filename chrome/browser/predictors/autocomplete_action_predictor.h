@@ -276,7 +276,6 @@ class AutocompleteActionPredictor
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
-  base::WeakPtr<content::PrerenderHandle> search_prerender_handle_;
   base::WeakPtr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
