@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {ActionChoice, GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {ActionChoice, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -214,6 +214,18 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakePointingSticks', pointingSticks);
   }
 
+  setGraphicsTabletSettings(id: number, settings: GraphicsTabletSettings):
+      void {
+    const graphicsTablets = this.methods.getResult('fakeGraphicsTablets');
+    for (const graphicsTablet of graphicsTablets) {
+      if (graphicsTablet.id === id) {
+        graphicsTablet.settings = settings;
+      }
+    }
+    this.methods.setResult('fakeGraphicsTablets', graphicsTablets);
+    this.notifyGraphicsTabletListUpdated();
+  }
+
   notifyKeboardListUpdated(): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
     // Make a deep copy to notify the functions observing keyboard settings.
@@ -252,7 +264,7 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
-  notifyGraphicsTabletUpdated(): void {
+  notifyGraphicsTabletListUpdated(): void {
     const graphicsTablets = this.methods.getResult('fakeGraphicsTablets');
     for (const observer of this.graphicsTabletObservers) {
       observer.onGraphicsTabletListUpdated(graphicsTablets);
@@ -287,7 +299,7 @@ export class FakeInputDeviceSettingsProvider implements
   observeGraphicsTabletSettings(observer: GraphicsTabletObserverInterface):
       void {
     this.graphicsTabletObservers.push(observer);
-    this.notifyGraphicsTabletUpdated();
+    this.notifyGraphicsTabletListUpdated();
   }
 
   getActionsForMouseButtonCustomization(): Promise<ActionChoice[]> {

@@ -105,6 +105,36 @@ suite('FakeInputDeviceSettings', () => {
     assertDeepEquals(updatedFirstPointingStick, result[0]);
   });
 
+  test('setGraphicsTabletSettings', async () => {
+    provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+    // Update the first graphics tablet settings with a new button remapping.
+    const updatedButtonRemappings = [
+      ...fakeGraphicsTablets[0]!.settings!.tabletButtonRemappings,
+      {
+        name: 'new button',
+        button: {
+          vkey: 0,
+        },
+        remappingAction: {
+          action: 0,
+        },
+      },
+    ];
+    const updatedGraphicsTablet = {
+      ...fakeGraphicsTablets[0],
+      settings: {
+        ...fakeGraphicsTablets[0]!.settings,
+        tabletButtonRemappings: updatedButtonRemappings,
+      },
+    };
+    provider.setGraphicsTabletSettings(
+        updatedGraphicsTablet.id!, updatedGraphicsTablet.settings);
+    // Verify if the first graphics tablet settings are updated.
+    const result = await provider.getConnectedGraphicsTabletSettings();
+    assertDeepEquals(
+        result[0]?.settings?.tabletButtonRemappings, updatedButtonRemappings);
+  });
+
   test('restoreDefaultKeyboardRemappings', async () => {
     provider.setFakeKeyboards(fakeKeyboards);
     // Restore the default remappings for the first keyboard settings.
