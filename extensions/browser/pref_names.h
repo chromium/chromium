@@ -89,6 +89,10 @@ inline constexpr char kInstallDenyList[] = "extensions.install.denylist";
 // accessed through extensions::ExternalPolicyProvider.
 inline constexpr char kInstallForceList[] = "extensions.install.forcelist";
 
+// A dictionary containing, for each extension id, additional
+// OAuth redirect URLs that will be allowed in chrome.identity API.
+inline constexpr char kOAuthRedirectUrls[] = "extensions.oauth_redirect_urls";
+
 // String pref for what version chrome was last time the extension prefs were
 // loaded.
 inline constexpr char kLastChromeVersion[] = "extensions.last_chrome_version";

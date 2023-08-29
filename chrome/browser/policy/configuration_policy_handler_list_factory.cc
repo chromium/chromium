@@ -946,6 +946,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     { key::kMicrosoftOneDriveMount,
     prefs::kMicrosoftOneDriveMount,
     base::Value::Type::STRING},
+  { key::kExtensionOAuthRedirectUrls,
+    extensions::pref_names::kOAuthRedirectUrls,
+    base::Value::Type::DICT },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

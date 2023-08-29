@@ -1147,6 +1147,7 @@ policies:
   1146: GoogleWorkspaceCloudUpload
   1147: ShortcutCustomizationAllowed
   1148: MicrosoftOneDriveMount
+  1149: ExtensionOAuthRedirectUrls
 atomic_groups:
   1: Homepage
   2: RemoteAccess
