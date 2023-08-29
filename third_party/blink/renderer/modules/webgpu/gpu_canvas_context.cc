@@ -613,6 +613,14 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
     texture_ = MakeGarbageCollected<GPUTexture>(
         device_, GetProcs().deviceCreateTexture(device_->GetHandle(),
                                                 &texture_descriptor_));
+    // If the user manually destroys the texture before yielding control back
+    // to the browser, do the copy just prior to the texture destruction.
+    texture_->SetBeforeDestroyCallback(WTF::BindOnce(
+        [](GPUCanvasContext* context, GPUTexture* texture) {
+          context->CopyToSwapTexture();
+          texture->ClearBeforeDestroyCallback();
+        },
+        WrapPersistent(this), WrapPersistent(texture_.Get())));
   } else {
     texture_ = swap_texture_;
   }
@@ -632,6 +640,7 @@ void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
   }
 
   if (copy_to_swap_texture_required_ && texture_) {
+    texture_->ClearBeforeDestroyCallback();
     texture_->destroy();
   }
   texture_ = nullptr;
@@ -658,8 +667,9 @@ void GPUCanvasContext::OnTextureTransferred() {
   DCHECK(texture_);
   DCHECK(swap_texture_);
 
-  if (copy_to_swap_texture_required_ && texture_) {
+  if (copy_to_swap_texture_required_ && texture_ && !texture_->Destroyed()) {
     CopyToSwapTexture();
+    texture_->ClearBeforeDestroyCallback();
     texture_->destroy();
   }
   texture_ = nullptr;

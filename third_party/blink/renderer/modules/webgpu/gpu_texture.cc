@@ -185,11 +185,20 @@ GPUTexture::~GPUTexture() {
 }
 
 void GPUTexture::destroy() {
+  if (destroyed_) {
+    return;
+  }
+
+  if (destroy_callback_) {
+    std::move(destroy_callback_).Run();
+  }
+
   if (mailbox_texture_) {
     DissociateMailbox();
     device_->UntrackTextureWithMailbox(this);
   }
   GetProcs().textureDestroy(GetHandle());
+  destroyed_ = true;
 }
 
 uint32_t GPUTexture::width() const {
@@ -229,6 +238,14 @@ void GPUTexture::DissociateMailbox() {
     mailbox_texture_->Dissociate();
     mailbox_texture_ = nullptr;
   }
+}
+
+void GPUTexture::SetBeforeDestroyCallback(base::OnceClosure callback) {
+  destroy_callback_ = std::move(callback);
+}
+
+void GPUTexture::ClearBeforeDestroyCallback() {
+  destroy_callback_.Reset();
 }
 
 }  // namespace blink
