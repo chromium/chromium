@@ -1,0 +1,76 @@
+Test trace events for scheduler.postTask()
+Recording started
+Tracing complete
+Number of SchedulePostTaskCallback events found: 2
+Object: {
+	args: {
+		data: {
+			delay: number
+			frame: string
+			priority: string
+			taskId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Schedule event 1 priority: user-visible
+Object: {
+	args: {
+		data: {
+			delay: number
+			frame: string
+			priority: string
+			taskId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Schedule event 2 priority: background
+Found RunPostTaskCallback event
+Object: {
+	args: {
+		data: {
+			delay: number
+			frame: string
+			priority: string
+			taskId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+RunPostTaskCallback priority: user-visible
+Found AbortPostTaskCallback event
+Object: {
+	args: {
+		data: {
+			frame: string
+			taskId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
