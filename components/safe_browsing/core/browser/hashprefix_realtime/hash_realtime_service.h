@@ -269,9 +269,6 @@ class HashRealTimeService : public KeyedService {
   //  - |response_body| is the unparsed response from the server.
   //  - |net_error| is the net error code from the server.
   //  - |response_code| is the HTTP status code from the server.
-  //  - |allow_retriable_errors| specifies whether certain types of errors can
-  //    be considered retriable, meaning they don't increment the backoff
-  //    counter.
   //  - |webui_delegate_token| is used for matching HPRT lookup responses to
   //    pings on chrome://safe-browsing.
   void OnURLLoaderComplete(
@@ -285,7 +282,6 @@ class HashRealTimeService : public KeyedService {
       std::unique_ptr<std::string> response_body,
       int net_error,
       int response_code,
-      bool allow_retriable_errors,
       absl::optional<int> webui_delegate_token);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
@@ -319,21 +315,17 @@ class HashRealTimeService : public KeyedService {
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body,
-      const std::vector<std::string>& requested_hash_prefixes,
-      bool allow_retriable_errors) const;
+      const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
   // returns either the response proto or an |OperationResult| with details on
   // why the parsing was unsuccessful. |requested_hash_prefixes| is used for a
   // sanitization call into |RemoveUnmatchedFullHashes|.
-  // |allow_retriable_errors| specifies whether certain types of errors can be
-  // considered retriable, meaning they don't increment the backoff counter.
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
   ParseResponse(int net_error,
                 int http_error,
                 std::unique_ptr<std::string> response_body,
-                const std::vector<std::string>& requested_hash_prefixes,
-                bool allow_retriable_errors) const;
+                const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Removes any |FullHash| within the |response| whose hash prefix is not found
   // within |requested_hash_prefixes|. This is not expected to occur, but is

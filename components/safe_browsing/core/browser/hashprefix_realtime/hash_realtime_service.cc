@@ -449,7 +449,7 @@ void HashRealTimeService::OnOhttpComplete(
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
       std::move(response_body_ptr), net_error, response_code,
-      /*allow_retriable_errors=*/false, webui_delegate_token);
+      webui_delegate_token);
 }
 
 void HashRealTimeService::OnDirectURLLoaderComplete(
@@ -478,7 +478,7 @@ void HashRealTimeService::OnDirectURLLoaderComplete(
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
       std::move(response_body), url_loader->NetError(), response_code,
-      /*allow_retriable_errors=*/true, webui_delegate_token);
+      webui_delegate_token);
 
   pending_requests_.erase(pending_request_it);
 }
@@ -494,7 +494,6 @@ void HashRealTimeService::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body,
     int net_error,
     int response_code,
-    bool allow_retriable_errors,
     absl::optional<int> webui_delegate_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
@@ -513,9 +512,9 @@ void HashRealTimeService::OnURLLoaderComplete(
   }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
-      response = ParseResponseAndUpdateBackoff(
-          net_error, response_code, std::move(response_body),
-          hash_prefixes_in_request, allow_retriable_errors);
+      response = ParseResponseAndUpdateBackoff(net_error, response_code,
+                                               std::move(response_body),
+                                               hash_prefixes_in_request);
   absl::optional<SBThreatType> sb_threat_type;
   bool is_lookup_successful = response.has_value();
   if (is_lookup_successful) {
@@ -555,11 +554,10 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes,
-    bool allow_retriable_errors) const {
+    const std::vector<std::string>& requested_hash_prefixes) const {
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
-                    requested_hash_prefixes, allow_retriable_errors);
+                    requested_hash_prefixes);
   base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationResult",
                                 response.error_or(OperationResult::kSuccess));
   if (response.has_value()) {
@@ -625,12 +623,10 @@ HashRealTimeService::ParseResponse(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes,
-    bool allow_retriable_errors) const {
+    const std::vector<std::string>& requested_hash_prefixes) const {
   if (net_error != net::OK &&
       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    return base::unexpected(allow_retriable_errors &&
-                                    ErrorIsRetriable(net_error, response_code)
+    return base::unexpected(ErrorIsRetriable(net_error, response_code)
                                 ? OperationResult::kRetriableError
                                 : OperationResult::kNetworkError);
   }

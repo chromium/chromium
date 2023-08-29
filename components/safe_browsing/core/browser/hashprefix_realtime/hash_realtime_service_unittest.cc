@@ -1104,8 +1104,6 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
   GURL url = GURL("https://example.test");
-  // Retriable errors are not yet implemented for the OHTTP path, so they should
-  // still be considered a network error.
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/absl::nullopt,
       /*custom_response=*/"",
@@ -1115,7 +1113,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNetworkError);
+      HashRealTimeService::OperationResult::kRetriableError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
   GURL url = GURL("https://example.test");
@@ -1539,18 +1537,24 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
 TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_RetriableError) {
   GURL url = GURL("https://example.test");
 
-  // Retriable errors are not yet implemented for the OHTTP path, so they
-  // should still trigger backoff.
+  // Retriable errors should not trigger backoff mode.
   RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
-  EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_NETWORK_CHANGED);
   RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_NETWORK_CHANGED);
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_NETWORK_CHANGED);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
-  ResetMetrics();
+
+  // Retriable errors should not reset the backoff counter back to 0.
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_FAILED);
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_FAILED);
   RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
+  EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  RunSimpleFailingRequest(url, /*net_error=*/net::ERR_FAILED);
   EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
-  CheckEnteringBackoffMetric(
-      /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED);
+  CheckEnteringBackoffMetric(/*expected_network_result=*/net::ERR_FAILED);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
