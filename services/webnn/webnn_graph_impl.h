@@ -22,7 +22,6 @@ class WebNNGraphImpl : public mojom::WebNNGraph {
   // match graph's expectation, the output name and byte length are used to
   // create the result of computation.
   struct ComputeResourceInfo {
-   public:
     explicit ComputeResourceInfo(const mojom::GraphInfoPtr& graph_info);
     ~ComputeResourceInfo();
 

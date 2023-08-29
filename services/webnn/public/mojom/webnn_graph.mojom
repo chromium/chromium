@@ -60,6 +60,31 @@ struct Padding2d {
   Size2d ending;
 };
 
+// Contains the attributes of conv2d operator.
+// Only `oihw` (output_channels, input_channels/groups, height, width) filter
+// layout is supported, other variants are being discussed in the working group
+// https://github.com/webmachinelearning/webnn/issues/324.
+struct Conv2dAttributes {
+  // The padding of input tensor which is the explicit pad or calculated pad
+  // with `MLAutoPad` type, input sizes, filter size, strides and dilations in
+  // blink side.
+  Padding2d padding;
+  // The stride of the sliding window for each spatial dimension of input.
+  Size2d strides;
+  // The dilation factor for each spatial dimension of input.
+  Size2d dilations;
+  // The number of groups that input channels and output channels are divided
+  // into.
+  uint32 groups = 1;
+  // The layout format of the input.
+  InputOperandLayout input_layout;
+  // The additional 1-D tensor with the shape of output channels whose values
+  // are added to the convolution result.
+  uint64? bias_operand_id;
+  //The optional activation function that immediately follows the convolution.
+  Operator? activation;
+};
+
 // Contains the attributes of pool2d operator.
 // The `roundingType` and `outputSizes` array in MLPool2dOptions are not
 // included because they are used to calculate the output dimensions of poo2d in
@@ -98,6 +123,7 @@ struct GemmAttributes {
 // Holds one of operator attributes.
 union OperatorAttributes {
   ClampAttributes clamp;
+  Conv2dAttributes conv2d;
   GemmAttributes gemm;
   Pool2dAttributes pool2d;
 };
@@ -108,6 +134,7 @@ struct Operator {
   enum Kind {
     // Keep the order as the same as build methods of `MLGraphBuilder`.
     kClamp,
+    kConv2d,
     kAdd,
     kSub,
     kMul,

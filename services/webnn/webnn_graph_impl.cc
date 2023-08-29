@@ -77,6 +77,101 @@ webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
   NOTREACHED_NORETURN();
 }
 
+bool ValidateClampAttributes(
+    const webnn::mojom::OperatorAttributesPtr& attributes) {
+  if (!attributes || !attributes->is_clamp()) {
+    // The type of attribute is not clamp.
+    return false;
+  }
+  auto& clamp_attributes = attributes->get_clamp();
+  if (!clamp_attributes) {
+    // The attributes of clamp were not configured.
+    return false;
+  }
+  if (std::isnan(clamp_attributes->min_value) ||
+      std::isnan(clamp_attributes->max_value)) {
+    // The min or max value are nan.
+    return false;
+  }
+  if (clamp_attributes->min_value >= clamp_attributes->max_value) {
+    // The min value must be below the max value.
+    return false;
+  }
+  return true;
+}
+
+bool ValidateActivation(const mojom::OperatorPtr& activation) {
+  switch (activation->kind) {
+    case mojom::Operator::Kind::kClamp:
+      return ValidateClampAttributes(activation->attributes);
+    case mojom::Operator::Kind::kRelu:
+      return true;
+    default:
+      // The activation is not supported.
+      return false;
+  }
+}
+
+absl::optional<webnn::Conv2dAttributes> ConvertToConv2dAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::OperatorAttributesPtr& attributes) {
+  if (!attributes->is_conv2d()) {
+    // The type of attribute is not conv2d.
+    return absl::nullopt;
+  }
+  auto& mojo_attributes = attributes->get_conv2d();
+  if (!mojo_attributes) {
+    // The attributes of conv2d were not configured.
+    return absl::nullopt;
+  }
+
+  webnn::Conv2dAttributes component_attributes;
+  // Convert padding, strides, dilations.
+  auto& mojo_padding = mojo_attributes->padding;
+  component_attributes.padding = webnn::Padding2d{
+      .beginning = webnn::Size2d{.height = mojo_padding->beginning->height,
+                                 .width = mojo_padding->beginning->width},
+      .ending = webnn::Size2d{.height = mojo_padding->ending->height,
+                              .width = mojo_padding->ending->width}};
+  component_attributes.strides =
+      webnn::Size2d{.height = mojo_attributes->strides->height,
+                    .width = mojo_attributes->strides->width};
+  component_attributes.dilations =
+      webnn::Size2d{.height = mojo_attributes->dilations->height,
+                    .width = mojo_attributes->dilations->width};
+
+  // Convert groups, input and filter layout.
+  component_attributes.groups = mojo_attributes->groups;
+  component_attributes.input_layout =
+      MojoInputOperandLayoutToComponent(mojo_attributes->input_layout);
+  // The filter only supports default `Oihw` layout in mojo definition, other
+  // variants are being discussed in WebNN working group:
+  // https://github.com/webmachinelearning/webnn/issues/324.
+  component_attributes.filter_layout = webnn::Conv2dFilterOperandLayout::kOihw;
+
+  // Convert to componment operand type with bias id.
+  auto& bias_operand_id = mojo_attributes->bias_operand_id;
+  if (bias_operand_id) {
+    if (!id_to_operand_map.contains(bias_operand_id.value())) {
+      // Invalid bias operand.
+      return absl::nullopt;
+    }
+    const mojom::OperandPtr& bias_operand =
+        id_to_operand_map.at(bias_operand_id.value());
+    component_attributes.bias_operand =
+        ConvertToComponentOperand(bias_operand.get());
+  }
+
+  // Validate the activation if the option is configured.
+  auto& activation = mojo_attributes->activation;
+  if (activation && !ValidateActivation(activation)) {
+    // The activation is invalid.
+    return absl::nullopt;
+  }
+
+  return component_attributes;
+}
+
 absl::optional<webnn::Pool2dAttributes> ConvertToPool2dAttributes(
     const webnn::mojom::OperatorAttributesPtr& attributes,
     const mojom::Operand* output) {
@@ -220,22 +315,8 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
     // The clamp operator is invalid.
     return false;
   }
-  if (!operation->attributes->is_clamp()) {
-    // The type of attribute is not clamp.
-    return false;
-  }
-  auto& clamp_attributes = operation->attributes->get_clamp();
-  if (!clamp_attributes) {
-    // The attributes of clamp were not configured.
-    return false;
-  }
-  if (std::isnan(clamp_attributes->min_value) ||
-      std::isnan(clamp_attributes->max_value)) {
-    // The min or max value are nan.
-    return false;
-  }
-  if (clamp_attributes->min_value >= clamp_attributes->max_value) {
-    // The min value must be below the max value.
+  if (!ValidateClampAttributes(operation->attributes)) {
+    // The attributes of clamp are invalid.
     return false;
   }
   if (output->data_type != input->data_type) {
@@ -245,6 +326,35 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
 
   if (output->dimensions != input->dimensions) {
     // The output shape is not expected.
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
+                    const mojom::OperatorPtr& operation) {
+  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operands, 0);
+  auto* filter =
+      GetMojoOperand(id_to_operand_map, operation->input_operands, 1);
+  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
+  if (!input || !filter || !output || !operation->attributes) {
+    // The conv2d operator is invalid.
+    return false;
+  }
+  auto component_attributes =
+      ConvertToConv2dAttributes(id_to_operand_map, operation->attributes);
+  if (!component_attributes) {
+    // Failed to convert the attributes of conv2d.
+    return false;
+  }
+  auto validated_output = ValidateConv2dAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+      std::move(component_attributes.value()));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
     return false;
   }
 
@@ -403,6 +513,8 @@ bool ValidateOperator(const IdToOperandMap& id_to_operand_map,
   switch (operation->kind) {
     case mojom::Operator::Kind::kClamp:
       return ValidateClamp(id_to_operand_map, operation);
+    case mojom::Operator::Kind::kConv2d:
+      return ValidateConv2d(id_to_operand_map, operation);
     case mojom::Operator::Kind::kAdd:
     case mojom::Operator::Kind::kSub:
     case mojom::Operator::Kind::kMul:

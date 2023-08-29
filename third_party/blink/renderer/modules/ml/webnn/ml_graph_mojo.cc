@@ -18,7 +18,7 @@ namespace blink {
 
 namespace {
 
-webnn::mojom::blink::GraphInfoPtr BuildWebNNGraphInfo(
+base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs) {
   // The `GraphInfo` represents an entire information of WebNN graph.
   auto graph_info = webnn::mojom::blink::GraphInfo::New();
@@ -93,11 +93,11 @@ webnn::mojom::blink::GraphInfoPtr BuildWebNNGraphInfo(
     // Create `mojo::Operator` with the id of the input and output operands.
     auto operation =
         ConvertToMojoOperator(operand_to_id_map, current_operator.Get());
-    if (!operation) {
+    if (!operation.has_value()) {
       // Return here if the operator is not implemented.
-      return nullptr;
+      return base::unexpected(operation.error());
     }
-    graph_info->operators.emplace_back(std::move(operation));
+    graph_info->operators.emplace_back(std::move(operation.value()));
   }
 
   return graph_info;
@@ -127,15 +127,16 @@ void MLGraphMojo::Trace(Visitor* visitor) const {
 void MLGraphMojo::BuildAsyncImpl(const MLNamedOperands& outputs,
                                  ScriptPromiseResolver* resolver) {
   auto graph_info = BuildWebNNGraphInfo(outputs);
-  if (!graph_info) {
+  if (!graph_info.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, "Failed to build graph."));
+        DOMExceptionCode::kDataError,
+        "Failed to build graph: " + graph_info.error()));
     return;
   }
   // Create `WebNNGraph` message pipe with `WebNNContext` mojo interface.
   auto* script_state = resolver->GetScriptState();
   ml_context_->CreateWebNNGraph(
-      script_state, std::move(graph_info),
+      script_state, std::move(graph_info.value()),
       WTF::BindOnce(&MLGraphMojo::OnCreateWebNNGraph, WrapPersistent(this),
                     WrapPersistent(resolver)));
 }
