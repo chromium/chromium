@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "ui/aura/test/find_window.h"
 #include "url/gurl.h"
 
 namespace {
@@ -70,6 +71,65 @@ class FakeSessionManagerClientBrowserHelper
       scoped_fake_session_manager_client_;
 };
 #endif
+
+// Watches for windows created with a given title.
+class AuraWindowTitleObserver
+    : public ui::test::
+          ObservationStateObserver<bool, aura::Env, aura::EnvObserver>,
+      public aura::WindowObserver {
+ public:
+  AuraWindowTitleObserver(aura::Env* env, std::u16string expected_title)
+      : ObservationStateObserver(env),
+        env_(env),
+        expected_title_(std::move(expected_title)) {}
+
+  // ui::test::StateObserver:
+  bool GetStateObserverInitialState() const override {
+    // Compute the initial state by checking for existing windows.
+    return aura::test::FindWindowWithTitle(env_, expected_title_);
+  }
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override {
+    if (found_) {
+      return;
+    }
+
+    if (window->GetTitle() == expected_title_) {
+      found_ = true;
+      windows_.clear();
+      OnStateObserverStateChanged(true);
+    } else {
+      auto [iter, inserted] = windows_.emplace(std::piecewise_construct,
+                                               std::forward_as_tuple(window),
+                                               std::forward_as_tuple(this));
+      CHECK(inserted);
+      iter->second.Observe(window);
+    }
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override {
+    windows_.erase(window);
+  }
+  void OnWindowTitleChanged(aura::Window* window) override {
+    if (window->GetTitle() == expected_title_) {
+      found_ = true;
+      windows_.clear();
+      OnStateObserverStateChanged(true);
+    }
+  }
+
+ private:
+  const raw_ptr<aura::Env> env_;
+  bool found_ = false;
+  const std::u16string expected_title_;
+
+  using ScopedWindowObservation =
+      base::ScopedObservation<aura::Window, aura::WindowObserver>;
+
+  std::map<aura::Window*, ScopedWindowObservation> windows_;
+};
 
 }  // namespace
 
@@ -186,4 +246,14 @@ void InteractiveAshTest::TearDownOnMainThread() {
   }
   InteractiveBrowserTestT<
       MixinBasedInProcessBrowserTest>::TearDownOnMainThread();
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForWindowWithTitle(aura::Env* env,
+                                           std::u16string title) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AuraWindowTitleObserver, kTitleObserver);
+  return Steps(
+      ObserveState(kTitleObserver,
+                   std::make_unique<AuraWindowTitleObserver>(env, title)),
+      WaitForState(kTitleObserver, true));
 }

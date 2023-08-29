@@ -27,6 +27,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
+
 const int kInvalidRadioGroupId = -1;
 const int kGroupId = 1;
 
@@ -54,6 +55,8 @@ void PopulateRadioItemFromMenuItems(
 }  // namespace
 
 namespace apps {
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kLaunchNewMenuItem);
 
 void AddCommandItem(uint32_t command_id,
                     uint32_t string_id,
@@ -144,6 +147,9 @@ void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
   switch (menu_item->type) {
     case apps::MenuItemType::kCommand: {
       model->AddItemWithStringId(menu_item->command_id, menu_item->string_id);
+      model->SetElementIdentifierAt(
+          model->GetIndexOfCommandId(menu_item->command_id).value(),
+          kLaunchNewMenuItem);
       break;
     }
     case apps::MenuItemType::kSubmenu:

@@ -13,6 +13,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/interaction_sequence.h"
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
@@ -94,6 +95,12 @@ class InteractiveAshTest
 
   // MixinBasedInProcessBrowserTest:
   void TearDownOnMainThread() override;
+
+  // Blocks until a window exists with the given title. If a matching window
+  // already exists the test will resume immediately.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForWindowWithTitle(
+      aura::Env* env,
+      std::u16string title);
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
