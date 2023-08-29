@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -281,6 +282,9 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
     WorkerThreadDelegate::OnMainEntry(worker);
 
     scoped_com_initializer_ = std::make_unique<win::ScopedCOMInitializer>();
+
+    // CHECK to make sure this COM thread is initialized correctly in an STA.
+    CHECK(scoped_com_initializer_->Succeeded());
   }
 
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
