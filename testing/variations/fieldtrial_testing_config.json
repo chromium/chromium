@@ -15704,11 +15704,12 @@
     "TrackpadDropdownMenu": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230808",
+                    "name": "Enabled_20230829",
                     "enable_features": [
                         "MouseAndTrackpadDropdownMenu"
                     ]
@@ -15724,7 +15725,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230808",
+                    "name": "Enabled_20230829",
                     "enable_features": [
                         "ConvertTrackpadEventsToMouse"
                     ]
