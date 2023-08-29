@@ -1,10 +1,8 @@
 This is a testharness.js-based test.
-Found 64 tests; 60 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL The ApplicationCache interface object should be exposed assert_true: expected true got false
+Found 61 tests; 60 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS The WorkerGlobalScope interface object should be exposed
 PASS The SharedWorkerGlobalScope interface object should be exposed
 FAIL The Worker interface object should be exposed assert_true: expected true got false
-FAIL The SharedWorker interface object should be exposed assert_true: expected true got false
 PASS The MessagePort interface object should be exposed
 PASS The MessageEvent interface object should be exposed
 PASS The WorkerNavigator interface object should be exposed
@@ -14,7 +12,6 @@ PASS The ImageData interface object should be exposed
 PASS The ImageBitmap interface object should be exposed
 PASS The CanvasGradient interface object should be exposed
 PASS The CanvasPattern interface object should be exposed
-FAIL The CanvasPath interface object should be exposed assert_true: expected true got false
 PASS The Path2D interface object should be exposed
 PASS The PromiseRejectionEvent interface object should be exposed
 PASS The EventSource interface object should be exposed

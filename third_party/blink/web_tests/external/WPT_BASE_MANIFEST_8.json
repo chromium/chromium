@@ -279661,6 +279661,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "0c25c168875d0add852098fa995539db02df2557",
+     []
+    ],
+    "mtime.json": [
+     "aa8759aaeecf53a96b168a14d4487a31ad0fa828",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -341535,16 +341545,8 @@
        []
       ]
      },
-     "unicode-range-selector-expected.txt": [
-      "36bb5fa54626d9af05892bb7874ab513bb13147e",
-      []
-     ],
-     "unicode-range-selector.html.ini": [
-      "0ce68aea2b7f5e6bc02c7b24487b5436b447a6a4",
-      []
-     ],
      "urange-parsing-expected.txt": [
-      "96bfb2fd189de691fdb3ae203e76f2677214447e",
+      "86b8e3849e900d8bbb0918cca9222f100bc877ea",
       []
      ],
      "urange-parsing.html.ini": [
@@ -434264,10 +434266,6 @@
       ]
      },
      "interface-objects": {
-      "001.worker-expected.txt": [
-       "6e27013262fd778feafbf487cacef778ce5ada59",
-       []
-      ],
       "001.worker.js.ini": [
        "121d5d1ed681d1fde1c00f1593f54013e21c8763",
        []
@@ -434281,7 +434279,7 @@
        []
       ],
       "003.any.sharedworker-expected.txt": [
-       "00e0c61c2d69c819c2f2ade525dc3d51b7031e99",
+       "b69aed6ce15d9f8716885ff6535f788203706f49",
        []
       ],
       "004-expected.txt": [
@@ -700522,21 +700520,21 @@
      },
      "interface-objects": {
       "001.worker.js": [
-       "80fc597380a6c1bc89c05cd6395c173abf11bb27",
+       "873e8701bb6b2cac49ae9b1e377239d22c014d83",
        [
         "workers/semantics/interface-objects/001.worker.html",
         {}
        ]
       ],
       "002.worker.js": [
-       "d4f48354eda302ba0d912649c2b9af70aae0d54e",
+       "9c8dc6746e0711d9a366cad0d2f161cc796e72ba",
        [
         "workers/semantics/interface-objects/002.worker.html",
         {}
        ]
       ],
       "003.any.js": [
-       "4d595bccce6b011f04143bf48cb4f29bd60a82f2",
+       "974756c5080c8110110cae89bc7ff1d541036fc8",
        [
         "workers/semantics/interface-objects/003.any.sharedworker.html",
         {
@@ -700550,7 +700548,7 @@
        ]
       ],
       "004.any.js": [
-       "822379e2c90767ff8c37dde68d5419ef42927a51",
+       "1b0b93b5df0f9557497e61f60fa428453848c56c",
        [
         "workers/semantics/interface-objects/004.any.sharedworker.html",
         {
