@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   // Simulate a browser-initiated navigation.
   GetActiveWebContents()->OpenURL(content::OpenURLParams(
       prerender_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       /*is_renderer_initiated=*/false));
   activation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(activation_manager.was_activated());

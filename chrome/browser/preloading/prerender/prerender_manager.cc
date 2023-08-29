@@ -406,7 +406,7 @@ PrerenderManager::StartPrerenderNewTabPage(
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
 
   return new_tab_page_prerender_handle_
