@@ -471,6 +471,12 @@ class AuthenticatorRequestDialogModel {
   // was handled.
   bool OnHybridTransportError();
 
+  // To be called when there are no passkeys from an internal authenticator.
+  // This is a rare case but can happen when the user grants passkeys permission
+  // on macOS as part of a request flow and then Chromium realises that the
+  // request should never have been sent to iCloud Keychain in the first place.
+  bool OnNoPasskeys();
+
   // To be called when the Bluetooth adapter powered state changes.
   void OnBluetoothPoweredStateChanged(bool powered);
 

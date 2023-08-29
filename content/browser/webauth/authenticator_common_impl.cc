@@ -1717,6 +1717,12 @@ void AuthenticatorCommonImpl::OnSignResponse(
               kHybridTransportError,
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
+    case device::GetAssertionStatus::kICloudKeychainNoCredentials:
+      SignalFailureToRequestDelegate(
+          AuthenticatorRequestClientDelegate::InterestingFailureReason::
+              kNoPasskeys,
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
     case device::GetAssertionStatus::kSuccess:
       break;
   }

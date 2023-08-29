@@ -102,9 +102,6 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override {
     scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
-    auto continuation =
-        base::BindOnce(&Authenticator::OnGetAssertionComplete,
-                       weak_factory_.GetWeakPtr(), std::move(callback));
 
     // Authentication is not required for this operation, but it's a moment
     // when we can reasonably ask for it. If the user authorizes Chromium then
@@ -112,18 +109,103 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     switch (sys_interface->GetAuthState()) {
       case SystemInterface::kAuthNotAuthorized:
         FIDO_LOG(DEBUG) << "iCKC: requesting permission";
-        sys_interface->AuthorizeAndContinue(base::BindOnce(
-            &SystemInterface::GetAssertion, GetSystemInterface(), window_,
-            std::move(request), std::move(continuation)));
+        sys_interface->AuthorizeAndContinue(
+            base::BindOnce(&Authenticator::GetAssertionAfterPermissionRequest,
+                           weak_factory_.GetWeakPtr(), std::move(request),
+                           std::move(callback)));
         break;
       case SystemInterface::kAuthDenied:
         // The operation continues even if the user denied access. See above.
         FIDO_LOG(DEBUG) << "iCKC: passkeys permission is denied";
         [[fallthrough]];
       case SystemInterface::kAuthAuthorized:
-        GetSystemInterface()->GetAssertion(window_, std::move(request),
-                                           std::move(continuation));
+        GetAssertionCall(std::move(request), std::move(callback));
         break;
+    }
+  }
+
+  void GetAssertionCall(CtapGetAssertionRequest request,
+                        GetAssertionCallback callback) {
+    auto continuation =
+        base::BindOnce(&Authenticator::OnGetAssertionComplete,
+                       weak_factory_.GetWeakPtr(), std::move(callback));
+    GetSystemInterface()->GetAssertion(window_, std::move(request),
+                                       std::move(continuation));
+  }
+
+  void GetAssertionAfterPermissionRequest(CtapGetAssertionRequest request,
+                                          GetAssertionCallback callback) {
+    // Since Chromium was not able to enumerate credentials from iCloud Keychain
+    // it's possible that this request should never have been sent in the first
+    // place. If a request is sent when there are no applicable credentials
+    // then macOS shows a QR code, which we want to avoid. We can't avoid it if
+    // the user denied permission, but if they granted it then we double-check
+    // whether the request makes sense.
+
+    scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
+    if (sys_interface->GetAuthState() != SystemInterface::kAuthAuthorized) {
+      GetAssertionCall(std::move(request), std::move(callback));
+      return;
+    }
+
+    scoped_refptr<base::SequencedTaskRunner> origin_task_runner =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    const std::string rp_id = request.rp_id;
+    __block auto continuation = base::BindOnce(
+        &Authenticator::GetAssertionAfterEnumeration,
+        weak_factory_.GetWeakPtr(), std::move(request), std::move(callback));
+    auto handler =
+        ^(NSArray<ASAuthorizationWebBrowserPlatformPublicKeyCredential*>*
+              credentials) {
+          std::vector<std::vector<uint8_t>> cred_ids;
+          for (NSUInteger i = 0; i < credentials.count; i++) {
+            cred_ids.emplace_back(ToVector(credentials[i].credentialID));
+          }
+
+          origin_task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(continuation), std::move(cred_ids)));
+        };
+
+    FIDO_LOG(DEBUG) << "iCKC: enumerating credentials for " << rp_id
+                    << " to check request";
+    sys_interface->GetPlatformCredentials(rp_id, handler);
+  }
+
+  void GetAssertionAfterEnumeration(
+      CtapGetAssertionRequest request,
+      GetAssertionCallback callback,
+      std::vector<std::vector<uint8_t>> cred_ids) {
+    // See the comment in `GetAssertionAfterPermissionRequest` for context. This
+    // function is called to filter requests after enumerating credential IDs
+    // from iCloud Keychain.
+
+    bool accept_request;
+    if (request.allow_list.empty()) {
+      accept_request = !cred_ids.empty();
+    } else {
+      std::vector<PublicKeyCredentialDescriptor> filtered_allow_list;
+
+      for (const auto& cred_id : cred_ids) {
+        const auto it = base::ranges::find_if(
+            request.allow_list,
+            [&cred_id](const PublicKeyCredentialDescriptor& allow_list_entry)
+                -> bool { return allow_list_entry.id == cred_id; });
+        if (it != request.allow_list.end()) {
+          filtered_allow_list.push_back(*it);
+        }
+      }
+
+      request.allow_list = std::move(filtered_allow_list);
+      accept_request = !request.allow_list.empty();
+    }
+
+    if (accept_request) {
+      GetAssertionCall(std::move(request), std::move(callback));
+    } else {
+      FIDO_LOG(DEBUG) << "iCKC: rejecting inapplicable request";
+      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
+                              {});
     }
   }
 

@@ -884,6 +884,11 @@ bool AuthenticatorRequestDialogModel::OnHybridTransportError() {
   return true;
 }
 
+bool AuthenticatorRequestDialogModel::OnNoPasskeys() {
+  SetCurrentStep(Step::kErrorNoPasskeys);
+  return true;
+}
+
 void AuthenticatorRequestDialogModel::OnBluetoothPoweredStateChanged(
     bool powered) {
   transport_availability_.is_ble_powered = powered;

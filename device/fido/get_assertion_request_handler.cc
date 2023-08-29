@@ -66,7 +66,8 @@ const std::set<pin::Permissions> GetPinTokenPermissionsFor(
 }
 
 absl::optional<GetAssertionStatus> ConvertDeviceResponseCode(
-    CtapDeviceResponseCode device_response_code) {
+    CtapDeviceResponseCode device_response_code,
+    AuthenticatorType auth_type) {
   switch (device_response_code) {
     case CtapDeviceResponseCode::kSuccess:
       return GetAssertionStatus::kSuccess;
@@ -74,7 +75,11 @@ absl::optional<GetAssertionStatus> ConvertDeviceResponseCode(
     // Only returned after the user interacted with the
     // authenticator.
     case CtapDeviceResponseCode::kCtap2ErrNoCredentials:
-      return GetAssertionStatus::kUserConsentButCredentialNotRecognized;
+      if (auth_type == AuthenticatorType::kICloudKeychain) {
+        return GetAssertionStatus::kICloudKeychainNoCredentials;
+      } else {
+        return GetAssertionStatus::kUserConsentButCredentialNotRecognized;
+      }
 
     // The user explicitly denied the operation. Touch ID returns this error
     // when the user cancels the macOS prompt. External authenticators may
@@ -757,7 +762,7 @@ void GetAssertionRequestHandler::HandleResponse(
   }
 
   const absl::optional<GetAssertionStatus> maybe_result =
-      ConvertDeviceResponseCode(status);
+      ConvertDeviceResponseCode(status, authenticator->GetType());
   if (!maybe_result) {
     if (state_ == State::kWaitingForResponseWithToken) {
       std::move(completion_callback_)

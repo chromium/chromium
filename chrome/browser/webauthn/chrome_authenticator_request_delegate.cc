@@ -520,6 +520,8 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
       return dialog_model_->OnWinUserCancelled();
     case InterestingFailureReason::kHybridTransportError:
       return dialog_model_->OnHybridTransportError();
+    case InterestingFailureReason::kNoPasskeys:
+      return dialog_model_->OnNoPasskeys();
   }
   return true;
 }

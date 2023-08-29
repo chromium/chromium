@@ -205,6 +205,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // Windows UI.
     kWinUserCancelled,
     kHybridTransportError,
+    kNoPasskeys,
   };
 
   // RequestSource enumerates the source of a request, which is either the Web
