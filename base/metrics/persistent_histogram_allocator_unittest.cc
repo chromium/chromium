@@ -111,7 +111,8 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
   std::unique_ptr<HistogramBase> recovered;
   PersistentHistogramAllocator recovery(
       std::make_unique<PersistentMemoryAllocator>(
-          allocator_memory_.get(), kAllocatorMemorySize, 0, 0, "", false));
+          allocator_memory_.get(), kAllocatorMemorySize, 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator histogram_iter(&recovery);
 
   recovered = histogram_iter.GetNext();
@@ -271,7 +272,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   PersistentHistogramAllocator recovery1(
       std::make_unique<PersistentMemoryAllocator>(
           const_cast<void*>(new_allocator->memory_allocator()->data()),
-          new_allocator->memory_allocator()->size(), 0, 0, "", false));
+          new_allocator->memory_allocator()->size(), 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator histogram_iter1(&recovery1);
 
   // Get the histograms that were created locally (and forgotten) and merge
@@ -325,7 +327,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   PersistentHistogramAllocator recovery2(
       std::make_unique<PersistentMemoryAllocator>(
           const_cast<void*>(new_allocator->memory_allocator()->data()),
-          new_allocator->memory_allocator()->size(), 0, 0, "", false));
+          new_allocator->memory_allocator()->size(), 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator histogram_iter2(&recovery2);
   while (true) {
     recovered = histogram_iter2.GetNext();
@@ -394,7 +397,8 @@ TEST_F(PersistentHistogramAllocatorTest, CustomRangesManager) {
   PersistentHistogramAllocator recovery(
       std::make_unique<PersistentMemoryAllocator>(
           const_cast<void*>(new_allocator->memory_allocator()->data()),
-          new_allocator->memory_allocator()->size(), 0, 0, "", false));
+          new_allocator->memory_allocator()->size(), 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
 
   // Set a custom RangesManager for the recovery allocator so that the
   // BucketRanges are not registered with the global SR.
@@ -499,8 +503,9 @@ TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {
 
   // Create an allocator and iterator using the file's data.
   PersistentHistogramAllocator new_file_allocator(
-      std::make_unique<PersistentMemoryAllocator>(data.get(), temp_size, 0, 0,
-                                                  "", false));
+      std::make_unique<PersistentMemoryAllocator>(
+          data.get(), temp_size, 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator it(&new_file_allocator);
 
   // Verify that |kHistogramName| is in the file.

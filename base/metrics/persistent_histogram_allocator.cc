@@ -711,7 +711,8 @@ void GlobalHistogramAllocator::CreateWithPersistentMemory(
     StringPiece name) {
   Set(WrapUnique(
       new GlobalHistogramAllocator(std::make_unique<PersistentMemoryAllocator>(
-          base, size, page_size, id, name, false))));
+          base, size, page_size, id, name,
+          PersistentMemoryAllocator::kReadWrite))));
 }
 
 // static
@@ -752,8 +753,9 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
   }
 
   Set(WrapUnique(new GlobalHistogramAllocator(
-      std::make_unique<FilePersistentMemoryAllocator>(std::move(mmfile), 0, id,
-                                                      name, false))));
+      std::make_unique<FilePersistentMemoryAllocator>(
+          std::move(mmfile), 0, id, name,
+          PersistentMemoryAllocator::kReadWrite))));
   Get()->SetPersistentLocation(file_path);
   return true;
 }

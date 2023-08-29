@@ -175,7 +175,8 @@ class HistogramThreadsafeTest : public testing::Test {
         std::make_unique<PersistentMemoryAllocator>(
             /*base=*/const_cast<void*>(allocator->data()), allocator->size(),
             /*page_size=*/0, /*id=*/0,
-            /*name=*/"GlobalHistogramAllocatorView", /*readonly=*/false);
+            /*name=*/"GlobalHistogramAllocatorView",
+            PersistentMemoryAllocator::kReadWrite);
     allocator_view_ =
         std::make_unique<PersistentHistogramAllocator>(std::move(memory_view));
   }
