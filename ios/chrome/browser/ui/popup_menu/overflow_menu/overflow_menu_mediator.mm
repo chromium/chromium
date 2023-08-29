@@ -958,14 +958,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   result.destination = static_cast<NSInteger>(destination);
 
-  result.longPressItems = @[
-    [[OverflowMenuLongPressItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
-           symbolName:@"pencil"
-              handler:^{
-                [weakSelf beginCustomization];
-              }],
-  ];
+  if (IsOverflowMenuCustomizationEnabled()) {
+    result.longPressItems = @[
+      [[OverflowMenuLongPressItem alloc]
+          initWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
+             symbolName:@"pencil"
+                handler:^{
+                  [weakSelf beginCustomization];
+                }],
+    ];
+  }
 
   return result;
 }
