@@ -426,6 +426,7 @@ void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
   native_theme->SetPreferredContrast(
       highContrastEnabled ? ui::NativeTheme::PreferredContrast::kMore
                           : ui::NativeTheme::PreferredContrast::kNoPreference);
+  native_theme->set_prefers_reduced_transparency(highContrastEnabled);
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
