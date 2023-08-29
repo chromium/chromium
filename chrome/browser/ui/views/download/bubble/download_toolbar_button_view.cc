@@ -475,7 +475,8 @@ void DownloadToolbarButtonView::OpenPrimaryDialog() {
 void DownloadToolbarButtonView::OpenSecurityDialog(
     const ContentId& content_id) {
   if (!bubble_delegate_) {
-    return;
+    is_primary_partial_view_ = false;
+    CreateBubbleDialogDelegate();
   }
   bubble_contents_->ShowSecurityPage(content_id);
   bubble_delegate_->set_margins(GetSecurityViewMargin());
@@ -547,10 +548,9 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   bubble_delegate_ = bubble_delegate.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
 
-  if (!is_primary_partial_view_) {
+  if (!is_primary_partial_view_ && !button_click_time_.is_null()) {
     // The main view is shown after clicking on the toolbar button.
     // Record the time from click to shown.
-    CHECK_NE(button_click_time_, base::TimeTicks());
     bubble_delegate_->GetWidget()
         ->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(

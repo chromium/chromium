@@ -34,6 +34,8 @@ class DownloadBubbleNavigationHandler {
  public:
   // Primary dialog is either main or partial view.
   virtual void OpenPrimaryDialog() = 0;
+  // Opens the security dialog. If the bubble is not currently open, it creates
+  // a new bubble to do so.
   virtual void OpenSecurityDialog(
       const offline_items_collection::ContentId& content_id) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;

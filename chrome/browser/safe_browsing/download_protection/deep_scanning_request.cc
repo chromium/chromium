@@ -13,10 +13,13 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -30,6 +33,10 @@
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/safe_browsing/deep_scanning_failure_modal_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
@@ -294,6 +301,15 @@ GetFinalAction(EventResult event_result) {
   }
 
   return final_action;
+}
+
+void PromptForPassword(download::DownloadItem* item) {
+  if (DownloadBubbleUIController* controller =
+          DownloadBubbleUIController::GetForDownload(item);
+      controller) {
+    controller->GetDownloadDisplayController()->OpenSecuritySubpage(
+        OfflineItemUtils::GetContentIdForDownload(item));
+  }
 }
 
 }  // namespace
@@ -603,6 +619,16 @@ void DeepScanningRequest::OnScanComplete(
   } else if (base::FeatureList::IsEnabled(kDeepScanningUpdatedUX) &&
              trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
+
+    if (base::FeatureList::IsEnabled(kDeepScanningEncryptedArchives) &&
+        result == BinaryUploadService::Result::FILE_ENCRYPTED) {
+      // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
+      // the password was not correct. Instead of failing, ask the user to
+      // correct the issue.
+      DownloadItemWarningData::SetHasIncorrectPassword(item_, true);
+      PromptForPassword(item_);
+      download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
+    }
   } else if (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
              analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;

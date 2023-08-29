@@ -23,6 +23,13 @@ class Profile;
 // the download toolbar button.
 class DownloadBubbleUIController {
  public:
+  // Get a valid controller for the given `download`. In the case of web apps,
+  // this will always be the web app window's controller. For regular downloads,
+  // this could be the controller for the most recently active window associated
+  // with this profile.
+  static DownloadBubbleUIController* GetForDownload(
+      download::DownloadItem* download);
+
   explicit DownloadBubbleUIController(Browser* browser);
   // Used to inject a custom DownloadBubbleUpdateService for testing. Prefer
   // the constructor above which uses that of the profile.
