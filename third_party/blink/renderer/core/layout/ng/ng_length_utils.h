@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -312,10 +313,10 @@ MinMaxSizes ComputeTransferredMinMaxBlockSizes(const LogicalSize& ratio,
 // This will compute the min/max block sizes for you, but it only works with
 // styles that have a LogicalAspectRatio. It doesn't work if the aspect ratio is
 // coming from a replaced element.
-MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
-    const NGConstraintSpace&,
-    const ComputedStyle&,
-    const NGBoxStrut& border_padding);
+CORE_EXPORT MinMaxSizes
+ComputeMinMaxInlineSizesFromAspectRatio(const NGConstraintSpace&,
+                                        const ComputedStyle&,
+                                        const NGBoxStrut& border_padding);
 
 template <typename MinMaxSizesFunc>
 MinMaxSizes ComputeMinMaxInlineSizes(
@@ -358,17 +359,117 @@ MinMaxSizes ComputeMinMaxInlineSizes(
   return sizes;
 }
 
-// Returns inline size of the node's border box by resolving the computed value
-// in style.logicalWidth (Length) to a layout unit, adding border and padding,
-// then constraining the result by the resolved min logical width and max
-// logical width from the ComputedStyle object. Calls Node::ComputeMinMaxSize
-// if needed.
-// |override_min_max_sizes_for_test| is provided *solely* for use by unit tests.
-CORE_EXPORT LayoutUnit ComputeInlineSizeForFragment(
+// Returns block size of the node's border box by resolving the computed value
+// in `style.logicalHeight` to a `LayoutUnit`, adding border and padding, then
+// constraining the result by the resolved min and max logical height from the
+// `ComputedStyle` object.
+//
+// `inline_size` is necessary when an aspect ratio is in use.
+// `override_available_size` is needed for <table> layout: when a table is under
+// an extrinsic constraint (e.g., being stretched by its parent, or forced to a
+// fixed block-size), we need to subtract the block size of all the <caption>
+// elements from the available block size.
+CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     const NGConstraintSpace&,
+    const ComputedStyle&,
+    const NGBoxStrut& border_padding,
+    LayoutUnit intrinsic_size,
+    absl::optional<LayoutUnit> inline_size,
+    LayoutUnit override_available_size = kIndefiniteSize);
+
+CORE_EXPORT LayoutUnit
+ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
+                                 const ComputedStyle& style,
+                                 const NGBoxStrut& border_padding);
+
+template <typename MinMaxSizesFunc>
+LayoutUnit ComputeInlineSizeForFragmentInternal(
+    const NGConstraintSpace& space,
     const NGBlockNode& node,
     const NGBoxStrut& border_padding,
-    const MinMaxSizes* override_min_max_sizes_for_test = nullptr);
+    const MinMaxSizesFunc& min_max_sizes_func) {
+  const auto& style = node.Style();
+
+  auto extent = kIndefiniteSize;
+  auto logical_width = style.LogicalWidth();
+  auto min_length = style.LogicalMinWidth();
+
+  if (!style.AspectRatio().IsAuto() &&
+      ((logical_width.IsAuto() &&
+        space.InlineAutoBehavior() != NGAutoBehavior::kStretchExplicit) ||
+       logical_width.IsMinContent() || logical_width.IsMaxContent())) {
+    extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
+
+    if (extent != kIndefiniteSize) {
+      // This means we successfully applied aspect-ratio and now need to check
+      // if we need to apply the implied minimum size:
+      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+      if (style.OverflowInlineDirection() == EOverflow::kVisible &&
+          min_length.IsAuto()) {
+        min_length = Length::MinIntrinsic();
+      }
+    }
+  }
+
+  if (LIKELY(extent == kIndefiniteSize)) {
+    if (logical_width.IsAuto()) {
+      if (space.AvailableSize().inline_size == kIndefiniteSize) {
+        logical_width = Length::MinContent();
+      } else if (space.IsInlineAutoBehaviorStretch()) {
+        logical_width = Length::FillAvailable();
+      } else {
+        logical_width = Length::FitContent();
+      }
+    }
+    extent = ResolveMainInlineLength(space, style, border_padding,
+                                     min_max_sizes_func, logical_width);
+  }
+
+  return ComputeMinMaxInlineSizes(space, node, border_padding,
+                                  min_max_sizes_func, &min_length)
+      .ClampSizeToMinAndMax(extent);
+}
+
+template <typename MinMaxSizesFunc>
+LayoutUnit ComputeInlineSizeForFragment(
+    const NGConstraintSpace& space,
+    const NGBlockNode& node,
+    const NGBoxStrut& border_padding,
+    const MinMaxSizesFunc& min_max_sizes_func) {
+  if (space.IsFixedInlineSize() || space.IsAnonymous()) {
+    return space.AvailableSize().inline_size;
+  }
+
+  if (node.IsTable()) {
+    return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
+  }
+
+  return ComputeInlineSizeForFragmentInternal(space, node, border_padding,
+                                              min_max_sizes_func);
+}
+
+// Returns inline size of the node's border box by resolving the computed value
+// in `style.logicalWidth` to a `LayoutUnit`, adding border and padding, then
+// constraining the result by the resolved min and max logical width from the
+// `ComputedStyle` object. Calls `ComputeMinMaxSizes` if needed.
+//
+// `override_min_max_sizes_for_test` is provided *solely* for use by unit tests.
+inline LayoutUnit ComputeInlineSizeForFragment(
+    const NGConstraintSpace& space,
+    const NGBlockNode& node,
+    const NGBoxStrut& border_padding,
+    const MinMaxSizes* override_min_max_sizes_for_test = nullptr) {
+  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+    if (UNLIKELY(override_min_max_sizes_for_test)) {
+      return MinMaxSizesResult(*override_min_max_sizes_for_test,
+                               /* depends_on_block_constraints */ false);
+    }
+    return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space);
+  };
+
+  return ComputeInlineSizeForFragment(space, node, border_padding,
+                                      MinMaxSizesFunc);
+}
 
 // Similar to |ComputeInlineSizeForFragment| but for determining the "used"
 // inline-size for a table fragment. See:
@@ -378,21 +479,6 @@ CORE_EXPORT LayoutUnit ComputeUsedInlineSizeForTableFragment(
     const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const MinMaxSizes& table_grid_min_max_sizes);
-
-// Same as ComputeInlineSizeForFragment, but uses height instead of width.
-// |inline_size| is necessary to compute the block size when an aspect ratio
-// is in use.
-// |override_available_size| is needed for <table> layout. When a table is
-// under an extrinsic constraint (being stretched by its parent, or forced to a
-// fixed block-size), we need to subtract the block-size of all the <caption>s
-// from the available block-size.
-CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
-    const NGConstraintSpace&,
-    const ComputedStyle&,
-    const NGBoxStrut& border_padding,
-    LayoutUnit intrinsic_size,
-    absl::optional<LayoutUnit> inline_size,
-    LayoutUnit override_available_size = kIndefiniteSize);
 
 LayoutUnit ComputeInitialBlockSizeForFragment(
     const NGConstraintSpace&,
@@ -589,6 +675,81 @@ inline LayoutUnit ConstrainByMinMax(LayoutUnit length,
                                     LayoutUnit min,
                                     LayoutUnit max) {
   return std::max(min, std::min(length, max));
+}
+
+template <typename MinMaxSizesFunc>
+NGFragmentGeometry CalculateInitialFragmentGeometry(
+    const NGConstraintSpace& space,
+    const NGBlockNode& node,
+    const NGBlockBreakToken* break_token,
+    const MinMaxSizesFunc& min_max_sizes_func,
+    bool is_intrinsic = false) {
+  const auto& style = node.Style();
+
+  if (node.IsFrameSet()) {
+    if (node.IsParentNGFrameSet()) {
+      const auto size = space.AvailableSize();
+      DCHECK_NE(size.inline_size, kIndefiniteSize);
+      DCHECK_NE(size.block_size, kIndefiniteSize);
+      DCHECK(space.IsFixedInlineSize());
+      DCHECK(space.IsFixedBlockSize());
+      return {size, {}, {}, {}};
+    }
+
+    const auto size = node.InitialContainingBlockSize();
+    return {size.ConvertToLogical(style.GetWritingMode()), {}, {}, {}};
+  }
+
+  const auto border = ComputeBorders(space, node);
+  const auto padding = ComputePadding(space, style);
+  auto scrollbar = ComputeScrollbars(space, node);
+
+  const auto border_padding = border + padding;
+  const auto border_scrollbar_padding = border_padding + scrollbar;
+
+  if (node.IsReplaced()) {
+    const auto border_box_size =
+        ComputeReplacedSize(node, space, border_padding);
+    return {border_box_size, border, scrollbar, padding};
+  }
+
+  absl::optional<LayoutUnit> inline_size;
+  const auto default_block_size = CalculateDefaultBlockSize(
+      space, node, break_token, border_scrollbar_padding);
+
+  if (!is_intrinsic &&
+      (space.IsFixedInlineSize() ||
+       !InlineLengthUnresolvable(space, style.LogicalWidth()))) {
+    inline_size = ComputeInlineSizeForFragment(space, node, border_padding,
+                                               min_max_sizes_func);
+
+    if (UNLIKELY(*inline_size < border_scrollbar_padding.InlineSum() &&
+                 scrollbar.InlineSum() && !space.IsAnonymous())) {
+      // Clamp the inline size of the scrollbar, unless it's larger than the
+      // inline size of the content box, in which case we'll return that
+      // instead. Scrollbar handling is quite bad in such situations, and this
+      // method here is just to make sure that left-hand scrollbars don't mess
+      // up scrollWidth. For the full story, visit http://crbug.com/724255.
+      const auto content_box_inline_size =
+          *inline_size - border_padding.InlineSum();
+
+      if (scrollbar.InlineSum() > content_box_inline_size) {
+        if (scrollbar.inline_end) {
+          DCHECK(!scrollbar.inline_start);
+          scrollbar.inline_end = content_box_inline_size;
+        } else {
+          DCHECK(scrollbar.inline_start);
+          scrollbar.inline_start = content_box_inline_size;
+        }
+      }
+    }
+  }
+
+  const auto block_size = ComputeInitialBlockSizeForFragment(
+      space, style, border_padding, default_block_size, inline_size);
+
+  return {LogicalSize(inline_size.value_or(kIndefiniteSize), block_size),
+          border, scrollbar, padding};
 }
 
 // Calculates the initial (pre-layout) fragment geometry given a node, and a

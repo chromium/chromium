@@ -219,11 +219,13 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
           absl::nullopt) const;
 
+  // `containing_grid_area` is an optional out parameter that holds the computed
+  // grid area (offset and size) of the specified grid item.
   NGConstraintSpace CreateConstraintSpaceForLayout(
       const GridItemData& grid_item,
       const NGGridLayoutData& layout_data,
-      LogicalRect* containing_grid_area,
       NGGridLayoutSubtree&& opt_layout_subtree = NGGridLayoutSubtree(),
+      LogicalRect* containing_grid_area = nullptr,
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
