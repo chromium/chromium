@@ -64,7 +64,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   ui::AXMode GetAccessibilityMode() const;
 
   // mojom::RenderAccessibility implementation.
-  void SetMode(const ui::AXMode& ax_mode) override;
+  void SetMode(const ui::AXMode& ax_mode, uint32_t reset_token) override;
   void FatalError() override;
   void HitTest(
       const gfx::Point& point,
@@ -72,12 +72,12 @@ class CONTENT_EXPORT RenderAccessibilityManager
       int request_id,
       blink::mojom::RenderAccessibility::HitTestCallback callback) override;
   void PerformAction(const ui::AXActionData& data) override;
-  void Reset(int32_t reset_token) override;
+  void Reset(uint32_t reset_token) override;
 
   // Communication with the browser process.
   void HandleAccessibilityEvents(
       blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-      int32_t reset_token,
+      uint32_t reset_token,
       blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback);
 
   void CloseConnection();

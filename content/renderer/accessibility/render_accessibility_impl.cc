@@ -124,10 +124,9 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
       render_accessibility_manager_(render_accessibility_manager),
       render_frame_(render_frame),
       plugin_tree_source_(nullptr),
-      reset_token_(0),
       ukm_timer_(std::make_unique<base::ElapsedTimer>()),
       last_ukm_source_id_(ukm::kInvalidSourceId),
-      serialize_post_lifecycle_(serialize_post_lifecycle) {
+      serialize_post_lifecycle_(true) {
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
@@ -215,6 +214,7 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
 }
 
 void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
+  CHECK(reset_token_);
   ui::AXMode old_mode = accessibility_mode_;
   DCHECK(!mode.is_mode_off())
       << "Should not be reached when turning a11y off; rather, the "
@@ -222,6 +222,7 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
 
   if (old_mode == mode) {
     DCHECK(ax_context_);
+    NOTREACHED() << "Do not call AccessibilityModeChanged unless it changes.";
     return;
   }
 
@@ -265,6 +266,11 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   // Fire a load complete event so that any ATs present can treat the page as
   // fresh and newly loaded.
   FireLoadCompleteIfLoaded();
+}
+
+void RenderAccessibilityImpl::set_reset_token(uint32_t reset_token) {
+  CHECK(reset_token);
+  reset_token_ = reset_token;
 }
 
 void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
@@ -489,9 +495,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
   }
 }
 
-void RenderAccessibilityImpl::Reset(int32_t reset_token) {
+void RenderAccessibilityImpl::Reset(uint32_t reset_token) {
   DCHECK(ax_context_);
   DCHECK(!accessibility_mode_.is_mode_off());
+  CHECK(reset_token);
   reset_token_ = reset_token;
   ax_context_->ResetSerializer();
   FireLoadCompleteIfLoaded();
@@ -1352,21 +1359,20 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     AddImageAnnotationDebuggingAttributes(updates_and_events->updates);
   }
 
+  CHECK(reset_token_);
   if (serialize_post_lifecycle_) {
     render_accessibility_manager_->HandleAccessibilityEvents(
-        std::move(updates_and_events), reset_token_,
+        std::move(updates_and_events), *reset_token_,
         base::BindOnce(&RenderAccessibilityImpl::OnSerializationReceived,
                        weak_factory_for_pending_events_.GetWeakPtr()));
   } else {
     legacy_event_schedule_status_ = LegacyEventScheduleStatus::kWaitingForAck;
     render_accessibility_manager_->HandleAccessibilityEvents(
-        std::move(updates_and_events), reset_token_,
+        std::move(updates_and_events), *reset_token_,
         base::BindOnce(
             &RenderAccessibilityImpl::LegacyOnAccessibilityEventsHandled,
             weak_factory_for_pending_events_.GetWeakPtr()));
   }
-  reset_token_ = 0;
-
   if (need_to_send_location_changes) {
     SendLocationChanges();
   }
@@ -1408,7 +1414,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 void RenderAccessibilityImpl::SendLocationChanges() {
   TRACE_EVENT0("accessibility", "RenderAccessibilityImpl::SendLocationChanges");
   DCHECK(ax_context_);
-  ax_context_->SerializeLocationChanges();
+  CHECK(reset_token_);
+  ax_context_->SerializeLocationChanges(*reset_token_);
 }
 
 void RenderAccessibilityImpl::LegacyOnAccessibilityEventsHandled() {

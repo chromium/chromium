@@ -50,11 +50,11 @@ int WebAXContext::GenerateAXID() const {
   return private_->GetAXObjectCache().GenerateAXID();
 }
 
-void WebAXContext::SerializeLocationChanges() const {
+void WebAXContext::SerializeLocationChanges(uint32_t reset_token) const {
   if (!HasActiveDocument()) {
     return;
   }
-  private_->GetAXObjectCache().SerializeLocationChanges();
+  private_->GetAXObjectCache().SerializeLocationChanges(reset_token);
 }
 
 WebAXObject WebAXContext::GetPluginRoot() {
