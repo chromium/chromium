@@ -291,6 +291,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    cores = "16|32",
     main_list_view = "try",
 )
 
