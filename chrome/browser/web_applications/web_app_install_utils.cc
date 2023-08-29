@@ -55,6 +55,7 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
@@ -87,7 +88,7 @@ namespace {
 // value can change overtime as new features are added.
 constexpr int kMaxIcons = 20;
 constexpr SquareSizePx kMaxIconSize =
-    webapps::InstallableManager::kMaximumIconSizeInPx;
+    webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
 // Returns whether the home tab icons exist.
 bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo* web_app_info) {

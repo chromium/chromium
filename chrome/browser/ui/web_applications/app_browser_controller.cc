@@ -31,7 +31,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_evaluator.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -170,7 +170,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
     // Show toolbar when not using 'https', unless this is an internal app,
     // or origin is secure (e.g. localhost).
     if (!is_internal_start_url_scheme && !url.SchemeIs(url::kHttpsScheme) &&
-        !webapps::InstallableManager::IsOriginConsideredSecure(url)) {
+        !webapps::InstallableEvaluator::IsOriginConsideredSecure(url)) {
       return true;
     }
 
@@ -194,7 +194,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   // Insecure external web sites show the toolbar.
   // Note: IsContentSecure is false until a navigation is committed.
   if (!last_committed_url.is_empty() && !is_internal_start_url_scheme &&
-      !webapps::InstallableManager::IsContentSecure(web_contents)) {
+      !webapps::InstallableEvaluator::IsContentSecure(web_contents)) {
     return true;
   }
 

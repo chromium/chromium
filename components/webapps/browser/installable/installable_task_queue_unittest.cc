@@ -18,18 +18,20 @@ struct TaskParams {
 };
 
 // Constructs an InstallableTask, with the supplied bools stored in it.
-InstallableTask CreateTask(const TaskParams& params) {
-  InstallableTask task;
-  task.params.valid_manifest = params.valid_manifest;
-  task.params.has_worker = params.has_worker;
-  task.params.valid_primary_icon = params.valid_primary_icon;
-  return task;
+std::unique_ptr<InstallableTask> CreateTask(const TaskParams& task_params) {
+  InstallableParams params;
+  params.valid_manifest = task_params.valid_manifest;
+  params.has_worker = task_params.has_worker;
+  params.valid_primary_icon = task_params.valid_primary_icon;
+
+  InstallablePageData page_data;
+  return std::make_unique<InstallableTask>(params, page_data);
 }
 
 bool IsEqual(const TaskParams& params, const InstallableTask& task) {
-  return task.params.valid_manifest == params.valid_manifest &&
-         task.params.has_worker == params.has_worker &&
-         task.params.valid_primary_icon == params.valid_primary_icon;
+  return task.params().valid_manifest == params.valid_manifest &&
+         task.params().has_worker == params.has_worker &&
+         task.params().valid_primary_icon == params.valid_primary_icon;
 }
 
 class InstallableTaskQueueUnitTest : public testing::Test {};

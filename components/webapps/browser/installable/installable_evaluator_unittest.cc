@@ -19,10 +19,9 @@ namespace webapps {
 
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
-class InstallableManagerUnitTest : public testing::Test {
+class InstallableEvaluatorUnitTest : public testing::Test {
  public:
-  InstallableManagerUnitTest()
-      : manager_(std::make_unique<InstallableManager>(nullptr)) {}
+  InstallableEvaluatorUnitTest() = default;
 
  protected:
   static blink::mojom::ManifestPtr GetValidManifest() {
@@ -46,34 +45,33 @@ class InstallableManagerUnitTest : public testing::Test {
 
   bool IsManifestValid(const blink::mojom::Manifest& manifest,
                        bool check_webapp_manifest_display = true) {
-    // Explicitly reset the error code before running the method.
-    manager_->set_valid_manifest_error(NO_ERROR_DETECTED);
-    return manager_->IsManifestValidForWebApp(manifest,
-                                              check_webapp_manifest_display);
+    errors_ = InstallableEvaluator::IsManifestValidForWebApp(
+        manifest, check_webapp_manifest_display);
+    return errors_.empty();
   }
 
   InstallableStatusCode GetErrorCode() {
-    return manager_->valid_manifest_error();
+    return errors_.empty() ? NO_ERROR_DETECTED : errors_[0];
   }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment;
-  std::unique_ptr<InstallableManager> manager_;
+  std::vector<InstallableStatusCode> errors_;
 };
 
-TEST_F(InstallableManagerUnitTest, EmptyManifestIsInvalid) {
+TEST_F(InstallableEvaluatorUnitTest, EmptyManifestIsInvalid) {
   blink::mojom::Manifest manifest;
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_EMPTY, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, CheckMinimalValidManifest) {
+TEST_F(InstallableEvaluatorUnitTest, CheckMinimalValidManifest) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
   EXPECT_TRUE(IsManifestValid(*manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresNameOrShortName) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->name = absl::nullopt;
@@ -90,7 +88,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestRequiresNonEmptyNameORShortName) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresNonEmptyNameORShortName) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->name = std::u16string();
@@ -107,7 +105,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresNonEmptyNameORShortName) {
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestRequiresValidStartURL) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresValidStartURL) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->start_url = GURL();
@@ -121,7 +119,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresValidStartURL) {
   EXPECT_EQ(START_URL_NOT_VALID, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestSupportsImagePNG) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImagePNG) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->icons[0].type = u"image/gif";
@@ -148,7 +146,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImagePNG) {
   EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestSupportsImageSVG) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImageSVG) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   // The correct mimetype is image/svg+xml.
@@ -168,7 +166,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageSVG) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestSupportsImageWebP) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImageWebP) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->icons[0].type = u"image/webp";
@@ -184,7 +182,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageWebP) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestRequiresPurposeAny) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresPurposeAny) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   // The icon MUST have IconPurpose::ANY at least.
@@ -198,7 +196,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresPurposeAny) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestRequiresIconSize) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresIconSize) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   // The icon MUST be 144x144 size at least.
@@ -247,7 +245,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresIconSize) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestDisplayModes) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayModes) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->display = blink::mojom::DisplayMode::kUndefined;
@@ -287,7 +285,7 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayModes) {
   EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestDisplayOverride) {
+TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayOverride) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->display_override.push_back(blink::mojom::DisplayMode::kMinimalUi);
@@ -331,7 +329,7 @@ TEST_F(InstallableManagerUnitTest, ManifestDisplayOverride) {
   EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, FallbackToBrowser) {
+TEST_F(InstallableEvaluatorUnitTest, FallbackToBrowser) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->display = blink::mojom::DisplayMode::kBrowser;
@@ -340,7 +338,7 @@ TEST_F(InstallableManagerUnitTest, FallbackToBrowser) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, SupportWindowControlsOverlay) {
+TEST_F(InstallableEvaluatorUnitTest, SupportWindowControlsOverlay) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->display_override.push_back(
@@ -349,16 +347,17 @@ TEST_F(InstallableManagerUnitTest, SupportWindowControlsOverlay) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-class InstallableManagerUnitTest_Tabbed : public InstallableManagerUnitTest {
+class InstallableEvaluatorUnitTest_Tabbed
+    : public InstallableEvaluatorUnitTest {
  public:
-  InstallableManagerUnitTest_Tabbed() = default;
+  InstallableEvaluatorUnitTest_Tabbed() = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsTabStrip};
 };
 
-TEST_F(InstallableManagerUnitTest_Tabbed, SupportTabbed) {
+TEST_F(InstallableEvaluatorUnitTest_Tabbed, SupportTabbed) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->display_override.push_back(blink::mojom::DisplayMode::kTabbed);

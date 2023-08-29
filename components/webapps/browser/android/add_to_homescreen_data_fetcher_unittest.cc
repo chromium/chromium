@@ -165,12 +165,14 @@ class TestInstallableManager : public InstallableManager {
       is_installable = false;
     }
 
-    if (params.valid_manifest &&
-        !IsManifestValidForWebApp(*manifest_,
-                                  true /* check_webapp_manifest_display */)) {
-      errors.insert(errors.end(), valid_manifest_->errors.begin(),
-                    valid_manifest_->errors.end());
-      is_installable = false;
+    if (params.valid_manifest) {
+      auto manifest_errors = InstallableEvaluator::IsManifestValidForWebApp(
+          *manifest_, true /* check_webapp_manifest_display */);
+      if (!manifest_errors.empty()) {
+        errors.insert(errors.end(), manifest_errors.begin(),
+                      manifest_errors.end());
+        is_installable = false;
+      }
     }
 
     if (params.valid_primary_icon && !primary_icon_) {

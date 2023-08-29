@@ -11,25 +11,9 @@
 #include "base/gtest_prod_util.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/browser/installable/installable_task.h"
 
 namespace webapps {
-
-struct InstallableTask {
-  InstallableTask();
-  InstallableTask(const InstallableParams& params,
-                  InstallableCallback callback);
-
-  InstallableTask(const InstallableTask&) = delete;
-  InstallableTask& operator=(const InstallableTask&) = delete;
-
-  InstallableTask(InstallableTask&& other);
-  InstallableTask& operator=(InstallableTask&& other);
-
-  ~InstallableTask();
-
-  InstallableParams params;
-  InstallableCallback callback;
-};
 
 // InstallableTaskQueue keeps track of pending tasks.
 class InstallableTaskQueue {
@@ -38,7 +22,7 @@ class InstallableTaskQueue {
   ~InstallableTaskQueue();
 
   // Adds task to the end of the active list of tasks to be processed.
-  void Add(InstallableTask task);
+  void Add(std::unique_ptr<InstallableTask> task);
 
   // Moves the current task from the main to the paused list.
   void PauseCurrent();
@@ -74,10 +58,10 @@ class InstallableTaskQueue {
 
   // The list of <params, callback> pairs that have come from a call to
   // InstallableManager::GetData.
-  std::deque<InstallableTask> tasks_;
+  std::deque<std::unique_ptr<InstallableTask>> tasks_;
 
   // Tasks which are waiting indefinitely for a service worker to be detected.
-  std::deque<InstallableTask> paused_tasks_;
+  std::deque<std::unique_ptr<InstallableTask>> paused_tasks_;
 };
 
 }  // namespace webapps
