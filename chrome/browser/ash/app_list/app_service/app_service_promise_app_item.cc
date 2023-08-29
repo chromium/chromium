@@ -61,17 +61,15 @@ AppServicePromiseAppItem::~AppServicePromiseAppItem() = default;
 
 void AppServicePromiseAppItem::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
-  if (update.NameChanged() && update.Name().has_value()) {
-    SetName(update.Name().value());
-  }
-  if (update.ProgressChanged() && update.Progress().has_value()) {
-    SetProgress(update.Progress().value());
-  }
   // Each status has its own set of visual effects.
   if (update.StatusChanged()) {
     SetAppStatus(ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
         update.Status()));
+    SetName(ShelfControllerHelper::GetLabelForPromiseStatus(update.Status()));
     LoadIcon();
+  }
+  if (update.ProgressChanged() && update.Progress().has_value()) {
+    SetProgress(update.Progress().value());
   }
 }
 
@@ -95,9 +93,8 @@ void AppServicePromiseAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {
 
 void AppServicePromiseAppItem::InitializeItem(
     const apps::PromiseAppUpdate& update) {
-  CHECK(update.Name().has_value());
   CHECK(update.ShouldShow());
-  SetName(update.Name().value());
+  SetName(ShelfControllerHelper::GetLabelForPromiseStatus(update.Status()));
   if (update.Progress().has_value()) {
     SetProgress(update.Progress().value());
   }

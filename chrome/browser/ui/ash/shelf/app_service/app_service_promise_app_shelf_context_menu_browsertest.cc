@@ -35,8 +35,6 @@ class AppServicePromiseAppShelfContextMenuBrowserTest
   void AddTestPromiseApp(const apps::PackageId& package_id) {
     apps::PromiseAppPtr promise_app =
         std::make_unique<apps::PromiseApp>(package_id);
-    promise_app->progress = 0.7;
-    promise_app->name = "Name";
     promise_app->should_show = true;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->PromiseAppRegistryCache()

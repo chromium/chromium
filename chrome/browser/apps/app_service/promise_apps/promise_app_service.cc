@@ -35,6 +35,7 @@
 #include "url/gurl.h"
 
 namespace {
+
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("promise_app_service_download_icon",
                                         R"(
@@ -104,7 +105,7 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
 
   const PackageId package_id = delta->package_id;
   bool is_existing_registration =
-      promise_app_registry_cache_->HasPromiseApp(delta->package_id);
+      promise_app_registry_cache_->HasPromiseApp(package_id);
 
   // If the app is in the AppRegistryCache, then it already has an item in the
   // Launcher/ Shelf and we don't need to create a new promise app item to
@@ -234,7 +235,6 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
     return;
   }
   if (!promise_app_info->GetPackageId().has_value() ||
-      !promise_app_info->GetName().has_value() ||
       promise_app_info->GetIcons().size() == 0) {
     LOG(ERROR) << "Cannot update promise app " << package_id.ToString()
                << " due to incomplete Almanac Promise App API response.";
@@ -257,11 +257,6 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
                << " as it does not exist in PromiseAppRegistry";
     return;
   }
-
-  PromiseAppPtr promise_app =
-      std::make_unique<PromiseApp>(promise_app_info->GetPackageId().value());
-  promise_app->name = promise_app_info->GetName().value();
-  OnPromiseApp(std::move(promise_app));
 
   pending_download_count_[package_id] = promise_app_info->GetIcons().size();
 

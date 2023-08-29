@@ -1062,15 +1062,14 @@ void ChromeShelfController::OnPromiseAppUpdate(
     return;
   }
   ash::ShelfItem item = model_->items()[index];
-  if (update.Name().has_value()) {
-    item.title = base::UTF8ToUTF16(update.Name().value());
-  }
   if (update.Progress().has_value()) {
     item.progress = update.Progress().value();
   }
   if (update.StatusChanged()) {
     item.app_status =
         ShelfControllerHelper::ConvertPromiseStatusToAppStatus(update.Status());
+    item.title = base::UTF8ToUTF16(
+        ShelfControllerHelper::GetLabelForPromiseStatus(update.Status()));
   }
   model_->Set(index, item);
 }

@@ -52,7 +52,6 @@ void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
     return;
   }
 
-  SET_OPTIONAL_VALUE(name);
   SET_OPTIONAL_VALUE(progress);
   SET_ENUM_VALUE(status, PromiseStatus::kUnknown);
   SET_OPTIONAL_VALUE(should_show);
@@ -68,20 +67,6 @@ const PackageId& PromiseAppUpdate::PackageId() const {
   } else {
     return state_->package_id;
   }
-}
-
-absl::optional<std::string> PromiseAppUpdate::Name() const {
-  if (delta_ && delta_->name.has_value()) {
-    return *delta_->name;
-  }
-  if (state_ && state_->name.has_value()) {
-    return *state_->name;
-  }
-  return absl::nullopt;
-}
-
-bool PromiseAppUpdate::NameChanged() const {
-  RETURN_OPTIONAL_VALUE_CHANGED(name);
 }
 
 absl::optional<float> PromiseAppUpdate::Progress() const {
@@ -116,8 +101,6 @@ bool PromiseAppUpdate::ShouldShowChanged() const {
 
 std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update) {
   out << "Package_id: " << update.PackageId().ToString() << std::endl;
-  out << "- Name Changed: " << update.NameChanged() << std::endl;
-  out << "- Name: " << update.Name().value_or("N/A") << std::endl;
   out << "- Progress Changed: " << update.ProgressChanged() << std::endl;
   out << "- Progress: "
       << (update.Progress().has_value()

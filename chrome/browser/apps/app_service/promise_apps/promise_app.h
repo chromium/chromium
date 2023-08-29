@@ -36,7 +36,6 @@ struct PromiseApp {
 
   PackageId package_id;
 
-  absl::optional<std::string> name;
   absl::optional<float> progress;
   PromiseStatus status = PromiseStatus::kUnknown;
 

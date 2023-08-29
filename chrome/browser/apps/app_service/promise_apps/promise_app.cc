@@ -21,16 +21,12 @@ PromiseAppIcon::PromiseAppIcon() = default;
 PromiseAppIcon::~PromiseAppIcon() = default;
 
 bool PromiseApp::operator==(const PromiseApp& rhs) const {
-  return this->package_id == rhs.package_id && this->name == rhs.name &&
-         this->progress == rhs.progress && this->status == rhs.status &&
-         this->should_show == rhs.should_show;
+  return this->package_id == rhs.package_id && this->progress == rhs.progress &&
+         this->status == rhs.status && this->should_show == rhs.should_show;
 }
 
 PromiseAppPtr PromiseApp::Clone() const {
   auto promise_app = std::make_unique<PromiseApp>(package_id);
-  if (name.has_value()) {
-    promise_app->name = name;
-  }
   if (progress.has_value()) {
     promise_app->progress = progress;
   }
@@ -43,7 +39,6 @@ PromiseAppPtr PromiseApp::Clone() const {
 
 std::ostream& operator<<(std::ostream& out, const PromiseApp& promise_app) {
   out << "Package_id: " << promise_app.package_id.ToString() << std::endl;
-  out << "- Name: " << promise_app.name.value_or("N/A") << std::endl;
   out << "- Progress: "
       << (promise_app.progress.has_value()
               ? base::NumberToString(promise_app.progress.value())

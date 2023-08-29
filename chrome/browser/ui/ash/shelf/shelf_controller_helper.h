@@ -35,6 +35,10 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
 
   ~ShelfControllerHelper() override;
 
+  // Get the item label that should be shown for the specified promise app
+  // status.
+  static std::string GetLabelForPromiseStatus(apps::PromiseStatus status);
+
   // Helper function to return the title associated with |app_id|.
   // Returns an empty title if no matching extension can be found.
   static std::u16string GetAppTitle(Profile* profile,

@@ -47,6 +47,10 @@
 
 namespace {
 
+// TODO(b/297453039): Replace with correct UXW when available.
+constexpr char kPendingString[] = "Waiting...";
+constexpr char kInstallingString[] = "Installing...";
+
 constexpr float kProgressNone = 0;
 constexpr float kProgressNotApplicable = -1;
 
@@ -67,6 +71,18 @@ ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
     : profile_(profile) {}
 
 ShelfControllerHelper::~ShelfControllerHelper() {}
+
+std::string ShelfControllerHelper::GetLabelForPromiseStatus(
+    apps::PromiseStatus status) {
+  switch (status) {
+    case apps::PromiseStatus::kUnknown:
+    case apps::PromiseStatus::kPending:
+      return kPendingString;
+    case apps::PromiseStatus::kInstalling:
+    case apps::PromiseStatus::kRemove:
+      return kInstallingString;
+  }
+}
 
 // static
 std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
@@ -182,12 +198,11 @@ std::u16string ShelfControllerHelper::GetPromiseAppTitle(
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(string_package_id);
-  if (!promise_app || !promise_app->name.has_value() ||
-      promise_app->name->empty()) {
+  if (!promise_app) {
     return std::u16string();
   }
 
-  return base::UTF8ToUTF16(promise_app->name.value());
+  return base::UTF8ToUTF16(GetLabelForPromiseStatus(promise_app->status));
 }
 
 // static

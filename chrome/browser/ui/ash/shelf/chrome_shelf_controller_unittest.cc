@@ -6258,7 +6258,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
       apps::PackageId(apps::AppType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
-  promise_app->name = "Name";
   promise_app->status = apps::PromiseStatus::kPending;
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
@@ -6271,22 +6270,24 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PromiseAppUpdatesShelfItem) {
   EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
   ash::ShelfID id(package_id.ToString());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item->title, std::u16string(u"Name"));
+  EXPECT_EQ(item->title,
+            base::UTF8ToUTF16(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kPending)));
   EXPECT_EQ(item->progress, 0);
   EXPECT_EQ(item->app_status, ash::AppStatus::kPending);
 
   // Push an progress and status update to the promise app.
   apps::PromiseAppPtr update = std::make_unique<apps::PromiseApp>(package_id);
-  update->name = "NewName";
   update->progress = 0.3;
   update->status = apps::PromiseStatus::kInstalling;
   cache()->OnPromiseApp(std::move(update));
 
   // Verify that the shelf item has updated details.
-  const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
-  EXPECT_EQ(item_after_update->progress, 0.3f);
-  EXPECT_EQ(item_after_update->app_status, ash::AppStatus::kInstalling);
+  EXPECT_EQ(item->title,
+            base::UTF8ToUTF16(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kInstalling)));
+  EXPECT_EQ(item->progress, 0.3f);
+  EXPECT_EQ(item->app_status, ash::AppStatus::kInstalling);
 }
 
 TEST_F(ChromeShelfControllerPromiseAppsTest,
@@ -6296,7 +6297,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
       apps::PackageId(apps::AppType::kArc, "main.package.for.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
-  promise_app->name = "Name";
+  promise_app->status = apps::PromiseStatus::kPending;
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
 
@@ -6306,7 +6307,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
       apps::PackageId(apps::AppType::kArc, "other.package");
   apps::PromiseAppPtr other_promise_app =
       std::make_unique<apps::PromiseApp>(other_package_id);
-  other_promise_app->name = "Other";
+  other_promise_app->status = apps::PromiseStatus::kPending;
   other_promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(other_promise_app));
 
@@ -6315,31 +6316,28 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   PinAppWithIDToShelf(package_id.ToString());
   PinAppWithIDToShelf(other_package_id.ToString());
 
-  // Verify the name of the main shelf item.
+  // Verify the status of the main shelf item.
   EXPECT_TRUE(model_->IsAppPinned(package_id.ToString()));
   ash::ShelfID id(package_id.ToString());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item->title, std::u16string(u"Name"));
+  EXPECT_EQ(item->app_status, ash::AppStatus::kPending);
 
-  // Verify the name of the other shelf item.
+  // Verify the status of the other shelf item.
   EXPECT_TRUE(model_->IsAppPinned(other_package_id.ToString()));
   ash::ShelfID other_id(other_package_id.ToString());
   const ash::ShelfItem* other_item = shelf_controller_->GetItem(other_id);
-  EXPECT_EQ(other_item->title, std::u16string(u"Other"));
+  EXPECT_EQ(other_item->app_status, ash::AppStatus::kPending);
 
   // Push an update to the main promise app.
   apps::PromiseAppPtr update = std::make_unique<apps::PromiseApp>(package_id);
-  update->name = "NewName";
+  update->status = apps::PromiseStatus::kInstalling;
   cache()->OnPromiseApp(std::move(update));
 
-  // Verify that the main shelf item has an updated name.
-  const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
+  // Verify that the main shelf item has an updated status.
+  EXPECT_EQ(item->app_status, ash::AppStatus::kInstalling);
 
   // Verify that the other shelf item remains the same.
-  const ash::ShelfItem* other_item_after_update =
-      shelf_controller_->GetItem(other_id);
-  EXPECT_EQ(other_item_after_update->title, std::u16string(u"Other"));
+  EXPECT_EQ(other_item->app_status, ash::AppStatus::kPending);
 }
 
 TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
@@ -6348,7 +6346,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
       apps::PackageId(apps::AppType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
-  promise_app->name = "Name";
   promise_app->status = apps::PromiseStatus::kPending;
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
@@ -6405,7 +6402,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, RemoveShelfItem) {
   apps::PackageId package_id(app_type, identifier);
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
-  promise_app->name = "Name";
   promise_app->progress = 0.9;
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
@@ -6444,7 +6440,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PinnedPromiseAppShelfItemType) {
       apps::PackageId(apps::AppType::kArc, "com.example.test");
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(package_id);
-  promise_app->name = "Name";
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
 
