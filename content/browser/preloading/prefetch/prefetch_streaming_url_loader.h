@@ -52,10 +52,11 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // via `AddEventToQueue()`) from the methods with the same names in
   // `PrefetchStreamingURLLoader`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void OnReceiveResponse(bool servable,
+  void OnReceiveResponse(PrefetchStreamingURLLoaderStatus status,
                          network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body);
-  void HandleRedirect(const net::RedirectInfo& redirect_info,
+  void HandleRedirect(PrefetchRedirectStatus redirect_status,
+                      const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
   void OnTransferSizeUpdated(int32_t transfer_size_diff);
   void OnComplete(network::URLLoaderCompletionStatus completion_status);
@@ -69,6 +70,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   RequestHandler CreateRequestHandler();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
+  bool IsWaitingForResponse() const;
   absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
       const {
     return completion_status_;
@@ -117,6 +119,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   void OnServingURLLoaderMojoDisconnect();
 
+  PrefetchStreamingURLLoaderStatus GetStatusForRecording() const;
+
   // The URL Loader events that occur before serving the prefetch are queued up
   // until the prefetch is served.
   std::vector<base::OnceClosure> event_queue_;
@@ -164,6 +168,12 @@ class CONTENT_EXPORT PrefetchResponseReader final
   };
 
   LoadState load_state_{LoadState::kStarted};
+
+  // Used for UMA recording.
+  absl::optional<PrefetchStreamingURLLoaderStatus> failure_reason_;
+  bool served_before_completion_{false};
+  bool served_after_completion_{false};
+  bool should_record_metrics_{true};
 
   // The prefetched data and metadata. Not set for a redirect response.
   network::mojom::URLResponseHeadPtr head_;
@@ -239,11 +249,9 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   //   network context.
   // - |kFailedInvalidRedirect|, if the redirect should not be followed by
   //   |this|.
-  void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status,
+  void HandleRedirect(PrefetchRedirectStatus redirect_status,
                       const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
-
-  bool Failed() const;
 
   void MakeSelfOwned(std::unique_ptr<PrefetchStreamingURLLoader> self);
   void PostTaskToDeleteSelf();
@@ -280,11 +288,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
 
   // Set when this manages its own lifetime.
   std::unique_ptr<PrefetchStreamingURLLoader> self_pointer_;
-
-  // Status of the URL loader. This recorded to UMA when the URL loader is
-  // deleted.
-  PrefetchStreamingURLLoaderStatus status_{
-      PrefetchStreamingURLLoaderStatus::kWaitingOnHead};
 
   // The timer that triggers a timeout when a request takes too long.
   base::OneShotTimer timeout_timer_;

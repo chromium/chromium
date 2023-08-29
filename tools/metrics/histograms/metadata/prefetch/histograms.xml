@@ -496,9 +496,9 @@ chromium-metrics-reviews@google.com.
     the prefetch.
 
     This is recorded once for each prefetch that is requested using a streaming
-    URL loader. It is recorded when the streaming URL loader is deleted which
-    can be when: 1) the URL loader is canceled, 2) the URL loader completed
-    serving the prefetch, or 3) the prefetch was deleted and not used.
+    URL loader. It is recorded when the corresponding PrefetchResponseReader is
+    deleted which can be when: 1) the URL loader is canceled, 2) the URL loader
+    completed serving the prefetch, or 3) the prefetch was deleted and not used.
   </summary>
 </histogram>
 

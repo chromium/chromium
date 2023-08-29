@@ -193,8 +193,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
 
   DCHECK(weak_streaming_loader);
   weak_streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
-      std::move(redirect_head));
+      PrefetchRedirectStatus::kFollow, redirect_info, std::move(redirect_head));
 
   // GetResponseReaderForCurrentPrefetch() now points to a new ResponseReader
   // after `AddRedirectHop()` above.
@@ -270,8 +269,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
 
   DCHECK(weak_first_streaming_loader);
   weak_first_streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect,
-      redirect_info, std::move(redirect_head));
+      PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
+      std::move(redirect_head));
 
   std::unique_ptr<network::ResourceRequest> redirect_request =
       std::make_unique<network::ResourceRequest>();

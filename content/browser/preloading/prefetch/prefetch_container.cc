@@ -850,15 +850,13 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 }
 
 bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
-  // Can only block until head if the request has been started using a streaming
-  // URL loader...
-  if (streaming_loaders_.empty() || GetLastStreamingURLLoader()->Failed()) {
+  // Can only block until head if the request has been started using a
+  // streaming URL loader and head/failure/redirect hasn't been received yet.
+  if (streaming_loaders_.empty() || redirect_chain_.empty() ||
+      !redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
     return false;
   }
-  // ... and head hasn't been received yet.
-  if (GetNonRedirectResponseReader()) {
-    return false;
-  }
+
   return PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness());
 }
 

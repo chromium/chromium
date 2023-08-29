@@ -762,8 +762,7 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
   if (!eligible && !prefetch_container->IsDecoy()) {
     active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
     prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
-        PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, redirect_info,
-        std::move(redirect_head));
+        PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
     prefetch_container->ResetAllStreamingURLLoaders();
 
     Prefetch();
@@ -779,9 +778,8 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
       prefetch_container
           ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop()) {
     prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
-        PrefetchStreamingURLLoaderStatus::
-            kStopSwitchInNetworkContextForRedirect,
-        redirect_info, std::move(redirect_head));
+        PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
+        std::move(redirect_head));
     // The new ResponseReader is associated with the new streaming URL loader at
     // the PrefetchStreamingURLLoader constructor.
     MakePrefetchRequest(prefetch_container, redirect_info.new_url);
@@ -791,8 +789,7 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
 
   // Otherwise, follow the redirect in the same streaming URL loader.
   prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
-      std::move(redirect_head));
+      PrefetchRedirectStatus::kFollow, redirect_info, std::move(redirect_head));
   // Associate the new ResponseReader with the current streaming URL loader.
   prefetch_container->GetLastStreamingURLLoader()->SetResponseReader(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
@@ -1211,8 +1208,7 @@ void PrefetchService::OnPrefetchRedirect(
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
     prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
-        PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, redirect_info,
-        std::move(redirect_head));
+        PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
     prefetch_container->ResetAllStreamingURLLoaders();
 
     Prefetch();

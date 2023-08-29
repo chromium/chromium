@@ -486,6 +486,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
   on_response_complete_loop.Run();
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -542,6 +543,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -608,6 +610,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -662,6 +665,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -845,9 +849,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
                                               net::HTTP_PERMANENT_REDIRECT);
   on_receive_redirect_loop.Run();
 
-  streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
-      std::move(redirect_head));
+  streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
+                                   redirect_info, std::move(redirect_head));
   on_follow_redirect_loop.Run();
 
   // Switch to a new ResponseReader.
@@ -997,9 +1000,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
                                               net::HTTP_PERMANENT_REDIRECT);
   on_receive_redirect_loop.Run();
 
-  streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, redirect_info,
-      std::move(redirect_head));
+  streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFail, redirect_info,
+                                   std::move(redirect_head));
   if (GetParam()) {
     on_head_received_loop.Run();
   }
@@ -1007,6 +1009,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -1061,8 +1064,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   // context. When this happens the streaming_loader will stop the fetch, and a
   // new streaming URL loader would start to fetch the redirect URL.
   streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect,
-      redirect_info, std::move(redirect_head));
+      PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
+      std::move(redirect_head));
 
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(test_url_loader_factory()->IsURLLoaderClientConnected());
@@ -1162,9 +1165,8 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   test_url_loader_factory()->DisconnectMojoPipes();
   task_environment()->RunUntilIdle();
 
-  streaming_loader->HandleRedirect(
-      PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
-      std::move(redirect_head));
+  streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
+                                   redirect_info, std::move(redirect_head));
   if (GetParam()) {
     on_head_received_loop.Run();
   }
@@ -1174,6 +1176,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -1237,6 +1240,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
   on_response_complete_loop.Run();
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -1291,6 +1295,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
@@ -1470,6 +1475,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StaleResponse) {
   EXPECT_TRUE(response_reader->Servable(base::Seconds(5)));
 
   streaming_loader.reset();
+  response_reader.reset();
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
