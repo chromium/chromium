@@ -70,7 +70,8 @@
     <h2 class="message-heading">[[getMessageHeading(messageType)]]</h2>
     <p class="message-detail">[[getMessageDetail(messageType)]]</p>
   </div>
-  <cr-button class="action-button" on-click="onManagePrintersClicked">
+  <cr-button class="action-button" on-click="onManagePrintersClicked"
+      hidden$="[[!showManagePrintersButton]]">
     $i18n{managePrintersLabel}
   </cr-button>
 </div>

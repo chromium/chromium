@@ -12,6 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {MetricsContext, PrintPreviewLaunchSourceBucket} from '../metrics.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
+import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {getTemplate} from './printer_setup_info_cros.html.js';
 
@@ -76,6 +77,8 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
       },
 
       metricsSource: Number,
+
+      showManagePrintersButton: Boolean,
     };
   }
 
@@ -83,12 +86,17 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
   private metricsSource: PrinterSetupInfoMetricsSource;
   private nativeLayer: NativeLayer;
   private metricsContext: MetricsContext;
+  private showManagePrintersButton: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
     this.nativeLayer = NativeLayerImpl.getInstance();
     this.metricsContext =
         MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
+    NativeLayerCrosImpl.getInstance().getShowManagePrinters().then(
+        (show: boolean) => {
+          this.showManagePrintersButton = show;
+        });
   }
 
   private getMessageDetail(): string {

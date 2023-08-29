@@ -13,6 +13,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 // <if expr="is_chromeos">
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
+
+import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -42,12 +44,19 @@ suite(preview_area_test.suiteName, function() {
 
   let pluginProxy: TestPluginProxy;
 
+  // <if expr="is_chromeos">
+  let nativeLayerCros: NativeLayerCrosStub;
+  // </if>
+
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     nativeLayer.setPageCount(3);
     pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
+    // <if expr="is_chromeos">
+    nativeLayerCros = setNativeLayerCrosInstance();
+    // </if>
 
     setupPreviewElement();
   });
@@ -197,33 +206,40 @@ suite(preview_area_test.suiteName, function() {
     previewArea.state = State.READY;
     previewArea.startPreview(false);
 
-    return whenPreviewStarted.then(() => {
-      // If destination capabilities fetch fails, the invalid printer error
-      // will be set by the destination settings.
-      previewArea.destination = new Destination(
-          'InvalidDevice', DestinationOrigin.LOCAL, 'InvalidName');
-      previewArea.state = State.ERROR;
-      previewArea.error = Error.INVALID_PRINTER;
-      const managePrintersFunction = 'managePrinters';
-      const recordMetricFunction = 'recordInHistogram';
-      assertEquals(0, nativeLayer.getCallCount(managePrintersFunction));
-      assertEquals(0, nativeLayer.getCallCount(recordMetricFunction));
+    // Metrics functions to verify.
+    const managePrintersFunction = 'managePrinters';
+    const recordMetricFunction = 'recordInHistogram';
 
-      // Click button to launch settings.
-      const setupInfoElement = previewArea.shadowRoot!.querySelector(
-          PrintPreviewPrinterSetupInfoCrosElement.is)!;
-      const managePrintersButton =
-          setupInfoElement.shadowRoot!.querySelector('cr-button')!;
-      managePrintersButton.click();
+    return whenPreviewStarted
+        .then(async () => {
+          // If destination capabilities fetch fails, the invalid printer error
+          // will be set by the destination settings.
+          previewArea.destination = new Destination(
+              'InvalidDevice', DestinationOrigin.LOCAL, 'InvalidName');
+          previewArea.state = State.ERROR;
+          previewArea.error = Error.INVALID_PRINTER;
+          assertEquals(0, nativeLayer.getCallCount(managePrintersFunction));
+          assertEquals(0, nativeLayer.getCallCount(recordMetricFunction));
 
-      // Verify manage printers button clicked and triggers recording histogram.
-      assertEquals(1, nativeLayer.getCallCount(managePrintersFunction));
-      assertEquals(1, nativeLayer.getCallCount(recordMetricFunction));
-      const call = nativeLayer.getArgs(recordMetricFunction)[0];
-      assertEquals('PrintPreview.PrinterSettingsLaunchSource', call[0]);
-      // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
-      assertEquals(0, call[1]);
-    });
+          return nativeLayerCros.whenCalled('getShowManagePrinters');
+        })
+        .then(() => {
+          // Click button to launch settings.
+          const setupInfoElement = previewArea.shadowRoot!.querySelector(
+              PrintPreviewPrinterSetupInfoCrosElement.is)!;
+          const managePrintersButton =
+              setupInfoElement.shadowRoot!.querySelector('cr-button')!;
+          managePrintersButton.click();
+
+          // Verify manage printers button clicked and triggers recording
+          // histogram.
+          assertEquals(1, nativeLayer.getCallCount(managePrintersFunction));
+          assertEquals(1, nativeLayer.getCallCount(recordMetricFunction));
+          const call = nativeLayer.getArgs(recordMetricFunction)[0];
+          assertEquals('PrintPreview.PrinterSettingsLaunchSource', call[0]);
+          // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
+          assertEquals(0, call[1]);
+        });
   });
   // </if>
 

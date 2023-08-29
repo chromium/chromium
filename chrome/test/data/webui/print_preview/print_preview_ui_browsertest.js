@@ -717,6 +717,14 @@ TEST_F(
       this.runMochaTest(
           printer_setup_info_cros_test.TestNames.ManagePrintersButtonMetrics);
     });
+
+TEST_F(
+    'PrintPreviewPrinterSetupInfoCrosTest', 'DoNotShowManagePrinters',
+    function() {
+      this.runMochaTest(
+          printer_setup_info_cros_test.TestNames.DoNotShowManagePrinters);
+    });
+
 GEN('#endif')
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');

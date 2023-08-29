@@ -5,9 +5,10 @@
 import {NativeLayerImpl, PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
+import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 
 const printer_setup_info_cros_test = {
@@ -18,6 +19,8 @@ const printer_setup_info_cros_test = {
     ManagePrintersButton: 'Manage printers button launches settings',
     MessageMatchesMessageType: 'Message matches message type',
     ManagePrintersButtonMetrics: 'Manage printers button records metrics',
+    DoNotShowManagePrinters:
+        'Manage printers button hidden when getShowManagePrinters is false',
   },
 };
 
@@ -27,10 +30,12 @@ Object.assign(
 suite(printer_setup_info_cros_test.suiteName, function() {
   let setupInfoElement: PrintPreviewPrinterSetupInfoCrosElement;
   let nativeLayer: NativeLayerStub;
+  let nativeLayerCros: NativeLayerCrosStub;
 
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
+    nativeLayerCros = setNativeLayerCrosInstance();
   });
 
   teardown(function() {
@@ -47,7 +52,7 @@ suite(printer_setup_info_cros_test.suiteName, function() {
   }
 
   /** Appends `PrintPreviewPrinterSetupInfoCrosElement` to document body. */
-  function setupElement(): void {
+  async function setupElement(): Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setupInfoElement =
         document.createElement(PrintPreviewPrinterSetupInfoCrosElement.is);
@@ -55,6 +60,7 @@ suite(printer_setup_info_cros_test.suiteName, function() {
         PrinterSetupInfoMetricsSource.PREVIEW_AREA);
     document.body.appendChild(setupInfoElement);
     flush();
+    await nativeLayerCros.whenCalled('getShowManagePrinters');
   }
 
 
@@ -72,48 +78,52 @@ suite(printer_setup_info_cros_test.suiteName, function() {
   }
 
   /** Verifies element can be added to UI and display. */
-  test(printer_setup_info_cros_test.TestNames.ElementDisplays, function() {
-    setupElement();
+  test(
+      printer_setup_info_cros_test.TestNames.ElementDisplays, async function() {
+        await setupElement();
 
-    assertTrue(!!setupInfoElement);
-    assertTrue(isChildVisible(setupInfoElement, 'cr-button'));
-    assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
-    assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
-  });
+        assertTrue(!!setupInfoElement);
+        assertTrue(isChildVisible(setupInfoElement, 'cr-button'));
+        assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
+        assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
+      });
 
   /** Verifies button text is localized. */
-  test(printer_setup_info_cros_test.TestNames.ButtonLocalized, function() {
-    setupElement();
+  test(
+      printer_setup_info_cros_test.TestNames.ButtonLocalized, async function() {
+        await setupElement();
 
-    const managePrintersLabelKey = 'managePrintersLabel';
-    assertTrue(setupInfoElement.i18nExists(managePrintersLabelKey));
-    const managePrintersButton =
-        getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
-    assertEquals(
-        setupInfoElement.i18n(managePrintersLabelKey),
-        managePrintersButton.textContent!.trim());
-  });
+        const managePrintersLabelKey = 'managePrintersLabel';
+        assertTrue(setupInfoElement.i18nExists(managePrintersLabelKey));
+        const managePrintersButton =
+            getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
+        assertEquals(
+            setupInfoElement.i18n(managePrintersLabelKey),
+            managePrintersButton.textContent!.trim());
+      });
 
   /**
    * Verifies manage printers button invokes launch settings from native layer.
    */
-  test(printer_setup_info_cros_test.TestNames.ManagePrintersButton, function() {
-    setupElement();
-    assertEquals(0, nativeLayer.getCallCount('managePrinters'));
+  test(
+      printer_setup_info_cros_test.TestNames.ManagePrintersButton,
+      async function() {
+        await setupElement();
+        assertEquals(0, nativeLayer.getCallCount('managePrinters'));
 
-    // Click button.
-    const managePrinters =
-        getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
-    managePrinters.click();
+        // Click button.
+        const managePrinters =
+            getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
+        managePrinters.click();
 
-    assertEquals(1, nativeLayer.getCallCount('managePrinters'));
-  });
+        assertEquals(1, nativeLayer.getCallCount('managePrinters'));
+      });
 
   /** Verify correct localized message displayed for message type. */
   test(
       printer_setup_info_cros_test.TestNames.MessageMatchesMessageType,
-      function() {
-        setupElement();
+      async function() {
+        await setupElement();
 
         // Default message type configured to be "no-printers".
         assertEquals(
@@ -175,8 +185,8 @@ suite(printer_setup_info_cros_test.suiteName, function() {
    */
   test(
       printer_setup_info_cros_test.TestNames.ManagePrintersButtonMetrics,
-      function() {
-        setupElement();
+      async function() {
+        await setupElement();
         const recordMetricsFunction = 'recordInHistogram';
         assertEquals(0, nativeLayer.getCallCount(recordMetricsFunction));
 
@@ -197,5 +207,21 @@ suite(printer_setup_info_cros_test.suiteName, function() {
 
         // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
         verifyRecordInHistogramCall(/*callIndex=*/ 1, /*expectedBucket=*/ 0);
+      });
+
+  /**
+   * Verifies manage printers button hidden when getShowManagePrinters returns
+   * false.
+   */
+  test(
+      printer_setup_info_cros_test.TestNames.DoNotShowManagePrinters,
+      async function() {
+        nativeLayerCros.setShowManagePrinters(false);
+        await setupElement();
+
+        assertTrue(!!setupInfoElement);
+        assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
+        assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
+        assertFalse(isChildVisible(setupInfoElement, 'cr-button'));
       });
 });
