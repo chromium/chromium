@@ -642,24 +642,39 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
 // Tests the behavior of non-eager prerenders with the new limit and scheduler.
 TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
        NewLimitAndScheduler_NonEager) {
+  std::vector<int> started_prerender_ids;
+
   // Starts the non-eager prerenders as many times as the specific limit.
   for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders();
        i++) {
     int frame_tree_node_id = CreateAndStartHostByLimitGroup(
         PrerenderHostRegistry::PrerenderLimitGroup::kSpeculationRulesNonEager);
+    started_prerender_ids.push_back(frame_tree_node_id);
     EXPECT_NE(frame_tree_node_id, kNoFrameTreeNodeId);
   }
 
-  // If we try to start non-eager prerenders after reaching the limit, that
-  // should be canceled with kMaxNumOfRunningPrerendersExceeded.
+  // Even after the limit of non-eager speculation rules is reached, it is
+  // permissible to start a new prerender. Instead, the oldest prerender will be
+  // canceled with kMaxNumOfRunningPrerendersExceeded to make room for a new
+  // one.
   int frame_tree_node_id_non_eager_exceeded = CreateAndStartHostByLimitGroup(
       PrerenderHostRegistry::PrerenderLimitGroup::kSpeculationRulesNonEager);
-  EXPECT_EQ(frame_tree_node_id_non_eager_exceeded, kNoFrameTreeNodeId);
+  ASSERT_NE(frame_tree_node_id_non_eager_exceeded, kNoFrameTreeNodeId);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+  for (auto id : started_prerender_ids) {
+    PrerenderHost* prerender_host = registry().FindNonReservedHostById(id);
+    if (id == started_prerender_ids[0]) {
+      // The oldest prerender has been canceled.
+      EXPECT_EQ(prerender_host, nullptr);
+    } else {
+      EXPECT_NE(prerender_host, nullptr);
+    }
+  }
 
   // On the other hand, prerenders belonging to different limit group(eager,
-  // embedder) can still be started.
+  // embedder) can still be started and not invoke cancellation, as these limits
+  // are separated.
   int frame_tree_node_id_eager = CreateAndStartHostByLimitGroup(
       PrerenderHostRegistry::PrerenderLimitGroup::kSpeculationRulesEager);
   int frame_tree_node_id_embedder = CreateAndStartHostByLimitGroup(

@@ -285,15 +285,23 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Calculates PrerenderLimitGroup by PrerenderTriggerType and
   // SpeculationEagerness.
+  // Currently, this is only used under kPrerender2NewLimitAndScheduler.
   PrerenderLimitGroup GetPrerenderLimitGroup(
       PrerenderTriggerType trigger_type,
       absl::optional<blink::mojom::SpeculationEagerness> eagerness);
+
+  // Returns the number of hosts that prerender_host_by_frame_tree_node_id_
+  // holds by trigger type / limit group.
+  // TODO(crbug.com/1350676): Make this function care about
+  // `prerender_new_tab_handle_by_frame_tree_node_id_` as well.
+  int GetHostCountByTriggerType(PrerenderTriggerType trigger_type);
+  int GetHostCountByLimitGroup(PrerenderLimitGroup limit_group);
 
   // Returns whether a certain type of PrerenderTriggerType is allowed to be
   // added to PrerenderHostRegistry according to the limit of the given
   // PrerenderTriggerType.
   // If kPrerender2NewLimitAndScheduler is enabled, SpeculationEagerness is
-  // additionally considered to calculate the new limits according to
+  // additionally considered to apply the new limits and behaviors according to
   // PrerenderLimitGroup.
   bool IsAllowedToStartPrerenderingForTrigger(
       PrerenderTriggerType trigger_type,
@@ -340,6 +348,11 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // not used for a while.
   base::flat_map<int, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
+
+  // Holds the host id of non-eager prerenders by their arrival order.
+  // Currently, it is used to calculate the oldest prerender on
+  // GetOldestHostPerLimitGroup for kPrerender2NewLimitAndScheduler.
+  base::circular_deque<int> non_eager_prerender_host_id_by_arrival_order_;
 
   // The host that is reserved for activation.
   std::unique_ptr<PrerenderHost> reserved_prerender_host_;

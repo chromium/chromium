@@ -715,6 +715,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
                           frame_tree_node_id));
     prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
         std::move(prerender_host);
+
+    if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
+      if (GetPrerenderLimitGroup(attributes.trigger_type,
+                                 attributes.eagerness) ==
+          PrerenderLimitGroup::kSpeculationRulesNonEager) {
+        non_eager_prerender_host_id_by_arrival_order_.push_back(
+            frame_tree_node_id);
+      }
+    }
   }
 
   switch (attributes.trigger_type) {
@@ -1637,49 +1646,82 @@ PrerenderHostRegistry::GetPrerenderLimitGroup(
   }
 }
 
+int PrerenderHostRegistry::GetHostCountByTriggerType(
+    PrerenderTriggerType trigger_type) {
+  int host_count = 0;
+  for (const auto& [_, host] : prerender_host_by_frame_tree_node_id_) {
+    if (host->trigger_type() == trigger_type) {
+      ++host_count;
+    }
+  }
+  return host_count;
+}
+
+int PrerenderHostRegistry::GetHostCountByLimitGroup(
+    PrerenderLimitGroup limit_group) {
+  CHECK(base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler));
+  int host_count = 0;
+  for (const auto& [_, host] : prerender_host_by_frame_tree_node_id_) {
+    if (GetPrerenderLimitGroup(host->trigger_type(), host->eagerness()) ==
+        limit_group) {
+      ++host_count;
+    }
+  }
+  return host_count;
+}
+
 bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     PrerenderTriggerType trigger_type,
     absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
-  int trigger_type_count = 0;
-
   PrerenderLimitGroup limit_group;
+  int host_count;
   if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
     limit_group = GetPrerenderLimitGroup(trigger_type, eagerness);
+    host_count = GetHostCountByLimitGroup(limit_group);
+  } else {
+    host_count = GetHostCountByTriggerType(trigger_type);
   }
-
-  for (const auto& [_, host] : prerender_host_by_frame_tree_node_id_) {
-    if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
-      if (GetPrerenderLimitGroup(host->trigger_type(), host->eagerness()) ==
-          limit_group) {
-        ++trigger_type_count;
-      }
-    } else {
-      if (host->trigger_type() == trigger_type) {
-        ++trigger_type_count;
-      }
-    }
-  }
-  // TODO(crbug.com/1350676): Make this function care about
-  // `prerender_new_tab_handle_by_frame_tree_node_id_` as well.
 
   if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
     // Apply the limit of maximum number of running prerenders per
     // PrerenderLimitGroup.
     switch (limit_group) {
       case PrerenderLimitGroup::kSpeculationRulesEager:
-        return trigger_type_count <
-               base::GetFieldTrialParamByFeatureAsInt(
-                   kPrerender2NewLimitAndScheduler,
-                   kMaxNumOfRunningSpeculationRulesEagerPrerenders, 10);
-      case PrerenderLimitGroup::kSpeculationRulesNonEager:
-        return trigger_type_count <
-               base::GetFieldTrialParamByFeatureAsInt(
-                   kPrerender2NewLimitAndScheduler,
-                   kMaxNumOfRunningSpeculationRulesNonEagerPrerenders, 2);
+        return host_count < base::GetFieldTrialParamByFeatureAsInt(
+                                kPrerender2NewLimitAndScheduler,
+                                kMaxNumOfRunningSpeculationRulesEagerPrerenders,
+                                10);
+      case PrerenderLimitGroup::kSpeculationRulesNonEager: {
+        int limit_non_eager = base::GetFieldTrialParamByFeatureAsInt(
+            kPrerender2NewLimitAndScheduler,
+            kMaxNumOfRunningSpeculationRulesNonEagerPrerenders, 2);
+
+        // When the limit on non-eager speculation rules is reached, cancel the
+        // oldest host to allow a newly incoming trigger to start.
+        if (host_count >= limit_non_eager) {
+          int oldest_prerender_host_id;
+
+          // Find the oldest non-eager prerender that has not been canceled yet.
+          do {
+            oldest_prerender_host_id =
+                non_eager_prerender_host_id_by_arrival_order_.front();
+            non_eager_prerender_host_id_by_arrival_order_.pop_front();
+          } while (!prerender_host_by_frame_tree_node_id_.contains(
+              oldest_prerender_host_id));
+
+          CHECK(CancelHost(
+              oldest_prerender_host_id,
+              PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded));
+
+          CHECK_LT(GetHostCountByLimitGroup(limit_group), limit_non_eager);
+        }
+
+        return true;
+      }
       case PrerenderLimitGroup::kEmbedder:
-        return trigger_type_count < base::GetFieldTrialParamByFeatureAsInt(
-                                        kPrerender2NewLimitAndScheduler,
-                                        kMaxNumOfRunningEmbedderPrerenders, 2);
+        return host_count < base::GetFieldTrialParamByFeatureAsInt(
+                                kPrerender2NewLimitAndScheduler,
+                                kMaxNumOfRunningEmbedderPrerenders, 2);
     }
   }
   switch (trigger_type) {
@@ -1687,7 +1729,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
       // The number of prerenders triggered by speculation rules is limited to
       // a Finch config param.
-      return trigger_type_count <
+      return host_count <
              base::GetFieldTrialParamByFeatureAsInt(
                  blink::features::kPrerender2,
                  blink::features::kPrerender2MaxNumOfRunningSpeculationRules,
@@ -1695,7 +1737,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     case PrerenderTriggerType::kEmbedder:
       // Currently the number of prerenders triggered by an embedder is
       // limited to two.
-      return trigger_type_count < 2;
+      return host_count < 2;
   }
 }
 
