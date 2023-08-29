@@ -626,7 +626,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_Unknown) {
       autofill_metrics::SaveCardPromptResult::kUnknown, 1);
 }
 
-TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveDialogContent) {
+TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveOnlyDialogContent) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnableCvcStorageAndFilling);
 
@@ -642,6 +642,25 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveDialogContent) {
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"To pay faster next time, save your card to your device");
+}
+
+TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveWithCvcDialogContent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  // Show the local card save bubble.
+  ShowLocalBubble(
+      /*card=*/nullptr,
+      /*options=*/AutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(BubbleType::LOCAL_SAVE, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            u"To pay faster next time, save your card, and security code to "
+            u"your device");
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
