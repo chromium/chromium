@@ -244,7 +244,7 @@
   </message>
   <message name="IDS_SITE_SETTINGS_EXPIRES_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exception list.">
     {COUNT, plural, 
-      =1 {Expires in 1 day} 
+      =1 {Expires tomorrow} 
       other {Expires in # days}
     }
   </message>
