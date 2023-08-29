@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/work_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,24 +20,21 @@ using base::win::RegKey;
 
 namespace {
 
-wchar_t test_root[] = L"TmpTmp";
-
 class CreateRegKeyWorkItemTest : public testing::Test {
  protected:
   void SetUp() override {
-    // Create a temporary key for testing
-    RegKey key(HKEY_CURRENT_USER, L"", KEY_ALL_ACCESS);
-    key.DeleteKey(test_root);
-    ASSERT_NE(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, test_root, KEY_READ));
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Create(HKEY_CURRENT_USER, test_root, KEY_READ));
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+    ASSERT_TRUE(RegKey(HKEY_CURRENT_USER, test_root, KEY_SET_VALUE).Valid());
   }
   void TearDown() override {
     logging::CloseLogFile();
-    // Clean up the temporary key
-    RegKey key(HKEY_CURRENT_USER, L"", KEY_ALL_ACCESS);
-    ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(test_root));
   }
+
+  static constexpr wchar_t test_root[] = L"TmpTmp";
+
+ private:
+  registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
 }  // namespace
