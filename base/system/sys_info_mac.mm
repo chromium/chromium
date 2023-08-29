@@ -141,7 +141,16 @@ std::string SysInfo::CPUModelName() {
 
 // static
 std::string SysInfo::HardwareModelName() {
-  return GetSysctlStringValue("hw.model");
+  // The old "hw.machine" and "hw.model" sysctls are discouraged in favor of the
+  // new "hw.product" and "hw.target". See
+  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/sys/sysctl.h#L1168-L1169
+  // and
+  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/kern/kern_mib.c#L374-L376
+  if (base::mac::MacOSMajorVersion() < 11) {
+    return GetSysctlStringValue("hw.model");
+  } else {
+    return GetSysctlStringValue("hw.product");
+  }
 }
 
 // static

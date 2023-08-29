@@ -83,18 +83,6 @@ enum class CPUType {
 // Returns the type of CPU this is being executed on.
 BASE_EXPORT CPUType GetCPUType();
 
-// Retrieve the system's model identifier string from the IOKit registry:
-// for example, "MacPro4,1", "MacBookPro6,1". Returns empty string upon
-// failure.
-BASE_EXPORT std::string GetModelIdentifier();
-
-// Parse a model identifier string; for example, into ("MacBookPro", 6, 1).
-// If any error occurs, none of the input pointers are touched.
-BASE_EXPORT bool ParseModelIdentifier(const std::string& ident,
-                                      std::string* type,
-                                      int32_t* major,
-                                      int32_t* minor);
-
 // Returns an OS name + version string. e.g.:
 //
 //   "macOS Version 10.14.3 (Build 18D109)"

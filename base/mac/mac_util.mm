@@ -405,51 +405,6 @@ CPUType GetCPUType() {
 #endif  // ARCH_CPU_*
 }
 
-std::string GetModelIdentifier() {
-  std::string return_string;
-  ScopedIOObject<io_service_t> platform_expert(IOServiceGetMatchingService(
-      kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice")));
-  if (platform_expert) {
-    apple::ScopedCFTypeRef<CFDataRef> model_data(
-        static_cast<CFDataRef>(IORegistryEntryCreateCFProperty(
-            platform_expert, CFSTR("model"), kCFAllocatorDefault, 0)));
-    if (model_data) {
-      return_string =
-          reinterpret_cast<const char*>(CFDataGetBytePtr(model_data));
-    }
-  }
-  return return_string;
-}
-
-bool ParseModelIdentifier(const std::string& ident,
-                          std::string* type,
-                          int32_t* major,
-                          int32_t* minor) {
-  size_t number_loc = ident.find_first_of("0123456789");
-  if (number_loc == std::string::npos) {
-    return false;
-  }
-  size_t comma_loc = ident.find(',', number_loc);
-  if (comma_loc == std::string::npos) {
-    return false;
-  }
-  int32_t major_tmp, minor_tmp;
-  std::string::const_iterator begin = ident.begin();
-  if (!StringToInt(MakeStringPiece(begin + static_cast<ptrdiff_t>(number_loc),
-                                   begin + static_cast<ptrdiff_t>(comma_loc)),
-                   &major_tmp) ||
-      !StringToInt(
-          MakeStringPiece(begin + static_cast<ptrdiff_t>(comma_loc) + 1,
-                          ident.end()),
-          &minor_tmp)) {
-    return false;
-  }
-  *type = ident.substr(0, number_loc);
-  *major = major_tmp;
-  *minor = minor_tmp;
-  return true;
-}
-
 std::string GetOSDisplayName() {
   std::string version_string = base::SysNSStringToUTF8(
       NSProcessInfo.processInfo.operatingSystemVersionString);

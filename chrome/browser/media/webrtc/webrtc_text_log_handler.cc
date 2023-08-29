@@ -483,7 +483,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   // Computer model
   std::string computer_model = "Not available";
 #if BUILDFLAG(IS_MAC)
-  computer_model = base::mac::GetModelIdentifier();
+  computer_model = base::SysInfo::HardwareModelName();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (const absl::optional<base::StringPiece> computer_model_statistic =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
