@@ -349,6 +349,10 @@ You should enable fsmonitor in large repos, such as Chromium and v8. Enabling
 it globally will launch many processes and probably isn't worthwhile. The
 command to enable fsmonitor in the current repo is:
 
+> WARNING: There is a major issue with fsmonitor resulting in git diff-index
+> returning wrong results. Skip enabling this until
+[crbug.com/1475405](https://crbug.com/1475405) is fixed.
+
 ```shell
 $ git config core.fsmonitor true
 ```
