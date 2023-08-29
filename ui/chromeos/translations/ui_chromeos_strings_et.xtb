@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Lülita loendivaatele</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kausta jagati Linuxiga</translation>
+<translation id="2379576081295865700">Salvestusruumi kontrollimine … Leiti 1 üksus</translation>
 <translation id="2383454254762599978">Teisalda prügikasti</translation>
 <translation id="2387458720915042159">Puhverserveri ühenduse tüüp</translation>
 <translation id="2389832672041313158">birma (Myanmar)</translation>
@@ -667,6 +668,7 @@
 <translation id="6164412158936057769">Liblikad</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6170470584681422115">Võileib</translation>
+<translation id="6177854567773392726">Salvestusruumi kontrollimine … Leiti <ph name="ITEMS_FOUND" /> üksust</translation>
 <translation id="6181912134988520389">Andke VM-ile <ph name="VM_NAME" /> luba pääseda juurde teie Google Drive’is olevatele failidele. Muudatused sünkroonitakse muude seadmetega.</translation>
 <translation id="6187719147498869044">ungari</translation>
 <translation id="6198252989419008588">Muuda PIN-koodi</translation>

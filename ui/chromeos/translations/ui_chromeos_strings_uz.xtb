@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> kabilarni yuklab olish</translation>
 <translation id="2377319039870049694">Qator shaklida</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ta jild Linuxga ulashilgan</translation>
+<translation id="2379576081295865700">Xotiradagi joy tekshirilmoqda… 1 ta obyekt topildi</translation>
 <translation id="2383454254762599978">Chiqitdonga tashlash</translation>
 <translation id="2387458720915042159">Proksi-server orqali ulanish turi</translation>
 <translation id="2389832672041313158">Birma/Myanma</translation>
@@ -666,6 +667,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6164412158936057769">Kapalaklar</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6170470584681422115">Sendvich</translation>
+<translation id="6177854567773392726">Xotiradagi joy tekshirilmoqda… <ph name="ITEMS_FOUND" /> ta obyekt topildi</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" />ga Google Drive omboringizdagi fayllarni ochishga ruxsat bering. Oʻzgarishlar boshqa qurilmalaringizga sinxronlanadi.</translation>
 <translation id="6187719147498869044">Venger</translation>
 <translation id="6198252989419008588">PIN-kodni o‘zgartirish</translation>

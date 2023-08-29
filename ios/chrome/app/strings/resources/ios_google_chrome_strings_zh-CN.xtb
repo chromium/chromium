@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中。</translation>
+<translation id="1180362651362502943">请继续使用您的 Google 账号中的 Chrome 数据。</translation>
 <translation id="1282031177488366470">帮助我们改进 Chrome 的功能和性能</translation>
 <translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
+<translation id="1407843355326180937">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息。</translation>
 <translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
 <translation id="1479202195792305274">您需要先登录 Google 账号才能使用 Chrome 的密码检查功能。</translation>
 <translation id="1491435845014430217">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="1511320244449497906">您已登录，且正在将您的数据同步到由 <ph name="DOMAIN" /> 管理的账号。此网域的管理员现在可以专门针对该账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
+<translation id="1526327845902180576">处于开启状态时：
+<ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />
+
+注意事项：
+<ph name="BEGIN_INDENT" />  • 系统会向 Google 发送与您的 Chrome 使用情况相关的信息，但这些信息未关联到您。
+
+  • 如果 Chrome 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
+
+  • 如果您将历史记录同步到 Google 账号，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="1682483655351012182">同步 Chrome 数据</translation>
 <translation id="1733654336159102143">在您退出 Chrome 或切换到别的应用时锁定您的无痕式标签页。</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
+<translation id="3901001113120561395">最大限度利用 Chrome。</translation>
 <translation id="3980220367029651214">您正要将同步账号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步账号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">贵组织要求您保持已退出 Chrome 的状态。</translation>
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">登录此网站和 Chrome。</translation>
 <translation id="4698415050768537821">Chrome 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">部分 Chrome 数据尚未保存到您的 Google 账号。
+
+        请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="4840404732697892756">您需要先登录 Google 账号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">帮助改善 Chrome</translation>
 <translation id="5119391094379141756">选择“Chrome”</translation>
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
+<translation id="5190139289262548459">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="5439191312780166229">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">您正要登录由 <ph name="DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此账号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
 <translation id="6709398533399187136">您的密码遭遇了数据泄露。Google 密码管理器建议您立即更改此密码。</translation>
+<translation id="6815466750807582739">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
+
+只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="6822673484890854830">Chrome 无法检查所有密码。请稍后再试。</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
 <translation id="8808828119384186784">Chrome 设置</translation>
+<translation id="8856877214925961642">口令加密不涵盖付款方式和地址。
+
+如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密码管理工具无法检查所有密码。请明天再试。</translation>
 <translation id="8897749957032330183">系统会将密码保存到此设备上的 Google 密码管理工具中。</translation>
 <translation id="8969290730818637510">处于开启状态时：

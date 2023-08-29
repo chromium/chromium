@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
 <translation id="2377319039870049694">Пераключыць на рэжым спіса</translation>
 <translation id="2377590462528165447">Папак абагулена з сістэмай Linux: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2379576081295865700">Ідзе праверка наяўнасці месца ў сховішчы… Знойдзены 1 элемент.</translation>
 <translation id="2383454254762599978">Перамясціць у сметніцу</translation>
 <translation id="2387458720915042159">Тып падключэння проксі-сервера</translation>
 <translation id="2389832672041313158">Бірманская/М'янма</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">Матылькі</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
+<translation id="6177854567773392726">Ідзе праверка наяўнасці месца ў сховішчы… Знойдзена элементаў: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="6181912134988520389">Даць <ph name="VM_NAME" /> доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="6187719147498869044">Венгерская</translation>
 <translation id="6198252989419008588">Змяніць PIN-код</translation>

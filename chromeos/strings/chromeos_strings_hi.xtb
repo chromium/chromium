@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">बाहरी डिवाइसों के लिए फ़र्मवेयर को अपडेट करने वाली विंडो खुली है. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध हैं.</translation>
 <translation id="1145516343487477149">Chromebook से जुड़े सामान्य सवालों के लिए, सहायता लेख और जवाब ढूंढें</translation>
+<translation id="1154390310959620237">सिर्फ़ पांच शॉर्टकट को पसंद के मुताबिक बनाया जा सकता है. नया शॉर्टकट जोड़ने के लिए, कोई शॉर्टकट मिटाएं.</translation>
 <translation id="1164939766849482256">डॉन टू डार्क स्क्रीन सेवर</translation>
 <translation id="1167755866710282443">बटन को पसंद के मुताबिक बनाने के लिए मेन्यू खोलें. मेन्यू की जगह बदलने के लिए, उसे खींचें और छोड़ें.</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">रीस्टार्ट हो रहा है…</translation>
 <translation id="2533048460510040082">सुझाया गया सहायता कॉन्टेंट</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
+<translation id="2555662516429796509">अपने कीबोर्ड पर 1-4 कार्रवाई बदलने वाली कुंजी और कोई अन्य बटन दबाएं</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
 <translation id="2597774443162333062">Google को फ़ाइलें डीबग करने के लिए भेजी जाएंगी</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
 <translation id="3373141842870501561">अर्थ फ़्लो वॉलपेपर</translation>
 <translation id="337375748120863155">आपके चुने गए जवाबों से जुड़ी जानकारी. कंट्रोल को ऐक्सेस करने के लिए, लेफ़्ट या राइट ऐरो बटन इस्तेमाल करें.</translation>
+<translation id="3383623117265110236">खास वॉलपेपर</translation>
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">स्क्रीन की रोशनी कम करें</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
 <translation id="4176659219503619100">कंट्रोल पैनल</translation>
+<translation id="4185315616950253617">जिस शॉर्टकट में सबसे ऊपर वाली पंक्ति के बटन शामिल हैं उसमें खोज बटन शामिल करना ज़रूरी है.</translation>
 <translation id="420283545744377356">स्क्रीन सेवर बंद करें</translation>
 <translation id="4213104098953699324">यूएसबी कीबोर्ड</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">एचटीटीपी अनुरोधों में इंतज़ार का समय</translation>
 <translation id="4271957103967917607">फ़ुल स्क्रीन में देखें</translation>
 <translation id="4275663329226226506">मीडिया</translation>
+<translation id="4278766082079064416">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. विवाद सुलझाने के लिए, उसमें बदलाव करें या हटाएं.</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4289849978083912975">स्लाइड शो</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="4873827928179867585">पुष्टि करने का एल्गोरिदम</translation>
 <translation id="4880328057631981605">एक्सेस पॉइंट नाम</translation>
+<translation id="488307179443832524">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. कोई नया शॉर्टकट दबाएं.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">डिसप्ले की रोशनी बढ़ाने वाला बटन</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
 <translation id="5784136236926853061">एचटीटीपी अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
+<translation id="5816802250591013230">कोई शॉर्टकट असाइन नहीं किया गया</translation>
 <translation id="5826644637650799838">कला के बारे में</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7041549558901442110">डिवाइस कनेक्ट नहीं है.</translation>
+<translation id="7046522406494308071">क्या आपको सभी शॉर्टकट डिफ़ॉल्ट पर रीसेट करने हैं?</translation>
 <translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
 <translation id="7068619307603204412">अपने डिवाइस को तैयार करें</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> के लिए खास आर्टवर्क चुनें</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">ऐक्सेस पॉइंट नेम (एपीएन)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="725133483556299729">ईमेल चुनें</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
+<translation id="7273347807225967898">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली कुंजी (ctrl, alt, shift, खोज बटन या लॉन्चर) का इस्तेमाल करके नया शॉर्टकट दबाएं.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">फ़ील द ब्रीज़</translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">कीबोर्ड की रोशनी</translation>
 <translation id="773153675489693198">साइकल काउंट</translation>
 <translation id="7747039790905080783">पहले से शेयर की गई कुंजी</translation>
+<translation id="7752963721013053477">डॉन टू डार्क मोड - खास</translation>
 <translation id="7762130827864645708">आपने अपना पासवर्ड बदल लिया है. कृपया अपना नया पासवर्ड इस्तेमाल करना शुरू करें.</translation>
 <translation id="7763470514545477072">डोमेन सफ़िक्स से मिलते-जुलते</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7882358943899516840">कंपनी का प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक कुंजी</translation>
+<translation id="7903695460270716054">चुनिंदा आर्टवर्क और इमेज चुनें</translation>
 <translation id="7915220255123750251">नेटवर्क एपीएन सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं.</translation>
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="7942349550061667556">लाल</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8094062939584182041">Google को इस समस्या के बारे में ईमेल भेजने की अनुमति दें</translation>
 <translation id="8104083085214006426">आप एक ओपन नेटवर्क का इस्तेमाल कर रहे हैं जो सुरक्षित नहीं है</translation>
+<translation id="8111706652656628199">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली एक और कुंजी (ctrl, alt, shift, खोज बटन या लॉन्चर) के साथ-साथ shift इस्तेमाल करके नया शॉर्टकट दबाएं.</translation>
 <translation id="811820734797650957">(Android) गेटवे को पिंग किया जा सकता है</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ट्रैफ़िक काउंटर का अनुरोध करें</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>
 <translation id="877985182522063539">ए4</translation>
+<translation id="8789196995628578448">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. कोई नया शॉर्टकट दबाएं. ओरिजनल शॉर्टकट को बदलने के लिए, यह शॉर्टकट फिर से दबाएं.</translation>
 <translation id="879568662008399081">इस नेटवर्क में कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="8798099450830957504">डिफ़ॉल्ट</translation>
 <translation id="8798441408945964110">कंपनी का नाम</translation>

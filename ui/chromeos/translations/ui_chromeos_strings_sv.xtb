@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Ladda ned mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Byt till listvy</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappar delas med Linux</translation>
+<translation id="2379576081295865700">Kontrollerar lagringsutrymme … 1 objekt hittades</translation>
 <translation id="2383454254762599978">Flytta till papperskorgen</translation>
 <translation id="2387458720915042159">Proxyanslutningstyp</translation>
 <translation id="2389832672041313158">burmesiska (Myanmar)</translation>
@@ -667,6 +668,7 @@
 <translation id="6164412158936057769">Fjärilar</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6170470584681422115">Smörgås</translation>
+<translation id="6177854567773392726">Kontrollerar lagringsutrymme … <ph name="ITEMS_FOUND" /> objekt hittades</translation>
 <translation id="6181912134988520389">Ge <ph name="VM_NAME" /> behörighet att öppna filer på din Google Drive. Ändringar synkroniseras med dina andra enheter.</translation>
 <translation id="6187719147498869044">ungerska</translation>
 <translation id="6198252989419008588">Byt pinkod</translation>

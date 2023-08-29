@@ -171,6 +171,7 @@
 <translation id="23721837607121582">ජංගම පැතිකඩ බාගන්න, ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ලැයිස්තු දසුනට මාරු වන්න</translation>
 <translation id="2377590462528165447">ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් ලිනක්ස් සමඟ බෙදා ගත්තා</translation>
+<translation id="2379576081295865700">ආචයන ඉඩ පරීක්ෂා කරමින්… 1 අයිතමයක් හමු විය</translation>
 <translation id="2383454254762599978">කුණු කූඩය වෙත ගෙන යන්න</translation>
 <translation id="2387458720915042159">ප්‍රොක්සි සබැඳුම් වර්ගය</translation>
 <translation id="2389832672041313158">බුරුම/මියන්මාරය</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">සමනලුන්</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6170470584681422115">සැන්ඩ්විච්</translation>
+<translation id="6177854567773392726">ආචයන ඉඩ පරීක්ෂා කරමින්… අයිතම <ph name="ITEMS_FOUND" />ක් හමු විය</translation>
 <translation id="6181912134988520389">ඔබේ Google Drive තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට <ph name="VM_NAME" /> හට අවසරය දෙන්න. වෙනස්කම් ඔබේ අනෙකුත් උපාංගවලට සමමුහූර්ත වෙයි.</translation>
 <translation id="6187719147498869044">හංගේරියානු</translation>
 <translation id="6198252989419008588">PIN අංකය වෙනස් කරන්න</translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Префрли на режим за преглед во список</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Linux</translation>
+<translation id="2379576081295865700">Се проверува просторот за складирање… Најдена е 1 ставка</translation>
 <translation id="2383454254762599978">Премести во корпата</translation>
 <translation id="2387458720915042159">Тип на врска прокси</translation>
 <translation id="2389832672041313158">бурмански (Мјанмар)</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">Пеперутки</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6170470584681422115">Сендвич</translation>
+<translation id="6177854567773392726">Се проверува просторот за складирање… Најдени се <ph name="ITEMS_FOUND" /> ставки</translation>
 <translation id="6181912134988520389">Дозволете <ph name="VM_NAME" /> да пристапува до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите ваши уреди.</translation>
 <translation id="6187719147498869044">унгарски</translation>
 <translation id="6198252989419008588">Промена на PIN</translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Descargar perfil para móbiles, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Cambiar á vista de lista</translation>
 <translation id="2377590462528165447">Compartíronse <ph name="NUMBER_OF_ITEMS" /> cartafoles con Linux</translation>
+<translation id="2379576081295865700">Comprobando espazo de almacenamento… 1 elemento atopado</translation>
 <translation id="2383454254762599978">Mover á papeleira</translation>
 <translation id="2387458720915042159">Tipo de conexión mediante proxy</translation>
 <translation id="2389832672041313158">Birmano (Myanmar)</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">Bolboretas</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6170470584681422115">Sándwich</translation>
+<translation id="6177854567773392726">Comprobando espazo de almacenamento… <ph name="ITEMS_FOUND" /> elementos atopados</translation>
 <translation id="6181912134988520389">Concede permiso a <ph name="VM_NAME" /> para acceder aos ficheiros de Google Drive. Os cambios sincronizaranse cos teus outros dispositivos.</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>

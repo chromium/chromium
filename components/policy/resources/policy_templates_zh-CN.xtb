@@ -277,6 +277,7 @@
           日后，此政策可能会适用于针对专用 IP 或 localhost 发出的所有跨源请求，具体取决于相关规范的演变情况。
 
           如果此政策设为 true，系统将允许网站向任意网络端点发送请求，但这些网站会受到其他跨源检查机制的约束。</translation>
+<translation id="1240559668501539326">安装 Bruschetta 虚拟机之前，在 <ph name="PRODUCT_OS_NAME" /> 设备上设置 Bruschetta 虚拟机安装程序要使用的元数据。</translation>
 <translation id="1240722269871366886">通过设置此政策，您可让 <ph name="PRODUCT_OS_NAME" />在用户使用虚拟键盘或实体键盘输入文字时建议表情符号。
       如果此政策设为 true，该功能便会处于开启状态，但用户可以自行更改此设置。
       此政策默认设为 false，在这种情况下，系统不会建议任何表情符号，而且用户无法覆盖此设置。</translation>
@@ -634,6 +635,7 @@
 
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="1530812829012954197">总是通过托管浏览器呈现以下网址格式</translation>
+<translation id="1534007181698071943">在弃用期间，允许将 unload 事件处理脚本默认设为停用状态</translation>
 <translation id="1542491165152947087">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
 <translation id="1550295162561011575">设置此政策后，管理员就可以配置在 <ph name="PRODUCT_NAME" /> 设备上启动应用的自动化设置。这些应用可在用户登录时启动，也可由用户从启动器中一并启动。</translation>
 <translation id="1552418937045050762">如果您启用了此设置，用户将能够选择启用“附近分享”功能，以便和附近的人互相发送文件。
@@ -992,6 +994,14 @@
       * 允许使用 PIN 码和指纹解锁，请使用 ["PIN", "FINGERPRINT"]。
 
       如果此政策未设置或设为一个空列表，则将无法在受管理的设备上使用任何 WebAuthn 因素。</translation>
+<translation id="1881471688033371681"><ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本即将被弃用。这类脚本是否会触发取决于 <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />。目前，政策默认允许触发，但后续会逐步更改为默认禁止触发，而且网站必须使用 <ph name="PERMISSIONS_POLICY_NAME" /> 标头明确启用此类脚本。这项企业政策可用于将默认设置强制保留为启用状态，这样就可以避免脚本被逐步弃用。
+
+网页可能需要依赖 <ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本来保存数据，或向服务器发出用户会话结束的信号。我们不建议采用这种做法，因为这样做不可靠，并且会因禁止使用 <ph name="PRODUCT_NAME" /> 而影响性能。尽管有推荐使用的替代方案，但 <ph name="UNLOAD_EVENT_NAME" /> 事件已经使用了很久，有些应用可能仍会依赖这类事件。
+
+如果此政策设为 false 或未设置，那么 <ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本会根据弃用安排被逐步弃用，而且未设置 <ph name="PERMISSIONS_POLICY_NAME" /> 标头的网站将停止触发“unload”事件。
+
+如果此政策设为 true，<ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本将默认继续正常运行。
+</translation>
 <translation id="1883274744253492031">允许混合内容自动升级</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
 <translation id="1888871729456797026">云政策在桌面设备上的注册令牌</translation>
@@ -1582,6 +1592,7 @@
 <translation id="2366301887862414321">允许使用用户级和系统级原生消息传递主机</translation>
 <translation id="2373014700224092497">允许用户添加 Kerberos 账号</translation>
 <translation id="2376134474855349829">为登录屏幕停用屏幕键盘，并允许用户暂时启用它</translation>
+<translation id="2376151922689284770">要在安装程序界面中显示的名称，例如“Happy VM”。如果未设置此政策，系统会显示一个根据 BruschettaVMConfiguration 政策中第一个条目（按显示顺序）生成的备用名称，如果缺少该条目，则会显示一个通用名称。</translation>
 <translation id="2382672620906337383">在达到某个更高的嵌套阈值之后，JavaScript setTimeout() 才会被强制设为下限值。</translation>
 <translation id="2384233438419344179">如果此政策已启用，系统会阻止来自浏览器地址栏所含网域之外的网页元素设置 Cookie。如果此政策已停用，系统会允许这些元素设置 Cookie，并会阻止用户更改此设置。
 
@@ -1824,6 +1835,7 @@
 
       如果您未设置此政策，系统将会应用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="2581338546762479588">允许在更新后自动重新启动</translation>
+<translation id="2582855747769273665">一个网址，供用户访问以了解详情。如果未设置此政策，安装程序中就不会显示“了解详情”网址。</translation>
 <translation id="2586117300379904732">允许使用唤醒锁定以便进行电源管理</translation>
 <translation id="2586231026319371211">以当地 24 小时制显示时间。</translation>
 <translation id="2587719089023392205">将 <ph name="PRODUCT_NAME" /> 设为默认浏览器</translation>
@@ -2849,6 +2861,7 @@
       如果您启用了或未设置此政策，用户可以通过打印管理应用或通过删除浏览器历史记录来删除打印任务记录。
 
       如果您停用了此政策，用户将无法通过上述两种方式删除打印任务记录。</translation>
+<translation id="3507745622376866366">在弃用期间，强制让 unload 事件处理脚本默认保持启用状态</translation>
 <translation id="350797926066071931">启用翻译</translation>
 <translation id="3513265258454735822">允许保存浏览器历史记录</translation>
 <translation id="3513655665999652754">Quirks Server 可提供硬件方面的配置文件（例如 ICC 显示配置文件），以调整显示器校准。
@@ -2945,6 +2958,7 @@
 
 请谨记，切勿让此政策始终保持启用状态，尤其是在生产环境中部署时。</translation>
 <translation id="357917253161699596">允许用户管理用户证书</translation>
+<translation id="3579976772194405786">Bruschetta</translation>
 <translation id="3580414086211696382">控制 File System API 在读取方面的使用</translation>
 <translation id="3584194414857209694">启用实验性政策</translation>
 <translation id="3584722841530002134">通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
@@ -3243,6 +3257,7 @@
 <translation id="3838094946886335701">通过设置此政策（仅为建议性政策），您可以注册一个协议处理程序列表以与用户注册的协议处理程序列表合并，从而同时使用这两组协议处理程序。“protocol”属性应设为“mailto”之类的协议，“URL”属性应设为处理相应协议（“protocol”字段中指定的协议）的应用所采用的网址格式。该格式可以包含一个“%s”占位符（将会替换为被处理的网址）。
 
       用户无法卸载由政策注册的协议处理程序，但可通过安装新的默认处理程序来更改由政策安装的协议处理程序。</translation>
+<translation id="3846610415459148921">网站使用情况报告</translation>
 <translation id="3851443303439635700">控制嵌套阈值，以指定何时开始将 JavaScript setTimeout() 函数强制设为下限值</translation>
 <translation id="3858128774616573616">如果此政策已启用，系统会在工具栏或溢出菜单中显示 Cast 工具栏图标，而且用户无法移除该图标。
 
@@ -3733,6 +3748,11 @@
 
       如果受管理的设备上有多个用户账号，仅当此政策已启用时，系统才会显示通知。</translation>
 <translation id="4298476374822550051">为 TLS 启用 Kyber 后量子密钥协议</translation>
+<translation id="4298577205501733707">针对已关联的用户，报告网站活动数据。
+
+通过设置此政策，您可以针对列入许可名单的网址，控制是否报告网站网址的打开和关闭事件。
+如果您未设置此政策，系统将不会报告任何网站事件。
+如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能使用 HTTP 和 HTTPS 网址 scheme。</translation>
 <translation id="4303167373847512281">允许使用开发者模式</translation>
 <translation id="4307116964468610577">此政策允许系统电池每天只充满 1 次，以延长它的使用寿命。除了用来将电池充满的时间，在当天的其余时间内，电池始终都不会充到 100%，即使系统已接通电源也是如此，这样更利于储电。
 
@@ -3989,6 +4009,7 @@
       此政策仅会影响那些使用 GAIA（不使用 SAML）验证身份的用户。
 
       此政策的值应以天为单位。</translation>
+<translation id="4525328580251166229">控制与 Bruschetta 子系统相关的政策。</translation>
 <translation id="453031441196755904">此政策已被弃用。</translation>
 <translation id="4531706050939927436">您可以通过 Google Play 从 Google 管理控制台中强制安装 Android 应用。这些应用不会使用此政策。</translation>
 <translation id="4534500438517478692">Android 限制名称：</translation>
@@ -4552,6 +4573,17 @@
       如果此政策未设置或已停用，设有“永久”类型的 webkitRequestFileSystem 将使用临时配额运行。
       </translation>
 <translation id="5105313908130842249">使用电池供电时的屏幕锁定延迟时间</translation>
+<translation id="510604120100968366">启用电量不足提示音功能。
+
+          该功能负责播放电量不足提示音。
+
+          如果启用政策，那么当电池电量或剩余续航时长降到特定阈值以下时，系统会播放电量不足提示音。
+
+          如果停用此政策，系统将不会播放电量不足提示音。
+
+          如果您设置此政策，用户便无法对其更改或覆盖。
+
+          如果未设置此政策，那么对于现有用户，该功能会处于停用状态，对于新用户，该功能在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上最初会处于启用状态，但用户可以随时启用或停用该功能。</translation>
 <translation id="5108031557082757679">已停用企业设备打印机</translation>
 <translation id="5109383437323376357">确定变体的可用情况</translation>
 <translation id="5109866581154565900">此政策用于控制是否让系统在用户首次登录期间向其显示触控板滚动方向界面。
@@ -4916,6 +4948,9 @@
           </translation>
 <translation id="5435888298115339571">在多功能框和三点状菜单中启用桌面分享功能</translation>
 <translation id="5441508088704391614">无特殊限制。默认。</translation>
+<translation id="5441642583310045749">针对已关联的用户，在已注册的设备上收集网站使用情况遥测数据的时间间隔。所允许的最短时间间隔为 5 分钟。
+
+如果未设置此政策，系统会应用默认时间间隔（15 分钟）。</translation>
 <translation id="5442026853063570579">此政策亦用于控制对 Android 开发者选项的访问权限。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法访问开发者选项。如果此政策设为其他值或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次 Build 号即可访问开发者选项。</translation>
 <translation id="5443582909255996887">如果此政策已启用，系统会在 Android 设备上隔离所有网站以使每个网站都在自己的进程内运行，并禁止用户选择停用此设置。网站的网址格式为架构加上 eTLD+1（例如，https://example.com）。请注意，从 <ph name="PRODUCT_NAME" /> 77 版起，Android 会默认隔离某些敏感网站，而此政策会将这个默认网站隔离模式应用到所有网站。
 
@@ -5120,6 +5155,14 @@
 <translation id="5608114828230655271">默认设备行为</translation>
 <translation id="5611869109049836323">在本地添加的信任锚中强制执行限制条件</translation>
 <translation id="5614865701790130558">记录基于政策的扩展程序安装事件</translation>
+<translation id="561493980641967737">如果启用此政策，那么以网址为键的匿名化数据收集功能会始终处于开启状态，从而将用户访问的网页网址发送给 Google，以用于改善搜索和浏览体验。
+
+如果停用此政策，系统将不会启用以网址为键的匿名化数据收集功能。
+
+如果未设置此政策，用户将能手动更改此设置。
+
+在 <ph name="PRODUCT_OS_NAME" /> 自助服务终端中，此政策不提供“允许用户决定”选项。如果未为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策，系统会始终启用以网址为键的匿名化数据收集功能。
+为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策后，系统会为自助服务终端应用启用以网址为键的指标收集功能。</translation>
 <translation id="5618398258385745432">在我们推出“查看密码时需重新验证”这一规定之前，我们是使用相关的设置来控制用户能否查看密码。自这一规定推出后，相关设置以及此政策便不再对 Chrome 的行为有任何影响。Chrome 的当前行为等同于此政策设为在密码管理器设置页面中禁止以明文形式显示密码。这意味着，设置页面中包含的只是一个占位符，仅当用户点击“显示”（并进行重新验证，如果适用的话）后，Chrome 才会显示相应密码。此政策的原始描述如下所示：
 
           控制用户是否可以在密码管理器中以明文形式显示密码。
@@ -5336,6 +5379,7 @@
 <translation id="5836064773277134605">限制远程访问主机使用的UDP端口范围</translation>
 <translation id="583627479140113555">允许在首次运行时导入已保存的密码</translation>
 <translation id="5838452040629810808">允许使用光标突出显示</translation>
+<translation id="5841157246593092717">控制是否可以停用 <ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本。</translation>
 <translation id="5842283830553218200">系统将默认使用针对已停用的表单控件分派事件的新行为。</translation>
 <translation id="5847509620317822100">该功能已从 Chrome 100 中移除。
 
@@ -7220,6 +7264,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果停用此政策，“新标签页”页面将不会显示中间槽通知（即使有）。
       </translation>
+<translation id="7458654009558330347">针对已关联的用户，报告网站使用情况遥测数据。
+
+      通过设置此政策，您可以针对列入许可名单的网址，控制是否报告网站使用情况遥测数据。
+如果此政策未设置，系统将不会报告任何网站使用情况遥测数据。
+如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能使用 HTTP 和 HTTPS 网址 scheme。</translation>
 <translation id="7459601923199346224">控制证书管理机制的用户和设备政策。</translation>
 <translation id="7459633275230216698">允许显示文件选择对话框</translation>
 <translation id="7462256705280836453">选择是否可以停用 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置</translation>
@@ -7341,6 +7390,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式。</translation>
 <translation id="754176366378585605">控制 File Handling API 的使用方式</translation>
+<translation id="754421082295668587">安装程序元数据</translation>
 <translation id="7544392541165889987">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便可作为 <ph name="CLOUD_PRINT_NAME" />与连接到该计算机的传统打印机之间的代理。用户可以使用自己的 Google 账号进行身份验证，从而开启云打印代理。
 
       如果此政策已停用，用户将无法开启代理，该计算机也就无法与 <ph name="CLOUD_PRINT_NAME" />共享其打印机。</translation>
@@ -7490,6 +7540,17 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已停用，PDF 查看器会使用其当前的 AGG 渲染程序。
 
 如果此政策未设置，由浏览器选择使用哪种 PDF 渲染程序。</translation>
+<translation id="7707869387893611318">启用充电提示音功能。
+
+          该功能负责播放充电提示音。
+
+          如果启用此政策，那么当设备连接到交流电源充电器之后，系统会播放充电提示音。
+
+          如果停用此政策，系统将不会播放充电提示音。
+
+          如果您设置此政策，用户便无法对其更改或覆盖。
+
+          如果未设置此政策，那么该功能在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上最初会处于停用状态，但用户可随时启用或停用该功能。</translation>
 <translation id="7708934468069982537">此政策已从 M58 中移除 - 在我们从 <ph name="PRODUCT_NAME" /> 中移除 DHE 之后。
 
       如果此政策设为 false 或未设置，系统将不会启用 TLS 中的 DHE 加密套件。您也可将此政策设为 true，以启用 DHE 加密套件并与过时的服务器保持兼容。这只是一种权宜之计，正确的做法是重新配置服务器。
@@ -8447,6 +8508,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8583509234908413302">允许 WebRTC 降级至旧版 TLS/DTLS</translation>
 <translation id="8584279193368801689">限制 PIN 码打印模式。如果此政策未设置，则会被视为无限制。如果所设的模式不适用，系统会忽略此政策。请注意，PIN 码打印功能仅针对使用 IPPS、HTTPS、USB 或 IPP-over-USB 协议之一的打印机启用。</translation>
 <translation id="8587229956764455752">允许创建新的用户账号</translation>
+<translation id="8587388061942446874">网站活动报告</translation>
 <translation id="8591713876665299827">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定当使用交流电源供电时系统应在设备闲置多久后采取闲置操作。
@@ -8497,6 +8559,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8633550872001751090">允许 <ph name="PRODUCT_NAME" /> 数据包含在备份中</translation>
 <translation id="8634062512783775032">使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密（若支持）</translation>
 <translation id="8637566476051166626">明确允许使用的网络端口</translation>
+<translation id="864092909205038982">网站使用情况遥测数据收集时间间隔（以毫秒为单位）。</translation>
 <translation id="8643838501942693770">允许使用第三方 Cookie，但用户可以更改相关设置</translation>
 <translation id="864611373241249369"><ph name="LACROS_NAME" /> 停用后，系统会尝试迁移所有数据。</translation>
 <translation id="8648844602494595665">此政策旨在控制多功能框中的锁形图标处理方式。
@@ -9208,6 +9271,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 启用 <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> 后，系统会忽略 <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> 并始终将其停用。</translation>
 <translation id="989197274317162189">此政策已被弃用且不再受支持，请改用“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策。</translation>
+<translation id="990830704772547092">在 <ph name="PRODUCT_OS_NAME" /> 设备上配置 Bruschetta 虚拟机安装程序</translation>
 <translation id="991560005425213776">向原生打印机发送用户名和文件名</translation>
 <translation id="99202634486128833">如果您将此政策设为 CopyCaCerts，ARC 应用便能使用所有已安装 ONC 且带有 <ph name="WEB_TRUSTED_BIT" /> 的 CA 证书。
 

@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">“更新外部设备的固件”窗口已打开。有 <ph name="NUM_UPDATES" /> 项可用的更新。</translation>
 <translation id="1145516343487477149">查找帮助文章和常见 Chromebook 问题解答</translation>
+<translation id="1154390310959620237">您只能自定义 5 个快捷键。如要添加一个新的快捷键，请先删除一个现有快捷键。</translation>
 <translation id="1164939766849482256">“黎明到黄昏”屏保</translation>
 <translation id="1167755866710282443">打开菜单即可自定义键。拖动菜单即可移动它。</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">正在重启…</translation>
 <translation id="2533048460510040082">推荐的帮助内容</translation>
 <translation id="2536159006530886390">无法连接到互联网。</translation>
+<translation id="2555662516429796509">按键盘上的 1-4 个辅助键和 1 个其他键</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2597774443162333062">文件将被发送到 Google 进行调试</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
 <translation id="3373141842870501561">“地球的风景变化”壁纸</translation>
 <translation id="337375748120863155">与您所选内容有关的信息。使用向左键或向右键即可访问相关控件。</translation>
+<translation id="3383623117265110236">专有</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">调低亮度</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
+<translation id="4185315616950253617">使用顶行按键的快捷键必须包含搜索键。</translation>
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
 <translation id="4271957103967917607">全屏查看</translation>
 <translation id="4275663329226226506">媒体</translation>
+<translation id="4278766082079064416">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。如要解决冲突，请修改或移除相关分配关系。</translation>
 <translation id="4289540628985791613">概述</translation>
 <translation id="4289849978083912975">幻灯片</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
 <translation id="4873827928179867585">身份验证算法</translation>
 <translation id="4880328057631981605">接入点名称 (APN)</translation>
+<translation id="488307179443832524">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。请按新的快捷键。</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4891842000192098784">压力</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">调高显示屏亮度</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延迟时间较长</translation>
+<translation id="5816802250591013230">未分配任何快捷键</translation>
 <translation id="5826644637650799838">关于该壁纸</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="583281660410589416">未知</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
+<translation id="7046522406494308071">将所有快捷键重置为默认设置？</translation>
 <translation id="7058278511608979688">结束并保存</translation>
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="7068619307603204412">准备设备</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失败 - 授权失败</translation>
 <translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
+<translation id="7107255225945990211">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="7108668606237948702">输入</translation>
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">移动网络服务提供商</translation>
 <translation id="725133483556299729">选择电子邮件地址</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
+<translation id="7273347807225967898">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift、搜索键或启动器键）。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">微风拂面</translation>
 <translation id="7287310195820267359">壁纸集</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">键盘背光</translation>
 <translation id="773153675489693198">循环计数</translation>
 <translation id="7747039790905080783">预共享的密钥</translation>
+<translation id="7752963721013053477">黎明到黄昏 - 专有</translation>
 <translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>
 <translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">提供商类型</translation>
 <translation id="7882501334836096755">公钥</translation>
+<translation id="7903695460270716054">选择精选艺术作品和图片</translation>
 <translation id="7915220255123750251">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7942349550061667556">红色</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8094062939584182041">允许 Google 就此问题向您发送电子邮件</translation>
 <translation id="8104083085214006426">您正在使用不安全的开放网络</translation>
+<translation id="8111706652656628199">此快捷键不可用。按新的快捷键时，请使用 shift 和另外 1 个辅助键（ctrl、alt、搜索键或启动器键）。</translation>
 <translation id="811820734797650957">(Android) 可对网关执行 ping 操作</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">请求流量计数器</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的影集</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。请按新的快捷键。如要替换原来的快捷键，请再次按这个新的快捷键。</translation>
 <translation id="879568662008399081">此网络可能有强制门户</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8798441408945964110">提供商名称</translation>

@@ -170,6 +170,7 @@
 <translation id="23721837607121582">Télécharger le profil mobile, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passer à l'affichage sous forme de liste</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
+<translation id="2379576081295865700">Vérification de l'espace de stockage en cours… 1 élément trouvé</translation>
 <translation id="2383454254762599978">Déplacer vers la corbeille</translation>
 <translation id="2387458720915042159">Type de connexion de mandataire</translation>
 <translation id="2389832672041313158">Birman (Myanmar)</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Papillons</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Vérification de l'espace de stockage en cours… <ph name="ITEMS_FOUND" /> éléments trouvés</translation>
 <translation id="6187719147498869044">Hongrois</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
 <translation id="6199801702437275229">En attente d'information sur l'espace disponible…</translation>

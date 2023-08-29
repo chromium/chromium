@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Мобилдик профилди жүктөп алуу, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Тизме көрүнүшүнө өтүү</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папка Linux аркылуу бөлүшүлдү</translation>
+<translation id="2379576081295865700">Сактагыч текшерилүүдө… 1 нерсе табылды</translation>
 <translation id="2383454254762599978">Таштандыга ыргытуу</translation>
 <translation id="2387458720915042159">Проксинин туташуу түрү</translation>
 <translation id="2389832672041313158">Бирмача (Мьянма)</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">Көпөлөктөр</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
+<translation id="6177854567773392726">Сактагыч текшерилүүдө… <ph name="ITEMS_FOUND" /> нерсе табылды</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" /> кызматына Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="6187719147498869044">Венгерче</translation>
 <translation id="6198252989419008588">PIN'ди өзгөртүү</translation>

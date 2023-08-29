@@ -171,6 +171,7 @@
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
+<translation id="2379576081295865700">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ… ພົບ 1 ລາຍການ</translation>
 <translation id="2383454254762599978">ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
 <translation id="2389832672041313158">ພາສາມຽນມາ/ພະມ້າ</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">ແມງກະເບື້ອ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
+<translation id="6177854567773392726">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ… ພົບ <ph name="ITEMS_FOUND" /> ລາຍການ</translation>
 <translation id="6181912134988520389">ໃຫ້ສິດເຂົ້າເຖິງໄຟລ໌ໃນ Google Drive ຂອງທ່ານໃຫ້ກັບ <ph name="VM_NAME" />. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນໆຂອງທ່ານ.</translation>
 <translation id="6187719147498869044">ພາສາຮັງກາຣຽນ</translation>
 <translation id="6198252989419008588">ປ່ຽນ PIN</translation>

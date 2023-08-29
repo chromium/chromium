@@ -94,6 +94,7 @@
 <translation id="174937106936716857">文件总数</translation>
 <translation id="1755345808328621801">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 应用商店中搜索合适的替代应用。</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">与 <ph name="VM_NAME" /> 共享</translation>
 <translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
 <translation id="180035236176489073">您必须在线访问这些文件。</translation>
@@ -170,6 +171,7 @@
 <translation id="23721837607121582">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
 <translation id="2377319039870049694">切换到列表视图</translation>
 <translation id="2377590462528165447">与 Linux 共享了 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
+<translation id="2379576081295865700">正在检查存储空间…找到了 1 项内容</translation>
 <translation id="2383454254762599978">移至回收站</translation>
 <translation id="2387458720915042159">代理连接类型</translation>
 <translation id="2389832672041313158">缅甸语</translation>
@@ -211,6 +213,7 @@
 <translation id="2718540689505416944">通过 Linux 安装应用</translation>
 <translation id="2719020180254996569">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，详细信息</translation>
 <translation id="2724954091494693138">土耳其语 F 键盘</translation>
+<translation id="2732288874651063549">管理 <ph name="VM_NAME" /> 共享</translation>
 <translation id="2732839045120506979">越南语 VNI</translation>
 <translation id="2735623501230989521">授权 Parallels Desktop 访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
 <translation id="2764206540577097904">您的 Google Workspace 个人存储空间已用尽。</translation>
@@ -305,6 +308,7 @@
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3511705761158917664">正在准备同步 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
+<translation id="3523225005467146490">已与 <ph name="VM_NAME" /> 共享 1 个文件夹</translation>
 <translation id="3524311639100184459">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3548125359243647069">您输错 PIN 码的次数过多。</translation>
@@ -659,6 +663,8 @@
 <translation id="6164412158936057769">蝴蝶</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6170470584681422115">三明治</translation>
+<translation id="6177854567773392726">正在检查存储空间…找到了 <ph name="ITEMS_FOUND" /> 项内容</translation>
+<translation id="6181912134988520389">授权 <ph name="VM_NAME" /> 访问您 Google 云端硬盘中的文件。相关更改会同步到您的其他设备。</translation>
 <translation id="6187719147498869044">匈牙利语</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
 <translation id="6199801702437275229">等待存储空间信息...</translation>
@@ -762,6 +768,7 @@
 <translation id="6989942356279143254">瑞典语</translation>
 <translation id="6990081529015358884">空间不足</translation>
 <translation id="6993826899923627728">这些内容位于您的回收站中</translation>
+<translation id="6996593023542748157">与 <ph name="VM_NAME" /> 共享文件夹</translation>
 <translation id="7008426324576352165">贵组织需要有更多存储空间才能完成上传。</translation>
 <translation id="7009985720488544166">管理员政策禁止移动 <ph name="COUNT" /> 个文件</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -947,6 +954,7 @@
 <translation id="8335837413233998004">白俄罗斯语</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">已存在具有相同名称的文件或目录。</translation>
+<translation id="83651606385705612">授权 <ph name="VM_NAME" /> 访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
 <translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8372852072747894550">希腊语</translation>
 <translation id="8386903983509584791">已完成扫描</translation>
@@ -956,6 +964,7 @@
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8428213095426709021">设置</translation>
+<translation id="8429998526804961548">已与 <ph name="VM_NAME" /> 共享 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="8431909052837336408">更改 SIM 卡 PIN 码</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8452135315243592079">缺少 SIM 卡</translation>

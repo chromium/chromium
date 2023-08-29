@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Pāriet uz saraksta skatījumu</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapes kopīgotas ar sistēmu Linux</translation>
+<translation id="2379576081295865700">Notiek krātuves vietas pārbaude… Atrasts viens vienums.</translation>
 <translation id="2383454254762599978">Pārvietot uz atkritni</translation>
 <translation id="2387458720915042159">Starpniekservera savienojuma veids</translation>
 <translation id="2389832672041313158">Birmiešu (Mjanma)</translation>
@@ -667,6 +668,7 @@
 <translation id="6164412158936057769">Tauriņi</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6170470584681422115">Sviestmaize</translation>
+<translation id="6177854567773392726">Notiek krātuves vietas pārbaude… Atrasto vienumu skaits: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="6181912134988520389">Piešķiriet virtuālajai mašīnai <ph name="VM_NAME" /> atļauju piekļūt failiem jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
 <translation id="6187719147498869044">Ungāru</translation>
 <translation id="6198252989419008588">Mainīt PIN</translation>

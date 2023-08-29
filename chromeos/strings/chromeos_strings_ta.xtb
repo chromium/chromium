@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புச் சாளரம் திறந்துள்ளது. <ph name="NUM_UPDATES" /> புதுப்பிப்புகள் உள்ளன.</translation>
 <translation id="1145516343487477149">உதவிக் கட்டுரைகளையும் Chromebook குறித்த பொதுவான கேள்விகளுக்கான பதில்களையும் கண்டறியலாம்</translation>
+<translation id="1154390310959620237">உங்களால் 5 ஷார்ட்கட்களை மட்டுமே பிரத்தியேகமாக்க முடியும். புதியதைச் சேர்க்க ஏற்கெனவே இருக்கும் ஷார்ட்கட்டை நீக்கவும்.</translation>
 <translation id="1164939766849482256">டான் டூ டார்க் ஸ்கிரீன் சேவர்</translation>
 <translation id="1167755866710282443">விசைகளைப் பிரத்தியேகமாக்க மெனுவைத் திறக்கவும். நகர்த்த மெனுவை இழுக்கவும்.</translation>
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">மீண்டும் தொடங்குகிறது...</translation>
 <translation id="2533048460510040082">பரிந்துரைக்கப்படும் உதவி உள்ளடக்கம்</translation>
 <translation id="2536159006530886390">இணையத்துடன் இணைக்க முடியவில்லை.</translation>
+<translation id="2555662516429796509">உங்கள் கீபோர்டில் 1-4 மாடிஃபையர்களையும் வேறு ஒரு பட்டனையும் அழுத்தவும்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2597774443162333062">ஃபைல்கள் பிழைதிருத்தத்திற்காக Googleளுக்கு அனுப்பப்படும்</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
 <translation id="3373141842870501561">எர்த் ஃப்ளோ வால்பேப்பர்</translation>
 <translation id="337375748120863155">உங்கள் தேர்வுடன் தொடர்புடைய தகவல். கட்டுப்பாடுகளை அணுக, இடது அல்லது வலது அம்புக்குறி பட்டனைப் பயன்படுத்தவும்.</translation>
+<translation id="3383623117265110236">பிரத்தியேகமானவை</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">ஒளிர்வைக் குறைப்பதற்கான ஐகான்</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
 <translation id="4176659219503619100">கட்டுப்பாட்டுப் பலகம்</translation>
+<translation id="4185315616950253617">மேல் வரிசை பட்டன்கள் இருக்கும் ஷார்ட்கட்டில் தேடல் விசை இருக்க வேண்டும்.</translation>
 <translation id="420283545744377356">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="4213104098953699324">USB கீபோர்டு</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
 <translation id="4271957103967917607">முழுத்திரையில் காட்டும்</translation>
 <translation id="4275663329226226506">ஊடகம்</translation>
+<translation id="4278766082079064416">இந்த ஷார்ட்கட் "<ph name="CONFLICT_ACCEL_NAME" />" என்பதற்குப் பயன்படுத்தப்படுகிறது. முரண்பாட்டைச் சரிசெய்ய ஷார்ட்கட்டை மாற்றவும் அல்லது அகற்றவும்.</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} முயற்சி மீதமுள்ளது}other{<ph name="ERROR_MESSAGE" /> {0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="4873827928179867585">அங்கீகரிப்பு அல்காரிதம்</translation>
 <translation id="4880328057631981605">ஆக்சஸ் பாயிண்ட் நேம்</translation>
+<translation id="488307179443832524">இந்த ஷார்ட்கட் "<ph name="CONFLICT_ACCEL_NAME" />" என்பதற்குப் பயன்படுத்தப்படுகிறது. புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4891842000192098784">ஸ்டிரெஸ்</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">காட்சி ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="57838592816432529">ஒலியடக்கு</translation>
 <translation id="5784136236926853061">HTTP கோரிக்கைகள் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
+<translation id="5816802250591013230">ஷார்ட்கட் ஒதுக்கப்படவில்லை</translation>
 <translation id="5826644637650799838">கலை குறித்த விவரம்</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
 <translation id="7040230719604914234">ஆபரேட்டர்</translation>
 <translation id="7041549558901442110">சாதனம் இணைக்கப்படவில்லை.</translation>
+<translation id="7046522406494308071">அனைத்து ஷார்ட்கட்களையும் இயல்புநிலைக்கு மீட்டமைக்கவா?</translation>
 <translation id="7058278511608979688">நிறுத்திவிட்டுச் சேமி</translation>
 <translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற <ph name="TIME_VALUE" /> ஆகும்</translation>
 <translation id="7068619307603204412">சாதனத்தைத் தயார்ப்படுத்துதல்</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> பிரத்தியேக ஆர்ட்வொர்க்கைத் தேர்வுசெய்யும்</translation>
 <translation id="7108668606237948702">உள்ளிடு</translation>
 <translation id="7130438335435247835">ஆக்சஸ் பாயிண்ட் நேம் (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
 <translation id="725133483556299729">மின்னஞ்சல் முகவரியைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
+<translation id="7273347807225967898">ஷார்ட்கட் இல்லை. மாடிஃபையர் கீயைப் (ctrl, alt, shift, search அல்லது லான்ச்சர்) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">மனதை வருடும் நினைவுகள்</translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">கீபோர்டு ஒளி</translation>
 <translation id="773153675489693198">சுழற்சியின் எண்ணிக்கை</translation>
 <translation id="7747039790905080783">முன்பே பகிரப்பட்ட குறியீடு</translation>
+<translation id="7752963721013053477">டான் டூ டார்க் - பிரத்தியேகமானது</translation>
 <translation id="7762130827864645708">உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இனி புதிய கடவுச்சொல்லைப் பயன்படுத்தவும்.</translation>
 <translation id="7763470514545477072">டொமைனின் பிற்பாதிக்கான பொருத்தம்</translation>
 <translation id="7769672763586021400">மாடல் ஐடி</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7882501334836096755">பொதுக் குறியீடு</translation>
+<translation id="7903695460270716054">தேர்ந்தெடுக்கப்பட்ட ஆர்ட்வொர்க்கையும் படங்களையும் தேர்வுசெய்யும்</translation>
 <translation id="7915220255123750251">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும்.</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
 <translation id="8094062939584182041">இந்தச் சிக்கல் குறித்து எனக்கு மின்னஞ்சல் அனுப்ப Googleளை அனுமதி</translation>
 <translation id="8104083085214006426">பொதுவான, பாதுகாப்பற்ற நெட்வொர்க்கைப் பயன்படுத்துகிறீர்கள்</translation>
+<translation id="8111706652656628199">ஷார்ட்கட் இல்லை. shift உடன் மேலும் ஒரு மாடிஃபையர் கீயை (Ctrl, alt, search, லான்ச்சர்) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="811820734797650957">(Android) கேட்வேயைத் தொடர்புகொள்வது</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ஆல்பம்</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">இந்த ஷார்ட்கட் "<ph name="CONFLICT_ACCEL_NAME" />" என்பதற்குப் பயன்படுத்தப்படுகிறது. புதிய ஷார்ட்கட்டை அழுத்தவும். அசல் ஷார்ட்கட்டை மாற்றியமைக்க இந்த ஷார்ட்கட்டை மீண்டும் அழுத்தவும்.</translation>
 <translation id="879568662008399081">இந்த நெட்வொர்க்கில் கேப்டிவ் போர்டல் இருக்கலாம்</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
 <translation id="8798441408945964110">வழங்குநர் பெயர்</translation>

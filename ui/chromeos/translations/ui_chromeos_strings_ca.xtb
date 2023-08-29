@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Baixa el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
+<translation id="2379576081295865700">S'està comprovant l'espai d'emmagatzematge… S'ha trobat 1 element.</translation>
 <translation id="2383454254762599978">Mou a la paperera</translation>
 <translation id="2387458720915042159">Tipus de connexió del servidor intermediari</translation>
 <translation id="2389832672041313158">Birmà (Birmània)</translation>
@@ -667,6 +668,7 @@
 <translation id="6164412158936057769">Papallones</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6170470584681422115">Entrepà</translation>
+<translation id="6177854567773392726">S'està comprovant l'espai d'emmagatzematge… S'han trobat <ph name="ITEMS_FOUND" /> elements.</translation>
 <translation id="6181912134988520389">Dona permís a <ph name="VM_NAME" /> per accedir als fitxers que hi ha al teu Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
 <translation id="6187719147498869044">Hongarès</translation>
 <translation id="6198252989419008588">Canvia el PIN</translation>

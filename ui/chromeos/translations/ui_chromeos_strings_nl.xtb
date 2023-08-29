@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Overschakelen naar lijstweergave</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Linux</translation>
+<translation id="2379576081295865700">Opslagruimte checken… 1 item gevonden</translation>
 <translation id="2383454254762599978">Naar de prullenbak verplaatsen</translation>
 <translation id="2387458720915042159">Proxyverbindingstype</translation>
 <translation id="2389832672041313158">Birmaans/Myanmar</translation>
@@ -668,6 +669,7 @@
 <translation id="6164412158936057769">Vlinders</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Opslagruimte checken… <ph name="ITEMS_FOUND" /> items gevonden</translation>
 <translation id="6181912134988520389">Geef <ph name="VM_NAME" /> toegang tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="6187719147498869044">Hongaars</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Download mobilprofil. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skift til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
+<translation id="2379576081295865700">Lagerpladsen tjekkes… Der blev fundet 1 element</translation>
 <translation id="2383454254762599978">Flyt til papirkurven</translation>
 <translation id="2387458720915042159">Proxy-forbindelsestype</translation>
 <translation id="2389832672041313158">Burmesisk/myanmarsk</translation>
@@ -667,6 +668,7 @@
 <translation id="6164412158936057769">Sommerfugle</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Lagerpladsen tjekkes… Der blev fundet <ph name="ITEMS_FOUND" /> elementer</translation>
 <translation id="6181912134988520389">Giv <ph name="VM_NAME" /> adgang til filer i Google Drev. Ændringer synkroniseres med dine andre enheder.</translation>
 <translation id="6187719147498869044">Ungarsk</translation>
 <translation id="6198252989419008588">Skift pinkode</translation>

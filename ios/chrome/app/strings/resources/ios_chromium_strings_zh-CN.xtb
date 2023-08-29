@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">帮助我们改进 Chromium 的功能和性能</translation>
 <translation id="1531155317299575425">显示意在引导用户登录 Chromium 的提示。</translation>
 <translation id="1617663976202781617">Chromium 同步功能中的数据</translation>
+<translation id="1647558790457890304">Chromium 设置</translation>
 <translation id="1722370509450468186">您的密码将会保存到您的账号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 数据</translation>
 <translation id="1758508597843173586">在您退出 Chromium 或切换到别的应用时锁定您的无痕式标签页。</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
+<translation id="3886689467633467988">登录此网站和 Chromium 即可获取您在所有设备上保存的书签及其他信息。</translation>
+<translation id="394413318816989199">口令加密不涵盖付款方式和地址。
+
+如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="3955621079070267756">从任意应用内打开 Chromium</translation>
 <translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理器中。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">为帮助改进该应用，Chromium 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
 <translation id="4736424910885271643">您的账号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
+<translation id="4790638144988730920">请继续使用您的 Google 账号中的 Chromium 数据。</translation>
 <translation id="4828317641996116749">Chromium 无法检查所有密码。请稍后再试。</translation>
 <translation id="4985291216379576555">已离线，Chromium 无法检查是否有更新</translation>
 <translation id="4996471330284142407">借助比以前更简单、更安全、更快速的 Chromium 提高工作效率。</translation>
 <translation id="4999538639245140991">由于您要退出的账号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chromium 数据，但这些数据仍会保留在您的 Google 账号中。</translation>
 <translation id="5042011327527167688">点按“在 Chromium 上通过 Google 地图查看”。</translation>
 <translation id="5048795749726991615">若要在其他应用中轻松获取您已保存的密码，请使用 Chromium 的自动填充功能</translation>
+<translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
 <translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
+<translation id="5242782538551259282">部分 Chromium 数据尚未保存到您的 Google 账号。
+
+        请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
 <translation id="5396916991083608703">将 Chromium 设为默认浏览器？</translation>
 <translation id="5453478652154926037">Chromium 无法检查您的密码。</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">此卡片会为您提供一些建议，帮助您充分利用 Chromium。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
+<translation id="5889847953983052353">处于开启状态时：
+<ph name="BEGIN_INDENT" />  • 可协助改进 Chromium，让所有像您这样使用 Chromium 的用户都能获享更好的体验。<ph name="END_INDENT" />
+
+注意事项：
+<ph name="BEGIN_INDENT" />  • 系统会向 Google 发送与您的 Chromium 使用情况相关的信息，但这些信息未关联到您。
+
+  • 如果 Chromium 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
+
+  • 如果您将历史记录同步到 Google 账号，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">您正要登录由 <ph name="DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chromium 数据。您的数据将与此账号永久关联。退出 Chromium 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
+<translation id="5951593919357934226">最大限度利用 Chromium。</translation>
 <translation id="5983312940147103417">帮助改善 Chromium</translation>
 <translation id="6062449165341879460">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此账号中存储的 Chromium 数据、书签、历史记录、密码和其他设置。当您退出账号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 账号中，且可供贵组织访问。贵组织也可专门针对上述账号设置用户规范，这可能会改变 Chromium 的行为。</translation>
 <translation id="61109258320235597">如要将 Chromium 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令。</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="632825460376924298">允许登录 Chromium</translation>
 <translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>
+<translation id="6407399265324739055">付款方式和地址不会加密。Chromium 中的浏览记录不会同步。
+
+只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 刚刚经过了改进！新版本已推出。</translation>
 <translation id="6563921047760808519">详细了解 <ph name="BEGIN_LINK" />Chromium 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium 现在支持为您的受管理账号设置用户规范</translation>

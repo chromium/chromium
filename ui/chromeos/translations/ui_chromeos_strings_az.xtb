@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Siyahı görünüşünə keçin</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> qovluq Linux ilə paylaşıldı</translation>
+<translation id="2379576081295865700">Yaddaş yeri yoxlanır… 1 element tapıldı</translation>
 <translation id="2383454254762599978">Zibil qutusuna köçürün</translation>
 <translation id="2387458720915042159">Proksi bağlantı növü</translation>
 <translation id="2389832672041313158">Birma dili (Myanma)</translation>
@@ -666,6 +667,7 @@
 <translation id="6164412158936057769">Kəpənəklər</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6170470584681422115">Sandviç</translation>
+<translation id="6177854567773392726">Yaddaş yeri yoxlanır… <ph name="ITEMS_FOUND" /> element tapıldı</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" /> üçün Google Diskdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronlaşdırılacaq.</translation>
 <translation id="6187719147498869044">Macar</translation>
 <translation id="6198252989419008588">PİN kodu dəyişdirin</translation>

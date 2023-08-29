@@ -171,6 +171,7 @@
 <translation id="23721837607121582">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">تبديل إلى عرض القائمة</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> من المجلَّدات المشتركة مع نظام التشغيل Linux.</translation>
+<translation id="2379576081295865700">جارٍ التحقّق من مساحة التخزين… تم العثور على ملف واحد.</translation>
 <translation id="2383454254762599978">نقل إلى "المهملات"</translation>
 <translation id="2387458720915042159">نوع الاتصال بالخادم الوكيل</translation>
 <translation id="2389832672041313158">البورمية/ميانمار</translation>
@@ -667,6 +668,7 @@
 <translation id="6164412158936057769">فراشات</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
+<translation id="6177854567773392726">جارٍ التحقّق من مساحة التخزين… تم العثور على <ph name="ITEMS_FOUND" /> ملف.</translation>
 <translation id="6181912134988520389">‏سيتم منح "<ph name="VM_NAME" />" إذن الوصول إلى الملفات في Google Drive. ستتم مزامنة التغييرات مع الأجهزة الأخرى.</translation>
 <translation id="6187719147498869044">المجرية</translation>
 <translation id="6198252989419008588">تغيير رقم التعريف الشخصي</translation>
