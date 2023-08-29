@@ -142,18 +142,17 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
     RunUntilIdle();
   }
 
+  void RunUntilIdle() { task_env_.RunUntilIdle(); }
+
   TestingProfile& profile() { return profile_; }
   PasswordStatusCheckService* service() { return service_.get(); }
-
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
   }
-
   raw_ptr<BulkLeakCheckService> bulk_leak_check_service() {
     return bulk_leak_check_service_;
   }
-
-  void RunUntilIdle() { task_env_.RunUntilIdle(); }
+  content::BrowserTaskEnvironment* task_environment() { return &task_env_; }
 
  private:
   void SetUp() override {
@@ -172,7 +171,8 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
     EXPECT_FALSE(service()->is_update_credential_count_pending());
   }
 
-  content::BrowserTaskEnvironment task_env_;
+  content::BrowserTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   signin::IdentityTestEnvironment identity_test_env_;
 
@@ -251,7 +251,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedTest, GetMultipleIssueCounts) {
 TEST_F(PasswordStatusCheckServiceBaseTest, RepeatedlyUpdatingDoesNotCrash) {
   for (int i = 0; i < 5; ++i) {
     service()->UpdateInsecureCredentialCountAsync();
-    service()->RunPasswordCheckAsync();
+    service()->StartRepeatedUpdates();
   }
   RunUntilIdle();
 }
@@ -259,10 +259,10 @@ TEST_F(PasswordStatusCheckServiceBaseTest, RepeatedlyUpdatingDoesNotCrash) {
 TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheckNoPasswords) {
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
-  service()->RunPasswordCheckAsync();
+  task_environment()->AdvanceClock(
+      service()->GetScheduledPasswordCheckInterval());
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
-
   RunUntilIdle();
 }
 
@@ -272,7 +272,8 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
 
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
-  service()->RunPasswordCheckAsync();
+  task_environment()->AdvanceClock(
+      service()->GetScheduledPasswordCheckInterval());
   EXPECT_CALL(observer,
               OnStateChanged(BulkLeakCheckService::State::kSignedOut));
   RunUntilIdle();
@@ -288,7 +289,8 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
 
   // When leak check runs, mock the result for this credential coming back
   // positive.
-  service()->RunPasswordCheckAsync();
+  task_environment()->AdvanceClock(
+      service()->GetScheduledPasswordCheckInterval());
   RunUntilIdle();
 
   bulk_leak_check_service()->set_state_and_notify(
@@ -312,38 +314,32 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_Error) {
 
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
-  service()->RunPasswordCheckAsync();
+  task_environment()->AdvanceClock(
+      service()->GetScheduledPasswordCheckInterval());
+
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
   EXPECT_CALL(observer,
               OnStateChanged(BulkLeakCheckService::State::kServiceError));
 
+  RunUntilIdle();
+
   bulk_leak_check_service()->set_state_and_notify(
       BulkLeakCheckService::State::kServiceError);
-
-  RunUntilIdle();
 
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, PrefInitialized) {
-  ASSERT_TRUE(profile().GetPrefs()->HasPrefPath(
+  EXPECT_TRUE(profile().GetPrefs()->HasPrefPath(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval));
-  const base::Value::Dict& check_schedule_dict = profile().GetPrefs()->GetDict(
-      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
 
-  absl::optional<base::TimeDelta> interval_used_for_scheduling =
-      base::ValueToTimeDelta(check_schedule_dict.Find(
-          safety_hub_prefs::kPasswordCheckIntervalKey));
-  ASSERT_TRUE(interval_used_for_scheduling.has_value());
-  ASSERT_EQ(interval_used_for_scheduling.value(),
+  EXPECT_EQ(service()->GetScheduledPasswordCheckInterval(),
             features::kBackgroundPasswordCheckInterval.Get());
 
-  absl::optional<base::Time> check_time = base::ValueToTime(
-      check_schedule_dict.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
-  ASSERT_TRUE(check_time.has_value());
-  ASSERT_GE(check_time.value(), base::Time::Now());
-  ASSERT_LT(check_time.value(),
-            base::Time::Now() + interval_used_for_scheduling.value());
+  EXPECT_GE(service()->GetScheduledPasswordCheckTime(), base::Time::Now());
+  EXPECT_LT(service()->GetScheduledPasswordCheckTime(),
+            base::Time::Now() + service()->GetScheduledPasswordCheckInterval());
 }
 
 // If interval changes, the scheduled time at which the password check runs
@@ -357,12 +353,9 @@ TEST_F(PasswordStatusCheckServiceBaseTest, CheckTimeUpdatedOnIntervalChange) {
 
   service()->StartRepeatedUpdates();
 
-  const base::Value::Dict& dict_before = profile().GetPrefs()->GetDict(
-      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
-  absl::optional<base::TimeDelta> interval_before = base::ValueToTimeDelta(
-      dict_before.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
-  absl::optional<base::Time> check_time_before = base::ValueToTime(
-      dict_before.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
+  base::TimeDelta interval_before =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
 
   base::FieldTrialParams params_after;
   params_after[features::kBackgroundPasswordCheckInterval.name] = "20d";
@@ -372,15 +365,84 @@ TEST_F(PasswordStatusCheckServiceBaseTest, CheckTimeUpdatedOnIntervalChange) {
 
   service()->StartRepeatedUpdates();
 
-  const base::Value::Dict& dict_after = profile().GetPrefs()->GetDict(
-      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
-  absl::optional<base::TimeDelta> interval_after = base::ValueToTimeDelta(
-      dict_after.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
-  absl::optional<base::Time> check_time_after = base::ValueToTime(
-      dict_after.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
+  base::TimeDelta interval_after =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_after = service()->GetScheduledPasswordCheckTime();
 
-  ASSERT_EQ(interval_before.value() * 2, interval_after.value());
-  ASSERT_NE(check_time_before.value(), check_time_after.value());
+  ASSERT_EQ(interval_before * 2, interval_after);
+  ASSERT_NE(check_time_before, check_time_after);
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest,
+       CheckTimeUpdatedAfterRunScheduledInTheFuture) {
+  ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
+
+  base::TimeDelta interval_before =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
+
+  // Time passes in which the scheduled password check should have run (Password
+  // check is scheduled in the time window of [Now, Now + Interval]).
+  task_environment()->AdvanceClock(
+      service()->GetScheduledPasswordCheckInterval());
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
+  RunUntilIdle();
+
+  // After password check is completed, the next one should be scheduled.
+  base::TimeDelta interval_after =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_after = service()->GetScheduledPasswordCheckTime();
+
+  ASSERT_EQ(interval_before, interval_after);
+  ASSERT_EQ(check_time_before + interval_before, check_time_after);
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest,
+       CheckTimeUpdatedAfterRunScheduledInThePast) {
+  ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
+
+  // Set scheduled time to be in the past.
+  service()->SetPasswordCheckSchedulePrefsWithInterval(
+      service()->GetScheduledPasswordCheckTime() -
+      service()->GetScheduledPasswordCheckInterval());
+
+  base::TimeDelta interval_before =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
+
+  service()->StartRepeatedUpdates();
+
+  // If the scheduled check time is in the past, it should run within an hour.
+  task_environment()->AdvanceClock(base::Hours(1));
+
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
+  RunUntilIdle();
+
+  // After password check is completed, the next one should be scheduled.
+  base::TimeDelta interval_after =
+      service()->GetScheduledPasswordCheckInterval();
+  base::Time check_time_after = service()->GetScheduledPasswordCheckTime();
+
+  ASSERT_EQ(interval_before, interval_after);
+  ASSERT_EQ(check_time_before + interval_before, check_time_after);
+}
+
+TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
+  ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
+  int runs = 10;
+
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning))
+      .Times(runs);
+  EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle))
+      .Times(runs);
+
+  for (int i = 0; i < runs; ++i) {
+    task_environment()->AdvanceClock(
+        service()->GetScheduledPasswordCheckInterval());
+    RunUntilIdle();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

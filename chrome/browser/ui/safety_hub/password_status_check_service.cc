@@ -60,6 +60,7 @@ PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
 PasswordStatusCheckService::~PasswordStatusCheckService() = default;
 
 void PasswordStatusCheckService::Shutdown() {
+  password_check_timer_.Stop();
   insecure_credentials_manager_observation_.Reset();
   bulk_leak_check_observation_.Reset();
   password_check_delegate_.reset();
@@ -72,22 +73,26 @@ void PasswordStatusCheckService::StartRepeatedUpdates() {
     base::TimeDelta update_interval =
         features::kBackgroundPasswordCheckInterval.Get();
 
-    base::TimeDelta delta = base::Microseconds(
+    base::TimeDelta random_delta = base::Microseconds(
         base::RandGenerator(update_interval.InMicroseconds()));
-    base::Time scheduled_check_time = base::Time::Now() + delta;
+    base::Time scheduled_check_time = base::Time::Now() + random_delta;
 
-    base::Value::Dict dict;
-    dict.Set(safety_hub_prefs::kNextPasswordCheckTimeKey,
-             base::TimeToValue(scheduled_check_time));
-    dict.Set(safety_hub_prefs::kPasswordCheckIntervalKey,
-             base::TimeDeltaToValue(update_interval));
-    profile_->GetPrefs()->SetDict(
-        safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval,
-        std::move(dict));
+    SetPasswordCheckSchedulePrefsWithInterval(scheduled_check_time);
   }
 
-  // TODO(crbug.com/1443466): Create task to run password check at the scheduled
-  // time.
+  // If the scheduled time for the password check is in the future, it should
+  // run at that time. If password check is overdue, pick a random time in the
+  // next hour.
+  base::TimeDelta password_check_run_delta =
+      GetScheduledPasswordCheckTime() > base::Time::Now()
+          ? GetScheduledPasswordCheckTime() - base::Time::Now()
+          : base::Microseconds(
+                base::RandGenerator(base::Hours(1).InMicroseconds()));
+
+  password_check_timer_.Start(
+      FROM_HERE, password_check_run_delta,
+      base::BindOnce(&PasswordStatusCheckService::RunPasswordCheckAsync,
+                     base::Unretained(this)));
 }
 
 void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
@@ -165,6 +170,14 @@ void PasswordStatusCheckService::OnStateChanged(
     case password_manager::BulkLeakCheckServiceInterface::State::kNetworkError:
     case password_manager::BulkLeakCheckServiceInterface::State::kQuotaLimit:
       is_password_check_running_ = false;
+
+      // Set time for next password check and schedule the next run.
+      base::TimeDelta check_interval =
+          features::kBackgroundPasswordCheckInterval.Get();
+      SetPasswordCheckSchedulePrefsWithInterval(
+          GetScheduledPasswordCheckTime() + check_interval);
+      StartRepeatedUpdates();
+
       MaybeResetInfrastructureAsync();
   }
 }
@@ -249,4 +262,39 @@ bool PasswordStatusCheckService::IsInfrastructureReady() const {
   }
 
   return false;
+}
+
+void PasswordStatusCheckService::SetPasswordCheckSchedulePrefsWithInterval(
+    base::Time check_time) {
+  base::TimeDelta check_interval =
+      features::kBackgroundPasswordCheckInterval.Get();
+
+  base::Value::Dict dict;
+  dict.Set(safety_hub_prefs::kNextPasswordCheckTimeKey,
+           base::TimeToValue(check_time));
+  dict.Set(safety_hub_prefs::kPasswordCheckIntervalKey,
+           base::TimeDeltaToValue(check_interval));
+
+  profile_->GetPrefs()->SetDict(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval,
+      std::move(dict));
+}
+
+base::Time PasswordStatusCheckService::GetScheduledPasswordCheckTime() const {
+  const base::Value::Dict& check_schedule_dict = profile_->GetPrefs()->GetDict(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
+  absl::optional<base::Time> check_time = base::ValueToTime(
+      check_schedule_dict.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
+  CHECK(check_time.has_value());
+  return check_time.value();
+}
+
+base::TimeDelta PasswordStatusCheckService::GetScheduledPasswordCheckInterval()
+    const {
+  const base::Value::Dict& check_schedule_dict = profile_->GetPrefs()->GetDict(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
+  absl::optional<base::TimeDelta> check_interval = base::ValueToTimeDelta(
+      check_schedule_dict.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
+  CHECK(check_interval.has_value());
+  return check_interval.value();
 }

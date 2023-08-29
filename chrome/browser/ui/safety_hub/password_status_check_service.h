@@ -42,18 +42,18 @@ class PasswordStatusCheckService
 
   bool is_password_check_running() const { return is_password_check_running_; }
 
+  // Returns the time at which the password check is currently scheduled to run.
+  base::Time GetScheduledPasswordCheckTime() const;
+
+  // Returns the interval that was used to schedule the current password check
+  // time.
+  base::TimeDelta GetScheduledPasswordCheckInterval() const;
+
   // Register a delayed task running the password check.
   void StartRepeatedUpdates();
 
   // Bring cached credential issues up to date with data from Password Manager.
   void UpdateInsecureCredentialCountAsync();
-
-  // Triggers Password Manager's password check to discover new credential
-  // issues.
-  //
-  // TODO(crbug.com/1443466) Make private once there is a way for the password
-  // check to be publicly triggered.
-  void RunPasswordCheckAsync();
 
   // Testing functions.
   bool IsObservingInsecureCredentialsManagerForTesting() const {
@@ -75,6 +75,13 @@ class PasswordStatusCheckService
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
+                           CheckTimeUpdatedAfterRunScheduledInThePast);
+
+  // Triggers Password Manager's password check to discover new credential
+  // issues.
+  void RunPasswordCheckAsync();
+
   // InsecureCredentialsManager::Observer implementation.
   // Getting notified about this indicates that the presenter is initialized and
   // that weak and reuse checks have concluded.
@@ -102,6 +109,9 @@ class PasswordStatusCheckService
   // Verifies that both `password_check_delegate_` and
   // `saved_passwords_presenter_` are initialized.
   bool IsInfrastructureReady() const;
+
+  // Updates pref dict for scheduled password check.
+  void SetPasswordCheckSchedulePrefsWithInterval(base::Time check_time);
 
   raw_ptr<Profile> profile_;
 
@@ -144,6 +154,9 @@ class PasswordStatusCheckService
   // intensive objects will be reset after all have finished.
   bool is_update_credential_count_pending_ = false;
   bool is_password_check_running_ = false;
+
+  // Timer to schedule the run of the password check after some time has passed.
+  base::OneShotTimer password_check_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_H_
