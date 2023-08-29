@@ -2519,7 +2519,8 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
       va_format |= VA_RT_FORMAT_PROTECTED;
     } else {
       va_attrib_extbuf_and_fd.va_attrib_extbuf.flags =
-          VA_SURFACE_EXTBUF_DESC_PROTECTED;
+          VA_SURFACE_EXTBUF_DESC_PROTECTED |
+          VA_SURFACE_EXTBUF_DESC_ENABLE_TILING;
     }
   }
 
