@@ -273,8 +273,13 @@ void InstallExtension(
   const base::FilePath& crx_path = state->crx_path;
   crx_installer->AddInstallerCallback(
       base::BindOnce(&OnExtensionInstalled, std::move(state)));
-  crx_installer->InstallCrxFile(extensions::CRXFileInfo{
-      crx_path, extensions::GetWebstoreVerifierFormat(false)});
+  const crx_file::VerifierFormat verifier_format =
+      ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled()
+          ? extensions::GetTestVerifierFormat()
+          : extensions::GetWebstoreVerifierFormat(
+                /*test_publisher_enabled=*/false);
+  crx_installer->InstallCrxFile(
+      extensions::CRXFileInfo{crx_path, verifier_format});
 }
 
 void OnExtensionSystemReady(

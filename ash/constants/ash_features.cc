@@ -2348,6 +2348,13 @@ BASE_FEATURE(kShimlessRMA3pDiagnostics,
              "ShimlessRMA3pDiagnostics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables 3p diagnostics dev mode in the Shimless RMA flow. This will skip some
+// checks to allow developers to use dev-signed extensions for development
+// purpose.
+BASE_FEATURE(kShimlessRMA3pDiagnosticsDevMode,
+             "ShimlessRMA3pDiagnosticsDevMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the shortcut customization app.
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kShortcutCustomizationJelly,
@@ -3925,6 +3932,10 @@ bool IsShimlessRMAComplianceCheckEnabled() {
 
 bool IsShimlessRMA3pDiagnosticsEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMA3pDiagnostics);
+}
+
+bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMA3pDiagnosticsDevMode);
 }
 
 bool IsSmdsSupportEnabled() {
