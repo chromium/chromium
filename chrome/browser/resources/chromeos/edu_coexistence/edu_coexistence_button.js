@@ -166,11 +166,17 @@ class EduCoexistenceButton extends EduCoexistenceButtonBase {
       return;
     }
     if (this.buttonType === ButtonTypes.BACK) {
-      this.dispatchEvent(new CustomEvent('go-back'));
+      this.dispatchEvent(new CustomEvent('go-back', {
+        bubbles: true,
+        composed: true,
+      }));
       return;
     }
     if (this.buttonType === ButtonTypes.ACTION) {
-      this.dispatchEvent(new CustomEvent('go-action'));
+      this.dispatchEvent(new CustomEvent('go-action', {
+        bubbles: true,
+        composed: true,
+      }));
       return;
     }
   }
