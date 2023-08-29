@@ -440,14 +440,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to balance lines of paragraphs.</summary>
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance.Fail" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>

@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Stability" enum="GuestOsFailureClasses"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>cpelling@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

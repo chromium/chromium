@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.ArcContinueBootImpulseStatus"
-    enum="ArcContinueBootImpulseStatus" expires_after="2023-12-24">
+    enum="ArcContinueBootImpulseStatus" expires_after="2024-02-25">
   <owner>vsomani@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.CryptohomeRecoveryResult"
-    enum="CryptohomeRecoveryResult" expires_after="2023-12-24">
+    enum="CryptohomeRecoveryResult" expires_after="2024-02-25">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
-    enum="AllowedUsersPoliciesInvalidState" expires_after="2023-10-17">
+    enum="AllowedUsersPoliciesInvalidState" expires_after="2024-02-25">
   <owner>emaamari@google.com</owner>
   <owner>src/chromeos/ash/components/policy/OWNERS</owner>
   <summary>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
-    expires_after="2023-12-24">
+    expires_after="2024-02-25">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
