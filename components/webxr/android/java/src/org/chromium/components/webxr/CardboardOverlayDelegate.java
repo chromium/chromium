@@ -6,6 +6,7 @@ package org.chromium.components.webxr;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -77,7 +78,8 @@ public class CardboardOverlayDelegate
     }
 
     public void showSettings(View view) {
-        PopupMenu popup = new PopupMenu(mActivity, view);
+        PopupMenu popup =
+                new PopupMenu(mActivity, view, Gravity.END, 0, R.style.CardboardSettingsPopupMenu);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.settings_menu, popup.getMenu());
         popup.setOnMenuItemClickListener(this);
