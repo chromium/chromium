@@ -1889,62 +1889,113 @@ String StylePropertySerializer::GetShorthandValueForGrid(
     const StylePropertyShorthand& shorthand) const {
   DCHECK_EQ(shorthand.length(), 6u);
 
-  const CSSValue* auto_flow_values =
+  const auto* template_row_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const auto* template_column_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const auto* template_area_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  const auto* auto_flow_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
-  const CSSValue* auto_row_values =
+  const auto* auto_row_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[4]);
-  const CSSValue* auto_column_values =
+  const auto* auto_column_values =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[5]);
 
-  // 1- <'grid-template'>
-  if (IsA<CSSIdentifierValue>(auto_flow_values) &&
-      To<CSSIdentifierValue>(auto_flow_values)->GetValueID() ==
-          CSSValueID::kRow &&
-      IsA<CSSIdentifierValue>(auto_row_values) &&
-      To<CSSIdentifierValue>(auto_row_values)->GetValueID() ==
-          CSSValueID::kAuto &&
-      IsA<CSSIdentifierValue>(auto_column_values) &&
-      To<CSSIdentifierValue>(auto_column_values)->GetValueID() ==
-          CSSValueID::kAuto) {
-    return GetShorthandValueForGridTemplate(shorthand);
-  }
+  // `auto-flow`, `grid-auto-rows`, and `grid-auto-columns` are parsed as either
+  // an identifier with the default value, or a CSSValueList containing a single
+  // entry with the default value. Unlike `grid-template-rows` and
+  // `grid-template-columns`, we *can* determine if the author specified them by
+  // the presence of an associated CSSValueList.
+  auto HasInitialValueListValue = [](const CSSValueList* value_list,
+                                     auto* definition) -> bool {
+    return value_list && value_list->length() == 1 &&
+           value_list->First() == *(To<Longhand>(definition()).InitialValue());
+  };
+  auto HasInitialIdentifierValue = [](const CSSValue* value,
+                                      CSSValueID initial_value) -> bool {
+    return IsA<CSSIdentifierValue>(value) &&
+           To<CSSIdentifierValue>(value)->GetValueID() == initial_value;
+  };
 
-  // If we have grid-auto-{flow,row,column} along with named lines, we can't
-  // serialize as a "grid" shorthand, as a syntax that combines the two is not
-  // valid per the grammar.
-  const CSSValue* template_area_value =
-      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  if (*template_area_value !=
-      *(To<Longhand>(GetCSSPropertyGridTemplateAreas()).InitialValue())) {
+  const auto* auto_row_value_list = DynamicTo<CSSValueList>(auto_row_values);
+  const bool is_auto_rows_initial_value =
+      HasInitialValueListValue(auto_row_value_list,
+                               GetCSSPropertyGridAutoRows) ||
+      HasInitialIdentifierValue(auto_row_values, CSSValueID::kAuto);
+  const bool specified_non_initial_auto_rows =
+      auto_row_value_list && !is_auto_rows_initial_value;
+
+  const auto* auto_column_value_list =
+      DynamicTo<CSSValueList>(auto_column_values);
+  const bool is_auto_columns_initial_value =
+      HasInitialValueListValue(auto_column_value_list,
+                               GetCSSPropertyGridAutoColumns) ||
+      HasInitialIdentifierValue(auto_column_values, CSSValueID::kAuto);
+  const bool specified_non_initial_auto_columns =
+      auto_column_value_list && !is_auto_columns_initial_value;
+
+  const auto* auto_flow_value_list = DynamicTo<CSSValueList>(auto_flow_values);
+  const bool is_auto_flow_initial_value =
+      HasInitialValueListValue(auto_flow_value_list,
+                               GetCSSPropertyGridAutoFlow) ||
+      HasInitialIdentifierValue(auto_flow_values, CSSValueID::kRow);
+
+  // `grid-auto-*` along with named lines is not valid per the grammar.
+  if ((auto_flow_value_list || auto_row_value_list || auto_column_value_list) &&
+      *template_area_value !=
+          *(To<Longhand>(GetCSSPropertyGridTemplateAreas()).InitialValue())) {
     return String();
   }
 
-  const CSSValue* template_row_values =
-      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* template_column_values =
-      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValueList* auto_flow_value_list =
-      DynamicTo<CSSValueList>(auto_flow_values);
-
-  // We cannot represent a grid shorthand if we have both template row and
-  // template column values along with auto-flow.
-  if (*template_row_values !=
-          *(To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue()) &&
+  // `grid-template-rows` and `grid-template-columns` are shorthards within this
+  // shorthand. Based on how parsing works, we can't differentiate between an
+  // author specifying `none` and uninitialized.
+  const bool non_initial_template_rows =
+      (*template_row_values !=
+       *(To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue()));
+  const bool non_initial_template_columns =
       *template_column_values !=
-          *(To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue())) {
+      *(To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue());
+
+  // `grid-template-*` and `grid-auto-*` are mutually exclusive per direction.
+  if ((non_initial_template_rows && specified_non_initial_auto_rows) ||
+      (non_initial_template_columns && specified_non_initial_auto_columns) ||
+      (specified_non_initial_auto_rows && specified_non_initial_auto_columns)) {
     return String();
   }
 
+  // 1- <'grid-template'>
+  // If the author didn't specify `auto-flow`, we should go down the
+  // `grid-template` path. This should also round-trip if the author specified
+  // the initial value for `auto-flow`, unless `auto-columns` or `auto-rows`
+  // were also set, causing it to match the shorthand syntax below.
+  if (!auto_flow_value_list ||
+      (is_auto_flow_initial_value && !(specified_non_initial_auto_columns ||
+                                       specified_non_initial_auto_rows))) {
+    return GetShorthandValueForGridTemplate(shorthand);
+  } else if (non_initial_template_rows && non_initial_template_columns) {
+    // Specifying both rows and columns is not valid per the grammar.
+    return String();
+  }
+
+  // At this point, the syntax matches:
+  // <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>? |
+  // [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>
+  // ...and thus will include `auto-flow` no matter what.
   StringBuilder auto_flow_text;
-  auto_flow_text.Append("auto-flow ");
+  auto_flow_text.Append("auto-flow");
   if (auto_flow_value_list &&
       auto_flow_value_list->HasValue(
           *CSSIdentifierValue::Create(CSSValueID::kDense))) {
-    auto_flow_text.Append("dense ");
+    auto_flow_text.Append(" dense");
   }
 
   // 2- <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>?
-  // | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>
+  // We can't distinguish between `grid-template-rows` being unspecified or
+  // being specified as `none` (see the comment near the definition of
+  // `non_initial_template_rows`), as both are initial values. So we must
+  // distinguish between the remaining two possible paths via `auto-flow`.
   StringBuilder result;
   if (auto_flow_value_list &&
       auto_flow_value_list->HasValue(
@@ -1952,10 +2003,21 @@ String StylePropertySerializer::GetShorthandValueForGrid(
     result.Append(template_row_values->CssText());
     result.Append(" / ");
     result.Append(auto_flow_text);
-    result.Append(auto_column_values->CssText());
+
+    if (specified_non_initial_auto_columns) {
+      result.Append(" ");
+      result.Append(auto_column_values->CssText());
+    }
   } else {
+    // 3- [ auto-flow && dense? ] <'grid-auto-rows'>? /
+    // <'grid-template-columns'>
     result.Append(auto_flow_text);
-    result.Append(auto_row_values->CssText());
+
+    if (specified_non_initial_auto_rows) {
+      result.Append(" ");
+      result.Append(auto_row_values->CssText());
+    }
+
     result.Append(" / ");
     result.Append(template_column_values->CssText());
   }
