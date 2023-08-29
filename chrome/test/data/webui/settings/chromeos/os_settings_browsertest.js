@@ -300,7 +300,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
- ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
@@ -327,13 +326,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'internet_page/cellular_setup_dialog_test.js'
  ],
  [
+   'InternetPageEsimInstallErrorDialog',
+   'internet_page/esim_install_error_dialog_test.js'
+ ],
+ ['InternetPageEsimRenameDialog', 'internet_page/esim_rename_dialog_test.js'],
+ [
    'InternetPageHotspotConfigDialog',
    'internet_page/hotspot_config_dialog_test.js',
    {enabled: ['ash::features::kHotspot']},
- ],
- [
-   'InternetPageEsimInstallErrorDialog',
-   'internet_page/esim_install_error_dialog_test.js'
  ],
  [
    'InternetPageHotspotSubpage',

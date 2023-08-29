@@ -30,7 +30,7 @@ const MIN_INPUT_LENGTH = 1;
 const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
-interface EsimRenameDialogElement {
+export interface EsimRenameDialogElement {
   $: {
     profileRenameDialog: CrDialogElement,
   };
@@ -38,7 +38,7 @@ interface EsimRenameDialogElement {
 
 const EsimRenameDialogElementBase = I18nMixin(PolymerElement);
 
-class EsimRenameDialogElement extends EsimRenameDialogElementBase {
+export class EsimRenameDialogElement extends EsimRenameDialogElementBase {
   static get is() {
     return 'esim-rename-dialog' as const;
   }
