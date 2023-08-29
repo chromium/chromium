@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 92 tests; 77 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL "u/**/+/**/a/**/?" => "U+A0-AF" assert_equals: expected "U+A0-AF" but got "U+1357"
 PASS "u+abc" => "U+ABC"
 PASS "U+abc" => "U+ABC"
@@ -91,6 +91,6 @@ PASS "u+?????" => "u+0-FFFFF"
 PASS "u+???????" is invalid
 PASS "u+?a" is invalid
 FAIL "u+??????" is invalid assert_equals: expected "U+1357" but got "U+0-FFFFFF"
-FAIL u+a is a valid selector assert_equals: expected "u + a" but got ".error"
+PASS u+a is a valid selector
 Harness: the test ran to completion.
 
