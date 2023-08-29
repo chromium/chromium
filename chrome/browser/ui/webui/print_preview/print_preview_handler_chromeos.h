@@ -23,6 +23,10 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_job_constants.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace printing {
 
 namespace mojom {
@@ -108,7 +112,22 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // Records the `PrintPreview.PrintAttemptOutcome` histogram.
   void HandleRecordPrintAttemptOutcome(const base::Value::List& args);
 
+  // Gets the WebContents that initiated print preview request using
+  // `PrintPreviewDialogController`.
+  content::WebContents* GetInitiator();
+
+  // Gets whether the UI should show the button to open printer settings. Button
+  // should be hidden if preview launched from the settings SWA.
+  void HandleGetShowManagePrinters(const base::Value::List& args);
+
+  void SetInitiatorForTesting(content::WebContents* test_initiator);
+
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
+
+  // Used for testing, when `GetInitiator` called and `test_initiator` is set
+  // then it will be returned instead of calling `PrintPreviewDialogController`
+  // to find the initiator.
+  raw_ptr<content::WebContents> test_initiator_ = nullptr;
 
   // Used to transmit mojo interface method calls to ash chrome.
   // Null if the interface is unavailable.

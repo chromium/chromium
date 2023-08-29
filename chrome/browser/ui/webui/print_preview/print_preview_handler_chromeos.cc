@@ -16,23 +16,28 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printing_constants.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/mojom/print.mojom.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -116,6 +121,11 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
       "recordPrintAttemptOutcome",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleRecordPrintAttemptOutcome,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getShowManagePrinters",
+      base::BindRepeating(
+          &PrintPreviewHandlerChromeOS::HandleGetShowManagePrinters,
           base::Unretained(this)));
 }
 
@@ -334,6 +344,43 @@ void PrintPreviewHandlerChromeOS::OnPrintServersChanged(
 void PrintPreviewHandlerChromeOS::OnServerPrintersChanged() {
   MaybeAllowJavascript();
   FireWebUIListener("server-printers-loading", base::Value(false));
+}
+
+content::WebContents* PrintPreviewHandlerChromeOS::GetInitiator() {
+  if (this->test_initiator_) {
+    return this->test_initiator_;
+  }
+
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
+  return dialog_controller->GetInitiator(web_ui()->GetWebContents());
+}
+
+void PrintPreviewHandlerChromeOS::HandleGetShowManagePrinters(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  CHECK(args[0].is_string());
+
+  // AllowJavascript needs to be called here instead of relying on
+  // `HandleGetInitialSettings` due to timing of calls.
+  if (!IsJavascriptAllowed()) {
+    AllowJavascript();
+  }
+
+  auto* initiator = this->GetInitiator();
+  if (initiator == nullptr) {
+    ResolveJavascriptCallback(args[0], base::Value(false));
+    return;
+  }
+
+  const bool domain_is_os_settings = initiator->GetLastCommittedURL().DomainIs(
+      chrome::kChromeUIOSSettingsHost);
+  ResolveJavascriptCallback(args[0], base::Value(!domain_is_os_settings));
+}
+
+void PrintPreviewHandlerChromeOS::SetInitiatorForTesting(
+    content::WebContents* test_initiator) {
+  this->test_initiator_ = test_initiator;
 }
 
 }  // namespace printing

@@ -1,5 +1,5 @@
 <style include="destination-dialog-style">
-  :host([is-showing-printer-setup-assistance]) div[slot=button-container] {
+  :host(:not([show-manage-printers-button])) div[slot=button-container] {
     justify-content: flex-end;
   }
 
@@ -58,8 +58,8 @@
     </print-preview-provisional-destination-resolver>
   </div>
   <div slot="button-container">
-    <cr-button on-click="onManageButtonClick_"
-        hidden$="[[isShowingPrinterSetupAssistance]]">
+    <cr-button on-click="onManageButtonClick_" id="managePrinters"
+        hidden$="[[!showManagePrintersButton]]">
       $i18n{manage}
       <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
     </cr-button>

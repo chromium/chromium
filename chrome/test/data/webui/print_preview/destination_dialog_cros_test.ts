@@ -29,6 +29,8 @@ const destination_dialog_cros_test = {
         'ManagePrintersMetrics_HasDestinations',
     ManagePrintersMetrics_HasNoDestinations:
         'ManagePrintersMetrics_HasNoDestinations',
+    PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse:
+        'PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse',
   },
 };
 
@@ -81,6 +83,9 @@ suite(destination_dialog_cros_test.suiteName, function() {
           destinationStore.startLoadAllDestinations();
           dialog.show();
           return nativeLayer.whenCalled('getPrinters');
+        })
+        .then(function() {
+          return nativeLayerCros.whenCalled('getShowManagePrinters');
         })
         .then(function() {
           flush();
@@ -367,5 +372,49 @@ suite(destination_dialog_cros_test.suiteName, function() {
 
         // Call should use bucket `DESTINATION_DIALOG_CROS_NO_PRINTERS`.
         verifyRecordInHistogramCall(/*callIndex=*/ 0, /*bucket=*/ 1);
+      });
+
+  // Test that the correct elements are displayed when the printer setup
+  // assistance flag is on, destination store has destinations, and
+  // getShowManagePrinters return false. Simulates opening print preview from
+  // a UI which cannot launch settings (ex. OS Settings app).
+  test(
+      destination_dialog_cros_test.TestNames
+          .PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse,
+      async () => {
+        // Set flag enabled.
+        loadTimeData.overrideValues({
+          isPrintPreviewSetupAssistanceEnabled: true,
+        });
+        nativeLayerCros.setShowManagePrinters(false);
+        await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
+
+        // Manage printers button hidden when show manage printers returns
+        // false.
+        const managePrintersButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('#managePrinters');
+        assertFalse(isVisible(managePrintersButton));
+
+        // Cancel button shown when there are valid destinations.
+        const cancelButton = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'cr-button.cancel-button');
+        assertTrue(isVisible(cancelButton));
+
+        // Printer setup element should not be displayed when there are
+        // valid destinations.
+        const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'print-preview-printer-setup-info-cros')!;
+        assertTrue(printerSetupInfo.hidden);
+
+        // Destination list should display if there are valid destinations.
+        const destinationList =
+            dialog.shadowRoot!.querySelector<HTMLElement>('#printList');
+        assertTrue(isVisible(destinationList));
+
+        // Destination search box should be shown if there are valid
+        // destinations.
+        const searchBox = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'print-preview-search-box');
+        assertTrue(isVisible(searchBox));
       });
 });

@@ -34,6 +34,7 @@ import {DestinationStore, DestinationStoreEventType} from '../data/destination_s
 import {PrintServerStore, PrintServerStoreEventType} from '../data/print_server_store.js';
 import {MetricsContext, PrintPreviewLaunchSourceBucket} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
+import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {getTemplate} from './destination_dialog_cros.html.js';
 import {PrintPreviewDestinationListItemElement} from './destination_list_item_cros.js';
@@ -135,6 +136,15 @@ export class PrintPreviewDestinationDialogCrosElement extends
         reflectToAttribute: true,
       },
 
+      showManagePrintersButton: {
+        type: Boolean,
+        computed: 'computeShowManagePrintersButton(' +
+            'showManagePrinters, isShowingPrinterSetupAssistance)',
+        reflectToAttribute: true,
+      },
+
+      showManagePrinters: Boolean,
+
       noPrinters_: {
         type: Number,
         value: PrinterSetupInfoMessageType.NO_PRINTERS,
@@ -160,11 +170,14 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private loadingAnyDestinations_: boolean;
   private isPrintPreviewSetupAssistanceEnabled_: boolean;
   private metricsContext_: MetricsContext;
+  private isShowingPrinterSetupAssistance: boolean;
+  private showManagePrintersButton: boolean;
 
   private tracker_: EventTracker = new EventTracker();
   private destinationInConfiguring_: Destination|null = null;
   private initialized_: boolean = false;
   private printServerStore_: PrintServerStore|null = null;
+  private showManagePrinters: boolean = false;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -196,6 +209,10 @@ export class PrintPreviewDestinationDialogCrosElement extends
     }
     this.metricsContext_ =
         MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
+    NativeLayerCrosImpl.getInstance().getShowManagePrinters().then(
+        (show: boolean) => {
+          this.showManagePrinters = show;
+        });
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -383,6 +400,10 @@ export class PrintPreviewDestinationDialogCrosElement extends
     return !this.destinations_.some(
         (destination: Destination): boolean =>
             destination.id !== GooglePromotedDestinationId.SAVE_AS_PDF);
+  }
+
+  private computeShowManagePrintersButton(): boolean {
+    return this.showManagePrinters && !this.isShowingPrinterSetupAssistance;
   }
 }
 

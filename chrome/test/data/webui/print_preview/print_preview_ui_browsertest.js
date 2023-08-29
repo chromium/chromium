@@ -836,6 +836,13 @@ TEST_F(
                             .ManagePrintersMetrics_HasNoDestinations);
     });
 
+TEST_F(
+    'PrintPreviewDestinationDialogCrosTest',
+    'ElementsDisplayedWithShowManagePrintersFalse', function() {
+      this.runMochaTest(
+          destination_dialog_cros_test.TestNames
+              .PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse);
+    });
 GEN('#endif');
 
 var PrintPreviewAdvancedDialogTest = class extends PrintPreviewTest {

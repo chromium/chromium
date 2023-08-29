@@ -218,6 +218,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
     auto preview_handler = std::make_unique<TestPrintPreviewHandlerChromeOS>(
         std::move(printer_handler));
+    preview_handler->SetInitiatorForTesting(preview_web_contents_.get());
     handler_ = preview_handler.get();
     local_printer_ = std::make_unique<TestLocalPrinter>();
     handler_->local_printer_ = local_printer_.get();
@@ -416,6 +417,21 @@ TEST_F(PrintPreviewHandlerChromeOSTest, HandlePrinterSetup) {
   const base::Value::List* options = GetMediaSizeOptionsFromCdd(*cdd_result);
   ASSERT_TRUE(options);
   EXPECT_EQ(expected_media, *options);
+}
+
+// Verify 'getShowManagePrinters' can be called.
+TEST_F(PrintPreviewHandlerChromeOSTest, HandleGetCanShowManagePrinters) {
+  const std::string callback_id = "callback-id";
+  base::Value::List args;
+  args.Append(callback_id);
+  web_ui()->HandleReceivedMessage("getShowManagePrinters", args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ(callback_id, data.arg1()->GetString());
+  ASSERT_TRUE(data.arg2()->is_bool());
+  ASSERT_TRUE(data.arg2()->GetBool());
 }
 
 }  // namespace printing
