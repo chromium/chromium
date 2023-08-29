@@ -1,0 +1,39 @@
+caption: Control whether passkey creation will default to iCloud Keychain.
+desc: |-
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may direct
+  passkey/WebAuthn creation requests directly to iCloud Keychain on macOS 13.5
+  or later. If iCloud Keychain syncing has not been enabled yet, this will
+  prompt the user to sign in with iCloud, or may prompt them to enable iCloud
+  Keychain syncing.
+
+  If this policy is set to false, iCloud Keychain will not be used by default
+  and the previous behavior (of creating the credential in the <ph
+  name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile) may be used
+  instead. Users will still be able to select iCloud Keychain as an option, and
+  may still see iCloud Keychain credentials when signing in.
+
+  If this policy is set to "true" then iCloud Keychain will be the default
+  whenever the WebAuthn request is compatible with that choice.
+
+  If this policy is not set then the default depends on factors such as
+  whether iCloud Drive is enabled, and whether the user has recently used or
+  created a credential in their
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- agl@chromium.org
+- nsatragno@google.com
+schema:
+  type: boolean
+items:
+- caption: Default to creating passkeys in iCloud Keychain when possible.
+  value: true
+- caption: Default to creating passkeys in other stores such as the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile.
+  value: false
+tags: []
+supported_on:
+- chrome.mac:118-
+type: main

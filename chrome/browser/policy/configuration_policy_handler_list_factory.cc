@@ -1924,6 +1924,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kScreenTimeEnabled,
     policy_prefs::kScreenTimeEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kCreatePasskeysInICloudKeychain,
+    prefs::kCreatePasskeysInICloudKeychain,
+    base::Value::Type::BOOLEAN },
 #endif
   { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
