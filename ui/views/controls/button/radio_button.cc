@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -27,6 +28,7 @@ namespace views {
 namespace {
 constexpr int kFocusRingRadius = 16;
 constexpr int kRadioButtonIconDipSize = 16;
+constexpr int kRadioButtonIconDipSizeCr2023 = 20;
 }  // namespace
 
 RadioButton::RadioButton(const std::u16string& label, int group_id)
@@ -126,7 +128,10 @@ const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
 }
 
 gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
-  return gfx::CreateVectorIcon(GetVectorIcon(), kRadioButtonIconDipSize,
+  return gfx::CreateVectorIcon(GetVectorIcon(),
+                               features::IsChromeRefresh2023()
+                                   ? kRadioButtonIconDipSizeCr2023
+                                   : kRadioButtonIconDipSize,
                                GetIconImageColor(GetIconState(for_state)));
 }
 
