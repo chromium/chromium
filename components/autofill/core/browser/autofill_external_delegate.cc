@@ -453,11 +453,6 @@ PopupType AutofillExternalDelegate::GetPopupType() const {
   return popup_type_;
 }
 
-absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-AutofillExternalDelegate::GetDriver() {
-  return &manager_->driver();
-}
-
 int32_t AutofillExternalDelegate::GetWebContentsPopupControllerAxId() const {
   return query_field_.form_control_ax_id;
 }

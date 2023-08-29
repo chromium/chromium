@@ -580,11 +580,6 @@ autofill::PopupType PasswordAutofillManager::GetPopupType() const {
   return autofill::PopupType::kPasswords;
 }
 
-absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
-PasswordAutofillManager::GetDriver() {
-  return password_manager_driver_.get();
-}
-
 int32_t PasswordAutofillManager::GetWebContentsPopupControllerAxId() const {
   // TODO: Needs to be implemented when we step up accessibility features in the
   // future.

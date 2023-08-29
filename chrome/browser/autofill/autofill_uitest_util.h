@@ -7,13 +7,13 @@
 
 #include <vector>
 
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 class Profile;
 
 namespace autofill {
 
-class AutofillExternalDelegate;
 class AutofillProfile;
 class CreditCard;
 
@@ -32,14 +32,14 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
 // Displays an Autofill popup with a dummy suggestion for an element at
 // `element_bounds`.
 // Unlike `autofill::test::GenerateTestAutofillPopup()`, this function triggers
-// the popup through the `autofill_external_delegate->GetAutofillDriver()`'s
-// `AskForValuesToFill()`, instead of the `autofill_external_delegate`'s
-// `OnQuery()` event. This initializes the form's meta data and prepares
-// ContentAutofillDriver's and ContentAutofillRouter's state to process events
-// such as `AutofillDriver::PopupHidden()` triggered by the popup.
-void GenerateTestAutofillPopup(
-    AutofillExternalDelegate* autofill_external_delegate,
-    gfx::RectF element_bounds = gfx::RectF(100.0f, 100.0f));
+// the popup through `driver->AskForValuesToFill()`, instead of
+// AutofillExternalDelegate::OnQuery(). This initializes the form's meta data
+// and prepares ContentAutofillDriver's and ContentAutofillRouter's state to
+// process events such as `AutofillDriver::PopupHidden()` triggered by the
+// popup.
+void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
+                               gfx::RectF element_bounds = gfx::RectF(100.0f,
+                                                                      100.0f));
 
 }  // namespace autofill
 

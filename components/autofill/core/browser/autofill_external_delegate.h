@@ -69,9 +69,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // popup type after call to |onQuery|.
   PopupType GetPopupType() const override;
 
-  absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-  GetDriver() override;
-
   // Returns the ax node id associated with the current web contents' element
   // who has a controller relation to the current autofill popup.
   int32_t GetWebContentsPopupControllerAxId() const override;
