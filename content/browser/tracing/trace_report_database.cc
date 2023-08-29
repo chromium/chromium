@@ -71,7 +71,9 @@ constexpr char kLocalTracesTableSql[] = R"sql(
 TraceReportDatabase::TraceReportDatabase()
     : database_(sql::DatabaseOptions{.exclusive_locking = true,
                                      .page_size = 4096,
-                                     .cache_size = 128}) {}
+                                     .cache_size = 128}) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 TraceReportDatabase::BaseReport::BaseReport() = default;
 TraceReportDatabase::BaseReport::BaseReport(const BaseReport& other) = default;
