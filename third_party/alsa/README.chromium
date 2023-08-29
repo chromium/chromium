@@ -6,6 +6,8 @@ License: LGPLv2+
 License File: LICENSE
 Security Critical: no
 Shipped: no
+CPEPrefix: cpe:/a:alsa-project:alsa
+
 
 Description:
 The alsa-lib is a library to interface with ALSA in the Linux kernel and virtual devices using a plugin system.
