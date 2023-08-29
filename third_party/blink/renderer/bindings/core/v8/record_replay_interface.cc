@@ -1768,14 +1768,6 @@ function DOM_getDocument() {
  * {@link DOM_getAllBoundingClientRects}
  * ##########################################################################*/
 
-const DefaultTransform = { scale: 1 };
-
-function getContextTransformScale(transform) {
-  transform ||= DefaultTransform;
-  return transform.scale === undefined ? 1 : transform.scale;
-}
-
-
 function getLastBoundingClientRect(nodeRrpId) {
   return gLastBoundingClientRectsByNodeRrpId.get(nodeRrpId);
 }
@@ -1794,17 +1786,14 @@ function DOM_getAllBoundingClientRects() {
   const elements = entries
     .map((elem, i) => {
       const id = registerPlainObject(elem.raw) || i;
-      // TODO: handle scaleX/Y/Z
-      const scale = getContextTransformScale(elem?.context?.transform);
 
       // Use the bounding client rect as a fallback.
       let { left, top, right, bottom } =
-        shiftRect(elem.raw.getBoundingClientRect(), elem.offset, scale);
+        shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
 
       // Get all client rects.
       const clientRects = [...elem.raw.getClientRects()].map(r => {
-        const { left, top, right, bottom } =
-          shiftRect(r, elem.offset, scale);
+        const { left, top, right, bottom } = shiftRect(r, elem.offset)
         return [left, top, right, bottom];
       });
 
@@ -1997,7 +1986,7 @@ function CSS_getComputedStyle({ node }) {
     //     pseudoType
     //   );
     // }
-    // else
+    // else {
     styleInfo = ownerGlobal.getComputedStyle(nodeObj);
     for (let i = 0; i < styleInfo.length; i++) {
       computedStyle.push({
@@ -2445,8 +2434,7 @@ let gNextStackingContextId = 1;
 // considered part of the parent stacking context, not this new one".
 // For these elements we also create a StackingContext but pass the
 // parent stacking context to the constructor as the "realStackingContext".
-function StackingContext(window, options) {
-  const { root, offset, transform, realStackingContext } = options || {};
+function StackingContext(window, root, offset, realStackingContext) {
   this.window = window;
   this.id = gNextStackingContextId++;
 
@@ -2454,10 +2442,6 @@ function StackingContext(window, options) {
 
   // Offset relative to the outer window of the window containing this context.
   this.offset = offset || { left: 0, top: 0 };
-
-  // Transform scale - accumulation of all transform scaling factors
-  // applied to this or parent stacking contexts.
-  this.transform = transform || DefaultTransform;
 
   // The arrays below are filled in tree order (preorder depth first traversal).
 
@@ -2501,8 +2485,6 @@ StackingContext.prototype = {
       return;
     }
 
-    const contextAttrs = {};
-
     const position = style.getPropertyValue("position");
     let clipBounds;
     if (position == "absolute") {
@@ -2539,26 +2521,10 @@ StackingContext.prototype = {
       }
     }
 
-    if (elem.style) {
-      // Elements with `opacity < 1` get their own stacking context.
-      const opacity = elem.style.getPropertyValue("opacity");
-      const opacityVal = opacity.length > 0 ? +opacity : 1;
-      contextAttrs.opacity = opacityVal;
-    }
-
-    // Elements with a nonempty transform get their own stacking context.
-    const transformStr = elem.style?.getPropertyValue("transform");
-    const transform = parseCssTransform(transformStr);
-    contextAttrs.transform = transform;
-
     // Create a new stacking context for any iframes.
     if (elem.raw.tagName == "IFRAME" && elem.raw.contentWindow?.document) {
       const { left, top } = elem.raw.getBoundingClientRect();
-      // TODO: handle scaleX/Y/Z
-      // TODO: computation of derived dependencies of `contextAttrs` should be moved to addContext.
-      contextAttrs.left = left * getContextTransformScale(this.transform);
-      contextAttrs.top = top * getContextTransformScale(this.transform);
-      this.addContext(elem, undefined, contextAttrs);
+      this.addContext(elem, undefined, left, top);
       elem.context.addChildren(elem.raw.contentWindow.document);
     }
 
@@ -2568,12 +2534,13 @@ StackingContext.prototype = {
       return;
     }
 
-    if ((contextAttrs.opacity !== undefined && contextAttrs.opacity < 1) ||
-        (contextAttrs.transform !== DefaultTransform)
-    ) {
-      // Elements with opacity < 1, or non-empty transforms, get their own
-      // stacking context.
-      this.addContext(elem, undefined, contextAttrs);
+    // Elements with `opacity < 0` get their own stacking context.
+    const opacity = elem.style.getPropertyValue("opacity");
+    if (opacity) {
+      const opacityVal = +opacity | 0;
+      if (opacityVal < 1) {
+        this.addContext(elem);
+      }
     }
 
     const parentDisplay = elem.parent?.style?.getPropertyValue("display");
@@ -2583,7 +2550,7 @@ StackingContext.prototype = {
     ) {
       const zIndex = elem.style.getPropertyValue("z-index");
       if (zIndex != "auto") {
-        this.addContext(elem, undefined, contextAttrs);
+        this.addContext(elem);
         // Elements with a zero z-index have their own stacking context but are
         // grouped with other positioned children with an auto z-index.
         const index = +zIndex | 0;
@@ -2596,7 +2563,7 @@ StackingContext.prototype = {
       if (position != "static") {
         this.realStackingContext.addPositionedElement(elem);
         if (!elem.context) {
-          this.addContext(elem, this.realStackingContext, contextAttrs);
+          this.addContext(elem, this.realStackingContext);
         }
       } else {
         this.addNonPositionedElement(elem);
@@ -2609,7 +2576,7 @@ StackingContext.prototype = {
 
     if (elem.isFloat()) {
       // Group the element and its descendants.
-      this.addContext(elem, this.realStackingContext, contextAttrs);
+      this.addContext(elem, this.realStackingContext);
       this.addFloatingElement(elem);
       return;
     }
@@ -2617,7 +2584,7 @@ StackingContext.prototype = {
     const display = elem.style.getPropertyValue("display");
     if (display == "inline-block" || display == "inline-table") {
       // Group the element and its descendants.
-      this.addContext(elem, this.realStackingContext, contextAttrs);
+      this.addContext(elem, this.realStackingContext);
       this.addNonPositionedElement(elem);
       return;
     }
@@ -2626,23 +2593,7 @@ StackingContext.prototype = {
     this.addChildrenWithParent(elem);
   },
 
-  addContext(
-    elem,
-    realStackingContext,
-    { left, top, opacity, transform } = {}
-  ) {
-    left = left || 0;
-    top = top || 0;
-    opacity = opacity || 1;
-    transform = transform || DefaultTransform;
-
-    // TODO: handle scaleX/Y/Z
-    if (transform !== DefaultTransform || this.transform !== DefaultTransform) {
-      transform = {
-        scale: getContextTransformScale(transform) * getContextTransformScale(this.transform)
-      };
-    }
-
+  addContext(elem, realStackingContext, left = 0, top = 0) {
     if (elem.context) {
       assert(!left && !top);
       return;
@@ -2651,12 +2602,7 @@ StackingContext.prototype = {
       left: this.offset.left + left,
       top: this.offset.top + top,
     };
-    elem.context = new StackingContext(this.window, {
-      root: elem,
-      offset,
-      realStackingContext,
-      transform
-    });
+    elem.context = new StackingContext(this.window, elem, offset, realStackingContext);
   },
 
   addZIndexElement(elem, index) {
@@ -2733,53 +2679,12 @@ StackingContext.prototype = {
 /** ###########################################################################
  * {@link shiftRect}
  * ##########################################################################*/
-function shiftRect(rect, offset, scale) {
+function shiftRect(rect, offset) {
   return {
-    left:
-      rect.left !== undefined ?
-        offset.left + (rect.left * scale) :
-        undefined,
-    top:
-      rect.top !== undefined ?
-        offset.top + (rect.top * scale) :
-        undefined,
-    right:
-      rect.right !== undefined ?
-        offset.left + (rect.right * scale):
-        undefined,
-    bottom:
-      rect.bottom !== undefined ?
-        offset.top + (rect.bottom * scale) :
-        undefined,
-  };
-}
-
-/** ###########################################################################
- * {@link parseCssTransform}
- * Parses a CSS transform string into an object with structure:
- * ```
- * { scale }
- * ```
- * ##########################################################################*/
-function parseCssTransform(transform) {
-  let cssScale;
-  if (transform) {
-    try {
-      // see https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleValue/parse_static
-      const css = CSSStyleValue.parse(
-        "transform",
-        transform,
-      );
-
-      cssScale = Array.from(css).find(entry => entry instanceof CSSScale);
-    } catch (err) {
-      // could not parse CSS transform
-    }
-  }
-
-  // TODO: handle scaleX/Y/Z
-  return {
-    scale: cssScale?.x?.value !== undefined ? cssScale?.x?.value : DefaultTransform.scale
+    left: rect.left !== undefined ? offset.left + rect.left : undefined,
+    top: rect.top !== undefined ? offset.top + rect.top : undefined,
+    right: rect.right !== undefined ? offset.left + rect.right : undefined,
+    bottom: rect.bottom !== undefined ? offset.top + rect.bottom : undefined,
   };
 }
 
@@ -2804,6 +2709,7 @@ __RECORD_REPLAY_ARGUMENTS__.internal = {
 }
 
 })();
+
 )"""";
 
 /** ###########################################################################
