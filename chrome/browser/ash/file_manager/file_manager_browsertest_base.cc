@@ -21,6 +21,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -99,6 +100,8 @@
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -858,6 +861,19 @@ struct GetLocalPathMessage {
 
   std::string local_path;
 };
+
+views::Widget* FindSharesheetWidget() {
+  for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
+    views::Widget::Widgets widgets;
+    views::Widget::GetAllChildWidgets(root_window, &widgets);
+    for (views::Widget* widget : widgets) {
+      if (widget->GetName() == "SharesheetBubbleView") {
+        return widget;
+      }
+    }
+  }
+  return nullptr;
+}
 
 }  // anonymous namespace
 
@@ -3884,6 +3900,24 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     app_list::ImageInfo image_info(unique_terms, file_path, base::Time::Now());
     app_list::LocalImageSearchServiceFactory::GetForBrowserContext(profile())
         ->Insert(image_info);
+    return;
+  }
+
+  if (name == "getSharesheetInfo") {
+    views::Widget* sharesheet_widget = FindSharesheetWidget();
+    base::Value::List result;
+    if (sharesheet_widget) {
+      views::View* sharesheet_bubble_view =
+          sharesheet_widget->GetContentsView();
+      views::View* targets = sharesheet_bubble_view->GetViewByID(
+          ash::sharesheet::SharesheetViewID::TARGETS_DEFAULT_VIEW_ID);
+      for (views::View* button : targets->children()) {
+        views::Label* label = static_cast<views::Label*>(button->GetViewByID(
+            ash::sharesheet::SharesheetViewID::TARGET_LABEL_VIEW_ID));
+        result.Append(label->GetText());
+      }
+    }
+    base::JSONWriter::Write(result, output);
     return;
   }
 

@@ -28,6 +28,7 @@ enum SharesheetViewID {
   // ID for the view populated with targets that shows in the default
   // sharesheet.
   TARGETS_DEFAULT_VIEW_ID,
+  TARGET_LABEL_VIEW_ID,
   HEADER_VIEW_TEXT_PREVIEW_ID,
   SHARE_ACTION_VIEW_ID,
 };

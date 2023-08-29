@@ -122,7 +122,6 @@ constexpr char kWebAppTaskType[] = "web";
 
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPdfFileExtension[] = ".pdf";
-constexpr char kEncryptedMimeType[] = "application/vnd.google-gsuite.encrypted";
 
 // The map with pairs Office file extensions with their corresponding
 // `OfficeOpenExtensions` enum.
@@ -572,8 +571,8 @@ OfficeOpenExtensions GetOfficeOpenExtension(const FileSystemURL& url) {
 
 // Files encrypted with Google Drive CSE have a specific MIME type; this helper
 // returns whether the given MIME type denotes such a file.
-bool IsEncryptedMimeType(const extensions::EntryInfo& entry) {
-  return base::StartsWith(entry.mime_type, kEncryptedMimeType);
+bool IsEncryptedEntry(const extensions::EntryInfo& entry) {
+  return drive::util::IsEncryptedMimeType(entry.mime_type);
 }
 
 }  // namespace
@@ -1101,9 +1100,8 @@ void FindAllTypesOfTasks(Profile* profile,
                          FindTasksCallback callback) {
   DCHECK(profile);
   auto resulting_tasks = std::make_unique<ResultingTasks>();
-  bool has_encrypted_item = base::ranges::any_of(entries, &IsEncryptedMimeType);
-  bool all_encrypted_items =
-      base::ranges::all_of(entries, &IsEncryptedMimeType);
+  bool has_encrypted_item = base::ranges::any_of(entries, &IsEncryptedEntry);
+  bool all_encrypted_items = base::ranges::all_of(entries, &IsEncryptedEntry);
   if (has_encrypted_item) {
     if (all_encrypted_items) {
       resulting_tasks->tasks.emplace_back(FullTaskDescriptor(

@@ -1638,6 +1638,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkEncryptedMoveEnabled")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    Share, /* share.js */
+    FilesAppBrowserTest,
+    ::testing::Values(TestCase("checkEncryptedSharesheetOptions")));
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */
     FilesAppBrowserTest,
     ::testing::Values(

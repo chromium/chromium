@@ -40,6 +40,7 @@ import './quick_view.js';
 import './recents.js';
 import './restore_prefs.js';
 import './search.js';
+import './share.js';
 import './share_and_manage_dialog.js';
 import './sort_columns.js';
 import './tab_index.js';

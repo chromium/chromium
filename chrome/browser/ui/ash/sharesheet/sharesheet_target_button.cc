@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -76,6 +77,7 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   auto* label =
       label_view->AddChildView(std::make_unique<views::Label>(display_name));
+  label->SetID(SharesheetViewID::TARGET_LABEL_VIEW_ID);
   label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
 
   if (chromeos::features::IsJellyEnabled()) {

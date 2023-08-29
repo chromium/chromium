@@ -46,6 +46,7 @@ js_type_check("closure_compile") {
     ":recents",
     ":restore_prefs",
     ":search",
+    ":share",
     ":share_and_manage_dialog",
     ":sort_columns",
     ":tab_index",
@@ -344,6 +345,14 @@ js_library("search") {
   deps = [
     ":test_data",
     "//ui/file_manager/integration_tests:files_app_state",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+}
+
+js_library("share") {
+  testonly = true
+  deps = [
+    ":test_data",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }

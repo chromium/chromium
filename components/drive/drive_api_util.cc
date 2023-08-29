@@ -181,6 +181,9 @@ bool HasHostedDocumentExtension(const base::FilePath& path) {
   return extension == kUnknownHostedDocumentExtension;
 }
 
+bool IsEncryptedMimeType(const std::string& mime_type) {
+  return base::StartsWith(mime_type, kEncryptedMimeType);
+}
 
 }  // namespace util
 }  // namespace drive

@@ -27,6 +27,7 @@ const char kGoogleFormMimeType[] = "application/vnd.google-apps.form";
 const char kGoogleMapMimeType[] = "application/vnd.google-apps.map";
 const char kGoogleSiteMimeType[] = "application/vnd.google-apps.site";
 const char kDriveFolderMimeType[] = "application/vnd.google-apps.folder";
+const char kEncryptedMimeType[] = "application/vnd.google-gsuite.encrypted";
 
 // Escapes ' to \' in the |str|. This is designed to use for string value of
 // search parameter on Drive API v2.
@@ -59,6 +60,10 @@ bool IsKnownHostedDocumentMimeType(const std::string& mime_type);
 // Returns true if the given file path has an extension corresponding to one of
 // hosted document types.
 bool HasHostedDocumentExtension(const base::FilePath& path);
+
+// Returns true if the given MIME type corresponds to an encrypted (Google Drive
+// CSE) file.
+bool IsEncryptedMimeType(const std::string& mime_type);
 
 }  // namespace util
 }  // namespace drive
