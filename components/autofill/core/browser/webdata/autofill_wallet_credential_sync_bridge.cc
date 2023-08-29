@@ -170,7 +170,16 @@ std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
 
 void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // For this data type, we want to delete all the data (not just the metadata)
+  // when the type is disabled!
+  if (AutofillTable* table = GetAutofillTable();
+      !table || !table->ClearServerCvcs()) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to delete wallet credential data from the table."});
+  }
+  web_data_backend_->CommitChanges();
+  web_data_backend_->NotifyOfMultipleAutofillChanges();
 }
 
 bool AutofillWalletCredentialSyncBridge::IsEntityDataValid(

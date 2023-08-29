@@ -373,4 +373,24 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ServerCvcChanged_Remove) {
   bridge()->ServerCvcChanged(change);
 }
 
+// Test to verify all the server cvc data is deleted/cleared when the sync is
+// disabled.
+TEST_F(AutofillWalletCredentialSyncBridgeTest, ApplyDisableSyncChanges) {
+  const ServerCvc server_cvc =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+
+  StartSyncing({AutofillWalletCredentialSpecificsFromStructData(server_cvc)});
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc));
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+
+  EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+}
+
 }  // namespace autofill
