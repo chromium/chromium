@@ -86,7 +86,7 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
     case UnitType::kDotsPerInch:
     case UnitType::kDotsPerCentimeter:
       return BaseType::kResolution;
-    case UnitType::kFraction:
+    case UnitType::kFlex:
       return BaseType::kFlex;
     case UnitType::kPercentage:
       return BaseType::kPercent;

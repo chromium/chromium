@@ -95,12 +95,12 @@ const double kMiddleStatePercentage = 50.0;
 
 namespace {
 
-static GridLength ConvertGridTrackBreadth(const StyleResolverState& state,
-                                          const CSSValue& value) {
+static Length ConvertGridTrackBreadth(const StyleResolverState& state,
+                                      const CSSValue& value) {
   // Fractional unit.
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (primitive_value && primitive_value->IsFlex()) {
-    return GridLength(primitive_value->GetDoubleValue());
+    return Length::Flex(primitive_value->GetDoubleValue());
   }
 
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -1347,11 +1347,8 @@ GridTrackSize StyleBuilderConverter::ConvertGridTrackSize(
   }
 
   SECURITY_DCHECK(function.length() == 2);
-  GridLength min_track_breadth(
-      ConvertGridTrackBreadth(state, function.Item(0)));
-  GridLength max_track_breadth(
-      ConvertGridTrackBreadth(state, function.Item(1)));
-  return GridTrackSize(min_track_breadth, max_track_breadth);
+  return GridTrackSize(ConvertGridTrackBreadth(state, function.Item(0)),
+                       ConvertGridTrackBreadth(state, function.Item(1)));
 }
 
 static void ConvertGridLineNamesList(

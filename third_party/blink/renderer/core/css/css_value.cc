@@ -110,6 +110,7 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated:
+    case Length::kFlex:
       return CSSPrimitiveValue::CreateFromLength(value, zoom);
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:

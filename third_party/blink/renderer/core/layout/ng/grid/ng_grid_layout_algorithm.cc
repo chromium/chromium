@@ -1313,11 +1313,12 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
           break;
         }
         case Length::kMinIntrinsic:
+        case Length::kFlex:
+        case Length::kExtendToZoom:
         case Length::kDeviceWidth:
         case Length::kDeviceHeight:
-        case Length::kExtendToZoom:
-        case Length::kContent:
         case Length::kNone:
+        case Length::kContent:
           NOTREACHED();
           break;
       }
@@ -1393,14 +1394,14 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
       absl::optional<LayoutUnit> fixed_min_track_breadth;
       if (track_size.HasFixedMinTrackBreadth()) {
-        fixed_min_track_breadth = MinimumValueForLength(
-            track_size.MinTrackBreadth().length(), available_size);
+        fixed_min_track_breadth =
+            MinimumValueForLength(track_size.MinTrackBreadth(), available_size);
       }
 
       absl::optional<LayoutUnit> fixed_max_track_breadth;
       if (track_size.HasFixedMaxTrackBreadth()) {
-        fixed_max_track_breadth = MinimumValueForLength(
-            track_size.MaxTrackBreadth().length(), available_size);
+        fixed_max_track_breadth =
+            MinimumValueForLength(track_size.MaxTrackBreadth(), available_size);
       }
 
       LayoutUnit track_contribution;

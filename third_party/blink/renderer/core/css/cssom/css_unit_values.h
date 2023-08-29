@@ -310,7 +310,7 @@ class CSSUnitValues {
 
   // <flex>
   static CSSUnitValue* fr(double value) {
-    return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kFraction);
+    return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kFlex);
   }
 };
 

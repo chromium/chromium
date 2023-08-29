@@ -5353,13 +5353,13 @@ CSSValue* ConsumeGridBreadth(CSSParserTokenRange& range,
     return ConsumeIdent(range);
   }
   if (token.GetType() == kDimensionToken &&
-      token.GetUnitType() == CSSPrimitiveValue::UnitType::kFraction) {
+      token.GetUnitType() == CSSPrimitiveValue::UnitType::kFlex) {
     if (token.NumericValue() < 0) {
       return nullptr;
     }
     return CSSNumericLiteralValue::Create(
         range.ConsumeIncludingWhitespace().NumericValue(),
-        CSSPrimitiveValue::UnitType::kFraction);
+        CSSPrimitiveValue::UnitType::kFlex);
   }
   return ConsumeLengthOrPercent(range, context,
                                 CSSPrimitiveValue::ValueRange::kNonNegative,

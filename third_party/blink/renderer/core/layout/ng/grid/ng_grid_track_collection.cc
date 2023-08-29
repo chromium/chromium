@@ -381,12 +381,10 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
       track_size(track_definition),
       fit_content_limit(kIndefiniteSize) {
   if (track_size.IsFitContent()) {
-    DCHECK(track_size.FitContentTrackBreadth().IsLength());
-
     // Argument for 'fit-content' is a <percentage> that couldn't be resolved to
     // a definite <length>, normalize to 'minmax(auto, max-content)'.
     if (is_available_size_indefinite &&
-        track_size.FitContentTrackBreadth().length().IsPercent()) {
+        track_size.FitContentTrackBreadth().IsPercent()) {
       track_size = GridTrackSize(Length::Auto(), Length::MaxContent());
     }
   } else {
@@ -394,9 +392,9 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
     // definitions from https://drafts.csswg.org/css-grid-2/#algo-terms.
     bool is_unresolvable_percentage_min_function =
         is_available_size_indefinite &&
-        track_size.MinTrackBreadth().HasPercentage();
+        track_size.MinTrackBreadth().IsPercentOrCalc();
 
-    GridLength normalized_min_track_sizing_function =
+    Length normalized_min_track_sizing_function =
         (is_unresolvable_percentage_min_function ||
          track_size.HasFlexMinTrackBreadth())
             ? Length::Auto()
@@ -404,9 +402,9 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
 
     bool is_unresolvable_percentage_max_function =
         is_available_size_indefinite &&
-        track_size.MaxTrackBreadth().HasPercentage();
+        track_size.MaxTrackBreadth().IsPercentOrCalc();
 
-    GridLength normalized_max_track_sizing_function =
+    Length normalized_max_track_sizing_function =
         (is_unresolvable_percentage_max_function ||
          track_size.HasAutoMaxTrackBreadth())
             ? Length::Auto()
@@ -421,7 +419,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
 
 double NGGridSet::FlexFactor() const {
   DCHECK(track_size.HasFlexMaxTrackBreadth());
-  return track_size.MaxTrackBreadth().Flex() * track_count;
+  return track_size.MaxTrackBreadth().GetFloatValue() * track_count;
 }
 
 LayoutUnit NGGridSet::BaseSize() const {
@@ -1134,23 +1132,23 @@ void NGGridSizingTrackCollection::InitializeSets(
 
     if (track_size.IsFitContent()) {
       // Indefinite lengths cannot occur, as they must be normalized to 'auto'.
-      DCHECK(!track_size.FitContentTrackBreadth().HasPercentage() ||
+      DCHECK(!track_size.FitContentTrackBreadth().IsPercentOrCalc() ||
              grid_available_size != kIndefiniteSize);
 
       LayoutUnit fit_content_argument = MinimumValueForLength(
-          track_size.FitContentTrackBreadth().length(), grid_available_size);
+          track_size.FitContentTrackBreadth(), grid_available_size);
       set.fit_content_limit = fit_content_argument * set.track_count;
     }
 
     if (track_size.HasFixedMaxTrackBreadth()) {
-      DCHECK(!track_size.MaxTrackBreadth().HasPercentage() ||
+      DCHECK(!track_size.MaxTrackBreadth().IsPercentOrCalc() ||
              grid_available_size != kIndefiniteSize);
 
       // A fixed sizing function: Resolve to an absolute length and use that
       // size as the track’s initial growth limit; if the growth limit is less
       // than the base size, increase the growth limit to match the base size.
       LayoutUnit fixed_max_breadth = MinimumValueForLength(
-          track_size.MaxTrackBreadth().length(), grid_available_size);
+          track_size.MaxTrackBreadth(), grid_available_size);
       set.growth_limit = fixed_max_breadth * set.track_count;
     } else {
       // An intrinsic or flexible sizing function: Use an initial growth limit
@@ -1159,13 +1157,13 @@ void NGGridSizingTrackCollection::InitializeSets(
     }
 
     if (track_size.HasFixedMinTrackBreadth()) {
-      DCHECK(!track_size.MinTrackBreadth().HasPercentage() ||
+      DCHECK(!track_size.MinTrackBreadth().IsPercentOrCalc() ||
              grid_available_size != kIndefiniteSize);
 
       // A fixed sizing function: Resolve to an absolute length and use that
       // size as the track’s initial base size.
       LayoutUnit fixed_min_breadth = MinimumValueForLength(
-          track_size.MinTrackBreadth().length(), grid_available_size);
+          track_size.MinTrackBreadth(), grid_available_size);
       set.InitBaseSize(fixed_min_breadth * set.track_count);
     } else {
       // An intrinsic sizing function: Use an initial base size of zero.

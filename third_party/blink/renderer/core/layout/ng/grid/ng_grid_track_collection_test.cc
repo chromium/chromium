@@ -299,9 +299,10 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridSetTrackSizeNormalization) {
       GridTrackSize(Length::MaxContent(), Length::MaxContent()),
       GridTrackSize(Length::MaxContent(), Length::MaxContent()));
   // minmax(1fr, 3fr)
-  TestTrackSizeNormalization(GridTrackSize(GridLength(1.0), GridLength(3.0)),
-                             GridTrackSize(Length::Auto(), GridLength(3.0)),
-                             GridTrackSize(Length::Auto(), GridLength(3.0)));
+  TestTrackSizeNormalization(
+      GridTrackSize(Length::Flex(1.0), Length::Flex(3.0)),
+      GridTrackSize(Length::Auto(), Length::Flex(3.0)),
+      GridTrackSize(Length::Auto(), Length::Flex(3.0)));
   // fit-content(40%)
   TestTrackSizeNormalization(
       GridTrackSize(Length::Percent(40), kFitContentTrackSizing),
@@ -317,7 +318,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridSizingTrackCollectionSetIterator) {
   for (wtf_size_t set_count : set_counts) {
     Vector<GridTrackSize, 1> track_sizes;
     for (wtf_size_t i = 0; i < set_count; ++i)
-      track_sizes.emplace_back(GridLength(expected_set_count++));
+      track_sizes.emplace_back(Length::Flex(expected_set_count++));
     ASSERT_TRUE(explicit_tracks.AddRepeater(
         track_sizes, NGGridTrackRepeater::RepeatType::kNoRepeat, 1));
   }
@@ -335,7 +336,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridSizingTrackCollectionSetIterator) {
   wtf_size_t set_count = 0;
   for (auto set_iterator = track_collection.GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
-    EXPECT_SET(GridTrackSize(GridLength(set_count++)), 1u, set_iterator);
+    EXPECT_SET(GridTrackSize(Length::Flex(set_count++)), 1u, set_iterator);
   }
   EXPECT_EQ(expected_set_count, set_count);
 
@@ -348,7 +349,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridSizingTrackCollectionSetIterator) {
     wtf_size_t current_range_set_count = 0;
     for (auto set_iterator = IteratorForRange(track_collection, i);
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
-      EXPECT_SET(GridTrackSize(GridLength(set_count++)), 1u, set_iterator);
+      EXPECT_SET(GridTrackSize(Length::Flex(set_count++)), 1u, set_iterator);
       ++current_range_set_count;
     }
     EXPECT_EQ(set_counts[range_count++], current_range_set_count);
@@ -552,7 +553,7 @@ TEST_F(NGGridTrackCollectionTest,
 
   // repeat(2, min-content 1fr 2px 3px)
   Vector<GridTrackSize, 1> track_sizes = {
-      GridTrackSize(Length::MinContent()), GridTrackSize(GridLength(1.0)),
+      GridTrackSize(Length::MinContent()), GridTrackSize(Length::Flex(1.0)),
       GridTrackSize(Length::Fixed(2)), GridTrackSize(Length::Fixed(3))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(
       track_sizes, NGGridTrackRepeater::RepeatType::kInteger, 2));
@@ -587,7 +588,7 @@ TEST_F(NGGridTrackCollectionTest,
 
   EXPECT_RANGE(1u, 2u, ranges[1]);
   set_iterator = IteratorForRange(track_collection, /* range_index */ 1);
-  EXPECT_SET(GridTrackSize(GridLength(1.0)), 1u, set_iterator);
+  EXPECT_SET(GridTrackSize(Length::Flex(1.0)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
@@ -602,7 +603,7 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::MinContent()), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
-  EXPECT_SET(GridTrackSize(GridLength(1.0)), 1u, set_iterator);
+  EXPECT_SET(GridTrackSize(Length::Flex(1.0)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());

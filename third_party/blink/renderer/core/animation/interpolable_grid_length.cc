@@ -20,6 +20,8 @@ GetInterpolableGridLengthType(const Length& length) {
       return InterpolableGridLength::kMinContent;
     case Length::kMaxContent:
       return InterpolableGridLength::kMaxContent;
+    case Length::kFlex:
+      return InterpolableGridLength::kFlex;
     default:
       return InterpolableGridLength::kLength;
   }
@@ -50,35 +52,28 @@ InterpolableGridLength::InterpolableGridLength(
 
 // static
 std::unique_ptr<InterpolableGridLength> InterpolableGridLength::Create(
-    const GridLength& grid_length,
+    const Length& length,
     float zoom) {
+  InterpolableGridLengthType type = GetInterpolableGridLengthType(length);
   std::unique_ptr<InterpolableValue> value;
-  InterpolableGridLengthType type;
-  Length length(Length::kAuto);
-  if (grid_length.IsLength()) {
-    length = grid_length.length();
-    value = grid_length.IsContentSized()
-                ? nullptr
-                : InterpolableLength::MaybeConvertLength(length, zoom);
-    type = GetInterpolableGridLengthType(length);
+  if (length.IsFlex()) {
+    value = std::make_unique<InterpolableNumber>(length.GetFloatValue());
   } else {
-    value = std::make_unique<InterpolableNumber>(grid_length.Flex());
-    type = kFlex;
+    value = InterpolableLength::MaybeConvertLength(length, zoom);
   }
   return std::make_unique<InterpolableGridLength>(std::move(value), type);
 }
 
-GridLength InterpolableGridLength::CreateGridLength(
+Length InterpolableGridLength::CreateGridLength(
     const CSSToLengthConversionData& conversion_data) const {
   if (IsContentSized())
-    return GridLength(CreateContentSizedLength(type_));
+    return CreateContentSizedLength(type_);
 
   DCHECK(value_);
   if (type_ == kFlex)
-    return GridLength(To<InterpolableNumber>(*value_).Value());
-  Length length = To<InterpolableLength>(*value_).CreateLength(
+    return Length::Flex(To<InterpolableNumber>(*value_).Value());
+  return To<InterpolableLength>(*value_).CreateLength(
       conversion_data, Length::ValueRange::kNonNegative);
-  return GridLength(length);
 }
 
 bool InterpolableGridLength::IsContentSized() const {

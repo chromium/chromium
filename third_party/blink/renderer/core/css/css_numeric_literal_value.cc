@@ -242,7 +242,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kHertz:
     case UnitType::kKilohertz:
     case UnitType::kTurns:
-    case UnitType::kFraction:
+    case UnitType::kFlex:
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
     case UnitType::kViewportInlineSize:
@@ -343,7 +343,7 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
     case UnitType::kViewportHeight:
     case UnitType::kViewportMin:
     case UnitType::kViewportMax:
-    case UnitType::kFraction:
+    case UnitType::kFlex:
       return num_ == other.num_;
     case UnitType::kQuirkyEms:
       return false;

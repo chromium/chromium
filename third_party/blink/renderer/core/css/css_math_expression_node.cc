@@ -193,7 +193,7 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kX:
     case CSSPrimitiveValue::UnitType::kDotsPerInch:
     case CSSPrimitiveValue::UnitType::kDotsPerCentimeter:
-    case CSSPrimitiveValue::UnitType::kFraction:
+    case CSSPrimitiveValue::UnitType::kFlex:
     case CSSPrimitiveValue::UnitType::kInteger:
       return true;
     default:

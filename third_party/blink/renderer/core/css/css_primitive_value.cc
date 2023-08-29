@@ -247,6 +247,9 @@ CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
       }
       return CSSNumericLiteralValue::Create(num, UnitType::kPercentage);
     }
+    case Length::kFlex:
+      return CSSNumericLiteralValue::Create(length.GetFloatValue(),
+                                            UnitType::kFlex);
     default:
       break;
   }
@@ -853,7 +856,7 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "khz";
     case UnitType::kTurns:
       return "turn";
-    case UnitType::kFraction:
+    case UnitType::kFlex:
       return "fr";
     case UnitType::kViewportWidth:
       return "vw";

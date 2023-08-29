@@ -148,7 +148,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kDotsPerInch,
     kDotsPerCentimeter,
     // Other units
-    kFraction,
+    kFlex,
     kInteger,
 
     // This value is used to handle quirky margins in reflow roots (body, td,
@@ -335,7 +335,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
            type <= UnitType::kDotsPerCentimeter;
   }
   bool IsResolution() const;
-  static bool IsFlex(UnitType unit) { return unit == UnitType::kFraction; }
+  static bool IsFlex(UnitType unit) { return unit == UnitType::kFlex; }
   bool IsFlex() const;
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#computationally-independent
