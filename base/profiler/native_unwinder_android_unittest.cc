@@ -139,11 +139,19 @@ std::vector<Frame> CaptureScenario(
   return sample;
 }
 
-// Checks that the expected information is present in sampled frames.
 // TODO(https://crbug.com/1147315): After fix, re-enable on all ASAN bots.
-// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
-// if defined(ADDRESS_SANITIZER).
-TEST(NativeUnwinderAndroidTest, DISABLED_PlainFunction) {
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_PlainFunction DISABLED_PlainFunction
+#else
+#define MAYBE_PlainFunction PlainFunction
+#endif
+// Checks that the expected information is present in sampled frames.
+TEST(NativeUnwinderAndroidTest, MAYBE_PlainFunction) {
+  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
+  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+    GTEST_SKIP();
+  }
+
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
       NativeUnwinderAndroid::CreateMemoryRegionsMap());
@@ -173,12 +181,20 @@ TEST(NativeUnwinderAndroidTest, DISABLED_PlainFunction) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
+// TODO(https://crbug.com/1147315): After fix, re-enable on all ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_Alloca DISABLED_Alloca
+#else
+#define MAYBE_Alloca Alloca
+#endif
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
-// TODO(https://crbug.com/1147315): After fix, re-enable on all ASAN bots.
-// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
-// if defined(ADDRESS_SANITIZER).
-TEST(NativeUnwinderAndroidTest, DISABLED_Alloca) {
+TEST(NativeUnwinderAndroidTest, MAYBE_Alloca) {
+  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
+  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+    GTEST_SKIP();
+  }
+
   UnwindScenario scenario(BindRepeating(&CallWithAlloca));
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
@@ -209,12 +225,20 @@ TEST(NativeUnwinderAndroidTest, DISABLED_Alloca) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
+// TODO(https://crbug.com/1147315): After fix, re-enable on all ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OtherLibrary DISABLED_OtherLibrary
+#else
+#define MAYBE_OtherLibrary OtherLibrary
+#endif
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
-// TODO(https://crbug.com/1147315): After fix, re-enable on all ASAN bots.
-// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
-// if defined(ADDRESS_SANITIZER).
-TEST(NativeUnwinderAndroidTest, DISABLED_OtherLibrary) {
+TEST(NativeUnwinderAndroidTest, MAYBE_OtherLibrary) {
+  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
+  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+    GTEST_SKIP();
+  }
+
   NativeLibrary other_library = LoadOtherLibrary();
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
