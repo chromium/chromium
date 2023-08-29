@@ -134,24 +134,19 @@ class HotspotDetailedViewTest : public AshTestBase {
     EXPECT_EQ(expected_text, entry_row->sub_text_label()->GetText());
   }
 
-  void AssertEntryRowEnabled(bool expected_enabled) {
+  void AssertEntryRowEnabled() {
     HoverHighlightView* entry_row = GetEntryRow();
     ASSERT_TRUE(entry_row);
-    if (expected_enabled) {
-      EXPECT_TRUE(entry_row->GetEnabled());
-      return;
-    }
-    EXPECT_FALSE(entry_row->GetEnabled());
+    // Entry row should be enabled to show a11y string.
+    EXPECT_TRUE(entry_row->GetEnabled());
+    EXPECT_EQ(kHotspotTitle, entry_row->GetAccessibleName());
   }
 
-  void AssertToggleOn(bool expected_toggle_on) {
+  void AssertToggleOn(bool expected_toggle_on, bool expected_toogle_enabled) {
     Switch* toggle = GetToggleButton();
     ASSERT_TRUE(toggle);
-    if (expected_toggle_on) {
-      EXPECT_TRUE(toggle->GetIsOn());
-      return;
-    }
-    EXPECT_FALSE(toggle->GetIsOn());
+    EXPECT_EQ(expected_toggle_on, toggle->GetIsOn());
+    EXPECT_EQ(expected_toogle_enabled, toggle->GetEnabled());
   }
 
  protected:
@@ -197,8 +192,9 @@ TEST_F(HotspotDetailedViewTest, HotspotEnabledUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(u"On, no devices connected");
-  AssertEntryRowEnabled(/*expected_enabled=*/true);
-  AssertToggleOn(/*expected_toggle_on=*/true);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/true,
+                 /**expected_toggle_enabled=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
   views::ImageView* hotspot_icon = GetHotspotIcon();
@@ -220,8 +216,9 @@ TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(u"Turning on…");
-  AssertEntryRowEnabled(/*expected_enabled=*/true);
-  AssertToggleOn(/*expected_toggle_on=*/true);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/true,
+                 /*expected_toggle_enabled=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
   views::ImageView* hotspot_icon = GetHotspotIcon();
@@ -246,8 +243,9 @@ TEST_F(HotspotDetailedViewTest, HotspotDisablingUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(u"Turning off…");
-  AssertEntryRowEnabled(/*expected_enabled=*/false);
-  AssertToggleOn(/*expected_toggle_on=*/false);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/false,
+                 /*expected_toggle_enabled=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
   views::ImageView* hotspot_icon = GetHotspotIcon();
@@ -263,8 +261,9 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndAllowedUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(std::u16string());
-  AssertEntryRowEnabled(/*expected_enabled=*/true);
-  AssertToggleOn(/*expected_toggle_on=*/false);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/false,
+                 /*expected_toggle_enabled=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
   views::ImageView* hotspot_icon = GetHotspotIcon();
@@ -281,8 +280,9 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndNoMobileNetworkUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(u"Connect to mobile data");
-  AssertEntryRowEnabled(/*expected_enabled=*/false);
-  AssertToggleOn(/*expected_toggle_on=*/false);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/false,
+                 /*expected_toggle_enabled=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
   views::ImageView* hotspot_icon = GetHotspotIcon();
@@ -300,8 +300,9 @@ TEST_F(HotspotDetailedViewTest,
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(std::u16string());
-  AssertEntryRowEnabled(/*expected_enabled=*/false);
-  AssertToggleOn(/*expected_toggle_on=*/false);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/false,
+                 /*expected_toggle_enabled=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_TRUE(extra_icon->GetVisible());
   EXPECT_EQ(u"Your mobile network doesn't support hotspot",
@@ -320,8 +321,9 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndBlockedByPolicyUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(std::u16string());
-  AssertEntryRowEnabled(/*expected_enabled=*/false);
-  AssertToggleOn(/*expected_toggle_on=*/false);
+  AssertEntryRowEnabled();
+  AssertToggleOn(/*expected_toggle_on=*/false,
+                 /*expected_toggle_enabled=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_TRUE(extra_icon->GetVisible());
   EXPECT_EQ(u"This setting is managed by your administrator",
@@ -333,13 +335,27 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndBlockedByPolicyUI) {
       hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
-TEST_F(HotspotDetailedViewTest, PressingEntryRowNotifiesDelegate) {
+TEST_F(HotspotDetailedViewTest,
+       PressingEntryRowNotifiesDelegateWhenHotspotAllowed) {
   ASSERT_TRUE(hotspot_detailed_view_);
   HoverHighlightView* entry_row = GetEntryRow();
   EXPECT_FALSE(hotspot_detailed_view_delegate_.last_toggle_state_);
 
   LeftClickOn(entry_row);
   EXPECT_TRUE(hotspot_detailed_view_delegate_.last_toggle_state_);
+}
+
+TEST_F(HotspotDetailedViewTest,
+       PressingEntryRowNotNotifiesDelegateWhenHotspotDisallowed) {
+  UpdateHotspotView(HotspotState::kDisabled,
+                    HotspotAllowStatus::kDisallowedNoMobileData);
+
+  ASSERT_TRUE(hotspot_detailed_view_);
+  HoverHighlightView* entry_row = GetEntryRow();
+  EXPECT_FALSE(hotspot_detailed_view_delegate_.last_toggle_state_);
+
+  LeftClickOn(entry_row);
+  EXPECT_FALSE(hotspot_detailed_view_delegate_.last_toggle_state_);
 }
 
 TEST_F(HotspotDetailedViewTest, PressingToggleNotifiesDelegate) {

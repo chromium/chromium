@@ -95,6 +95,8 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView,
 
   hotspot_config::mojom::HotspotState state_ =
       hotspot_config::mojom::HotspotState::kDisabled;
+  hotspot_config::mojom::HotspotAllowStatus allow_status_ =
+      hotspot_config::mojom::HotspotAllowStatus::kAllowed;
 
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
