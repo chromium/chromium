@@ -50,7 +50,9 @@ void ServiceWorkerResourceLoader::SetCommitResponsibility(
       } else {
         CHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet ||
               commit_responsibility_ ==
-                  FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
+                  FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect ||
+              commit_responsibility_ ==
+                  FetchResponseFrom::kAutoPreloadHandlingFallback);
       }
       break;
   }

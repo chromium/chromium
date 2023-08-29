@@ -6132,6 +6132,8 @@ class ServiceWorkerAutoPreloadBrowserTest
         {features::kServiceWorkerBypassFetchHandler});
   }
 
+  ~ServiceWorkerAutoPreloadBrowserTest() override = default;
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -6234,6 +6236,86 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
 
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_EQ(2, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerAutoPreloadBrowserTest,
+    Subresource_NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  // Fetch something from the service worker.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_fallback";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_FetchHandler_Wins_Fallback) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?server_slow&sw_fallback";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest

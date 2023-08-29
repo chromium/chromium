@@ -194,6 +194,14 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
 };
 
+bool ServiceWorkerSubresourceLoader::MaybeStartAutoPreload() {
+  if (controller_connector_->fetch_handler_bypass_option() !=
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload) {
+    return false;
+  }
+  return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
+}
+
 bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
   if (controller_connector_->fetch_handler_bypass_option() !=
       blink::mojom::ServiceWorkerFetchHandlerBypassOption::
@@ -434,9 +442,11 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
       }
       break;
     case kDefault:
-      // Dispatch RaceNetworkRequest if enabled.
       if (MaybeStartRaceNetworkRequest()) {
         SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
+      } else if (MaybeStartAutoPreload()) {
+        SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
+        SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       }
       break;
     case kSkipped:
@@ -602,22 +612,35 @@ void ServiceWorkerSubresourceLoader::OnFallback(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN);
 
+  // Update the commit responsibility to the intermediate state
+  // |kAutoPreloadHandlingFallback| for the fallback. This is a special
+  // treatment for AutoPreload.
+  if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload &&
+      commit_responsibility() == FetchResponseFrom::kServiceWorker) {
+    SetCommitResponsibility(FetchResponseFrom::kAutoPreloadHandlingFallback);
+  }
+
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
-      // If the RaceNetworkRequest is triggered but the response is not handled
-      // yet, ask its URLLoaderClient to handle the response regardless of the
-      // response status not to dispatch additional network request for
-      // fallback.
-      if (dispatched_preload_type() ==
-          DispatchedPreloadType::kRaceNetworkRequest) {
-        SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
-        return;
+      // If the RaceNetworkRequest or AutoPreload is triggered but the response
+      // is not handled yet, ask its URLLoaderClient to handle the response
+      // regardless of the response status not to dispatch additional network
+      // request for fallback.
+      switch (dispatched_preload_type()) {
+        case DispatchedPreloadType::kRaceNetworkRequest:
+        case DispatchedPreloadType::kAutoPreload:
+          SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+          return;
+        case DispatchedPreloadType::kNone:
+          SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
+          break;
+        case DispatchedPreloadType::kNavigationPreload:
+          NOTREACHED_NORETURN();
       }
-      SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       break;
     case FetchResponseFrom::kServiceWorker:
-      // RaceNetworkRequest comes first ant it's a redirect.
+      // RaceNetworkRequest comes first and it's a redirect.
       // When redirect happens, RaceNetworkRequest defer the remaining response
       // to the fetch handler (FetchResponseFrom::kServiceWorker). However, if
       // the fetch handler result is a fallback, the fetch handler itself can't
@@ -639,7 +662,19 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // the code path for the non-fallback case.
       return;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      NOTREACHED_NORETURN();
+      // |kAutoPreloadHandlingFallback| is the intermediate state to transfer
+      // the commit responsibility from the fetch handler to the network
+      // request (kServiceWorker). If the fetch handler result is fallback,
+      // manually set the network request (kWithoutServiceWorker).
+      SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+      // If the network request is faster than the fetch handler, the response
+      // from the network is processed but not committed. We have to explicitly
+      // commit and complete the response. Otherwise
+      // |ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse()| will
+      // be called.
+      race_network_request_loader_client_
+          ->CommitAndCompleteResponseIfDataTransferFinished();
+      return;
   }
 
   // Hand over to the network loader.

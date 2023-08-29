@@ -221,6 +221,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   std::vector<blink::ServiceWorkerRouterSource> MaybeEvaluateRouterConditions()
       const;
 
+  bool MaybeStartAutoPreload();
+
   network::mojom::URLResponseHeadPtr response_head_;
   absl::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
