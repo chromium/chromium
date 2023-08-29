@@ -719,7 +719,15 @@ WebRequestInternalAddEventListenerFunction::Run() {
   std::string extension_name =
       extension ? extension->name() : extension_id_safe();
 
-  if (!web_view_instance_id) {
+  if (web_view_instance_id) {
+    // If a web view ID has been supplied and the call is from an extension
+    // (i.e. not from WebUI), we require the extension to have the webview
+    // permission.
+    if (extension && !extension->permissions_data()->HasAPIPermission(
+                         mojom::APIPermissionID::kWebView)) {
+      return RespondNow(Error("Missing webview permission."));
+    }
+  } else {
     auto has_blocking_permission = [&extension, &event_name]() {
       if (extension->permissions_data()->HasAPIPermission(
               APIPermissionID::kWebRequestBlocking)) {

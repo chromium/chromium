@@ -6438,6 +6438,61 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
       << errors[0]->message();
 }
 
+// Tests that an extension that doesn't have the `webView` permission cannot
+// manually create and add a WebRequestEvent that specifies a webViewInstanceId.
+// TODO(tjudkins): It would be good to also stop this on the JS layer by not
+// allowing extensions to manually create and add WebRequestEvents.
+// Regression test for crbug.com/1472830
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       TestWebviewIdSpecifiedOnEvent_NoPermission) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": [ "http://example.com/*" ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // The extension tries to add a listener; this will fail asynchronously
+  // as a part of the webRequestInternal API trying to add the listener.
+  // This results in runtime.lastError being set, but since it's an
+  // internal API, there's no way for the extension to catch the error.
+  static constexpr char kBackgroundJs[] =
+      R"(let event = new chrome.webRequest.onBeforeRequest.constructor(
+             'webRequest.onBeforeRequest',
+             undefined,
+             undefined,
+             undefined,
+             1); // webViewInstanceId
+         event.addListener(() => {},
+         {urls: ['*://*.example.com/*']});)";
+
+  // Since we can't catch the error in the extension's JS, we instead listen to
+  // the error come into the error console.
+  ErrorConsoleTestObserver error_observer(1u, profile());
+  error_observer.EnableErrorCollection();
+
+  // Load the extension and wait for the error to come.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+
+  ASSERT_TRUE(extension);
+  error_observer.WaitForErrors();
+
+  const ErrorList& errors =
+      ErrorConsole::Get(profile())->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(u"Unchecked runtime.lastError: Missing webview permission.",
+            errors[0]->message());
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+}
+
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   TestExtensionDir test_dir1;
