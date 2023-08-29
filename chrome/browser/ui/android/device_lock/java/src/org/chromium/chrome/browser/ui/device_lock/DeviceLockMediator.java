@@ -16,10 +16,8 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PR
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 
@@ -64,7 +62,7 @@ public class DeviceLockMediator {
         mModel = new PropertyModel.Builder(ALL_KEYS)
                          .with(PREEXISTING_DEVICE_LOCK, isDeviceLockPresent())
                          .with(DEVICE_SUPPORTS_PIN_CREATION_INTENT,
-                                 isDeviceLockCreationIntentSupported())
+                                 DeviceLockUtils.isDeviceLockCreationIntentSupported(mActivity))
                          .with(IN_SIGN_IN_FLOW, account != null)
                          .with(ON_CREATE_DEVICE_LOCK_CLICKED, v -> onCreateDeviceLockClicked())
                          .with(ON_GO_TO_OS_SETTINGS_CLICKED, v -> onGoToOSSettingsClicked())
@@ -87,27 +85,13 @@ public class DeviceLockMediator {
         return keyguardManager.isDeviceSecure();
     }
 
-    private boolean isDeviceLockCreationIntentSupported() {
-        return new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
-                       .resolveActivity(mActivity.getPackageManager())
-                != null;
-    }
-
-    private Intent createDeviceLockDirectlyIntent() {
-        return new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
-    }
-
-    private Intent createDeviceLockThroughOSSettingsIntent() {
-        return new Intent(Settings.ACTION_SECURITY_SETTINGS);
-    }
-
     private void onCreateDeviceLockClicked() {
-        navigateToDeviceLockCreation(createDeviceLockDirectlyIntent(),
+        navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockDirectlyIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(mDelegate::onDeviceLockReady));
     }
 
     private void onGoToOSSettingsClicked() {
-        navigateToDeviceLockCreation(createDeviceLockThroughOSSettingsIntent(),
+        navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(mDelegate::onDeviceLockReady));
     }
 

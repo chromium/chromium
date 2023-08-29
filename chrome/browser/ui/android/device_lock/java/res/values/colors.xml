@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <color name="device_lock_illustration_yellow">@color/modern_yellow_500</color>
+    <color name="device_lock_illustration_red">@color/default_red</color>
+    <color name="device_lock_illustration_green">@color/google_green_600</color>
+    <color name="device_lock_illustration_background_polygon">@color/modern_grey_200</color>
+    <color name="device_lock_illustration_top_polygon_fill">@color/modern_blue_600</color>
+    <color name="device_lock_illustration_top_polygon_border">@color/modern_grey_200</color>
+    <color name="device_lock_illustration_burst">@color/modern_grey_400</color>
+    <color name="device_lock_illustration_exclamation_point">@color/modern_grey_800</color>
+</resources>

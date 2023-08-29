@@ -3198,6 +3198,20 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Create a profile lock
       </message>
 
+      <!-- Strings for a missing device lock. -->
+      <message name="IDS_MISSING_DEVICE_LOCK_TITLE" translateable="false" desc="">
+        Continue without a car profile lock?
+      </message>
+      <message name="IDS_MISSING_DEVICE_LOCK_DESCRIPTION" translateable="false" desc="">
+        Opening Chrome without a profile lock will remove your your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.
+      </message>
+      <message name="IDS_MISSING_DEVICE_LOCK_REMOVE_LOCAL_DATA" translateable="false" desc="">
+        Also clear bookmarks, history, and more from this car
+      </message>
+      <message name="IDS_DELETE_AND_CONTINUE" translateable="false" desc="">
+        Delete &amp; continue
+      </message>
+
       <!-- Strings for Streamlined Signin and Unified Consent. -->
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR_LIMIT=27]">
         Turn on sync?

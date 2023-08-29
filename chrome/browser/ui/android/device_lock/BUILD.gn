@@ -9,8 +9,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockMediator.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockUtils.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockView.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockView.java",
+    "java/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockViewBinder.java",
   ]
   deps = [
     ":java_resources",
@@ -32,6 +38,8 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockCoordinatorTest.java",
     "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockCoordinatorTest.java",
+    "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockViewBinderTest.java",
   ]
   deps = [
     ":java",
@@ -56,7 +64,10 @@ android_library("javatests") {
 
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.device_lock"
-  sources = [ "junit/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockMediatorUnitTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockMediatorUnitTest.java",
+  ]
 
   deps = [
     ":java",
@@ -89,7 +100,11 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/device_lock_illustration.xml",
     "java/res/drawable/device_lock_illustration.xml",
+    "java/res/drawable/missing_device_lock_illustration.xml",
     "java/res/layout/device_lock_view.xml",
+    "java/res/layout/missing_device_lock_view.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
