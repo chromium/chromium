@@ -80,7 +80,7 @@
   fuzzy_test_computed_color(`rgb(from rebeccapurple b alpha r / g)`, `rgba(153, 255, 102, 0.2)`);
   fuzzy_test_computed_color(`rgb(from rebeccapurple r r r / r)`, `rgba(102, 102, 102, 0.4)`);
   fuzzy_test_computed_color(`rgb(from rebeccapurple alpha alpha alpha / alpha)`, `rgb(255, 255, 255)`);
-  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) g b r)`, `rgb(102, 153, 51)`);
+  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) g b r)`, `rgba(102, 153, 51, 0.8)`);
   fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) b alpha r / g)`, `rgba(153, 204, 51, 0.4)`);
   fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) r r r / r)`, `rgba(51, 51, 51, 0.2)`);
   fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) alpha alpha alpha / alpha)`, `rgba(204, 204, 204, 0.8)`);
@@ -266,7 +266,7 @@
   fuzzy_test_computed_color(`lab(from lab(25 20 50) l a b)`, `lab(25 20 50)`);
   fuzzy_test_computed_color(`lab(from lab(25 20 50) l a b / alpha)`, `lab(25 20 50)`);
   fuzzy_test_computed_color(`lab(from lab(25 20 50 / 40%) l a b / alpha)`, `lab(25 20 50 / 0.4)`);
-  fuzzy_test_computed_color(`lab(from lab(200 300 400 / 500%) l a b / alpha)`, `lab(200 300 400)`);
+  fuzzy_test_computed_color(`lab(from lab(200 300 400 / 500%) l a b / alpha)`, `lab(100 300 400)`);
   fuzzy_test_computed_color(`lab(from lab(-200 -300 -400 / -500%) l a b / alpha)`, `lab(0 -300 -400 / 0)`);
 
   // Test nesting relative colors.
@@ -296,7 +296,7 @@
   fuzzy_test_computed_color(`lab(from lab(25 20 50 / 40%) l 35 b / alpha)`, `lab(25 35 50 / 0.4)`);
   fuzzy_test_computed_color(`lab(from lab(25 20 50 / 40%) l a 35 / alpha)`, `lab(25 20 35 / 0.4)`);
   fuzzy_test_computed_color(`lab(from lab(25 20 50 / 40%) l a b / .35)`, `lab(25 20 50 / 0.35)`);
-  fuzzy_test_computed_color(`lab(from lab(0.7 45 30 / 40%) 200 300 400 / 500)`, `lab(200 300 400)`);
+  fuzzy_test_computed_color(`lab(from lab(0.7 45 30 / 40%) 200 300 400 / 500)`, `lab(100 300 400)`);
   fuzzy_test_computed_color(`lab(from lab(0.7 45 30 / 40%) -200 -300 -400 / -500)`, `lab(0 -300 -400 / 0)`);
 
   // Testing valid permutation (types match).
@@ -392,7 +392,7 @@
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30) l c h)`, `lch(0.7 45 30)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30) l c h / alpha)`, `lch(0.7 45 30)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) l c h / alpha)`, `lch(0.7 45 30 / 0.4)`);
-  fuzzy_test_computed_color(`lch(from lch(200 300 400 / 500%) l c h / alpha)`, `lch(200 300 40)`);
+  fuzzy_test_computed_color(`lch(from lch(200 300 400 / 500%) l c h / alpha)`, `lch(100 300 40)`);
   fuzzy_test_computed_color(`lch(from lch(-200 -300 -400 / -500%) l c h / alpha)`, `lch(0 0 320 / 0)`);
 
   // Test nesting relative colors.
@@ -429,7 +429,7 @@
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) l c 25 / alpha)`, `lch(0.7 45 25 / 0.4)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) l c 25deg / alpha)`, `lch(0.7 45 25 / 0.4)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) l c h / .25)`, `lch(0.7 45 30 / 0.25)`);
-  fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) 200 300 400 / 500)`, `lch(200 300 40)`);
+  fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) 200 300 400 / 500)`, `lch(100 300 40)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) -200 -300 -400 / -500)`, `lch(0 0 320 / 0)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) 50 120 400deg / 500)`, `lch(50 120 40)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / 40%) 50 120 -400deg / -500)`, `lch(50 120 320 / 0)`);
