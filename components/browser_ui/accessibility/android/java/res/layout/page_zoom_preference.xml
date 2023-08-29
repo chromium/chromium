@@ -12,6 +12,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
+    <!-- PAGE ZOOM-->
     <TextView
         style="@style/PreferenceTitle"
         android:layout_width="wrap_content"
@@ -34,6 +35,38 @@ found in the LICENSE file.
 
     <include layout="@layout/page_zoom_slider" />
 
+    <!-- TEXT SIZE CONTRAST-->
+    <TextView
+        android:id="@+id/text_size_contrast_title"
+        style="@style/PreferenceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/text_size_contrast_title" />
+
+    <TextView
+        android:id="@+id/text_size_contrast_summary"
+        style="@style/PreferenceSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/text_size_contrast_summary" />
+
+    <TextView
+        android:id="@+id/text_size_contrast_current_value_text"
+        style="@style/TextAppearance.TextSmall.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/page_zoom_view_level_padding_large"
+        android:visibility="gone"
+        android:textAlignment="center" />
+
+    <include
+        android:id="@+id/text_size_contrast_seekbar"
+        layout="@layout/text_size_contrast_slider"
+        android:visibility="gone" />
+
+    <!-- PREVIEW-->
     <TextView
         style="@style/PreferenceTitle"
         android:layout_width="wrap_content"

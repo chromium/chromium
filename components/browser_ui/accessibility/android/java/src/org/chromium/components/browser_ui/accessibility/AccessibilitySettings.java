@@ -17,6 +17,8 @@ import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePr
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 /**
  * Fragment to keep track of all the accessibility related preferences.
@@ -82,8 +84,14 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
         if (mDelegate.showPageZoomSettingsUI()) {
             mTextScalePref.setVisible(false);
+            // Set the initial values for page zoom and text contrast.
+            // TODO(crbug.com/1459631): Edit this initial value when we propagate text contrast
+            // changes to the backend.
             mPageZoomDefaultZoomPref.setInitialValue(PageZoomUtils.getDefaultZoomAsSeekBarValue(
                     mDelegate.getBrowserContextHandle()));
+            if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+                mPageZoomDefaultZoomPref.setInitialTextSizeContrastValue(50);
+            }
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
