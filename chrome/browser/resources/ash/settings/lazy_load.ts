@@ -152,6 +152,7 @@ export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared
 export {EsimInstallErrorDialogElement} from './internet_page/esim_install_error_dialog.js';
 export {SettingsHotspotSubpageElement} from './internet_page/hotspot_subpage.js';
 export {NetworkAlwaysOnVpnElement} from './internet_page/network_always_on_vpn.js';
+export {NetworkDeviceInfoDialogElement} from './internet_page/network_device_info_dialog.js';
 export {NetworkProxySectionElement} from './internet_page/network_proxy_section.js';
 export {PasspointRemoveDialogElement} from './internet_page/passpoint_remove_dialog.js';
 export {SettingsPasspointSubpageElement} from './internet_page/passpoint_subpage.js';

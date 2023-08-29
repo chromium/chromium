@@ -169,7 +169,7 @@ export class FakeProfile {
 }
 
 /** @implements {EuiccInterface} */
-class FakeEuicc {
+export class FakeEuicc {
   constructor(eid, numProfiles, fakeESimManager) {
     this.fakeESimManager_ = fakeESimManager;
     this.properties = {eid};

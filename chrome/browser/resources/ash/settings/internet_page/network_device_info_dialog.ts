@@ -24,14 +24,14 @@ const QR_CODE_TILE_SIZE = 5;
 // Styling for filled tiles in the QR code.
 const QR_CODE_FILL_STYLE = '#000000';
 
-interface NetworkDeviceInfoDialogElement {
+export interface NetworkDeviceInfoDialogElement {
   $: {
     done: CrButtonElement,
     deviceInfoDialog: CrDialogElement,
   };
 }
 
-class NetworkDeviceInfoDialogElement extends I18nMixin
+export class NetworkDeviceInfoDialogElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'network-device-info-dialog' as const;

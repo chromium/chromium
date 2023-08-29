@@ -361,6 +361,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'internet_page/network_always_on_vpn_test.js'
  ],
  [
+   'InternetPageNetworkDeviceInfoDialog',
+   'internet_page/network_device_info_dialog_test.js'
+ ],
+ [
    'InternetPageNetworkProxySection',
    'internet_page/network_proxy_section_test.js'
  ],
@@ -486,7 +490,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'nearby_share_subpage_tests.js',
    {enabled: ['features::kNearbySharing']},
  ],
- ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
    'OsA11yPage',
