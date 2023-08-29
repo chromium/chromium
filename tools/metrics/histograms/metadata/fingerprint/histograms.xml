@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanSuccess"
+<histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanError"
     expires_after="2024-01-01">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.SensorError.InitializationFailure"
-    enum="BooleanSuccess" expires_after="2024-01-01">
+    enum="BooleanError" expires_after="2024-01-01">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.SensorError.NoIrq" enum="BooleanSuccess"
+<histogram name="Fingerprint.SensorError.NoIrq" enum="BooleanError"
     expires_after="2024-01-01">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -144,8 +144,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.SensorError.SpiCommunication"
-    enum="BooleanSuccess" expires_after="2024-01-01">
+<histogram name="Fingerprint.SensorError.SpiCommunication" enum="BooleanError"
+    expires_after="2024-01-01">
   <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
