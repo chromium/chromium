@@ -973,6 +973,8 @@ bool OverviewSession::IsEmpty() const {
 }
 
 void OverviewSession::RestoreWindowActivation(bool restore) {
+  TRACE_EVENT0("ui", "OverviewSession::RestoreWindowActivation");
+
   if (!active_window_before_overview_)
     return;
 

@@ -433,6 +433,8 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
 }
 
 void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
+  TRACE_EVENT0("ui", "OverviewItem::RestoreWindow");
+
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in `SplitViewController::OnOverviewModeEnding`.
   // Unify the mechanism to control it and remove ifs.
