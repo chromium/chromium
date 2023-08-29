@@ -1230,10 +1230,6 @@ void ChromeUserManagerImpl::AsyncRemoveCryptohome(
       identifier, base::BindOnce(&OnRemoveUserComplete, account_id));
 }
 
-bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
-  return account_id == user_manager::StubAccountId();
-}
-
 bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==

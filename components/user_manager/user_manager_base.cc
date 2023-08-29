@@ -759,13 +759,13 @@ bool UserManagerBase::IsLoggedInAsAnyKioskApp() const {
 
 bool UserManagerBase::IsLoggedInAsStub() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && IsStubAccountId(active_user_->GetAccountId());
+  return IsUserLoggedIn() && active_user_->GetAccountId() == StubAccountId();
 }
 
 bool UserManagerBase::IsUserNonCryptohomeDataEphemeral(
     const AccountId& account_id) const {
   // Data belonging to the guest and stub users is always ephemeral.
-  if (account_id == GuestAccountId() || IsStubAccountId(account_id)) {
+  if (account_id == GuestAccountId() || account_id == StubAccountId()) {
     return true;
   }
 
@@ -814,7 +814,7 @@ bool UserManagerBase::IsEphemeralAccountId(const AccountId& account_id) const {
   }
 
   // Data belonging to the stub users is never ephemeral.
-  if (IsStubAccountId(account_id)) {
+  if (account_id == StubAccountId()) {
     return false;
   }
 

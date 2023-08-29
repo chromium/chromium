@@ -368,10 +368,6 @@ void FakeUserManager::AsyncRemoveCryptohome(const AccountId& account_id) const {
   NOTIMPLEMENTED();
 }
 
-bool FakeUserManager::IsStubAccountId(const AccountId& account_id) const {
-  return account_id == StubAccountId();
-}
-
 bool FakeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return false;

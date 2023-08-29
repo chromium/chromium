@@ -58,6 +58,7 @@
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
 
 namespace ash {
@@ -180,7 +181,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     SigninProfileHandler::Get()->ProfileStartUp(user_profile);
 
     if (!is_running_test &&
-        user_manager->IsStubAccountId(user->GetAccountId())) {
+        user->GetAccountId() == user_manager::StubAccountId()) {
       // Add stub user to Account Manager. (But not when running tests: this
       // allows tests to setup appropriate environment)
       InitializeAccountManager(

@@ -449,9 +449,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Actually removes cryptohome.
   virtual void AsyncRemoveCryptohome(const AccountId& account_id) const = 0;
 
-  // Returns true if |account_id| is Stub user.
-  virtual bool IsStubAccountId(const AccountId& account_id) const = 0;
-
   // Returns true if |account_id| is deprecated supervised.
   // TODO(crbug/1155729): Check it is not used anymore and remove it.
   virtual bool IsDeprecatedSupervisedAccountId(

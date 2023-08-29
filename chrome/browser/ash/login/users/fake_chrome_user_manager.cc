@@ -297,10 +297,6 @@ void FakeChromeUserManager::AsyncRemoveCryptohome(
   NOTIMPLEMENTED();
 }
 
-bool FakeChromeUserManager::IsStubAccountId(const AccountId& account_id) const {
-  return account_id == user_manager::StubAccountId();
-}
-
 bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==

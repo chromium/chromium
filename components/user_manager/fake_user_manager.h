@@ -77,7 +77,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SwitchActiveUser(const AccountId& account_id) override;
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
-  bool IsStubAccountId(const AccountId& account_id) const override;
 
   // Not implemented.
   void Shutdown() override {}
