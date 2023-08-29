@@ -10,7 +10,7 @@
   <setup-loading-page id="profileLoadingPage" loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
   </setup-loading-page>
   <template is="dom-if" if="[[smdsSupportEnabled_]]" restamp>
-    <profile-discovery-consent-page id="profileDiscoveryConsentPage">
+    <profile-discovery-consent-page id="profileDiscoveryConsentPage" should-skip-discovery="{{shouldSkipDiscovery_}}">
     </profile-discovery-consent-page>
   </template>
   <template is="dom-if"

@@ -7,6 +7,7 @@
  * Page in eSIM Setup flow that requests user consent to scan for profiles.
  */
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './base_page.js';
 
@@ -21,5 +22,19 @@ Polymer({
 
   behaviors: [I18nBehavior],
 
-  properties: {},
+  properties: {
+    shouldSkipDiscovery: {
+      type: Boolean,
+      notify: true,
+    },
+  },
+
+  shouldSkipDiscoveryClicked_(e) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+    this.shouldSkipDiscovery = true;
+    this.fire('forward-navigation-requested');
+  },
 });

@@ -152,6 +152,15 @@ Polymer({
     },
 
     /**
+     * Whether the user is setting up the eSIM profile manually.
+     * @type {boolean}
+     */
+    shouldSkipDiscovery_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * Whether error state should be shown for the current page.
      * @private {boolean}
      */
@@ -353,21 +362,18 @@ Polymer({
   initSubflow() {
     if (!this.smdsSupportEnabled_) {
       this.fetchProfiles_();
+    } else {
+      this.getEuicc_();
     }
     this.onNetworkStateListChanged();
   },
 
   /** @private */
   async fetchProfiles_() {
-    const euicc = await getEuicc();
-    if (!euicc) {
-      this.hasFailedFetchingProfiles_ = true;
-      this.showError_ = true;
-      this.state_ = ESimUiState.SETUP_FINISH;
-      console.warn('No Euiccs found');
+    await this.getEuicc_();
+    if (!this.euicc_) {
       return;
     }
-    this.euicc_ = euicc;
 
     if (this.smdsSupportEnabled_) {
       await this.getAvailableProfileProperties_();
@@ -379,6 +385,19 @@ Polymer({
     } else {
       this.state_ = ESimUiState.PROFILE_SELECTION;
     }
+  },
+
+  /** @private */
+  async getEuicc_() {
+    const euicc = await getEuicc();
+    if (!euicc) {
+      this.hasFailedFetchingProfiles_ = true;
+      this.showError_ = true;
+      this.state_ = ESimUiState.SETUP_FINISH;
+      console.warn('No Euiccs found');
+      return;
+    }
+    this.euicc_ = euicc;
   },
 
   /**
@@ -712,9 +731,14 @@ Polymer({
   navigateForward() {
     this.showError_ = false;
     switch (this.state_) {
-      // Set |this.hasConsentedForDiscovery_| to |true| since navigating
-      // forward is explicitly giving consent to perform SM-DS scans.
       case ESimUiState.PROFILE_SEARCH_CONSENT:
+        if (this.shouldSkipDiscovery_) {
+          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+          break;
+        }
+        // Set |this.hasConsentedForDiscovery_| to |true| since navigating
+        // forward and not setting up manually is explicitly giving consent
+        // to perform SM-DS scans.
         this.hasConsentedForDiscovery_= true;
         this.state_ = ESimUiState.PROFILE_SEARCH;
         break;
@@ -818,7 +842,8 @@ Polymer({
   /** @private */
   onForwardNavigationRequested_() {
     if (this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_READY ||
-        this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
+        this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_READY ||
+        this.state_ === ESimUiState.PROFILE_SEARCH_CONSENT) {
       this.navigateForward();
     }
   },
@@ -856,6 +881,10 @@ Polymer({
   computeHeader_() {
     if (this.selectedESimPageName_ === ESimPageName.FINAL && !this.showError_) {
       return this.i18n('eSimFinalPageSuccessHeader');
+    }
+
+    if (this.selectedESimPageName_ === ESimPageName.PROFILE_DISCOVERY_CONSENT) {
+      return this.i18n('profileDiscoveryConsentTitle');
     }
 
     return '';
