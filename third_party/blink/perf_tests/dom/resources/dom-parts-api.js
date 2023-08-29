@@ -7,12 +7,20 @@
   const createContent = (node, root, useParts, chainParts, width, depth, extra, at = 0) => {
     at++;
     for (let i=0; i<width; i++) {
-      const s = document.createComment('s');
+      const s = document.createComment('start');
       const c = document.createElement('section');
       c.textContent = `${at}.${i}`;
       let extras = [];
       for(let e=0;e<extra;e++) {
         extras.push(Object.assign(document.createElement('span'),{classList:'extra'}));
+      }
+      if (i==0) {
+        const nodePartNode = document.createElement('section');
+        nodePartNode.textContent = 'nodepart';
+        extras.push(nodePartNode);
+        if (useParts) {
+          new NodePart(root, nodePartNode);
+        }
       }
       const e = document.createComment('e');
       node.append(s, c, ...extras, e);
@@ -76,12 +84,43 @@
     return parts;
   }
 
-  class CustomPart {
+  const countNodes = (node) => {
+    let c = 1;
+    node.childNodes.forEach(child => {
+      c += countNodes(child);
+    });
+    return c;
+  }
+
+  const countNodesAndParts = (state) => {
+    const nodes = countNodes(state.container);
+    const root = state.container.ownerDocument.getPartRoot();
+    let parts,nodeParts,childNodeParts;
+    if (!root.getParts().length) {
+      partCount = state.parts.length;
+      nodeParts = state.parts.filter(p => p instanceof FakeNodePart).length;
+      childNodeParts = state.parts.filter(p => p instanceof FakeChildNodePart).length;
+    } else {
+      const parts = recursiveGetParts(root);
+      partCount = parts.length;
+      nodeParts = parts.filter(p => p instanceof NodePart).length;
+      childNodeParts = parts.filter(p => p instanceof ChildNodePart).length;
+    }
+    return {nodes, partCount, nodeParts, childNodeParts};
+  }
+
+  class FakeChildNodePart {
     start = null;
     end = null;
     constructor(start, end) {
       this.start = start;
       this.end = end;
+    }
+  }
+  class FakeNodePart {
+    node = null;
+    constructor(node) {
+      this.node = node;
     }
   }
 
@@ -103,7 +142,7 @@
       test: "Manual tree walk",
       prepare: (container) => {
         state = errorCheck(container);
-        state.walker = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT);
+        state.walker = document.createTreeWalker(document, 129 /* NodeFilter.SHOW_{ELEMENT|COMMENT} */);
         return state;
       },
       clone: (state) => {
@@ -116,8 +155,11 @@
         const parts = [];
         state.walker.currentNode = state.container;
         while (state.walker.nextNode()) {
-          if (state.walker.currentNode.textContent.match('s')) {
-            parts.push(new CustomPart(state.walker.currentNode,state.walker.currentNode.nextSibling.nextSibling));
+          const node = state.walker.currentNode;
+          if (node.nodeType === Node.COMMENT_NODE && node.textContent === 'start') {
+            parts.push(new FakeChildNodePart(node,node.nextSibling.nextSibling));
+          } else if (node.nodeType === Node.ELEMENT_NODE && node.firstChild?.nodeType === Node.TEXT_NODE && node.firstChild.textContent === 'nodepart') {
+            parts.push(new FakeNodePart(node));
           }
         }
         state.parts = parts;
@@ -222,4 +264,5 @@
   window.runPerfTest =runPerfTest;
   window.createAllContent = createAllContent;
   window.manualRunTest = manualRunTest;
+  window.countNodesAndParts = countNodesAndParts;
 })();

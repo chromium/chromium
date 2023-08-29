@@ -3,10 +3,7 @@
 <script src="../../perf_tests/dom/resources/dom-parts-api.js"></script>
 
 <fieldset id=controls disabled>
-  <span>
-    <button id=small>Small defaults</button>
-    <button id=big>Big defaults</button>
-  </span>
+  <span id=presets></span>
   <label>Width <input type=number id=width></label>
   <label>Depth <input type=number id=depth></label>
   <label>Extra <input type=number id=extra></label>
@@ -16,8 +13,8 @@
   </span>
   <label>Total DOM nodes: <input type=number disabled id=total_nodes></label>
   <label>Repeats <input type=number id=repeats></label>
-  <button id="Raw">Raw</button>
-  <button id="Comments">Comments</button>
+ <!-- <button id="Raw">Raw</button> -->
+  <button id="Comments" reference>Comments</button>
   <button id="PartsFlat">Parts (flat)</button>
   <button id="PartsNested">Parts (nested)</button>
 </fieldset>
@@ -59,8 +56,9 @@
     let totalP = 0, totalN = 0;
     for(let i=1;i<=getDepth();++i) {
       const thisLayer = Math.pow(getWidth(), i);
-      totalP += thisLayer;
-      totalN += thisLayer*(1 + 1 + 2 + getExtra()); // <section>, label text, 2 comments, plus extra nodes
+      const thisLayerNodeParts = Math.pow(getWidth(), i-1); // 1 NodePart per layer
+      totalP += thisLayer + thisLayerNodeParts;
+      totalN += thisLayer*(1 + 1 + 2 + getExtra()) + thisLayerNodeParts * 2; // <section>, label text, 2 comments, plus extra nodes, plus 2 per NodePart
     }
     totalParts.value = totalP;
     totalNodes.value = totalN;
@@ -73,23 +71,25 @@
   showDOM.onchange = () => {
     testContainer.classList.toggle('hidden');
   }
-  function smallDefaults() {
-    width.value = 2;
-    depth.value = 2;
-    extra.value = 0;
-    repeats.value = 1;
-    updateTotalParts();
-  };
-  function bigDefaults() {
-    width.value = 5;
-    depth.value = 5;
-    extra.value = 8; // Reddit is 8:1 Nodes to Parts
-    repeats.value = 100;
-    updateTotalParts();
-  };
-  document.getElementById('small').onclick = smallDefaults;
-  document.getElementById('big').onclick = bigDefaults;
-  bigDefaults();
+
+  const presets = [
+    {name: 'Small defaults', width:2, depth: 2, extra: 0, repeats: 1},
+    {name: 'Medium defaults', width:5, depth: 3, extra: 3, repeats: 1000},
+    {name: 'Big defaults', width:5, depth: 5, extra: 8, repeats: 100},
+  ];
+  for (let p of presets) {
+    const button = document.createElement('button');
+    button.textContent = p.name;
+    button.onclick = () => {
+      width.value = p.width;
+      depth.value = p.depth;
+      extra.value = p.extra;
+      repeats.value = p.repeats;
+      updateTotalParts();
+    };
+    document.getElementById('presets').appendChild(button);
+  }
+  document.getElementById('presets').firstChild.onclick();
 
   const test = async (testCase) => {
     await setStatus('Running test...', false);
@@ -98,23 +98,34 @@
     return results;
   }
 
-  const countNodes = (node) => {
-    let c = 1;
-    node.childNodes.forEach(child => {
-      c += countNodes(child);
-    });
-    return c;
+  function speedRatio(shorterTime, longerTime) {
+    return `${(1 + Math.abs(longerTime - shorterTime) / shorterTime).toFixed(2)}x`;
   }
-
+  let referenceTime;
   const listen = (node, cb) => {
     node.addEventListener('click', async () => {
       const {cloneTime, appendTime, getPartsTime, state} = await cb();
-      const nodes = countNodes(state.container) - 2; // 2 for extra container nodes
-      node.textContent = `${node.id}: ${cloneTime.toFixed(1)}ms + ${appendTime.toFixed(1)}ms + ${getPartsTime.toFixed(1)}ms = ${(cloneTime+appendTime+getPartsTime).toFixed(1)}ms, ${state.parts.length} parts, ${nodes} nodes`;
+      const countInfo = countNodesAndParts(state);
+      const nodes = countInfo.nodes - 2; // 2 for extra container nodes
+      if (countInfo.partCount != state.parts.length) { alert('error'); }
+      const nodeParts = countInfo.nodeParts;
+      const childNodeParts = countInfo.childNodeParts;
+      const totalTime = cloneTime+appendTime+getPartsTime;
+      let comparison = '';
+      if (node.hasAttribute('reference')) {
+        referenceTime = totalTime;
+      } else if (referenceTime) {
+        if (totalTime <= referenceTime) {
+          comparison = ` (${speedRatio(totalTime,referenceTime)} Faster than Manual)`;
+        } else {
+          comparison = ` (${speedRatio(referenceTime,totalTime)} Slower than Manual)`;
+        }
+      }
+      node.textContent = `${node.id}: ${cloneTime.toFixed(1)}ms + ${appendTime.toFixed(1)}ms + ${getPartsTime.toFixed(1)}ms = ${totalTime.toFixed(1)}ms, ${state.parts.length} parts (${nodeParts}&${childNodeParts}), ${nodes} nodes${comparison}`;
     });
   }
 
-  listen(Raw, () => test('Raw, no parts'));
+//  listen(Raw, () => test('Raw, no parts'));
   listen(Comments, () => test('Manual tree walk'));
   listen(PartsFlat, () => test('Parts, flat'));
   listen(PartsNested, () => test('Parts, nested'));
