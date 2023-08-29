@@ -69,7 +69,11 @@ constexpr int GetMessageIdForTransportDescription(
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
       return IDS_WEBAUTHN_TRANSPORT_USB;
     case AuthenticatorTransport::kInternal:
+#if BUILDFLAG(IS_MAC)
+      return IDS_WEBAUTHN_YOUR_CHROME_PROFILE;
+#else
       return IDS_WEBAUTHN_TRANSPORT_INTERNAL;
+#endif
     case AuthenticatorTransport::kHybrid:
       return IDS_WEBAUTHN_TRANSPORT_CABLE;
     case AuthenticatorTransport::kAndroidAccessory:

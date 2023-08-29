@@ -14642,6 +14642,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_TRANSPORT_USB" desc="Menu item text. The user selects this to use a security key (an external physical device for user authentication) plugged in to the USB port of the computer.">
         USB security key
       </message>
+      <if expr="is_macosx">
+        <message name="IDS_WEBAUTHN_YOUR_CHROME_PROFILE" desc="Menu item text. The user selects this to use a hardware-based authentication mechanism that is built in to the computer, such as a fingerprint reader. The credential itself is stored in the Chrome profile, however, and this text emphasizes that.">
+          Your Chrome profile
+        </message>
+      </if>
       <message name="IDS_WEBAUTHN_TRANSPORT_INTERNAL" desc="Menu item text. The user selects this to use a hardware-based authentication mechanism that is built in to the computer, such as a fingerprint reader.">
         This device
       </message>
