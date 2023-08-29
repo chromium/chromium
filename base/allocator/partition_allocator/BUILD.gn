@@ -349,6 +349,8 @@ source_set("allocator_base") {
     "partition_alloc_base/cxx20_is_constant_evaluated.h",
     "partition_alloc_base/debug/alias.cc",
     "partition_alloc_base/debug/alias.h",
+    "partition_alloc_base/debug/stack_trace.cc",
+    "partition_alloc_base/debug/stack_trace.h",
     "partition_alloc_base/export_template.h",
     "partition_alloc_base/gtest_prod_util.h",
     "partition_alloc_base/immediate_crash.h",
@@ -375,6 +377,7 @@ source_set("allocator_base") {
     "partition_alloc_base/numerics/safe_math_clang_gcc_impl.h",
     "partition_alloc_base/numerics/safe_math_shared_impl.h",
     "partition_alloc_base/posix/eintr_wrapper.h",
+    "partition_alloc_base/process/process_handle.h",
     "partition_alloc_base/rand_util.cc",
     "partition_alloc_base/rand_util.h",
     "partition_alloc_base/scoped_clear_last_error.h",
@@ -403,7 +406,9 @@ source_set("allocator_base") {
 
   if (is_win) {
     sources += [
+      "partition_alloc_base/debug/stack_trace_win.cc",
       "partition_alloc_base/memory/page_size_win.cc",
+      "partition_alloc_base/process/process_handle_win.cc",
       "partition_alloc_base/rand_util_win.cc",
       "partition_alloc_base/scoped_clear_last_error_win.cc",
       "partition_alloc_base/threading/platform_thread_win.cc",
@@ -411,22 +416,31 @@ source_set("allocator_base") {
     ]
   } else if (is_posix) {
     sources += [
+      "partition_alloc_base/debug/stack_trace_posix.cc",
       "partition_alloc_base/files/file_util.h",
       "partition_alloc_base/files/file_util_posix.cc",
       "partition_alloc_base/memory/page_size_posix.cc",
       "partition_alloc_base/posix/safe_strerror.cc",
       "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/process/process_handle_posix.cc",
       "partition_alloc_base/rand_util_posix.cc",
       "partition_alloc_base/threading/platform_thread_internal_posix.h",
       "partition_alloc_base/threading/platform_thread_posix.cc",
       "partition_alloc_base/time/time_conversion_posix.cc",
     ]
 
+    if (is_linux || is_chromeos) {
+      sources += [ "partition_alloc_base/debug/stack_trace_linux.cc" ]
+    }
+
     if (is_android || is_chromeos_ash) {
       sources += [ "partition_alloc_base/time/time_android.cc" ]
     }
     if (is_apple) {
-      sources += [ "partition_alloc_base/time/time_apple.mm" ]
+      sources += [
+        "partition_alloc_base/debug/stack_trace_mac.cc",
+        "partition_alloc_base/time/time_apple.mm",
+      ]
     } else {
       sources += [ "partition_alloc_base/time/time_now_posix.cc" ]
     }
@@ -448,6 +462,7 @@ source_set("allocator_base") {
     # Only android build requires native_library, and native_library depends
     # on file_path. So file_path is added if is_android = true.
     sources += [
+      "partition_alloc_base/debug/stack_trace_android.cc",
       "partition_alloc_base/files/file_path.cc",
       "partition_alloc_base/files/file_path.h",
       "partition_alloc_base/native_library.cc",
@@ -750,6 +765,7 @@ buildflag_header("debugging_buildflags") {
     "PA_DCHECK_IS_ON=$_dcheck_is_on",
     "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "PA_DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "PA_CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
   ]
 }
 
