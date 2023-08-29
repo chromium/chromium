@@ -578,15 +578,6 @@ std::vector<TracingHandler*> TracingHandler::ForAgentHost(
   return host->HandlersByName<TracingHandler>(Tracing::Metainfo::domainName);
 }
 
-void TracingHandler::SetRenderer(int process_host_id,
-                                 RenderFrameHostImpl* frame_host) {
-  if (!frame_host) {
-    return;
-  }
-  video_consumer_->SetFrameSinkId(
-      frame_host->GetRenderWidgetHost()->GetFrameSinkId());
-}
-
 void TracingHandler::Wire(UberDispatcher* dispatcher) {
   frontend_ = std::make_unique<Tracing::Frontend>(dispatcher->channel());
   Tracing::Dispatcher::wire(dispatcher, this);
@@ -973,6 +964,12 @@ void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
   if (screenshot_enabled) {
     // Reset number of screenshots received, each time tracing begins.
     number_of_screenshots_from_video_consumer_ = 0;
+    if (WebContents* wc = host_ ? host_->GetWebContents() : nullptr) {
+      auto* frame_host =
+          static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
+      video_consumer_->SetFrameSinkId(
+          frame_host->GetRenderWidgetHost()->GetFrameSinkId());
+    }
     video_consumer_->SetMinAndMaxFrameSize(kMinFrameSize, kMaxFrameSize);
     video_consumer_->StartCapture();
   }
