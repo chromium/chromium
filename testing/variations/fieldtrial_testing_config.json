@@ -6360,7 +6360,7 @@
                     ]
                 },
                 {
-                    "name": "rs2_rr0.5_im0_rvip0_20230824",
+                    "name": "rs2_rr05_im0_rvip0_20230824",
                     "params": {
                         "rangeRatio": "0.5",
                         "rangeSize": "2",
@@ -6372,7 +6372,7 @@
                     ]
                 },
                 {
-                    "name": "rs2_rr0.5_im0_rvip1_20230824",
+                    "name": "rs2_rr05_im0_rvip1_20230824",
                     "params": {
                         "rangeRatio": "0.5",
                         "rangeSize": "2",
@@ -6396,19 +6396,7 @@
                     ]
                 },
                 {
-                    "name": "Prestable_enabled_20230824",
-                    "params": {
-                        "rangeRatio": "1",
-                        "rangeSize": "4",
-                        "useIncrementalMount": "false",
-                        "useRecyclerViewItemPrefetch": "true"
-                    },
-                    "enable_features": [
-                        "FeedPerformanceStudy"
-                    ]
-                },
-                {
-                    "name": "Stable_enabled_20230824",
+                    "name": "Enabled_20230824",
                     "params": {
                         "rangeRatio": "1",
                         "rangeSize": "4",
