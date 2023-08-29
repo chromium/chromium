@@ -408,7 +408,7 @@ const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The next value to use for the accessibility reset token.
-uint32_t g_accessibility_reset_token = 0;
+int g_next_accessibility_reset_token = 1;
 
 // Whether to allow injecting javascript into any kind of frame, for Android
 // WebView, WebLayer, Fuchsia web.ContextProvider and CastOS content shell.
@@ -2902,16 +2902,15 @@ void RenderFrameHostImpl::AccessibilityReset() {
   if (!render_accessibility_)
     return;
 
-  accessibility_reset_token_ = ++g_accessibility_reset_token;
-  render_accessibility_->Reset(*accessibility_reset_token_);
+  accessibility_reset_token_ = g_next_accessibility_reset_token++;
+  render_accessibility_->Reset(accessibility_reset_token_);
 }
 
 void RenderFrameHostImpl::AccessibilityFatalError() {
   CHECK(!BrowserAccessibilityManager::IsFailFastMode());
   browser_accessibility_manager_.reset();
-  if (!render_accessibility_) {
+  if (accessibility_reset_token_ || !render_accessibility_)
     return;
-  }
 
   static auto* ax_rfhi_url_crash_key = base::debug::AllocateCrashKeyString(
       "ax_rfhi_url", base::debug::CrashKeySize::Size256);
@@ -7119,10 +7118,8 @@ bool RenderFrameHostImpl::Reload() {
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(
     const AXEventNotificationDetails& details) {
-  if (!browser_accessibility_manager_) {
-    CHECK(!delegate_->GetAccessibilityMode().has_mode(ui::AXMode::kNativeAPIs));
+  if (!browser_accessibility_manager_)
     return;
-  }
 
   DCHECK(delegate_->GetAccessibilityMode().has_mode(ui::AXMode::kNativeAPIs));
   if (!browser_accessibility_manager_->OnAccessibilityEvents(details)) {
@@ -9173,7 +9170,7 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 void RenderFrameHostImpl::HandleAXEvents(
     const ui::AXTreeID& tree_id,
     blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-    uint32_t reset_token) {
+    int32_t reset_token) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
   SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.HandleAXEvents");
 
@@ -9190,12 +9187,10 @@ void RenderFrameHostImpl::HandleAXEvents(
   // Don't process this IPC if either we're waiting on a reset and this IPC
   // doesn't have the matching token ID, or if we're not waiting on a reset but
   // this message includes a reset token.
-  // The token prevents obsolete data from being processed.
-  CHECK(accessibility_reset_token_);
-  if (*accessibility_reset_token_ != reset_token) {
-    DVLOG(1) << "Ignoring obsolete accessibility data.";
+  if (accessibility_reset_token_ != reset_token) {
     return;
   }
+  accessibility_reset_token_ = 0;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
 
@@ -9264,24 +9259,17 @@ void RenderFrameHostImpl::HandleAXEvents(
 
 void RenderFrameHostImpl::HandleAXLocationChanges(
     const ui::AXTreeID& tree_id,
-    std::vector<blink::mojom::LocationChangesPtr> changes,
-    uint32_t reset_token) {
+    std::vector<blink::mojom::LocationChangesPtr> changes) {
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
     // changes are no longer relevant and can be discarded.
     return;
   }
 
-  CHECK(accessibility_reset_token_);
-  if (*accessibility_reset_token_ != reset_token) {
-    DVLOG(1) << "Ignoring obsolete accessibility data.";
+  if (accessibility_reset_token_ ||
+      IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXLocationChange))
     return;
-  }
-
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kAXLocationChange)) {
-    return;
-  }
 
   BrowserAccessibilityManager* manager =
       GetOrCreateBrowserAccessibilityManager();
@@ -10831,8 +10819,7 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
       GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);
       DCHECK(render_accessibility_);
     }
-    accessibility_reset_token_ = ++g_accessibility_reset_token;
-    render_accessibility_->SetMode(ax_mode, *accessibility_reset_token_);
+    render_accessibility_->SetMode(ax_mode);
   } else {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.

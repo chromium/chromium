@@ -170,7 +170,7 @@ class RenderAccessibilityHostInterceptor
   }
 
   void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-                      uint32_t reset_token,
+                      int32_t reset_token,
                       HandleAXEventsCallback callback) override {
     handled_updates_.insert(handled_updates_.end(),
                             updates_and_events->updates.begin(),
@@ -179,8 +179,7 @@ class RenderAccessibilityHostInterceptor
   }
 
   void HandleAXLocationChanges(
-      std::vector<blink::mojom::LocationChangesPtr> changes,
-      uint32_t reset_token) override {
+      std::vector<blink::mojom::LocationChangesPtr> changes) override {
     for (auto& change : changes)
       location_changes_.emplace_back(std::move(change));
   }
@@ -315,7 +314,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
   void SetMode(ui::AXMode mode) {
-    frame()->GetRenderAccessibilityManager()->SetMode(mode, 1);
+    frame()->GetRenderAccessibilityManager()->SetMode(mode);
   }
 
   ui::AXTreeUpdate GetLastAccUpdate() {

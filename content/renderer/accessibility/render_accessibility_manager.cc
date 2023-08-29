@@ -32,7 +32,7 @@ void RenderAccessibilityManager::BindReceiver(
   receiver_.set_disconnect_handler(base::BindOnce(
       [](RenderAccessibilityManager* impl) {
         impl->receiver_.reset();
-        impl->SetMode(ui::AXMode::kNone, 0);
+        impl->SetMode(ui::AXMode::kNone);
       },
       base::Unretained(this)));
 }
@@ -48,16 +48,11 @@ ui::AXMode RenderAccessibilityManager::GetAccessibilityMode() const {
   return render_accessibility_->GetAccessibilityMode();
 }
 
-void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode,
-                                         uint32_t reset_token) {
+void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode) {
   ui::AXMode old_mode = GetAccessibilityMode();
 
-  if (old_mode == new_mode) {
-    if (render_accessibility_) {
-      render_accessibility_->set_reset_token(reset_token);
-    }
+  if (old_mode == new_mode)
     return;
-  }
 
   if (new_mode.has_mode(ui::AXMode::kWebContents) &&
       !old_mode.has_mode(ui::AXMode::kWebContents)) {
@@ -68,11 +63,6 @@ void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode,
   } else if (!new_mode.has_mode(ui::AXMode::kWebContents) &&
              old_mode.has_mode(ui::AXMode::kWebContents)) {
     render_accessibility_.reset();
-  }
-
-  if (render_accessibility_) {
-    CHECK(reset_token);
-    render_accessibility_->set_reset_token(reset_token);
   }
 
   // Notify the RenderFrame when the accessibility mode is changes to ensure it
@@ -103,16 +93,15 @@ void RenderAccessibilityManager::PerformAction(const ui::AXActionData& data) {
   render_accessibility_->PerformAction(data);
 }
 
-void RenderAccessibilityManager::Reset(uint32_t reset_token) {
+void RenderAccessibilityManager::Reset(int32_t reset_token) {
   DCHECK(render_accessibility_);
   render_accessibility_->Reset(reset_token);
 }
 
 void RenderAccessibilityManager::HandleAccessibilityEvents(
     blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-    uint32_t reset_token,
+    int32_t reset_token,
     blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback) {
-  CHECK(reset_token);
   GetOrCreateRemoteRenderAccessibilityHost()->HandleAXEvents(
       std::move(updates_and_events), reset_token, std::move(callback));
 }

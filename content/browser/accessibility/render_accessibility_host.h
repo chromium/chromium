@@ -52,12 +52,11 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
   ~RenderAccessibilityHost() override;
 
   void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-                      uint32_t reset_token,
+                      int32_t reset_token,
                       HandleAXEventsCallback callback) override;
 
   void HandleAXLocationChanges(
-      std::vector<blink::mojom::LocationChangesPtr> changes,
-      uint32_t reset_token) override;
+      std::vector<blink::mojom::LocationChangesPtr> changes) override;
 
  private:
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl_;

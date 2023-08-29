@@ -3630,7 +3630,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // in the same task of |HandleAXEventsForTests()| and and result in a test
   // fail.
   rfh_a->HandleAXEventsForTests(rfh_a->GetAXTreeID(),
-                                std::move(updates_and_events));
+                                std::move(updates_and_events),
+                                /*reset_token=*/0);
 
   // Reset the callback before restoring the page so that we will not fail when
   // events are generated.

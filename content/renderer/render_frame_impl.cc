@@ -6120,7 +6120,7 @@ int RenderFrameImpl::GetEnabledBindings() {
 }
 
 void RenderFrameImpl::SetAccessibilityModeForTest(ui::AXMode new_mode) {
-  render_accessibility_manager_->SetMode(new_mode, 1);
+  render_accessibility_manager_->SetMode(new_mode);
 }
 
 const RenderFrameMediaPlaybackOptions&
