@@ -4371,8 +4371,14 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TAB_PICKUP_BANNER_TITLE" desc="Infobar title to open a previously opened tab from another device.">
         Last Tab Used on <ph name="SOURCE_DEVICE">$1<ex>iPad</ex></ph>
       </message>
+      <message name="IDS_IOS_TAB_RESUMPTION_JUST_NOW" desc="String indicating that the presented tab was synced less than 1 minute ago.">
+        just now
+      </message>
       <message name="IDS_IOS_TAB_RESUMPTION_TITLE" desc="Title for the module that presents the last opened tab, on the new tab page.">
         Continue Browsing
+      </message>
+      <message name="IDS_IOS_TAB_RESUMPTION_TILE_HOST_LABEL" desc="Label that displays the name of the last synced device. This module presents the last open tab, on the new tab page.">
+        From "<ph name="SOURCE_DEVICE">$1<ex>iPad</ex></ph>"
       </message>
       <message name="IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER" desc="The accessibility label of the tab strip button to enter the tab switcher. The tab switcher is a view showing the opened tabs, and allows users to switch, close, and open new tabs. [iOS only]">
         Enter Tab Switcher

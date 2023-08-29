@@ -11,6 +11,12 @@ source_set("tab_resumption") {
   ]
   deps = [
     "//base",
+    "//components/sessions:session_id",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
     "//url",
   ]
