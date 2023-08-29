@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/fake_recommend_apps_fetcher.h"
 
 #include <algorithm>
 
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_delegate.h"
 
-namespace ash {
+namespace apps {
 namespace {
 
 constexpr base::TimeDelta kFakeLoadingTime = base::Seconds(3);
@@ -51,4 +51,4 @@ void FakeRecommendAppsFetcher::Retry() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace ash
+}  // namespace apps

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
@@ -11,15 +11,15 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/fake_recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"  // nogncheck https://crbug.com/1475504
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace ash {
+namespace apps {
 namespace {
 
 // The factory callback that will be used to create RecommendAppsFetcher
@@ -32,15 +32,16 @@ RecommendAppsFetcher::FactoryCallback* g_factory_callback = nullptr;
 // static
 std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
     RecommendAppsFetcherDelegate* delegate) {
-  if (g_factory_callback)
+  if (g_factory_callback) {
     return g_factory_callback->Run(delegate);
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kFakeArcRecommendedAppsForTesting)) {
+          ash::switches::kFakeArcRecommendedAppsForTesting)) {
     LOG(WARNING) << "Using fake recommended apps fetcher";
     std::string num_apps_str =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kFakeArcRecommendedAppsForTesting);
+            ash::switches::kFakeArcRecommendedAppsForTesting);
     int fake_apps_count = 0;
     if (!base::StringToInt(num_apps_str, &fake_apps_count)) {
       fake_apps_count = 3;
@@ -51,8 +52,10 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
 
   mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
       display_config;
-  BindCrosDisplayConfigController(
+  ash::BindCrosDisplayConfigController(
       display_config.InitWithNewPipeAndPassReceiver());
+  // TODO(crbug.com/1475504): Remove dependency on ProfileManager, by passing a
+  // Profile* into this method.
   return std::make_unique<RecommendAppsFetcherImpl>(
       delegate, std::move(display_config),
       ProfileManager::GetActiveUserProfile()
@@ -69,4 +72,4 @@ void RecommendAppsFetcher::SetFactoryCallbackForTesting(
   g_factory_callback = callback;
 }
 
-}  // namespace ash
+}  // namespace apps

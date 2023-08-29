@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
+#ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
+#define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 
-namespace ash {
+namespace apps {
 class RecommendAppsFetcherDelegate;
 
 // This class fakes network request for the Recommend Apps screen.
@@ -38,6 +38,6 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
   base::WeakPtrFactory<FakeRecommendAppsFetcher> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
+#endif  // CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_

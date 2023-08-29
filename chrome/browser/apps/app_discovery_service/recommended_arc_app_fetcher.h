@@ -8,16 +8,13 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
-
-namespace ash {
-class RecommendAppsFetcher;
-}
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_delegate.h"
 
 namespace apps {
+class RecommendAppsFetcher;
 
 class RecommendedArcAppFetcher : public AppFetcher,
-                                 public ash::RecommendAppsFetcherDelegate {
+                                 public RecommendAppsFetcherDelegate {
  public:
   RecommendedArcAppFetcher();
   RecommendedArcAppFetcher(const RecommendedArcAppFetcher&) = delete;
@@ -37,7 +34,7 @@ class RecommendedArcAppFetcher : public AppFetcher,
 
  private:
   apps::ResultCallback callback_;
-  std::unique_ptr<ash::RecommendAppsFetcher> recommend_apps_fetcher_;
+  std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
 };
 
 }  // namespace apps

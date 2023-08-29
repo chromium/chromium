@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 
 #include "base/base64url.h"
 #include "base/functional/bind.h"
@@ -13,7 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_delegate.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "gpu/config/gpu_info.h"
@@ -31,7 +31,7 @@
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/gl_version_info.h"
 
-namespace ash {
+namespace apps {
 namespace {
 
 constexpr const char kGetRevisedAppListUrl[] =
@@ -68,8 +68,9 @@ bool HasKeyboard() {
 bool HasHardKeyboard() {
   for (const ui::InputDevice& device :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (!device.phys.empty())
+    if (!device.phys.empty()) {
       return true;
+    }
   }
 
   return false;
@@ -167,8 +168,9 @@ GetScreenLayoutSizeId(const int screen_layout_size_value) {
 }
 
 const gpu::GPUInfo GetGPUInfo() {
-  if (g_gpu_info_for_test)
+  if (g_gpu_info_for_test) {
     return *g_gpu_info_for_test;
+  }
 
   return content::GpuDataManager::GetInstance()->GetGPUInfo();
 }
@@ -298,8 +300,9 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
   device_config_.set_gl_es_version(GetGLVersionInfo(gpu_info));
 
   for (const base::StringPiece& gl_extension : GetGLExtensions(gpu_info)) {
-    if (!gl_extension.empty())
+    if (!gl_extension.empty()) {
       device_config_.add_gl_extension(std::string(gl_extension));
+    }
   }
 }
 
@@ -311,8 +314,9 @@ void RecommendAppsFetcherImpl::StartAshRequest() {
 }
 
 void RecommendAppsFetcherImpl::MaybeStartCompressAndEncodeProtoMessage() {
-  if (!ash_ready_ || !arc_features_ready_ || has_started_proto_processing_)
+  if (!ash_ready_ || !arc_features_ready_ || has_started_proto_processing_) {
     return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -382,8 +386,9 @@ void RecommendAppsFetcherImpl::OnArcFeaturesRead(
 }
 
 void RecommendAppsFetcherImpl::StartDownload() {
-  if (!proto_compressed_and_encoded_)
+  if (!proto_compressed_and_encoded_) {
     return;
+  }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("play_recommended_apps_download", R"(
@@ -476,9 +481,10 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   // further parsing.
   const std::string json_xss_prevention_prefix = ")]}'";
   std::string response_body_json = *response_body;
-  if (base::StartsWith(response_body_json, json_xss_prevention_prefix))
+  if (base::StartsWith(response_body_json, json_xss_prevention_prefix)) {
     response_body_json =
         response_body_json.substr(json_xss_prevention_prefix.length());
+  }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       response_body_json,
@@ -507,4 +513,4 @@ void RecommendAppsFetcherImpl::OnJsonParsed(
   delegate_->OnLoadSuccess(std::move(*result));
 }
 
-}  // namespace ash
+}  // namespace apps

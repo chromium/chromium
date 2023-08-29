@@ -5182,6 +5182,7 @@ static_library("browser") {
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/apps/app_deduplication_service",
       "//chrome/browser/apps/app_discovery_service:almanac_fetcher",
+      "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/apps/app_provisioning_service",
       "//chrome/browser/ash",

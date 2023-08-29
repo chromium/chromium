@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_
+#ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_
+#define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/device_configuration.pb.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/device_configuration.pb.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,7 +35,7 @@ class URLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace ash {
+namespace apps {
 class RecommendAppsFetcherDelegate;
 
 // This class handles the network request for the Recommend Apps screen. It is
@@ -160,6 +160,6 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   base::WeakPtrFactory<RecommendAppsFetcherImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_
+#endif  // CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_
+#ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_
+#define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_
 
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_delegate.h"
 
 #include "base/functional/callback.h"
 #include "base/values.h"
 
-namespace ash {
+namespace apps {
 
 // Delegate interface used by RecommendAppsFetcher to report its results.
 class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
@@ -61,6 +61,6 @@ class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
   base::OnceClosure result_callback_;
 };
 
-}  // namespace ash
+}  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_
+#endif  // CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_

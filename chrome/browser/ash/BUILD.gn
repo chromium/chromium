@@ -1880,13 +1880,6 @@ source_set("ash") {
     "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",
     "login/screens/quick_start_screen.h",
-    "login/screens/recommend_apps/fake_recommend_apps_fetcher.cc",
-    "login/screens/recommend_apps/fake_recommend_apps_fetcher.h",
-    "login/screens/recommend_apps/recommend_apps_fetcher.cc",
-    "login/screens/recommend_apps/recommend_apps_fetcher.h",
-    "login/screens/recommend_apps/recommend_apps_fetcher_delegate.h",
-    "login/screens/recommend_apps/recommend_apps_fetcher_impl.cc",
-    "login/screens/recommend_apps/recommend_apps_fetcher_impl.h",
     "login/screens/recommend_apps_screen.cc",
     "login/screens/recommend_apps_screen.h",
     "login/screens/recovery_eligibility_screen.cc",
@@ -3443,7 +3436,6 @@ source_set("ash") {
   ]
 
   public_deps = [
-    ":device_configuration_proto",
     ":lock_unlock_event_proto",
     ":login_logout_event_proto",
     ":os_events_proto",
@@ -4538,8 +4530,6 @@ static_library("test_support") {
     "login/screens/mock_update_screen.h",
     "login/screens/mock_welcome_screen.cc",
     "login/screens/mock_welcome_screen.h",
-    "login/screens/recommend_apps/fake_recommend_apps_fetcher_delegate.cc",
-    "login/screens/recommend_apps/fake_recommend_apps_fetcher_delegate.h",
     "login/session/user_session_manager_test_api.cc",
     "login/session/user_session_manager_test_api.h",
     "login/test/cryptohome_mixin.cc",
@@ -5473,7 +5463,6 @@ source_set("unit_tests") {
     "login/screens/arc_vm_data_migration_screen_unittest.cc",
     "login/screens/chromevox_hint/chromevox_hint_detector_unittest.cc",
     "login/screens/network_screen_unittest.cc",
-    "login/screens/recommend_apps/recommend_apps_fetcher_impl_unittest.cc",
     "login/screens/reset_screen_unittest.cc",
     "login/screens/update_required_screen_unittest.cc",
     "login/screens/update_screen_unittest.cc",
@@ -6481,11 +6470,6 @@ proto_library("add_remove_user_event_proto") {
 
 proto_library("attestation_proto") {
   sources = [ "attestation/attestation_key_payload.proto" ]
-}
-
-proto_library("device_configuration_proto") {
-  sources = [ "login/screens/recommend_apps/device_configuration.proto" ]
-  generate_python = false
 }
 
 proto_library("login_logout_event_proto") {

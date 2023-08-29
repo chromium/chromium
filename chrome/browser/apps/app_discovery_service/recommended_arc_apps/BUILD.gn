@@ -1,0 +1,84 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("recommended_arc_apps") {
+  sources = [
+    "fake_recommend_apps_fetcher.cc",
+    "fake_recommend_apps_fetcher.h",
+    "recommend_apps_fetcher.cc",
+    "recommend_apps_fetcher.h",
+    "recommend_apps_fetcher_delegate.h",
+    "recommend_apps_fetcher_impl.cc",
+    "recommend_apps_fetcher_impl.h",
+  ]
+
+  deps = [
+    ":device_configuration_proto",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common/api",
+    "//gpu/config",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//third_party/zlib/google:compression_utils",
+    "//ui/display",
+    "//ui/events/devices",
+  ]
+}
+
+proto_library("device_configuration_proto") {
+  sources = [ "device_configuration.proto" ]
+  generate_python = false
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_recommend_apps_fetcher_delegate.cc",
+    "fake_recommend_apps_fetcher_delegate.h",
+    "scoped_test_recommend_apps_fetcher_factory.cc",
+    "scoped_test_recommend_apps_fetcher_factory.h",
+  ]
+
+  deps = [
+    ":recommended_arc_apps",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "recommend_apps_fetcher_impl_unittest.cc" ]
+
+  deps = [
+    ":recommended_arc_apps",
+    ":test_support",
+    "//ash/components/arc",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom:mojom",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+    "//ui/display",
+    "//ui/display:test_support",
+    "//ui/display/util",
+    "//ui/events/devices:test_support",
+  ]
+}

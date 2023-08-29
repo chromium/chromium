@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 
 #include <memory>
 #include <utility>
@@ -14,8 +14,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher_delegate.h"
-#include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/fake_recommend_apps_fetcher_delegate.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
@@ -37,7 +37,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 
-namespace ash {
+namespace apps {
 namespace {
 
 // Values set in ArcFeatures created by CreateArcFeaturesForTest.
@@ -94,14 +94,13 @@ class TestCrosDisplayConfig
 
   ~TestCrosDisplayConfig() override = default;
 
-  void Flush() {
-    receiver_.FlushForTesting();
-  }
+  void Flush() { receiver_.FlushForTesting(); }
 
   bool RunGetDisplayUnitInfoListCallback(
       std::vector<crosapi::mojom::DisplayUnitInfoPtr> unit_info_list) {
-    if (!get_display_unit_info_list_callback_)
+    if (!get_display_unit_info_list_callback_) {
       return false;
+    }
     std::move(get_display_unit_info_list_callback_)
         .Run(std::move(unit_info_list));
     return true;
@@ -350,8 +349,9 @@ class RecommendAppsFetcherImplTest : public testing::Test {
         "https://android.clients.google.com/fdfe/chrome/"
         "getSetupAppRecommendations",
         request.url.spec());
-    if (request_waiter_)
+    if (request_waiter_) {
       request_waiter_->Quit();
+    }
   }
 
   void HandleArcFeaturesRequest(
@@ -1090,4 +1090,4 @@ TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryParseErrorResponse) {
             delegate_.WaitForResult());
 }
 
-}  // namespace ash
+}  // namespace apps
