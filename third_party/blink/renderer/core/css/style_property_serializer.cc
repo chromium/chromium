@@ -1571,8 +1571,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
     bool use_repeat_x_shorthand = false;
     bool use_repeat_y_shorthand = false;
     bool use_single_word_shorthand = false;
-    bool found_position_xcss_property = false;
-    bool found_position_ycss_property = false;
+    bool found_position_x_css_property = false;
+    bool found_position_y_css_property = false;
 
     for (unsigned property_index = 0; property_index < size; property_index++) {
       const CSSValue* value = nullptr;
@@ -1700,7 +1700,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       if (!is_initial_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||
             property->IDEquals(CSSPropertyID::kWebkitMaskSize)) {
-          if (found_position_ycss_property || found_position_xcss_property) {
+          if (found_position_y_css_property || found_position_x_css_property) {
             layer_result.Append(" / ");
           } else {
             layer_result.Append(" 0% 0% / ");
@@ -1725,11 +1725,11 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         }
         if (property->IDEquals(CSSPropertyID::kBackgroundPositionX) ||
             property->IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
-          found_position_xcss_property = true;
+          found_position_x_css_property = true;
         }
         if (property->IDEquals(CSSPropertyID::kBackgroundPositionY) ||
             property->IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
-          found_position_ycss_property = true;
+          found_position_y_css_property = true;
           // background-position is a special case. If only the first offset is
           // specified, the second one defaults to "center", not the same value.
         }
