@@ -42,6 +42,7 @@ class ShelfSpinnerController;
 
 namespace apps {
 class PromiseAppUpdate;
+class ShortcutUpdate;
 }
 
 namespace ash {
@@ -281,6 +282,7 @@ class ChromeShelfController
                                 bool by_migration) override;
   void OnPromiseAppUpdate(const apps::PromiseAppUpdate& update) override;
   void OnPromiseAppRemoved(const apps::PackageId& package_id) override;
+  void OnShortcutUpdated(const apps::ShortcutUpdate& update) override;
 
   // AppIconLoaderDelegate:
   void OnAppImageUpdated(const std::string& app_id,

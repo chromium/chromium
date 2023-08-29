@@ -160,6 +160,8 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
@@ -6452,6 +6454,50 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, PinnedPromiseAppShelfItemType) {
   ash::ShelfID id(package_id.ToString());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   EXPECT_TRUE(item->is_promise_app);
+}
+
+class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {
+ public:
+  ChromeShelfControllerShortcutTest() {
+    feature_list_.InitAndEnableFeature(features::kCrosWebAppShortcutUiUpdate);
+  }
+  ~ChromeShelfControllerShortcutTest() override = default;
+
+  apps::ShortcutRegistryCache* cache() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->ShortcutRegistryCache();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
+  apps::ShortcutPtr shortcut =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "Name";
+  cache()->UpdateShortcut(std::move(shortcut));
+
+  // Create a shelf item for the shortcut.
+  InitShelfController();
+  PinAppWithIDToShelf(shortcut_id.value());
+
+  // Verify the details of the shelf item.
+  EXPECT_TRUE(model_->IsAppPinned(shortcut_id.value()));
+  ash::ShelfID id(shortcut_id.value());
+  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
+  EXPECT_EQ(item->title, std::u16string(u"Name"));
+
+  // Update shortcut title.
+  apps::ShortcutPtr update =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  update->name = "NewName";
+  cache()->UpdateShortcut(std::move(update));
+
+  // Verify that the shelf item has updated details.
+  const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
+  EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
