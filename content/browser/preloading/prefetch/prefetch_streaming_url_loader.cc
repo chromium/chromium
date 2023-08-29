@@ -340,6 +340,10 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
 
 PrefetchResponseReader::RequestHandler
 PrefetchResponseReader::CreateRequestHandler() {
+  if (streaming_url_loader_) {
+    streaming_url_loader_->OnStartServing();
+  }
+
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
                         base::WrapRefCounted(this));
 }

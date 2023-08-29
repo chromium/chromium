@@ -718,7 +718,6 @@ PrefetchContainer::CreateRequestHandlerInternal(Reader& reader) {
   CHECK(!streaming_loaders_.empty());
   DCHECK_EQ(reader.GetPrefetchContainer(), this);
   auto* raw_streaming_loader = streaming_loaders_[0].get();
-  raw_streaming_loader->OnStartServing();
 
   DCHECK(reader.GetCurrentSinglePrefetchToServe()
              .response_reader_->GetStreamingLoader()
