@@ -11,12 +11,12 @@ import {TREEITEM_DRIVE} from './create_new_folder.js';
 /**
  * Directory tree selector constants.
  */
-const TREEITEM_A = TREEITEM_DRIVE + ' [entry-label="A"] ';
-const TREEITEM_B = TREEITEM_A + '[entry-label="B"] ';
-const TREEITEM_C = TREEITEM_B + '[entry-label="C"] ';
+const TREEITEM_A = TREEITEM_DRIVE + ' [entry-label="A"]';
+const TREEITEM_B = TREEITEM_A + ' [entry-label="B"]';
+const TREEITEM_C = TREEITEM_B + ' [entry-label="C"]';
 
-const TREEITEM_D = TREEITEM_DRIVE + ' [entry-label="D"] ';
-const TREEITEM_E = TREEITEM_D + '[entry-label="E"] ';
+const TREEITEM_D = TREEITEM_DRIVE + ' [entry-label="D"]';
+const TREEITEM_E = TREEITEM_D + ' [entry-label="E"]';
 
 /**
  * Entry set used for the folder shortcut tests.

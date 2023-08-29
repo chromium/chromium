@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  testonly = true
+  deps = [ ":directory_tree" ]
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "language_in=ECMASCRIPT_2020",
+        "js_module_root=./gen/ui",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
+}
+
+js_library("directory_tree") {
+  testonly = true
+  deps = [
+    "//ui/file_manager/integration_tests:element_object",
+    "//ui/file_manager/integration_tests:remote_call",
+    "//ui/file_manager/integration_tests:test_util",
+  ]
+}

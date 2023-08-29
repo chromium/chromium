@@ -1768,20 +1768,32 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("directoryTreeActiveDirectory"),
+        TestCase("directoryTreeActiveDirectory").FilesExperimental(),
         TestCase("directoryTreeSelectedDirectory"),
-        // TODO(b/189173190): Enable
-        // TestCase("directoryTreeRecentsSubtypeScroll"),
+        TestCase("directoryTreeSelectedDirectory").FilesExperimental(),
         TestCase("directoryTreeHorizontalScroll"),
+        TestCase("directoryTreeHorizontalScroll").FilesExperimental(),
         TestCase("directoryTreeExpandHorizontalScroll"),
+        TestCase("directoryTreeExpandHorizontalScroll").FilesExperimental(),
         TestCase("directoryTreeExpandHorizontalScrollRTL"),
+        TestCase("directoryTreeExpandHorizontalScrollRTL").FilesExperimental(),
         TestCase("directoryTreeVerticalScroll"),
+        TestCase("directoryTreeVerticalScroll").FilesExperimental(),
         TestCase("directoryTreeExpandFolder"),
         TestCase("directoryTreeExpandFolder").FilesExperimental(),
         TestCase(
             "directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff"),
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOff")
+            .FilesExperimental(),
         TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn"),
+        TestCase("directoryTreeExpandFolderWithHiddenFileAndShowHiddenFilesOn")
+            .FilesExperimental(),
         TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume"),
-        TestCase("directoryTreeExpandFolderOnDelayExpansionVolume")));
+        TestCase("directoryTreeExpandFolderOnNonDelayExpansionVolume")
+            .FilesExperimental(),
+        TestCase("directoryTreeExpandFolderOnDelayExpansionVolume"),
+        TestCase("directoryTreeExpandFolderOnDelayExpansionVolume")
+            .FilesExperimental()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DirectoryTreeContextMenu, /* directory_tree_context_menu.js */

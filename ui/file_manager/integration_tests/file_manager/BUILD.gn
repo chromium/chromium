@@ -127,6 +127,7 @@ js_library("directory_tree") {
   testonly = true
   deps = [
     ":test_data",
+    "page_objects:directory_tree",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }

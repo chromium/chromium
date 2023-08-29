@@ -54,6 +54,7 @@ group("closure_compile") {
     "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
+    "integration_tests/file_manager/page_objects:closure_compile",
   ]
 }
 

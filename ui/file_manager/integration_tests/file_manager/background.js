@@ -51,11 +51,12 @@ import './traverse.js';
 import './zip_files.js';
 
 import {FilesAppState} from '../files_app_state.js';
-import {RemoteCall, RemoteCallFilesApp} from '../remote_call.js';
-import {addEntries, checkIfNoErrorsOccuredOnApp, ENTRIES, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo, testPromiseAndApps} from '../test_util.js';
+import {RemoteCallFilesApp} from '../remote_call.js';
+import {addEntries, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {CHOOSE_ENTRY_PROPERTY} from './choose_entry_const.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
 /**
@@ -367,8 +368,8 @@ export async function createShortcut(appId, directoryName) {
       'fakeMouseClick', appId,
       ['[command="#pin-folder"]:not([hidden]):not([disabled])']));
 
-  await remoteCall.waitForElement(
-      appId, `.tree-item[entry-label="${directoryName}"]`);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel(directoryName);
 }
 
 /**
@@ -379,20 +380,8 @@ export async function createShortcut(appId, directoryName) {
  * @return {Promise} Promise fulfilled on success.
  */
 export async function expandTreeItem(appId, treeItem) {
-  // TODO(b/272125628): Use page object.
-  const useNewTree =
-      await sendTestMessage({name: 'isFilesExperimentalEnabled'}) === 'true';
-  const expandIcon = useNewTree ?
-      // expand-icon is inside shadow DOM.
-      [treeItem, '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon'] :
-      (treeItem +
-       ' > .tree-row:is([has-children=true], [may-have-children]) .expand-icon');
-  await remoteCall.waitAndClickElement(appId, expandIcon);
-
-  const expandedSubtree = useNewTree ?
-      `${treeItem}[expanded]` :
-      (treeItem + '> .tree-children[expanded]');
-  await remoteCall.waitForElement(appId, expandedSubtree);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItem(treeItem);
 }
 
 /**
@@ -401,36 +390,12 @@ export async function expandTreeItem(appId, treeItem) {
  * @param {string} appId Files app windowId.
  * @param {string} breadcrumbsPath Path based in the entry labels like:
  *    /My files/Downloads/photos
- * @return {Promise<string>} Promise fulfilled on success with the selector
+ * @return {!Promise<string>} Promise fulfilled on success with the selector
  *    query of the last directory expanded.
  */
 export async function recursiveExpand(appId, breadcrumbsPath) {
-  const paths = breadcrumbsPath.split('/').filter(path => path);
-  // TODO(b/272125628): Use page object.
-  const useNewTree =
-      await sendTestMessage({name: 'isFilesExperimentalEnabled'}) === 'true';
-  const hasChildren = useNewTree ?
-      ' > xf-tree-item' :
-      ' > .tree-row:is([has-children=true], [may-have-children])';
-
-  // Expand each directory in the breadcrumb.
-  let query = '#directory-tree';
-  for (const parentLabel of paths) {
-    // Wait for parent element to be displayed.
-    query += useNewTree ? ` [label="${parentLabel}"]` :
-                          ` [entry-label="${parentLabel}"]`;
-    await remoteCall.waitForElement(appId, query);
-
-    // Only expand if element isn't expanded yet.
-    const elements = await remoteCall.callRemoteTestUtil(
-        'queryAllElements', appId, [query + '[expanded]']);
-    if (!elements.length) {
-      await remoteCall.waitForElement(appId, query + hasChildren);
-      await expandTreeItem(appId, query);
-    }
-  }
-
-  return query;
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  return directoryTree.recursiveExpand(breadcrumbsPath);
 }
 
 /**
@@ -446,33 +411,8 @@ export async function recursiveExpand(appId, breadcrumbsPath) {
  */
 export async function navigateWithDirectoryTree(
     appId, breadcrumbsPath, shortcutToPath) {
-  // Focus the directory tree.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'focus', appId, ['#directory-tree']),
-      'focus failed: #directory-tree');
-
-  const paths = breadcrumbsPath.split('/');
-  const leaf = paths.pop();
-
-  // Expand all parents of the leaf entry.
-  let query = await recursiveExpand(appId, paths.join('/'));
-
-  // Navigate to the final entry.
-  query += ` [entry-label="${leaf}"]`;
-  await remoteCall.waitAndClickElement(appId, query);
-
-  // Wait directory to finish scanning its content.
-  await remoteCall.waitForElement(appId, `[scan-completed="${leaf}"]`);
-
-  // If the search was not closed, wait for it to close.
-  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
-
-  // Wait to navigation to final entry to finish.
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(
-      appId, (shortcutToPath || breadcrumbsPath));
-
-  return query;
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  return directoryTree.navigateToPath(breadcrumbsPath, shortcutToPath);
 }
 
 /**
@@ -483,18 +423,17 @@ export async function navigateWithDirectoryTree(
  */
 export async function mountCrostini(
     appId, initialEntries = BASIC_CROSTINI_ENTRY_SET) {
-  const fakeLinuxFiles = '#directory-tree [root-type-icon="crostini"]';
-  const realLinxuFiles = '#directory-tree [volume-type-icon="crostini"]';
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
   // Add entries to crostini volume, but do not mount.
   await addEntries(['crostini'], initialEntries);
 
   // Linux files fake root is shown.
-  await remoteCall.waitForElement(appId, fakeLinuxFiles);
+  await directoryTree.waitForPlaceholderItem('crostini');
 
   // Mount crostini, and ensure real root and files are shown.
-  remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [fakeLinuxFiles]);
-  await remoteCall.waitForElement(appId, realLinxuFiles);
+  await directoryTree.selectPlaceholderItem('crostini');
+  await directoryTree.waitForItemByType('crostini');
   const files = TestEntryInfo.getExpectedRows(BASIC_CROSTINI_ENTRY_SET);
   await remoteCall.waitForFiles(appId, files);
 }
@@ -507,20 +446,19 @@ export async function mountCrostini(
  *     load in the volume.
  */
 export async function mountGuestOs(appId, initialEntries) {
-  const id = await sendTestMessage({
+  await sendTestMessage({
     name: 'registerMountableGuest',
     displayName: 'Bluejohn',
     canMount: true,
     vmType: 'bruschetta',
   });
-  const placeholder = '#directory-tree [root-type-icon="bruschetta"]';
-  const real = '#directory-tree [volume-type-icon="bruschetta"]';
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
   // Wait for the GuestOS fake root then click it.
-  remoteCall.waitAndClickElement(appId, placeholder);
+  await directoryTree.selectPlaceholderItem('bruschetta');
 
   // Wait for the volume to get mounted.
-  await remoteCall.waitForElement(appId, real);
+  await directoryTree.waitForItemByType('bruschetta');
 
   // Add entries to GuestOS volume
   await addEntries(['guest_os_0'], initialEntries);
