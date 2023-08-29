@@ -38,13 +38,6 @@ void JNI_AccessibilityState_OnDisplayInversionEnabledChanged(JNIEnv* env,
 }
 
 // static
-void JNI_AccessibilityState_OnContrastLevelChanged(
-    JNIEnv* env,
-    jboolean highContrastEnabled) {
-  AccessibilityState::NotifyContrastLevelObservers((bool)highContrastEnabled);
-}
-
-// static
 void JNI_AccessibilityState_RecordAccessibilityServiceInfoHistograms(
     JNIEnv* env) {
   AccessibilityState::NotifyRecordAccessibilityServiceInfoHistogram();
@@ -74,14 +67,6 @@ void AccessibilityState::NotifyAnimatorDurationScaleObservers() {
 void AccessibilityState::NotifyDisplayInversionEnabledObservers(bool enabled) {
   for (AccessibilityStateDelegate* delegate : GetDelegates()) {
     delegate->OnDisplayInversionEnabledChanged(enabled);
-  }
-}
-
-// static
-void AccessibilityState::NotifyContrastLevelObservers(
-    bool highContrastEnabled) {
-  for (AccessibilityStateDelegate* delegate : GetDelegates()) {
-    delegate->OnContrastLevelChanged(highContrastEnabled);
   }
 }
 
