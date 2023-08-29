@@ -103,14 +103,14 @@ void FedCmAccountSelectionView::Show(
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
-    bubble_widget_ = CreateBubbleWithAccessibleTitle(
-                         top_frame_for_display_, iframe_for_display_, idp_title,
-                         rp_context, show_auto_reauthn_checkbox)
-                         ->GetWeakPtr();
-    if (!bubble_widget_) {
+    views::Widget* widget = CreateBubbleWithAccessibleTitle(
+        top_frame_for_display_, iframe_for_display_, idp_title, rp_context,
+        show_auto_reauthn_checkbox);
+    if (!widget) {
       delegate_->OnDismiss(DismissReason::kOther);
       return;
     }
+    bubble_widget_ = widget->GetWeakPtr();
 
     // Initialize InputEventActivationProtector to handle potentially unintended
     // input events. Do not override `input_protector_` set by
@@ -177,16 +177,15 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
-    bubble_widget_ = CreateBubbleWithAccessibleTitle(
-                         base::UTF8ToUTF16(top_frame_etld_plus_one),
-                         iframe_etld_plus_one_u16,
-                         base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                         /*show_auto_reauthn_checkbox=*/false)
-                         ->GetWeakPtr();
-    if (!bubble_widget_) {
+    views::Widget* widget = CreateBubbleWithAccessibleTitle(
+        base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
+        base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+        /*show_auto_reauthn_checkbox=*/false);
+    if (!widget) {
       delegate_->OnDismiss(DismissReason::kOther);
       return;
     }
+    bubble_widget_ = widget->GetWeakPtr();
 
     // Initialize InputEventActivationProtector to handle potentially unintended
     // input events. Do not override `input_protector_` set by
