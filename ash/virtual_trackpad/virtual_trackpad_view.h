@@ -18,6 +18,7 @@ class Widget;
 
 namespace ash {
 
+class BlurredBackgroundShield;
 class TrackpadInternalSurfaceView;
 
 // The contents view of the widget which houses the virtual trackpad. Serves as
@@ -64,6 +65,9 @@ class VirtualTrackpadView : public views::View {
   base::flat_map<int, views::LabelButton*> finger_buttons_;
   raw_ptr<TrackpadInternalSurfaceView, ExperimentalAsh> trackpad_view_ =
       nullptr;
+
+  // Creates a new layer that blurs the background underneath the view layer.
+  std::unique_ptr<BlurredBackgroundShield> blurred_background_;
 };
 
 }  // namespace ash
