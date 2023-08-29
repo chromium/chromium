@@ -107,6 +107,10 @@ class AuraWindowTitleObserver
       iter->second.Observe(window);
     }
   }
+  void OnWillDestroyEnv() override {
+    env_ = nullptr;
+    OnObservationStateObserverSourceDestroyed();
+  }
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
@@ -121,7 +125,7 @@ class AuraWindowTitleObserver
   }
 
  private:
-  const raw_ptr<aura::Env> env_;
+  raw_ptr<aura::Env> env_;
   bool found_ = false;
   const std::u16string expected_title_;
 
