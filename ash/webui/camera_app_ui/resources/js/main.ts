@@ -384,12 +384,10 @@ export class App {
 
   /**
    * Handles pressed keys.
-   *
-   * @param event Key press event.
    */
-  private onKeyPressed(event: Event) {
+  private onKeyPressed(event: KeyboardEvent) {
     tooltip.hide();  // Hide shown tooltip on any keypress.
-    nav.onKeyPressed(assertInstanceof(event, KeyboardEvent));
+    nav.onKeyPressed(event);
   }
 
   /**
