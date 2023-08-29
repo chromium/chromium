@@ -158,6 +158,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // flag is enabled.
   private isWebUIToolbarVisible_: boolean;
 
+  synth = window.speechSynthesis;
+
+  // State for speech synthesis needs to be tracked separately because there
+  // are bugs with window.speechSynthesis.paused and
+  // window.speechSynthesis.speaking on some platforms.
+  paused = true;
+  speechStarted = false;
+
   constructor() {
     super();
     if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
@@ -292,6 +300,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.hasContent_ = false;
   }
 
+  // TODO(crbug.com/1474951): Handle focus changes for speech, including
+  // updating speech state.
   updateContent() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
@@ -357,19 +367,26 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
-  synth = window.speechSynthesis;
 
   stopSpeech() {
-    // TODO(crbug.com/1474951): Instead of cancelling, this should pause audio.
-    this.synth.cancel();
+    // TODO(crbug.com/1474951): When pausing, can we pause on the previous
+    // word so that speech doesn't resume in the middle of the word?
+    this.synth.pause();
+    this.paused = true;
   }
 
   playSpeech() {
+    if (this.speechStarted && this.paused) {
+      this.synth.resume();
+      this.paused = false;
+      return;
+    }
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const container = shadowRoot.getElementById('container');
     assert(container);
     if (container.textContent) {
+      this.paused = false;
       this.playMessage(container.textContent);
     }
   }
@@ -431,11 +448,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/1474951): Allow rate to be customized.
     message.rate = 1;
 
+    this.speechStarted = true;
     this.synth.cancel();
     this.synth.speak(message);
   }
 
   private onSpeechStopped() {
+    this.speechStarted = false;
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const toolbar = shadowRoot.getElementById('toolbar');
