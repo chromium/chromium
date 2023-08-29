@@ -209,10 +209,6 @@
 #include "chrome/browser/ui/webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/app_launcher_page_ui.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/webui_js_error/webui_js_error_ui.h"
 #endif
@@ -535,15 +531,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
-  // AppLauncherPage is not needed on Android or ChromeOS.
+  // AppHome is not needed on Android or ChromeOS.
   if (url.host_piece() == chrome::kChromeUIAppLauncherPageHost && profile &&
       extensions::ExtensionSystem::Get(profile)->extension_service() &&
       !profile->IsGuestSession()) {
-    if (base::FeatureList::IsEnabled(features::kDesktopPWAsAppHomePage)) {
-      return &NewWebUI<webapps::AppHomeUI>;
-    } else {
-      return &NewWebUI<AppLauncherPageUI>;
-    }
+    return &NewWebUI<webapps::AppHomeUI>;
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   if (profile->IsGuestSession() &&
@@ -1047,12 +1039,6 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
 
 #if !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_CHROMEOS)
-  // The Apps launcher page is not available on android or ChromeOS.
-  if (page_url.host_piece() == chrome::kChromeUIAppLauncherPageHost)
-    return AppLauncherPageUI::GetFaviconResourceBytes(scale_factor);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
   if (page_url.host_piece() == chrome::kChromeUINewTabPageHost)
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
 

@@ -119,13 +119,9 @@ class DeprecatedAppsDialogViewBrowserTest
   }
 
   base::StringPiece ClickDeprecatedDialogLinkString() {
-    if (base::FeatureList::IsEnabled(features::kDesktopPWAsAppHomePage)) {
-      return "document.querySelector('body > "
-             "deprecated-apps-link').shadowRoot.querySelector('#deprecated-"
-             "apps-link').click()";
-    } else {
-      return "document.getElementById('deprecated-apps-link').click()";
-    }
+    return "document.querySelector('body > "
+           "deprecated-apps-link').shadowRoot.querySelector('#deprecated-apps-"
+           "link').click()";
   }
 
   void WaitForDialogToBeDestroyed() {

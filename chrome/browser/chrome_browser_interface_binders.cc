@@ -1601,11 +1601,9 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsAppHomePage)) {
-    RegisterWebUIControllerInterfaceBinder<
-        ::app_home::mojom::PageHandlerFactory, webapps::AppHomeUI>(map);
-  }
-#endif
+  RegisterWebUIControllerInterfaceBinder<::app_home::mojom::PageHandlerFactory,
+                                         webapps::AppHomeUI>(map);
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   RegisterWebUIControllerInterfaceBinder<::mojom::WebAppInternalsHandler,
