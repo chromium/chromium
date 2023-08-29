@@ -16,6 +16,7 @@ namespace base {
 
 class NativeUnwinderAndroidMapDelegate;
 class NativeUnwinderAndroidMemoryRegionsMap;
+class NativeUnwinderAndroidMemoryRegionsMapImpl;
 
 // Implementation of unwindstack::Memory that restricts memory access to a stack
 // buffer, used by NativeUnwinderAndroid. While unwinding, only memory accesses
@@ -80,7 +81,7 @@ class NativeUnwinderAndroid : public Unwinder,
 
   const uintptr_t exclude_module_with_base_address_;
   raw_ptr<NativeUnwinderAndroidMapDelegate> map_delegate_;
-  const raw_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map_;
+  const raw_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl> memory_regions_map_;
 };
 
 }  // namespace base

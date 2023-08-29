@@ -18,7 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
-#include "base/profiler/native_unwinder_android_memory_regions_map.h"
+#include "base/profiler/native_unwinder_android_memory_regions_map_impl.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
@@ -52,32 +52,25 @@ void AddMapInfo(uint64_t start,
   map_info.set_elf_offset(map_info.offset());
 }
 
-class NativeUnwinderAndroidMemoryRegionsMapForTesting
-    : public NativeUnwinderAndroidMemoryRegionsMap {
- public:
-  NativeUnwinderAndroidMemoryRegionsMapForTesting(unwindstack::Maps* maps,
-                                                  unwindstack::Memory* memory)
-      : maps_(maps), memory_(memory) {}
-  unwindstack::Maps* GetMaps() override { return maps_; }
-  unwindstack::Memory* GetMemory() override { return memory_; }
-  // This function is not expected to be called within the unittest, as
-  // `NativeUnwinderAndroidMemoryRegionsMapForTesting` does not own
-  // `unwindstack::Memory`.
-  std::unique_ptr<unwindstack::Memory> TakeMemory() override { return nullptr; }
-
- private:
-  raw_ptr<unwindstack::Maps> maps_;
-  raw_ptr<unwindstack::Memory> memory_;
-};
+std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl>
+CreateMemoryRegionsMap() {
+  std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map =
+      NativeUnwinderAndroid::CreateMemoryRegionsMap();
+  std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl> downcast(
+      static_cast<NativeUnwinderAndroidMemoryRegionsMapImpl*>(
+          memory_regions_map.release()));
+  return downcast;
+}
 
 class NativeUnwinderAndroidMapDelegateForTesting
     : public NativeUnwinderAndroidMapDelegate {
  public:
   explicit NativeUnwinderAndroidMapDelegateForTesting(
-      std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map)
+      std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl>
+          memory_regions_map)
       : memory_regions_map_(std::move(memory_regions_map)) {}
 
-  NativeUnwinderAndroidMemoryRegionsMap* GetMapReference() override {
+  NativeUnwinderAndroidMemoryRegionsMapImpl* GetMapReference() override {
     acquire_count_++;
     return memory_regions_map_.get();
   }
@@ -87,7 +80,7 @@ class NativeUnwinderAndroidMapDelegateForTesting
   uint32_t release_count() { return release_count_; }
 
  private:
-  const std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap>
+  const std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl>
       memory_regions_map_;
 
   uint32_t acquire_count_ = 0u;
@@ -154,7 +147,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_PlainFunction) {
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
 
   ModuleCache module_cache;
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
@@ -198,7 +191,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_Alloca) {
   UnwindScenario scenario(BindRepeating(&CallWithAlloca));
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
 
   ModuleCache module_cache;
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
@@ -244,7 +237,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_OtherLibrary) {
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
   ModuleCache module_cache;
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
 
@@ -273,11 +266,11 @@ TEST(NativeUnwinderAndroidTest, ExcludeOtherLibrary) {
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
   ModuleCache module_cache;
   unwindstack::MapInfo* other_library_map =
       map_delegate.GetMapReference()
-          ->GetMaps()
+          ->maps()
           ->Find(GetAddressInOtherLibrary(other_library))
           .get();
   ASSERT_NE(nullptr, other_library_map);
@@ -315,7 +308,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
 
   // Several unwinders are used to unwind different portion of the stack. Since
   // only 1 unwinder can be registered as a module provider, each unwinder uses
@@ -336,7 +329,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
   ModuleCache module_cache_for_chrome;
   unwindstack::MapInfo* other_library_map =
       map_delegate.GetMapReference()
-          ->GetMaps()
+          ->maps()
           ->Find(GetAddressInOtherLibrary(other_library))
           .get();
   ASSERT_NE(nullptr, other_library_map);
@@ -402,7 +395,7 @@ TEST(NativeUnwinderAndroidTest, JavaFunction) {
   UnwindScenario scenario(base::BindRepeating(callWithJavaFunction));
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
 
   ModuleCache module_cache;
@@ -458,17 +451,18 @@ TEST(NativeUnwinderAndroidTest, UnwindStackMemoryTest) {
 
 // Checks the debug basename is the whole name for a non-ELF module.
 TEST(NativeUnwinderAndroidTest, ModuleDebugBasenameForNonElf) {
-  unwindstack::Maps maps;
+  auto maps = std::make_unique<unwindstack::Maps>();
 
   AddMapInfo(0x1000u, 0x2000u, 0u, PROT_READ | PROT_EXEC, "[foo / bar]", {0xAA},
-             maps);
+             *maps);
 
   ModuleCache module_cache;
 
-  auto memory_regions_map = NativeUnwinderAndroid::CreateMemoryRegionsMap();
+  std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl>
+      memory_regions_map = CreateMemoryRegionsMap();
+  memory_regions_map->SetMapsForTesting(std::move(maps));
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      std::make_unique<NativeUnwinderAndroidMemoryRegionsMapForTesting>(
-          &maps, memory_regions_map->GetMemory()));
+      std::move(memory_regions_map));
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
   unwinder->Initialize(&module_cache);
 
@@ -480,15 +474,16 @@ TEST(NativeUnwinderAndroidTest, ModuleDebugBasenameForNonElf) {
 
 // Checks that modules are only created for executable memory regions.
 TEST(NativeUnwinderAndroidTest, ModulesCreatedOnlyForExecutableRegions) {
-  unwindstack::Maps maps;
-  AddMapInfo(0x1000u, 0x2000u, 0u, PROT_READ | PROT_EXEC, "[a]", {0xAA}, maps);
-  AddMapInfo(0x2000u, 0x3000u, 0u, PROT_READ, "[b]", {0xAB}, maps);
-  AddMapInfo(0x3000u, 0x4000u, 0u, PROT_READ | PROT_EXEC, "[c]", {0xAC}, maps);
+  auto maps = std::make_unique<unwindstack::Maps>();
+  AddMapInfo(0x1000u, 0x2000u, 0u, PROT_READ | PROT_EXEC, "[a]", {0xAA}, *maps);
+  AddMapInfo(0x2000u, 0x3000u, 0u, PROT_READ, "[b]", {0xAB}, *maps);
+  AddMapInfo(0x3000u, 0x4000u, 0u, PROT_READ | PROT_EXEC, "[c]", {0xAC}, *maps);
 
-  auto memory_regions_map = NativeUnwinderAndroid::CreateMemoryRegionsMap();
+  std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMapImpl>
+      memory_regions_map = CreateMemoryRegionsMap();
+  memory_regions_map->SetMapsForTesting(std::move(maps));
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      std::make_unique<NativeUnwinderAndroidMemoryRegionsMapForTesting>(
-          &maps, memory_regions_map->GetMemory()));
+      std::move(memory_regions_map));
   ModuleCache module_cache;
   auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
   unwinder->Initialize(&module_cache);
@@ -510,7 +505,7 @@ TEST(NativeUnwinderAndroidTest, ModulesCreatedOnlyForExecutableRegions) {
 TEST(NativeUnwinderAndroidTest,
      AcquireAndReleaseMemoryRegionsMapThroughMapDelegate) {
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
-      NativeUnwinderAndroid::CreateMemoryRegionsMap());
+      CreateMemoryRegionsMap());
 
   {
     ModuleCache module_cache;

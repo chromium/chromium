@@ -2864,6 +2864,8 @@ if (is_android) {
       "profiler/libunwindstack_unwinder_android.h",
       "profiler/native_unwinder_android.cc",
       "profiler/native_unwinder_android.h",
+      "profiler/native_unwinder_android_memory_regions_map_impl.cc",
+      "profiler/native_unwinder_android_memory_regions_map_impl.h",
     ]
 
     public_deps = [
