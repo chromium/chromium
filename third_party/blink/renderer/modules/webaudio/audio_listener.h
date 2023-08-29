@@ -39,9 +39,6 @@
 
 namespace blink {
 
-class HRTFDatabaseLoader;
-class PannerHandler;
-
 // This interface represents the position and orientation of the person
 // listening to the audio scene. All PannerNode objects spatialize in relation
 // to the BaseAudioContext's listener.
@@ -74,40 +71,13 @@ class AudioListener final : public ScriptWrappable,
                       ExceptionState& exceptionState);
   void setPosition(float x, float y, float z, ExceptionState& exceptionState);
 
-  const gfx::Point3F GetPosition() const;
-  const gfx::Vector3dF GetOrientation() const;
-  const gfx::Vector3dF GetUpVector() const;
-
-  const float* GetPositionXValues(uint32_t frames_to_process);
-  const float* GetPositionYValues(uint32_t frames_to_process);
-  const float* GetPositionZValues(uint32_t frames_to_process);
-  const float* GetForwardXValues(uint32_t frames_to_process);
-  const float* GetForwardYValues(uint32_t frames_to_process);
-  const float* GetForwardZValues(uint32_t frames_to_process);
-  const float* GetUpXValues(uint32_t frames_to_process);
-  const float* GetUpYValues(uint32_t frames_to_process);
-  const float* GetUpZValues(uint32_t frames_to_process);
-
-  // True if any of AudioParams have automations.
-  bool HasSampleAccurateValues() const;
-
-  // True if any of AudioParams are set for a-rate automations (the default).
-  bool IsAudioRate() const;
-
   // Updates the internal state of the listener, including updating the dirty
   // state of all PannerNodes if necessary.
   void UpdateState();
 
-  bool IsListenerDirty() const;
-
   base::Lock& ListenerLock();
 
-  void AddPannerHandler(PannerHandler&);
-  void RemovePannerHandler(PannerHandler&);
-
-  void CreateAndLoadHRTFDatabaseLoader(float);
   void WaitForHRTFDatabaseLoaderThreadCompletion();
-  HRTFDatabaseLoader* HrtfDatabaseLoader();
 
   // InspectorHelperMixin: Note that this object belongs to a BaseAudioContext,
   // so these methods get called by the parent context.
