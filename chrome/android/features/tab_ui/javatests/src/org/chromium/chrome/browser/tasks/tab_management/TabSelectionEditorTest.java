@@ -49,7 +49,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.SysUtils;
@@ -1299,7 +1298,6 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance() throws IOException {
         prepareBlankTab(2, false);
@@ -1323,7 +1321,6 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewV2Shows() throws IOException {
         prepareBlankTab(2, false);
@@ -1337,7 +1334,6 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTab(2, false);
@@ -1362,7 +1358,6 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListView_select() throws IOException {
         prepareBlankTab(2, false);

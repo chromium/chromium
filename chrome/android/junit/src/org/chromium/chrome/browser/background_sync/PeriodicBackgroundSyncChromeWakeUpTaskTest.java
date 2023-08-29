@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.os.PersistableBundle;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -82,12 +80,6 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
         ShadowDeviceConditions.setCurrentNetworkConnectionType(ConnectionType.CONNECTION_NONE);
 
         mocker.mock(PeriodicBackgroundSyncChromeWakeUpTaskJni.TEST_HOOKS, mNativeMock);
-    }
-
-    @After
-    public void tearDown() {
-        // Clean up static state for subsequent Robolectric tests.
-        SysUtils.resetForTesting();
     }
 
     @Test

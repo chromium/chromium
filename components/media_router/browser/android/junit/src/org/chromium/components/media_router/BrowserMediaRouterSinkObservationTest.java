@@ -5,6 +5,7 @@
 package org.chromium.components.media_router;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -12,9 +13,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 
 import java.util.ArrayList;
@@ -108,17 +108,15 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
 
     @Test
     @Feature({"MediaRouter"})
+    @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testNotLowRamDevice() {
-        SysUtils.resetForTesting();
-        CommandLine.getInstance().appendSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE);
         assertTrue(mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1));
     }
 
     @Test
     @Feature({"MediaRouter"})
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testIsLowRamDevice() {
-        SysUtils.resetForTesting();
-        CommandLine.getInstance().appendSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE);
-        assertEquals(false, mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1));
+        assertFalse(mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1));
     }
 }

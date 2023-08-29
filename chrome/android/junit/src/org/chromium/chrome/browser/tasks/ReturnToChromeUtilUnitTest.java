@@ -29,7 +29,6 @@ import android.text.format.DateUtils;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,10 +44,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
@@ -71,7 +72,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepageManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -89,9 +89,9 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ReturnToChromeUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class,
-                ShadowSysUtils.class})
+        shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
+@CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
@@ -116,14 +116,6 @@ public class ReturnToChromeUtilUnitTest {
         @Implementation
         public static boolean isInitializedWithNative() {
             return sIsInitialized;
-        }
-    }
-
-    @Implements(SysUtils.class)
-    static class ShadowSysUtils {
-        @Implementation
-        public static boolean isLowEndDevice() {
-            return false;
         }
     }
 
@@ -193,11 +185,6 @@ public class ReturnToChromeUtilUnitTest {
                 .when(mResources)
                 .getInteger(org.chromium.ui.R.integer.min_screen_width_bucket);
         Assert.assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
-    }
-
-    @After
-    public void tearDown() {
-        SysUtils.resetForTesting();
     }
 
     @Test

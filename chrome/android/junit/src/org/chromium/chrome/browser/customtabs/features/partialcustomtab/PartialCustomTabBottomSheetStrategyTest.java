@@ -44,8 +44,6 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -57,7 +55,6 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -117,16 +114,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
         return pcct;
-    }
-
-    @Before
-    public void setUp() {
-        SysUtils.resetForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        SysUtils.resetForTesting();
     }
 
     @Test

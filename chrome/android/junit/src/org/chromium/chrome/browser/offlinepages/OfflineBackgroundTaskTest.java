@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.PersistableBundle;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -107,12 +105,6 @@ public class OfflineBackgroundTaskTest {
         mTestActivity = new Activity();
         ApplicationStatus.onStateChangeForTesting(mTestActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mTestActivity, ActivityState.STOPPED);
-    }
-
-    @After
-    public void tearDown() {
-        // Clean up static state for subsequent Robolectric tests.
-        SysUtils.resetForTesting();
     }
 
     private void setupScheduledProcessingWithResult(boolean result) {

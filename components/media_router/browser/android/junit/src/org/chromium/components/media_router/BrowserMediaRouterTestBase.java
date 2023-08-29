@@ -14,8 +14,6 @@ import static org.mockito.Mockito.spy;
 import org.junit.Before;
 import org.robolectric.shadows.ShadowLog;
 
-import org.chromium.base.CommandLine;
-
 /**
  * Robolectric test base class for BrowserMediaRouter.
  */
@@ -55,8 +53,5 @@ public class BrowserMediaRouterTestBase {
         assertEquals(1, mBrowserMediaRouter.getRouteProvidersForTest().size());
         assertEquals(mRouteProvider, mBrowserMediaRouter.getRouteProvidersForTest().get(0));
         assertNotNull(mRouteProvider);
-
-        // Initialize the command line to avoid an assertion failure in SysUtils.
-        CommandLine.init(new String[0]);
     }
 }

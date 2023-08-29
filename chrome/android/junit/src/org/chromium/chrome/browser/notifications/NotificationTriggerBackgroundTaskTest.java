@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 
 import android.os.PersistableBundle;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
@@ -57,11 +55,6 @@ public class NotificationTriggerBackgroundTaskTest {
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
         ChromeBackgroundTaskFactory.setAsDefault();
         NotificationTriggerScheduler.setInstanceForTests(mTriggerScheduler);
-    }
-
-    @After
-    public void tearDown() {
-        SysUtils.resetForTesting();
     }
 
     private static TaskParameters createTaskParameters(long timestamp) {

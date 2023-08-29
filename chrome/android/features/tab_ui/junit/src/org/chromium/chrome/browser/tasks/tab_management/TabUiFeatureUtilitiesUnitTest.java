@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -42,8 +41,6 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        SysUtils.resetForTesting();
         setAccessibilityEnabledForTesting(false);
         CachedFeatureFlags.resetFlagsForTesting();
     }
@@ -53,7 +50,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         CachedFeatureFlags.resetFlagsForTesting();
         setAccessibilityEnabledForTesting(null);
         DeviceClassManager.resetForTesting();
-        SysUtils.resetForTesting();
     }
 
     @Test

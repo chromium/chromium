@@ -26,14 +26,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -427,7 +425,6 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @Feature({"RenderTest", "Messages"})
     @Restriction({RESTRICTION_TYPE_LOW_END_DEVICE})
-    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     public void testBasic_lowEnd() throws Exception {
         Activity activity = getActivity();
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
