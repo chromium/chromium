@@ -201,6 +201,10 @@ void GuestOsSharePath::Shutdown() {
     client->RemoveVmObserver(this);
   }
 
+  if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
+    vmgr->RemoveObserver(this);
+  }
+
   for (auto& shared_path : shared_paths_) {
     if (shared_path.second.watcher) {
       file_watcher_task_runner_->DeleteSoon(
