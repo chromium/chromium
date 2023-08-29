@@ -126,11 +126,11 @@ class CompanionPageHandler
 
   // This method is used as the callback that handles visual search results.
   // Its role is to perform some checks and do a mojom IPC to side panel.
-  void HandleVisualSearchResult(std::vector<std::string> results,
-                                const VisualSuggestionsMetrics& stats);
+  void HandleVisualSearchResult(const std::vector<std::string> results,
+                                const VisualSuggestionsMetrics stats);
 
   // Method responsible for binding and sending VQS results to panel.
-  void SendVisualSearchResult(std::vector<std::string> results);
+  void SendVisualSearchResult(const std::vector<std::string>& results);
 
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
@@ -162,6 +162,7 @@ class CompanionPageHandler
 
   absl::optional<base::TimeTicks> full_load_start_time_;
   absl::optional<base::TimeTicks> reload_start_time_;
+  absl::optional<base::TimeTicks> ui_loading_start_time_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

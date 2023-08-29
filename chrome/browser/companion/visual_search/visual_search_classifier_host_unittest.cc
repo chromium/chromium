@@ -134,8 +134,8 @@ class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
 TEST_F(VisualSearchClassifierHostTest, StartClassification) {
   SetModelPath();
   VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](std::vector<std::string> results,
-                        const VisualSuggestionsMetrics& stats) {});
+      base::BindOnce([](const std::vector<std::string> results,
+                        const VisualSuggestionsMetrics stats) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -157,8 +157,8 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kVisualSearchConfigForCompanion, config_string);
   VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](std::vector<std::string> results,
-                        const VisualSuggestionsMetrics& stats) {});
+      base::BindOnce([](const std::vector<std::string> results,
+                        const VisualSuggestionsMetrics stats) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -176,8 +176,8 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
   VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](std::vector<std::string> results,
-                        const VisualSuggestionsMetrics& stats) {});
+      base::BindOnce([](const std::vector<std::string> results,
+                        const VisualSuggestionsMetrics stats) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -197,8 +197,8 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
 TEST_F(VisualSearchClassifierHostTest, StartClassification_WithInvalidModel) {
   SetInvalidModelPath();
   VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](std::vector<std::string> results,
-                        const VisualSuggestionsMetrics& stats) {});
+      base::BindOnce([](const std::vector<std::string> results,
+                        const VisualSuggestionsMetrics stats) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   base::RunLoop().RunUntilIdle();
@@ -221,8 +221,8 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithInvalidModel) {
 TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
   SetModelPath();
   VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](std::vector<std::string> results,
-                        const VisualSuggestionsMetrics& stats) {});
+      base::BindOnce([](const std::vector<std::string> results,
+                        const VisualSuggestionsMetrics stats) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   GURL url("https://foo.bar");
@@ -243,8 +243,8 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
 TEST_F(VisualSearchClassifierHostTest, HandleClassification) {
   SetModelPath();
   VisualSearchClassifierHost::ResultCallback callback =
-      base::BindOnce([](std::vector<std::string> results,
-                        const VisualSuggestionsMetrics& stats) {
+      base::BindOnce([](const std::vector<std::string> results,
+                        const VisualSuggestionsMetrics stats) {
         EXPECT_EQ(results.size(), 1U);
       });
   visual_search_host_->StartClassification(

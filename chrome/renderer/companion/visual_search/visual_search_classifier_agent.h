@@ -66,6 +66,10 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
   // drop the incoming request.
   bool is_classifying_ = false;
 
+  // Used to track that we are retrying visual classification because our
+  // first attempt did not find any images in the DOM.
+  bool is_retrying_ = false;
+
   // Pointer to RenderFrame used for DOM traversal and extract image bytes.
   content::RenderFrame* render_frame_ = nullptr;
 

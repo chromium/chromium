@@ -72,8 +72,8 @@ enum class InitStatus {
 class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
  public:
   using ResultCallback =
-      base::OnceCallback<void(std::vector<std::string>,
-                              const VisualSuggestionsMetrics& metrics)>;
+      base::OnceCallback<void(const std::vector<std::string>,
+                              const VisualSuggestionsMetrics metrics)>;
 
   explicit VisualSearchClassifierHost(
       VisualSearchSuggestionsService* visual_search_service);

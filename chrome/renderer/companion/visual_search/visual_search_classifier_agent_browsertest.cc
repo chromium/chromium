@@ -97,6 +97,16 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::TearDown();
   }
 
+  void LoadHtmlWithSingleImage() {
+    base::FilePath img_path = img_file_path();
+    std::string base64_img;
+    ASSERT_TRUE(base::ReadFileToString(img_path, &base64_img));
+    std::string html = "<html><body><img src=\"";
+    html.append(base64_img);
+    html.append("\"</body></html>");
+    LoadHTML(html.c_str());
+  }
+
  protected:
   VisualSearchClassifierAgent* agent_;  // Owned by RenderFrame
   base::HistogramTester histogram_tester_;
@@ -107,13 +117,7 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
 
 TEST_F(VisualSearchClassifierAgentTest,
        StartClassification_SingleImageNonShoppy) {
-  base::FilePath img_path = img_file_path();
-  std::string base64_img;
-  ASSERT_TRUE(base::ReadFileToString(img_path, &base64_img));
-  std::string html = "<html><body><img src=\"";
-  html.append(base64_img);
-  html.append("\"</body></html>");
-  LoadHTML(html.c_str());
+  LoadHtmlWithSingleImage();
   agent_->StartVisualClassification(model_file_.Duplicate(), "",
                                     test_handler_.GetRemoteHandler());
   base::RunLoop().RunUntilIdle();
@@ -141,14 +145,13 @@ TEST_F(VisualSearchClassifierAgentTest, StartClassification_NoImages) {
   // on certain platforms (i.e. linux-lacros-rel, linux-wayland).
   if (model_file_.IsValid()) {
     histogram_tester_.ExpectBucketCount(
-        "Companion.VisualQuery.Agent.DomImageCount", 0, 1);
+        "Companion.VisualQuery.Agent.StartClassification", false, 1);
   }
 }
 
 TEST_F(VisualSearchClassifierAgentTest, StartClassification_InvalidModel) {
   base::File file;
-  std::string html = "<html><body>dummy</body></html>";
-  LoadHTML(html.c_str());
+  LoadHtmlWithSingleImage();
   agent_->StartVisualClassification(file.Duplicate(), "",
                                     test_handler_.GetRemoteHandler());
   base::RunLoop().RunUntilIdle();

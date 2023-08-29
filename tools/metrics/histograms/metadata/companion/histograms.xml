@@ -137,6 +137,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.VisualQuery.Agent.StartClassification"
+    enum="Boolean" expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether we successfully started classification in the
+    VisualSearchClassifierAgent or chose to delay processing to wait for DOM to
+    get updates with images. This is recorded right after we traverse the DOM
+    for images but before we do any classification.
+  </summary>
+</histogram>
+
 <histogram name="Companion.VisualQuery.ClassificationInitStatus"
     enum="Companion.VisualQuery.InitStatus" expires_after="2024-02-04">
   <owner>srna@google.com</owner>
@@ -157,6 +170,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the latency of the classifer host in completing classification.
     Recorded after the classification results are sent to the callback.
+  </summary>
+</histogram>
+
+<histogram name="Companion.VisualQuery.ClassificationResultsSize"
+    units="images" expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the number of images received by the companion UI from the
+    VisualSearchClassifierAgent running in the renderer process. Recorded once
+    the classification and result filtering is complete and the result is
+    received by the browser process.
   </summary>
 </histogram>
 
@@ -330,6 +356,30 @@ chromium-metrics-reviews@google.com.
     eligibility module in CSC. Recorded at the end of the second pass
     (post-classification thresholding stage) if there is at least one eligible
     image. This score will be greater than the shopping threshold value.
+  </summary>
+</histogram>
+
+<histogram name="Companion.VisualQuery.ResultLatency" units="ms"
+    expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the latency from the time the side panel starts loading to when the
+    visual query suggestion is sent to the side panel. Recorded right after the
+    visual result is sent to the side panel for rendering.
+  </summary>
+</histogram>
+
+<histogram name="Companion.VisualQuery.SendVisualResultSuccess" enum="Boolean"
+    expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether we were able to successfully send a visual query suggestion
+    to the side panel. This is recorded right after we make the mojom IPC to the
+    side panel.
   </summary>
 </histogram>
 
