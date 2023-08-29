@@ -9,8 +9,10 @@ import '../settings_shared.css.js';
 import './cups_printers.js';
 import './cups_printers_browser_proxy.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -22,7 +24,7 @@ import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_pri
 import {getTemplate} from './os_printing_page.html.js';
 
 const OsSettingsPrintingPageElementBase =
-    DeepLinkingMixin(RouteOriginMixin(PolymerElement));
+    DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)));
 
 export class OsSettingsPrintingPageElement extends
     OsSettingsPrintingPageElementBase {
@@ -65,6 +67,13 @@ export class OsSettingsPrintingPageElement extends
         value: () =>
             new Set<Setting>([Setting.kPrintJobs, Setting.kScanningApp]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
     };
   }
 
@@ -72,6 +81,7 @@ export class OsSettingsPrintingPageElement extends
   searchTerm: string;
 
   private browserProxy_: CupsPrintersBrowserProxy;
+  private isRevampWayfindingEnabled_: boolean;
   private section_: Section;
 
   constructor() {
@@ -100,17 +110,24 @@ export class OsSettingsPrintingPageElement extends
     this.attemptDeepLink();
   }
 
-  private onTapCupsPrinters_(): void {
+  private onClickCupsPrint_(): void {
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
   }
 
-  private onOpenPrintManagement_(): void {
+  private onClickPrintManagement_(): void {
     this.browserProxy_.openPrintManagementApp();
   }
 
-  private onOpenScanningApp_(): void {
+  private onClickScanningApp_(): void {
     this.browserProxy_.openScanningApp();
     recordSettingChange(Setting.kScanningApp);
+  }
+
+  private getCupsPrintDescription_(): string {
+    if (this.isRevampWayfindingEnabled_) {
+      return this.i18n('cupsPrintDescription');
+    }
+    return '';
   }
 }
 

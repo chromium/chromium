@@ -171,6 +171,18 @@
   }
 </style>
 
+
+<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+  <cr-link-row id="printManagement" class="section-title"
+      on-click="onClickPrintManagement_"
+      label="$i18n{printJobsTitle}"
+      sub-label="$i18n{printJobsSublabel}"
+      external
+      deep-link-focus-id$="[[Setting.kPrintJobs]]">
+  </cr-link-row>
+  <div class="hr"></div>
+</template>
+
 <template is="dom-if" if="[[!hasActiveNetworkConnection]]">
   <div id="noConnectivityContentContainer"
       class="layout horizontal padded">

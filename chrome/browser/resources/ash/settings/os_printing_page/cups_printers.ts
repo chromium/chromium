@@ -43,6 +43,7 @@ import {CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {Constructor} from '../common/types.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -51,7 +52,7 @@ import {Route, routes} from '../router.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers.html.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
 import {SettingsCupsAddPrinterDialogElement} from './cups_settings_add_printer_dialog.js';
 
@@ -235,6 +236,13 @@ export class SettingsCupsPrintersElement extends
         readOnly: true,
         reflectToAttribute: true,
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
     };
   }
 
@@ -246,11 +254,13 @@ export class SettingsCupsPrintersElement extends
   private addPrintServerResultText_: string;
   private addPrinterResultText_: string;
   private attemptedLoadingPrinters_: boolean;
+  private browserProxy_: CupsPrintersBrowserProxy;
   private enterprisePrinterCount_: number;
   private enterprisePrintersAriaLabel_: string;
   private enterprisePrinters_: PrinterListEntry[];
   private entryManager_: CupsPrintersEntryManager;
   private hasActiveNetworkConnection: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private nearbyPrinterCount_: number;
   private nearbyPrintersAriaLabel_: string;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -275,15 +285,15 @@ export class SettingsCupsPrintersElement extends
 
     this.addPrintServerResultText_ = '';
 
+    this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
+
     if (this.isPrinterSettingsRevampEnabled_) {
       // This request is made in the constructor to fetch the # of saved
       // printers for determining whether the nearby printers section should
       // start open or closed.
-      CupsPrintersBrowserProxyImpl.getInstance()
-          .getCupsSavedPrintersList()
-          .then(
-              savedPrinters => this.nearbyPrintersExpanded_ =
-                  savedPrinters.printerList.length === 0);
+      this.browserProxy_.getCupsSavedPrintersList().then(
+          savedPrinters => this.nearbyPrintersExpanded_ =
+              savedPrinters.printerList.length === 0);
     } else {
       // Nearby printers should always show when the revamp flag is disabled.
       this.nearbyPrintersExpanded_ = true;
@@ -439,12 +449,11 @@ export class SettingsCupsPrintersElement extends
   }
 
   private updateCupsPrintersList_(): void {
-    CupsPrintersBrowserProxyImpl.getInstance().getCupsSavedPrintersList().then(
+    this.browserProxy_.getCupsSavedPrintersList().then(
         this.onSavedPrintersChanged_.bind(this));
 
-    CupsPrintersBrowserProxyImpl.getInstance()
-        .getCupsEnterprisePrintersList()
-        .then(this.onEnterprisePrintersChanged_.bind(this));
+    this.browserProxy_.getCupsEnterprisePrintersList().then(
+        this.onEnterprisePrintersChanged_.bind(this));
   }
 
   private onSavedPrintersChanged_(cupsPrintersList: CupsPrintersList): void {
@@ -581,6 +590,10 @@ export class SettingsCupsPrintersElement extends
   private showNearbyPrintersRevampSection_(): boolean {
     return this.isPrinterSettingsRevampEnabled_ &&
         this.hasActiveNetworkConnection;
+  }
+
+  private onClickPrintManagement_(): void {
+    this.browserProxy_.openPrintManagementApp();
   }
 }
 

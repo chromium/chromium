@@ -2,19 +2,22 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{printingPageTitle}">
-      <cr-link-row id="cupsPrintersRow" label="$i18n{cupsPrintersTitle}"
-          on-click="onTapCupsPrinters_"
+      <cr-link-row id="cupsPrintersRow" label="$i18n{cupsPrintTitle}"
+          sub-label="[[getCupsPrintDescription_()]]"
+          on-click="onClickCupsPrint_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <cr-link-row class="hr" id="printManagement"
-          on-click="onOpenPrintManagement_"
-          label="$i18n{printJobsTitle}"
-          sub-label="$i18n{printJobsSublabel}"
-          external
-          deep-link-focus-id$="[[Setting.kPrintJobs]]">
-      </cr-link-row>
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+        <cr-link-row class="hr" id="printManagement"
+            on-click="onClickPrintManagement_"
+            label="$i18n{printJobsTitle}"
+            sub-label="$i18n{printJobsSublabel}"
+            external
+            deep-link-focus-id$="[[Setting.kPrintJobs]]">
+        </cr-link-row>
+      </template>
       <cr-link-row class="hr" id="scanningApp"
-          on-click="onOpenScanningApp_"
+          on-click="onClickScanningApp_"
           label="$i18n{scanAppTitle}"
           sub-label="$i18n{scanAppSublabel}"
           external
@@ -25,7 +28,7 @@
 
   <template is="dom-if" route-path="/cupsPrinters">
     <os-settings-subpage
-        page-title="$i18n{cupsPrintersTitle}"
+        page-title="$i18n{cupsPrintTitle}"
         search-label="$i18n{searchLabel}"
         search-term="{{searchTerm}}">
       <settings-cups-printers search-term="{{searchTerm}}"
