@@ -676,10 +676,13 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
       .SetCaptureHandleConfig(std::move(config_ptr));
 }
 
-ScriptPromise MediaDevices::ProduceCropTarget(ScriptState* script_state,
-                                              Element* element,
-                                              ExceptionState& exception_state) {
+ScriptPromise MediaDevices::ProduceSubCaptureTarget(
+    ScriptState* script_state,
+    Element* element,
+    ExceptionState& exception_state,
+    SubCaptureTargetType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(type, SubCaptureTargetType::kCropTarget);
 
 #if BUILDFLAG(IS_ANDROID)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,

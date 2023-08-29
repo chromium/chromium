@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -50,6 +51,11 @@ enum class EnumerateDevicesResult {
   kErrorMediaDevicesDispatcherHostDisconnected = 3,
   kTimedOut = 4,
   kMaxValue = kTimedOut
+};
+
+enum class SubCaptureTargetType {
+  kCropTarget,
+  // TODO(crbug.com/1418194): Add kRestrictionTarget.
 };
 
 class MODULES_EXPORT MediaDevices final
@@ -87,11 +93,15 @@ class MODULES_EXPORT MediaDevices final
                               const CaptureHandleConfig*,
                               ExceptionState&);
 
-  // Using ProduceCropTarget(), CropTarget.fromElement() can communicate
-  // with the browser process through the mojom pipe that `this` owns.
-  // TODO(crbug.com/1332628): Move most of the logic into crop_target.cc/h,
-  // leaving only communication in MediaDevices.
-  ScriptPromise ProduceCropTarget(ScriptState*, Element*, ExceptionState&);
+  // Using ProduceSubCaptureTarget(), CropTarget.fromElement() and similar
+  // static functions can communicate with the browser process through
+  // the mojom pipe that `this` owns.
+  // TODO(crbug.com/1332628): Move most of the logic
+  // into sub_capture_target.cc/h, leaving only communication in MediaDevices.
+  ScriptPromise ProduceSubCaptureTarget(ScriptState*,
+                                        Element*,
+                                        ExceptionState&,
+                                        SubCaptureTargetType);
 
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;

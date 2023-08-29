@@ -88,6 +88,8 @@ blink_modules_sources("mediastream") {
     "remote_media_stream_track_adapter.h",
     "screen_capture_media_stream_track.cc",
     "screen_capture_media_stream_track.h",
+    "sub_capture_target.cc",
+    "sub_capture_target.h",
     "track_audio_renderer.cc",
     "track_audio_renderer.h",
     "transferred_media_stream_track.cc",

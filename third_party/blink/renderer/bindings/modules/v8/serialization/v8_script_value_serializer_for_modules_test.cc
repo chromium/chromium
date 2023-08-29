@@ -1847,7 +1847,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
   CropTarget* const new_crop_target =
       V8CropTarget::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_crop_target, nullptr);
-  EXPECT_EQ(new_crop_target->GetCropId(), crop_id);
+  EXPECT_EQ(new_crop_target->GetId(), crop_id);
 }
 #endif
 

@@ -144,7 +144,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  const String crop_id(crop_target ? crop_target->GetCropId() : String());
+  const String crop_id(crop_target ? crop_target->GetId() : String());
 
   // If the promise is not resolved within the |timeout_interval|, a
   // CropToResult::kTimedOut response will be recorded in the UMA.

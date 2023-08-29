@@ -743,8 +743,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromise div_promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
+  const ScriptPromise div_promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTargetType::kCropTarget);
   platform()->RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(scope.GetExceptionState().HadException());
@@ -788,8 +789,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
     Element* const element = document.getElementById(AtomicString(id));
     dispatcher_host().SetNextCropId(
         String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-    const ScriptPromise promise = media_devices->ProduceCropTarget(
-        scope.GetScriptState(), element, scope.GetExceptionState());
+    const ScriptPromise promise = media_devices->ProduceSubCaptureTarget(
+        scope.GetScriptState(), element, scope.GetExceptionState(),
+        SubCaptureTargetType::kCropTarget);
 
     ScriptPromiseTester script_promise_tester(scope.GetScriptState(), promise);
     script_promise_tester.WaitUntilSettled();
@@ -812,8 +814,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromise element_promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
+  const ScriptPromise element_promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTargetType::kCropTarget);
   platform()->RunUntilIdle();
   EXPECT_TRUE(element_promise.IsEmpty());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
@@ -837,16 +840,18 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromise first_promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
+  const ScriptPromise first_promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTargetType::kCropTarget);
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
   first_tester.WaitUntilSettled();
   EXPECT_TRUE(first_tester.IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   // The second call to |produceCropId| should return the same ID.
-  const ScriptPromise second_promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
+  const ScriptPromise second_promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTargetType::kCropTarget);
   ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
   second_tester.WaitUntilSettled();
   EXPECT_TRUE(second_tester.IsFulfilled());
@@ -871,8 +876,9 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   Element* const div = document.getElementById(AtomicString("test-div"));
   dispatcher_host().SetNextCropId(
       String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  const ScriptPromise promise = media_devices->ProduceCropTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
+  const ScriptPromise promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTargetType::kCropTarget);
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
@@ -880,7 +886,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
 
   const CropTarget* const crop_target =
       V8CropTarget::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
-  const WTF::String& crop_id = crop_target->GetCropId();
+  const WTF::String& crop_id = crop_target->GetId();
   EXPECT_TRUE(crop_id.ContainsOnlyASCIIOrEmpty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(crop_id.Ascii()).is_valid());
 }
