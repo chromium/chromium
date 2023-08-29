@@ -289,7 +289,13 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         Use Chrome by default to open links, search from widgets, and autofill passwords in other apps
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT" desc="Title for the default browser video promo. [iOS only]">
-        Open Chrome From Any App
+        Set Chrome as your Default Browser
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_3" desc="Text of the row indicating the third step of the instruction to set Chrome as default browser [iOS only]">
+        Select "Chrome."
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_STEP_2" desc="Text of the row indicating the second step of the instruction to set Chrome as default browser [iOS only]">
+        Tap "Chrome" then "Default Browser App."
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT" desc="Subtitle for the default browser video promo. [iOS only]">
         Open Chrome Settings in iOS, then tap on "Browser Default APP" and select Chrome.
