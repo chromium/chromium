@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Root from 'devtools/core/root/root.js';
+
 (async function() {
   // This test is testing the old breakpoint sidebar pane. Make sure to
   // turn off the new breakpoint pane experiment.

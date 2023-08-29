@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as Root from 'devtools/core/root/root.js';
+
 (async function() {
   TestRunner.addResult(`Check that RuntimeCallStats are present in profile.\n`);
   await TestRunner.loadLegacyModule('timeline');
