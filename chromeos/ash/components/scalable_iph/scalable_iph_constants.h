@@ -7,6 +7,10 @@
 
 namespace scalable_iph {
 
+constexpr char kScalableIphDebugHost[] = "scalable-iph-debug";
+constexpr char kScalableIphDebugURL[] =
+    "chrome-untrusted://scalable-iph-debug/";
+
 // Those ids are from //chrome/browser/web_applications/web_app_id_constants.h.
 // We cannot include the file from this component as //chromeos should not
 // depend on //chrome/browser. Those values are tested against values in

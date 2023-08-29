@@ -58,6 +58,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
  protected:
   // Allow sub-classes to initialize scoped feature list with different values.
+  // TODO(b/297565024): Abstract this as we initialize more than just IPH
+  //                    configs in this method.
   virtual void InitializeScopedFeatureList();
   void AppendVersionNumber(base::FieldTrialParams& params,
                            const base::Feature& feature,
@@ -98,6 +100,9 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Set false in the constructor to disable `ash::features::kScalableIphDebug`.
+  bool enable_scalable_iph_debug_ = true;
 
  private:
   static void SetTestingFactories(content::BrowserContext* browser_context);

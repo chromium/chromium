@@ -21,6 +21,7 @@ source_set("scalable_iph") {
   deps = [
     ":constants",
     ":iph_session",
+    ":logger",
     ":scalable_iph_delegate",
     "//base",
     "//components/feature_engagement/public",
@@ -51,6 +52,18 @@ source_set("scalable_iph_delegate") {
     ":constants",
     ":iph_session",
     "//components/keyed_service/core",
+  ]
+}
+
+source_set("logger") {
+  sources = [
+    "logger.cc",
+    "logger.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
   ]
 }
 

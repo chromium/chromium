@@ -20,8 +20,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -402,6 +404,9 @@ ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
   EnsureTimerStarted();
 
   online_ = delegate_->IsOnline();
+
+  SCALABLE_IPH_LOG(logger())
+      << "Initialize:\n- online_: " << (online_ ? "true" : "false");
 
   tracker_->AddOnInitializedCallback(
       base::BindOnce(&ScalableIph::CheckTriggerConditionsOnInitSuccess,

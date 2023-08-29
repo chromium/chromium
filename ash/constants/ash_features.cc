@@ -2250,6 +2250,11 @@ BASE_FEATURE(kRemoveStalePolicyPinnedAppsFromShelf,
 // Enables ChromeOS scalable IPH.
 BASE_FEATURE(kScalableIph, "ScalableIph", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables debug feature of ChromeOS Scalable Iph.
+BASE_FEATURE(kScalableIphDebug,
+             "ScalableIphDebug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the scanning app. Requires
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kScanningAppJelly,
@@ -3888,6 +3893,11 @@ bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
 
 bool IsScalableIphEnabled() {
   return base::FeatureList::IsEnabled(kScalableIph);
+}
+
+bool IsScalableIphDebugEnabled() {
+  return IsScalableIphEnabled() &&
+         base::FeatureList::IsEnabled(kScalableIphDebug);
 }
 
 bool IsSeparateNetworkIconsEnabled() {

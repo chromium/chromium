@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+#include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
 
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
@@ -70,6 +71,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(std::make_unique<FaceMLAppUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddUntrustedWebUIConfig(
       std::make_unique<SampleSystemWebAppUntrustedUIConfig>());

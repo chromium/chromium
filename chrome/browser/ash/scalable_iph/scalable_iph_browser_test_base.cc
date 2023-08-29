@@ -149,8 +149,21 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
 
   base::test::FeatureRefAndParams scalable_iph_feature(
       ash::features::kScalableIph, {});
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {scalable_iph_feature, test_config}, {});
+
+  std::vector<base::test::FeatureRefAndParams> enabled_features(
+      {scalable_iph_feature, test_config});
+  std::vector<base::test::FeatureRef> disabled_features;
+
+  if (enable_scalable_iph_debug_) {
+    enabled_features.push_back(
+        base::test::FeatureRefAndParams(ash::features::kScalableIphDebug, {}));
+  } else {
+    disabled_features.push_back(
+        base::test::FeatureRef(ash::features::kScalableIphDebug));
+  }
+
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                     disabled_features);
 }
 
 void ScalableIphBrowserTestBase::AppendVersionNumber(

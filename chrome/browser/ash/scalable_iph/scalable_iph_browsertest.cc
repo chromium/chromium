@@ -10,6 +10,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
+#include "base/strings/pattern.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -34,7 +36,9 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/test/event_generator_delegate_aura.h"
 #include "ui/message_center/message_center.h"
@@ -49,6 +53,11 @@ using TestEnvironment =
     ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
+
+constexpr char kTestLogMessage[] = "test-log-message";
+constexpr char kTestLogMessagePattern[] = "*test-log-message*";
+constexpr char kScalableIphDebugLogTextUrl[] =
+    "chrome-untrusted://scalable-iph-debug/log.txt";
 
 BASE_FEATURE(kScalableIphTestTwo,
              "ScalableIphTestTwo",
@@ -107,6 +116,11 @@ class AppListItemWaiter : public AppListModelUpdaterObserver {
   base::RunLoop run_loop_;
   base::ScopedObservation<AppListModelUpdater, AppListModelUpdaterObserver>
       app_list_model_updater_observation_{this};
+};
+
+class ScalableIphBrowserTestDebugOff : public ScalableIphBrowserTest {
+ public:
+  ScalableIphBrowserTestDebugOff() { enable_scalable_iph_debug_ = false; }
 };
 
 class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
@@ -607,6 +621,83 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
   ash::AppListController* app_list_controller = ash::AppListController::Get();
   CHECK(app_list_controller);
   app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+}
+
+// Logging feature is on by default in `ScalableIphBrowserTest`.
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, Log) {
+  constexpr char kTestFileNamePattern[] = "*scalable_iph_browsertest.cc*";
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  CHECK(scalable_iph);
+
+  // `logging::SetLogMessageHandler` takes a function pointer. Use a static
+  // variable as a captureless lambda can be converted to a function pointer.
+  static base::NoDestructor<std::vector<std::string>> captured_logs;
+  CHECK_EQ(nullptr, logging::GetLogMessageHandler());
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t message_start,
+                                   const std::string& str) {
+    captured_logs->push_back(str);
+    return true;
+  });
+
+  SCALABLE_IPH_LOG(scalable_iph->logger()) << kTestLogMessage;
+
+  logging::SetLogMessageHandler(nullptr);
+
+  EXPECT_TRUE(base::MatchPattern(scalable_iph->logger()->GenerateLog(),
+                                 kTestLogMessagePattern));
+  EXPECT_TRUE(base::MatchPattern(scalable_iph->logger()->GenerateLog(),
+                                 kTestFileNamePattern));
+
+  std::string log_output = base::JoinString(*captured_logs, "");
+  if (DCHECK_IS_ON()) {
+    EXPECT_TRUE(base::MatchPattern(log_output, kTestLogMessagePattern));
+  } else {
+    EXPECT_FALSE(base::MatchPattern(log_output, kTestLogMessagePattern));
+  }
+
+  // Confirms that the debug page is accessible.
+  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+      browser(), GURL(kScalableIphDebugLogTextUrl));
+  ASSERT_TRUE(render_frame_host);
+  ASSERT_TRUE(render_frame_host->GetLastResponseHeaders());
+  EXPECT_EQ(200, render_frame_host->GetLastResponseHeaders()->response_code());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  CHECK(scalable_iph);
+
+  // `logging::SetLogMessageHandler` takes a function pointer. Use a static
+  // variable as a captureless lambda can be converted to a function pointer.
+  static base::NoDestructor<std::vector<std::string>> captured_logs;
+  CHECK_EQ(nullptr, logging::GetLogMessageHandler());
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t message_start,
+                                   const std::string& str) {
+    captured_logs->push_back(str);
+    return true;
+  });
+
+  SCALABLE_IPH_LOG(scalable_iph->logger()) << kTestLogMessage;
+
+  logging::SetLogMessageHandler(nullptr);
+
+  EXPECT_TRUE(scalable_iph->logger()->IsLogEmptyForTesting());
+
+  std::string log_output = base::JoinString(*captured_logs, "");
+  EXPECT_FALSE(base::MatchPattern(log_output, kTestLogMessagePattern));
+
+  // Confirms that the debug page is not accessible if the flag is off.
+  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+      browser(), GURL(kScalableIphDebugLogTextUrl));
+  ASSERT_TRUE(render_frame_host);
+  // Last response headers is nullptr if there is no response. See the comment
+  // of `RenderFrameHost::GetLastResponseHeaders` for details.
+  EXPECT_FALSE(render_frame_host->GetLastResponseHeaders());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {

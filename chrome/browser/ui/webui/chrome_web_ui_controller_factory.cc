@@ -75,6 +75,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/favicon/core/favicon_service.h"
@@ -1179,6 +1180,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIUntrustedTerminalURL),
     GURL(chrome::kChromeUIUserImageURL),
     GURL(chrome::kChromeUIVmUrl),
+    GURL(scalable_iph::kScalableIphDebugURL),
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // IME extension's Japanese options page. Opened via OS_URL_HANDLER SWA

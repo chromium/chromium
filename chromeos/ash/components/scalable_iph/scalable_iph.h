@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -91,6 +92,8 @@ class ScalableIph : public KeyedService,
 
   void RecordEvent(Event event);
 
+  Logger* logger() { return &logger_; }
+
   ScalableIphDelegate* delegate_for_testing() { return delegate_.get(); }
 
   // KeyedService:
@@ -163,6 +166,7 @@ class ScalableIph : public KeyedService,
   ScalableIphDelegate::SessionState session_state_ =
       ScalableIphDelegate::SessionState::kUnknownInitialValue;
   bool has_saved_printers_ = false;
+  Logger logger_;
 
   base::RepeatingClosure has_saved_printers_closure_for_testing_;
   std::vector<const base::Feature*> feature_list_for_testing_;
