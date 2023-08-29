@@ -1469,7 +1469,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2162705204091149050">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software und den Dateien abrufen</translation>
 <translation id="2162926944953615670">Keine verfügbaren eSIM-Profile</translation>
 <translation id="2163470535490402084">Stelle eine Internetverbindung her, um dich auf deinem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
-<translation id="2163996651553460171">Chrome optimal nutzen</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und ein weiterer Schalter</translation>
 <translation id="2165102982098084499">Du hast einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
 <translation id="2165177462441582039">Du kannst festlegen, wie lange ein Element markiert bleiben soll</translation>
@@ -3879,6 +3878,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
 <translation id="4110490973560452005">Download abgeschlossen: <ph name="FILE_NAME" />. Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113743276555482284">Dateipasswort</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3994,6 +3994,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4217558091331485702">Vor dem Öffnen scannen</translation>
 <translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4218081191298393750">Klicke auf das Lautsprechersymbol, um diesen Tab stummzuschalten</translation>
+<translation id="4220157655212610908">Externen Sicherheitsschlüssel verwenden</translation>
 <translation id="4220648711404560261">Bei der Aktivierung ist ein Fehler aufgetreten.</translation>
 <translation id="4222917615373664617">Preisbeobachtung ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Passkey erstellen</translation>
@@ -4635,6 +4636,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4761104368405085019">Mikrofon verwenden</translation>
 <translation id="4762489666082647806">Cursorfarbe</translation>
 <translation id="4762718786438001384">Speicherplatz auf Gerät äußerst niedrig</translation>
+<translation id="4762849514113423887">Falsches Passwort. Versuche es noch einmal.</translation>
 <translation id="4763408175235639573">Beim Anzeigen dieser Seite wurden die folgenden Cookies eingerichtet</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ist kein gültiges Google for Education-Konto. Wende dich an deinen Administrator. Wenn du ein Administrator bist, kannst du deine Organisation unter g.co/workspace/edusignup einrichten.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Dieses Gerät wird für einen Monat gespeichert und du kannst dich das nächste Mal ohne einen Code verbinden. Dies wird von deinem Administrator festgelegt.}other{Dieses Gerät wird für {MONTHS} Monate gespeichert und du kannst dich das nächste Mal ohne einen Code verbinden. Dies wird von deinem Administrator festgelegt.}}</translation>
@@ -5709,7 +5711,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="567740581294087470">Welche Art von Feedback möchtest du geben?</translation>
 <translation id="5677503058916217575">Sprache der Seite:</translation>
 <translation id="5677928146339483299">Blockiert</translation>
-<translation id="5677946354068040947">weitere Optionen</translation>
 <translation id="5678550637669481956">Lese- und Schreibzugriff auf <ph name="VOLUME_NAME" /> wurde zugelassen.</translation>
 <translation id="5678821117681811450">Wird an <ph name="WEB_DRIVE" /> gesendet</translation>
 <translation id="5678955352098267522">Deine Daten auf <ph name="WEBSITE_1" /> lesen</translation>
@@ -6609,6 +6610,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6436778875248895551">Die Erweiterung „<ph name="EXTENSION_NAME" />“ wurde von deinem Administrator blockiert</translation>
 <translation id="6438234780621650381">Einstellungen zurücksetzen</translation>
 <translation id="6438475350605608554">Du importierst Passwörter bereits auf einem anderen Tab</translation>
+<translation id="6438480100790416671">Speicherplatz wird geprüft…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audiowiedergabe</translation>
 <translation id="6441377161852435370">Tab zur Leseliste hinzufügen</translation>
 <translation id="6442187272350399447">Smiley</translation>
@@ -7989,6 +7991,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7585106857920830898">Dieser Download wird auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…</translation>
 <translation id="7586498138629385861">Chrome wird weiter ausgeführt, solange die Chrome-Apps geöffnet sind.</translation>
 <translation id="7589461650300748890">Vorsicht!</translation>
+<translation id="7590883480672980941">Eingabeeinstellungen</translation>
 <translation id="7592060599656252486">Einige</translation>
 <translation id="7593653750169415785">Automatisch blockiert, weil du Benachrichtigungen mehrmals abgewiesen hast</translation>
 <translation id="7594725637786616550">Durch einen Powerwash wird dein <ph name="DEVICE_TYPE" /> auf den Werkszustand zurückgesetzt.</translation>
@@ -9098,12 +9101,14 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8472623782143987204">Hardwaregestützt</translation>
 <translation id="8473540203671727883">Text unter dem Mauszeiger vorlesen</translation>
 <translation id="8473863474539038330">Adressen</translation>
+<translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
 <translation id="8474733733775441349">Passwörter aus deinem Google-Konto anzeigen</translation>
 <translation id="8475313423285172237">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
 <translation id="8476408756881832830">Wiedergabe pausieren, wenn eine Sprachausgabe durch ChromeVox stattfindet</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps enthalten – außerdem Informationen über ChromeOS-Abstürze und Angaben dazu, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen des ChromeOS-Geräts deines Kindes aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ im Google-Konto deines Kindes aktiviert ist, werden die Daten deines Kindes möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com findest du weitere Informationen zu dieser Einstellung. Dort erfährst du auch, wie du sie ändern kannst.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="8476630458761527665">Gib das Passwort für diese Datei ein</translation>
 <translation id="8477241577829954800">Außer Kraft gesetzt</translation>
 <translation id="8477384620836102176">&amp;Allgemein</translation>
 <translation id="8479176401914456949">Ungültiger Code. Versuche es noch einmal.</translation>
@@ -9396,6 +9401,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8725178340343806893">Favoriten/Lesezeichen</translation>
 <translation id="87254326763805752">Passkey bestätigen</translation>
 <translation id="8726206820263995930">Fehler beim Übertragen von Richtlinieneinstellungen vom Server: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Chrome optimal nutzen</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Autofill-Metadaten<ph name="END_LINK1" /> senden
           <ph name="LINE_BREAK" />
           (Deine Autofill-Daten werden nicht freigegeben)</translation>

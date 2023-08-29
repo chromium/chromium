@@ -1044,6 +1044,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6433501201775827830">Selecciona el motor de búsqueda</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6437478888915024427">Información de la página</translation>
+<translation id="6440291723980579689">Las páginas se cargan solo cuando las abres</translation>
 <translation id="6441734959916820584">El nombre es demasiado largo</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# imagen}other{# imágenes}}</translation>
 <translation id="6447558397796644647">No se puede encontrar ese favorito. Revisa la ortografía o agrega un nuevo favorito.</translation>

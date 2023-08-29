@@ -203,6 +203,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2178545675770638239">Sélectionner un mot de passe</translation>
 <translation id="2195124168004379331">Votre navigateur semble sûr</translation>
+<translation id="2213327331203157297">Pour désactiver le mode Blocage dans Chrome, désactivez-le sur votre iPhone.</translation>
 <translation id="2218443599109088993">Zoom arrière</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation…</translation>
@@ -474,7 +475,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3771033907050503522">Ongl. navig. priv.</translation>
 <translation id="3775743491439407556">La synchronisation ne fonctionne pas</translation>
 <translation id="3779810277399252432">Aucune connexion Internet.</translation>
-<translation id="3783017676699494206">Enregistrer l'image</translation>
 <translation id="3789294999358192700">Procédez comme suit :</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -1361,6 +1361,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8843129975935593190">Votre entreprise limite les éléments que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Masqué</translation>
 <translation id="8855242995793521265">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
+<translation id="8855781063981781621">Pour désactiver le mode Blocage dans Chrome, désactivez-le sur votre iPad.</translation>
 <translation id="8863431381414769983">Obtenez un itinéraire et des informations locales depuis Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="8870413625673593573">Récemment fermés</translation>

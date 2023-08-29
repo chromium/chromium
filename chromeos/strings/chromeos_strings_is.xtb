@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS-auðkenningarlykill</translation>
 <translation id="2713444072780614174">Hvítur</translation>
 <translation id="2717139507051041123">Kveikja á dökkri litastillingu</translation>
+<translation id="2728460467788544679">Hreinsa allan prentferil</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2744221223678373668">Deilt</translation>
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lítill (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Fara í reikningsstillingar</translation>
+<translation id="6461047516875166066">Segðu mér meira</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skanna aftur síðu?}=1{Skanna aftur síðu {PAGE_NUMBER}?}one{Skanna aftur síðu {PAGE_NUMBER}?}other{Skanna aftur síðu {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Einnota aðgangsorð</translation>
 <translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Engar myndir</translation>
 <translation id="8329018942023753850">reiknivélarforrit</translation>
 <translation id="8336739000755212683">Breyta reikningsmynd í tækinu</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> eða <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Prentverk</translation>
 <translation id="8351855506390808906">Snertipunktur lyklaskipanar</translation>
 <translation id="8352772353338965963">Bæta reikningi við innskráningu á marga reikninga. Hægt er að fá aðgang að öllum innskráðum reikningum án aðgangsorðs og því ætti aðeins að nota þennan eiginleika með traustum reikningum.</translation>

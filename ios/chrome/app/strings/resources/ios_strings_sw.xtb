@@ -203,6 +203,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="2178545675770638239">Chagua Nenosiri</translation>
 <translation id="2195124168004379331">Kivinjari Chako Kinaonekana Kuwa Salama</translation>
+<translation id="2213327331203157297">Ili uzime Hali ya Kufunga katika Chrome, izime kwenye iPhone yako.</translation>
 <translation id="2218443599109088993">Sogeza Mbali</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2239626343334228536">Inafuta data ya kuvinjari...</translation>
@@ -474,7 +475,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3771033907050503522">Vichupo Fiche</translation>
 <translation id="3775743491439407556">Kipengele cha Kusawazisha Hakifanyi Kazi</translation>
 <translation id="3779810277399252432">Hakuna muunganisho wa intaneti.</translation>
-<translation id="3783017676699494206">Hifadhi Picha</translation>
 <translation id="3789294999358192700">Fuata hatua zifuatazo:</translation>
 <translation id="3789841737615482174">Sakinisha</translation>
 <translation id="380329542618494757">Jina</translation>
@@ -1360,6 +1360,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="8843129975935593190">Shirika lako linadhibiti maudhui unayoweza kuyasawazisha.</translation>
 <translation id="8849001918648564819">Kimefichwa</translation>
 <translation id="8855242995793521265">Haipunguzi kasi ya utendaji wa kivinjari au kifaa chako kwa njia inayoweza kugunduliwa.</translation>
+<translation id="8855781063981781621">Ili kuzima Hali ya Kufunga katika Chrome, izime kwenye iPad yako.</translation>
 <translation id="8863431381414769983">Pata maelekezo na maelezo ya eneo kutoka Ramani za Google</translation>
 <translation id="8868471676553493380">{count,plural, =1{Kichupo {count}}other{Vichupo {count}}}</translation>
 <translation id="8870413625673593573">Zilizofungwa Hivi Karibuni</translation>

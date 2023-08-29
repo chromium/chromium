@@ -45,7 +45,6 @@
 <translation id="1175944128323889279">የአሁን ባትሪ ደረጃ <ph name="BATTERY_PERCENTAGE" />%፣ <ph name="TIME" /> ይቀራል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
-<translation id="1181431373490845924">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች መመልከትን ማዋቀር ያሰናብቱ</translation>
 <translation id="1182225749592316782">ይህ የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል</translation>
 <translation id="1182876754474670069">መነሻ</translation>
 <translation id="1183863904939664422">በዚህ የአስተያየት ጥቆማ ላይ ፍላጎት የለኝም</translation>
@@ -64,6 +63,7 @@
 <translation id="1217633719248931900">ወደ መተግበሪያ ይሂዱ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />፣ የPlay መደብር መተግበሪያ</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
+<translation id="1226877728704622336">የቦዘነ ዴስክ</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
 <translation id="1235458158152011030">የታወቁ አውታረ መረቦች</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ተገናኝቷል።</translation>
@@ -117,7 +117,6 @@
 <translation id="1415846719612499304">የአውታረ መረብ ዝርዝርን አሳይ። <ph name="STATE_TEXT" />።</translation>
 <translation id="1419738280318246476">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን ይክፈቱ</translation>
 <translation id="1420408895951708260">የምሽት ብርሃንን ቀያይር። <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="1455242230282523554">የቋንቋ ቅንብሮችን አሳይ</translation>
 <translation id="1460620680449458626">የድምፅ መጠን ድምፀ ከል ተደርጓል።</translation>
@@ -410,7 +409,6 @@
 <translation id="2750932254614666392">«ሰርዝ»</translation>
 <translation id="2750941250130734256">ገባሪ መስኮት ተነቅሏል።</translation>
 <translation id="2761723519669354964">የደመቀ ንጥልን ከመደርደሪያ ክፈት</translation>
-<translation id="2774327524281966309">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ማዋቀርን ያሰናብቱ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> በ<ph name="KEY_TWO" /> በኩል</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው</translation>
@@ -489,7 +487,6 @@
 <translation id="3095995014811312755">ስሪት</translation>
 <translation id="309749186376891736">ጠቋሚን አንቀሳቅስ</translation>
 <translation id="3100274880412651815">የማንሳት ሁነታን ያሰናብቱ</translation>
-<translation id="3103732015595029598">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ያዋቅሩ</translation>
 <translation id="3105917916468784889">ቅጽበታዊ ገፅ እይታን ያነሳል</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ብሉቱዝ)</translation>
 <translation id="3113492864356515707">ቀዳሚ ንጥልን በመደርደሪያ ላይ አድምቅ</translation>
@@ -659,7 +656,6 @@
 <translation id="3735740477244556633">ደርድር በ</translation>
 <translation id="3738664582935948253">አሁን በማያ ቀረጻዎች ውስጥ ጠቅታዎችን እና የቁልፍ ሰሌዳ አቋራጮችን ማሳየት ይችላሉ</translation>
 <translation id="3742055079367172538">ቅጽበታዊ ገፅ ዕይታ ተነስቷል</translation>
-<translation id="375335662788363456">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎችን ማዋቀር ያሰናብቱ</translation>
 <translation id="3756485814916578707">ማያ ገጽን Cast በማድረግ ላይ</translation>
 <translation id="3765841382945324995">የ<ph name="SIX_PACK_KEY_NAME" /> አቋራጭ ከ<ph name="OLD_SHORTCUT" /> ወደ <ph name="NEW_SHORTCUT" /> ዘምኗል</translation>
 <translation id="3765841986579723851">ዛሬ አርትዖት ተደርጎበታል</translation>
@@ -794,7 +790,6 @@
 <translation id="428715201724021596">ከመገለጫ ጋር በመገናኘት ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="4294319844246081198">ደህና አደሩ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="4296136865091727875">ሁሉንም <ph name="COUNT" /> ማሳወቂያዎች አጽዳ</translation>
-<translation id="4300367807227655672">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን ማሳወቂያዎች መመልከትን ያዋቅሩ</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> ወደ <ph name="FOLDER_NAME" /> አቃፊ ተንቀሳቅሷል።</translation>
 <translation id="4302592941791324970">አይገኝም</translation>
 <translation id="4303223480529385476">የሁኔታ አካባቢን ዘርጋ</translation>
@@ -820,18 +815,15 @@
 <translation id="4405151984121254935">የተገናኘው የዳርቻ ዓይነት አይደገፍም</translation>
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ጠፍቷል</translation>
-<translation id="4414595745967164324">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች ያዋቅሩ</translation>
 <translation id="4424159417645388645">ዴስክ 5</translation>
 <translation id="4427695046139341014">የጨዋታ ዳሽቦርድ</translation>
 <translation id="4430019312045809116">ድምፅ</translation>
-<translation id="4435022394553622295">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ማሳወቂያዎች፣ እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="4441283832827406317">መተግበሪያዎች በስም ይደረደራሉ</translation>
 <translation id="4445159312344259901">ለመክፈት ይግቡ</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 አስፈላጊ ማሳወቂያ}one{# አስፈላጊ ማሳወቂያዎች}other{# አስፈላጊ ማሳወቂያዎች}}</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
 <translation id="4451374464530248585">የAlt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የታች ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፉን + የታች ቀስት ይጫኑ።</translation>
 <translation id="4453876312474547652">Ctrl + Vን ተጭነው ሲይዙ የቅንጥብ ሰሌዳውን ያያሉ። በchrome://flags (Lacros እየተጠቀሙ ከሆነ ደግሞ os://flags) ውስጥ የ#clipboard-history-longpress ጠቋሚን በማሰናከል ይህን አቋራጭ ማጥፋት ይችላሉ።</translation>
-<translation id="4455051983450390249">የስልክዎን ማሳወቂያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="445864333228800152">ደህን አመሹ ፣</translation>
 <translation id="4458688154122353284">የማያ ገፅ ቀረጻን አቁም</translation>
 <translation id="445923051607553918">የWi-Fi አውታረ መረብ ይቀላቀሉ</translation>
@@ -914,7 +906,6 @@
 <translation id="4798888871844665150">የተቀዳ ንጥል አስቀድሞ በቅንጥብ ሰሌዳ ውስጥ ነው። ለማየት <ph name="SHORTCUT_KEY_NAME" /> + V ይጠቀሙ።</translation>
 <translation id="479989351350248267">ፈልግ</translation>
 <translation id="4804818685124855865">ግንኙነት አቋርጥ</translation>
-<translation id="4810227386592387399">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን መተግበሪያዎች መመልከትን ያዋቅሩ</translation>
 <translation id="4813311884204119883">አገናኝን በትሩ ድርድር ላይ ወደ ባዶ ቦታ ይጎትቱ</translation>
 <translation id="4814539958450445987">በመለያ መግቢያ ማያ ገፅ</translation>
 <translation id="481455355267255546">ቀጥሎ የሚመጣው</translation>
@@ -1010,6 +1001,7 @@
 <translation id="5197255632782567636">በይነመረብ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />፣ <ph name="NUMBER" /> ክስተቶች</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ከ<ph name="IN_PLACE_APP" /> ጋር አዲስ አቃፊ ለመፍጠር ተጣምሯል።</translation>
+<translation id="5203299837691351876">ገቢር ዴስክ</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />፣ <ph name="NOTIFICATION_TITLE" />፦ <ph name="MESSAGE" />፣ <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ሌላ ማሳወቂያ}one{# ሌሎች ማሳወቂያዎች}other{# ሌሎች ማሳወቂያዎች}}</translation>
 <translation id="5207949376430453814">የጽሑፍ ድፋቱን አድምቅ</translation>
@@ -1099,7 +1091,6 @@
 <translation id="5551456515017410630">ቀን መቁጠሪያን ክፈት/ዝጋ</translation>
 <translation id="5551974246223970793">አንድን ገፅ ሲፈልጉ ለፍለጋ ወደ ቀጣዩ ተዛማጅ ይሂዱ</translation>
 <translation id="5558091555391176027">የአቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>
-<translation id="5560420195677022218">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን መተግበሪያዎች ይመልከቱ</translation>
 <translation id="556042886152191864">አዘራር</translation>
 <translation id="5570122939431135380">አዲስ ትርን በማንነትን የማያሳውቅ መስኮት ውስጥ ይክፈቱት</translation>
 <translation id="5571066253365925590">ብሉቱዝ ነቅቷል</translation>
@@ -1197,6 +1188,7 @@
 <translation id="595202126637698455">አፈጻጸም መከታተያ ነቅቷል</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">ክትትል የሚደረግበት ተጠቃሚ</translation>
+<translation id="5960410286721553511">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ ይመልከቱ</translation>
 <translation id="5961960957587052807">ብርሃን</translation>
 <translation id="5965524703725988602">ጠቆር ያለ ገጽታን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="5975235751479998104">በመስኮቶች አማካኝነት ወደኋላ ተጓዝ</translation>
@@ -1253,13 +1245,11 @@
 <translation id="616543563528926612">የቀኝ ጠቅታ አቋራጭ ከ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + ጠቅታ ወደ alt + ጠቅታ ዘምኗል</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6166852626429024716">የእርስዎን መሣሪያ፣ መተግበሪያዎች፣ ቅንብሮች፣ ድር ይፈልጉ...</translation>
-<translation id="6167922743323004256">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ መመልከትን ማዋቀር ያሰናብቱ</translation>
 <translation id="6168318496333165060">የምርመራ መተግበሪያን ክፈት</translation>
 <translation id="6173151025443907148">Lacros ከነቃ ሁለተኛ ተጠቃሚ በመለያ ማስገባት አይደገፍም። እባክዎ በምትኩ በLacros ውስጥ ሁለተኛ የአሳሽ መገለጫ ይጠቀሙ ወይም Lacrosን ያሰናክሉ እና እንደገና ይሞክሩ።</translation>
 <translation id="6179832488876878285">እዚህ አስፈላጊ ፋይሎችዎን መሰካት ይችላሉ። ለመጀመር የፋይሎች መተግበሪያን ይክፈቱ።</translation>
 <translation id="6182592640011875895">ዴስክ ክፈት</translation>
 <translation id="6185696379715117369">ገፅ ወደላይ</translation>
-<translation id="619279033188484792">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="619335566042889110">አሁን ሙሉ ኃይል ይሙሉ</translation>
 <translation id="6193431488227440296">ገንቢ</translation>
 <translation id="6199775032047436064">የአሁኑን ገፅ ዳግም ይጭናል</translation>
@@ -1273,7 +1263,6 @@
 <translation id="6231419273573514727">የተቀጥላዎች አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> አሁን ላይ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን ማሳወቂያዎች መመልከት ማዋቀርን ያሰናብቱ</translation>
 <translation id="6244986124527896815">በ«<ph name="NEW_SHORTCUT" />» የተግባር መሪ መተግበሪያን ይክፈቱ።</translation>
 <translation id="6247728804802644171">ማሳወቂያዎችን ክፈት</translation>
 <translation id="6254629735336163724">ወደ አግድም ተቆልፏል</translation>
@@ -1408,6 +1397,7 @@
 <translation id="6819327813400217281">ካሜራ ታችኛው ግራ ጥግ ላይ ገጥሟል</translation>
 <translation id="6820676911989879663">እረፍት ይውሰዱ!</translation>
 <translation id="6827049576281411231">የክስተት ፓነልን ዝጋ</translation>
+<translation id="6831561626108366035">ወደ <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> አዝራር ይሂዱ።</translation>
 <translation id="6836499262298959512">አደገኛ ፋይል</translation>
 <translation id="6852052252232534364">ለማግበር ጠቅ ያድርጉ</translation>
 <translation id="6855029042976311970">አሁን አርትዖት ተደርጓል</translation>
@@ -1420,7 +1410,6 @@
 <translation id="6884665277231944629">ወደ ዛሬ ተመለስ</translation>
 <translation id="6886172995547742638">የእርስዎ <ph name="DEVICE_TYPE" /> ያነሰ አፈጻጸም ሊያጋጥመው ይችላል። የእውቅና ማረጋገጫ ያለው <ph name="PREFERRED_MINIMUM_POWER" /> ዋ ወይም ከዚያ በላይ የሆነ የUSB-C ኃይል አስማሚን ይጠቀሙ።</translation>
 <translation id="688631446150864480">መስኮቶችን ለመቀያየር የታች ቀስትን ይጫኑ</translation>
-<translation id="6891721121089053234">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ሚዲያ፣ እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6901883536534621389">ለማሰስ የእጅ ምልክቶችን ይሞክሩ</translation>
 <translation id="6912841030378044227">በአድራሻ አሞሌ ላይ አተኩር</translation>
@@ -1444,6 +1433,7 @@
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="698231206551913481">አንዴ ይህ ተጠቃሚ ከተወገደ በኋላ ከዚህ ተጠቃሚ ጋር የተጎዳኙ ሁሉም ፋይሎች እና አካባቢያዊ ውሂብ በቋሚነት ይሰረዛሉ።</translation>
 <translation id="6985306450422696113">ከ<ph name="TOTAL_MEMORY" /> አጠቃላይ <ph name="USED_MEMORY" /> ማከማቻ ይገኛል</translation>
+<translation id="6989752354829085073">በእርስዎ Chromebook ዙሪያ እንዴት እንደሚያልፉ ለማወቅ ፈጣን ጉብኝት ያድርጉ። በ6 እርምጃዎች ይጀምሩ እና ያሂዱ።</translation>
 <translation id="7004910047186208204">ከተንቀሳቃሽ ስልክ ውሂብ ጋር ያገናኙ</translation>
 <translation id="7005239792648594238">ለመጀመር አንድ መተግበሪያ ይክፈቱ</translation>
 <translation id="7007983414944123363">የእርስዎ ፒን ወይም ይለፍ ቃል ሊረጋገጥ አልቻለም። እንደገና ይሞክሩ።</translation>
@@ -1569,6 +1559,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> አሁን ላይ ማይክሮፎንዎን እየተጠቀመ ነው</translation>
 <translation id="7561982940498449837">ምናሌን ዝጋ</translation>
 <translation id="7564874036684306347">መስኮትን ወደ ሌላ ዴስክቶፕ መውሰድ ያልተጠበቀ ባህሪን ሊያስከትል ይችላል። ተከትለው የሚመጡ ማሳወቂያዎችን፣ መስኮቶች እና መገናኛዎች በዴስክቶፖች መካከል ሊከፈሉ ይችላሉ።</translation>
+<translation id="7567950130372125778">ሰላም። Chromebook ትንሽ ለየት ይላል።</translation>
 <translation id="7569509451529460200">ብሬይል እና ChromeVox ነቅተዋል</translation>
 <translation id="7571361473021531288">ባትሪ <ph name="BATTERY_PERCENTAGE" />% <ph name="TIME" /> ይቀራል</translation>
 <translation id="7573585051776738856">ገባሪ መስኮት በቀኝ በኩል ተተክሏል።</translation>
@@ -1610,6 +1601,7 @@
 <translation id="7723703419796509666">የገንቢ መሣሪያዎች መቆጣጠሪያን ያሳዩ ወይም ይደብቁ</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7725108879223146004">የመገናኛ ነጥብ ዝርዝሮችን አሳይ። መገናኛ ነጥብ በመጥፋት ላይ ነው።</translation>
+<translation id="7726391492136714301">የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="7727952505535211425">ድር ጣቢያውን በአድራሻ አሞሌው ውስጥ በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
@@ -1627,7 +1619,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> እና <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ጠንካራ ሲግናል</translation>
 <translation id="7837740436429729974">ጊዜው አብቅቷል</translation>
-<translation id="7838712802972544930">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን መተግበሪያዎች መመልከት ማዋቀርን ያሰናብቱ</translation>
 <translation id="7842569679327885685">ማስጠንቀቂያ፦ የሙከራ ባህሪ</translation>
 <translation id="7846634333498149051">የቁልፍ ሰሌዳ</translation>
 <translation id="7848989271541991537">ወደ ገፅ <ph name="PAGE_NUMBER" />፣ ረድፍ <ph name="ROW_NUMBER" />፣ ዓምድ <ph name="COLUMN_NUMBER" /> ተንቀሳቅሷል።</translation>
@@ -1693,7 +1684,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ተብሎ የተሰየመ ቅንብር ደንብ አስቀድሞ አለ።</translation>
 <translation id="8052898407431791827">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="8054466585765276473">የባትሪ ጊዜን በማስላት ላይ።</translation>
-<translation id="8077971003886736669">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ መመልከትን ያዋቅሩ</translation>
 <translation id="8079538659226626406">ማያ ገጽ ማጋራት</translation>
 <translation id="8083540854303889870">ለበኋላ የተቀመጠ</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> ላይ ይጀመራል</translation>
@@ -1723,7 +1713,6 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="8155628902202578800">የ<ph name="USER_EMAIL_ADDRESS" /> የመረጃ መገናኛን ክፈት</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ን በመጠቀም ላይ</translation>
-<translation id="8183592608247778598">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎችን ይመልከቱ</translation>
 <translation id="8185090165691050712">መጠን ለማሳነስ የመቆለፊያ ሁኔታን አብራ/አጥፋ</translation>
 <translation id="8192202700944119416">ማሳወቂያዎች ተደብቀዋል</translation>
 <translation id="8196787716797768628">በመተግበሪያዎች መካከል በፍጥነት ለመቀያየር እና ከእርስዎ Chromebook ጋር በጡባዊ ሁነታ መስተጋብር ለመፈጸም የእጅ ምልክቶችን ይጠቀሙ።</translation>
@@ -1850,7 +1839,6 @@
 <translation id="875593634123171288">የቪፒኤን ቅንብሮችን አሳይ</translation>
 <translation id="8759408218731716181">ባለብዙ መለያ መግቢያን ማዋቀር አልተቻለም</translation>
 <translation id="8763883995157866248">መሣሪያን በእንቅልፍ ሁነታ ውስጥ አስቀምጥ</translation>
-<translation id="8773962395093246071">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች መመልከትን ያዋቅሩ</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />፣ የተጫነ መተግበሪያ፣ ታግዷል</translation>
 <translation id="8785070478575117577">ወደ <ph name="NETWORK_NAME" /> አገናኝ</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />። <ph name="ENTERPRISE_TEXT" /></translation>

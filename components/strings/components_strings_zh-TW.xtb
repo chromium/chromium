@@ -522,7 +522,6 @@
 <translation id="2048261947532620704">正在翻譯頁面</translation>
 <translation id="205212645995975601">烤肉與燒烤</translation>
 <translation id="2053111141626950936">系統不會翻譯<ph name="LANGUAGE" />網頁。</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果這項功能已啟用且處於有效狀態，Chrome 就能判斷你近期的瀏覽活動與哪個大型使用者群組 (或稱「同類群組」) 最為相近。廣告主可以選擇要向該群組顯示的廣告，而你的瀏覽記錄會保留在裝置上，僅供本人存取。你所在的群組會每天更新。}=1{如果這項功能已啟用且處於有效狀態，Chrome 就能判斷你近期的瀏覽活動與哪個大型使用者群組 (或稱「同類群組」) 最為相近。廣告主可以選擇要向該群組顯示的廣告，而你的瀏覽記錄會保留在裝置上，僅供本人存取。你所在的群組會每天更新。}other{如果這項功能已啟用且處於有效狀態，Chrome 就能判斷你近期的瀏覽活動與哪個大型使用者群組 (或稱「同類群組」) 最為相近。廣告主可以選擇要向該群組顯示的廣告，而你的瀏覽記錄會保留在裝置上，僅供本人存取。你所在的群組會每隔 {NUM_DAYS} 天更新。}}</translation>
 <translation id="2056658168519009885">網站可以要求 Chrome 提供資訊，據此向你放送個人化廣告。</translation>
 <translation id="2059202684901022309">22 x 34 吋</translation>
 <translation id="2064568741209980952">信用與貸款</translation>
@@ -669,7 +668,6 @@
 <translation id="2355395290879513365">攻擊者可能會看到你正在這個網站上瀏覽的圖片，並以修改圖片內容的方式讓你受騙。</translation>
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2357481397660644965">你的裝置是由 <ph name="DEVICE_MANAGER" /> 管理，帳戶是由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{不到 1 天後}=1{1 天後}other{{NUM_DAYS} 天後}}</translation>
 <translation id="2359629602545592467">多種</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361263712565360498">275 x 395 公釐</translation>
@@ -1230,7 +1228,6 @@
 <translation id="3586833803451155175">濕墨膜</translation>
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3587738293690942763">中間</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{你隨時可以重設群組。大約需要 1 天才能加入新群組。}=1{你隨時可以重設群組。大約需要 1 天才能加入新群組。}other{你隨時可以重設群組。需要 {NUM_DAYS} 天才能加入新群組。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">「管理 Google 隱私權設定」按鈕，啟動後即可前往 Google 帳戶隱私權設定</translation>
 <translation id="3603507503523709">已遭系統管理員封鎖的應用程式</translation>
@@ -1245,6 +1242,7 @@
 <translation id="36224234498066874">清除瀏覽資料...</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
 <translation id="3624292976554877583">標籤 (霧面)</translation>
+<translation id="3625929652356389713">可以要求自動開啟子母畫面視窗</translation>
 <translation id="3628905806504633297">{0,plural, =1{根據管理員政策，建議你不要將這個檔案轉移到「<ph name="DESTINATION_NAME" />」}other{根據管理員政策，建議你不要將這些檔案轉移到「<ph name="DESTINATION_NAME" />」}}</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網路的清單中，建議您
       從清單中將其移除，然後再重新加入。</translation>
@@ -1378,6 +1376,7 @@
 <translation id="388632593194507180">偵測到你正遭到監控</translation>
 <translation id="3886948180919384617">堆疊出紙器 3</translation>
 <translation id="3890664840433101773">新增電子郵件地址</translation>
+<translation id="3893306401511601929">自動顯示子母畫面</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">這張信用卡已過期</translation>
 <translation id="390391808978419508">開啟作業逾時</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{這張卡片已儲存到你的 Google 帳戶}other{這些卡片已儲存到你的 Google 帳戶}}</translation>
 <translation id="4287495839370498922">Chrome 的加強型廣告隱私權設定</translation>
-<translation id="4287885627794386150">符合適用條件但尚未啟用</translation>
 <translation id="4290920330097335010">一律不允許</translation>
 <translation id="4296207570293932800">全新廣告隱私權功能正式上線</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 頁的縮圖</translation>
@@ -2157,6 +2155,7 @@
 <translation id="5512812358367123529">辦公家具</translation>
 <translation id="5513528801833998679">使用裝置登入功能</translation>
 <translation id="5515388687005870733">55 x 85 公釐</translation>
+<translation id="5516095341424241911">使用 Google 的安全防護技術，確保付款資訊安全無虞</translation>
 <translation id="5518670652865028077">藝術與娛樂</translation>
 <translation id="5519516356611866228">包含你所做的變更</translation>
 <translation id="5519696598216267194">紙 (打孔紙)</translation>
@@ -2312,7 +2311,6 @@
 <translation id="5847181246682413476">電源供應器</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">關閉</translation>
 <translation id="5862579898803147654">堆疊出紙器 8</translation>
 <translation id="5863847714970149516">你要瀏覽的網頁可能會向你收取費用</translation>
 <translation id="5866257070973731571">新增電話號碼</translation>
@@ -3046,7 +3044,6 @@
 <translation id="7378877318020334501">電視喜劇</translation>
 <translation id="7380398842872229465">10 x 15 吋</translation>
 <translation id="738439098860678026">幼兒教育</translation>
-<translation id="7386364858855961704">不適用</translation>
 <translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7390545607259442187">驗證信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>
@@ -3142,7 +3139,6 @@
 <translation id="7549584377607005141">這個網頁需要使用你先前輸入的資料才能正確顯示。你可以重新傳送這些資料，不過這麼做會重複執行這個網頁先前執行過的任何動作。</translation>
 <translation id="7550637293666041147">你的裝置使用者名稱和 Chrome 使用者名稱</translation>
 <translation id="7551484245293639699">旅遊保險</translation>
-<translation id="755279583747225797">試用功能已啟用</translation>
 <translation id="7552846755917812628">嘗試按照下列提示操作：</translation>
 <translation id="7554475479213504905">仍要重新載入及顯示內容</translation>
 <translation id="7554791636758816595">新分頁</translation>
@@ -3989,5 +3985,6 @@
     &lt;li&gt;嘗試連線至其他網路&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">自動顯示子母畫面</translation>
 <translation id="997986563973421916">來自 Google Pay</translation>
 </translationbundle>

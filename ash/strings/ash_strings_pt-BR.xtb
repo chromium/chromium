@@ -45,7 +45,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1175944128323889279">Nível atual da bateria: <ph name="BATTERY_PERCENTAGE" />%. Tempo restante: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
-<translation id="1181431373490845924">Dispensar configuração para conferir fotos, mídia e notificações recentes do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Esta ação libera o acesso para todos os apps e sites com essas permissões</translation>
 <translation id="1182876754474670069">início</translation>
 <translation id="1183863904939664422">Não tenho interesse nesta sugestão</translation>
@@ -118,7 +117,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1415846719612499304">Mostrar lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Veja as fotos e mídias recentes do smartphone no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
@@ -411,7 +409,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2750932254614666392">"Excluir"</translation>
 <translation id="2750941250130734256">Janela ativa desafixada.</translation>
 <translation id="2761723519669354964">Abrir item destacado na estante</translation>
-<translation id="2774327524281966309">Dispensar a configuração de notificações e apps do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + pesquisa + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
@@ -490,7 +487,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3095995014811312755">versão</translation>
 <translation id="309749186376891736">Mover cursor</translation>
 <translation id="3100274880412651815">Dispensar modo de captura</translation>
-<translation id="3103732015595029598">Configurar as notificações e os apps do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Faça uma captura de tela</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Destacar item anterior na estante</translation>
@@ -660,7 +656,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738664582935948253">Agora é possível mostrar cliques e atalhos do teclado em gravações de tela</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
-<translation id="375335662788363456">Dispensar configuração de fotos, mídia, notificações e apps recentes do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="3756485814916578707">Transmitindo tela</translation>
 <translation id="3765841382945324995">O atalho "<ph name="SIX_PACK_KEY_NAME" />" era <ph name="OLD_SHORTCUT" /> e foi atualizado para <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editado hoje</translation>
@@ -795,7 +790,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="428715201724021596">Conectando-se ao perfil. Pode levar alguns minutos..</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>
-<translation id="4300367807227655672">Configurar a visualização de notificações do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> movido para a pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="4302592941791324970">Indisponível</translation>
 <translation id="4303223480529385476">Expandir área de status</translation>
@@ -821,18 +815,15 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4405151984121254935">O tipo do periférico conectado não é compatível</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
-<translation id="4414595745967164324">Configurar fotos, mídia, notificações e apps recentes do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
 <translation id="4427695046139341014">Painel de jogo</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4435022394553622295">Veja notificações e apps do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Os apps estão ordenados por nome</translation>
 <translation id="4445159312344259901">Faça login para desbloquear</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificação importante}one{# notificação importante}other{# notificações importantes}}</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="4451374464530248585">O atalho de teclado Alt + seta para baixo mudou. Para usar a tecla Page Down, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para baixo.</translation>
 <translation id="4453876312474547652">A área de transferência será mostrada quando você tocar em Ctrl + V e pressionar. É possível desativar esse atalho desativando a flag #clipboard-history-longpress em chrome://flags (os://flags, se estiver usando o Lacros).</translation>
-<translation id="4455051983450390249">Veja as notificações do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Boa noite,</translation>
 <translation id="4458688154122353284">Parar gravação da tela</translation>
 <translation id="445923051607553918">Entrar na rede Wi-Fi</translation>
@@ -915,7 +906,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4798888871844665150">O item copiado já está na área de transferência. Use <ph name="SHORTCUT_KEY_NAME" /> + V para visualizar.</translation>
 <translation id="479989351350248267">pesquisar</translation>
 <translation id="4804818685124855865">Desconectar</translation>
-<translation id="4810227386592387399">Configurar a visualização de apps do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Arraste o link até uma área em branco na barra de guias</translation>
 <translation id="4814539958450445987">Tela de login</translation>
 <translation id="481455355267255546">Próximos eventos</translation>
@@ -1101,7 +1091,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5551456515017410630">Abrir/fechar agenda</translation>
 <translation id="5551974246223970793">Acessar o próximo resultado ao pesquisar em uma página</translation>
 <translation id="5558091555391176027">Alternar a alta visibilidade do Compartilhar por proximidade</translation>
-<translation id="5560420195677022218">Veja os apps do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5570122939431135380">Abrir nova guia em uma nova janela anônima</translation>
 <translation id="5571066253365925590">Bluetooth ativado</translation>
@@ -1199,6 +1188,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Usuário supervisionado</translation>
+<translation id="5960410286721553511">Ver as fotos e mídias recentes do smartphone</translation>
 <translation id="5961960957587052807">Claro</translation>
 <translation id="5965524703725988602">Alternar tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Navegar pelas janelas</translation>
@@ -1255,13 +1245,11 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="616543563528926612">O atalho de clicar com o botão direito do mouse era <ph name="LAUNCHER_KEY_NAME" /> + clique e foi atualizado para alt + clique</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166852626429024716">Pesquisar no dispositivo, em apps, nas configurações, na Web…</translation>
-<translation id="6167922743323004256">Dispensar configuração da visualização de fotos e mídia recentes do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Abrir o app Diagnóstico</translation>
 <translation id="6173151025443907148">Não é possível fazer login em um segundo usuário se o navegador Lacros está ativado. Use um segundo perfil de navegador no Lacros ou desative-o e tente novamente.</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
 <translation id="6182592640011875895">Abrir espaço de trabalho</translation>
 <translation id="6185696379715117369">Página para cima</translation>
-<translation id="619279033188484792">Veja as fotos, mídias e notificações recentes do smartphone no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Dev</translation>
 <translation id="6199775032047436064">Recarregar página atual</translation>
@@ -1275,7 +1263,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Dispensar configuração de visualização das notificações do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="6244986124527896815">Abra o app Gerenciador de tarefas com "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
@@ -1423,7 +1410,6 @@ Nova instalação</translation>
 <translation id="6884665277231944629">Voltar para hoje</translation>
 <translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou mais.</translation>
 <translation id="688631446150864480">Pressione a seta para baixo para mudar de janela</translation>
-<translation id="6891721121089053234">Veja as fotos, mídias e apps recentes do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901883536534621389">Tente navegar usando gestos</translation>
 <translation id="6912841030378044227">Foco na barra de endereço</translation>
@@ -1615,6 +1601,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7723703419796509666">Mostrar ou ocultar o console das Ferramentas para desenvolvedores</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7725108879223146004">Consulte detalhes do ponto de acesso. Ele está sendo desativado.</translation>
+<translation id="7726391492136714301">Veja notificações e apps do smartphone</translation>
 <translation id="7727952505535211425">Abrir o site na barra de endereço em uma nova guia</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
 <translation id="7748275671948949022">Destacar o botão do acesso rápido na estante</translation>
@@ -1632,7 +1619,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Tempo esgotado</translation>
-<translation id="7838712802972544930">Dispensar configuração de visualização de apps do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="7842569679327885685">Aviso: recurso experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Movido para página <ph name="PAGE_NUMBER" />, linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
@@ -1698,7 +1684,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
-<translation id="8077971003886736669">Configurar a visualização de mídia e fotos recentes do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Compartilhamento de tela</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
 <translation id="8091153018031979607">Início: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1728,7 +1713,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Essas configurações são gerenciadas pelo administrador.</translation>
 <translation id="8155628902202578800">Abrir a caixa de diálogo de informações da conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usando <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Veja fotos, mídias, notificações e apps recentes do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo de bloqueio</translation>
 <translation id="8192202700944119416">As notificações estão ocultas.</translation>
 <translation id="8196787716797768628">Use os gestos para alternar rapidamente entre apps e interagir com o Chromebook no modo tablet.</translation>
@@ -1855,7 +1839,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
 <translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>
 <translation id="8763883995157866248">Colocar o dispositivo no modo de espera</translation>
-<translation id="8773962395093246071">Configurar a visualização de fotos, mídia e notificações recentes do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalado, bloqueado</translation>
 <translation id="8785070478575117577">Conectar-se a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

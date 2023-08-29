@@ -203,6 +203,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2178545675770638239">Select password</translation>
 <translation id="2195124168004379331">Your Browser Looks Good</translation>
+<translation id="2213327331203157297">To disable Lockdown mode in Chrome, turn it off on your iPhone.</translation>
 <translation id="2218443599109088993">Zoom out</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
 <translation id="2239626343334228536">Clearing browsing data…</translation>
@@ -474,7 +475,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sync isn't working</translation>
 <translation id="3779810277399252432">No Internet connection.</translation>
-<translation id="3783017676699494206">Save Image</translation>
 <translation id="3789294999358192700">Follow the steps below:</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="380329542618494757">Name</translation>
@@ -1360,6 +1360,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8843129975935593190">Your organisation limits what you can sync.</translation>
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8855242995793521265">Doesn't noticeably slow down your browser or device.</translation>
+<translation id="8855781063981781621">To disable Lockdown mode in Chrome, turn it off on your iPad.</translation>
 <translation id="8863431381414769983">Get directions and local info from Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="8870413625673593573">Recently Closed</translation>

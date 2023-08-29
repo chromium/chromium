@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} පිටුසන සුරැක ඇත}one{ඔබේ Google ගිණුමේ, {email} පිටුසන් සුරැක ඇත}other{ඔබේ Google ගිණුමේ, {email} පිටුසන් සුරැක ඇත}}</translation>
 <translation id="1870148520156231997">මුරපදය අනාවරණ කරන්න</translation>
 <translation id="1872096359983322073">පන්දම</translation>
+<translation id="1882901927376062252">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} පිටුසන සුරැකී ඇත}one{ඔබේ {email} Google ගිණුමේ, පිටුසන් {count} ක් සුරැකී ඇත}other{ඔබේ {email} Google ගිණුමේ, පිටුසන් {count} ක් සුරැකී ඇත}}</translation>
 <translation id="1883255238294161206">ලැයිස්තුව හකුළන්න</translation>
 <translation id="1894023287452300670">මෙහි මිල හඹා යන්න</translation>
 <translation id="189531189292803889">ඔබේ iPad මෑතක දී ප්‍රතිසාධනය කර ඇති අතර, එය ඔබේ පෙරනිමි බ්‍රව්සරය වෙනස් කරන්නට ඇත.</translation>
@@ -203,6 +204,7 @@
 <translation id="2175927920773552910">QR කේතය</translation>
 <translation id="2178545675770638239">මුරපදය තෝරන්න</translation>
 <translation id="2195124168004379331">ඔබේ බ්‍රව්සරය හොඳින් පෙනේ</translation>
+<translation id="2213327331203157297">Chrome තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPhone මත ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="2218443599109088993">කුඩා කරන්න</translation>
 <translation id="2230173723195178503">වෙබ් පිටුව පූරණය කරන ලදී</translation>
 <translation id="2239626343334228536">බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීම...</translation>
@@ -474,7 +476,6 @@
 <translation id="3771033907050503522">අප්‍රකට පටිති</translation>
 <translation id="3775743491439407556">සමමුහූර්ත කිරීම ක්‍රියා නොකරයි</translation>
 <translation id="3779810277399252432">අන්තර්ජාල සබැඳුම නැත.</translation>
-<translation id="3783017676699494206">රූපය සුරකින්න</translation>
 <translation id="3789294999358192700">පහත පියවර අනුගමනය කරන්න:</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
 <translation id="380329542618494757">නම</translation>
@@ -691,6 +692,7 @@
 <translation id="5083464117946352670">ගොනු ප්‍රමාණය තීරණය කළ නොහැකිය.</translation>
 <translation id="5090832849094901128">මෙම මුරපදය මැකීම <ph name="WEBSITE" /> හි ඔබගේ ගිණුම මකන්නේ නැත.</translation>
 <translation id="5094827893301452931">ට්වීට් කිරීම සම්පූර්ණයි.</translation>
+<translation id="5100848274708256363">පවුලේ කණ්ඩායමකට එක් වන්න</translation>
 <translation id="5109892411553231226">ගෙවීමේ ක්‍රම කළමනාකරණය කරන්න</translation>
 <translation id="5118713593561876160">රුචිකත්ව</translation>
 <translation id="5118764316110575523">අක්‍රිය</translation>
@@ -993,6 +995,7 @@
 <translation id="6642362222295953972">පවතින පටිත්තට මාරු වන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6645899968535965230">QR කේතය: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">අවසන් ධාවනය <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ෆෝල්ඩරය සංස්කරණය කරන්න</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6668619169535738264">පිටුසන් සංස්කරණ කරන්න</translation>
@@ -1106,6 +1109,7 @@
 <translation id="7351537303876921605">සන්දර්භය මෙනුවේ සබැඳිය තනන්න තට්ටු කරන්න</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7353432112255316844">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
+<translation id="7380220816562673297">දැනට ඔබට මුරපද බෙදා ගත හැක්කේ පවුලේ සාමාජිකයින් සමග පමණයි. සාමාජිකයින් 6 දෙනෙක් දක්වා සමග <ph name="BEGIN_LINK" />පවුලේ කණ්ඩායමක් සාදා<ph name="END_LINK" /> Google පුරා ඔබේ නිෂ්පාදනවලින් සහ ග්‍රාහකත්වවලින් වැඩියෙන් ලබා ගන්න.</translation>
 <translation id="7383797227493018512">කියවීම් ලැයිස්තුව</translation>
 <translation id="7398893703713203428">සබැඳියක් තනන්න</translation>
 <translation id="7399802613464275309">ආරක්ෂක පරීක්ෂාව</translation>
@@ -1360,6 +1364,7 @@
 <translation id="8843129975935593190">ඔබගේ සංවිධානය ඔබට සමමුහුර්ත කළ හැකි දේ සීමා කරයි.</translation>
 <translation id="8849001918648564819">සඟවා ඇත</translation>
 <translation id="8855242995793521265">ඔබේ බ්‍රව්සරය හෝ උපාංගය සැලකිය යුතු ලෙස මන්දගාමී නොකරයි.</translation>
+<translation id="8855781063981781621">Chrome තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPad මත ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="8863431381414769983">Google සිතියම් වෙතින් උපදෙස් සහ දේශීය තතු ලබා ගන්න</translation>
 <translation id="8868471676553493380">{count,plural, =1{ටැබ {count}}one{ටැබ {count}}other{ටැබ {count}}}</translation>
 <translation id="8870413625673593573">මෑතකදී වසන ලද</translation>
@@ -1428,6 +1433,7 @@
 <translation id="9223358826628549784">බිඳ වැටීම් වාර්තාව යවන ලදි.</translation>
 <translation id="941747855997058526">මුරපදය තෝරන්න...</translation>
 <translation id="948048872540558976">නව පටිත්තක් තනන්න</translation>
+<translation id="952218985181984374">{count,plural, =1{පිටුසන සුරකින ලදි}one{පිටු සලකුණු {count} ක් සුරකින ලදි}other{පිටු සලකුණු {count} ක් සුරකින ලදි}}</translation>
 <translation id="952704832371081537">අවලංගු කරන්න</translation>
 <translation id="953008885340860025">Chrome වරනය වී ඇත</translation>
 <translation id="959066944189734975">ඔබ <ph name="CHANNEL_NAME" /> අනුගමනය කරයි</translation>

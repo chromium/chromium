@@ -522,7 +522,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2048261947532620704">Traduzione della pagina in corso…</translation>
 <translation id="205212645995975601">BBQ e grigliate</translation>
 <translation id="2053111141626950936">Le pagine in <ph name="LANGUAGE" /> non verranno tradotte.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando questo controllo è attivato e lo stato è attivo, Chrome stabilisce a quale "coorte" (un gruppo numeroso di utenti) è più simile la tua attività di navigazione. Gli inserzionisti possono selezionare gli annunci per il gruppo e la tua attività di navigazione rimane privata sul tuo dispositivo. Il tuo gruppo viene aggiornato ogni giorno.}=1{Quando questo controllo è attivato e lo stato è attivo, Chrome stabilisce a quale "coorte" (un gruppo numeroso di utenti) è più simile la tua attività di navigazione. Gli inserzionisti possono selezionare gli annunci per il gruppo e la tua attività di navigazione rimane privata sul tuo dispositivo. Il tuo gruppo viene aggiornato ogni giorno.}other{Quando questo controllo è attivato e lo stato è attivo, Chrome stabilisce a quale "coorte" (un gruppo numeroso di utenti) è più simile la tua attività di navigazione. Gli inserzionisti possono selezionare gli annunci per il gruppo e la tua attività di navigazione rimane privata sul tuo dispositivo. Il tuo gruppo viene aggiornato ogni {NUM_DAYS} giorni}}</translation>
 <translation id="2056658168519009885">I siti possono chiedere a Chrome informazioni utili a personalizzare gli annunci che vedi.</translation>
 <translation id="2059202684901022309">55,8 × 86,3 cm</translation>
 <translation id="2064568741209980952">Credito e prestiti</translation>
@@ -669,7 +668,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2355395290879513365">Gli utenti malintenzionati potrebbero riuscire a vedere le immagini che visualizzi in questo sito e ingannarti modificandole.</translation>
 <translation id="2356070529366658676">Chiedi</translation>
 <translation id="2357481397660644965">Il tuo dispositivo è gestito da <ph name="DEVICE_MANAGER" /> e il tuo account da <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Tra meno di un giorno}=1{Tra un giorno}other{Tra {NUM_DAYS} giorni}}</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1228,7 +1226,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3586833803451155175">Pellicola umida</translation>
 <translation id="3586931643579894722">Nascondi dettagli</translation>
 <translation id="3587738293690942763">Medio</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà circa un giorno per unirsi a un nuovo gruppo.}=1{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorrà circa un giorno per unirsi a un nuovo gruppo.}other{Puoi reimpostare il tuo gruppo in qualsiasi momento. Ci vorranno {NUM_DAYS} giorni per unirsi a un nuovo gruppo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Pulsante Gestisci le impostazioni della privacy di Google, attiva per andare alle impostazioni della privacy del tuo Account Google</translation>
 <translation id="3603507503523709">Applicazione bloccata dal tuo amministratore</translation>
@@ -1577,7 +1574,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4285498937028063278">Sblocca</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Questa carta è stata salvata nel tuo Account Google}other{Queste carte sono state salvate nel tuo Account Google}}</translation>
 <translation id="4287495839370498922">Privacy degli annunci migliorata in Chrome</translation>
-<translation id="4287885627794386150">Funzionalità idonea per la prova, ma non attiva</translation>
 <translation id="4290920330097335010">Non consentire mai</translation>
 <translation id="4296207570293932800">Nuova funzionalità di privacy per gli annunci ora disponibile</translation>
 <translation id="4297502707443874121">Miniatura della pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2224,6 +2220,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5633259641094592098">Film cult e indie</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635237618724097525">Smartphone</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Sistemi e componenti stereo</translation>
 <translation id="5644090287519800334">Spostamento X lato 1 immagine</translation>
 <translation id="5645132789250840550">Plastica (semilucida)</translation>
@@ -2312,7 +2309,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5847181246682413476">Alimentatori</translation>
 <translation id="5851548754964597211">Elenco schede</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Off</translation>
 <translation id="5862579898803147654">Fascicolatore 8</translation>
 <translation id="5863847714970149516">La pagina che segue potrebbe tentare di addebitarti dei costi</translation>
 <translation id="5866257070973731571">Aggiungi numero di telefono</translation>
@@ -3045,7 +3041,6 @@ Ulteriori dettagli:
 <translation id="7378877318020334501">Commedie TV</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="738439098860678026">Educazione della prima infanzia</translation>
-<translation id="7386364858855961704">Non applicabile</translation>
 <translation id="7388594495505979117">{0,plural, =1{Il tuo dispositivo verrà riavviato tra 1 minuto}other{Il tuo dispositivo verrà riavviato tra # minuti}}</translation>
 <translation id="7390545607259442187">Conferma della carta</translation>
 <translation id="7392089738299859607">Aggiorna indirizzo</translation>
@@ -3141,7 +3136,6 @@ Ulteriori dettagli:
 <translation id="7549584377607005141">Questa pagina web richiede dati che hai inserito in precedenza per poter essere visualizzata correttamente. Puoi inviare di nuovo i dati, ma in questo caso ripeterai l'azione precedentemente eseguita nella pagina.</translation>
 <translation id="7550637293666041147">Nome utente del dispositivo e nome utente di Chrome</translation>
 <translation id="7551484245293639699">Assicurazioni per i viaggi</translation>
-<translation id="755279583747225797">La prova è attiva</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
 <translation id="7554475479213504905">Ricarica e mostra comunque</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
@@ -3774,6 +3768,7 @@ Ulteriori dettagli:
 <translation id="885730110891505394">Condivisione con Google</translation>
 <translation id="8858065207712248076">Chrome ti consiglia di reimpostare la password di <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, se l'hai utilizzata su altri siti.</translation>
 <translation id="885906927438988819">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">Per pagare più velocemente la prossima volta, salva la carta sul tuo dispositivo</translation>
 <translation id="8864939224504814334">Completi e abiti professionali</translation>
 <translation id="8866132857352163524">Colonne sonore</translation>
 <translation id="8866481888320382733">Errore durante l'analisi delle impostazioni criterio</translation>
@@ -3951,6 +3946,7 @@ Ulteriori dettagli:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quali dati vengono usati:<ph name="END_BOLD" /> gli argomenti degli annunci sono basati sulla tua cronologia di navigazione recente, ossia un elenco di siti che hai visitato usando Chrome su questo dispositivo.</translation>
 <translation id="939736085109172342">Nuova cartella</translation>
 <translation id="940053046584497293">Viaggi e trasporti</translation>
+<translation id="944540589955480312">Usa password e passkey salvate nel tuo Account Google</translation>
 <translation id="945855313015696284">Controlla le informazioni riportate di seguito ed elimina le schede non valide</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo sito in Google Sites</translation>
 <translation id="949314938206378263">Hai chiesto di poter visitare questo sito. Uno dei tuoi genitori può rispondere in Family Link.</translation>

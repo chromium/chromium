@@ -22,6 +22,8 @@
 
   • หากคุณซิงค์ประวัติการเข้าชมกับบัญชี Google เมตริกอาจรวมข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">คุณได้รับการดูแลอย่างเข้มงวดที่สุดของ Chrome ให้ปลอดภัยจากเว็บไซต์ที่เป็นอันตราย</translation>
+<translation id="1675955119303651351">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
+        โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="1682483655351012182">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1733654336159102143">ล็อกโหมดไม่ระบุตัวตนเมื่อคุณออกจาก Chrome หรือเปลี่ยนไปใช้แอปอื่น</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +31,7 @@
 <translation id="1917964099031477364">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chrome และแอปอื่นๆ ของ Google ในอุปกรณ์นี้</translation>
 <translation id="2009224836393115614">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2056123005618757196">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Google Chrome ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
+<translation id="2120238739383482109">เปิดบุ๊กมาร์ก Chrome</translation>
 <translation id="2147651015520127414">Chrome ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="2199719347983604670">ข้อมูลจากการซิงค์ของ Chrome</translation>
 <translation id="2339201583852607431">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google (<ph name="EMAIL" />)</translation>
@@ -65,6 +68,7 @@
 <translation id="3594076341410558780">ซ่อนการ์ด "รับประโยชน์สูงสุดจาก Chrome"</translation>
 <translation id="3655656110921623717">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์ในอุปกรณ์เคลื่อนที่ทุกครั้ง</translation>
 <translation id="3720541637541300822">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome</translation>
+<translation id="3741995255368156336">เปิดเรื่องรออ่านใน Chrome</translation>
 <translation id="3827545470516145620">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
 <translation id="384394811301901750">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปได้ในขณะนี้</translation>
 <translation id="3901001113120561395">รับประโยชน์สูงสุดจาก Chrome</translation>
@@ -92,6 +96,7 @@
 <translation id="4903674399067644695">การ์ดนี้แสดงคำแนะนำเกี่ยวกับวิธีใช้ Chrome ให้เกิดประโยชน์สูงสุด</translation>
 <translation id="5030102366287574140">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="5108659628347594808">ปรับปรุง Chrome ให้ดีขึ้น</translation>
+<translation id="5112925986883715005">ดูเรื่องรออ่านใน Chrome</translation>
 <translation id="5119391094379141756">เลือก Chrome</translation>
 <translation id="5162467219239570114">Chrome เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chrome เวอร์ชันใหม่อีกต่อไป</translation>
 <translation id="5190139289262548459">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome</translation>
@@ -155,6 +160,7 @@
 <translation id="804638182476029347">อนุญาตให้การแจ้งเตือนของ Chrome รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="81358522153858150">ตอนนี้ Chrome รองรับนโยบายผู้ใช้สำหรับบัญชีที่จัดการแล้ว</translation>
 <translation id="8160472928944011082">อัปเดต Chrome ไม่ได้</translation>
+<translation id="8213758103105806860">ดูบุ๊กมาร์ก Chrome</translation>
 <translation id="8357607116237445042">เลือกว่าจะล้างข้อมูล Chrome จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="840168496893712993">ส่วนเสริมบางรายการทำให้ Chrome ขัดข้อง โปรดลองถอนการติดตั้งส่วนเสริมนั้น</translation>

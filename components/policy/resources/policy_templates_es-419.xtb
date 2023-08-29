@@ -141,6 +141,7 @@ Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_
           Si se habilita esta política o no se establece, los usuarios podrán decidir si se recuerdan las contraseñas de Kerberos para no tener que ingresarlas de nuevo. Los tickets de Kerberos se recuperan automáticamente a menos que se requiera autenticación adicional (autenticación de dos factores).
 
           Si se inhabilita esta política, las contraseñas no se recordarán nunca y se quitarán todas las contraseñas previamente almacenadas. Los usuarios deberán ingresar su contraseña cada vez que necesiten autenticación en el sistema Kerberos. Según la configuración del servidor, esta acción debe realizarse cada 8 horas o cada varios meses.</translation>
+<translation id="1126456433590366966">Automatizar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="112794759469625182">Se quitó esta política en la versión M118. Permitía habilitar e inhabilitar la Certificación remota para el usuario, pero ahora este mecanismo está habilitado de forma predeterminada.
 
 Si habilitas la política, los usuarios podrán usar el hardware de los dispositivos con <ph name="PRODUCT_OS_NAME" /> para certificar su identidad de forma remota ante la AC de privacidad mediante la función <ph name="CHALLENGE_USER_KEY_FUNCTION" /> de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.
@@ -271,6 +272,7 @@ Sin embargo, los patrones de coincidencia de orígenes para esta política no pu
       Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.
 
       A partir de la versión 99 de <ph name="PRODUCT_NAME" />, esta configuración también controla los puntos de entrada de la función "Ver el código fuente de la página". Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no podrán ver los códigos fuente de las páginas mediante una combinación de teclas ni el menú contextual. Para bloquear la vista de los códigos fuente, debes agregar "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1238868319430505522">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
 
           Si estableces esta política como verdadera, se inhabilitarán todas las verificaciones del <ph name="PRIVATE_NETWORK_ACCESS" /> para todos los orígenes. Esto puede permitir que ocurran ataques <ph name="CSRF" /> en servidores de redes privadas.
@@ -433,6 +435,7 @@ Esto reemplaza la política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NA
 <translation id="1371851989348083665">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
+<translation id="1376765488559847650">CloudUpload</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="1384594066274112751">Esta política hace que el navegador no descarte nunca las URLs que coincidan con uno o más de los patrones que especifican (con el formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />).
       Esto se aplica al descarte de la presión de memoria y del modo de alta eficiencia.
@@ -1353,6 +1356,7 @@ los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="2135335181634291106">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> especificará la URL del ícono favorito del proveedor de búsqueda predeterminado.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />, no se especificará ningún ícono para el proveedor de búsqueda.</translation>
+<translation id="2136073175041447267">Configura unidades en la nube (Google Drive, Microsoft OneDrive) en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2144236546337326489">Permitir que se habilite la continuación de tareas en Phone Hub</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
 <translation id="2146103669166779785">El código hexadecimal de color que se usará para generar un esquema y aplicarlo en el navegador.</translation>
@@ -2731,6 +2735,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se debilitará la zona de pruebas que utilizan los procesos del procesador. Desactiva la política solo si hay problemas de compatibilidad con el software de terceros que deba ejecutarse en los procesos del renderizador.
 
       Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
+<translation id="3338431256935927407">Controla los parámetros de configuración relacionados con la función de carga en la nube.</translation>
 <translation id="3339271789059866414">Configura la disponibilidad del servicio de proxy del sistema y las credenciales de proxy para los servicios del sistema.
       Si no se establece la política, no estará disponible el servicio de proxy del sistema.</translation>
 <translation id="334231891933432876">Cerrar la sesión del usuario en cuanto se anule la autenticación de su cuenta</translation>
@@ -2781,6 +2786,7 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 
       Si inhabilitas la política o no la estableces, se guardará el historial de navegación.</translation>
 <translation id="3387999258705169775">Comportamiento predeterminado de la restricción anidada de la función setTimeout()</translation>
+<translation id="3388628790024977864">No permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
 <translation id="3391457705621770207">Si estableces la política, se determinará la cantidad de tiempo (expresado en milisegundos) sin actividad del usuario antes de acceder automáticamente a la cuenta local del dispositivo especificada en la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
@@ -3187,6 +3193,16 @@ Si no estableces esta política para un sitio, se aplicará la política de <ph 
       Si se habilita o no se establece ningún valor, los usuarios podrán controlar Autocompletar. De esta manera, podrán configurar los perfiles de la función y activarla o desactivarla cuando lo deseen.</translation>
 <translation id="3733014427925403568">El día de la semana para el intervalo.</translation>
 <translation id="3736879847913515635">Habilitar la opción para agregar una persona en el Administrador de usuarios</translation>
+<translation id="3739912184950385207">Esta política permite que los administradores configuren el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
+
+Si estableces la política como "<ph name="ALLOWED_NAME" />", el usuario podrá configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /> si lo desea.
+Después de completar el proceso de configuración, los archivos cuyo formato coincida se moverán a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> de forma predeterminada y una app de <ph name="MICROSOFT_365_NAME" /> los controlará cuando el usuario intente abrirlos.
+
+Si estableces la política como "<ph name="DISALLOWED_NAME" />", el usuario no podrá configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ni <ph name="MICROSOFT_365_NAME" />, como se describió anteriormente, y se quitará <ph name="MICROSOFT_365_NAME" /> de la lista de posibles controladores de archivos.
+
+Si estableces la política como "<ph name="AUTOMATED_NAME" />", se configurará automáticamente el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" />, de modo que los archivos cuyos formatos coincidan se moverán a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> de forma predeterminada y una app de <ph name="MICROSOFT_365_NAME" /> los controlará cuando el usuario intente abrirlos.
+
+Si no estableces la política, su función será equivalente a establecerla como "<ph name="ALLOWED_NAME" />" para los usuarios generales. Para los usuarios empresariales, se establecerá como "<ph name="DISALLOWED_NAME" />" de forma predeterminada.</translation>
 <translation id="3744984310825999317">Permitir que <ph name="PEPPER_NAME" /> use un decodificador nuevo para la decodificación de video acelerada por hardware</translation>
 <translation id="3749259744154402564">No compatible</translation>
 <translation id="3749511622128647337">Inhabilitar la salida de audio</translation>
@@ -3459,6 +3475,7 @@ El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una app web puede eje
       Si habilitas esta política, se le solicitará al usuario que seleccione un certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados.
       Si inhabilitas esta política o no la estableces, solo se le solicitará al usuario que haga una elección cuando ningún certificado coincida con la selección automática.</translation>
 <translation id="3947897854999940598">Especificar la plantilla de URI del agente de resolución de DNS-over-HTTPS con información de identidad</translation>
+<translation id="3949642828552641632">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3950110092991281616">Permite la autenticación ambiental solo en sesiones comunes.</translation>
 <translation id="3950239119790560549">Actualizar las restricciones de tiempo</translation>
 <translation id="3953860513079094502">Enviar información sobre eventos de detección y respuesta extendidas (XDR)</translation>
@@ -5037,6 +5054,7 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5393009997533871906">Los usuarios solo ven las impresoras que se encuentran en la lista de elementos permitidos</translation>
+<translation id="5396322417222266779">Permitir que el usuario personalice las combinaciones de teclas del sistema</translation>
 <translation id="5398387276166014955">Permitir que se inserte código de terceros en Chrome</translation>
 <translation id="5401696449591951427">Habilita <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5404749470367600971">Permitir el filtro de rendimiento de accesibilidad</translation>
@@ -5522,6 +5540,7 @@ Si inhabilitas esta política, se inhabilitará la protección para extensiones 
 <translation id="5838452040629810808">Habilitar la función para destacar el cursor</translation>
 <translation id="5841157246593092717">Controlar si se pueden inhabilitar los controladores del evento <ph name="UNLOAD_EVENT_NAME" /></translation>
 <translation id="5842283830553218200">Usar el comportamiento nuevo de envío de eventos en los controles de formulario inhabilitados de forma predeterminada</translation>
+<translation id="5843736977964493779">No permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="5847509620317822100">Se quitó esta función en Chrome 100.
 
       Si habilitas esta política, se mostrarán recomendaciones de apps que el usuario haya instalado anteriormente en otros dispositivos. Se mostrarán estas recomendaciones en el selector después de las recomendaciones locales de apps (en caso de que no se haya ingresado texto de búsqueda).
@@ -5866,6 +5885,11 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
 <translation id="614662973812186053">Esta política también controla la recopilación de datos de diagnóstico y uso de Android.</translation>
 <translation id="614665605501218241">Permitir a los sitios de la lista enviar solicitudes a extremos de red más privados de una forma no segura.</translation>
 <translation id="614753473456574270">No permitir que los usuarios establezcan un PIN poco seguro</translation>
+<translation id="6150044272483721831">Esta política controla si se permite la personalización de combinaciones de teclas del sistema.
+
+Si habilitas o no estableces esta política, los usuarios podrán personalizar las combinaciones de teclas del sistema con la app de Combinaciones de teclas.
+
+Si la inhabilitas, la app de Combinaciones de teclas estará en modo de solo lectura, lo que no permitirá la personalización.</translation>
 <translation id="6150320133676152520">Inhabilitar el envío automático de PIN en la pantalla de bloqueo y de acceso</translation>
 <translation id="6155350825868160236">Permitir que el usuario decida si se usarán los servicios web de Google para solucionar errores de ortografía</translation>
 <translation id="6155936611791017817">Establece el estado predeterminado del cursor grande en la pantalla de acceso.</translation>
@@ -6224,6 +6248,7 @@ en la pantalla de <ph name="LOG_IN" />.</translation>
       Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.
 
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios elegir este permiso para cada sitio.</translation>
+<translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
 <translation id="6394350458541421998">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6396956366662970339">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
@@ -6698,6 +6723,7 @@ La política se quitará de <ph name="PRODUCT_NAME" /> en el futuro.</translatio
       Si la inhabilitas o no la estableces, los sitios solo podrán usar la política SharedArrayBuffers cuando cuenten con aislamiento de origen cruzado.</translation>
 <translation id="6735701345096330595">Habilitar la corrección ortográfica de idiomas</translation>
 <translation id="6736283207617136584">Habilitar los informes de estado de las actualizaciones del SO del dispositivo</translation>
+<translation id="6739541168983991680">Automatizar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6739847036322230891">No permitir que los usuarios agreguen impresoras no empresariales, las configuren ni impriman en ellas</translation>
 <translation id="6740611636377710500">Permite que este usuario ejecute PluginVm.
 
@@ -6917,6 +6943,7 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 
       Ten en cuenta que, si estableces esta política como verdadera o no la configuras, pero estableces <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> como falsa, <ph name="LACROS_NAME" /> no permitirá que se inicien perfiles de invitado.</translation>
 <translation id="692096803256767290">Revertir el SO a la versión de destino</translation>
+<translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos ejecuten máquinas virtuales en ChromeOS</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Permite forzar la habilitación del corrector ortográfico de idiomas. Se omitirán los idiomas que no se reconozcan en esa lista.
@@ -7511,6 +7538,16 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="7433714841194914373">Habilitar Instant</translation>
 <translation id="7434202861148928348">Configurar los nombres de dominio obligatorios para clientes de acceso remoto</translation>
 <translation id="7436939516497076240">Inhabilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
+<translation id="7438379915013106443">Esta política permite que los administradores configuren el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
+
+Si estableces la política como "<ph name="ALLOWED_NAME" />", el usuario podrá configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /> si lo desea.
+Después de completar el proceso de configuración, los archivos cuyo formato coincida se moverán a <ph name="GOOGLE_DRIVE_NAME" /> de forma predeterminada y una app de <ph name="GOOGLE_WORKSPACE_NAME" /> los controlará cuando el usuario intente abrirlos.
+
+Si estableces la política como "<ph name="DISALLOWED_NAME" />", el usuario no podrá configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" />, como se describió anteriormente, y se quitarán las apps de <ph name="GOOGLE_WORKSPACE_NAME" /> de la lista de posibles controladores de archivos.
+
+Si estableces la política como "<ph name="AUTOMATED_NAME" />", se configurará automáticamente el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" />, de modo que los archivos cuyos formatos coincidan se moverán a <ph name="GOOGLE_DRIVE_NAME" /> de forma predeterminada y una app de <ph name="GOOGLE_WORKSPACE_NAME" /> los controlará cuando el usuario intente abrirlos.
+
+Si no estableces la política, su función será equivalente a establecerla como "<ph name="ALLOWED_NAME" />" para los usuarios generales. Para los usuarios empresariales, se establecerá como "<ph name="DISALLOWED_NAME" />" de forma predeterminada.</translation>
 <translation id="7443356543619955157">Si estableces la política, se podrá aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una string en formato JSON, como la define el formato Open Network Configuration.</translation>
 <translation id="7446978687387327623">Permitir las verificaciones con proxy de la Navegación segura en tiempo real</translation>
 <translation id="7448430478749155471">Habilita la función de Seleccionar para pronunciar en la pantalla de acceso</translation>
@@ -8821,6 +8858,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="8583509234908413302">Permitir que los protocolos TLS/DTLS heredados cambien a una versión inferior en WebRTC</translation>
 <translation id="8584279193368801689">Restringe el modo de impresión con PIN. Si no se configura la política, no se aplicará ninguna restricción. Si el modo no está disponible, se ignorará esta política. Ten en cuenta que solo se habilitará la función de impresión con PIN para impresoras que usen uno de los siguientes protocolos: IPPS, HTTPS, USB o IPP por USB.</translation>
 <translation id="8587229956764455752">Permitir la creación de nuevas cuentas de usuario</translation>
+<translation id="8589285015138337712">No permitir que el usuario personalice las combinaciones de teclas del sistema</translation>
 <translation id="8591713876665299827">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Especifica el período sin intervención del usuario después del cual se ejecutará la acción de inactividad cuando el dispositivo esté funcionando con CA.
@@ -9320,6 +9358,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
 <translation id="9031831501689819108">Habilitar la Compatibilidad con navegadores heredados</translation>
 <translation id="9032595854515551464">Habilitar el servicio de <ph name="PRODUCT_NAME" /> V2 y abrir el escritorio remoto al acceder</translation>
+<translation id="9034285085962866065">Permitir la personalización de combinaciones de teclas del sistema</translation>
 <translation id="9035086760683255833">Habilita la función de accesibilidad para destacar el cursor del teclado.
 
           Esta función destaca el elemento donde está el cursor del teclado.

@@ -522,7 +522,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2048261947532620704">Pagina vertalen</translation>
 <translation id="205212645995975601">Barbecue en grillen</translation>
 <translation id="2053111141626950936">Pagina's in het <ph name="LANGUAGE" /> worden niet vertaald.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}=1{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}other{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke {NUM_DAYS} dagen geüpdatet.}}</translation>
 <translation id="2056658168519009885">Sites kunnen Chrome om informatie vragen om de advertenties te personaliseren die je ziet.</translation>
 <translation id="2059202684901022309">22 x 34 inch</translation>
 <translation id="2064568741209980952">Kredietverlening</translation>
@@ -669,7 +668,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2355395290879513365">Aanvallers kunnen mogelijk de afbeeldingen zien die je op deze site bekijkt en je misleiden door de afbeeldingen aan te passen.</translation>
 <translation id="2356070529366658676">Vragen</translation>
 <translation id="2357481397660644965">Je apparaat wordt beheerd door <ph name="DEVICE_MANAGER" /> en je account wordt beheerd door <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Over minder dan 1 dag}=1{Over 1 dag}other{Over {NUM_DAYS} dagen}}</translation>
 <translation id="2359629602545592467">Meerdere</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1227,7 +1225,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3586833803451155175">Natte film</translation>
 <translation id="3586931643579894722">Details verbergen</translation>
 <translation id="3587738293690942763">Midden</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Je kunt je groep op elk moment resetten. Het duurt ongeveer 1 dag om aan een nieuwe groep deel te nemen.}=1{Je kunt je groep op elk moment resetten. Het duurt ongeveer 1 dag om aan een nieuwe groep deel te nemen.}other{Je kunt je groep op elk moment resetten. Het duurt {NUM_DAYS} dagen om aan een nieuwe groep deel te nemen.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knop Google-privacyinstellingen beheren. Activeer deze om naar de privacyinstellingen van je Google-account te gaan.</translation>
 <translation id="3603507503523709">App geblokkeerd door je beheerder</translation>
@@ -1242,6 +1239,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="36224234498066874">Browsegegevens wissen</translation>
 <translation id="362276910939193118">Volledige geschiedenis bekijken</translation>
 <translation id="3624292976554877583">Labels (mat)</translation>
+<translation id="3625929652356389713">Kan toestemming vragen om automatisch scherm-in-scherm-vensters te openen</translation>
 <translation id="3628905806504633297">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand over te zetten naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden over te zetten naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Als dit programma al wordt vermeld als een programma dat toegang heeft tot het netwerk, kun je proberen het uit de lijst te verwijderen en het opnieuw toe te voegen.</translation>
 <translation id="3630426379756188722">Knop Vind mijn apparaat. Activeer deze om naar Vind mijn apparaat te gaan in het Google-account.</translation>
@@ -1374,6 +1372,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="388632593194507180">Controle gedetecteerd</translation>
 <translation id="3886948180919384617">Stapeleenheid 3</translation>
 <translation id="3890664840433101773">E-mailadres toevoegen</translation>
+<translation id="3893306401511601929">Automatisch scherm-in-scherm</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">De pas is verlopen</translation>
 <translation id="390391808978419508">Time-out bij openen</translation>
@@ -1573,7 +1572,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Deze pas is opgeslagen in je Google-account}other{Deze passen zijn opgeslagen in je Google-account}}</translation>
 <translation id="4287495839370498922">Verbeterde advertentieprivacy in Chrome</translation>
-<translation id="4287885627794386150">Komt in aanmerking voor proef maar is niet actief</translation>
 <translation id="4290920330097335010">Nooit toestaan</translation>
 <translation id="4296207570293932800">Nieuwe functie voor advertentieprivacy nu beschikbaar</translation>
 <translation id="4297502707443874121">Miniatuur voor pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2153,6 +2151,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5512812358367123529">Kantoormeubilair</translation>
 <translation id="5513528801833998679">Inloggen op apparaat gebruiken</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5516095341424241911">De beveiligingstechnologie van Google gebruiken om je betalingsgegevens te beveiligen</translation>
 <translation id="5518670652865028077">Kunst en entertainment</translation>
 <translation id="5519516356611866228">Met jouw wijzigingen</translation>
 <translation id="5519696598216267194">Papier (voorgestanst)</translation>
@@ -2219,6 +2218,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5633259641094592098">Cult- en indiefilms</translation>
 <translation id="563371367637259496">Mobiel</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" />.</translation>
 <translation id="5642411781689336699">Stereosystemen en -componenten</translation>
 <translation id="5644090287519800334">Beeldverschuiving X van zijde 1</translation>
 <translation id="5645132789250840550">Plastic (zijdeglans)</translation>
@@ -2307,7 +2307,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5847181246682413476">Stroomvoorziening</translation>
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Uit</translation>
 <translation id="5862579898803147654">Stapeleenheid 8</translation>
 <translation id="5863847714970149516">De komende pagina probeert misschien kosten in rekening te brengen</translation>
 <translation id="5866257070973731571">Telefoonnummer toevoegen</translation>
@@ -3040,7 +3039,6 @@ Aanvullende informatie:
 <translation id="7378877318020334501">Tv-comedy's</translation>
 <translation id="7380398842872229465">10 x 15 inch</translation>
 <translation id="738439098860678026">Peuteronderwijs</translation>
-<translation id="7386364858855961704">Niet van toepassing</translation>
 <translation id="7388594495505979117">{0,plural, =1{Je apparaat wordt over 1 minuut opnieuw opgestart}other{Je apparaat wordt over # minuten opnieuw opgestart}}</translation>
 <translation id="7390545607259442187">Creditcard bevestigen</translation>
 <translation id="7392089738299859607">Adres updaten</translation>
@@ -3136,7 +3134,6 @@ Aanvullende informatie:
 <translation id="7549584377607005141">Deze webpagina kan alleen correct worden weergegeven op basis van gegevens die je eerder hebt opgegeven. Je kunt deze gegevens opnieuw verzenden, maar hierdoor worden de acties herhaald die eerder op deze pagina zijn uitgevoerd.</translation>
 <translation id="7550637293666041147">De gebruikersnaam van je apparaat en je Chrome-gebruikersnaam</translation>
 <translation id="7551484245293639699">Reisverzekering</translation>
-<translation id="755279583747225797">Proef is actief</translation>
 <translation id="7552846755917812628">Probeer de volgende tips:</translation>
 <translation id="7554475479213504905">Opnieuw laden en toch bekijken</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
@@ -3768,6 +3765,7 @@ Aanvullende informatie:
 <translation id="885730110891505394">Delen met Google</translation>
 <translation id="8858065207712248076">Chrome raadt je aan het wachtwoord voor <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="885906927438988819">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een Windows-netwerkcontrole uit<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">Sla je kaart op je apparaat op, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="8864939224504814334">Pakken en zakelijke kleding</translation>
 <translation id="8866132857352163524">Soundtracks</translation>
 <translation id="8866481888320382733">Fout bij het parseren van beleidsinstellingen</translation>
@@ -3945,6 +3943,7 @@ Aanvullende informatie:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je advertentieonderwerpen zijn gebaseerd op je recente browsegeschiedenis. Dit is een lijst met sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="940053046584497293">Reizen en transport</translation>
+<translation id="944540589955480312">Wachtwoorden en toegangssleutels gebruiken die zijn opgeslagen in je Google-account</translation>
 <translation id="945855313015696284">Controleer de informatie hieronder en verwijder alle ongeldige passen</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe site in Google Sites te maken</translation>
 <translation id="949314938206378263">Je hebt gevraagd of je deze site mag bezoeken. Je ouder kan reageren in Family Link.</translation>
@@ -3981,5 +3980,6 @@ Aanvullende informatie:
     &lt;li&gt;Maak verbinding met een ander netwerk&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">automatisch scherm-in-scherm</translation>
 <translation id="997986563973421916">Van Google Pay</translation>
 </translationbundle>

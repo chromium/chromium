@@ -522,7 +522,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2048261947532620704">Stránka sa prekladá</translation>
 <translation id="205212645995975601">Opekanie a grilovanie</translation>
 <translation id="2053111141626950936">Stránky v jazyku <ph name="LANGUAGE" /> nebudú prekladané.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Keď je tento ovládací prvok zapnutý a stav je aktívny, Chrome stanoví, ktorej veľkej skupine ľudí („kohorte“) je vaša nedávna aktivita prehliadania najviac podobná. Inzerenti môžu pre túto skupinu vybrať reklamy a vaša aktivita prehliadania zostane uchovaná v súkromí vo vašom zariadení. Skupina sa aktualizuje každý deň.}=1{Keď je tento ovládací prvok zapnutý a stav je aktívny, Chrome stanoví, ktorej veľkej skupine ľudí („kohorte“) je vaša nedávna aktivita prehliadania najviac podobná. Inzerenti môžu pre túto skupinu vybrať reklamy a vaša aktivita prehliadania zostane uchovaná v súkromí vo vašom zariadení. Skupina sa aktualizuje každý deň.}few{Keď je tento ovládací prvok zapnutý a stav je aktívny, Chrome stanoví, ktorej veľkej skupine ľudí („kohorte“) je vaša nedávna aktivita prehliadania najviac podobná. Inzerenti môžu pre túto skupinu vybrať reklamy a vaša aktivita prehliadania zostane uchovaná v súkromí vo vašom zariadení. Skupina sa aktualizuje každé {NUM_DAYS} dni.}many{Keď je tento ovládací prvok zapnutý a stav je aktívny, Chrome stanoví, ktorej veľkej skupine ľudí („kohorte“) je vaša nedávna aktivita prehliadania najviac podobná. Inzerenti môžu pre túto skupinu vybrať reklamy a vaša aktivita prehliadania zostane uchovaná v súkromí vo vašom zariadení. Skupina sa aktualizuje každého {NUM_DAYS} dňa.}other{Keď je tento ovládací prvok zapnutý a stav je aktívny, Chrome stanoví, ktorej veľkej skupine ľudí („kohorte“) je vaša nedávna aktivita prehliadania najviac podobná. Inzerenti môžu pre túto skupinu vybrať reklamy a vaša aktivita prehliadania zostane uchovaná v súkromí vo vašom zariadení. Skupina sa aktualizuje každých {NUM_DAYS} dní.}}</translation>
 <translation id="2056658168519009885">Weby môžu požiadať Chrome o informácie, aby mohli prispôsobovať reklamy, ktoré sa vám zobrazujú.</translation>
 <translation id="2059202684901022309">22 × 34 palcov</translation>
 <translation id="2064568741209980952">Úvery a pôžičky</translation>
@@ -669,7 +668,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2355395290879513365">Útočníci môžu vidieť obrázky, ktoré si prehliadate na tomto webe, a môžu vás napadnúť tým, že ich podvodným spôsobom upravia.</translation>
 <translation id="2356070529366658676">Opýtať sa</translation>
 <translation id="2357481397660644965">Vaše zariadenie spravuje <ph name="DEVICE_MANAGER" /> a váš účet spravuje <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{O menej ako deň}=1{O deň}few{O {NUM_DAYS} dni}many{O {NUM_DAYS} dňa}other{O {NUM_DAYS} dní}}</translation>
 <translation id="2359629602545592467">Viaceré</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
@@ -1228,7 +1226,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3586833803451155175">Vlhký film</translation>
 <translation id="3586931643579894722">Skryť podrobnosti</translation>
 <translation id="3587738293690942763">Stred</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}=1{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}few{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dni.}many{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dňa.}other{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dní.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tlačidlo Spravovať nastavenia ochrany súkromia na Googli, ktorého aktivovaním prejdete do nastavení ochrany súkromia svojho účtu Google</translation>
 <translation id="3603507503523709">Aplikácia bola zablokovaná vaším správcom</translation>
@@ -1576,7 +1573,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4285498937028063278">Odopnúť</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Táto karta sa uložila do vášho účtu Google}few{Tieto karty sa uložili do vášho účtu Google}many{Tieto karty sa uložili do vášho účtu Google}other{Tieto karty sa uložili do vášho účtu Google}}</translation>
 <translation id="4287495839370498922">Zlepšená ochrana súkromia pri reklamách v Chrome</translation>
-<translation id="4287885627794386150">Vhodné pre skúšobné obdobie, ale neaktívne</translation>
 <translation id="4290920330097335010">Nikdy nepovoliť</translation>
 <translation id="4296207570293932800">K dispozícii je nová funkcia ochrany súkromia pri reklamách</translation>
 <translation id="4297502707443874121">Miniatúra stránky <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2312,7 +2308,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5847181246682413476">Zdroje napájania</translation>
 <translation id="5851548754964597211">Zoznam kariet</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5862579898803147654">Odkladač č. 8</translation>
 <translation id="5863847714970149516">Stránka, na ktorú sa chystáte prejsť, vám môže účtovať poplatky</translation>
 <translation id="5866257070973731571">Pridanie telefónneho čísla</translation>
@@ -3045,7 +3040,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7378877318020334501">Televízne komédie</translation>
 <translation id="7380398842872229465">10 × 15 palcov</translation>
 <translation id="738439098860678026">Vzdelávanie v ranom detstve</translation>
-<translation id="7386364858855961704">Nedá sa použiť</translation>
 <translation id="7388594495505979117">{0,plural, =1{Vaše zariadenie sa reštartuje o 1 minútu}few{Vaše zariadenie sa reštartuje o # minúty}many{Vaše zariadenie sa reštartuje o # minúty}other{Vaše zariadenie sa reštartuje o # minút}}</translation>
 <translation id="7390545607259442187">Overenie karty</translation>
 <translation id="7392089738299859607">Aktualizácia adresy</translation>
@@ -3141,7 +3135,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7549584377607005141">Správne zobrazenie tejto webovej stránky si vyžaduje údaje, ktoré ste zadali v minulosti. Tieto údaje môžete poslať znova, ale v tom prípade zopakujete všetky akcie, ktoré sa na tejto stránke vykonali v minulosti.</translation>
 <translation id="7550637293666041147">Vaše používateľské meno v zariadení a Chrome</translation>
 <translation id="7551484245293639699">Cestovné poistenie</translation>
-<translation id="755279583747225797">Skúšobné obdobie je aktívne</translation>
 <translation id="7552846755917812628">Vyskúšajte nasledujúce tipy:</translation>
 <translation id="7554475479213504905">Znova načítať a aj tak zobraziť</translation>
 <translation id="7554791636758816595">Nová karta</translation>

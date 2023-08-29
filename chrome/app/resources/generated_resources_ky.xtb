@@ -1508,7 +1508,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2162705204091149050">Серепчиңиз, OS, түзмөк, орнотулган программа, жана файлдар тууралуу маалыматты окуу</translation>
 <translation id="2162926944953615670">Жеткиликтүү eSIM-карта профилдери жок</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кирүү үчүн Интернетке туташыңыз.</translation>
-<translation id="2163996651553460171">Chrome'дун бардык мүмкүнчүлүктөрүн пайдаланыңыз</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> жана дагы 1 которгуч</translation>
 <translation id="2165102982098084499">Бул түзмөктөрдү QR кодду скандоо аркылуу туташтырдыңыз.</translation>
 <translation id="2165177462441582039">Бир объекттен экинчисине өтүү ылдамдыгын тандаңыз</translation>
@@ -5814,7 +5813,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="567740581294087470">Кандай пикир жөнөтөйүн дедиңиз эле?</translation>
 <translation id="5677503058916217575">Баракчанын тили:</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>
-<translation id="5677946354068040947">дагы параметрлер</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> дегенге окуу жана жазуу мүмкүнчүлүгү берилди.</translation>
 <translation id="5678821117681811450">Төмөнкүгө жөнөтүлүүдө: <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Дайын-даректериңизди <ph name="WEBSITE_1" /> дарегинен окуңуз</translation>
@@ -6727,6 +6725,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" кеңейтүүсүн администраторуңуз бөгөттөп койду</translation>
 <translation id="6438234780621650381">Параметрлерди кайра коюу</translation>
 <translation id="6438475350605608554">Сырсөздөрдү башка өтмөктө импорттоп жатасыз</translation>
+<translation id="6438480100790416671">Сактагыч текшерилүүдө…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Аудио файл ойнотулууда</translation>
 <translation id="6440291723980579689">Барактар ачылгандан кийин гана жүктөлөт</translation>
 <translation id="6441377161852435370">Өтмөктү окуу тизмесине кошуу</translation>
@@ -8126,6 +8125,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7585106857920830898">Уюмуңуздун коопсуздук саясаттарын бузгандыгы текшерилүүдө...</translation>
 <translation id="7586498138629385861">Chrome колдонмолору ачылып турганда Chrome иштей берет.</translation>
 <translation id="7589461650300748890">Ушундай болмок. Абайлаңыз.</translation>
+<translation id="7590883480672980941">Киргизүү параметрлери</translation>
 <translation id="7592060599656252486">Айрымдар</translation>
 <translation id="7593653750169415785">Автоматтык түрдө бөгөттөлдү, анткени сиз билдирмелерди бир нече жолу четке кактыңыз</translation>
 <translation id="7594725637786616550"><ph name="DEVICE_TYPE" /> түзмөгүн баштапкы абалга келтирүү үчүн "Жууп салуу" функциясын колдонуңуз.</translation>
@@ -9551,6 +9551,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8725178340343806893">Сүйүктүүлөр/Кыстармалар</translation>
 <translation id="87254326763805752">Мүмкүндүк алуу ачкычын ырастоо</translation>
 <translation id="8726206820263995930">Серверден саясат параметрлери алынып жаткан учурда келип чыккан ката: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Chrome'дун бардык мүмкүнчүлүктөрүн колдонуңуз</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Автотолтуруу метадайындарын<ph name="END_LINK1" /> жөнөтүү
           <ph name="LINE_BREAK" />
           (автотолтуруу маалыматыңыз бөлүшүлбөйт)</translation>

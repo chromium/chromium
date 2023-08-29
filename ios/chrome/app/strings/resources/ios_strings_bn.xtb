@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2178545675770638239">পাসওয়ার্ড বেছে নিন</translation>
 <translation id="2195124168004379331">আপনার ব্রাউজার ঠিক আছে</translation>
+<translation id="2213327331203157297">Chrome-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার iPhone-এ বন্ধ করুন।</translation>
 <translation id="2218443599109088993">ছোট করে দেখুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
@@ -474,7 +475,6 @@
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="3775743491439407556">সিঙ্ক কাজ করছে না</translation>
 <translation id="3779810277399252432">কোনও ইন্টারনেট সংযোগ নেই৷</translation>
-<translation id="3783017676699494206">ছবি সেভ করুন</translation>
 <translation id="3789294999358192700">নিচে দেওয়া ধাপগুলি অনুসরণ করুন:</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="380329542618494757">নাম</translation>
@@ -1361,6 +1361,7 @@
 <translation id="8843129975935593190">আপনি কী সিঙ্ক করতে পারবেন সেটি আপনার প্রতিষ্ঠান সীমিত করে।</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8855242995793521265">উল্লেখযোগ্যভাবে আপনার ব্রাউজার বা ডিভাইসের পারফর্ম্যান্স ধীর গতির করে দেয় না।</translation>
+<translation id="8855781063981781621">Chrome-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার iPad-এ বন্ধ করুন।</translation>
 <translation id="8863431381414769983">Google Maps থেকে স্থানীয় তথ্য এবং দিকনির্দেশ পান</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
 <translation id="8870413625673593573">সম্প্রতি বন্ধ হয়েছে</translation>

@@ -203,6 +203,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2178545675770638239">Zgjidh fjalëkalimin</translation>
 <translation id="2195124168004379331">Shfletuesi yt duket në rregull</translation>
+<translation id="2213327331203157297">Për të çaktivizuar Lockdown Mode në Chrome, çaktivizoje atë në iPhone.</translation>
 <translation id="2218443599109088993">Zvogëlo</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
@@ -474,7 +475,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
 <translation id="3775743491439407556">Sinkronizimi nuk po punon</translation>
 <translation id="3779810277399252432">Nuk ka lidhje interneti.</translation>
-<translation id="3783017676699494206">Ruaj imazhin</translation>
 <translation id="3789294999358192700">Ndiq hapat më poshtë:</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="380329542618494757">Emri</translation>
@@ -1360,6 +1360,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8843129975935593190">Organizata jote kufizon se çfarë mund të sinkronizosh.</translation>
 <translation id="8849001918648564819">E fshehur</translation>
 <translation id="8855242995793521265">Nuk e ngadalëson dukshëm shfletuesin ose pajisjen tënde.</translation>
+<translation id="8855781063981781621">Për të çaktivizuar Lockdown Mode në Chrome, çaktivizoje atë në iPad.</translation>
 <translation id="8863431381414769983">Merr udhëzime dhe informacione lokale nga Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} skedë}other{{count} skeda}}</translation>
 <translation id="8870413625673593573">Të mbyllura së fundi</translation>

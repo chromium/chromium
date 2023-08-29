@@ -231,6 +231,7 @@
 <translation id="2712812801627182647">TLS ପ୍ରମାଣୀକରଣ କୀ</translation>
 <translation id="2713444072780614174">ଧଳା</translation>
 <translation id="2717139507051041123">ଡାର୍କ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="2728460467788544679">ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସକୁ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2744221223678373668">ସେୟାର କରାଯାଇଛି</translation>
 <translation id="2751739896257479635">EAP ଫେଜ୍‍ 2 ପ୍ରମାଣିକରଣ</translation>
@@ -701,6 +702,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ଦୁର୍ବଳ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="6461047516875166066">ମୋତେ ଅଧିକ କୁହନ୍ତୁ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
@@ -923,6 +925,7 @@
 <translation id="8318753676953949627">କୌଣସି ଇମେଜ୍ ନାହିଁ</translation>
 <translation id="8329018942023753850">କାଲକୁଲେଟର ଆପ</translation>
 <translation id="8336739000755212683">ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଛବି ବଦଳାନ୍ତୁ</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> କିମ୍ବା <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="8351855506390808906">କୀମେପିଂ ଟଚ ପଏଣ୍ଟ</translation>
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>

@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Ключ аўтэнтыфікацыі TLS</translation>
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2717139507051041123">Уключыць рэжым цёмных колераў</translation>
+<translation id="2728460467788544679">Выдаленне ўсёй гісторыі друку</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Абагулена</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перайсці ў налады ўліковага запісу</translation>
+<translation id="6461047516875166066">Даведацца больш</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Сканіраваць старонку паўторна?}=1{Сканіраваць старонку {PAGE_NUMBER} паўторна?}one{Сканіраваць старонку {PAGE_NUMBER} паўторна?}few{Сканіраваць старонку {PAGE_NUMBER} паўторна?}many{Сканіраваць старонку {PAGE_NUMBER} паўторна?}other{Сканіраваць старонку {PAGE_NUMBER} паўторна?}}</translation>
 <translation id="6472207088655375767">Аднаразовы пароль</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8329018942023753850">праграма "Калькулятар"</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ці <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8351855506390808906">Кропка дотыку для вызначэння клавіш</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>

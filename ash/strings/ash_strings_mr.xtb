@@ -45,7 +45,6 @@
 <translation id="1175944128323889279">बॅटरीची सद्य पातळी <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> शिल्लक आहे</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
-<translation id="1181431373490845924">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="1182225749592316782">हे कॅमेरा आणि मायक्रोफोन परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते</translation>
 <translation id="1182876754474670069">होम</translation>
 <translation id="1183863904939664422">या सूचनेमध्ये स्वारस्य नाही</translation>
@@ -64,6 +63,7 @@
 <translation id="1217633719248931900">अ‍ॅपवर जा</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play स्टोअर अ‍ॅप</translation>
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">इनॅक्टिव्ह डेस्‍क</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> शी कनेक्ट केले.</translation>
@@ -117,7 +117,6 @@
 <translation id="1415846719612499304">नेटवर्क सूची दाखवा. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस अनलॉक करा</translation>
 <translation id="1420408895951708260">रात्रीचा प्रकाश टॉगल करा. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1455242230282523554">भाषा सेटिंग्ज दर्शवा</translation>
 <translation id="1460620680449458626">व्हॉल्यूम म्यूट केलेला आहे.</translation>
@@ -410,7 +409,6 @@
 <translation id="2750932254614666392">"हटवा"</translation>
 <translation id="2750941250130734256">अ‍ॅक्टिव्ह विंडो अनडॉक केली आहे.</translation>
 <translation id="2761723519669354964">शेल्फमधील हायलाइट केलेला आयटम उघडा</translation>
-<translation id="2774327524281966309">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनवरील सूचना आणि अ‍ॅप्स सेट करणे डिसमिस करा</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ते <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> हे <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
@@ -489,7 +487,6 @@
 <translation id="3095995014811312755">आवृत्ती</translation>
 <translation id="309749186376891736">कर्सर हलवा</translation>
 <translation id="3100274880412651815">कॅप्चर मोड डिसमिस करा</translation>
-<translation id="3103732015595029598">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनवरील सूचना आणि अ‍ॅप्स सेट करा</translation>
 <translation id="3105917916468784889">स्क्रीनशॉट घ्या</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="3113492864356515707">शेल्फवरील आधीचा आयटम हायलाइट करा</translation>
@@ -659,7 +656,6 @@
 <translation id="3735740477244556633">यानुसार क्रमाने लावा</translation>
 <translation id="3738664582935948253">तुम्ही आता स्क्रीन रेकॉर्डिंगमध्ये क्लिक आणि कीबोर्ड शॉर्टकट दाखवू शकता</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
-<translation id="375335662788363456">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स सेट करणे डिसमिस करा</translation>
 <translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> शॉर्टकट <ph name="OLD_SHORTCUT" /> वरून <ph name="NEW_SHORTCUT" /> वर अपडेट केला आहे</translation>
 <translation id="3765841986579723851">आज संपादित केलेली</translation>
@@ -794,7 +790,6 @@
 <translation id="428715201724021596">प्रोफाइलशी कनेक्ट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="4294319844246081198">सुप्रभात <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सर्व <ph name="COUNT" /> सूचना साफ करा</translation>
-<translation id="4300367807227655672">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनवरील सूचना पाहणे सेट करा</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> फोल्डर <ph name="FOLDER_NAME" /> वर हलवले.</translation>
 <translation id="4302592941791324970">उपलब्ध नाही</translation>
 <translation id="4303223480529385476">स्थिती क्षेत्राचा विस्तार करा</translation>
@@ -820,18 +815,15 @@
 <translation id="4405151984121254935">कनेक्ट केलेल्या पेरिफेरल प्रकाराला सपोर्ट नाही</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
-<translation id="4414595745967164324">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स सेट करा</translation>
 <translation id="4424159417645388645">डेस्‍क ५</translation>
 <translation id="4427695046139341014">गेम डॅशबोर्ड</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
-<translation id="4435022394553622295">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनच्या सूचना आणि अ‍ॅप्स पहा</translation>
 <translation id="4441283832827406317">अ‍ॅप्स नावानुसार क्रमाने लावली जातात</translation>
 <translation id="4445159312344259901">अनलॉक करण्यासाठी साइन इन करा</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{एक महत्त्वाची सूचना}other{# महत्त्वाच्या सूचना}}</translation>
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4451374464530248585">Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज डाउन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + डाउन अ‍ॅरो वापरा.</translation>
 <translation id="4453876312474547652">तुम्ही Ctrl + V प्रेस करून धरून ठेवल्यावर तुम्हाला क्लिपबोर्ड दिसेल. तुम्ही chrome://flags (Lacros वापरत असल्यास, os://flags) मधील #clipboard-history-longpress फ्लॅग बंद करून हा शॉर्टकट बंद करू शकता.</translation>
-<translation id="4455051983450390249">तुमच्या <ph name="DEVICE_TYPE" /> वर फोनमधील सूचना पहा</translation>
 <translation id="445864333228800152">शुभ संध्याकाळ,</translation>
 <translation id="4458688154122353284">स्क्रीन रेकॉर्डिंग थांबवा</translation>
 <translation id="445923051607553918">वाय-फाय  नेटवर्कमध्ये सामील व्हा</translation>
@@ -914,7 +906,6 @@
 <translation id="4798888871844665150">क्लिपबोर्डमध्ये आधीपासून असलेला आयटम कॉपी करा. पाहण्यासाठी <ph name="SHORTCUT_KEY_NAME" /> + V वापरा.</translation>
 <translation id="479989351350248267">शोध</translation>
 <translation id="4804818685124855865">‍डिस्कनेक्ट</translation>
-<translation id="4810227386592387399">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनवरील अ‍ॅप्स पाहणे सेट करा</translation>
 <translation id="4813311884204119883">टॅब स्ट्रिपवरील रिक्त भागावर लिंक ड्रॅग करा</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="481455355267255546">पुढील</translation>
@@ -1010,6 +1001,7 @@
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इव्हेंट</translation>
 <translation id="5198715732953550718">नवीन फोल्डर तयार करण्यासाठी <ph name="IN_PLACE_APP" /> सोबत <ph name="MOVED_APP_NAME" /> एकत्रित केले गेले.</translation>
+<translation id="5203299837691351876">अ‍ॅक्टिव्ह डेस्क</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{एक इतर सूचना}other{# इतर सूचना}}</translation>
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
@@ -1099,7 +1091,6 @@
 <translation id="5551456515017410630">कॅलेंडर सुरू/बंद करा</translation>
 <translation id="5551974246223970793">पेज शोधत असताना, शोधासाठी नवीन जुळणीवर जा</translation>
 <translation id="5558091555391176027">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा</translation>
-<translation id="5560420195677022218">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अ‍ॅप्स पहा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5570122939431135380">नवीन टॅबमध्ये नवीन गुप्त विंडो उघडा</translation>
 <translation id="5571066253365925590">ब्लूटूथ सक्षम</translation>
@@ -1197,6 +1188,7 @@
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5955304353782037793">अ‍ॅप</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
+<translation id="5960410286721553511">तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
 <translation id="5961960957587052807">फिकट</translation>
 <translation id="5965524703725988602">गडद थीम टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">विंडोदरम्यान पुढे जा</translation>
@@ -1253,13 +1245,11 @@
 <translation id="616543563528926612">राइट-क्लिक शॉर्टकट <ph name="LAUNCHER_KEY_NAME" /> की + क्लिकवरून Alt + click वर अपडेट केला आहे</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6166852626429024716">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा...</translation>
-<translation id="6167922743323004256">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="6168318496333165060">Diagnostics अ‍ॅप उघडा</translation>
 <translation id="6173151025443907148">Lacros सुरू असल्यास दुसर्‍या वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6179832488876878285">तुम्ही तुमच्या महत्त्वाच्या फाइल येथे पिन करू शकता. सुरुवात करण्यासाठी Files अ‍ॅप उघडा.</translation>
 <translation id="6182592640011875895">डेस्‍क उघडा</translation>
 <translation id="6185696379715117369">पेज अप</translation>
-<translation id="619279033188484792">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पहा</translation>
 <translation id="619335566042889110">आता पूर्णपणे चार्ज करा</translation>
 <translation id="6193431488227440296">डेव्हलपर</translation>
 <translation id="6199775032047436064">वर्तमान पेज रीलोड करा</translation>
@@ -1273,7 +1263,6 @@
 <translation id="6231419273573514727">पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="6237231532760393653">१X</translation>
-<translation id="6243908713912479677">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनवरील सूचना पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" वापरून Task Manager अ‍ॅप उघडा.</translation>
 <translation id="6247728804802644171">सूचना उघडा</translation>
 <translation id="6254629735336163724">आडव्या दिशेने लॉक केले</translation>
@@ -1408,6 +1397,7 @@
 <translation id="6819327813400217281">कॅमेरा सर्वात खालच्या डाव्या कोपऱ्यात स्नॅप केला आहे</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
 <translation id="6827049576281411231">इव्हेंट पॅनल बंद करा</translation>
+<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> बटणावर जा.</translation>
 <translation id="6836499262298959512">धोकादायक फाइल</translation>
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
 <translation id="6855029042976311970">आताच संपादित केलेली</translation>
@@ -1420,7 +1410,6 @@
 <translation id="6884665277231944629">आजवर जा</translation>
 <translation id="6886172995547742638">तुमच्या <ph name="DEVICE_TYPE" /> चा परफॉर्मन्स कमी होऊ शकतो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W किंवा त्यावरील USB-C पॉवर अडॅप्टर वापरा.</translation>
 <translation id="688631446150864480">विंडो स्विच करण्यासाठी डाउन अ‍ॅरो की प्रेस करा</translation>
-<translation id="6891721121089053234">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि अ‍ॅप्स पहा</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6901883536534621389">नेव्हिगेट करण्यासाठी जेश्चर वापरून पहा</translation>
 <translation id="6912841030378044227">ॲड्रेस बारवर फोकस करा</translation>
@@ -1444,6 +1433,7 @@
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="698231206551913481">एकदा हा वापरकर्ता काढल्यानंतर या वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
 <translation id="6985306450422696113">एकूण <ph name="TOTAL_MEMORY" /> पैकी <ph name="USED_MEMORY" /> मेमरी उपलब्ध आहे</translation>
+<translation id="6989752354829085073">तुमच्या Chromebook वर सुरुवात कशी करावी हे जाणून घेण्यासाठी झटपट फेरफटका मारा. ६ पायऱ्या वापरून सुरुवात करा.</translation>
 <translation id="7004910047186208204">मोबाइल डेटाशी कनेक्ट करा</translation>
 <translation id="7005239792648594238">सुरुवात करण्यासाठी अ‍ॅप उघडा</translation>
 <translation id="7007983414944123363">तुमच्या पिन किंवा पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
@@ -1569,6 +1559,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> हे सध्या तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
+<translation id="7567950130372125778">हाय. Chromebook हे थोडे वेगळे आहे.</translation>
 <translation id="7569509451529460200">ब्रेल आणि ChromeVox सुरू केलेले आहेत</translation>
 <translation id="7571361473021531288">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | बॅटरी शिल्लक आहे <ph name="TIME" /></translation>
 <translation id="7573585051776738856">अ‍ॅक्टिव्ह विंडो उजवीकडे डॉक केली आहे.</translation>
@@ -1610,6 +1601,7 @@
 <translation id="7723703419796509666">डेव्हलपर टूल कन्सोल दाखवा किंवा लपवा</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7725108879223146004">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद करत आहे.</translation>
+<translation id="7726391492136714301">तुमच्या फोनच्या सूचना आणि अ‍ॅप्स पहा</translation>
 <translation id="7727952505535211425">वेबसाइट नवीन टॅबमधील अ‍ॅड्रेस बारमध्ये उघडा</translation>
 <translation id="7742327441377685481">सूचना नाहीत</translation>
 <translation id="7748275671948949022">शेल्फवरील लाँचर बटण हायलाइट करा</translation>
@@ -1627,7 +1619,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> आणि <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">मजबूत सिग्नल</translation>
 <translation id="7837740436429729974">वेळ संपली</translation>
-<translation id="7838712802972544930">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनवरील अ‍ॅप्स पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="7842569679327885685">चेतावणी: प्रयोगात्मक वैशिष्ट्य</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, पंक्ती <ph name="ROW_NUMBER" />, स्तंभ <ph name="COLUMN_NUMBER" /> वर हलवले.</translation>
@@ -1693,7 +1684,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नावाचे टेंप्लेट आधीपासून अस्तित्वात आहे</translation>
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="8054466585765276473">बॅटरी वेळ गणना करत आहे.</translation>
-<translation id="8077971003886736669">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पाहणे सेट करा</translation>
 <translation id="8079538659226626406">स्क्रीन शेअर</translation>
 <translation id="8083540854303889870">नंतरसाठी सेव्ह केले</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> वाजता सुरू होईल</translation>
@@ -1723,7 +1713,6 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> साठी माहिती डायलॉग उघडा</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> वापरत आहे</translation>
-<translation id="8183592608247778598">तुमच्या <ph name="DEVICE_TYPE" /> वर, तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पहा</translation>
 <translation id="8185090165691050712">लॉक मोडचा आकार बदलण्यासाठी मेनू सुरू/बंद करा</translation>
 <translation id="8192202700944119416">सूचना लपवलेल्या आहेत.</translation>
 <translation id="8196787716797768628">टॅबलेट मोडमध्ये अ‍ॅप्सदरम्यान झटपट स्विच करण्यासाठी आणि तुमच्या Chromebook सोबत परस्परसंवाद साधण्यासाठी जेश्चर वापरा.</translation>
@@ -1850,7 +1839,6 @@
 <translation id="875593634123171288">VPN सेटिंग्ज दाखवा</translation>
 <translation id="8759408218731716181">एकाधिक साइन इन सेट करता आले नाही</translation>
 <translation id="8763883995157866248">डिव्हाइस हे स्लीप मोडमध्ये ठेवा</translation>
-<translation id="8773962395093246071">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पाहणे सेट करा</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, ब्लॉक केले</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> शी कनेक्ट करा</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

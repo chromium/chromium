@@ -1335,6 +1335,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="2135335181634291106">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> consente di specificare l'URL dell'icona preferita del provider di ricerca predefinito.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> non viene configurato, non è presente alcuna icona per il provider di ricerca.</translation>
+<translation id="2136073175041447267">Configura le unità cloud (Google Drive, Microsoft OneDrive) in <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
@@ -4946,6 +4947,7 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è su
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5393009997533871906">Agli utenti vengono mostrate soltanto le stampanti indicate nella lista consentita</translation>
+<translation id="5396322417222266779">Consenti all'utente di personalizzare le scorciatoie di sistema</translation>
 <translation id="5398387276166014955">Consenti l'inserimento di codice di terze parti in Chrome</translation>
 <translation id="5401696449591951427">Attiva <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5404749470367600971">Consenti il filtro delle prestazioni di accessibilità.</translation>
@@ -5758,6 +5760,11 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="614662973812186053">Questa norma controlla anche la raccolta dei dati diagnostici e sull'utilizzo di Android.</translation>
 <translation id="614665605501218241">Consenti ai siti elencati di effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.</translation>
 <translation id="614753473456574270">Non consentire agli utenti di impostare un PIN inefficace</translation>
+<translation id="6150044272483721831">Questo criterio consente di stabilire se la personalizzazione delle scorciatoie di sistema è consentita.
+
+Se questo criterio viene attivato o se non viene configurato, gli utenti potranno personalizzare le scorciatoie di sistema tramite l'app Scorciatoie da tastiera.
+
+Se questo criterio viene disattivato, l'app Scorciatoie da tastiera sarà in modalità di sola lettura, impedendo qualsiasi personalizzazione.</translation>
 <translation id="6150320133676152520">Disattiva l'invio automatico del PIN nella schermata di blocco e accesso</translation>
 <translation id="6155350825868160236">Consenti all'utente di decidere se usare o meno servizi web di Google per correggere gli errori ortografici</translation>
 <translation id="6155936611791017817">Impostazione stato predefinito del puntatore grande nella schermata di accesso</translation>
@@ -8612,6 +8619,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="8583509234908413302">Consenti downgrade a protocolli TLS/DTLS precedenti in WebRTC</translation>
 <translation id="8584279193368801689">Consente di limitare la modalità di stampa PIN. Se il criterio non viene impostato non vengono applicate limitazioni. Se la modalità non è disponibile, questo criterio viene ignorato. Tieni presente che la funzionalità di stampa PIN viene attivata solo per le stampanti che usano uno dei protocolli IPPS, HTTPS, USB o IPP-over-USB.</translation>
 <translation id="8587229956764455752">Consenti la creazione di nuovi account utente</translation>
+<translation id="8589285015138337712">Non consentire all'utente di personalizzare le scorciatoie di sistema</translation>
 <translation id="8591713876665299827">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Consente di specificare il periodo di tempo senza input utente trascorso il quale viene compiuta l'azione stabilita per l'inattività quando viene usata la corrente alternata.
@@ -9094,6 +9102,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
 <translation id="9031831501689819108">Attiva Supporto dei browser precedenti</translation>
 <translation id="9032595854515551464">Attiva il servizio <ph name="PRODUCT_NAME" /> V2 e avvia la scrivania remota all'accesso</translation>
+<translation id="9034285085962866065">Consenti la personalizzazione delle scorciatoie di sistema</translation>
 <translation id="9035086760683255833">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera.
 
           Questa funzione consente di evidenziare l'elemento attivo impostato tramite tastiera.

@@ -203,6 +203,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2178545675770638239">Selecione a palavra-passe</translation>
 <translation id="2195124168004379331">Está tudo bem no seu navegador</translation>
+<translation id="2213327331203157297">Para desativar o modo de bloqueio no Chrome, desative-o no seu iPhone.</translation>
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
 <translation id="2239626343334228536">A limpar os dados de navegação…</translation>
@@ -474,7 +475,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3771033907050503522">Sep. nav. anónima</translation>
 <translation id="3775743491439407556">A sincronização não está a funcionar</translation>
 <translation id="3779810277399252432">Sem ligação à Internet.</translation>
-<translation id="3783017676699494206">Guardar Imagem</translation>
 <translation id="3789294999358192700">Siga os passos abaixo:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -1360,6 +1360,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8843129975935593190">A sua organização limita o que pode sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
+<translation id="8855781063981781621">Para desativar o modo de bloqueio no Chrome, desative-o no seu iPad.</translation>
 <translation id="8863431381414769983">Obtenha direções e informações locais do Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>

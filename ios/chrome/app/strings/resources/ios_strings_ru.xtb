@@ -200,6 +200,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Выберите пароль</translation>
 <translation id="2195124168004379331">Ваш браузер в безопасности</translation>
+<translation id="2213327331203157297">Отключите режим блокировки входа в Chrome на своем устройстве iPhone.</translation>
 <translation id="2218443599109088993">Уменьшить</translation>
 <translation id="2230173723195178503">Веб-страница загружена</translation>
 <translation id="2239626343334228536">Удаление данных о работе в браузере…</translation>
@@ -466,7 +467,6 @@
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
 <translation id="3775743491439407556">Ошибка синхронизации</translation>
 <translation id="3779810277399252432">Нет доступа к Интернету</translation>
-<translation id="3783017676699494206">Сохранить изображение</translation>
 <translation id="3789294999358192700">Выполните следующие действия:</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="380329542618494757">Имя</translation>
@@ -1337,6 +1337,7 @@
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>
+<translation id="8855781063981781621">Отключите режим блокировки входа в Chrome на своем устройстве iPad.</translation>
 <translation id="8863431381414769983">Прокладывайте маршруты и получайте полезную информацию в Google Картах</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>

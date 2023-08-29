@@ -45,7 +45,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1175944128323889279">Paras kuasa bateri semasa <ph name="BATTERY_PERCENTAGE" />%, tinggal <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
-<translation id="1181431373490845924">Menolak penyediaan pemaparan foto, media dan pemberitahuan terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1182225749592316782">Tindakan ini akan membenarkan akses kepada semua apl dan laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Tidak berminat dengan cadangan ini</translation>
@@ -118,7 +117,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1415846719612499304">Tunjukkan senarai rangkaian. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Buka kunci peranti untuk melaksanakan tindakan pemberitahuan</translation>
 <translation id="1420408895951708260">Togol Cahaya Malam. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Lihat foto dan media baru-baru ini telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1455242230282523554">Tunjukkan tetapan bahasa</translation>
 <translation id="1460620680449458626">Kelantangan diredamkan.</translation>
@@ -411,7 +409,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2750932254614666392">"Padam"</translation>
 <translation id="2750941250130734256">Tetingkap aktif tidak didok.</translation>
 <translation id="2761723519669354964">Buka item yang diserlahkan daripada rak</translation>
-<translation id="2774327524281966309">Menolak penyediaan pemberitahuan dan apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hingga <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> diurus oleh <ph name="MANAGER" /></translation>
@@ -490,7 +487,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3095995014811312755">versi</translation>
 <translation id="309749186376891736">Alihkan kursor</translation>
 <translation id="3100274880412651815">Ketepikan mod tangkap</translation>
-<translation id="3103732015595029598">Menyediakan pemberitahuan dan apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="3105917916468784889">Ambil tangkapan skrin</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Serlahkan item sebelumnya pada rak</translation>
@@ -660,7 +656,6 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3735740477244556633">Isih mengikut</translation>
 <translation id="3738664582935948253">Kini anda boleh menunjukkan klik dan pintasan papan kekunci dalam rakaman skrin</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
-<translation id="375335662788363456">Menolak penyediaan foto, media, pemberitahuan dan apl terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="3756485814916578707">Menghantar skrin</translation>
 <translation id="3765841382945324995">Pintasan <ph name="SIX_PACK_KEY_NAME" /> dikemaskinikan kepada <ph name="NEW_SHORTCUT" /> daripada <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
@@ -796,7 +791,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="428715201724021596">Menyambung kepada profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="4294319844246081198">Selamat pagi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Kosongkan kesemua <ph name="COUNT" /> pemberitahuan</translation>
-<translation id="4300367807227655672">Menyediakan pemaparan pemberitahuan telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> dialihkan kepada folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Tidak tersedia</translation>
 <translation id="4303223480529385476">Kembangkan area status</translation>
@@ -822,18 +816,15 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4405151984121254935">Jenis peranti persisian yang disambungkan tidak disokong</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
-<translation id="4414595745967164324">Menyediakan foto, media, pemberitahuan dan apl terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4424159417645388645">Meja 5</translation>
 <translation id="4427695046139341014">Papan Pemuka Permainan</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
-<translation id="4435022394553622295">Lihat pemberitahuan dan apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4441283832827406317">Apl diisih mengikut nama</translation>
 <translation id="4445159312344259901">Log masuk untuk membuka kunci</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan penting}other{# pemberitahuan penting}}</translation>
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="4451374464530248585">Pintasan papan kekunci Alt + Anak Panah ke Bawah telah berubah. Untuk menggunakan kekunci Page Down, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Bawah.</translation>
 <translation id="4453876312474547652">Anda akan melihat papan keratan apabila anda menekan dan menahan Ctrl + V. Anda boleh mematikan pintasan ini dengan melumpuhkan bendera #clipboard-history-longpress dalam chrome://flags (os://flags jika anda menggunakan Lacros).</translation>
-<translation id="4455051983450390249">Lihat pemberitahuan telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="445864333228800152">Selamat petang,</translation>
 <translation id="4458688154122353284">Hentikan rakaman skrin</translation>
 <translation id="445923051607553918">Sertai rangkaian Wi-Fi</translation>
@@ -916,7 +907,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4798888871844665150">Item yang disalin sudah berada dalam papan keratan. Gunakan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Putuskan sambungan</translation>
-<translation id="4810227386592387399">Menyediakan pemaparan apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4813311884204119883">Seret pautan ke bahagian kosong pada jalur tab</translation>
 <translation id="4814539958450445987">Skrin Log Masuk</translation>
 <translation id="481455355267255546">Seterusnya</translation>
@@ -1102,7 +1092,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5551456515017410630">Buka/tutup kalendar</translation>
 <translation id="5551974246223970793">Apabila membuat carian pada halaman, akses padanan seterusnya untuk membuat carian</translation>
 <translation id="5558091555391176027">Togol keterlihatan tinggi Kongsi Berdekatan</translation>
-<translation id="5560420195677022218">Lihat apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5570122939431135380">Buka tab baharu dalam tetingkap Inkognito baharu</translation>
 <translation id="5571066253365925590">Bluetooth didayakan</translation>
@@ -1200,6 +1189,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Pengguna diselia</translation>
+<translation id="5960410286721553511">Lihat foto dan media baru-baru ini pada telefon anda</translation>
 <translation id="5961960957587052807">Sedikit</translation>
 <translation id="5965524703725988602">Togol tema Gelap. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Kitar ke hadapan melalui tetingkap</translation>
@@ -1256,13 +1246,11 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="616543563528926612">Pintasan klik kanan telah dikemaskinikan kepada Alt + klik daripada kekunci <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6166852626429024716">Cari dalam peranti anda, apl, tetapan, web...</translation>
-<translation id="6167922743323004256">Menolak penyediaan pemaparan foto dan media terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="6168318496333165060">Buka apl Diagnostik</translation>
 <translation id="6173151025443907148">Log masuk pengguna kedua tidak disokong jika Lacros didayakan. Sila gunakan profil penyemak imbas kedua dalam Lacros atau lumpuhkan Lacros dan cuba lagi.</translation>
 <translation id="6179832488876878285">Anda boleh menyematkan fail penting anda di sini. Buka apl Files untuk bermula.</translation>
 <translation id="6182592640011875895">Buka meja</translation>
 <translation id="6185696379715117369">Halaman atas</translation>
-<translation id="619279033188484792">Lihat foto, media dan pemberitahuan baru-baru ini telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="619335566042889110">Caskan penuh sekarang</translation>
 <translation id="6193431488227440296">Pembangun</translation>
 <translation id="6199775032047436064">Muatkan semula halaman semasa</translation>
@@ -1276,7 +1264,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Menolak penyediaan pemaparan pemberitahuan telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="6244986124527896815">Buka apl Pengurus Tugas dengan "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Buka pemberitahuan</translation>
 <translation id="6254629735336163724">Dikunci mendatar</translation>
@@ -1424,7 +1411,6 @@ Pemasangan baharu</translation>
 <translation id="6884665277231944629">Kembali ke hari ini</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>
-<translation id="6891721121089053234">Lihat foto, media dan apl terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6901883536534621389">Cuba gerak isyarat untuk menavigasi</translation>
 <translation id="6912841030378044227">Fokus pada bar alamat</translation>
@@ -1616,6 +1602,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7723703419796509666">Tunjukkan atau sembunyikan konsol Alatan Pembangun</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7725108879223146004">Tunjukkan butiran tempat liputan. Tempat liputan sedang dimatikan.</translation>
+<translation id="7726391492136714301">Lihat pemberitahuan dan apl telefon anda</translation>
 <translation id="7727952505535211425">Buka laman web dalam bar alamat pada tab baharu</translation>
 <translation id="7742327441377685481">Tiada pemberitahuan</translation>
 <translation id="7748275671948949022">Serlahkan butang Pelancar pada rak</translation>
@@ -1633,7 +1620,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Isyarat kuat</translation>
 <translation id="7837740436429729974">Masa tamat</translation>
-<translation id="7838712802972544930">Menolak penyediaan pemaparan apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="7842569679327885685">Amaran: Ciri percubaan</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7848989271541991537">Dialihkan kepada Halaman <ph name="PAGE_NUMBER" />, baris <ph name="ROW_NUMBER" />, lajur <ph name="COLUMN_NUMBER" />.</translation>
@@ -1699,7 +1685,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8051716679295756675">Templat yang bernama <ph name="DESK_TEMPLATE_NAME" /> sudah wujud</translation>
 <translation id="8052898407431791827">Disalin ke papan keratan</translation>
 <translation id="8054466585765276473">Mengira tempoh bateri.</translation>
-<translation id="8077971003886736669">Menyediakan pemaparan foto dan media terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8079538659226626406">Perkongsian Skrin</translation>
 <translation id="8083540854303889870">Disimpan untuk kemudian</translation>
 <translation id="8091153018031979607">Bermula jam <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1729,7 +1714,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="8155628902202578800">Buka dialog maklumat untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Lihat foto, media, pemberitahuan dan apl terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
 <translation id="8192202700944119416">Pemberitahuan disembunyikan.</translation>
 <translation id="8196787716797768628">Gunakan gerak isyarat untuk bertukar antara apl dengan pantas dan berinteraksi dengan Chromebook anda dalam mod tablet.</translation>
@@ -1856,7 +1840,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="875593634123171288">Tunjukkan tetapan VPN</translation>
 <translation id="8759408218731716181">Tidak dapat menyediakan berbilang log masuk</translation>
 <translation id="8763883995157866248">Tetapkan peranti kepada mod tidur</translation>
-<translation id="8773962395093246071">Menyediakan pemaparan foto, media dan pemberitahuan terbaharu telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Apl yang Dipasang, Disekat</translation>
 <translation id="8785070478575117577">Sambung kepada <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

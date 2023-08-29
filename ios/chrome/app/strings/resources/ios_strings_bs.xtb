@@ -203,7 +203,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2178545675770638239">Odaberite lozinku</translation>
 <translation id="2195124168004379331">Izgleda da je vaš preglednik siguran</translation>
-<translation id="2213327331203157297">Da biste onemogućili način zaključavanja u Chromeu, isključite ga na iPhoneu.</translation>
+<translation id="2213327331203157297">Da onemogućite način rada sa zaključavanjem u Chromeu, isključite ga na iPhoneu.</translation>
 <translation id="2218443599109088993">Umanji</translation>
 <translation id="2230173723195178503">Web lokacija je učitana</translation>
 <translation id="2239626343334228536">Brisanje podataka pregledanja...</translation>
@@ -475,7 +475,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3771033907050503522">Anonimne kartice</translation>
 <translation id="3775743491439407556">Sinhronizacija ne funkcionira</translation>
 <translation id="3779810277399252432">Nema internetske veze.</translation>
-<translation id="3783017676699494206">Sačuvaj sliku</translation>
 <translation id="3789294999358192700">Slijedite korake ispod:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -1361,7 +1360,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="8843129975935593190">Vaša organizacija ograničava šta možete sinhronizirati.</translation>
 <translation id="8849001918648564819">Skriveno</translation>
 <translation id="8855242995793521265">Ne usporava primjetno preglednik ni uređaj.</translation>
-<translation id="8855781063981781621">Da biste onemogućili način zaključavanja u Chromeu, isključite ga na iPadu.</translation>
+<translation id="8855781063981781621">Da onemogućite način rada sa zaključavanjem u Chromeu, isključite ga na iPadu.</translation>
 <translation id="8863431381414769983">Primajte smjernice i lokalne informacije od Google Mapa</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} kartica}one{{count} kartica}few{{count} kartice}other{{count} kartica}}</translation>
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>

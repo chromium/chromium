@@ -1032,6 +1032,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6433501201775827830">Choisissez votre moteur de recherche</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6437478888915024427">Renseignements sur la page</translation>
+<translation id="6440291723980579689">Les pages se chargent uniquement lorsque vous les ouvrez</translation>
 <translation id="6441734959916820584">Le nom est trop long</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# image}one{# image}other{# images}}</translation>
 <translation id="6447558397796644647">Impossible de trouver ce favori. Vérifiez l'orthographe ou ajoutez un signet.</translation>

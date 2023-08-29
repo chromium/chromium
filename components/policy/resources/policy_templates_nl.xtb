@@ -1341,6 +1341,7 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 <translation id="2135335181634291106">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> instelt, wordt de URL voor het favoriete icoon van de standaard zoekprovider gespecificeerd.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
+<translation id="2136073175041447267">Cloudschijven (Google Drive, Microsoft OneDrive) instellen in <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2144236546337326489">Toestaan dat Telefoonhub-taakvoortzetting wordt aangezet</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
 <translation id="2146103669166779785">Hexadecimale kleur waarmee een thema voor de browser wordt samengesteld en toegepast.</translation>
@@ -4926,6 +4927,7 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5393009997533871906">Alleen printers op de toelatingslijst worden getoond aan gebruikers</translation>
+<translation id="5396322417222266779">Toestaan dat de gebruiker systeemsneltoetsen aanpast</translation>
 <translation id="5398387276166014955">Toestaan dat code van derden wordt geïnjecteerd in Chrome</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> aanzetten</translation>
 <translation id="5404749470367600971">Filters voor toegankelijkheidsprestaties toestaan.</translation>
@@ -5738,6 +5740,11 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
 <translation id="614662973812186053">Met dit beleid wordt ook het gebruik van Android en het verzamelen van diagnostische gegevens bepaald.</translation>
 <translation id="614665605501218241">Hiermee sta je de vermelde sites toe om op een onbeveiligde manier verzoeken te sturen naar netwerkeindpunten die meer privé zijn.</translation>
 <translation id="614753473456574270">Niet toestaan dat gebruikers een zwakke pincode instellen</translation>
+<translation id="6150044272483721831">Dit beleid bepaalt of aanpassing van systeemsneltoetsen is toegestaan.
+
+Als je dit beleid toepast of niet instelt, kunnen gebruikers systeemsneltoetsen aanpassen via de Sneltoetsen-app.
+
+Als je dit beleid niet toepast, staat de Sneltoetsen-app in de modus Alleen lezen en is aanpassing niet toegestaan.</translation>
 <translation id="6150320133676152520">Automatisch versturen van pincode op het vergrendel- en inlogscherm uitzetten</translation>
 <translation id="6155350825868160236">Toestaan dat gebruikers kiezen of Google-webservices worden gebruikt om spelfouten op te lossen</translation>
 <translation id="6155936611791017817">De standaardstatus van de grote muisaanwijzer op het inlogscherm instellen</translation>
@@ -8569,6 +8576,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="8583509234908413302">Downgraden van verouderde TLS/DTLS toestaan in WebRTC</translation>
 <translation id="8584279193368801689">Beperkt de modus voor afdrukken met pincode. Als het beleid niet is ingesteld, gelden er geen beperkingen. Als de modus niet beschikbaar is, wordt dit beleid genegeerd. Houd er rekening mee dat de functie voor afdrukken met pincode alleen werkt met printers die het protocol IPPS, HTTPS, USB of IPP-over-USB gebruiken.</translation>
 <translation id="8587229956764455752">Het maken van nieuwe gebruikersaccounts toestaan</translation>
+<translation id="8589285015138337712">Niet toestaan dat de gebruiker systeemsneltoetsen aanpast</translation>
 <translation id="8591713876665299827">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Specificeert de tijdsduur zonder gebruikersinvoer waarna de actie voor inactiviteit wordt uitgevoerd als er op netstroom wordt gewerkt.
@@ -9050,6 +9058,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="9020630127193895800">Indigo achtergrondverlichting van toetsenbord</translation>
 <translation id="9031831501689819108">Ondersteuning voor oudere browsers aanzetten</translation>
 <translation id="9032595854515551464"><ph name="PRODUCT_NAME" /> V2-service aanzetten en extern bureau starten bij inloggen</translation>
+<translation id="9034285085962866065">Aanpassing van systeemsneltoetsen toestaan</translation>
 <translation id="9035086760683255833">Zet de toegankelijkheidsfunctie voor markeren via toetsenbordfocus aan.
 
           Met deze functie wordt het object gemarkeerd waarop het toetsenbord is gefocust.

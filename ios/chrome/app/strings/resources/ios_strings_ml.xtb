@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
+<translation id="1882901927376062252">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ {count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="1883255238294161206">ലിസ്റ്റ് ചുരുക്കുക</translation>
 <translation id="1894023287452300670">ഇവിടെ നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="189531189292803889">നിങ്ങളുടെ iPad അടുത്തിടെ പുനഃസ്ഥാപിച്ചു, അത് നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ മാറ്റിയിരിക്കാം.</translation>
@@ -475,7 +476,6 @@
 <translation id="3771033907050503522">ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="3775743491439407556">സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
-<translation id="3783017676699494206">ചിത്രം സംരക്ഷിക്കുക</translation>
 <translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക:</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="380329542618494757">പേര്</translation>
@@ -692,6 +692,7 @@
 <translation id="5083464117946352670">ഫയൽ വലുപ്പം നിർണ്ണയിക്കാനാവില്ല.</translation>
 <translation id="5090832849094901128">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="WEBSITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല.</translation>
 <translation id="5094827893301452931">Tweet പങ്കിടൽ പൂർത്തിയായി.</translation>
+<translation id="5100848274708256363">ഒരു കുടുംബ ഗ്രൂപ്പിൽ ചേരുക</translation>
 <translation id="5109892411553231226">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5118713593561876160">താൽപ്പര്യങ്ങൾ</translation>
 <translation id="5118764316110575523">ഓഫാണ്</translation>
@@ -994,6 +995,7 @@
 <translation id="6642362222295953972">നിലവിലുള്ള ടാബിലേക്ക് മാറുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6645899968535965230">QR കോഡ്: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">അവസാനം റൺ ചെയ്തത്: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ഫോൾഡർ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6668619169535738264">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
@@ -1107,6 +1109,7 @@
 <translation id="7351537303876921605">സന്ദർഭ മെനുവിലെ 'ലിങ്ക് സൃഷ്ടിക്കുക' ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
 <translation id="7353432112255316844">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
+<translation id="7380220816562673297">ഇപ്പോൾ നിങ്ങൾക്ക്, കുടുംബാംഗങ്ങളുമായി മാത്രമേ പാസ്‌വേഡുകൾ പങ്കിടാനാകൂ. 6 അംഗങ്ങൾ വരെയുള്ള <ph name="BEGIN_LINK" />ഒരു കുടുംബ ഗ്രൂപ്പ് സൃഷ്‌ടിച്ച്<ph name="END_LINK" /> Google-ൽ ഉടനീളമുള്ള നിങ്ങളുടെ ഉൽപ്പന്നങ്ങളും സബ്‌സ്‌ക്രിപ്‌ഷനുകളും കൂടുതൽ പ്രയോജനപ്പെടുത്തുക.</translation>
 <translation id="7383797227493018512">വായനാ ലിസ്‌റ്റ്</translation>
 <translation id="7398893703713203428">ലിങ്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="7399802613464275309">സുരക്ഷാ പരിശോധന</translation>
@@ -1430,6 +1433,7 @@
 <translation id="9223358826628549784">ക്രാഷ് റിപ്പോർട്ട് അയച്ചു.</translation>
 <translation id="941747855997058526">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="948048872540558976">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക</translation>
+<translation id="952218985181984374">{count,plural, =1{ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>

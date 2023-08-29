@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="1870148520156231997">పాస్‌వర్డ్‌ను చూపండి</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
+<translation id="1882901927376062252">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
 <translation id="1894023287452300670">ధరను ఇక్కడ ట్రాక్ చేయండి</translation>
 <translation id="189531189292803889">మీ iPad ఇటీవల రీస్టోర్ అయింది, దాని వలన మీ ఆటోమేటిక్ బ్రౌజర్ మారి ఉండవచ్చు.</translation>
@@ -475,7 +476,6 @@
 <translation id="3771033907050503522">అజ్ఞాత ట్యాబ్‌లు</translation>
 <translation id="3775743491439407556">సింక్ పని చేయడం లేదు</translation>
 <translation id="3779810277399252432">ఇంటర్నెట్ కనెక్షన్ లేదు.</translation>
-<translation id="3783017676699494206">చిత్రాన్ని సేవ్ చేయండి</translation>
 <translation id="3789294999358192700">కింది దశలను ఫాలో అవ్వండి:</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="380329542618494757">పేరు</translation>
@@ -657,6 +657,7 @@
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="4854345657858711387">పాస్‌కోడ్‌ని సెట్ చేయండి</translation>
 <translation id="4856498338299082007">మీ Google ఖాతాలో</translation>
+<translation id="4856841893565072365">స్మార్ట్‌గా క్రమపద్ధతిలో అమర్చే మెనూ బార్</translation>
 <translation id="4858786880085262208">సాధ్యమైనప్పుడు, HTTPSకు అప్‌గ్రేడ్ చేయండి. సురక్షిత సైట్‌లు సురక్షితం కాని కంటెంట్‌ను పొందుపరచవచ్చు.</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
 <translation id="4872323082491632254">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
@@ -692,6 +693,7 @@
 <translation id="5083464117946352670">ఫైల్ సైజ్‌ గుర్తించలేకపో..</translation>
 <translation id="5090832849094901128">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="WEBSITE" />లో మీ ఖాతా తొలగించబడదు.</translation>
 <translation id="5094827893301452931">ట్వీట్ చేయడం పూర్తయింది.</translation>
+<translation id="5100848274708256363">ఫ్యామిలీ గ్రూప్‌లో చేరండి</translation>
 <translation id="5109892411553231226">పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5118713593561876160">ఆసక్తులు</translation>
 <translation id="5118764316110575523">ఆఫ్ చేయబడి ఉంది</translation>
@@ -994,6 +996,7 @@
 <translation id="6642362222295953972">ప్రస్తుత ట్యాబ్‌కు మారు</translation>
 <translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6645899968535965230">QR కోడ్: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">చివరిసారిగా చెక్ చేసిన సమయం <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6668619169535738264">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
@@ -1107,6 +1110,7 @@
 <translation id="7351537303876921605">సంబంధిత మెనూలో లింక్‌ను క్రియేట్ చేయండి ఆప్షన్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="7353432112255316844">ఇది మీరే అని వెరిఫై చేయండి</translation>
+<translation id="7380220816562673297">ప్రస్తుతానికి, మీరు పాస్‌వర్డ్‌లను ఫ్యామిలీ మెంబర్‌లతో మాత్రమే షేర్ చేయగలరు. గరిష్ఠంగా 6 మంది మెంబర్‌లతో <ph name="BEGIN_LINK" />ఫ్యామిలీ గ్రూప్‌ను క్రియేట్ చేసి<ph name="END_LINK" />, Googleలోని మీ ప్రోడక్ట్‌లు, సబ్‌స్క్రిప్షన్‌ల నుండి ఎక్కువ ప్రయోజనాలను పొందండి.</translation>
 <translation id="7383797227493018512">పఠన లిస్ట్‌</translation>
 <translation id="7398893703713203428">లింక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7399802613464275309">భద్రతా చెక్-అప్</translation>
@@ -1430,6 +1434,7 @@
 <translation id="9223358826628549784">క్రాష్ రిపోర్ట్‌ పంపబడింది.</translation>
 <translation id="941747855997058526">పాస్‌వర్డ్‌ను ఎంచుకోండి...</translation>
 <translation id="948048872540558976">కొత్త ట్యాబ్‌ను క్రియేట్ చేయండి</translation>
+<translation id="952218985181984374">{count,plural, =1{బుక్‌మార్క్ సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="952704832371081537">రద్దు చేయండి</translation>
 <translation id="953008885340860025">Chrome సైన్ అవుట్ చేయబడింది</translation>
 <translation id="959066944189734975">మీరు <ph name="CHANNEL_NAME" />ను ఫాలో అవుతున్నారు</translation>

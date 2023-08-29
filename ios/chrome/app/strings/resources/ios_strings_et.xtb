@@ -203,6 +203,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="2175927920773552910">QR-kood</translation>
 <translation id="2178545675770638239">Parooli valimine</translation>
 <translation id="2195124168004379331">Teie brauser näib turvaline</translation>
+<translation id="2213327331203157297">Chrome'is lukustamisrežiimi keelamiseks lülitage see iPhone'is välja.</translation>
 <translation id="2218443599109088993">Suumi välja</translation>
 <translation id="2230173723195178503">Veebileht laaditi</translation>
 <translation id="2239626343334228536">Sirvimisandmete kustutamine …</translation>
@@ -474,7 +475,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3771033907050503522">Inkogn. vahelehed</translation>
 <translation id="3775743491439407556">Sünkroonimine ei tööta</translation>
 <translation id="3779810277399252432">Interneti-ühendus puudub.</translation>
-<translation id="3783017676699494206">Salvesta kujutis</translation>
 <translation id="3789294999358192700">Järgige allolevaid juhiseid.</translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="380329542618494757">Nimi</translation>
@@ -656,6 +656,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4854345657858711387">Pääsukoodi seadistamine</translation>
 <translation id="4856498338299082007">Teie Google’i kontol</translation>
+<translation id="4856841893565072365">Nutika sortimise menüüriba</translation>
 <translation id="4858786880085262208">Võimaluse korral viiakse üle HTTPS-ile. Turvalised saidid võivad manustada sisu, mis pole turvaline.</translation>
 <translation id="4860895144060829044">Helistage</translation>
 <translation id="4872323082491632254">Paroolide kontrollimine</translation>
@@ -1360,6 +1361,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="8843129975935593190">Teie organisatsioon piirab sünkroonimist.</translation>
 <translation id="8849001918648564819">Peidetud</translation>
 <translation id="8855242995793521265">Ei aeglusta märgatavalt teie brauserit ega seadet.</translation>
+<translation id="8855781063981781621">Chrome'is lukustamisrežiimi keelamiseks lülitage see iPadis välja.</translation>
 <translation id="8863431381414769983">Juhiste ja kohaliku teabe hankimine Google Mapsist</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} vaheleht}other{{count} vahelehte}}</translation>
 <translation id="8870413625673593573">Viimati suletud</translation>

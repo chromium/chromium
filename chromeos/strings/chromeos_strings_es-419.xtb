@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2717139507051041123">Habilitar el modo de color oscuro</translation>
+<translation id="2728460467788544679">Borrar todo el historial de impresiones</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">VPN abierto</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>
+<translation id="6461047516875166066">Más información</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{¿Deseas volver a escanear la página?}=1{¿Deseas volver a escanear la página {PAGE_NUMBER}?}other{¿Deseas volver a escanear la página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">No hay imágenes</translation>
 <translation id="8329018942023753850">app de Calculadora</translation>
 <translation id="8336739000755212683">Cambiar la imagen de cuenta del dispositivo</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8351855506390808906">Punto táctil de la asignación de teclas</translation>
 <translation id="8352772353338965963">Agrega una cuenta para el acceso múltiple. Puedes acceder a todas las cuentas abiertas sin una contraseña, por lo que esta función solo debe utilizarse con cuentas de confianza.</translation>

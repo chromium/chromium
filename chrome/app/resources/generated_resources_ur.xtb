@@ -1497,7 +1497,6 @@
 <translation id="2162705204091149050">‏اپنے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر اور فائلز سے متعلق معلومات پڑھیں</translation>
 <translation id="2162926944953615670">‏کوئی eSIM پروفائل دستیاب نہیں ہے</translation>
 <translation id="2163470535490402084">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
-<translation id="2163996651553460171">‏Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور 1 مزید سوئچ</translation>
 <translation id="2165102982098084499">‏آپ نے QR کوڈ اسکین کر کے ان آلات کو لنک کیا ہے۔</translation>
 <translation id="2165177462441582039">منتخب کریں کہ ہائی لائٹ کو ہر آئٹم پر کتنی دیر رہنا چاہیے</translation>
@@ -5802,7 +5801,6 @@
 <translation id="567740581294087470">آپ کس طرح کے تاثرات فراہم کر رہے ہیں؟</translation>
 <translation id="5677503058916217575">صفحہ کی زبان:</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
-<translation id="5677946354068040947">مزید اختیارات</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> کیلئے پڑھنے اور لکھنے کی رسائی دی گئی ہے۔</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> پر بھیجا جا رہا ہے</translation>
 <translation id="5678955352098267522">اپنا ڈیٹا <ph name="WEBSITE_1" /> پر پڑھیں</translation>
@@ -6715,6 +6713,7 @@
 <translation id="6436778875248895551">آپ کے منتظم نے "<ph name="EXTENSION_NAME" />" ایکسٹینشن کو مسدود کر دیا ہے</translation>
 <translation id="6438234780621650381">ترتیبات ری سیٹ کریں</translation>
 <translation id="6438475350605608554">آپ پہلے ہی کسی دوسرے ٹیب میں پاس ورڈز درآمد کر رہے ہیں</translation>
+<translation id="6438480100790416671">اسٹوریج کی جگہ چیک کی جا رہی ہے…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - آڈیو چلا رہی ہے</translation>
 <translation id="6440291723980579689">صفحات آپ کے کھولنے کے بعد ہی لوڈ ہوتے ہیں</translation>
 <translation id="6441377161852435370">پڑھنے کی فہرست میں ٹیب شامل کریں</translation>
@@ -8114,6 +8113,7 @@
 <translation id="7585106857920830898">آپ کی تنظیم کی سکیورٹی پالیسیوں کے ساتھ چیک کیا جا رہا ہے...</translation>
 <translation id="7586498138629385861">‏Chrome Apps کھلے ہونے پر Chrome چلتا رہے گا۔</translation>
 <translation id="7589461650300748890">رک جائیں۔ محتاط رہیں۔</translation>
+<translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7592060599656252486">کچھ</translation>
 <translation id="7593653750169415785">خودکار طور پر مسدود ہو گیا کیونکہ آپ نے اطلاعات کو چند بار مسترد کر دیا تھا</translation>
 <translation id="7594725637786616550">‏آپ کے <ph name="DEVICE_TYPE" /> کو ری سیٹ کر کے بالکل نیا کرنے کے لیے Powerwash۔</translation>
@@ -9540,6 +9540,7 @@
 <translation id="8725178340343806893">پسندیدہ/بُک مارکس</translation>
 <translation id="87254326763805752">پاس کی کی تصدیق کریں</translation>
 <translation id="8726206820263995930">سرور کی جانب سے پالیسی کی ترتیبات کی بازیابی کے وقت خرابی: <ph name="CLIENT_ERROR" />۔</translation>
+<translation id="8727043961453758442">‏Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />آٹوفل میٹا ڈیٹا<ph name="END_LINK1" /> بھیجیں
           <ph name="LINE_BREAK" />
           (آپ کے آٹو فل ڈیٹا کا اشتراک نہیں کیا جائے گا)</translation>

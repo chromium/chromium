@@ -203,6 +203,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2178545675770638239">Parol Seçin</translation>
 <translation id="2195124168004379331">Brauzer təhlükəsiz görünür</translation>
+<translation id="2213327331203157297">Chrome-da Kilidləmə rejimini deaktiv etmək üçün onu iPhone-da söndürün.</translation>
 <translation id="2218443599109088993">Kiçildin</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2239626343334228536">Brauzinq datası silinir...</translation>
@@ -474,7 +475,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3771033907050503522">Gizli Panellər</translation>
 <translation id="3775743491439407556">Sinxronizasiya İşləmir</translation>
 <translation id="3779810277399252432">İnternet bağlantısı yoxdur.</translation>
-<translation id="3783017676699494206">Şəkli yadda saxlayın</translation>
 <translation id="3789294999358192700">Aşağıdakı addımları izləyin:</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="380329542618494757">Ad</translation>
@@ -1360,6 +1360,7 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8843129975935593190">Təşkilatınız sinxronizasiya edə biləcəyinizi məhdudlaşdırır.</translation>
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8855242995793521265">Brauzer və ya cihazı çox yavaşlatmır.</translation>
+<translation id="8855781063981781621">Chrome-da Kilidləmə rejimini deaktiv etmək üçün onu iPad-də söndürün.</translation>
 <translation id="8863431381414769983">Google Xəritədən istiqamət və yerli məlumat əldə edin</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tab}}</translation>
 <translation id="8870413625673593573">Son Qapadılan</translation>

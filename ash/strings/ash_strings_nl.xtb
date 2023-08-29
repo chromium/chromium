@@ -45,7 +45,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1175944128323889279">Huidig batterijniveau <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> resterend</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
-<translation id="1181431373490845924">Instellen van de weergave van recente foto's, media en meldingen op je telefoon sluiten op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Hiermee geef je toegang aan alle apps en websites met camera- en microfoonrechten</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Niet geïnteresseerd in deze suggestie</translation>
@@ -64,6 +63,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1217633719248931900">Naar de app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store-app</translation>
 <translation id="1225748608451425081">Je Chromebook is vergrendeld vanwege een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">inactief bureau</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
 <translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
@@ -117,7 +117,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1415846719612499304">Netwerklijst tonen. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Ontgrendel het apparaat om de meldingsactie uit te voeren</translation>
 <translation id="1420408895951708260">Nachtverlichting aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Recente foto's en media van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
 <translation id="1460620680449458626">Volume staat uit.</translation>
@@ -410,7 +409,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2750932254614666392">'Verwijderen'</translation>
 <translation id="2750941250130734256">Actief venster losgemaakt.</translation>
 <translation id="2761723519669354964">Gemarkeerd item openen vanuit plank</translation>
-<translation id="2774327524281966309">Instellen van meldingen en apps op je telefoon op je <ph name="DEVICE_TYPE" /> sluiten</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> tot en met <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+zoeken+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> beheerd door <ph name="MANAGER" /></translation>
@@ -489,7 +487,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3095995014811312755">versie</translation>
 <translation id="309749186376891736">Cursor verplaatsen</translation>
 <translation id="3100274880412651815">Opnamemodus sluiten</translation>
-<translation id="3103732015595029598">Meldingen en apps van je telefoon instellen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Vorig item op de plank markeren</translation>
@@ -557,6 +554,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3386978599540877378">het vergrootglas op volledige schermgrootte</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Dicteren aanzetten?</translation>
+<translation id="3394432020929931914">, uitgevouwen</translation>
 <translation id="3400357268283240774">Aanvullende instellingen</translation>
 <translation id="3405101454990027959">Microfoontoegang aanzetten</translation>
 <translation id="3408735331120433841">Je cast nu je scherm.</translation>
@@ -658,7 +656,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3738664582935948253">Je kunt nu klikken en sneltoetsen tonen in schermopnamen</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
-<translation id="375335662788363456">Instellen van recente foto's, media, meldingen en apps op je <ph name="DEVICE_TYPE" /> op je telefoon sluiten</translation>
 <translation id="3756485814916578707">Scherm casten</translation>
 <translation id="3765841382945324995">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> is geüpdatet van <ph name="OLD_SHORTCUT" /> naar <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Vandaag bewerkt</translation>
@@ -781,6 +778,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Geen simkaart</translation>
 <translation id="4261870227682513959">Instellingen voor meldingen bekijken. Meldingen staan uit</translation>
+<translation id="4264977415328155183">, samengevouwen</translation>
 <translation id="4269883910223712419">De beheerder van dit apparaat kan het volgende doen:</translation>
 <translation id="4274537685965975248">De sneltoets Ctrl + Alt + pijl-omlaag is veranderd. Als je de toets End wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-rechts.</translation>
 <translation id="4275283744500212192">Indelingsopties voor vensters openen</translation>
@@ -792,7 +790,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
 <translation id="4294319844246081198">Goedemorgen <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Alle <ph name="COUNT" /> meldingen wissen</translation>
-<translation id="4300367807227655672">Weergave van meldingen van je telefoon instellen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> is verplaatst naar de map <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Niet beschikbaar</translation>
 <translation id="4303223480529385476">Statusgedeelte uitvouwen</translation>
@@ -818,18 +815,15 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
-<translation id="4414595745967164324">Recente foto's, media, meldingen en apps van je telefoon instellen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4427695046139341014">Game Dashboard</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4435022394553622295">Meldingen en apps van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Apps zijn gesorteerd op naam</translation>
 <translation id="4445159312344259901">Log in om te ontgrendelen</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrijke melding}other{# belangrijke meldingen}}</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4451374464530248585">De sneltoets Alt + pijl-omlaag is veranderd. Als je de toets Page Down wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omlaag.</translation>
 <translation id="4453876312474547652">Je ziet het klembord als je Ctrl + V ingedrukt houdt. Je kunt deze sneltoets uitzetten door de flag #clipboard-history-longpress uit te zetten in chrome://flags (os://flags als je Lacros gebruikt).</translation>
-<translation id="4455051983450390249">De meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Goedenavond,</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
 <translation id="445923051607553918">Aanmelden bij wifi-netwerk</translation>
@@ -912,7 +906,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4798888871844665150">Gekopieerd item staat al op klembord. Gebruik <ph name="SHORTCUT_KEY_NAME" /> + V om te bekijken.</translation>
 <translation id="479989351350248267">zoeken</translation>
 <translation id="4804818685124855865">Verbinding verbreken</translation>
-<translation id="4810227386592387399">Weergave van de apps van je telefoon instellen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Sleep de link naar een leeg gedeelte van de tabbladstrook</translation>
 <translation id="4814539958450445987">Inlogscherm</translation>
 <translation id="481455355267255546">Volgende</translation>
@@ -1008,6 +1001,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> afspraken</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is gecombineerd met <ph name="IN_PLACE_APP" /> om een nieuwe map te maken.</translation>
+<translation id="5203299837691351876">actief bureau</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 andere melding}other{# andere meldingen}}</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
@@ -1097,7 +1091,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5551456515017410630">Agenda openen/sluiten</translation>
 <translation id="5551974246223970793">Naar de volgende overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
 <translation id="5558091555391176027">Hoge zichtbaarheid voor Dichtbij delen aan- of uitzetten</translation>
-<translation id="5560420195677022218">Apps van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Knop</translation>
 <translation id="5570122939431135380">Nieuw tabblad openen in een nieuw incognitovenster</translation>
 <translation id="5571066253365925590">Bluetooth staat aan</translation>
@@ -1195,6 +1188,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="595202126637698455">Bijhouden van prestaties staat aan</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Gelimiteerde gebruiker</translation>
+<translation id="5960410286721553511">Recente foto's en media van je telefoon bekijken</translation>
 <translation id="5961960957587052807">Licht</translation>
 <translation id="5965524703725988602">Donker thema aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Vooruitgaan door vensters</translation>
@@ -1251,13 +1245,11 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="616543563528926612">De sneltoets voor klikken met de rechtermuisknop is geüpdatet van <ph name="LAUNCHER_KEY_NAME" />-toets + klikken naar alt + klikken</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6166852626429024716">Zoek op je apparaat, in apps en instellingen en op internet...</translation>
-<translation id="6167922743323004256">Instellen van de weergave van recente foto's en media van je telefoon op je <ph name="DEVICE_TYPE" /> sluiten</translation>
 <translation id="6168318496333165060">App voor diagnostische gegevens openen</translation>
 <translation id="6173151025443907148">Een tweede gebruiker inloggen wordt niet ondersteund als Lacros aanstaat. Gebruik in plaats daarvan een tweede browserprofiel in Lacros of zet Lacros uit en probeer het opnieuw.</translation>
 <translation id="6179832488876878285">Je kunt hier je belangrijke bestanden vastzetten. Open de app Bestanden om aan de slag te gaan.</translation>
 <translation id="6182592640011875895">Bureau openen</translation>
 <translation id="6185696379715117369">Page Up</translation>
-<translation id="619279033188484792">Recente foto's, media en meldingen van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Nu volledig opladen</translation>
 <translation id="6193431488227440296">Dev</translation>
 <translation id="6199775032047436064">De huidige pagina opnieuw laden</translation>
@@ -1271,7 +1263,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Instellen van de weergave van meldingen van je telefoon op je <ph name="DEVICE_TYPE" /> sluiten</translation>
 <translation id="6244986124527896815">Open de Taakbeheer-app met <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Meldingen openen</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
@@ -1406,6 +1397,7 @@ Nieuwe installatie</translation>
 <translation id="6819327813400217281">Camera uitgelijnd op de linkerbenedenhoek</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
 <translation id="6827049576281411231">Afsprakenvenster sluiten</translation>
+<translation id="6831561626108366035">Knop Naar <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Gevaarlijk bestand</translation>
 <translation id="6852052252232534364">Klik om te activeren</translation>
 <translation id="6855029042976311970">Zojuist bewerkt</translation>
@@ -1418,7 +1410,6 @@ Nieuwe installatie</translation>
 <translation id="6884665277231944629">Terug naar vandaag</translation>
 <translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
 <translation id="688631446150864480">Druk op de pijl-omlaag om tussen vensters te schakelen</translation>
-<translation id="6891721121089053234">Recente foto's, media en apps van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6901883536534621389">Gebaren gebruiken om te navigeren</translation>
 <translation id="6912841030378044227">Focus op adresbalk</translation>
@@ -1442,6 +1433,7 @@ Nieuwe installatie</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
 <translation id="6985306450422696113"><ph name="USED_MEMORY" /> geheugen van in totaal <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
+<translation id="6989752354829085073">Volg een korte rondleiding voor meer informatie over hoe je je Chromebook gebruikt. Ga aan de slag in 6 stappen.</translation>
 <translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
 <translation id="7007983414944123363">Je pincode of wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
@@ -1480,6 +1472,8 @@ Nieuwe installatie</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144942256906679589">Batterijstatus</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+<ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
@@ -1562,6 +1556,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
+<translation id="7567950130372125778">Hallo. Chromebook is een beetje anders.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>
 <translation id="7571361473021531288">Batterij <ph name="BATTERY_PERCENTAGE" />% | Nog <ph name="TIME" /> over</translation>
 <translation id="7573585051776738856">Actief venster rechts vastgezet.</translation>
@@ -1603,6 +1598,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7723703419796509666">Developer Tools-console tonen of verbergen</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7725108879223146004">Toon de hotspotdetails. Hotspot wordt uitgezet.</translation>
+<translation id="7726391492136714301">Meldingen en apps van je telefoon bekijken</translation>
 <translation id="7727952505535211425">De website in de adresbalk openen in een nieuw tabblad</translation>
 <translation id="7742327441377685481">Geen meldingen</translation>
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
@@ -1620,7 +1616,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7837740436429729974">De tijd is om</translation>
-<translation id="7838712802972544930">Instellen van de weergave van de apps van je telefoon op je <ph name="DEVICE_TYPE" /> sluiten</translation>
 <translation id="7842569679327885685">Waarschuwing: Experimentele functie</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7848989271541991537">Verplaatst naar pagina <ph name="PAGE_NUMBER" />, rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
@@ -1686,7 +1681,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
-<translation id="8077971003886736669">Recente foto's en media van je telefoon instellen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Scherm delen</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
 <translation id="8091153018031979607">Begint om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1716,7 +1710,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8155628902202578800">Dialoogvenster met informatie openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
-<translation id="8183592608247778598">Recente foto's, media, meldingen en apps van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192202700944119416">Meldingen zijn verborgen.</translation>
 <translation id="8196787716797768628">Met gebaren kun je snel schakelen tussen apps en je Chromebook gebruiken in de tabletmodus.</translation>
@@ -1843,7 +1836,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
 <translation id="8763883995157866248">Slaapmodus aanzetten</translation>
-<translation id="8773962395093246071">Weergave van recente foto's, media en meldingen van je telefoon instellen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, geïnstalleerde app, geblokkeerd</translation>
 <translation id="8785070478575117577">Verbinding maken met <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

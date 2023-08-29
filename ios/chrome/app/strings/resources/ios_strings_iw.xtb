@@ -200,6 +200,7 @@
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2178545675770638239">בחירת סיסמה</translation>
 <translation id="2195124168004379331">נראה שהדפדפן שלך בטוח</translation>
+<translation id="2213327331203157297">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chrome, צריך להשבית אותה ב-iPhone.</translation>
 <translation id="2218443599109088993">התרחקות</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="2239626343334228536">ניקוי נתוני הגלישה מתבצע…</translation>
@@ -466,7 +467,6 @@
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
 <translation id="3775743491439407556">הסנכרון לא פועל</translation>
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
-<translation id="3783017676699494206">שמירת תמונה</translation>
 <translation id="3789294999358192700">פועלים לפי השלבים הבאים:</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="380329542618494757">שם</translation>
@@ -1337,6 +1337,7 @@
 <translation id="8843129975935593190">הארגון שלך מגביל את מה שאפשר לסנכרן.</translation>
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8855242995793521265">ההגנה המשופרת לא מאטה במידה משמעותית את הדפדפן או המכשיר.</translation>
+<translation id="8855781063981781621">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chrome, צריך להשבית אותה ב-iPad.</translation>
 <translation id="8863431381414769983">‏קבלת מסלול הגעה ומידע מקומי ממפות Google</translation>
 <translation id="8868471676553493380">{count,plural, =1{כרטיסייה אחת ({count})}one{{count} כרטיסיות}two{{count} כרטיסיות}other{{count} כרטיסיות}}</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>

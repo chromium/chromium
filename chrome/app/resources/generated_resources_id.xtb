@@ -1508,7 +1508,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2162705204091149050">Membaca informasi tentang browser, OS, perangkat, software terinstal, dan file</translation>
 <translation id="2162926944953615670">Tidak ada profil eSIM yang tersedia</translation>
 <translation id="2163470535490402084">Sambungkan ke internet untuk masuk ke <ph name="DEVICE_TYPE" /> Anda.</translation>
-<translation id="2163996651553460171">Mengoptimalkan penggunaan Chrome</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, dan 1 tombol lainnya</translation>
 <translation id="2165102982098084499">Anda menautkan perangkat ini dengan memindai kode QR.</translation>
 <translation id="2165177462441582039">Pilih seberapa lama sorotan harus tetap berada di setiap item</translation>
@@ -3955,6 +3954,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4110485659976215879">Pulihkan peringatan</translation>
 <translation id="4110490973560452005">Download selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk masuk ke area kotak download</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113743276555482284">Sandi file</translation>
 <translation id="4114524937989710624">Anda melihat saran file untuk membantu Anda kembali ke aktivitas terbaru Anda di Google Drive dengan mudah.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4073,6 +4073,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4217558091331485702">Pindai sebelum membuka</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4218081191298393750">Klik ikon speaker untuk membisukan tab ini</translation>
+<translation id="4220157655212610908">Gunakan kunci keamanan eksternal</translation>
 <translation id="4220648711404560261">Terjadi error selama aktivasi.</translation>
 <translation id="4222917615373664617">Pemantauan harga diaktifkan. Harganya <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Buat kunci sandi</translation>
@@ -4725,6 +4726,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4761104368405085019">Menggunakan mikrofon Anda</translation>
 <translation id="4762489666082647806">Warna pointer</translation>
 <translation id="4762718786438001384">Ruang disk perangkat hampir habis</translation>
+<translation id="4762849514113423887">Sandi salah. Coba lagi.</translation>
 <translation id="4763408175235639573">Cookie berikut disetel saat Anda melihat halaman ini</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> bukan akun Google for Education yang valid. Hubungi administrator Anda. Jika Anda adalah administrator, Anda dapat menyiapkan organisasi dengan membuka: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Perangkat ini akan disimpan selama 1 bulan dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}other{Perangkat ini akan disimpan selama {MONTHS} bulan dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}}</translation>
@@ -5814,7 +5816,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="567740581294087470">Jenis masukan apa yang Anda berikan?</translation>
 <translation id="5677503058916217575">Bahasa halaman:</translation>
 <translation id="5677928146339483299">Diblokir</translation>
-<translation id="5677946354068040947">opsi lainnya</translation>
 <translation id="5678550637669481956">Akses membaca dan menulis ke <ph name="VOLUME_NAME" /> telah diberikan.</translation>
 <translation id="5678821117681811450">Mengirim ke <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Membaca data Anda di <ph name="WEBSITE_1" /></translation>
@@ -6727,6 +6728,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6436778875248895551">Ekstensi "<ph name="EXTENSION_NAME" />" diblokir oleh administrator Anda</translation>
 <translation id="6438234780621650381">Reset setelan</translation>
 <translation id="6438475350605608554">Anda sudah mengimpor sandi di tab lain</translation>
+<translation id="6438480100790416671">Memeriksa ruang penyimpanan…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Pemutaran audio</translation>
 <translation id="6440291723980579689">Halaman dimuat hanya setelah Anda membukanya</translation>
 <translation id="6441377161852435370">Tambahkan tab ke daftar bacaan</translation>
@@ -8126,6 +8128,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7585106857920830898">Memeriksa berdasarkan kebijakan keamanan organisasi Anda ...</translation>
 <translation id="7586498138629385861">Chrome akan tetap berjalan meskipun Aplikasi Chrome dibuka.</translation>
 <translation id="7589461650300748890">Aduh, hati-hati dong.</translation>
+<translation id="7590883480672980941">Setelan masukan</translation>
 <translation id="7592060599656252486">Beberapa</translation>
 <translation id="7593653750169415785">Otomatis terblokir karena Anda menolak notifikasi beberapa kali</translation>
 <translation id="7594725637786616550">Powerwash untuk mereset <ph name="DEVICE_TYPE" /> agar kembali seperti baru.</translation>
@@ -9248,12 +9251,14 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8472623782143987204">cadangan hardware</translation>
 <translation id="8473540203671727883">Ucapkan teks di bawah kursor</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
+<translation id="8474378002946546633">Izinkan pemberitahuan</translation>
 <translation id="8474733733775441349">Tampilkan sandi dari Akun Google Anda</translation>
 <translation id="8475313423285172237">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chrome.</translation>
 <translation id="8476408756881832830">Jeda pemutaran saat ChromeVox sedang berbicara</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang digunakan, berapa banyak memori yang biasanya digunakan, serta data penggunaan dan diagnostik aplikasi Android. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat ChromeOS anak Anda. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google anak, data anak mungkin akan disimpan ke Akun Google miliknya. Pelajari setelan ini dan cara menyesuaikannya lebih lanjut di families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="8476630458761527665">Masukkan sandi file</translation>
 <translation id="8477178913400731244">Hapus data</translation>
 <translation id="8477241577829954800">Diganti</translation>
 <translation id="8477384620836102176">&amp;Umum</translation>
@@ -9552,6 +9557,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8725178340343806893">Favorit/Bookmark</translation>
 <translation id="87254326763805752">Konfirmasi kunci sandi</translation>
 <translation id="8726206820263995930">Terjadi error saat mengambil setelan kebijakan dari server: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Maksimalkan penggunaan Chrome</translation>
 <translation id="8727751378406387165">Kirim <ph name="BEGIN_LINK1" />metadata isi otomatis<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (data isi otomatis Anda tidak akan dibagikan)</translation>

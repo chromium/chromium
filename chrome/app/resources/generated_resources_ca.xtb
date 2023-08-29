@@ -1495,7 +1495,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2162705204091149050">Llegir informació sobre el navegador, el sistema operatiu, el dispositiu, el programari instal·lat i els fitxers</translation>
 <translation id="2162926944953615670">No hi ha cap perfil d'eSIM disponible</translation>
 <translation id="2163470535490402084">Connecteu-vos a Internet per iniciar la sessió al dispositiu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="2163996651553460171">Treu el màxim profit de Chrome</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i 1 interruptor més</translation>
 <translation id="2165102982098084499">Has enllaçat aquests dispositius escanejant un codi QR.</translation>
 <translation id="2165177462441582039">Tria durant quant de temps ha d'estar marcat cada element</translation>
@@ -3937,6 +3936,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4110485659976215879">Restaura l'advertiment</translation>
 <translation id="4110490973560452005">S'ha completat la baixada: <ph name="FILE_NAME" />. Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
+<translation id="4113743276555482284">Contrasenya del fitxer</translation>
 <translation id="4114524937989710624">Veus suggeriments de fitxers per ajudar-te a trobar fàcilment la teva activitat més recent a Google Drive.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4054,6 +4054,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4217558091331485702">Analitza el fitxer abans d'obrir-lo</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4218081191298393750">Fes clic a la icona del micròfon per silenciar aquesta pestanya</translation>
+<translation id="4220157655212610908">Utilitza una clau de seguretat externa</translation>
 <translation id="4220648711404560261">S'ha produït un error durant l'activació.</translation>
 <translation id="4222917615373664617">El seguiment dels preus està activat. El preu és <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Crea una clau d'accés</translation>
@@ -4705,6 +4706,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4761104368405085019">Utilitzar el micròfon</translation>
 <translation id="4762489666082647806">Color del punter</translation>
 <translation id="4762718786438001384">L'espai de disc del dispositiu és molt baix</translation>
+<translation id="4762849514113423887">La contrasenya no és correcta. Torna-ho a provar.</translation>
 <translation id="4763408175235639573">S'han permès les galetes següents en visitar aquesta pàgina</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> no és un compte de Google for Education vàlid. Contacta amb l'administrador. Si ets administrador, pots configurar la teva organització a g.co/workspace/edusignup.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Aquest dispositiu es desarà durant 1 mes i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}other{Aquest dispositiu es desarà durant {MONTHS} mesos i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}}</translation>
@@ -5791,7 +5793,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="567740581294087470">Quin tipus de suggeriments vols proporcionar?</translation>
 <translation id="5677503058916217575">Idioma de la pàgina:</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
-<translation id="5677946354068040947">més opcions</translation>
 <translation id="5678550637669481956">S'ha concedit accés de lectura i d'escriptura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">S'està enviant a <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Llegir les dades del lloc <ph name="WEBSITE_1" /></translation>
@@ -6701,6 +6702,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6436778875248895551">L'administrador ha bloquejat l'extensió "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">Restablir la configuració</translation>
 <translation id="6438475350605608554">Ja estàs important contrasenyes en una altra pestanya</translation>
+<translation id="6438480100790416671">S'està comprovant l'espai d'emmagatzematge…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: s'està reproduint àudio</translation>
 <translation id="6440291723980579689">Les pàgines només es carreguen després d'obrir-les</translation>
 <translation id="6441377161852435370">Afegeix una pestanya a la llista de lectura</translation>
@@ -8101,6 +8103,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7585106857920830898">S'està comprovant si es compleixen les polítiques de seguretat de la teva organització...</translation>
 <translation id="7586498138629385861">Chrome continuarà funcionant mentre hi hagi aplicacions de Chrome obertes.</translation>
 <translation id="7589461650300748890">Aneu amb compte</translation>
+<translation id="7590883480672980941">Configuració de l'entrada</translation>
 <translation id="7592060599656252486">Parcial</translation>
 <translation id="7593653750169415785">S'ha bloquejat automàticament perquè has rebutjat les notificacions unes quantes vegades</translation>
 <translation id="7594725637786616550">Fes un Powerwash per restablir el teu dispositiu <ph name="DEVICE_TYPE" /> i que quedi com nou.</translation>
@@ -9223,12 +9226,14 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8472623782143987204">recolzat per maquinari</translation>
 <translation id="8473540203671727883">Llegeix el text que hi ha a sota del cursor del ratolí</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
+<translation id="8474378002946546633">Permet les notificacions</translation>
 <translation id="8474733733775441349">Mostra les contrasenyes del Compte de Google</translation>
 <translation id="8475313423285172237">Un altre programa de l'ordinador ha afegit una extensió que pot canviar el funcionament de Chrome.</translation>
 <translation id="8476408756881832830">Pausa la reproducció quan ChromeVox parli</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan es bloqueja ChromeOS, quines funcions s'han utilitzat, quanta memòria s'utilitza normalment i dades de diagnòstic i d'ús d'aplicacions Android. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu ChromeOS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots ajustar-les, ves a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="8476630458761527665">Introdueix la contrasenya del fitxer</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>
 <translation id="8477241577829954800">Reemplaçat</translation>
 <translation id="8477384620836102176">&amp;General</translation>
@@ -9527,6 +9532,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8725178340343806893">Preferits/adreces d'interès</translation>
 <translation id="87254326763805752">Confirma la clau d'accés</translation>
 <translation id="8726206820263995930">S'ha produït un error en recuperar la configuració de la política del servidor: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Aprofita Chrome al màxim</translation>
 <translation id="8727751378406387165">Envia <ph name="BEGIN_LINK1" />metadades d'Emplenament automàtic<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (les dades de la funció Emplenament automàtic no es compartiran)</translation>

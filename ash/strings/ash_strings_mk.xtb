@@ -45,7 +45,6 @@
 <translation id="1175944128323889279">Тековно ниво на батеријата: <ph name="BATTERY_PERCENTAGE" /> %, преостанато време: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
-<translation id="1181431373490845924">Отфрлете го поставувањето прегледување на неодамнешните фотографии, аудиовизуелни содржини и известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Ова дозволува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Не ме интересира предлогов</translation>
@@ -118,7 +117,6 @@
 <translation id="1415846719612499304">Прикажете го списокот со мрежи. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Отклучете го уредот за да се изврши дејството од известувањето</translation>
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Прегледувајте ги неодамнешните фотографии и аудиовизуелни содржини од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
@@ -411,7 +409,6 @@
 <translation id="2750932254614666392">„Избриши“</translation>
 <translation id="2750941250130734256">Активниот прозорец е изваден од приклучок.</translation>
 <translation id="2761723519669354964">Отворете нагласена ставка од полицата</translation>
-<translation id="2774327524281966309">Отфрлете го поставувањето прегледување на известувањата и апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>
@@ -490,7 +487,6 @@
 <translation id="3095995014811312755">верзија</translation>
 <translation id="309749186376891736">Премести го покажувачот</translation>
 <translation id="3100274880412651815">Отфрли го режимот на снимање</translation>
-<translation id="3103732015595029598">Поставете прегледување на известувањата и апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3105917916468784889">Сними слика од екранот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Нагласете ја претходната ставка на полицата</translation>
@@ -660,7 +656,6 @@
 <translation id="3735740477244556633">Подреди по</translation>
 <translation id="3738664582935948253">Сега може да ги прикажувате кликнувањата и кратенките од тастатура во снимките од екранот</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
-<translation id="375335662788363456">Отфрлете го поставувањето прегледување на неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3765841382945324995">Кратенката <ph name="SIX_PACK_KEY_NAME" /> е ажурирана во <ph name="NEW_SHORTCUT" /> од <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Изменето денес</translation>
@@ -796,7 +791,6 @@
 <translation id="428715201724021596">Се поврзува со профилот. Може да потрае неколку минути.</translation>
 <translation id="4294319844246081198">Добро утро <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Избриши ги сите <ph name="COUNT" /> известувања</translation>
-<translation id="4300367807227655672">Поставете прегледување на известувањата од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> е преместена во папката <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Не е достапно</translation>
 <translation id="4303223480529385476">Прошири ја статусната област</translation>
@@ -822,18 +816,15 @@
 <translation id="4405151984121254935">Поврзаниот вид периферен уред не е поддржан</translation>
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
-<translation id="4414595745967164324">Поставете прегледување на неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4424159417645388645">Работна површина 5</translation>
 <translation id="4427695046139341014">Контролна табла за игри</translation>
 <translation id="4430019312045809116">Гласност</translation>
-<translation id="4435022394553622295">Прегледувајте ги известувањата и апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Апликациите се подредени по име</translation>
 <translation id="4445159312344259901">Најавете се за да отклучите</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно известување}one{# важно известување}other{# важни известувања}}</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="4451374464530248585">Кратенката од тастатура Alt + Стрелка надолу се промени. За да го користите копчето Page Down, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надолу.</translation>
 <translation id="4453876312474547652">Ќе ја видите привремената меморија кога ќе притиснете и задржите „Ctrl + V“. Кратенкава може да ја исклучите така што ќе ја оневозможите ознаката #clipboard-history-longpress во chrome://flags (os://flags ако се користи Lacros).</translation>
-<translation id="4455051983450390249">Прегледувајте ги известувањата од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
 <translation id="445923051607553918">Придружи се на мрежа за Wi-Fi</translation>
@@ -916,7 +907,6 @@
 <translation id="4798888871844665150">Копираната ставка веќе е во привремената меморија. Користете „<ph name="SHORTCUT_KEY_NAME" /> + V“ за да прегледате.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
-<translation id="4810227386592387399">Поставете прегледување на апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Повлечете го линкот до празен простор на лентата за картички</translation>
 <translation id="4814539958450445987">Екран за најавување</translation>
 <translation id="481455355267255546">Следни настани</translation>
@@ -1102,7 +1092,6 @@
 <translation id="5551456515017410630">Отворете/затворете календар</translation>
 <translation id="5551974246223970793">При пребарувањето страница, оди на следното совпаѓање за пребарување</translation>
 <translation id="5558091555391176027">Вклучете/исклучете голема видливост за „Споделување во близина“</translation>
-<translation id="5560420195677022218">Прегледувајте ги апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Копче</translation>
 <translation id="5570122939431135380">Отвора нова картичка во нов прозорец „Инкогнито“</translation>
 <translation id="5571066253365925590">Bluetooth е овозможен</translation>
@@ -1200,6 +1189,7 @@
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
 <translation id="5955304353782037793">апликација</translation>
 <translation id="5958529069007801266">Надгледуван корисник</translation>
+<translation id="5960410286721553511">Прегледувајте ги неодамнешните фотографии и аудиовизуелните содржини од телефонот</translation>
 <translation id="5961960957587052807">Делумно</translation>
 <translation id="5965524703725988602">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Движете се нанапред низ прозорците</translation>
@@ -1256,13 +1246,11 @@
 <translation id="616543563528926612">Кратенката со кликнување со десно копче е променета во Alt + клик од копчето <ph name="LAUNCHER_KEY_NAME" /> + клик</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6166852626429024716">Пребарувајте низ уредот, апликациите, поставките, на интернет…</translation>
-<translation id="6167922743323004256">Отфрлање на прегледувањето на неодамнешните фотографии и аудиовизуелни содржини од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Отворете ја апликацијата Diagnostics</translation>
 <translation id="6173151025443907148">Ако е овозможен Lacros, не е поддржано најавување втор корисник. Наместо тоа, користете втор профил за прелистувач во Lacros или оневозможете го Lacros и обидете се повторно.</translation>
 <translation id="6179832488876878285">Може да ги закачите вашите важни датотеки тука. Отворете ја апликацијата Files за да започнете.</translation>
 <translation id="6182592640011875895">Отвори работна површина</translation>
 <translation id="6185696379715117369">Нагоре</translation>
-<translation id="619279033188484792">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини и известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Целосно наполни сега</translation>
 <translation id="6193431488227440296">Dev</translation>
 <translation id="6199775032047436064">Повторно вчитај ја тековната страница</translation>
@@ -1276,7 +1264,6 @@
 <translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ги користи камерата и микрофонот во моментов</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Отфрлете го поставувањето прегледување на известувањата од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6244986124527896815">Отворете ја апликацијата „Управник со задачи“ со „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6247728804802644171">Отворете ги известувањата</translation>
 <translation id="6254629735336163724">Заклучен хоризонтално</translation>
@@ -1424,7 +1411,6 @@
 <translation id="6884665277231944629">Вратете се на денешниот датум</translation>
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="688631446150864480">Притискајте го копчето со стрелка надолу за да се префрлате меѓу прозорците</translation>
-<translation id="6891721121089053234">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини и апликации од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6901883536534621389">Обидете се со движења за навигација</translation>
 <translation id="6912841030378044227">Фокусирајте се на лентата за адреси</translation>
@@ -1616,6 +1602,7 @@
 <translation id="7723703419796509666">Ја прикажува или ја сокрива конзолата со „Програмерски алатки“</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7725108879223146004">Прикажи детали за точката на пристап. Точката на пристап се исклучува.</translation>
+<translation id="7726391492136714301">Прегледувајте ги известувањата и апликациите од телефонот</translation>
 <translation id="7727952505535211425">Го отвора веб-сајтот во лентата за адреси во нова картичка</translation>
 <translation id="7742327441377685481">Нема известувања</translation>
 <translation id="7748275671948949022">Нагласете го копчето за стартерот на полицата</translation>
@@ -1633,7 +1620,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7837740436429729974">Времето истече</translation>
-<translation id="7838712802972544930">Отфрлете го поставувањето прегледување на апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7842569679327885685">Предупредување: експериментална функција</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7848989271541991537">Преместена на страница <ph name="PAGE_NUMBER" />, ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
@@ -1699,7 +1685,6 @@
 <translation id="8051716679295756675">Веќе постои шаблон со име <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Копирано во привремената меморија</translation>
 <translation id="8054466585765276473">пресметување време на батерија.</translation>
-<translation id="8077971003886736669">Поставување прегледување на неодамнешните фотографии и аудиовизуелни содржини од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Споделување екран</translation>
 <translation id="8083540854303889870">Зачувани за подоцна</translation>
 <translation id="8091153018031979607">Започнува во <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1729,7 +1714,6 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Администраторот управува со поставкава.</translation>
 <translation id="8155628902202578800">Отвори го дијалогот со податоци за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Се користи <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8185090165691050712">Вклучете/исклучете го менито во режим на заклучување промени на големината</translation>
 <translation id="8192202700944119416">Известувањата се скриени.</translation>
 <translation id="8196787716797768628">Користете движења за брзо префрлање помеѓу апликациите и за да комуницирате со вашиот Chromebook во режим на таблет.</translation>
@@ -1856,7 +1840,6 @@
 <translation id="875593634123171288">Прикажи ги поставките за VPN</translation>
 <translation id="8759408218731716181">Не може да се постават повеќе најави</translation>
 <translation id="8763883995157866248">Поставете го уредот во режим на спиење</translation>
-<translation id="8773962395093246071">Поставете прегледување на неодамнешните фотографии, аудиовизуелни содржини и известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8785070478575117577">Поврзи се со <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

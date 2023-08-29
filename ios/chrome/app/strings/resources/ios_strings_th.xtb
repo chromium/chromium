@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}}</translation>
 <translation id="1870148520156231997">แสดงรหัสผ่าน</translation>
 <translation id="1872096359983322073">แฟลช</translation>
+<translation id="1882901927376062252">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไว้ในบัญชี Google ของคุณ {email} แล้ว}}</translation>
 <translation id="1883255238294161206">ยุบรายการ</translation>
 <translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
 <translation id="189531189292803889">iPad ได้รับการกู้คืนข้อมูลเมื่อเร็วๆ นี้ ซึ่งอาจมีการเปลี่ยนเบราว์เซอร์เริ่มต้น</translation>
@@ -411,10 +412,12 @@
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="3340938510625667914">การดำเนินการใน Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
+<translation id="3365529507898144230">บันทึกใน Photos</translation>
 <translation id="3371831930909698441">มีบริการแปลภาษา ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="3377063233124932127">ตอนนี้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ที่บันทึกไว้ย้ายไปอยู่ด้านบนแล้ว</translation>
 <translation id="3393920035788932672">อนุญาตให้แสดงป๊อปอัป</translation>
 <translation id="3399930248910934354">เปิดการตั้งค่า Chrome</translation>
+<translation id="3404232721752787413">บันทึกใน Google Photos</translation>
 <translation id="3404744938087714423">การออกจากระบบจะปิดการซิงค์</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ต.ค. 2023</translation>
@@ -475,7 +478,6 @@
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="3775743491439407556">การซิงค์ไม่ทำงาน</translation>
 <translation id="3779810277399252432">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
-<translation id="3783017676699494206">บันทึกภาพ</translation>
 <translation id="3789294999358192700">โดยทำตามขั้นตอนด้านล่างนี้</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="380329542618494757">ชื่อ</translation>
@@ -657,6 +659,7 @@
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="4854345657858711387">ตั้งพาสโค้ด</translation>
 <translation id="4856498338299082007">ในบัญชี Google</translation>
+<translation id="4856841893565072365">แถบเมนูของการจัดเรียงอัจฉริยะ</translation>
 <translation id="4858786880085262208">อัปเกรดเป็น HTTPS เมื่อทำได้ เว็บไซต์ที่ปลอดภัยอาจฝังเนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4872323082491632254">ตรวจสอบรหัสผ่าน</translation>
@@ -692,6 +695,7 @@
 <translation id="5083464117946352670">ไม่สามารถระบุขนาดไฟล์ได้</translation>
 <translation id="5090832849094901128">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="WEBSITE" /></translation>
 <translation id="5094827893301452931">ทวีตแล้ว</translation>
+<translation id="5100848274708256363">เข้าร่วมกลุ่มครอบครัว</translation>
 <translation id="5109892411553231226">จัดการวิธีการชำระเงิน</translation>
 <translation id="5118713593561876160">ความสนใจ</translation>
 <translation id="5118764316110575523">ปิด</translation>
@@ -903,6 +907,7 @@
 <translation id="6289501276895392862">เลิกติดตาม <ph name="CHANNEL_NAME" /> แล้ว</translation>
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
 <translation id="629730747756840877">บัญชี</translation>
+<translation id="630693926528731525">ไม่ได้แชร์รหัสผ่าน ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่าคุณลงชื่อเข้าใช้ Chrome แล้ว จากนั้นลองอีกครั้ง</translation>
 <translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
 <translation id="6324669097367352121">ตั้งค่าลงชื่อเข้าใช้</translation>
 <translation id="6328337032497818759">ปรับแต่งเมนู</translation>
@@ -994,6 +999,7 @@
 <translation id="6642362222295953972">เปลี่ยนไปใช้แท็บที่มีอยู่</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645899968535965230">คิวอาร์โค้ด: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">เรียกใช้ล่าสุด <ph name="TIME" /></translation>
 <translation id="6656103420185847513">แก้ไขโฟลเดอร์</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6668619169535738264">แก้ไขบุ๊กมาร์ก</translation>
@@ -1107,6 +1113,7 @@
 <translation id="7351537303876921605">แตะ "สร้างลิงก์" ในเมนูตามบริบท</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7353432112255316844">ยืนยันว่าเป็นคุณ</translation>
+<translation id="7380220816562673297">ตอนนี้คุณจะแชร์รหัสผ่านกับสมาชิกในครอบครัวได้เท่านั้น <ph name="BEGIN_LINK" />สร้างกลุ่มครอบครัว<ph name="END_LINK" />ที่มีสมาชิกได้สูงสุด 6 คน ตลอดจนใช้ประโยชน์จากผลิตภัณฑ์และการสมัครใช้บริการใน Google ได้มากขึ้น</translation>
 <translation id="7383797227493018512">เรื่องรออ่าน</translation>
 <translation id="7398893703713203428">สร้างลิงก์</translation>
 <translation id="7399802613464275309">การตรวจสอบความปลอดภัย</translation>
@@ -1430,6 +1437,7 @@
 <translation id="9223358826628549784">ส่งรายงานข้อขัดข้องแล้ว</translation>
 <translation id="941747855997058526">เลือกรหัสผ่าน...</translation>
 <translation id="948048872540558976">สร้างแท็บใหม่</translation>
+<translation id="952218985181984374">{count,plural, =1{บันทึกบุ๊กมาร์กแล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการแล้ว}}</translation>
 <translation id="952704832371081537">ยกเลิก</translation>
 <translation id="953008885340860025">Chrome ออกจากระบบแล้ว</translation>
 <translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>

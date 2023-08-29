@@ -706,6 +706,7 @@
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1558671750917454373">繼續投放去 <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">我們正在檢查儲存空間…</translation>
 <translation id="1562119309884184621">新增此聯絡人後，下次該聯絡人分享檔案時，系統將可辨識該聯絡人</translation>
 <translation id="1563137369682381456">到期日</translation>
 <translation id="1563702743503072935">登入後，您亦可在此裝置上查看儲存在 Google 帳戶中的密碼</translation>
@@ -1249,6 +1250,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">準備中</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 項)</translation>
+<translation id="1972313920920745320">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體。<ph name="BEGIN_LINK" />進一步瞭解如何讓特定網站保持使用中的狀態<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="197288927597451399">保留</translation>
 <translation id="1973313062201924554">如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式亦會取得同樣的權限。</translation>
@@ -1508,7 +1510,6 @@
 <translation id="2162705204091149050">讀取瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料</translation>
 <translation id="2162926944953615670">沒有可用的 eSIM 卡設定檔</translation>
 <translation id="2163470535490402084">請連接互聯網，才能登入 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="2163996651553460171">充分運用 Chrome 的所有功能</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 個按鈕裝置</translation>
 <translation id="2165102982098084499">透過掃瞄 QR 碼的方式連結了這些裝置。</translation>
 <translation id="2165177462441582039">選擇突顯範圍在每個項目上的停留時間</translation>
@@ -2450,6 +2451,7 @@
 <translation id="2889043468805635730">未發現問題</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
 <translation id="2890206081124517553">記住您不同裝置的桌面背景</translation>
+<translation id="2891464434568738544">目前未開啟任何網站。請前往任一網站，並將該網站加入這份清單。</translation>
 <translation id="2891566119238851894">開側面板入面嘅搜尋工具列。側面板入面嘅搜尋工具列冇開。</translation>
 <translation id="2891922230654533301">要使用裝置登入 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="2893013536106749396">挑選能助您緊貼所關注事情的資訊卡</translation>
@@ -5635,6 +5637,7 @@
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
 <translation id="5522403133543437426">網址列中使用的搜尋引擎。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理員已安裝 1 個擴充程式}other{管理員已安裝 # 個擴充程式}}</translation>
+<translation id="5523532775593636291">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以使用字母、數字和特殊字元，且不可超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
@@ -5811,7 +5814,6 @@
 <translation id="567740581294087470">您要提供哪一類意見？</translation>
 <translation id="5677503058916217575">網頁語言：</translation>
 <translation id="5677928146339483299">已封鎖</translation>
-<translation id="5677946354068040947">更多選項</translation>
 <translation id="5678550637669481956">已授與「<ph name="VOLUME_NAME" />」的讀取和寫入權限。</translation>
 <translation id="5678821117681811450">正在傳送至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
@@ -6724,6 +6726,7 @@
 <translation id="6436778875248895551">管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充程式</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438475350605608554">您已在其他分頁中匯入密碼</translation>
+<translation id="6438480100790416671">正在檢查儲存空間…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
 <translation id="6440291723980579689">網頁只會在開啟後載入</translation>
 <translation id="6441377161852435370">將分頁新增至閱讀清單</translation>
@@ -6975,7 +6978,7 @@
 <translation id="6644513150317163574">網址格式無效。使用單一登入 (SSO) 驗證時，必須將伺服器指定為主機名稱。</translation>
 <translation id="6644846457769259194">正在更新裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">關閉「快速配對」</translation>
-<translation id="6646696210740573446">透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能也會將網址 (包括部分網頁內容) 傳送給 Google。</translation>
+<translation id="6646696210740573446">透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果有網站試圖盜取你的密碼，或當你下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至 Google。</translation>
 <translation id="6647228709620733774">Netscape 憑證授權撤銷網址</translation>
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重要更新。登入即可開始更新。</translation>
@@ -8124,6 +8127,7 @@
 <translation id="7585106857920830898">正在檢查是否符合您機構的安全性政策…</translation>
 <translation id="7586498138629385861">Chrome 會在 Chrome 應用程式開啟的狀態下持續運作。</translation>
 <translation id="7589461650300748890">噢，請注意！</translation>
+<translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7592060599656252486">部分</translation>
 <translation id="7593653750169415785">由於您拒絕通知數次而自動被封鎖的網站</translation>
 <translation id="7594725637786616550">執行 Powerwash 以將 <ph name="DEVICE_TYPE" /> 恢復原廠設定。</translation>
@@ -8524,6 +8528,7 @@
 <translation id="7893008570150657497">存取您電腦中的相片、音樂及其他媒體</translation>
 <translation id="7893153962594818789">這部 <ph name="DEVICE_TYPE" /> 已關閉藍牙功能。請輸入您的密碼並開啟藍牙功能。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (預設)</translation>
+<translation id="7894382333736164977">我們正在檢查儲存空間，目前找到 <ph name="ITEMS_FOUND" /> 個項目。</translation>
 <translation id="7896292361319775586">要儲存 <ph name="FILE" /> 嗎？</translation>
 <translation id="789722939441020330">不允許網站自動下載多個檔案</translation>
 <translation id="7897900149154324287">以後請務必先從「檔案」應用程式中退出卸除式裝置，然後再拔出，以免遺失數據。</translation>
@@ -9171,7 +9176,7 @@
 <translation id="84098433273647700">您目前安裝的主題。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
-<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="8413795581997394485">對已知的危險網站、下載檔案及擴充程式提供保護功能。瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">要啟用 Chrome OS 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="8414249071344507766">回憶將會隱藏 2 天</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
@@ -9247,6 +9252,7 @@
 <translation id="8472623782143987204">硬件支援</translation>
 <translation id="8473540203671727883">說出滑鼠游標下的文字</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
+<translation id="8474378002946546633">允許通知</translation>
 <translation id="8474733733775441349">顯示 Google 帳戶中的密碼</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>
 <translation id="8476408756881832830">在 ChromeVox 朗讀時暫停播放音訊</translation>
@@ -9552,6 +9558,7 @@
 <translation id="8725178340343806893">我的最愛/書籤</translation>
 <translation id="87254326763805752">確認密鑰</translation>
 <translation id="8726206820263995930">從伺服器擷取政策設定時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
+<translation id="8727043961453758442">充分運用 Chrome 的功能</translation>
 <translation id="8727751378406387165">傳送<ph name="BEGIN_LINK1" />自動填入元數據<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (系統不會共用自動填入資料)</translation>

@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR કોડ</translation>
 <translation id="2178545675770638239">પાસવર્ડ પસંદ કરો</translation>
 <translation id="2195124168004379331">તમારા બ્રાઉઝરમાં બધું ઠીક લાગે છે</translation>
+<translation id="2213327331203157297">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPhone પર બંધ કરો.</translation>
 <translation id="2218443599109088993">નાનું કરો</translation>
 <translation id="2230173723195178503">વેબપેજ લોડ કર્યું</translation>
 <translation id="2239626343334228536">બ્રાઉઝિંગ ડેટા સાફ થઈ રહ્યો છે...</translation>
@@ -474,7 +475,6 @@
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
 <translation id="3775743491439407556">સિંક કાર્ય કરી રહ્યું નથી</translation>
 <translation id="3779810277399252432">કોઈ ઇન્ટરનેટ કનેક્શન નથી.</translation>
-<translation id="3783017676699494206">ફોટા સાચવો</translation>
 <translation id="3789294999358192700">નીચેના પગલાં અનુસરો:</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="380329542618494757">નામ</translation>
@@ -1360,6 +1360,7 @@
 <translation id="8843129975935593190">તમે શું સિંક કરી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે.</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
 <translation id="8855242995793521265">તમારા બ્રાઉઝર અથવા ડિવાઇસને નોંધપાત્ર રીતે ધીમું કરતું નથી.</translation>
+<translation id="8855781063981781621">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPad પર બંધ કરો.</translation>
 <translation id="8863431381414769983">Google Maps દ્વારા દિશાનિર્દેશો અને સ્થાન માહિતી મેળવો</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
 <translation id="8870413625673593573">તાજેતરમાં બંધ કરેલા</translation>

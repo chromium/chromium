@@ -65,6 +65,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> は Chrome を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4249068189593983585">Chrome の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
+<translation id="4463378960278646000">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。管理者は特定の機能を設定または制限できます。</translation>
 <translation id="4508370294876102450">他のアプリから Chrome を開く</translation>
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>

@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS যাচাইকরণ কী</translation>
 <translation id="2713444072780614174">সাদা</translation>
 <translation id="2717139507051041123">'ডার্ক কালার' মোড চালু করুন</translation>
+<translation id="2728460467788544679">সমস্ত প্রিন্ট ইতিহাস মুছে দিন</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2744221223678373668">শেয়ার করে নেওয়া</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">খারাপ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">অ্যাকাউন্ট সেটিংসে যান</translation>
+<translation id="6461047516875166066">আরও জানতে চাই</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি আবার স্ক্যান করতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}}</translation>
 <translation id="6472207088655375767">ওটিপি</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
 <translation id="8329018942023753850">Calculator অ্যাপ</translation>
 <translation id="8336739000755212683">ডিভাইস অ্যাকাউন্টের ছবিটি পরিবর্তন করুন</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> অথবা <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="8351855506390808906">কীম্যাপ করার টাচ পয়েন্ট</translation>
 <translation id="8352772353338965963">একাধিক সাইন-ইন-এ একটি অ্যাকাউন্ট যোগ করুন৷ সমস্ত সাইন-ইন থাকা অ্যাকাউন্টগুলি কোনো পাসওয়ার্ড ছাড়াই অ্যাক্সেস করা যাবে, তাই এই বৈশিষ্ট্যটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টগুলির সাথে ব্যবহার করা উচিৎ৷</translation>

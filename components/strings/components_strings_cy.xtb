@@ -522,7 +522,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2048261947532620704">Wrthi'n cyfieithu'r dudalen</translation>
 <translation id="205212645995975601">Barbeciw a grilio</translation>
 <translation id="2053111141626950936">Ni fydd tudalennau yn <ph name="LANGUAGE" /> yn cael eu cyfieithu.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Pan fydd y rheolaeth hon ymlaen a'r statws yn weithredol, mae Chrome yn penderfynu pa grŵp mawr o bobl, neu "garfan," y mae eich gweithgarwch pori diweddar yn fwyaf tebyg iddynt. Gall hysbysebwyr ddewis hysbysebion ar gyfer y grŵp a chedwir eich gweithgarwch pori yn breifat ar eich dyfais. Mae'ch grŵp yn cael ei ddiweddaru bob dydd.}=1{Pan fydd y rheolaeth hon ymlaen a'r statws yn weithredol, mae Chrome yn penderfynu pa grŵp mawr o bobl, neu "garfan," y mae eich gweithgarwch pori diweddar yn fwyaf tebyg iddynt. Gall hysbysebwyr ddewis hysbysebion ar gyfer y grŵp a chedwir eich gweithgarwch pori yn breifat ar eich dyfais. Mae'ch grŵp yn cael ei ddiweddaru bob dydd.}two{Pan fydd y rheolaeth hon ymlaen a'r statws yn weithredol, mae Chrome yn penderfynu pa grŵp mawr o bobl, neu "garfan," y mae eich gweithgarwch pori diweddar yn fwyaf tebyg iddynt. Gall hysbysebwyr ddewis hysbysebion ar gyfer y grŵp a chedwir eich gweithgarwch pori yn breifat ar eich dyfais. Mae'ch grŵp yn cael ei ddiweddaru bob {NUM_DAYS} ddiwrnod.}few{Pan fydd y rheolaeth hon ymlaen a'r statws yn weithredol, mae Chrome yn penderfynu pa grŵp mawr o bobl, neu "garfan," y mae eich gweithgarwch pori diweddar yn fwyaf tebyg iddynt. Gall hysbysebwyr ddewis hysbysebion ar gyfer y grŵp a chedwir eich gweithgarwch pori yn breifat ar eich dyfais. Mae'ch grŵp yn cael ei ddiweddaru bob {NUM_DAYS} diwrnod.}many{Pan fydd y rheolaeth hon ymlaen a'r statws yn weithredol, mae Chrome yn penderfynu pa grŵp mawr o bobl, neu "garfan," y mae eich gweithgarwch pori diweddar yn fwyaf tebyg iddynt. Gall hysbysebwyr ddewis hysbysebion ar gyfer y grŵp a chedwir eich gweithgarwch pori yn breifat ar eich dyfais. Mae'ch grŵp yn cael ei ddiweddaru bob {NUM_DAYS} diwrnod.}other{Pan fydd y rheolaeth hon ymlaen a'r statws yn weithredol, mae Chrome yn penderfynu pa grŵp mawr o bobl, neu "garfan," y mae eich gweithgarwch pori diweddar yn fwyaf tebyg iddynt. Gall hysbysebwyr ddewis hysbysebion ar gyfer y grŵp a chedwir eich gweithgarwch pori yn breifat ar eich dyfais. Mae'ch grŵp yn cael ei ddiweddaru bob {NUM_DAYS} diwrnod.}}</translation>
 <translation id="2056658168519009885">Gall gwefannau ofyn i Chrome am wybodaeth i helpu i bersonoleiddio'r hysbysebion a welwch.</translation>
 <translation id="2059202684901022309">22 x 34 modfedd</translation>
 <translation id="2064568741209980952">Credyd a Benthyca</translation>
@@ -669,7 +668,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2355395290879513365">Mae'n bosib y bydd ymosodwyr yn gallu gweld y lluniau rydych yn edrych arnynt ar y wefan hon a'ch twyllo drwy eu haddasu.</translation>
 <translation id="2356070529366658676">Gofyn</translation>
 <translation id="2357481397660644965">Rheolir eich dyfais gan <ph name="DEVICE_MANAGER" /> a rheolir eich cyfrif gan <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Mewn llai na diwrnod}=1{Mewn diwrnod}two{Mewn {NUM_DAYS} ddiwrnod}few{Mewn {NUM_DAYS} diwrnod}many{Mewn {NUM_DAYS} diwrnod}other{Mewn {NUM_DAYS} diwrnod}}</translation>
 <translation id="2359629602545592467">Mwy nad un</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1231,7 +1229,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3586833803451155175">Ffilm Wlyb</translation>
 <translation id="3586931643579894722">Cuddio'r manylion</translation>
 <translation id="3587738293690942763">Canol</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Gallwch ailosod eich grŵp unrhyw bryd. Mae'n cymryd tua diwrnod i ymuno â grŵp newydd.}=1{Gallwch ailosod eich grŵp unrhyw bryd. Mae'n cymryd tua diwrnod i ymuno â grŵp newydd.}two{Gallwch ailosod eich grŵp unrhyw bryd. Mae'n cymryd tua {NUM_DAYS} ddiwrnod i ymuno â grŵp newydd.}few{Gallwch ailosod eich grŵp unrhyw bryd. Mae'n cymryd tua {NUM_DAYS} diwrnod i ymuno â grŵp newydd.}many{Gallwch ailosod eich grŵp unrhyw bryd. Mae'n cymryd tua {NUM_DAYS} diwrnod i ymuno â grŵp newydd.}other{Gallwch ailosod eich grŵp unrhyw bryd. Mae'n cymryd tua {NUM_DAYS} diwrnod i ymuno â grŵp newydd.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botwm rheoli gosodiadau preifatrwydd Google, gweithredwch i fynd i osodiadau preifatrwydd eich Cyfrif Google</translation>
 <translation id="3603507503523709">Mae'r ap wedi'i rwystro gan eich gweinyddwr</translation>
@@ -1580,7 +1577,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4285498937028063278">Dad-binio</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Mae'r cerdyn hwn wedi'i gadw yn eich Cyfrif Google}zero{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}two{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}few{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}many{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}other{Mae'r cardiau hyn wedi'u cadw yn eich Cyfrif Google}}</translation>
 <translation id="4287495839370498922">Preifatrwydd hysbyseb gwell yn Chrome</translation>
-<translation id="4287885627794386150">Yn gymwys am dreial ond nid yw'n weithredol</translation>
 <translation id="4290920330097335010">Peidio byth â chaniatáu</translation>
 <translation id="4296207570293932800">Nodwedd preifatrwydd hysbyseb newydd ar gael nawr</translation>
 <translation id="4297502707443874121">Mân-lun ar gyfer tudalen <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2316,7 +2312,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5847181246682413476">Cyflenwadau Pŵer</translation>
 <translation id="5851548754964597211">Rhestr tabiau</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Diffodd</translation>
 <translation id="5862579898803147654">Pentyrrwr 8</translation>
 <translation id="5863847714970149516">Gallai'r dudalen rydych ar fin mynd arni geisio codi tâl arnoch</translation>
 <translation id="5866257070973731571">Ychwanegu Rhif Ffôn</translation>
@@ -3050,7 +3045,6 @@ Manylion ychwanegol:
 <translation id="7378877318020334501">Rhaglenni teledu comedi</translation>
 <translation id="7380398842872229465">10 x 15 modfedd</translation>
 <translation id="738439098860678026">Addysg plentyndod cynnar</translation>
-<translation id="7386364858855961704">Ddim yn berthnasol</translation>
 <translation id="7388594495505979117">{0,plural, =1{Bydd eich dyfais yn ailgychwyn mewn 1 funud}zero{Bydd eich dyfais yn ailgychwyn mewn # munud}two{Bydd eich dyfais yn ailgychwyn mewn # funud}few{Bydd eich dyfais yn ailgychwyn mewn # munud}many{Bydd eich dyfais yn ailgychwyn mewn # munud}other{Bydd eich dyfais yn ailgychwyn mewn # munud}}</translation>
 <translation id="7390545607259442187">Cadarnhau Cerdyn</translation>
 <translation id="7392089738299859607">Diweddaru'r Cyfeiriad</translation>
@@ -3146,7 +3140,6 @@ Manylion ychwanegol:
 <translation id="7549584377607005141">Mae'r dudalen we hon yn gofyn am ddata a nodoch yn gynharach er mwyn cael ei harddangos yn iawn. Gallwch anfon y data hyn eto, ond drwy wneud hynny byddwch yn ailadrodd unrhyw gamau a gyflawnodd y dudalen hon yn flaenorol.</translation>
 <translation id="7550637293666041147">Enw defnyddiwr eich dyfais ac enw defnyddiwr Chrome</translation>
 <translation id="7551484245293639699">Yswiriant teithio</translation>
-<translation id="755279583747225797">Mae'r treial yn weithredol</translation>
 <translation id="7552846755917812628">Rhowch gynnig ar y cyngor canlynol:</translation>
 <translation id="7554475479213504905">Ail-lwytho a dangos beth bynnag</translation>
 <translation id="7554791636758816595">Tab Newydd</translation>

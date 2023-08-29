@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">የTLS ማረጋገጫ ቁልፍ</translation>
 <translation id="2713444072780614174">ነጭ</translation>
 <translation id="2717139507051041123">የጨለማ ቀለም ሁነታን አንቃ</translation>
+<translation id="2728460467788544679">ሁሉንም የህትመት ታሪክ ያጽዱ</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2744221223678373668">የተጋራ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ደካማ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ወደ የመለያ ቅንብሮች ሂድ</translation>
+<translation id="6461047516875166066">ተጨማሪ ንገረኝ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ገፅ ዳግም ይቃኝ?}=1{ገፅ {PAGE_NUMBER} ዳግም ይቃኝ?}one{ገፅ {PAGE_NUMBER} ዳግም ይቃኝ?}other{ገፅ {PAGE_NUMBER} ዳግም ይቃኝ?}}</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
 <translation id="6480327114083866287">በ<ph name="MANAGER" /> የሚተዳደር</translation>

@@ -203,6 +203,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="2178545675770638239">Wachtwoord selecteren</translation>
 <translation id="2195124168004379331">Je browser ziet er goed uit</translation>
+<translation id="2213327331203157297">Als je de Lockdown-modus in Chrome wilt uitzetten, zet je deze uit op je iPhone.</translation>
 <translation id="2218443599109088993">Uitzoomen</translation>
 <translation id="2230173723195178503">Webpagina geladen</translation>
 <translation id="2239626343334228536">Browsegegevens wissen…</translation>
@@ -474,7 +475,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3771033907050503522">Incognitotabbladen</translation>
 <translation id="3775743491439407556">Synchronisatie werkt niet</translation>
 <translation id="3779810277399252432">Geen internetverbinding.</translation>
-<translation id="3783017676699494206">Afbeelding opslaan</translation>
 <translation id="3789294999358192700">Voer de onderstaande stappen uit:</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="380329542618494757">Naam</translation>
@@ -1360,6 +1360,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8843129975935593190">De limieten van je organisatie voor wat je kunt synchroniseren.</translation>
 <translation id="8849001918648564819">Verborgen</translation>
 <translation id="8855242995793521265">Je browser of apparaat wordt hier niet merkbaar langzamer van.</translation>
+<translation id="8855781063981781621">Als je de Lockdown-modus in Chrome wilt uitzetten, zet je deze uit op je iPad.</translation>
 <translation id="8863431381414769983">Routes en lokale informatie opvragen via Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} tabblad}other{{count} tabbladen}}</translation>
 <translation id="8870413625673593573">Recent gesloten</translation>

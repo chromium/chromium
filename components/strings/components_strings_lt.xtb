@@ -522,7 +522,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2048261947532620704">Verčiamas puslapis</translation>
 <translation id="205212645995975601">Kepsniai ir kepimas ant grotelių</translation>
 <translation id="2053111141626950936">Puslapiai, parašyti <ph name="LANGUAGE" />, verčiami nebus.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}=1{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}one{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dieną.}few{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienas.}many{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienos.}other{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienų.}}</translation>
 <translation id="2056658168519009885">Svetainės gali prašyti „Chrome“ informacijos, kad galėtų suasmeninti jums rodomus skelbimus.</translation>
 <translation id="2059202684901022309">22 x 34 col.</translation>
 <translation id="2064568741209980952">Kreditai ir paskolos</translation>
@@ -669,7 +668,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2355395290879513365">Užpuolikai galbūt galės matyti, kuriuos šios svetainės vaizdus peržiūrite, ir juos pakeis siekdami jus suklaidinti.</translation>
 <translation id="2356070529366658676">Paklausti</translation>
 <translation id="2357481397660644965">Jūsų įrenginį valdo <ph name="DEVICE_MANAGER" />, o paskyrą – <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Mažiau nei per dieną}=1{Per dieną}one{Per {NUM_DAYS} dieną}few{Per {NUM_DAYS} dienas}many{Per {NUM_DAYS} dienos}other{Per {NUM_DAYS} dienų}}</translation>
 <translation id="2359629602545592467">Kelios</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1232,7 +1230,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3586833803451155175">Šlapia plėvelė</translation>
 <translation id="3586931643579894722">Slėpti išsamią informaciją</translation>
 <translation id="3587738293690942763">Vidurys</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}=1{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}one{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dieną.}few{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienas.}many{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienos.}other{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienų.}}</translation>
 <translation id="3600246354004376029">„<ph name="TITLE" />“, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Mygtukas „Tvarkyti „Google“ privatumo nustatymus“; suaktyvinkite, kad apsilankytumėte „Google“ paskyros privatumo nustatymų skiltyje</translation>
 <translation id="3603507503523709">Programą užblokavo administratorius</translation>
@@ -1581,7 +1578,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4285498937028063278">Atsegti</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ši kortelė išsaugota jūsų „Google“ paskyroje}one{Šios kortelės išsaugotos jūsų „Google“ paskyroje}few{Šios kortelės išsaugotos jūsų „Google“ paskyroje}many{Šios kortelės išsaugotos jūsų „Google“ paskyroje}other{Šios kortelės išsaugotos jūsų „Google“ paskyroje}}</translation>
 <translation id="4287495839370498922">Patobulintas su skelbimais susijęs privatumas naršyklėje „Chrome“</translation>
-<translation id="4287885627794386150">Galima naudoti bandomąją versiją, bet ji nėra aktyvi</translation>
 <translation id="4290920330097335010">Niekada neleisti</translation>
 <translation id="4296207570293932800">Dabar pasiekiama nauja skelbimų privatumo funkcija</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> puslapio miniatiūra</translation>
@@ -2317,7 +2313,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5847181246682413476">Maitinimo tiekimas</translation>
 <translation id="5851548754964597211">Skirtukų sąrašas</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Išjungta</translation>
 <translation id="5862579898803147654">8 dėtuvė</translation>
 <translation id="5863847714970149516">Toliau pateiktame puslapyje gali būti bandoma jus apmokestinti</translation>
 <translation id="5866257070973731571">Telefono numerio pridėjimas</translation>
@@ -3051,7 +3046,6 @@ Papildoma išsami informacija:
 <translation id="7378877318020334501">TV komedijos</translation>
 <translation id="7380398842872229465">10 x 15 col.</translation>
 <translation id="738439098860678026">Švietimas ankstyvoje vaikystėje</translation>
-<translation id="7386364858855961704">Netaikoma</translation>
 <translation id="7388594495505979117">{0,plural, =1{Įrenginys bus paleistas iš naujo po vienos minutės}one{Įrenginys bus paleistas iš naujo po # minutės}few{Įrenginys bus paleistas iš naujo po # minučių}many{Įrenginys bus paleistas iš naujo po # minutės}other{Įrenginys bus paleistas iš naujo po # minučių}}</translation>
 <translation id="7390545607259442187">Kortelės patvirtinimas</translation>
 <translation id="7392089738299859607">Adreso atnaujinimas</translation>
@@ -3147,7 +3141,6 @@ Papildoma išsami informacija:
 <translation id="7549584377607005141">Jei norite, kad šis tinklalapis būtų tinkamai pateikiamas, reikalingi anksčiau įvesti duomenys. Galite nusiųsti šiuos duomenis iš naujo, bet taip pakartosite visus anksčiau šiame puslapyje įvykdytus veiksmus.</translation>
 <translation id="7550637293666041147">Įrenginio naudotojo vardas ir „Chrome“ naudotojo vardas</translation>
 <translation id="7551484245293639699">Kelionių draudimas</translation>
-<translation id="755279583747225797">Bandomoji versija aktyvi</translation>
 <translation id="7552846755917812628">Išbandykite toliau pateiktus patarimus.</translation>
 <translation id="7554475479213504905">Įkelti iš naujo ir vis tiek rodyti</translation>
 <translation id="7554791636758816595">Naujas skirtukas</translation>

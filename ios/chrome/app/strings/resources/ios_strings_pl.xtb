@@ -155,6 +155,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1836891464494477513">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{Zakładki zostały zapisane na Twoim koncie Google {email}}many{Zakładki zostały zapisane na Twoim koncie Google {email}}other{Zakładki zostały zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="1870148520156231997">Pokaż hasło</translation>
 <translation id="1872096359983322073">Latarka</translation>
+<translation id="1882901927376062252">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{{count} zakładki zostały zapisane na Twoim koncie Google {email}}many{{count} zakładek zostało zapisanych na Twoim koncie Google {email}}other{{count} zakładki zostało zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="1883255238294161206">Zwiń listę</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
@@ -475,7 +476,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3771033907050503522">Karty incognito</translation>
 <translation id="3775743491439407556">Synchronizacja nie działa</translation>
 <translation id="3779810277399252432">Brak połączenia z internetem.</translation>
-<translation id="3783017676699494206">Zapisz obraz</translation>
 <translation id="3789294999358192700">Wykonaj te czynności:</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
@@ -657,6 +657,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4850886885716139402">Widok</translation>
 <translation id="4854345657858711387">Ustaw kod dostępu</translation>
 <translation id="4856498338299082007">Na Twoim koncie Google</translation>
+<translation id="4856841893565072365">Pasek menu inteligentnego sortowania</translation>
 <translation id="4858786880085262208">Jeśli to możliwe, przełączaj się na HTTPS. Bezpieczne witryny mogą umieszczać treści, które nie są bezpieczne.</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4872323082491632254">Sprawdź hasła</translation>
@@ -692,6 +693,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5083464117946352670">Nie można ustalić rozmiaru pliku.</translation>
 <translation id="5090832849094901128">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet opublikowany.</translation>
+<translation id="5100848274708256363">Dołącz do grupy rodzinnej</translation>
 <translation id="5109892411553231226">Zarządzaj formami płatności</translation>
 <translation id="5118713593561876160">Zainteresowania</translation>
 <translation id="5118764316110575523">Wyłączono</translation>
@@ -994,6 +996,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6642362222295953972">Przełącz na istniejącą kartę</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645899968535965230">Kod QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Ostatnio uruchomiono: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Folder edytora</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6668619169535738264">Edytuj zakładkę</translation>
@@ -1107,6 +1110,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7351537303876921605">Kliknij Utwórz link w menu kontekstowym</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7353432112255316844">Potwierdź, że to Ty</translation>
+<translation id="7380220816562673297">Obecnie hasła możesz udostępniać tylko członkom grupy rodzinnej. <ph name="BEGIN_LINK" />Utwórz grupę rodzinną<ph name="END_LINK" /> liczącą maksymalnie 6 osób i w pełni wykorzystaj potencjał produktów, usług i subskrypcji Google.</translation>
 <translation id="7383797227493018512">Do przeczytania</translation>
 <translation id="7398893703713203428">Utwórz link</translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
@@ -1430,6 +1434,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="9223358826628549784">Raport o awarii został wysłany.</translation>
 <translation id="941747855997058526">Wybierz hasło</translation>
 <translation id="948048872540558976">Utwórz nową kartę</translation>
+<translation id="952218985181984374">{count,plural, =1{Zakładka została zapisana}few{{count} zakładki zostały zapisane}many{{count} zakładek została zapisanych}other{{count} zakładki zostało zapisane}}</translation>
 <translation id="952704832371081537">Anuluj</translation>
 <translation id="953008885340860025">Wylogowano z Chrome</translation>
 <translation id="959066944189734975">Obserwujesz kanał <ph name="CHANNEL_NAME" /></translation>

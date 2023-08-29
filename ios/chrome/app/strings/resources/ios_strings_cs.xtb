@@ -155,6 +155,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1836891464494477513">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{Záložky byly uloženy do vašeho účtu Google {email}}many{Záložky byly uloženy do vašeho účtu Google {email}}other{Záložky byly uloženy do vašeho účtu Google {email}}}</translation>
 <translation id="1870148520156231997">Zobrazit heslo</translation>
 <translation id="1872096359983322073">Svítilna</translation>
+<translation id="1882901927376062252">{count,plural, =1{Záložka byla uložena do vašeho účtu Google {email}}few{{count} záložky byly uloženy do vašeho účtu Google {email}}many{{count} záložky bylo uloženo do vašeho účtu Google {email}}other{{count} záložek bylo uloženo do vašeho účtu Google {email}}}</translation>
 <translation id="1883255238294161206">Sbalit seznam</translation>
 <translation id="1894023287452300670">Tady můžete sledovat cenu</translation>
 <translation id="189531189292803889">Váš iPad byl nedávno obnoven, což mohlo změnit váš výchozí prohlížeč.</translation>
@@ -203,6 +204,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2178545675770638239">Vyberte heslo</translation>
 <translation id="2195124168004379331">Váš prohlížeč vypadá dobře</translation>
+<translation id="2213327331203157297">Pokud chcete v Chromu deaktivovat režim blokování, vypněte ho na svém iPhonu.</translation>
 <translation id="2218443599109088993">Oddálit</translation>
 <translation id="2230173723195178503">Webová stránka byla načtena</translation>
 <translation id="2239626343334228536">Mazání údajů o prohlížení...</translation>
@@ -474,7 +476,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3771033907050503522">Anonymní karty</translation>
 <translation id="3775743491439407556">Synchronizace nefunguje</translation>
 <translation id="3779810277399252432">Nejste připojeni k internetu</translation>
-<translation id="3783017676699494206">Uložit obrázek</translation>
 <translation id="3789294999358192700">Postupujte podle následujících pokynů:</translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="380329542618494757">Název</translation>
@@ -691,6 +692,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5083464117946352670">Velikost souboru nelze zjistit.</translation>
 <translation id="5090832849094901128">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet byl odeslán.</translation>
+<translation id="5100848274708256363">Připojení k rodinné skupině</translation>
 <translation id="5109892411553231226">Spravovat platební metody</translation>
 <translation id="5118713593561876160">Zájmy</translation>
 <translation id="5118764316110575523">Vypnuto</translation>
@@ -993,6 +995,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6642362222295953972">Přepnout na existující kartu</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Naposledy spuštěno: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Úprava složky</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6668619169535738264">Upravit záložku</translation>
@@ -1106,6 +1109,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7351537303876921605">V kontextové nabídce klepněte na Vytvořit odkaz.</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353432112255316844">Ověřte svoji totožnost</translation>
+<translation id="7380220816562673297">Prozatím můžete hesla sdílet pouze se členy rodiny. <ph name="BEGIN_LINK" />Vytvořte si rodinnou skupinu<ph name="END_LINK" /> až se šesti členy a využívejte naplno služby a předplatná napříč Googlem.</translation>
 <translation id="7383797227493018512">Seznam četby</translation>
 <translation id="7398893703713203428">Vytvořit odkaz</translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
@@ -1360,6 +1364,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8843129975935593190">Vaše organizace omezuje, co můžete synchronizovat.</translation>
 <translation id="8849001918648564819">Skryté</translation>
 <translation id="8855242995793521265">Nijak znatelně nezpomaluje prohlížeč ani zařízení.</translation>
+<translation id="8855781063981781621">Pokud chcete v Chromu deaktivovat režim blokování, vypněte ho na svém iPadu.</translation>
 <translation id="8863431381414769983">Získávat trasy a místní informace z Map Google</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} karta}few{{count} karty}many{{count} karty}other{{count} karet}}</translation>
 <translation id="8870413625673593573">Nedávno zavřené</translation>
@@ -1428,6 +1433,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="9223358826628549784">Zpráva o selhání byla odeslána.</translation>
 <translation id="941747855997058526">Vybrat heslo…</translation>
 <translation id="948048872540558976">Vytvořit novou kartu</translation>
+<translation id="952218985181984374">{count,plural, =1{Záložka uložena}few{Byly uloženy {count} záložky}many{Bylo uloženo {count} záložky}other{Bylo uloženo {count} záložek}}</translation>
 <translation id="952704832371081537">Zrušit</translation>
 <translation id="953008885340860025">Chrome je odhlášen</translation>
 <translation id="959066944189734975">Sledujete web <ph name="CHANNEL_NAME" /></translation>

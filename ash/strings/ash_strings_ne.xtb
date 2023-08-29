@@ -115,7 +115,6 @@
 <translation id="1415846719612499304">नेटवर्कको सूची देखाउनुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="1419738280318246476">सूचनासम्बन्धी कारबाही गर्न डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> मा आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्नुहोस्</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
@@ -546,6 +545,7 @@
 <translation id="3378438761594387761">तपाईं यहाँ आफ्ना हालसालैका स्क्रिन क्याप्चर र डाउनलोड गरिएका सामग्री भेट्टाउनु हुने छ</translation>
 <translation id="3386978599540877378">पूर्ण स्क्रिनको म्याग्निफायर</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
+<translation id="3394432020929931914">, एक्स्पान्ड गरिएको</translation>
 <translation id="3400357268283240774">अतिरिक्त सेटिङहरू</translation>
 <translation id="3405101454990027959">माइक्रोफोन प्रयोग गर्ने अनुमति अन गर्नुहोस्</translation>
 <translation id="3408735331120433841">तपाईं अहिले आफ्नो स्क्रिन कास्ट गर्दै हुनुहुन्छ।</translation>
@@ -765,6 +765,7 @@
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="425364040945105958">SIM कार्ड छैन</translation>
 <translation id="4261870227682513959">सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। सूचनाहरू निष्क्रिय छन्</translation>
+<translation id="4264977415328155183">, कोल्याप्स गरिएको</translation>
 <translation id="4269883910223712419">यो डिभाइसको प्रशासक निम्न कुराहरू गर्न सक्नुहु्न्छ:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। End की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + राइट एरो थिच्नुहोस्।</translation>
 <translation id="4275283744500212192">विन्डो लेआउटका विकल्पहरू खोल्नुहोस्</translation>
@@ -804,14 +805,12 @@
 <translation id="4424159417645388645">डेस्क ५</translation>
 <translation id="4427695046139341014">गेम ड्यासबोर्ड</translation>
 <translation id="4430019312045809116">आयतन</translation>
-<translation id="4435022394553622295">आफ्नो फोनमा प्राप्त भएका सूचना र फोनमा भएका एपहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="4441283832827406317">एपहरू नामअनुसार क्रमबद्ध गरिन्छन्</translation>
 <translation id="4445159312344259901">अनलक गर्न साइन इन गर्नुहोस्</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{एउटा महत्त्वपूर्ण सूचना}other{# वटा महत्त्वपूर्ण सूचना}}</translation>
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
 <translation id="4451374464530248585">Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Down की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + डाउन एरो की थिच्नुहोस्।</translation>
 <translation id="4453876312474547652">Ctrl + V थिचिराख्दा क्लिपबोर्ड देखाइन्छ। तपाईं chrome://flags मा गई (वा Lacros प्रयोग गर्दै हुनुहुन्छ भने os://flags मा गई) #clipboard-history-longpress फ्ल्याग अफ गरेर यो सर्टकट अफ गर्न सक्नुहुन्छ।</translation>
-<translation id="4455051983450390249">आफ्नो फोनमा प्राप्त भएका सूचनाहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="445864333228800152">नमस्ते,</translation>
 <translation id="4458688154122353284">स्क्रिन रेकर्ड गर्ने कार्य रोक्नुहोस्</translation>
 <translation id="445923051607553918">Wi-Fi सञ्जालमा संयोग गर्नुहोस्</translation>
@@ -1076,7 +1075,6 @@
 <translation id="5551456515017410630">पात्रो खोल्नुहोस्/बन्द गर्नुहोस्</translation>
 <translation id="5551974246223970793">कुनै पेज खोज्दा खोज पदसँग मिल्दोजुल्दो अर्को परिणाममा जानुहोस्</translation>
 <translation id="5558091555391176027">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी मोड टगल गर्नुहोस्</translation>
-<translation id="5560420195677022218">आफ्नो फोनमा भएका एपहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नयाँ ट्याब नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="5571066253365925590">ब्लुटूथ सक्षम भयो</translation>
@@ -1172,6 +1170,7 @@
 <translation id="595202126637698455">प्रदर्शन ट्रेसिङ सक्षम गरियो</translation>
 <translation id="5955304353782037793">एप</translation>
 <translation id="5958529069007801266">सुपरिवेक्षित प्रयोगकर्ता</translation>
+<translation id="5960410286721553511">आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्नुहोस्</translation>
 <translation id="5961960957587052807">हलुका</translation>
 <translation id="5965524703725988602">अँध्यारो थिम टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="5975235751479998104">विन्डोहरू सुल्टो क्रमअनुसार पालैपालो हेर्नुहोस्</translation>
@@ -1233,7 +1232,6 @@
 <translation id="6179832488876878285">तपाईं यहाँ आफ्ना महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न थाल्न फाइलहरू नामक एप खोल्नुहोस्।</translation>
 <translation id="6182592640011875895">डेस्क खोल्नुहोस्</translation>
 <translation id="6185696379715117369">पृष्ठ माथि</translation>
-<translation id="619279033188484792"><ph name="DEVICE_TYPE" /> मा आफ्नो फोनका हालसालैका फोटो, मिडिया र सूचनाहरू हेर्नुहोस्</translation>
 <translation id="619335566042889110">अहिले नै फुल चार्ज गर्नुहोस्</translation>
 <translation id="6193431488227440296">डेभ</translation>
 <translation id="6199775032047436064">हालको पृष्ठ फेरि लोड गर्नुहोस्</translation>
@@ -1393,7 +1391,6 @@
 <translation id="6884665277231944629">आजको मितिमा फर्कनुहोस्</translation>
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
 <translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>
-<translation id="6891721121089053234">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा एपहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6901883536534621389">नेभिगेट गर्न जेस्चर प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6912841030378044227">एड्रेस बारमा फोकस गर्नुहोस्</translation>
@@ -1454,6 +1451,8 @@
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144942256906679589">ब्याट्रीको स्थिति</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>
@@ -1580,6 +1579,7 @@
 <translation id="7723703419796509666">डेभलपर टुल कन्सोल देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7725108879223146004">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अफ हुँदै छ।</translation>
+<translation id="7726391492136714301">आफ्नो फोनका सूचना तथा एपहरू हेर्नुहोस्</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
@@ -1691,7 +1691,6 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> प्रयोग गर्दै</translation>
-<translation id="8183592608247778598">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="8185090165691050712">लक मोडको आकार बदल्न मेनु टगल गरी अन/अफ गर्नुहोस्</translation>
 <translation id="8192202700944119416">सूचनाहरू लुकाइन्छन्।</translation>
 <translation id="8196787716797768628">एउटा अनुप्रयोगबाट तुरुन्तै अर्को एपमा जान र आफ्नो Chromebook ट्याब्लेट मोडमा प्रयोग गर्न इसाराहरूको प्रयोग गर्नुहोस्।</translation>

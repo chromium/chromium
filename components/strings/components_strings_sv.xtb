@@ -522,7 +522,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2048261947532620704">Översätter sida</translation>
 <translation id="205212645995975601">BBQ och grillning</translation>
 <translation id="2053111141626950936">Sidor på <ph name="LANGUAGE" /> översätts inte.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{När den här inställningen är på och statusen är Aktiv fastställer Chrome vilken grupp, eller kohort, som du tillhör utifrån din senaste webbaktivitet. Annonsörer kan välja annonser för denna grupp och din webbhistorik förblir privat på enheten. Grupptillhörigheten uppdateras dagligen.}=1{När den här inställningen är på och statusen är Aktiv fastställer Chrome vilken grupp, eller kohort, som du tillhör utifrån din senaste webbaktivitet. Annonsörer kan välja annonser för denna grupp och din webbhistorik förblir privat på enheten. Grupptillhörigheten uppdateras dagligen.}other{När den här inställningen är på och statusen är Aktiv fastställer Chrome vilken grupp, eller kohort, som du tillhör utifrån din senaste webbaktivitet. Annonsörer kan välja annonser för denna grupp och din webbhistorik förblir privat på enheten. Grupptillhörigheten uppdateras med {NUM_DAYS} dagars mellanrum.}}</translation>
 <translation id="2056658168519009885">Webbplatser kan be Chrome om information för att anpassa vilka annonser som visas.</translation>
 <translation id="2059202684901022309">22 x 34 tum</translation>
 <translation id="2064568741209980952">Krediter och lån</translation>
@@ -669,7 +668,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2355395290879513365">Det är möjligt att hackare kan se vilka bilder du visar på den här webbplatsen och att de försöker lura dig genom att modifiera dem.</translation>
 <translation id="2356070529366658676">Fråga</translation>
 <translation id="2357481397660644965">Enheten hanteras av <ph name="DEVICE_MANAGER" /> och kontot hanteras av <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Om mindre än ett dygn}=1{Om ett dygn}other{Om {NUM_DAYS} dygn}}</translation>
 <translation id="2359629602545592467">Flera</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1231,7 +1229,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3586833803451155175">Våtfilm</translation>
 <translation id="3586931643579894722">Dölj detaljerad information</translation>
 <translation id="3587738293690942763">Mellan</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Du kan återställa grupptillhörigheten när som helst. Det tar ungefär ett dygn att bli med i en ny grupp.}=1{Du kan återställa grupptillhörigheten när som helst. Det tar ungefär ett dygn att bli med i en ny grupp.}other{Du kan återställa grupptillhörigheten när som helst. Det tar {NUM_DAYS} dygn att bli med i en ny grupp.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen Hantera Googles integritetsinställningar: aktivera om du vill öppna Google-kontots integritetsinställningar</translation>
 <translation id="3603507503523709">Appen blockeras av administratören</translation>
@@ -1246,6 +1243,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="36224234498066874">Rensa webbinformation ...</translation>
 <translation id="362276910939193118">Visa fullständig historik</translation>
 <translation id="3624292976554877583">Etiketter (matta)</translation>
+<translation id="3625929652356389713">Får begära tillstånd att öppna bild-i-bild-fönster automatiskt</translation>
 <translation id="3628905806504633297">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att överföra den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att överföra dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Om den redan finns med på listan över program som har tillgång till nätverket 
         kan du prova att ta bort den från listan och sedan lägga till den igen.</translation>
@@ -1379,6 +1377,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="388632593194507180">Övervakning har upptäckts</translation>
 <translation id="3886948180919384617">Utmatningsfack 3</translation>
 <translation id="3890664840433101773">Lägg till e-post</translation>
+<translation id="3893306401511601929">Automatisk bild-i-bild</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3901925938762663762">Kortet gäller inte längre</translation>
 <translation id="390391808978419508">Tidsgränsen för att öppna överskreds</translation>
@@ -1578,7 +1577,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Det här kortet har sparats i ditt Google-konto}other{De här korten har sparats i ditt Google-konto}}</translation>
 <translation id="4287495839370498922">Förbättrad annonsintegritet i Chrome</translation>
-<translation id="4287885627794386150">Behörig för provperiod, men inte aktiv</translation>
 <translation id="4290920330097335010">Tillåt aldrig</translation>
 <translation id="4296207570293932800">Nu finns en ny funktion för annonsintegritet</translation>
 <translation id="4297502707443874121">Miniatyr för sidan <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2158,6 +2156,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5512812358367123529">Kontorsmöbler</translation>
 <translation id="5513528801833998679">Använd enhetsinloggning</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5516095341424241911">Skydda dina betalningsuppgifter med hjälp av Googles säkerhetsteknik</translation>
 <translation id="5518670652865028077">Konst och underhållning</translation>
 <translation id="5519516356611866228">Med dina ändringar</translation>
 <translation id="5519696598216267194">Papper (perforerat)</translation>
@@ -2313,7 +2312,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5847181246682413476">Kraftförsörjning</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Av</translation>
 <translation id="5862579898803147654">Utmatningsfack 8</translation>
 <translation id="5863847714970149516">Sidan du är på väg till kan försöka debitera dig</translation>
 <translation id="5866257070973731571">Ange telefonnummer</translation>
@@ -3047,7 +3045,6 @@ Mer information.
 <translation id="7378877318020334501">Tv-komedier</translation>
 <translation id="7380398842872229465">10 x 15 tum</translation>
 <translation id="738439098860678026">Pedagogik för yngre barn</translation>
-<translation id="7386364858855961704">Ej tillämpligt</translation>
 <translation id="7388594495505979117">{0,plural, =1{Om 1 minut startas enheten om}other{Om # minuter startas enheten om}}</translation>
 <translation id="7390545607259442187">Bekräfta kort</translation>
 <translation id="7392089738299859607">Uppdatera adressen</translation>
@@ -3143,7 +3140,6 @@ Mer information.
 <translation id="7549584377607005141">Den här webbsidan kräver uppgifter som du har angett tidigare för att kunna visas korrekt. Du kan skicka uppgifterna igen, men om du gör det upprepas de åtgärder som har utförts av sidan tidigare.</translation>
 <translation id="7550637293666041147">Ditt användarnamn på enheten och användarnamn i Chrome</translation>
 <translation id="7551484245293639699">Reseförsäkringar</translation>
-<translation id="755279583747225797">Provperioden är aktiv</translation>
 <translation id="7552846755917812628">Testa följande tips:</translation>
 <translation id="7554475479213504905">Läs in igen och visa ändå</translation>
 <translation id="7554791636758816595">Ny flik</translation>
@@ -3991,5 +3987,6 @@ Mer information:
     &lt;li&gt;Testa att ansluta till ett annat nätverk&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">automatisk bild-i-bild</translation>
 <translation id="997986563973421916">Från Google Pay</translation>
 </translationbundle>

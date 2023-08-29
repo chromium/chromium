@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شدند}}</translation>
 <translation id="1870148520156231997">نشان دادن گذرواژه</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
+<translation id="1882901927376062252">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
 <translation id="1894023287452300670">قیمت را در اینجا پیگیری کنید</translation>
 <translation id="189531189292803889">‏iPad اخیراً بازیابی شده است و ممکن است مرورگر پیش‌فرضتان را تغییر داده باشد.</translation>
@@ -203,6 +204,7 @@
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
 <translation id="2178545675770638239">انتخاب گذرواژه</translation>
 <translation id="2195124168004379331">مرورگرتان خوب به‌نظر می‌رسد</translation>
+<translation id="2213327331203157297">‏برای غیرفعال کردن حالت «قفل همه» در Chrome، آن را در iPhone خود خاموش کنید.</translation>
 <translation id="2218443599109088993">کوچک کردن</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
 <translation id="2239626343334228536">درحال پاک کردن داده‌های محصول مرور…</translation>
@@ -474,7 +476,6 @@
 <translation id="3771033907050503522">برگه‌های ناشناس</translation>
 <translation id="3775743491439407556">همگام‌سازی کار نمی‌کند</translation>
 <translation id="3779810277399252432">اتصال اینترنتی ندارید</translation>
-<translation id="3783017676699494206">ذخیره تصویر</translation>
 <translation id="3789294999358192700">مراحل زیر را دنبال کنید:</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="380329542618494757">نام</translation>
@@ -691,6 +692,7 @@
 <translation id="5083464117946352670">تعیین اندازه فایل ممکن نیست.</translation>
 <translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
 <translation id="5094827893301452931">‏Tweet انجام شد.</translation>
+<translation id="5100848274708256363">پیوستن به گروه خانواده</translation>
 <translation id="5109892411553231226">مدیریت «روش‌های پرداخت»</translation>
 <translation id="5118713593561876160">علایق</translation>
 <translation id="5118764316110575523">خاموش</translation>
@@ -993,6 +995,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6642362222295953972">رفتن به برگه موجود</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645899968535965230">رمزینه پاسخ‌سریع: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">آخرین اجرا: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">ویرایش پوشه</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6668619169535738264">ویرایش نشانک</translation>
@@ -1106,6 +1109,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7351537303876921605">‏در Context Menu (منوی بافت) روی Create Link (ایجاد پیوند) ضربه بزنید</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353432112255316844">تأیید کنید هویتتان</translation>
+<translation id="7380220816562673297">‏درحال‌حاضر، می‌توانید گذرواژه‌ها را فقط با اعضای خانواده هم‌رسانی کنید. <ph name="BEGIN_LINK" />گروه خانواده‌ای با حداکثر ۶ عضو ایجاد کنید<ph name="END_LINK" /> و بهره بیشتری از محصولات و اشتراک‌ها در Google ببرید.</translation>
 <translation id="7383797227493018512">فهرست خواندن</translation>
 <translation id="7398893703713203428">ایجاد پیوند</translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
@@ -1360,6 +1364,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8843129975935593190">سازمان شما آنچه را می‌توانید همگام‌سازی کنید محدود می‌کند.</translation>
 <translation id="8849001918648564819">پنهان</translation>
 <translation id="8855242995793521265">باعث نمی‌شود سرعت مرورگر یا دستگاه شما به‌طور قابل‌توجهی کاهش یابد.</translation>
+<translation id="8855781063981781621">‏برای غیرفعال کردن حالت «قفل همه» در Chrome، آن را در iPad خود خاموش کنید.</translation>
 <translation id="8863431381414769983">‏دریافت مسیر و اطلاعات محلی از Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} برگه}one{{count} برگه}other{{count} برگه}}</translation>
 <translation id="8870413625673593573">اخیراً بسته‌شده</translation>
@@ -1428,6 +1433,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9223358826628549784">گزارش خرابی ارسال شد.</translation>
 <translation id="941747855997058526">انتخاب گذرواژه…</translation>
 <translation id="948048872540558976">ایجاد برگه جدید</translation>
+<translation id="952218985181984374">{count,plural, =1{نشانک ذخیره شد}one{‫{count} نشانک ذخیره شد}other{‫{count} نشانک ذخیره شد}}</translation>
 <translation id="952704832371081537">لغو</translation>
 <translation id="953008885340860025">‏Chrome از سیستم خارج شده است</translation>
 <translation id="959066944189734975">‫<ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>

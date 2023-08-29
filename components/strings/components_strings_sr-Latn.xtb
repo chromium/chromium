@@ -522,7 +522,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2048261947532620704">Stranica se prevodi</translation>
 <translation id="205212645995975601">Roštilj</translation>
 <translation id="2053111141626950936">Stranice na jeziku <ph name="LANGUAGE" /> neće biti prevedene.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira svakog dana.}=1{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira svakog dana.}one{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dan.}few{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dana.}other{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dana.}}</translation>
 <translation id="2056658168519009885">Sajtovi mogu da zatraže od Chrome-a informacije da bi personalizovali oglase koji vam se prikazuju.</translation>
 <translation id="2059202684901022309">22×34 in</translation>
 <translation id="2064568741209980952">Krediti i pozajmice</translation>
@@ -669,7 +668,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2355395290879513365">Napadači će moći da vide slike koje gledate na ovom sajtu i da ih izmene kako bi vas prevarili.</translation>
 <translation id="2356070529366658676">Pitaj</translation>
 <translation id="2357481397660644965">Uređajem upravlja <ph name="DEVICE_MANAGER" />, a nalogom <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Za manje od jednog dana}=1{Za jedan dan}one{Za {NUM_DAYS} dan}few{Za {NUM_DAYS} dana}other{Za {NUM_DAYS} dana}}</translation>
 <translation id="2359629602545592467">Više</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2361263712565360498">275×395 mm</translation>
@@ -1231,7 +1229,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3586833803451155175">Vlažan film</translation>
 <translation id="3586931643579894722">Sakrij detalje</translation>
 <translation id="3587738293690942763">Srednje</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grupu možete da resetujete u bilo kom trenutku. Pridruživanje novoj grupi traje otprilike jedan dan.}=1{Grupu možete da resetujete u bilo kom trenutku. Pridruživanje novoj grupi traje otprilike jedan dan.}one{Grupu možete da resetujete u bilo kom trenutku. Pridruživanje novoj grupi traje otprilike {NUM_DAYS} dan.}few{Grupu možete da resetujete u bilo kom trenutku. Pridruživanje novoj grupi traje otprilike {NUM_DAYS} dana.}other{Grupu možete da resetujete u bilo kom trenutku. Pridruživanje novoj grupi traje otprilike {NUM_DAYS} dana.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Dugme Upravljaj Google podešavanjima privatnosti, aktivirajte ga da biste posetili podešavanja privatnosti Google naloga</translation>
 <translation id="3603507503523709">Administrator blokira aplikaciju</translation>
@@ -1580,7 +1577,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ova kartica je sačuvana na Google nalogu}one{Ove kartice su sačuvane na Google nalogu}few{Ove kartice su sačuvane na Google nalogu}other{Ove kartice su sačuvane na Google nalogu}}</translation>
 <translation id="4287495839370498922">Poboljšana privatnost sa oglasima u Chrome-u</translation>
-<translation id="4287885627794386150">Ispunjava uslove za probu, ali nije aktivno</translation>
 <translation id="4290920330097335010">Nikada ne dozvoli</translation>
 <translation id="4296207570293932800">Sada je dostupna nova funkcija za privatnost sa oglasima</translation>
 <translation id="4297502707443874121">Sličica za <ph name="THUMBNAIL_PAGE" />. stranicu</translation>
@@ -2316,7 +2312,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5847181246682413476">Uređaji za napajanje</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Isključeno</translation>
 <translation id="5862579898803147654">8. pregrada za slaganje</translation>
 <translation id="5863847714970149516">Sledeća stranica može da pokuša da vam nešto naplati</translation>
 <translation id="5866257070973731571">Dodajte broj telefona</translation>
@@ -3049,7 +3044,6 @@ Dodatni detalji:
 <translation id="7378877318020334501">TV komedije</translation>
 <translation id="7380398842872229465">10×15 in</translation>
 <translation id="738439098860678026">Predškolsko obrazovanje</translation>
-<translation id="7386364858855961704">Nije primenjivo</translation>
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se restartovati za 1 minut}one{Uređaj će se restartovati za # minut}few{Uređaj će se restartovati za # minuta}other{Uređaj će se restartovati za # minuta}}</translation>
 <translation id="7390545607259442187">Potvrdite karticu</translation>
 <translation id="7392089738299859607">Ažurirajte adresu</translation>
@@ -3145,7 +3139,6 @@ Dodatni detalji:
 <translation id="7549584377607005141">Ova veb-stranica zahteva podatke koje ste uneli ranije da bi se pravilno prikazala. Možete ponovo da pošaljete te podatke, ali ako to uradite, ponovićete bilo koju radnju koju je ova stranica prethodno obavila.</translation>
 <translation id="7550637293666041147">Korisničko ime uređaja i korisničko ime za Chrome</translation>
 <translation id="7551484245293639699">Putno osiguranje</translation>
-<translation id="755279583747225797">Proba je aktivna</translation>
 <translation id="7552846755917812628">Isprobajte sledeće savete:</translation>
 <translation id="7554475479213504905">Ipak ponovo učitaj i prikaži</translation>
 <translation id="7554791636758816595">Nova kartica</translation>

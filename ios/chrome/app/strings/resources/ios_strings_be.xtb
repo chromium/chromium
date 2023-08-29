@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Выберыце пароль</translation>
 <translation id="2195124168004379331">З браўзерам усё ў парадку</translation>
+<translation id="2213327331203157297">Каб адключыць рэжым Lockdown Mode у Chrome, адключыце яго на iPhone.</translation>
 <translation id="2218443599109088993">Паменшыць</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
@@ -474,7 +475,6 @@
 <translation id="3771033907050503522">Укладкі інкогніта</translation>
 <translation id="3775743491439407556">Сінхранізацыя не працуе</translation>
 <translation id="3779810277399252432">Няма падключэння да інтэрнэту.</translation>
-<translation id="3783017676699494206">Захаваць відарыс</translation>
 <translation id="3789294999358192700">Выканайце наступныя дзеянні:</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="380329542618494757">Імя</translation>
@@ -1360,6 +1360,7 @@
 <translation id="8843129975935593190">Тыпы даных для сінхранізацыі вызначаюцца вашай арганізацыяй.</translation>
 <translation id="8849001918648564819">Схавана</translation>
 <translation id="8855242995793521265">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
+<translation id="8855781063981781621">Каб адключыць рэжым Lockdown Mode у Chrome, адключыце яго на iPad.</translation>
 <translation id="8863431381414769983">Паказваць маршруты і мясцовую інфармацыю з Google Карт</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} укладка}one{{count} укладка}few{{count} укладкі}many{{count} укладак}other{{count} укладкі}}</translation>
 <translation id="8870413625673593573">Нядаўна закрытыя</translation>

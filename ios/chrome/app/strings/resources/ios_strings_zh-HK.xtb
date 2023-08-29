@@ -476,7 +476,6 @@
 <translation id="3771033907050503522">無痕式分頁</translation>
 <translation id="3775743491439407556">同步功能無法正常運作</translation>
 <translation id="3779810277399252432">沒有互聯網連線。</translation>
-<translation id="3783017676699494206">儲存圖片</translation>
 <translation id="3789294999358192700">請按以下步驟操作：</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="380329542618494757">名稱</translation>
@@ -1108,7 +1107,7 @@
 <translation id="7351537303876921605">輕按內容選單中的 [建立連結]</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7353432112255316844">驗證身分</translation>
-<translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
+<translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="7383797227493018512">閱讀清單</translation>
 <translation id="7398893703713203428">建立連結</translation>
 <translation id="7399802613464275309">安全檢查</translation>

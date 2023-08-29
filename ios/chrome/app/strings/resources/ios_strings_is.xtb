@@ -203,6 +203,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2178545675770638239">Veldu aðgangsorð</translation>
 <translation id="2195124168004379331">Vafrinn virðist í fínu standi</translation>
+<translation id="2213327331203157297">Til að slökkva á Lockdown Mode í Chrome þarftu að slökkva á því í iPhone-símanum þínum.</translation>
 <translation id="2218443599109088993">Minnka aðdrátt</translation>
 <translation id="2230173723195178503">Vefsíða sótt</translation>
 <translation id="2239626343334228536">Hreinsar vefskoðunargögn...</translation>
@@ -474,7 +475,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3771033907050503522">Huliðsflipar</translation>
 <translation id="3775743491439407556">Samstilling virkar ekki</translation>
 <translation id="3779810277399252432">Engin internettenging.</translation>
-<translation id="3783017676699494206">Vista mynd</translation>
 <translation id="3789294999358192700">Fylgdu skrefunum hér fyrir neðan:</translation>
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="380329542618494757">Nafn</translation>
@@ -1360,6 +1360,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8843129975935593190">Fyrirtækið takmarkar hvað þú getur samstillt.</translation>
 <translation id="8849001918648564819">Falið</translation>
 <translation id="8855242995793521265">Hægir ekki greinilega á vafranum eða tækinu.</translation>
+<translation id="8855781063981781621">Til að slökkva á Lockdown Mode í Chrome þarftu að slökkva á því í iPad-tækinu þínu.</translation>
 <translation id="8863431381414769983">Fáðu leiðarlýsingar og staðbundnar upplýsingar frá Google-kortum</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} flipi}one{{count} flipi}other{{count} flipar}}</translation>
 <translation id="8870413625673593573">Nýlega lokað</translation>

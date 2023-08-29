@@ -45,7 +45,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1175944128323889279">Livello attuale della batteria: <ph name="BATTERY_PERCENTAGE" />%, tempo rimanente: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
-<translation id="1181431373490845924">Chiudi la configurazione della visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Consente l'accesso per tutti i siti web e tutte le app che dispongono delle autorizzazioni di accesso al microfono e alla fotocamera</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Non mi interessa questo suggerimento</translation>
@@ -118,7 +117,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1415846719612499304">Mostra l'elenco di reti. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Sblocca il dispositivo per eseguire l'azione di notifica</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Visualizza le foto e i contenuti multimediali recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
@@ -411,7 +409,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Finestra attiva sganciata.</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
-<translation id="2774327524281966309">Chiudi la configurazione delle notifiche e delle app dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+ Tasto per la ricerca + S</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
@@ -490,7 +487,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3095995014811312755">versione</translation>
 <translation id="309749186376891736">Sposta il cursore</translation>
 <translation id="3100274880412651815">Ignora modalità di acquisizione</translation>
-<translation id="3103732015595029598">Configura le notifiche e le app dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Evidenzia l'elemento precedente nella barra delle app</translation>
@@ -558,6 +554,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3386978599540877378">la lente d'ingrandimento a schermo intero</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vuoi attivare la dettatura?</translation>
+<translation id="3394432020929931914">, espanso</translation>
 <translation id="3400357268283240774">Impostazioni aggiuntive</translation>
 <translation id="3405101454990027959">Attiva accesso al microfono</translation>
 <translation id="3408735331120433841">Al momento stai trasmettendo il tuo schermo.</translation>
@@ -655,7 +652,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3735740477244556633">Ordina per</translation>
 <translation id="3738664582935948253">Ora puoi mostrare i clic e le scorciatoie da tastiera nelle registrazioni dello schermo</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
-<translation id="375335662788363456">Chiudi la configurazione di app, notifiche, contenuti multimediali e foto recenti dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3765841382945324995">La scorciatoia <ph name="SIX_PACK_KEY_NAME" /> è stata cambiata in <ph name="NEW_SHORTCUT" /> da <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Modificato oggi</translation>
@@ -779,6 +775,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Nessuna SIM rilevata</translation>
 <translation id="4261870227682513959">Mostra impostazioni di notifica. Le notifiche sono disattivate</translation>
+<translation id="4264977415328155183">, compresso</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4275283744500212192">Apri le opzioni di layout delle finestre</translation>
@@ -790,7 +787,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="428715201724021596">Connessione al profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
-<translation id="4300367807227655672">Configura la visualizzazione delle notifiche dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> spostata nella cartella <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Non disponibile</translation>
 <translation id="4303223480529385476">Espandi area di stato</translation>
@@ -816,18 +812,15 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4405151984121254935">Il tipo periferico connesso non è supportato</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
-<translation id="4414595745967164324">Configura app, notifiche, contenuti multimediali e foto recenti dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4427695046139341014">Pannello di gioco</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4435022394553622295">Visualizza le notifiche e le app del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}other{# notifiche importanti}}</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451374464530248585">La scorciatoia da tastiera Alt + Freccia giù è cambiata. Per usare il tasto Pagina giù, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia giù.</translation>
 <translation id="4453876312474547652">Vedrai gli Appunti quando tieni premuto Ctrl + V. Puoi disattivare questa scorciatoia disattivando il flag #clipboard-history-longpress in chrome://flags (os://flags se usi Lacros).</translation>
-<translation id="4455051983450390249">Visualizza le notifiche del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Buonasera,</translation>
 <translation id="4458688154122353284">Interrompi registrazione dello schermo</translation>
 <translation id="445923051607553918">Connetti a rete Wi-Fi</translation>
@@ -910,7 +903,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4798888871844665150">Elemento copiato già presente negli appunti. Utilizza <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare.</translation>
 <translation id="479989351350248267">ricerca</translation>
 <translation id="4804818685124855865">Disconnetti</translation>
-<translation id="4810227386592387399">Configura la visualizzazione delle app dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Trascina il link in un'area vuota della tabstrip</translation>
 <translation id="4814539958450445987">Schermata di accesso</translation>
 <translation id="481455355267255546">Prossimi eventi</translation>
@@ -1096,7 +1088,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5551456515017410630">Apri/chiudi il calendario</translation>
 <translation id="5551974246223970793">Quando cerchi una pagina, vai alla corrispondenza successiva</translation>
 <translation id="5558091555391176027">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze</translation>
-<translation id="5560420195677022218">Visualizza le app del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5570122939431135380">Apri nuova scheda in nuova finestra di navigazione in incognito</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
@@ -1194,6 +1185,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="595202126637698455">Rilevamento del rendimento attivo</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utente supervis.</translation>
+<translation id="5960410286721553511">Visualizza le foto e i contenuti multimediali recenti del tuo telefono</translation>
 <translation id="5961960957587052807">Leggera</translation>
 <translation id="5965524703725988602">Attiva/disattiva il tema scuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Spostati avanti tra le finestre</translation>
@@ -1207,7 +1199,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="601304062528754300">Evidenzia l'elemento successivo nella barra delle app</translation>
 <translation id="6015573907265691211">Segna come completata</translation>
 <translation id="6018164090099858612">Uscita dalla modalità di mirroring</translation>
-<translation id="6019566113895157499">Key Shortcuts</translation>
+<translation id="6019566113895157499">Scorciatoie da tastiera</translation>
 <translation id="602001110135236999">Scorri a sinistra</translation>
 <translation id="6022924867608035986">Cancella testo dalla casella di ricerca</translation>
 <translation id="602472752137106327">Mostra finestre di tutte le scrivanie, pulsante di opzione selezionato</translation>
@@ -1250,13 +1242,11 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="616543563528926612">La scorciatoia per il clic con il tasto destro del mouse tasto <ph name="LAUNCHER_KEY_NAME" /> + clic viene aggiornata ad Alt + clic</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6166852626429024716">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
-<translation id="6167922743323004256">Chiudi la configurazione della visualizzazione di contenuti multimediali e foto recenti dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Apri l'app Diagnostica</translation>
 <translation id="6173151025443907148">L'accesso di un secondo utente non è supportato se Lacros è attivo. Usa un secondo profilo del browser in Lacros oppure disattiva Lacros e riprova.</translation>
 <translation id="6179832488876878285">Puoi bloccare qui i tuoi file importanti. Apri l'app File per iniziare.</translation>
 <translation id="6182592640011875895">Apri scrivania</translation>
 <translation id="6185696379715117369">Pagina su</translation>
-<translation id="619279033188484792">Visualizza le foto, i contenuti multimediali e le notifiche recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Ricarica completamente adesso</translation>
 <translation id="6193431488227440296">Dev</translation>
 <translation id="6199775032047436064">Ricarica la pagina corrente</translation>
@@ -1270,7 +1260,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sta usando la fotocamera e il microfono</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Chiudi la configurazione della visualizzazione delle notifiche dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="6244986124527896815">Apri l'app Task Manager con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
@@ -1418,7 +1407,6 @@ Nuova installazione</translation>
 <translation id="6884665277231944629">Torna a oggi</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Premi il tasto Freccia giù per cambiare finestra</translation>
-<translation id="6891721121089053234">Visualizza le foto, i contenuti multimediali e le app recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
 <translation id="6912841030378044227">Imposta lo stato attivo sulla barra degli indirizzi</translation>
@@ -1481,6 +1469,8 @@ Nuova installazione</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144942256906679589">Stato della batteria</translation>
 <translation id="7165278925115064263">ALT + MAIUSC + K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
@@ -1608,6 +1598,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7723703419796509666">Mostra o nascondi la console Strumenti per sviluppatori</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7725108879223146004">Mostra i dettagli relativi all'hotspot. È in corso la disattivazione dell'hotspot.</translation>
+<translation id="7726391492136714301">Visualizza notifiche e app del tuo telefono</translation>
 <translation id="7727952505535211425">Apri il sito web nella barra degli indirizzi in una nuova scheda</translation>
 <translation id="7742327441377685481">Nessuna notifica</translation>
 <translation id="7748275671948949022">Evidenzia il pulsante Avvio app nella barra delle app</translation>
@@ -1625,7 +1616,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Segnale forte</translation>
 <translation id="7837740436429729974">Tempo scaduto</translation>
-<translation id="7838712802972544930">Chiudi la configurazione della visualizzazione delle app dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="7842569679327885685">Avviso: funzione sperimentale</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7848989271541991537">Spostata alla Pagina <ph name="PAGE_NUMBER" />, riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
@@ -1691,7 +1681,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
-<translation id="8077971003886736669">Configura la visualizzazione di contenuti multimediali e foto recenti dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Condivisione schermo</translation>
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>
 <translation id="8091153018031979607">Inizia alle ore <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1721,7 +1710,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Visualizza le foto, i contenuti multimediali, le notifiche e le app recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Attiva/disattiva il menu per la modalità di blocco del ridimensionamento</translation>
 <translation id="8192202700944119416">Le notifiche sono nascoste.</translation>
 <translation id="8196787716797768628">Usa i gesti per spostarti rapidamente tra le app e per interagire con il Chromebook in modalità tablet.</translation>
@@ -1847,7 +1835,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
 <translation id="8763883995157866248">Attiva la modalità di sospensione sul dispositivo</translation>
-<translation id="8773962395093246071">Configura la visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone su <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

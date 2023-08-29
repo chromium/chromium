@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS-autentiseringsnyckel</translation>
 <translation id="2713444072780614174">Vit</translation>
 <translation id="2717139507051041123">Aktivera mörkt färgläge</translation>
+<translation id="2728460467788544679">Rensa all utskriftshistorik</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Delade</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">Öppen VPN</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>
+<translation id="6461047516875166066">Berätta mer</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vill du skanna om sidan?}=1{Vill du skanna om sidan {PAGE_NUMBER}?}other{Vill du skanna om sidan {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Engångslösenord</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>

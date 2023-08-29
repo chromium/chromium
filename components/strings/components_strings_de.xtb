@@ -519,7 +519,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2048261947532620704">Seite wird übersetzt</translation>
 <translation id="205212645995975601">Barbecue und Grillen</translation>
 <translation id="2053111141626950936">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird täglich aktualisiert.}=1{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird täglich aktualisiert.}other{Wenn dieses Steuerelement aktiviert und aktiv ist, bestimmt Chrome, welcher großen Personengruppe oder „Kohorte“ deine aktuellen Browseraktivitäten am ähnlichsten sind. Werbetreibende können Werbung für die einzelnen Gruppen auswählen und deine Browseraktivitäten werden sicher auf deinem Gerät gespeichert. Deine Gruppe wird alle {NUM_DAYS} Tage aktualisiert.}}</translation>
 <translation id="2056658168519009885">Websites können Informationen von Chrome anfordern, um dir personalisierte Werbung anzuzeigen.</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
 <translation id="2064568741209980952">Kredite und Darlehen</translation>
@@ -665,7 +664,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2355395290879513365">Angreifer können unter Umständen die Bilder sehen, die du dir auf dieser Website ansiehst, und könnten dann versuchen, dich durch Ändern der Bilder zu täuschen.</translation>
 <translation id="2356070529366658676">Nachfragen</translation>
 <translation id="2357481397660644965">Dein Gerät wird von <ph name="DEVICE_MANAGER" /> und dein Konto von <ph name="ACCOUNT_MANAGER" /> verwaltet.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{In weniger als einem Tag}=1{In einem Tag}other{In {NUM_DAYS} Tagen}}</translation>
 <translation id="2359629602545592467">Mehrere</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1214,7 +1212,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3586833803451155175">Nassfilm</translation>
 <translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587738293690942763">Mitte</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}=1{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}other{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert {NUM_DAYS} Tage, einer neuen Gruppe beizutreten.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Schaltfläche „Datenschutzeinstellungen des Google-Kontos verwalten“ – aktivieren, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
 <translation id="3603507503523709">App durch Administrator blockiert</translation>
@@ -1559,7 +1556,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4285498937028063278">Loslösen</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Diese Karte wurde in deinem Google-Konto gespeichert}other{Diese Karten wurden in deinem Google-Konto gespeichert}}</translation>
 <translation id="4287495839370498922">Erweiterter Datenschutz bei Anzeigen in Chrome</translation>
-<translation id="4287885627794386150">Testversion möglich, aber nicht aktiv</translation>
 <translation id="4290920330097335010">Nie erlauben</translation>
 <translation id="4296207570293932800">Es sind neue Funktionen zum Datenschutz bei Anzeigen verfügbar</translation>
 <translation id="4297502707443874121">Miniaturansicht für Seite <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2291,7 +2287,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5847181246682413476">Stromversorgung</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Aus</translation>
 <translation id="5862579898803147654">Stapelfach 8</translation>
 <translation id="5863847714970149516">Auf der nächsten Seite wird möglicherweise versucht, dir etwas in Rechnung zu stellen</translation>
 <translation id="5866257070973731571">Telefonnummer hinzufügen</translation>
@@ -3014,7 +3009,6 @@ Weitere Details:
 <translation id="7378877318020334501">Comedy-Fernsehserien</translation>
 <translation id="7380398842872229465">10 × 15 Zoll</translation>
 <translation id="738439098860678026">Früherziehung</translation>
-<translation id="7386364858855961704">Nicht zutreffend</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7390545607259442187">Karte bestätigen</translation>
 <translation id="7392089738299859607">Adresse aktualisieren</translation>
@@ -3109,7 +3103,6 @@ Weitere Details:
 <translation id="7549584377607005141">Damit diese Webseite richtig angezeigt wird, werden die Daten benötigt, die du vorher eingegeben hast. Du kannst diese Daten noch einmal senden, dabei werden jedoch sämtliche Aktionen wiederholt, die vorher durch diese Seite ausgeführt wurden.</translation>
 <translation id="7550637293666041147">Deine Nutzernamen auf dem Gerät und in Chrome</translation>
 <translation id="7551484245293639699">Reiseversicherung</translation>
-<translation id="755279583747225797">Testversion ist aktiv</translation>
 <translation id="7552846755917812628">Probiere folgende Tipps aus:</translation>
 <translation id="7554475479213504905">Aktualisieren und trotzdem anzeigen</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>

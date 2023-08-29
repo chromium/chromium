@@ -1044,6 +1044,7 @@
 <translation id="6433501201775827830">ඔබේ සෙවුම් එන්ජිම තෝරා ගන්න</translation>
 <translation id="6434309073475700221">ඉවත ලන්න</translation>
 <translation id="6437478888915024427">පිටුවේ තතු</translation>
+<translation id="6440291723980579689">පිටු ඔබ ඒවා විවෘත කිරීමෙන් පසුව පමණක් පූරණය වේ</translation>
 <translation id="6441734959916820584">නම දිග වැඩියි</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# රූපයක්}one{රූප #ක්}other{රූප #ක්}}</translation>
 <translation id="6447558397796644647">එම පිටුසන සොයාගත නොහැක. ඔබේ අක්‍ෂර වින්‍යාසය පරීක්‍ෂා කරන්න, නැති නම් නව පිටුසනක් එක් කරන්න.</translation>
@@ -1092,6 +1093,7 @@
 <translation id="6641780377503683465"><ph name="INTEREST" /> ඉවත් කරන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6645629752388991326">මෙම උපාංගය ආරක්ෂක යතුරක් ලෙස භාවිත කිරීමෙන් පිරිය හැකි උපාංග පාලනය කරන්න.</translation>
+<translation id="6646696210740573446">ඔබේ IP ලිපිනය සඟවන පෞද්ගලිකත්ව සේවාදායකයක් හරහා URL හි අපැහැදිලි කොටසක් Google වෙත යවයි. වෙබ් අඩවියක් ඔබේ මුරපදය සොරා ගැනීමට උත්සාහ කළහොත්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chrome පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL Google වෙත යැවීමට ද හැක.</translation>
 <translation id="6647441008198474441">ඔබ පිවිසෙන URL ඔබ මීළඟට පිවිසිය හැකි අඩවි මොනවාදැයි පුරෝකථනය කිරීමට Google වෙත යවනු ලැබේ</translation>
 <translation id="6648459603387803038">ඔබේ පරිපාලකට දුරස්ථව ඔබේ බ්‍රවුසර සැකසීම වෙනස් කළ හැකිය. මෙම උපාංගය මත ක්‍රියාකාරකම Chrome හට පිටතින් ද කළමනා කරනු ලැබිය හැක.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1451,6 +1453,7 @@
 <translation id="8394720698884623075">Chrome තුළ ගබඩා කර ඇති අනාරක්ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්ෂා කරයි.</translation>
 <translation id="8402673309244746971">පහත දේ වෙත යන්න</translation>
 <translation id="8413126021676339697">සම්පූර්ණ ඉතිහාසය පෙන්වන්න</translation>
+<translation id="8413795581997394485">අනතුරුදායක බව දන්නා වෙබ් අඩවි, බාගැනීම්, සහ දිගුවලින් ආරක්ෂා කරයි. ඔබ වෙබ් අඩවියකට පිවිසෙන විට, Chrome ඔබේ IP ලිපිනය සඟවන පෞද්ගලිකත්ව සේවාදායකයක් හරහා URL හි අපැහැදිලි කොටසක් Google වෙත යවයි. වෙබ් අඩවියක් සැක කටයුතු දෙයක් සිදු කරන්නේ නම්, සම්පූර්ණ URL සහ පිටු අන්තර්ගතයේ බිටු ද යවයි.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> වෙත <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග පුරන්න</translation>
 <translation id="8416347857511542594">Chrome තුළ වෙළඳ දැන්වීම් පුද්ගලිකකරණය ගැන තව දැන ගන්න</translation>
 <translation id="8419244640277402268">ඇතුළත් කරන්න</translation>

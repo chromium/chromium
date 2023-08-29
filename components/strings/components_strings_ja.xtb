@@ -300,6 +300,7 @@
 <translation id="1569487616857761740">有効期限の入力</translation>
 <translation id="1569694109004336106">Google Chrome がパスワード入力で Windows Hello を有効にしようとしています。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> インチ</translation>
+<translation id="1574714699824202614">お支払い方法を確認しています</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
@@ -448,6 +449,7 @@
 <translation id="1874224422119691492">パスワード入力で画面ロックを使用するかどうかは、<ph name="SETTINGS" /> で変更できます</translation>
 <translation id="1875025161375567525">フォトトレイ</translation>
 <translation id="1875512691959384712">Google フォーム</translation>
+<translation id="1876399092304384674">日付別</translation>
 <translation id="187918866476621466">起動ページを開く</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1884843295353628214">ジャズ</translation>
@@ -517,7 +519,6 @@
 <translation id="2048261947532620704">ページを翻訳しています</translation>
 <translation id="205212645995975601">バーベキュー、グリル</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />のページは翻訳されません。</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}=1{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは毎日更新されます。}other{このコントロールをオンにして、ステータスが有効な場合、Chrome は最近の閲覧アクティビティが最も類似している「コホート」という多人数のグループを特定します。広告主はこのグループに対して広告を表示するように設定できる一方、ユーザーの閲覧アクティビティはデバイスに保存されてプライバシーが保たれます。なお、このグループは {NUM_DAYS} 日ごとに更新されます。}}</translation>
 <translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトから Chrome に情報を要求することがあります。</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
 <translation id="2064568741209980952">クレジット、貸付</translation>
@@ -663,7 +664,6 @@
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
 <translation id="2356070529366658676">確認する</translation>
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{1 日以内}=1{1 日後}other{{NUM_DAYS} 日後}}</translation>
 <translation id="2359629602545592467">複数</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2361263712565360498">275x395 mm</translation>
@@ -1157,6 +1157,7 @@
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、現在開いているすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="3474392552865647225">[Chrome のフォントをカスタマイズ] ボタンです。実行すると、Chrome のフォントサイズと書体をカスタマイズできます</translation>
 <translation id="3477679029130949506">映画情報、劇場情報</translation>
+<translation id="3478033058537426179">グループ別</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3484560055331845446">Google アカウントにアクセスできなくなる可能性があります。Chrome で今すぐパスワードを変更することをおすすめします。変更の際には、ログインするよう求められます。</translation>
 <translation id="3484861421501147767">リマインダー: 保存済みのプロモーション コードを利用できます</translation>
@@ -1212,7 +1213,6 @@
 <translation id="3586833803451155175">ウェット フィルム</translation>
 <translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3587738293690942763">中</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{グループはいつでもリセットできます。新しいグループに分類されるまでには約 1 日かかります。}=1{グループはいつでもリセットできます。新しいグループに分類されるまでには約 1 日かかります。}other{グループはいつでもリセットできます。新しいグループに分類されるまでには {NUM_DAYS} 日かかります。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />、<ph name="DOMAIN" />、<ph name="TIME" /></translation>
 <translation id="3600492954573979888">[Google のプライバシー設定を管理] ボタンです。実行すると Google アカウントのプライバシー設定に移動できます</translation>
 <translation id="3603507503523709">アプリケーションは管理者によってブロックされています</translation>
@@ -1558,7 +1558,6 @@
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{このカードを Google アカウントに保存しました}other{これらのカードを Google アカウントに保存しました}}</translation>
 <translation id="4287495839370498922">Chrome で表示される広告プライバシーの強化について</translation>
-<translation id="4287885627794386150">試用版を使用できますが有効になっていません</translation>
 <translation id="4290920330097335010">許可しない</translation>
 <translation id="4296207570293932800">新しい広告のプライバシー機能をご利用いただけるようになりました</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
@@ -1689,6 +1688,7 @@
 <translation id="4579699065574932398">銀行</translation>
 <translation id="4582204425268416675">カードを削除</translation>
 <translation id="4582595824823167856">テキスト メッセージを送信する</translation>
+<translation id="4586607503179159908">お支払い方法を確認しました</translation>
 <translation id="4587425331216688090">Chrome からアドレスを削除してもよろしいですか？</translation>
 <translation id="459089498662672729"><ph name="ORIGIN_NAME" /> からこの場所への貼り付けは、管理者のポリシーで推奨されていません</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" /> への接続は新しい暗号スイートにより暗号化されています。</translation>
@@ -2289,7 +2289,6 @@
 <translation id="5847181246682413476">電源</translation>
 <translation id="5851548754964597211">タブ リスト</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">OFF</translation>
 <translation id="5862579898803147654">スタッカー 8</translation>
 <translation id="5863847714970149516">表示しようとしているページでは課金される恐れがあります</translation>
 <translation id="5866257070973731571">電話番号の追加</translation>
@@ -3012,7 +3011,6 @@
 <translation id="7378877318020334501">お笑い番組</translation>
 <translation id="7380398842872229465">10x15 インチ</translation>
 <translation id="738439098860678026">幼児教育</translation>
-<translation id="7386364858855961704">対象外です</translation>
 <translation id="7388594495505979117">{0,plural, =1{デバイスは 1 分後に再起動されます}other{デバイスは # 分後に再起動されます}}</translation>
 <translation id="7390545607259442187">カードの確認</translation>
 <translation id="7392089738299859607">住所を更新</translation>
@@ -3107,7 +3105,6 @@
 <translation id="7549584377607005141">このウェブページを正しく表示するには、先ほど入力したデータが必要です。データは再送信できますが、このページで先ほど行った操作を繰り返すことになります。</translation>
 <translation id="7550637293666041147">お客様のデバイスのユーザー名と Chrome のユーザー名</translation>
 <translation id="7551484245293639699">旅行保険</translation>
-<translation id="755279583747225797">試用版は有効です</translation>
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7554475479213504905">再読み込みして表示</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
@@ -3400,6 +3397,7 @@
 <translation id="8150722005171944719"><ph name="URL" /> のファイルを読むことができません。削除されたか移動された可能性があります。ファイルに対するアクセス権がない場合もあります。</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}}</translation>
 <translation id="81563721597823545">ホッケー用品</translation>
+<translation id="8161095570253161196">ブラウジングを再開</translation>
 <translation id="8163866351304776260">4 穴パンチ（左）</translation>
 <translation id="8175796834047840627">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。</translation>
 <translation id="8176440868214972690">このデバイスの管理者は、次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>

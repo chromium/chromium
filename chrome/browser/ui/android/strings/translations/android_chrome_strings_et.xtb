@@ -1044,6 +1044,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6433501201775827830">Valige oma otsingumootor</translation>
 <translation id="6434309073475700221">Loobu</translation>
 <translation id="6437478888915024427">Lehe teave</translation>
+<translation id="6440291723980579689">Lehed laaditakse alles pärast nende avamist</translation>
 <translation id="6441734959916820584">Nimi on liiga pikk</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# pilt}other{# pilti}}</translation>
 <translation id="6447558397796644647">Seda järjehoidjat ei leita. Kontrollige õigekirja või lisage uus järjehoidja.</translation>

@@ -203,6 +203,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="2175927920773552910">QR kodea</translation>
 <translation id="2178545675770638239">Hautatu pasahitz bat</translation>
 <translation id="2195124168004379331">Zure arakatzaileak itxura ona du</translation>
+<translation id="2213327331203157297">Chrome-n blokeo modua desgaitzeko, desaktiba ezazu iPhone-an.</translation>
 <translation id="2218443599109088993">Txikitu</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
@@ -474,7 +475,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
 <translation id="3775743491439407556">Sinkronizazioa ez dabil</translation>
 <translation id="3779810277399252432">Ez zaude konektatuta Internetera.</translation>
-<translation id="3783017676699494206">Gorde irudia</translation>
 <translation id="3789294999358192700">Egin urrats hauek:</translation>
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="380329542618494757">Izena</translation>
@@ -1360,6 +1360,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8843129975935593190">Erakundeak sinkroniza dezakezuna mugatzen du.</translation>
 <translation id="8849001918648564819">Ezkutatuta</translation>
 <translation id="8855242995793521265">Ez du nabarmen moteltzen arakatzailea, ezta gailua ere.</translation>
+<translation id="8855781063981781621">Chrome-n blokeo modua desgaitzeko, desaktiba ezazu iPad-ean.</translation>
 <translation id="8863431381414769983">Lortu jarraibideak eta tokiko informazioa Google Maps-en bidez</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} fitxa}other{{count} fitxa}}</translation>
 <translation id="8870413625673593573">Itxitako azkenak</translation>

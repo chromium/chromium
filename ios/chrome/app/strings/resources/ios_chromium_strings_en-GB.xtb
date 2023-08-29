@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Select <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2618596336309823556">From your device's Settings, open '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' and select 'Chromium'</translation>
+<translation id="2631735236435791495">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chromium can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>

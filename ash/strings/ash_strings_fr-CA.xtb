@@ -114,7 +114,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1415846719612499304">Afficher la liste des réseaux. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Déverrouillez l'appareil pour effectuer l'action de la notification</translation>
 <translation id="1420408895951708260">Activer ou désactiver le mode Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Affichez les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
@@ -545,6 +544,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3378438761594387761">Vous trouverez vos téléchargements et vos captures d'écran récents ici</translation>
 <translation id="3386978599540877378">la loupe plein écran</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
+<translation id="3394432020929931914">, développé</translation>
 <translation id="3400357268283240774">Autres paramètres</translation>
 <translation id="3405101454990027959">Activer l'accès au microphone</translation>
 <translation id="3408735331120433841">Vous diffusez actuellement votre écran.</translation>
@@ -764,6 +764,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
+<translation id="4264977415328155183">, réduit</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
 <translation id="4275283744500212192">Ouvrir les options de mise en page des fenêtres</translation>
@@ -803,14 +804,12 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4427695046139341014">Tableau de bord de jeu</translation>
 <translation id="4430019312045809116">Volume</translation>
-<translation id="4435022394553622295">Affichez les notifications et les applications récentes de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Les applications sont triées par nom</translation>
 <translation id="4445159312344259901">Connectez-vous pour le déverrouiller</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notification importante}one{# notification importante}other{# notifications importantes}}</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4451374464530248585">Le raccourci-clavier Alt+flèche vers le bas a changé. Pour utiliser la touche Page suivante, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers le bas.</translation>
 <translation id="4453876312474547652">Vous verrez le presse-papiers lorsque vous maintenez enfoncées les touches Ctrl + V. Vous pouvez désactiver ce raccourci en désactivant l'indicateur #clipboard-history-longpress dans chrome://flags (os://flags si vous utilisez Lacros).</translation>
-<translation id="4455051983450390249">Affichez les notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="445923051607553918">Connexion à un réseau Wi-Fi</translation>
@@ -1074,7 +1073,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5551456515017410630">Ouvrir/fermer l'agenda</translation>
 <translation id="5551974246223970793">Lors de la recherche d'une page, passez à la correspondance suivante pour la recherche</translation>
 <translation id="5558091555391176027">Activer/désactiver la haute visibilité du partage à proximité</translation>
-<translation id="5560420195677022218">Affichez les applications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5570122939431135380">Ouvrir un nouvel onglet dans une nouvelle fenêtre de navigation privée</translation>
 <translation id="5571066253365925590">Bluetooth activé</translation>
@@ -1170,6 +1168,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
+<translation id="5960410286721553511">Affichez les photos et les fichiers multimédias récents de votre téléphone</translation>
 <translation id="5961960957587052807">Léger</translation>
 <translation id="5965524703725988602">Activer/désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Faire défiler les fenêtres par l'avant</translation>
@@ -1231,7 +1230,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Ouvrez l'application Fichiers pour commencer.</translation>
 <translation id="6182592640011875895">Ouvrir le bureau</translation>
 <translation id="6185696379715117369">Page précédente</translation>
-<translation id="619279033188484792">Affichez les notifications, les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Recharger complètement maintenant</translation>
 <translation id="6193431488227440296">Développeur</translation>
 <translation id="6199775032047436064">Actualiser la page actuelle</translation>
@@ -1390,7 +1388,6 @@ Nouvelle installation</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
-<translation id="6891721121089053234">Affichez les photos, les applications et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6901883536534621389">Essayez les gestes pour naviguer</translation>
 <translation id="6912841030378044227">Mettre la barre d'adresse en évidence</translation>
@@ -1450,6 +1447,8 @@ Nouvelle installation</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144942256906679589">État de la pile</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7188494361780961876">Le menu a été déplacé vers le coin supérieur gauche de l'écran.</translation>
@@ -1575,6 +1574,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7723703419796509666">Afficher ou masquer la console des outils pour les développeurs</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7725108879223146004">Afficher les détails du point d'accès sans fil. Désactivation du point d'accès sans fil en cours…</translation>
+<translation id="7726391492136714301">Affichez les notifications et les applications de votre téléphone</translation>
 <translation id="7727952505535211425">Ouvrir le site Web dans la barre d'adresse dans un nouvel onglet</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
 <translation id="7748275671948949022">Mettre en évidence le bouton du lanceur sur l'étagère</translation>
@@ -1686,7 +1686,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> C'est votre administrateur qui gère ce paramètre.</translation>
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'information pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Paramètres régionaux utilisés : <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Affichez les photos, les notifications, les applications et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Activer/désactiver le menu pour redimensionner le mode verrouiller</translation>
 <translation id="8192202700944119416">Les notifications sont masquées.</translation>
 <translation id="8196787716797768628">Utilisez des gestes pour passer rapidement d'une application à l'autre et interagir avec votre Chromebook en mode tablette.</translation>

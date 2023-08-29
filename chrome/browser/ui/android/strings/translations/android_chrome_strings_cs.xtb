@@ -1044,6 +1044,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6433501201775827830">Vyberte vyhledávač</translation>
 <translation id="6434309073475700221">Zahodit</translation>
 <translation id="6437478888915024427">Informace o stránce</translation>
+<translation id="6440291723980579689">Stránky se načítají až poté, co je otevřete</translation>
 <translation id="6441734959916820584">Název je příliš dlouhý</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# obrázek}few{# obrázky}many{# obrázku}other{# obrázků}}</translation>
 <translation id="6447558397796644647">Daná záložka nebyla nalezena. Zkontrolujte, zda jste neudělali překlep, nebo přidejte novou záložku.</translation>
@@ -1092,6 +1093,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6641780377503683465">Odstranit zájem <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6645629752388991326">Určete, která zařízení se mohou přihlásit s použitím tohoto zařízení jako bezpečnostního klíče.</translation>
+<translation id="6646696210740573446">Odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome do Googlu odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="6647441008198474441">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další</translation>
 <translation id="6648459603387803038">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
@@ -1451,6 +1453,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8394720698884623075">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu</translation>
 <translation id="8402673309244746971">Přejít na sledované</translation>
 <translation id="8413126021676339697">Zobrazit celou historii</translation>
+<translation id="8413795581997394485">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Když navštívíte nějaký web, Chrome odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud web provede něco podezřelého, odešlou se také úplné adresy URL a části obsahu stránky.</translation>
 <translation id="8414396119627470038">Přihlaste se k webu <ph name="SITE_ETLD_PLUS_ONE" /> pomocí účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Další informace o personalizaci reklam v Chromu</translation>
 <translation id="8419244640277402268">Zahrnout</translation>

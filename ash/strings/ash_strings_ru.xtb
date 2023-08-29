@@ -61,6 +61,7 @@
 <translation id="1217633719248931900">Открыть приложение</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение из Play Маркета</translation>
 <translation id="1225748608451425081">Устройство Chromebook заблокировано в связи с известной проблемой. Время, по истечении которого можно будет выполнить вход: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">неактивный рабочий стол</translation>
 <translation id="1229194443904279055">Остановить выбор текста</translation>
 <translation id="1235458158152011030">Сохраненные сети</translation>
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
@@ -114,7 +115,6 @@
 <translation id="1415846719612499304">Показать список сетей. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство.</translation>
 <translation id="1420408895951708260">Включить или отключить ночную подсветку (<ph name="STATE_TEXT" />)</translation>
-<translation id="1420732223884894666">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> недавно добавленные на телефон фотографии и медиафайлы</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
@@ -545,6 +545,7 @@
 <translation id="3378438761594387761">Здесь будут появляться новые записи экрана и скачанные файлы</translation>
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
+<translation id="3394432020929931914">, развернуто</translation>
 <translation id="3400357268283240774">Дополнительные настройки</translation>
 <translation id="3405101454990027959">Предоставить доступ к микрофону</translation>
 <translation id="3408735331120433841">Идет трансляция экрана.</translation>
@@ -764,6 +765,7 @@
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425364040945105958">Нет SIM-карты</translation>
 <translation id="4261870227682513959">Показать настройки уведомлений. Уведомления отключены.</translation>
+<translation id="4264977415328155183">, свернуто</translation>
 <translation id="4269883910223712419">Администратор этого устройства имеет возможность:</translation>
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4275283744500212192">Открыть параметры макета страницы</translation>
@@ -803,14 +805,12 @@
 <translation id="4424159417645388645">Рабочий стол 5</translation>
 <translation id="4427695046139341014">Игровая панель</translation>
 <translation id="4430019312045809116">Объем</translation>
-<translation id="4435022394553622295">Просмотр уведомлений и приложений с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Приложения упорядочены по названию.</translation>
 <translation id="4445159312344259901">Войти, чтобы разблокировать</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важное уведомление}one{# важное уведомление}few{# важных уведомления}many{# важных уведомлений}other{# важного уведомления}}</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
 <translation id="4453876312474547652">Чтобы открыть историю буфера обмена, нажмите и удерживайте клавиши Ctrl + V. Если вы не хотите использовать это сочетание клавиш, отключите экспериментальный параметр #clipboard-history-longpress на странице chrome://flags (os://flags для Lacros).</translation>
-<translation id="4455051983450390249">Просмотр уведомлений с телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
 <translation id="445923051607553918">Подключение к сети Wi-Fi</translation>
@@ -987,6 +987,7 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Для создания папки были объединены приложения "<ph name="MOVED_APP_NAME" />" и "<ph name="IN_PLACE_APP" />".</translation>
+<translation id="5203299837691351876">активный рабочий стол</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ещё 1 уведомление}one{ещё # уведомление}few{ещё # уведомления}many{ещё # уведомлений}other{ещё # уведомления}}</translation>
 <translation id="5207949376430453814">Выделять курсор при вводе текста</translation>
@@ -1074,7 +1075,6 @@
 <translation id="5551456515017410630">Открыть или закрыть календарь</translation>
 <translation id="5551974246223970793">Перейти к следующему результату поиска по странице</translation>
 <translation id="5558091555391176027">Включить или отключить широкий доступ для Обмена с окружением</translation>
-<translation id="5560420195677022218">Просмотр приложений с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Открыть вкладку в новом окне в режиме инкогнито</translation>
 <translation id="5571066253365925590">Bluetooth включен</translation>
@@ -1170,6 +1170,7 @@
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Контролируемый профиль</translation>
+<translation id="5960410286721553511">Просматривайте недавно добавленные на телефон фотографии и медиафайлы.</translation>
 <translation id="5961960957587052807">Слабое</translation>
 <translation id="5965524703725988602">Включить или отключить тёмную тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Перейти к следующему окну</translation>
@@ -1231,7 +1232,6 @@
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
 <translation id="6182592640011875895">Открыть рабочий стол</translation>
 <translation id="6185696379715117369">На страницу вверх</translation>
-<translation id="619279033188484792">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> уведомления с телефона, а также недавно добавленные на телефон фотографии и медиафайлы</translation>
 <translation id="619335566042889110">Зарядить до конца сейчас</translation>
 <translation id="6193431488227440296">Версия для разработчиков</translation>
 <translation id="6199775032047436064">Обновление страницы</translation>
@@ -1378,6 +1378,7 @@
 <translation id="6819327813400217281">Окно предварительного просмотра камеры привязано к левому нижнему углу</translation>
 <translation id="6820676911989879663">Пора отдохнуть!</translation>
 <translation id="6827049576281411231">Закрыть панель мероприятий</translation>
+<translation id="6831561626108366035">Кнопка "Открыть <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />".</translation>
 <translation id="6836499262298959512">Опасный файл</translation>
 <translation id="6852052252232534364">Активировать</translation>
 <translation id="6855029042976311970">Изменено только что</translation>
@@ -1390,7 +1391,6 @@
 <translation id="6884665277231944629">Вернуться к сегодняшней дате</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
 <translation id="688631446150864480">Чтобы перейти к другому окну, нажмите клавишу со стрелкой вниз</translation>
-<translation id="6891721121089053234">Просмотр недавних фотографий, медиафайлов и приложений с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6901883536534621389">Используйте жесты для навигации</translation>
 <translation id="6912841030378044227">Перейти к адресной строке</translation>
@@ -1413,6 +1413,7 @@
 <translation id="6981291220124935078">Разрешить доступ</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
+<translation id="6989752354829085073">Посмотрите краткий обзор и узнайте, как работать на Chromebook. Пройдите обучение за 6 шагов.</translation>
 <translation id="7004910047186208204">Подключиться к мобильному интернету</translation>
 <translation id="7005239792648594238">Чтобы начать, откройте приложение</translation>
 <translation id="7007983414944123363">Введенный PIN-код или пароль недействителен. Повторите попытку.</translation>
@@ -1450,6 +1451,8 @@
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144942256906679589">Состояние батареи</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
@@ -1535,6 +1538,7 @@
 <translation id="7557816257942363084">Сейчас использует микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
+<translation id="7567950130372125778">Узнайте об особенностях работы на Chromebook</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
 <translation id="7571361473021531288">Батарея: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полного заряда</translation>
 <translation id="7573585051776738856">Активное окно прикреплено справа.</translation>
@@ -1575,6 +1579,7 @@
 <translation id="7723703419796509666">Показать или скрыть консоль инструментов разработчика</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7725108879223146004">Показать сведения о точке доступа. Точка доступа отключается.</translation>
+<translation id="7726391492136714301">Просмотр уведомлений и приложений с телефона</translation>
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
 <translation id="7742327441377685481">Нет уведомлений</translation>
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
@@ -1686,7 +1691,6 @@
 <translation id="8155007568264258537">Функцией "<ph name="FEATURE_NAME" />" управляет администратор.</translation>
 <translation id="8155628902202578800">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Используемый язык: <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Просмотр недавних фотографий, медиафайлов, уведомлений и приложений с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Показать или скрыть меню для режима блокировки изменения размеров</translation>
 <translation id="8192202700944119416">Уведомления скрыты</translation>
 <translation id="8196787716797768628">Используйте жесты, чтобы быстро переключаться между приложениями и работать с устройством Chromebook в режиме планшета.</translation>

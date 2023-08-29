@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{Обележивачи су сачувани на Google налогу, {email}}few{Обележивачи су сачувани на Google налогу, {email}}other{Обележивачи су сачувани на Google налогу, {email}}}</translation>
 <translation id="1870148520156231997">Прикажите лозинку</translation>
 <translation id="1872096359983322073">Блиц</translation>
+<translation id="1882901927376062252">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{{count}обележивач је сачуван на Google налогу, {email}}few{{count}обележивача су сачувана на Google налогу, {email}}other{{count}обележивача је сачувано на Google налогу, {email}}}</translation>
 <translation id="1883255238294161206">Скупи листу</translation>
 <translation id="1894023287452300670">Пратите цену овде</translation>
 <translation id="189531189292803889">Садржај iPad-а је недавно враћен, због чега је подразумевани прегледач можда промењен.</translation>
@@ -475,7 +476,6 @@
 <translation id="3771033907050503522">Картице Без архивирања</translation>
 <translation id="3775743491439407556">Синхронизација не ради</translation>
 <translation id="3779810277399252432">Нема интернет везе.</translation>
-<translation id="3783017676699494206">Сачувај слику</translation>
 <translation id="3789294999358192700">Пратите кораке испод:</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="380329542618494757">Име</translation>
@@ -692,6 +692,7 @@
 <translation id="5083464117946352670">Није могуће утврдити величину датотеке.</translation>
 <translation id="5090832849094901128">Брисањем ове лозинке нећете избрисати налог на <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Твит је довршен.</translation>
+<translation id="5100848274708256363">Придружите се групи за породицу</translation>
 <translation id="5109892411553231226">Управљајте начинима плаћања</translation>
 <translation id="5118713593561876160">Интересовања</translation>
 <translation id="5118764316110575523">Искључено</translation>
@@ -994,6 +995,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6642362222295953972">Пређите на постојећу картицу</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6645899968535965230">QR кôд: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Последње покретање <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Измена директоријума</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6668619169535738264">Измени обележивач</translation>
@@ -1107,6 +1109,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7351537303876921605">Додирните Направи линк у контекстуалном менију</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
 <translation id="7353432112255316844">Потврдите свој идентитет</translation>
+<translation id="7380220816562673297">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Направите групу за породицу<ph name="END_LINK" /> са највише 6 чланова и добијте више из производа и претплата у свим Google услугама.</translation>
 <translation id="7383797227493018512">Листа за читање</translation>
 <translation id="7398893703713203428">Create Link (Направи линк)</translation>
 <translation id="7399802613464275309">Безбедносна провера</translation>
@@ -1430,6 +1433,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9223358826628549784">Извештај о отказивању је послат.</translation>
 <translation id="941747855997058526">Изаберите лозинку…</translation>
 <translation id="948048872540558976">Направите нову картицу</translation>
+<translation id="952218985181984374">{count,plural, =1{Обележивач је сачуван}one{{count} обележивач је сачуван}few{{count} обележивача су сачувана}other{{count} обележивача је сачувано}}</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Одјављени сте из Chrome-а</translation>
 <translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>

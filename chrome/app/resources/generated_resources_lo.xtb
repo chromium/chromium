@@ -1506,7 +1506,6 @@
 <translation id="2162705204091149050">ອ່ານຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ໄດ້ຕິດຕັ້ງ ແລະ ໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="2162926944953615670">ບໍ່ມີໂປຣໄຟລ໌ eSIM ທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="2163470535490402084">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດ ເພື່ອ​ລົງຊື່ເຂົ້າໃຊ້​ຫາ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
-<translation id="2163996651553460171">ໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ 1 ປຸ່ມ</translation>
 <translation id="2165102982098084499">ທ່ານລິ້ງອຸປະກອນເຫຼົ່ານີ້ແລ້ວໂດຍການສະແກນລະຫັດ QR.</translation>
 <translation id="2165177462441582039">ເລືອກວ່າຈະໃຫ້ໄຮໄລ້ຢູ່ດົນປານໃດໃນແຕ່ລະລາຍການ</translation>
@@ -5815,7 +5814,6 @@
 <translation id="567740581294087470">ທ່ານກຳລັງສົ່ງຄຳຕິຊົມປະເພດໃດ?</translation>
 <translation id="5677503058916217575">ພາ​ສາໜ້າ:</translation>
 <translation id="5677928146339483299">ບລັອກແລ້ວ</translation>
-<translation id="5677946354068040947">ຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="5678550637669481956">ການເຂົ້າເຖິງ <ph name="VOLUME_NAME" /> ເພື່ອອ່ານ ແລະຂຽນໄດ້​ຮັບ​ອະ​ນຸ​ຍາດແລ້ວ​.</translation>
 <translation id="5678821117681811450">ກຳລັງສົ່ງຫາ <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">ອ່ານ​ຂໍ້​ມູນ​ຂອງ​ທ່ານ​ຢູ່​ເທິງ <ph name="WEBSITE_1" /></translation>
@@ -6728,6 +6726,7 @@
 <translation id="6436778875248895551">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6438234780621650381">ຕັ້ງການຕັ້ງຄ່າ​ຄືນໃໝ່</translation>
 <translation id="6438475350605608554">ທ່ານໄດ້ນຳເຂົ້າລະຫັດຜ່ານໃນແຖບອື່ນແລ້ວ</translation>
+<translation id="6438480100790416671">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ກຳລັງຫຼິ້ນສຽງ</translation>
 <translation id="6440291723980579689">ໜ້າຈະໂຫຼດຫຼັງຈາກທີ່ທ່ານເປີດພວກມັນເທົ່ານັ້ນ</translation>
 <translation id="6441377161852435370">ເພີ່ມແຖບໃສ່ລາຍຊື່ການອ່ານ</translation>
@@ -8126,6 +8125,7 @@
 <translation id="7585106857920830898">ກຳລັງກວດສອບນຳນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
 <translation id="7586498138629385861">Chrome ຈະສືບຕໍ່ແລ່ນຢູ່ໃນຂະນະທີ່ແອັບ Chrome ເປີດ.</translation>
 <translation id="7589461650300748890">ໂຮ້​, ນັ້ນ. ​ລະ​ມັດ​ລະ​ວັງ!</translation>
+<translation id="7590883480672980941">ການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7592060599656252486">ບາງສ່ວນ</translation>
 <translation id="7593653750169415785">ບລັອກໄວ້ໂດຍອັດຕະໂນມັດແລ້ວ ເພາະວ່າທ່ານປະຕິເສດການແຈ້ງເຕືອນສອງສາມຄັ້ງແລ້ວ</translation>
 <translation id="7594725637786616550">Powerwash ເພື່ອຕັ້ງອຸປະກອນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານຄືນໃຫ້ຄືກັບອັນໃໝ່.</translation>
@@ -9551,6 +9551,7 @@
 <translation id="8725178340343806893">ລາຍການທີ່ມັກ/ບຸກມາກ</translation>
 <translation id="87254326763805752">ຢືນຢັນກະແຈຜ່ານ</translation>
 <translation id="8726206820263995930">ຄວາມຜິດພາດເມື່ອໄປເອົາການຕັ້ງຄ່ານະໂຍບາຍຈາກເຊີບເວີ: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">ຮັບປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
 <translation id="8727751378406387165">ສົ່ງ <ph name="BEGIN_LINK1" />ເມຕາເດຕາທີ່ເປັນການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (ຂໍ້ມູນທີ່ທ່ານຕື່ມອັດຕະໂນມັດຈະບໍ່ຖືກແບ່ງປັນ)</translation>

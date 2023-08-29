@@ -203,6 +203,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2178545675770638239">Seleccionar contraseña</translation>
 <translation id="2195124168004379331">Tu navegador parece estar bien</translation>
+<translation id="2213327331203157297">Para inhabilitar el modo hermético en Chrome, desactívalo en tu iPhone.</translation>
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
@@ -474,7 +475,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
 <translation id="3775743491439407556">La sincronización no funciona</translation>
 <translation id="3779810277399252432">Sin conexión a Internet</translation>
-<translation id="3783017676699494206">Guardar imagen</translation>
 <translation id="3789294999358192700">Sigue estos pasos:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nombre</translation>
@@ -1360,6 +1360,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8849001918648564819">Oculta</translation>
 <translation id="8855242995793521265">No ralentiza mucho tu navegador ni dispositivo.</translation>
+<translation id="8855781063981781621">Para inhabilitar el modo hermético en Chrome, desactívalo en tu iPad.</translation>
 <translation id="8863431381414769983">Obtén instrucciones sobre cómo llegar, así como información local de Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="8870413625673593573">Cerrado recientemente</translation>

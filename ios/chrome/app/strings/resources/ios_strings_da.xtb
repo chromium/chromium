@@ -203,6 +203,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2178545675770638239">Vælg adgangskode</translation>
 <translation id="2195124168004379331">Din browser ser sikker ud</translation>
+<translation id="2213327331203157297">Hvis du vil deaktivere Nedlukningstilstand i Chrome, skal du deaktivere den på din iPhone.</translation>
 <translation id="2218443599109088993">Zoom ud</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2239626343334228536">Browserdata ryddes...</translation>
@@ -474,7 +475,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internetforbindelse.</translation>
-<translation id="3783017676699494206">Gem billede</translation>
 <translation id="3789294999358192700">Sådan gør du:</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
@@ -1360,6 +1360,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="8843129975935593190">Din organisation begrænser, hvad du kan synkronisere.</translation>
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8855242995793521265">Gør ikke din browser eller enhed mærkbart langsommere.</translation>
+<translation id="8855781063981781621">Hvis du vil deaktivere Nedlukningstilstand i Chrome, skal du deaktivere den på din iPad.</translation>
 <translation id="8863431381414769983">Få rutevejledning og lokale oplysninger fra Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="8870413625673593573">Senest lukkede</translation>

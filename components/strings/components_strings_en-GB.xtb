@@ -522,7 +522,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2048261947532620704">Translating page</translation>
 <translation id="205212645995975601">BBQ and grilling</translation>
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every day.}=1{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every day.}other{When this control is on and the status is active, Chrome determines which large group of people, or 'cohort', your recent browsing activity is most similar to. Advertisers can select ads for the group, and your browsing activity is kept private on your device. Your group is updated every {NUM_DAYS} days.}}</translation>
 <translation id="2056658168519009885">Sites can ask Chrome for information to help personalise the ads that you see.</translation>
 <translation id="2059202684901022309">22 in x 34 in</translation>
 <translation id="2064568741209980952">Credit and Lending</translation>
@@ -669,7 +668,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
 <translation id="2356070529366658676">Ask</translation>
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{In less than a day}=1{In a day}other{In {NUM_DAYS} days}}</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1231,7 +1229,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3586833803451155175">Wet film</translation>
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587738293690942763">Middle</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{You can reset your group at any time. It takes about a day to join a new group.}=1{You can reset your group at any time. It takes about a day to join a new group.}other{You can reset your group at any time. It takes {NUM_DAYS} days to join a new group.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Manage Google privacy settings button, activate to visit your Google Account privacy settings</translation>
 <translation id="3603507503523709">Application blocked by your administrator</translation>
@@ -1580,7 +1577,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{This card has been saved in your Google Account}other{These cards have been saved in your Google Account}}</translation>
 <translation id="4287495839370498922">Enhanced ad privacy in Chrome</translation>
-<translation id="4287885627794386150">Eligible for trial but not active</translation>
 <translation id="4290920330097335010">Never allow</translation>
 <translation id="4296207570293932800">New ads privacy feature now available</translation>
 <translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2227,6 +2223,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5633259641094592098">Cult and indie movies</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo Systems and Components</translation>
 <translation id="5644090287519800334">Side 1 image X shift</translation>
 <translation id="5645132789250840550">Plastic (semi-gloss)</translation>
@@ -2315,7 +2312,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5847181246682413476">Power Supplies</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Off</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
 <translation id="5863847714970149516">The page ahead may try to charge you money</translation>
 <translation id="5866257070973731571">Add Phone Number</translation>
@@ -3049,7 +3045,6 @@ Additional details:
 <translation id="7378877318020334501">TV comedies</translation>
 <translation id="7380398842872229465">10 in x 15 in</translation>
 <translation id="738439098860678026">Early childhood education</translation>
-<translation id="7386364858855961704">Not applicable</translation>
 <translation id="7388594495505979117">{0,plural, =1{Your device will restart in 1 minute}other{Your device will restart in # minutes}}</translation>
 <translation id="7390545607259442187">Confirm Card</translation>
 <translation id="7392089738299859607">Update Address</translation>
@@ -3145,7 +3140,6 @@ Additional details:
 <translation id="7549584377607005141">This web page requires data that you entered earlier in order to be properly displayed. You can send this data again, but by doing so you will repeat any action this page previously performed.</translation>
 <translation id="7550637293666041147">Your device username and Chrome username</translation>
 <translation id="7551484245293639699">Travel insurance</translation>
-<translation id="755279583747225797">Trial is active</translation>
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7554475479213504905">Reload and show anyway</translation>
 <translation id="7554791636758816595">New Tab</translation>
@@ -3777,6 +3771,7 @@ Additional details:
 <translation id="885730110891505394">Sharing with Google</translation>
 <translation id="8858065207712248076">Chrome recommends resetting your <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> password if you reused it on other sites.</translation>
 <translation id="885906927438988819">If spelling is correct, <ph name="BEGIN_LINK" />try running windows network Diagnostics<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">To pay faster next time, save your card to your device</translation>
 <translation id="8864939224504814334">Suits and Business Attire</translation>
 <translation id="8866132857352163524">Soundtracks</translation>
 <translation id="8866481888320382733">Error parsing policy settings</translation>
@@ -3954,6 +3949,7 @@ Additional details:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your ad topics are based on your recent browsing history – a list of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="939736085109172342">New folder</translation>
 <translation id="940053046584497293">Travel and transportation</translation>
+<translation id="944540589955480312">Use passwords and passkeys saved in your Google Account</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new site in Google Sites quickly</translation>
 <translation id="949314938206378263">You asked to visit this site. Your parent can reply in Family Link.</translation>

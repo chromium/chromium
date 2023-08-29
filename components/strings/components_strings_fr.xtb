@@ -522,7 +522,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2048261947532620704">Traduction de la page</translation>
 <translation id="205212645995975601">Barbecue et grillades</translation>
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour tous les jours.}=1{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour tous les jours.}one{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour {NUM_DAYS} fois par jour.}other{Lorsque cette option est activée et que son état est actif, Chrome détermine le groupe de personnes, ou "cohorte", le plus semblable à votre activité de navigation récente. Les annonceurs peuvent sélectionner des annonces pour ce groupe. Votre activité de navigation restera privée sur cet appareil. Votre groupe est mis à jour tous les {NUM_DAYS} jours.}}</translation>
 <translation id="2056658168519009885">Les sites peuvent demander des informations à Chrome pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="2059202684901022309">22 x 34 pouces</translation>
 <translation id="2064568741209980952">Crédit et prêt</translation>
@@ -669,7 +668,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2355395290879513365">Il se peut que des pirates informatiques puissent voir les images que vous regardez sur ce site et vous piègent en les modifiant.</translation>
 <translation id="2356070529366658676">Demander</translation>
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte par <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Dans moins de 1 jour}=1{Dans 1 jour}one{Dans {NUM_DAYS} jour}other{Dans {NUM_DAYS} jours}}</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1231,7 +1229,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3586833803451155175">Pellicule humide</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587738293690942763">Milieu</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Vous pouvez réinitialiser votre groupe à tout moment. Comptez environ une journée pour rejoindre un nouveau groupe.}=1{Vous pouvez réinitialiser votre groupe à tout moment. Comptez environ une journée pour rejoindre un nouveau groupe.}one{Vous pouvez réinitialiser votre groupe à tout moment. Comptez {NUM_DAYS} jour pour rejoindre un nouveau groupe.}other{Vous pouvez réinitialiser votre groupe à tout moment. Comptez {NUM_DAYS} jours pour rejoindre un nouveau groupe.}}</translation>
 <translation id="3600246354004376029">"<ph name="TITLE" />", <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Bouton "Gérer les paramètres de confidentialité du compte Google" à activer pour accéder aux paramètres de confidentialité de votre compte Google</translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
@@ -1246,6 +1243,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="36224234498066874">Effacer les données de navigation...</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
 <translation id="3624292976554877583">Étiquettes (mates)</translation>
+<translation id="3625929652356389713">Peut demander à ouvrir automatiquement les fenêtres Picture-in-picture</translation>
 <translation id="3628905806504633297">{0,plural, =1{Une règle de l'administrateur déconseille de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">S'il est déjà répertorié en tant que programme autorisé à accéder au réseau,
     essayez de le supprimer de la liste, puis de le rajouter.</translation>
@@ -1379,6 +1377,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="388632593194507180">Activité de surveillance détectée</translation>
 <translation id="3886948180919384617">Empileur 3</translation>
 <translation id="3890664840433101773">Ajouter une adresse e-mail</translation>
+<translation id="3893306401511601929">Picture-in-picture automatique</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
 <translation id="390391808978419508">Délai d'ouverture dépassé</translation>
@@ -1578,7 +1577,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Cette carte a été enregistrée dans votre compte Google}one{Cette carte a été enregistrée dans votre compte Google}other{Ces cartes ont été enregistrées dans votre compte Google}}</translation>
 <translation id="4287495839370498922">Confidentialité des annonces améliorée dans Chrome</translation>
-<translation id="4287885627794386150">Essai possible, mais non actif</translation>
 <translation id="4290920330097335010">Ne jamais autoriser</translation>
 <translation id="4296207570293932800">Nouvelle fonctionnalité de confidentialité des annonces disponible</translation>
 <translation id="4297502707443874121">Vignette de la page <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2158,6 +2156,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5512812358367123529">Mobilier d'entreprise</translation>
 <translation id="5513528801833998679">Utiliser la connexion à l'appareil</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5516095341424241911">Utilisation de la technologie de sécurité Google pour protéger vos informations de paiement…</translation>
 <translation id="5518670652865028077">Arts et divertissements</translation>
 <translation id="5519516356611866228">Avec vos modifications</translation>
 <translation id="5519696598216267194">Papier (perforé)</translation>
@@ -2224,6 +2223,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5633259641094592098">Films cultes et indépendants</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Systèmes et composants stéréo</translation>
 <translation id="5644090287519800334">Décalage X de l'image côté 1</translation>
 <translation id="5645132789250840550">Plastique (semi-brillance)</translation>
@@ -2312,7 +2312,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5847181246682413476">Alimentation électrique</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Désactivé</translation>
 <translation id="5862579898803147654">Empileur 8</translation>
 <translation id="5863847714970149516">Il se peut que l'accès à la page suivante engendre des frais</translation>
 <translation id="5866257070973731571">Ajouter un numéro de téléphone</translation>
@@ -3047,7 +3046,6 @@ Informations supplémentaires :
 <translation id="7378877318020334501">Comédies (films TV)</translation>
 <translation id="7380398842872229465">10 x 15 pouces</translation>
 <translation id="738439098860678026">Crèches et jardins d'enfants</translation>
-<translation id="7386364858855961704">Non applicable</translation>
 <translation id="7388594495505979117">{0,plural, =1{Votre appareil va redémarrer dans 1 minute}one{Votre appareil va redémarrer dans # minute}other{Votre appareil va redémarrer dans # minutes}}</translation>
 <translation id="7390545607259442187">Valider la carte</translation>
 <translation id="7392089738299859607">Modifier l'adresse</translation>
@@ -3143,7 +3141,6 @@ Informations supplémentaires :
 <translation id="7549584377607005141">Pour s'afficher correctement, cette page Web a besoin des données que vous avez saisies précédemment. Vous pouvez envoyer de nouveau ces données. Cependant, en procédant ainsi, vous répéterez toute action déjà effectuée sur cette page.</translation>
 <translation id="7550637293666041147">Votre nom d'utilisateur Chrome et celui lié à votre appareil</translation>
 <translation id="7551484245293639699">Assurance voyage</translation>
-<translation id="755279583747225797">Essai actif</translation>
 <translation id="7552846755917812628">Essayez les astuces suivantes :</translation>
 <translation id="7554475479213504905">Relancer et afficher malgré tout</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
@@ -3775,6 +3772,7 @@ Informations supplémentaires :
 <translation id="885730110891505394">Partage avec Google</translation>
 <translation id="8858065207712248076">L'équipe Chrome vous recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="885906927438988819">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic réseau Windows<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">Pour payer plus rapidement la prochaine fois, enregistrez votre carte sur votre appareil</translation>
 <translation id="8864939224504814334">Costumes et tenues de ville</translation>
 <translation id="8866132857352163524">Bandes-son</translation>
 <translation id="8866481888320382733">Erreur d'analyse des paramètres de la règle.</translation>
@@ -3952,6 +3950,7 @@ Informations supplémentaires :
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : Vos thèmes d'annonces sont basés sur votre historique de navigation récent, qui liste les sites auxquels vous avez accédé dans Chrome sur cet appareil.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940053046584497293">Voyages et transports</translation>
+<translation id="944540589955480312">Utiliser les mots de passe et clés d'accès enregistrés dans votre compte Google</translation>
 <translation id="945855313015696284">Vérifiez les informations ci-dessous et supprimez les cartes non valides</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement un site dans Google Sites</translation>
 <translation id="949314938206378263">Tu as demandé à consulter ce site. Ton parent peut répondre dans Family Link.</translation>
@@ -3988,5 +3987,6 @@ Informations supplémentaires :
     &lt;li&gt;Essayez de vous connecter à un autre réseau.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">Picture-in-picture automatique</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

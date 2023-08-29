@@ -45,7 +45,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1175944128323889279">Aktuálna úroveň batérie: <ph name="BATTERY_PERCENTAGE" /> %, zostávajúci čas: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
-<translation id="1181431373490845924">Zrušiť nastavovanie zobrazovania nedávnych fotiek, médií a upozornení z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Týmto povolíte prístup všetkým aplikáciám a webom s povoleniami používať kameru a mikrofón</translation>
 <translation id="1182876754474670069">domov</translation>
 <translation id="1183863904939664422">Tento návrh ma nezaujíma</translation>
@@ -118,7 +117,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1415846719612499304">Zobraziť zoznam sietí. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Ak chcete vykonať akciu s upozornením, odomknite zariadenie</translation>
 <translation id="1420408895951708260">Prepnúť nočný režim. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Zobrazte si v zariadení <ph name="DEVICE_TYPE" /> najnovšie fotky a médiá zo svojho telefónu</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="1455242230282523554">Zobraziť nastavenia jazyka</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
@@ -411,7 +409,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2750932254614666392">Odstrániť</translation>
 <translation id="2750941250130734256">Aktívne okno bolo uvoľnené.</translation>
 <translation id="2761723519669354964">Otvorenie zvýraznenej položku z poličky</translation>
-<translation id="2774327524281966309">Zrušiť nastavovanie upozornení a aplikácií z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> pomocou klávesa <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + kláves vyhľadávania + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" /></translation>
@@ -490,7 +487,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3095995014811312755">verzia</translation>
 <translation id="309749186376891736">Presunúť kurzor</translation>
 <translation id="3100274880412651815">Zrušiť režim snímania</translation>
-<translation id="3103732015595029598">Nastaviť upozornenia a aplikácie z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Zvýraznenie predchádzajúcej položky na poličke</translation>
@@ -660,7 +656,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3735740477244556633">Zoradiť podľa</translation>
 <translation id="3738664582935948253">V nahrávkach obrazovky teraz môžete zobrazovať kliknutia a klávesové skratky</translation>
 <translation id="3742055079367172538">Vytvorila sa snímka obrazovky</translation>
-<translation id="375335662788363456">Zrušte nastavovanie nedávnych fotiek, médií, upozornení a aplikácií z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3756485814916578707">Prenáša sa obrazovka</translation>
 <translation id="3765841382945324995">Skratka <ph name="SIX_PACK_KEY_NAME" /> bola aktualizovaná z kombinácie <ph name="OLD_SHORTCUT" /> na kombináciu <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Upravené dnes</translation>
@@ -795,7 +790,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="428715201724021596">Pripája sa k profilu. Môže to trvať niekoľko minút.</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazať všetky upozornenia (počet: <ph name="COUNT" />)</translation>
-<translation id="4300367807227655672">Nastaviť zobrazovanie upozornení z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> bola presunutá do priečinka <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Nie je k dispozícii</translation>
 <translation id="4303223480529385476">Rozbaliť stavovú oblasť</translation>
@@ -821,18 +815,15 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4405151984121254935">Pripojený typ periférie nie je podporovaný</translation>
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
-<translation id="4414595745967164324">Nastaviť nedávne fotky, médiá, upozornenia a aplikácie z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">5. plocha</translation>
 <translation id="4427695046139341014">Herný panel</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
-<translation id="4435022394553622295">Zobrazujte si upozornenia a aplikácie svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Aplikácie sú zoradené podľa názvu</translation>
 <translation id="4445159312344259901">Odomknite prihlásením</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 dôležité upozornenie}few{# dôležité upozornenia}many{# important notifications}other{# dôležitých upozornení}}</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="4451374464530248585">Klávesová skratka Alt + šípka nadol bola zmenená. Ak chcete použiť kláves Page Down, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nadol.</translation>
 <translation id="4453876312474547652">Schránka sa zobrazí, keď pridržíte klávesy Ctrl + V. Túto skratku môžete vypnúť tak, že na chrome://flags (os://flags, ak používate Lacros) deaktivujete experimentálnu funkciu #clipboard-history-longpress.</translation>
-<translation id="4455051983450390249">Zobrazujte si upozornenia svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastaviť nahrávanie obrazovky</translation>
 <translation id="445923051607553918">Pripojiť sa k sieti Wi‑Fi</translation>
@@ -915,7 +906,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4798888871844665150">Skopírovaná položka sa už v schránke nachádza. Zobrazíte ju pomocou skratky <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Odpojiť</translation>
-<translation id="4810227386592387399">Nastaviť zobrazovanie aplikácií z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Presuňte odkaz do prázdnej oblasti na paneli kariet</translation>
 <translation id="4814539958450445987">Prihlasovacia obrazovka</translation>
 <translation id="481455355267255546">Ďalšie</translation>
@@ -1101,7 +1091,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5551456515017410630">Otvorenie alebo zavretie kalendára</translation>
 <translation id="5551974246223970793">Prechod na ďalšiu zhodu vyhľadávania pri vyhľadávaní na stránke</translation>
 <translation id="5558091555391176027">Prepnúť vysokú viditeľnosť Zdieľania nablízku</translation>
-<translation id="5560420195677022218">Zobrazujte si upozornenia svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Tlačidlo</translation>
 <translation id="5570122939431135380">Otvorenie novej karty v novom okne inkognito</translation>
 <translation id="5571066253365925590">Rozhranie Bluetooth je povolené</translation>
@@ -1199,6 +1188,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>
 <translation id="5955304353782037793">aplikácia</translation>
 <translation id="5958529069007801266">Kontrolovaný používateľ</translation>
+<translation id="5960410286721553511">Pozrite si najnovšie fotky a médiá z telefónu</translation>
 <translation id="5961960957587052807">Svetlé</translation>
 <translation id="5965524703725988602">Prepnúť tmavý motív. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Prechádzanie oknami vpred</translation>
@@ -1255,13 +1245,11 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="616543563528926612">Skratka kliknutia pravým tlačidlom bola aktualizovaná z kombinácie <ph name="LAUNCHER_KEY_NAME" /> + kliknutie na kombináciu Alt + kliknutie</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6166852626429024716">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete…</translation>
-<translation id="6167922743323004256">Zrušte nastavovanie zobrazovania nedávnych fotiek a médií z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Otvorenie aplikácie Diagnostika</translation>
 <translation id="6173151025443907148">Prihlásenie druhého používateľa nie je podporované, keď je spustený prehliadač Lacros. Použite radšej druhý profil v prehliadači Lacros alebo Lacros deaktivujte a skúste to znova.</translation>
 <translation id="6179832488876878285">Tu si môžete pripnúť dôležité súbory. Začnite otvorením aplikácie Súbory.</translation>
 <translation id="6182592640011875895">Otvoriť plochu</translation>
 <translation id="6185696379715117369">Posunúť o stránku nahor</translation>
-<translation id="619279033188484792">V zariadení <ph name="DEVICE_TYPE" /> si môžete pozrieť najnovšie fotky, médiá a upozornenia zo svojho telefónu</translation>
 <translation id="619335566042889110">Úplne nabiť</translation>
 <translation id="6193431488227440296">Vývoj.</translation>
 <translation id="6199775032047436064">Opätovné načítanie aktuálnej stránky</translation>
@@ -1275,7 +1263,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> momentálne používa kameru a mikrofón</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Zrušiť nastavovanie zobrazovania upozornení z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6244986124527896815">Otvorte aplikáciu Správca úloh skratkou <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Otvorenie upozornení</translation>
 <translation id="6254629735336163724">Uzamknuté vodorovne</translation>
@@ -1423,7 +1410,6 @@ Nová inštalácia</translation>
 <translation id="6884665277231944629">Prejsť späť na dnešok</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>
-<translation id="6891721121089053234">Zobrazujte si najnovšie fotky, médiá a aplikácie svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6901883536534621389">Skúste prechádzanie gestami</translation>
 <translation id="6912841030378044227">Označenie panela s adresou</translation>
@@ -1615,6 +1601,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7723703419796509666">Zobrazenie alebo skrytie konzoly s nástrojmi pre vývojárov</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
 <translation id="7725108879223146004">Zobraziť podrobnosti o hotspote. Hotspot sa vypína.</translation>
+<translation id="7726391492136714301">Zobrazujte si upozornenia a aplikácie svojho telefónu</translation>
 <translation id="7727952505535211425">Otvorenie webu na paneli s adresou na novej karte</translation>
 <translation id="7742327441377685481">Žiadne upozornenia</translation>
 <translation id="7748275671948949022">Zvýraznenie tlačidla Spúšťača na poličke</translation>
@@ -1632,7 +1619,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">silný signál</translation>
 <translation id="7837740436429729974">Čas vypršal</translation>
-<translation id="7838712802972544930">Zrušiť nastavovanie zobrazovania aplikácií z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7842569679327885685">Upozornenie: Experimentálna funkcia</translation>
 <translation id="7846634333498149051">Klávesnica</translation>
 <translation id="7848989271541991537">Prechod na <ph name="PAGE_NUMBER" />. stránku, <ph name="ROW_NUMBER" />. riadok,<ph name="COLUMN_NUMBER" />. stĺpec.</translation>
@@ -1698,7 +1684,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8051716679295756675">Šablóna s názvom <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Skopírované do schránky</translation>
 <translation id="8054466585765276473">Výpočet času výdrže batérie.</translation>
-<translation id="8077971003886736669">Nastavte si zobrazovanie nedávnych fotiek a médií z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Zdieľanie obrazovky</translation>
 <translation id="8083540854303889870">Uložené na neskôr</translation>
 <translation id="8091153018031979607">Začína sa o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1728,7 +1713,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavenie ovláda váš správca.</translation>
 <translation id="8155628902202578800">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Práve sa používa <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Zobrazujte si najnovšie fotky, médiá, upozornenia a aplikácie svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Zapnutie alebo vypnutie ponuky umožňujúcej zmenu veľkosti zamknutého režimu</translation>
 <translation id="8192202700944119416">Upozornenia sú skryté.</translation>
 <translation id="8196787716797768628">Gestami môžete rýchlo prepínať medzi aplikáciami a používať Chromebook v režime tabletu.</translation>
@@ -1854,7 +1838,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="875593634123171288">Zobraziť nastavenia VPN</translation>
 <translation id="8759408218731716181">Nie je možné nastaviť viacnásobné prihlásenie</translation>
 <translation id="8763883995157866248">Prepnutie zariadenie do režimu spánku</translation>
-<translation id="8773962395093246071">Nastaviť zobrazovanie nedávnych fotiek, médií a upozornení z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260">Nainštalovaná aplikácia <ph name="APP_NAME" /> je blokovaná</translation>
 <translation id="8785070478575117577">Pripojiť k sieti <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

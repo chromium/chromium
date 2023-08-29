@@ -522,7 +522,6 @@
 <translation id="2048261947532620704">페이지 번역 중</translation>
 <translation id="205212645995975601">바비큐 및 그릴</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{이 컨트롤이 사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome이 기기 사용자의 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '동질 집단'을 결정합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 매일 업데이트됩니다.}=1{이 컨트롤이 사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome이 기기 사용자의 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '동질 집단'을 결정합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 매일 업데이트됩니다.}other{이 컨트롤이 사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome이 기기 사용자의 최근 탐색 활동과 가장 유사한 대규모의 사용자 그룹, 즉 '동질 집단'을 결정합니다. 광고주는 해당 그룹에 게재할 광고를 선택할 수 있으며 탐색 활동은 사용자 기기에서 비공개로 유지됩니다. 그룹은 {NUM_DAYS}일마다 업데이트됩니다.}}</translation>
 <translation id="2056658168519009885">사이트에서 광고 개인 최적화에 도움이 되는 정보를 Chrome에 요청할 수 있습니다.</translation>
 <translation id="2059202684901022309">22x34인치</translation>
 <translation id="2064568741209980952">신용 및 대출</translation>
@@ -669,7 +668,6 @@
 <translation id="2355395290879513365">공격자는 사용자가 이 사이트에서 보고 있는 이미지를 볼 수 있으며 이미지를 수정하여 사용자를 속일 수 있습니다.</translation>
 <translation id="2356070529366658676">확인</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{1일 이내}=1{1일 후}other{{NUM_DAYS}일 후}}</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2361263712565360498">275x395mm</translation>
@@ -1231,7 +1229,6 @@
 <translation id="3586833803451155175">웻 필름</translation>
 <translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587738293690942763">보통</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}=1{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}other{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 {NUM_DAYS}일이 소요됩니다.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Google 개인 정보 보호 설정 관리 버튼, Google 계정 개인 정보 보호 설정 페이지를 방문하려면 활성화하세요.</translation>
 <translation id="3603507503523709">관리자가 차단한 애플리케이션</translation>
@@ -1246,6 +1243,7 @@
 <translation id="36224234498066874">인터넷 사용 기록 삭제...</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
 <translation id="3624292976554877583">라벨(무광)</translation>
+<translation id="3625929652356389713">PIP 모드 창을 자동으로 열도록 요청할 수 있음</translation>
 <translation id="3628905806504633297">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 전송하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 전송하지 않는 것이 좋습니다.}}</translation>
 <translation id="3630155396527302611">이미 네트워크 액세스가 허용된 프로그램으로 되어 있는 경우
     목록에서 삭제한 뒤 다시 추가합니다.</translation>
@@ -1379,6 +1377,7 @@
 <translation id="388632593194507180">모니터링 감지됨</translation>
 <translation id="3886948180919384617">스태커 3</translation>
 <translation id="3890664840433101773">이메일 추가</translation>
+<translation id="3893306401511601929">자동 PIP 모드</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3901925938762663762">만료된 카드입니다.</translation>
 <translation id="390391808978419508">여는 시간 초과</translation>
@@ -1578,7 +1577,6 @@
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{다음 카드가 Google 계정에 저장되었습니다.}other{다음 카드가 Google 계정에 저장되었습니다.}}</translation>
 <translation id="4287495839370498922">Chrome의 개선된 광고 개인 정보 보호</translation>
-<translation id="4287885627794386150">무료 체험을 이용할 수 있으나 활성화되어 있지 않음</translation>
 <translation id="4290920330097335010">허용 안함</translation>
 <translation id="4296207570293932800">새로운 광고 개인 정보 보호 기능 사용 가능</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> 페이지 미리보기 이미지</translation>
@@ -2158,6 +2156,7 @@
 <translation id="5512812358367123529">사무용 가구</translation>
 <translation id="5513528801833998679">기기 로그인 사용</translation>
 <translation id="5515388687005870733">55x85mm</translation>
+<translation id="5516095341424241911">Google의 보안 기술을 사용하여 결제 정보를 안전하게 보호하세요</translation>
 <translation id="5518670652865028077">예술 및 엔터테인먼트</translation>
 <translation id="5519516356611866228">변경사항 포함</translation>
 <translation id="5519696598216267194">용지(천공)</translation>
@@ -2313,7 +2312,6 @@
 <translation id="5847181246682413476">전원 공급 장치</translation>
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">사용 안함</translation>
 <translation id="5862579898803147654">스태커 8</translation>
 <translation id="5863847714970149516">방문하려는 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5866257070973731571">전화번호 추가</translation>
@@ -3047,7 +3045,6 @@
 <translation id="7378877318020334501">TV 코미디</translation>
 <translation id="7380398842872229465">10x15인치</translation>
 <translation id="738439098860678026">유아 교육</translation>
-<translation id="7386364858855961704">해당 사항 없음</translation>
 <translation id="7388594495505979117">{0,plural, =1{1분 후에 기기가 다시 시작됩니다}other{#분 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="7390545607259442187">카드 확인</translation>
 <translation id="7392089738299859607">주소 업데이트</translation>
@@ -3142,7 +3139,6 @@
 <translation id="7549584377607005141">이 웹페이지를 제대로 표시하려면 이전에 입력한 데이터가 필요합니다. 이 데이터를 다시 보낼 수 있지만 이 경우 해당 페이지에서 이전에 수행한 작업이 반복됩니다.</translation>
 <translation id="7550637293666041147">기기 사용자 이름 및 Chrome 사용자 이름</translation>
 <translation id="7551484245293639699">여행자 보험</translation>
-<translation id="755279583747225797">무료 체험이 활성화됨</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7554475479213504905">무시하고 새로고침 및 표시</translation>
 <translation id="7554791636758816595">새 탭</translation>
@@ -3989,5 +3985,6 @@
     &lt;li&gt;다른 네트워크에 연결해 보세요.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">자동 PIP 모드</translation>
 <translation id="997986563973421916">출처: Google Pay</translation>
 </translationbundle>

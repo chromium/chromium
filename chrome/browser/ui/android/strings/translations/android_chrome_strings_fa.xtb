@@ -1044,6 +1044,7 @@
 <translation id="6433501201775827830">انتخاب موتور جستجو</translation>
 <translation id="6434309073475700221">صرف‌نظرکردن</translation>
 <translation id="6437478888915024427">اطلاعات صفحه</translation>
+<translation id="6440291723980579689">صفحه‌ها فقط بعداز باز شدن بارگیری می‌شوند</translation>
 <translation id="6441734959916820584">نام خیلی طولانی است</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# تصویر}one{# تصویر}other{# تصویر}}</translation>
 <translation id="6447558397796644647">آن نشانک پیدا نشد. املای خود را بررسی کنید یا نشانک جدیدی را اضافه کنید.</translation>
@@ -1092,6 +1093,7 @@
 <translation id="6641780377503683465">برداشتن <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645629752388991326">کنترل کنید کدام دستگاه‌ها می‌توانند بااستفاده از این دستگاه به‌عنوان کلید امنیتی به سیستم وارد شوند.</translation>
+<translation id="6646696210740573446">‏بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حریم خصوصی‌ای که نشانی IP شما را پنهان می‌کند به Google ارسال می‌کند. اگر سایتی تلاش کند گذرواژه‌تان را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به Google ارسال کند.</translation>
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6648459603387803038">‏سرپرستتان می‌تواند تنظیم مرورگرتان را ازراه‌دور تغییر دهد. فعالیت انجام‌شده در این دستگاه می‌تواند از خارج از Chrome هم مدیریت شود.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}one{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}}</translation>
@@ -1451,6 +1453,7 @@
 <translation id="8394720698884623075">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند</translation>
 <translation id="8402673309244746971">رفتن به «دنبال می‌کنید»</translation>
 <translation id="8413126021676339697">نمایش کل سابقه</translation>
+<translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حریم خصوصی‌ای که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">‏درباره شخصی‌سازی آگهی در Chrome بیشتر بدانید</translation>
 <translation id="8419244640277402268">لحاظ شود</translation>

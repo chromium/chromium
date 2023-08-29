@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Виберіть пароль</translation>
 <translation id="2195124168004379331">Ваш веб-переглядач у безпеці</translation>
+<translation id="2213327331203157297">Щоб вимкнути режим блокування входу в Chrome, відключіть його на своєму пристрої iPhone.</translation>
 <translation id="2218443599109088993">Віддалити</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
@@ -474,7 +475,6 @@
 <translation id="3771033907050503522">Анонімні вкладки</translation>
 <translation id="3775743491439407556">Синхронізація не працює</translation>
 <translation id="3779810277399252432">Немає з’єднання з Інтернетом</translation>
-<translation id="3783017676699494206">Зберегти зображення</translation>
 <translation id="3789294999358192700">Для цього виконайте наведені нижче дії.</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
@@ -1360,6 +1360,7 @@
 <translation id="8843129975935593190">Ваша організація обмежила дані, які можна синхронізувати.</translation>
 <translation id="8849001918648564819">Приховано</translation>
 <translation id="8855242995793521265">Не сповільнює роботу веб-переглядача або пристрою.</translation>
+<translation id="8855781063981781621">Щоб вимкнути режим блокування входу в Chrome, відключіть його на своєму пристрої iPad.</translation>
 <translation id="8863431381414769983">Прокладайте маршрути й отримуйте місцеву інформацію з Карт Google</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Нещодавно закриті</translation>

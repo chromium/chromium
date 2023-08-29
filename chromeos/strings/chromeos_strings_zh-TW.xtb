@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">傳輸層安全標準 (TLS) 驗證金鑰</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2717139507051041123">啟用深色模式</translation>
+<translation id="2728460467788544679">清除所有列印記錄</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2744221223678373668">共用</translation>
 <translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">前往帳戶設定</translation>
+<translation id="6461047516875166066">瞭解詳情</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃描頁面嗎？}=1{要重新掃描第 {PAGE_NUMBER} 頁嗎？}other{要重新掃描第 {PAGE_NUMBER} 頁嗎？}}</translation>
 <translation id="6472207088655375767">動態密碼</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>

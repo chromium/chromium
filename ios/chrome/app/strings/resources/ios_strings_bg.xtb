@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2178545675770638239">Избиране на парола</translation>
 <translation id="2195124168004379331">Всичко е наред с браузъра ви</translation>
+<translation id="2213327331203157297">За да деактивирате режима на заключване в Chrome, изключете го на своя iPhone.</translation>
 <translation id="2218443599109088993">Отдалечаване</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2239626343334228536">Данните за сърфирането се изчистват...</translation>
@@ -474,7 +475,6 @@
 <translation id="3771033907050503522">Раздели „инкогнито“</translation>
 <translation id="3775743491439407556">Синхронизирането не работи</translation>
 <translation id="3779810277399252432">Няма връзка с интернет.</translation>
-<translation id="3783017676699494206">Запазване на изобрaжението</translation>
 <translation id="3789294999358192700">Изпълнете следните стъпки:</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="380329542618494757">Име</translation>
@@ -1360,6 +1360,7 @@
 <translation id="8843129975935593190">Организацията ви ограничава това какво можете да синхронизирате.</translation>
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8855242995793521265">Не забавя осезаемо браузъра или устройството ви.</translation>
+<translation id="8855781063981781621">За да деактивирате режима на заключване в Chrome, изключете го на своя iPad.</translation>
 <translation id="8863431381414769983">Получавайте упътвания и местна информация от Google Карти</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
 <translation id="8870413625673593573">Наскоро затворени</translation>

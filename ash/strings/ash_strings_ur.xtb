@@ -45,7 +45,6 @@
 <translation id="1175944128323889279">موجودہ بیٹری لیول <ph name="BATTERY_PERCENTAGE" />فیصد، <ph name="TIME" /> باقی ہے</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
-<translation id="1181431373490845924">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="1182225749592316782">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1182876754474670069">گھر</translation>
 <translation id="1183863904939664422">اس تجویز میں کوئی دلچسپی نہیں</translation>
@@ -118,7 +117,6 @@
 <translation id="1415846719612499304">نیٹ ورک کی فہرست دکھائیں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="1419738280318246476">اطلاع کی کارروائی کرنے کیلئے آلے کو غیر مقفل کریں</translation>
 <translation id="1420408895951708260">نائٹ لائٹ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر اور میڈیا دیکھیں</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1455242230282523554">زبان کی ترتیبات دکھائیں</translation>
 <translation id="1460620680449458626">والیوم خاموش کیا ہوا ہے۔</translation>
@@ -411,7 +409,6 @@
 <translation id="2750932254614666392">"حذف کریں"</translation>
 <translation id="2750941250130734256">فعال ونڈو کو غیر مقفل کیا گیا۔</translation>
 <translation id="2761723519669354964">شیلف سے نمایاں کردہ آئٹم کھولیں</translation>
-<translation id="2774327524281966309">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات اور ایپس سیٹ اپ کرنے کو برخاست کریں</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
@@ -490,7 +487,6 @@
 <translation id="3095995014811312755">ورژن</translation>
 <translation id="309749186376891736">کرسر منتقل کریں</translation>
 <translation id="3100274880412651815">کیپچر وضع برخاست کریں</translation>
-<translation id="3103732015595029598">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات اور ایپس سیٹ اپ کریں</translation>
 <translation id="3105917916468784889">اسکرین شاٹ لیں</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="3113492864356515707">گزشتہ آئٹم کو شیلف پر نمایاں کریں</translation>
@@ -660,7 +656,6 @@
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3738664582935948253">اب آپ اسکرین ریکارڈنگز میں کلکس اور کی بورڈ شارٹ کٹس دکھا سکتے ہیں</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
-<translation id="375335662788363456">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="3756485814916578707">اسکرین کاسٹ ہو رہی ہے</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> شارٹ کٹ کو <ph name="OLD_SHORTCUT" /> سے <ph name="NEW_SHORTCUT" /> میں اپ ڈیٹ کیا گیا ہے</translation>
 <translation id="3765841986579723851">آج ترمیم کیا گیا</translation>
@@ -795,7 +790,6 @@
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
-<translation id="4300367807227655672">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> کو فولڈر<ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="4302592941791324970">دستیاب نہیں ہے</translation>
 <translation id="4303223480529385476">اسٹیٹس ایریا کو پھیلائیں</translation>
@@ -821,18 +815,15 @@
 <translation id="4405151984121254935">منسلک پیریفرل کی قسم تعاون یافتہ نہیں ہے</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
-<translation id="4414595745967164324">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس سیٹ اپ کریں</translation>
 <translation id="4424159417645388645">ڈیسک 5</translation>
 <translation id="4427695046139341014">گیم ڈیش بورڈ</translation>
 <translation id="4430019312045809116">والیوم</translation>
-<translation id="4435022394553622295">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات اور ایپس دیکھیں</translation>
 <translation id="4441283832827406317">ایپس نام کے لحاظ سے ترتیب دی گئی ہیں</translation>
 <translation id="4445159312344259901">غیر مقفل کیلئے سائن ان کریں</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="4451374464530248585">‏Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Page Down کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'نیچے تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4453876312474547652">‏Ctrl + V کو دبا کر اور اسے ہولڈ کر کے رکھنے پر، آپ کو کلپ بورڈ دکھائی دے گا۔ آپ chrome://flags (os://flags، اگر آپ Lacros استعمال کر رہے ہیں) میں ‎#clipboard-history-longpress پرچم کو غیر فعال کر کے اس شارٹ کٹ کو آف کر سکتے ہیں۔</translation>
-<translation id="4455051983450390249">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات دیکھیں</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
 <translation id="445923051607553918">‏Wi-Fi نیٹ ورک میں شامل ہوں</translation>
@@ -915,7 +906,6 @@
 <translation id="4798888871844665150">‏کاپی کیے گئے آئٹم پہلے ہی کلپ بورڈ میں ہیں۔ دیکھنے کے لیے <ph name="SHORTCUT_KEY_NAME" /> + V کا استعمال کریں۔</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
 <translation id="4804818685124855865">منقطع کریں</translation>
-<translation id="4810227386592387399">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی ایپس دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="4813311884204119883">لنک کو ٹیب اسٹرپ پر خالی جگہ پر گھسیٹیں</translation>
 <translation id="4814539958450445987">لاگ ان اسکرین</translation>
 <translation id="481455355267255546">اس کے آگے</translation>
@@ -1101,7 +1091,6 @@
 <translation id="5551456515017410630">کیلنڈر کھولیں/بند کریں</translation>
 <translation id="5551974246223970793">صفحہ تلاش کرتے وقت، تلاش کے لیے اگلی مماثلت پر جائیں</translation>
 <translation id="5558091555391176027">قریبی آلات کے ساتھ اشتراک کی اعلی مرئیت کو ٹوگل کریں</translation>
-<translation id="5560420195677022218">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی ایپس دیکھیں</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5570122939431135380">نئی پوشیدگی ونڈو میں نیا ٹیب کھولیں</translation>
 <translation id="5571066253365925590">بلوٹوتھ فعال ہے</translation>
@@ -1199,6 +1188,7 @@
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
 <translation id="5955304353782037793">ایپ</translation>
 <translation id="5958529069007801266">تحفظ یافتہ صارف</translation>
+<translation id="5960410286721553511">اپنے فون کی حالیہ تصاویر اور میڈیا دیکھیں</translation>
 <translation id="5961960957587052807">روشنی</translation>
 <translation id="5965524703725988602">گہری تھیم کو ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="5975235751479998104">ونڈوز کے ذریعے سب سے آگے ایپ پر جائیں</translation>
@@ -1255,13 +1245,11 @@
 <translation id="616543563528926612">‏دائیں کلک کے شارٹ کٹ کو <ph name="LAUNCHER_KEY_NAME" /> کلید + کلک سے alt + کلک پر اپ ڈیٹ کیا جاتا ہے</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166852626429024716">اپنا آلہ، ایپس، ترتیبات ویب تلاش کریں...</translation>
-<translation id="6167922743323004256">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر اور میڈیا دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="6168318496333165060">‏Diagnostics ایپ کھولیں</translation>
 <translation id="6173151025443907148">‏اگر Lacros فعال ہے تو دوسرے صارف میں سائن ان کرنا تعاون یافتہ نہیں ہے۔ براہ کرم اس کی بجائے Lacros میں دوسری براؤزر پروفائل استعمال کریں یا Lacros کو غیر فعال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
 <translation id="6182592640011875895">ڈیسک کھولیں</translation>
 <translation id="6185696379715117369">Page up</translation>
-<translation id="619279033188484792">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
 <translation id="619335566042889110">اب پوری طرح چارج کریں</translation>
 <translation id="6193431488227440296">Dev</translation>
 <translation id="6199775032047436064">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
@@ -1275,7 +1263,6 @@
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" کی مدد سے ٹاسک مینیجر ایپ کھولیں۔</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
 <translation id="6254629735336163724">افقی پر مقفل ہے</translation>
@@ -1422,7 +1409,6 @@
 <translation id="6884665277231944629">آج کی تاریخ پر واپس جائیں</translation>
 <translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سندیافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
 <translation id="688631446150864480">ونڈوز کو سوئچ کرنے کیلئے نیچے تیر کے نشان والی کلید کو دبائیں</translation>
-<translation id="6891721121089053234">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور ایپس دیکھیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6901883536534621389">نیویگیٹ کرنے کے لیے اشاروں کو آزمائیں</translation>
 <translation id="6912841030378044227">ایڈریس بار پر فوکس کریں</translation>
@@ -1614,6 +1600,7 @@
 <translation id="7723703419796509666">ڈویلپر ٹولز کنسول دکھائیں یا چھپائیں</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7725108879223146004">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آف ہو رہا ہے۔</translation>
+<translation id="7726391492136714301">اپنے فون کی اطلاعات اور ایپس دیکھیں</translation>
 <translation id="7727952505535211425">ایڈریس بار میں ویب سائٹ کو ایک نئے ٹیب میں کھولیں</translation>
 <translation id="7742327441377685481">کوئی اطلاع نہیں ہے</translation>
 <translation id="7748275671948949022">لانچر بٹن کو شیلف پر نمایاں کریں</translation>
@@ -1631,7 +1618,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> اور <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">مضبوط سگنل</translation>
 <translation id="7837740436429729974">وقت ختم ہو گیا</translation>
-<translation id="7838712802972544930">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="7842569679327885685">انتباہ: تجرباتی خصوصیت</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7848989271541991537">صفحہ <ph name="PAGE_NUMBER" />، قطار <ph name="ROW_NUMBER" />، کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
@@ -1697,7 +1683,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> کے نام والی تمثیل پہلے سے موجود ہے</translation>
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="8054466585765276473">بیٹری کے وقت کا حساب لگایا جا رہا ہے۔</translation>
-<translation id="8077971003886736669">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر اور میڈیا دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="8079538659226626406">اسکرین کا اشتراک</translation>
 <translation id="8083540854303889870">بعد کیلئے محفوظ کردہ</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> کو شروع ہوگا</translation>
@@ -1727,7 +1712,6 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> کے لئے معلومات کا ڈائلاگ کھولیں</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> استعمال کر کے</translation>
-<translation id="8183592608247778598">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھیں</translation>
 <translation id="8185090165691050712">قفل موڈ کا سائز تبدیل کرنے کے لیے مینیو کو آن/آف کریں</translation>
 <translation id="8192202700944119416">اطلاعات پوشیدہ ہیں۔</translation>
 <translation id="8196787716797768628">‏ایپس کے درمیان فوری طور پر سوئچ کرنے کے لیے اشارات کا استعمال کریں اور ٹیبلیٹ وضع میں اپنے Chromebook کے ساتھ تعامل کریں۔</translation>
@@ -1854,7 +1838,6 @@
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
 <translation id="8759408218731716181">متعدد سائن ان ترتیب نہیں دے سکتے</translation>
 <translation id="8763883995157866248">آلہ کو سلیپ وضع میں بھیجیں</translation>
-<translation id="8773962395093246071">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات کو دیکھنے کے لیے سیٹ اپ کریں</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، انسٹال کردہ ایپ، مسدود ہے</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> سے منسلک کریں</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />۔ <ph name="ENTERPRISE_TEXT" /></translation>

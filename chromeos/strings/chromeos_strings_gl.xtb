@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Activar modo de cores escuras</translation>
+<translation id="2728460467788544679">Borrar todo o historial de impresións</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir á configuración da conta</translation>
+<translation id="6461047516875166066">Máis información</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Xestionado por <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Sen imaxes</translation>
 <translation id="8329018942023753850">aplicación da calculadora</translation>
 <translation id="8336739000755212683">Cambiar imaxe da conta do dispositivo</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ou <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8351855506390808906">Punto táctil de asignación de teclas</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>

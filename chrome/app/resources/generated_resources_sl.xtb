@@ -1511,7 +1511,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2162705204091149050">Branje podatkov o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi in datotekah</translation>
 <translation id="2162926944953615670">Ni razpoložljivih profilov za e-SIM.</translation>
 <translation id="2163470535490402084">Če se želite prijaviti v napravo <ph name="DEVICE_TYPE" />, vzpostavite povezavo z internetom.</translation>
-<translation id="2163996651553460171">Čim bolje izkoristite Chrome</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še 1 stikalo</translation>
 <translation id="2165102982098084499">Te naprave ste povezali z optičnim branjem kode QR.</translation>
 <translation id="2165177462441582039">Izberite, kako dolgo naj posamezen element ostane označen</translation>
@@ -5822,7 +5821,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="567740581294087470">Katere povratne informacije pošiljate?</translation>
 <translation id="5677503058916217575">Jezik strani:</translation>
 <translation id="5677928146339483299">Blokirano</translation>
-<translation id="5677946354068040947">več možnosti</translation>
 <translation id="5678550637669481956">Odobren je dostop z možnostjo branja in pisanja za to: <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Pošiljanje v <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Branje vaših podatkov na spletnem mestu <ph name="WEBSITE_1" /></translation>
@@ -6735,6 +6733,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6436778875248895551">Razširitev »<ph name="EXTENSION_NAME" />« je blokiral skrbnik.</translation>
 <translation id="6438234780621650381">Ponastavitev nastavitev</translation>
 <translation id="6438475350605608554">Gesla že uvažate na drugem zavihku.</translation>
+<translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – zvok se predvaja</translation>
 <translation id="6440291723980579689">Strani se naložijo samo, ko jih odprete</translation>
 <translation id="6441377161852435370">Dodaj zavihek na bralni seznam</translation>
@@ -6992,6 +6991,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6644513150317163574">Neveljavna oblika URL-ja. Če se uporablja preverjanje pristnosti z enotno prijavo, mora biti strežnik naveden kot gostitelj.</translation>
 <translation id="6644846457769259194">Posodabljanje naprave (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Izklop hitre seznanitve</translation>
+<translation id="6646696210740573446">Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome Googlu prav tako pošlje URL-je, vključno z delčki vsebine strani.</translation>
 <translation id="6647228709620733774">Spletni naslov preklica overitelja Netscapeovega potrdila</translation>
 <translation id="6647690760956378579">Predogled naravnega glasu</translation>
 <translation id="6648911618876616409">Nujna posodobitev je pripravljena za namestitev. Če želite začeti, se prijavite.</translation>
@@ -8141,6 +8141,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7585106857920830898">Preverjamo, ali je datoteka v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="7586498138629385861">Chrome se izvaja naprej, dokler so odprte aplikacije za Chrome.</translation>
 <translation id="7589461650300748890">Počasi. Previdno.</translation>
+<translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7592060599656252486">Nekatera</translation>
 <translation id="7593653750169415785">Samodejno blokirano, ker ste nekajkrat zavrnili obvestila</translation>
 <translation id="7594725637786616550">Uporabite Powerwash za ponastavitev naprave <ph name="DEVICE_TYPE" />, da bo kot nova.</translation>
@@ -9188,6 +9189,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="84098433273647700">Trenutna tema, ki ste jo namestili.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dovoljeno: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
+<translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="8413956290606243087">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS?</translation>
 <translation id="8414249071344507766">Spomini so skriti za dva dneva.</translation>
 <translation id="8414396119627470038">Prijavite se v storitev <ph name="SITE_ETLD_PLUS_ONE" /> s podatki za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -9263,6 +9265,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8472623782143987204">podprto s strojno opremo</translation>
 <translation id="8473540203671727883">Izgovori besedilo pod miško</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
+<translation id="8474378002946546633">Omogoči obvestila</translation>
 <translation id="8474733733775441349">Prikaz gesel iz računa Google</translation>
 <translation id="8475313423285172237">Drug program v računalniku je dodal razširitev, ki lahko spremeni način delovanja Chroma.</translation>
 <translation id="8476408756881832830">Zaustavi predvajanje, ko ChromeVox govori</translation>
@@ -9568,6 +9571,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8725178340343806893">Priljubljene/Zaznamki</translation>
 <translation id="87254326763805752">Potrdite geslo</translation>
 <translation id="8726206820263995930">Napaka pri prenosu nastavitev pravilnika iz strežnika: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Izkoristite Chrome na najboljši način</translation>
 <translation id="8727751378406387165">Pošlji <ph name="BEGIN_LINK1" />samodejno izpolnjevanje metapodatkov<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (podatki za samodejno izpolnjevanje se ne bodo delili)</translation>

@@ -155,6 +155,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="1836891464494477513">{count,plural, =1{Obeleživač je sačuvan na Google nalogu, {email}}one{Obeleživači su sačuvani na Google nalogu, {email}}few{Obeleživači su sačuvani na Google nalogu, {email}}other{Obeleživači su sačuvani na Google nalogu, {email}}}</translation>
 <translation id="1870148520156231997">Prikažite lozinku</translation>
 <translation id="1872096359983322073">Blic</translation>
+<translation id="1882901927376062252">{count,plural, =1{Obeleživač je sačuvan na Google nalogu, {email}}one{{count}obeleživač je sačuvan na Google nalogu, {email}}few{{count}obeleživača su sačuvana na Google nalogu, {email}}other{{count}obeleživača je sačuvano na Google nalogu, {email}}}</translation>
 <translation id="1883255238294161206">Skupi listu</translation>
 <translation id="1894023287452300670">Pratite cenu ovde</translation>
 <translation id="189531189292803889">Sadržaj iPad-a je nedavno vraćen, zbog čega je podrazumevani pregledač možda promenjen.</translation>
@@ -475,7 +476,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
 <translation id="3775743491439407556">Sinhronizacija ne radi</translation>
 <translation id="3779810277399252432">Nema internet veze.</translation>
-<translation id="3783017676699494206">Sačuvaj sliku</translation>
 <translation id="3789294999358192700">Pratite korake ispod:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -692,6 +692,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5083464117946352670">Nije moguće utvrditi veličinu datoteke.</translation>
 <translation id="5090832849094901128">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tvit je dovršen.</translation>
+<translation id="5100848274708256363">Pridružite se grupi za porodicu</translation>
 <translation id="5109892411553231226">Upravljajte načinima plaćanja</translation>
 <translation id="5118713593561876160">Interesovanja</translation>
 <translation id="5118764316110575523">Isključeno</translation>
@@ -994,6 +995,7 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="6642362222295953972">Pređite na postojeću karticu</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Poslednje pokretanje <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Izmena direktorijuma</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6668619169535738264">Izmeni obeleživač</translation>
@@ -1107,6 +1109,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7351537303876921605">Dodirnite Napravi link u kontekstualnom meniju</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
 <translation id="7353432112255316844">Potvrdite svoj identitet</translation>
+<translation id="7380220816562673297">Za sada lozinke možete da delite samo sa članovima porodice. <ph name="BEGIN_LINK" />Napravite grupu za porodicu<ph name="END_LINK" /> sa najviše 6 članova i dobijte više iz proizvoda i pretplata u svim Google uslugama.</translation>
 <translation id="7383797227493018512">Lista za čitanje</translation>
 <translation id="7398893703713203428">Create Link (Napravi link)</translation>
 <translation id="7399802613464275309">Bezbednosna provera</translation>
@@ -1430,6 +1433,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="9223358826628549784">Izveštaj o otkazivanju je poslat.</translation>
 <translation id="941747855997058526">Izaberite lozinku…</translation>
 <translation id="948048872540558976">Napravite novu karticu</translation>
+<translation id="952218985181984374">{count,plural, =1{Obeleživač je sačuvan}one{{count} obeleživač je sačuvan}few{{count} obeleživača su sačuvana}other{{count} obeleživača je sačuvano}}</translation>
 <translation id="952704832371081537">Otkaži</translation>
 <translation id="953008885340860025">Odjavljeni ste iz Chrome-a</translation>
 <translation id="959066944189734975">Pratite <ph name="CHANNEL_NAME" /></translation>

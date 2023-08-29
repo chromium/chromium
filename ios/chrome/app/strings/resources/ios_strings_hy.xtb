@@ -203,6 +203,7 @@
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2178545675770638239">Ընտրեք գաղտնաբառ</translation>
 <translation id="2195124168004379331">Ձեր դիտարկիչն ապահով է</translation>
+<translation id="2213327331203157297">Chrome-ում արգելափակման ռեժիմն անջատելու համար անջատեք այն ձեր iPhone-ում։</translation>
 <translation id="2218443599109088993">Փոքրացնել</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
@@ -474,7 +475,6 @@
 <translation id="3771033907050503522">Ինկոգնիտո ներդիրներ</translation>
 <translation id="3775743491439407556">Համաժամացումը չի աշխատում</translation>
 <translation id="3779810277399252432">Կապ չկա</translation>
-<translation id="3783017676699494206">Պահել պատկերը</translation>
 <translation id="3789294999358192700">Կատարեք հետևյալ քայլերը․</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="380329542618494757">Անուն</translation>
@@ -1360,6 +1360,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8843129975935593190">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարելի է համաժամացնել։</translation>
 <translation id="8849001918648564819">Ոչ ոք</translation>
 <translation id="8855242995793521265">Չի հանգեցնում դիտարկիչի կամ սարքի աշխատանքի զգալի դանդաղեցմանը։</translation>
+<translation id="8855781063981781621">Chrome-ում արգելափակման ռեժիմն անջատելու համար անջատեք այն ձեր iPad-ում։</translation>
 <translation id="8863431381414769983">Ստացեք երթուղիներ և օգտակար տեղեկություններ Google Քարտեզներից</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
 <translation id="8870413625673593573">Վերջին փակվածները</translation>

@@ -114,7 +114,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1415846719612499304">Netzwerkliste anzeigen. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Wenn du die Benachrichtigungsaktion ausführen möchtest, entsperre das Gerät</translation>
 <translation id="1420408895951708260">Nachtlicht an/aus. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Letzte Fotos und Medien von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
@@ -802,14 +801,12 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4427695046139341014">Dashboard für Spiele</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
-<translation id="4435022394553622295">Du kannst auf deinem Gerät „<ph name="DEVICE_TYPE" />“ die Benachrichtigungen und Apps von deinem Smartphone aufrufen</translation>
 <translation id="4441283832827406317">Apps wurden nach Name sortiert</translation>
 <translation id="4445159312344259901">Zum Entsperren anmelden</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 wichtige Benachrichtigung}other{# wichtige Benachrichtigungen}}</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
 <translation id="4451374464530248585">Die Tastenkombination Alt + Abwärtspfeil hat sich geändert. Wenn du jetzt die Seite-nach-unten-Taste benötigst, drücke die <ph name="LAUNCHER_KEY_NAME" />-Taste + Abwärtspfeil.</translation>
 <translation id="4453876312474547652">Die Zwischenablage wird angezeigt, wenn du Strg + V gedrückt hältst. Du kannst diese Tastenkombination deaktivieren, indem du unter „chrome://flags“ (bei Verwendung von Lacros unter „os://flags“) das Flag „#clipboard-history-longpress“ deaktivierst.</translation>
-<translation id="4455051983450390249">Du kannst auf <ph name="DEVICE_TYPE" /> die Benachrichtigungen von deinem Smartphone aufrufen</translation>
 <translation id="445864333228800152">Guten Abend,</translation>
 <translation id="4458688154122353284">Bildschirmaufzeichnung beenden</translation>
 <translation id="445923051607553918">Mit WLAN verbinden</translation>
@@ -1073,7 +1070,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5551456515017410630">Kalender öffnen/schließen</translation>
 <translation id="5551974246223970793">Bei der Suche auf einer Seite zur nächsten Übereinstimmung für die Suche gehen</translation>
 <translation id="5558091555391176027">Hohe Sichtbarkeit bei Nearby Share aktivieren/deaktivieren</translation>
-<translation id="5560420195677022218">Du kannst auf deinem Gerät „<ph name="DEVICE_TYPE" />“ die Apps von deinem Smartphone aufrufen</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5570122939431135380">Neuen Tab in neuem Inkognitofenster öffnen</translation>
 <translation id="5571066253365925590">Bluetooth aktiviert</translation>
@@ -1169,6 +1165,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
+<translation id="5960410286721553511">Die letzten Fotos und Medien von deinem Smartphone abrufen</translation>
 <translation id="5961960957587052807">Leicht</translation>
 <translation id="5965524703725988602">Dunkles Design aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Vorwärts von Fenster zu Fenster wechseln</translation>
@@ -1230,7 +1227,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6179832488876878285">Du kannst wichtige Dateien hier anpinnen. Öffne die Dateien App, um zu starten.</translation>
 <translation id="6182592640011875895">Desktop öffnen</translation>
 <translation id="6185696379715117369">Bildlauf nach oben</translation>
-<translation id="619279033188484792">Letzte Fotos, Medien und Benachrichtigungen von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="619335566042889110">Jetzt vollständig aufladen</translation>
 <translation id="6193431488227440296">Entwickler</translation>
 <translation id="6199775032047436064">Aktuelle Seite neu laden</translation>
@@ -1389,7 +1385,6 @@ Neuinstallation</translation>
 <translation id="6884665277231944629">Zurück zum heutigen Datum</translation>
 <translation id="6886172995547742638">Die Leistungsfähigkeit deines <ph name="DEVICE_TYPE" /> kann hierdurch beeinträchtigt werden. Verwende ein zugelassenes USB-C-Netzteil mit einer Leistung von mindestens <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Drücke den Abwärtspfeil, um zwischen Fenstern zu wechseln</translation>
-<translation id="6891721121089053234">Letzte Fotos, Medien und Apps von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6901883536534621389">Touch-Gesten zum Navigieren ausprobieren</translation>
 <translation id="6912841030378044227">Fokus auf Adressleiste</translation>
@@ -1574,6 +1569,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7723703419796509666">Entwicklertools-Konsole ein- oder ausblenden</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7725108879223146004">Hotspot-Details anzeigen. Hotspot wird deaktiviert.</translation>
+<translation id="7726391492136714301">Benachrichtigungen und Apps von deinem Smartphone abrufen</translation>
 <translation id="7727952505535211425">Website in Adressleiste auf neuem Tab öffnen</translation>
 <translation id="7742327441377685481">Keine Benachrichtigungen</translation>
 <translation id="7748275671948949022">Launcher-Schaltfläche in der Ablage hervorheben</translation>
@@ -1685,7 +1681,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
-<translation id="8183592608247778598">Du kannst auf deinem Gerät „<ph name="DEVICE_TYPE" />“ die letzten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone aufrufen</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
 <translation id="8192202700944119416">Benachrichtigungen sind ausgeblendet.</translation>
 <translation id="8196787716797768628">Mit Touch-Gesten kannst du im Tablet-Modus schnell zwischen Apps wechseln und dein Chromebook bedienen.</translation>

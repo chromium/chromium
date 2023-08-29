@@ -204,6 +204,7 @@
 <translation id="1153636665119721804">Google प्रगत संरक्षण प्रोग्राम</translation>
 <translation id="1155545602507378023">नाही, फक्त या डिव्हाइसवर</translation>
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
+<translation id="1156684356635483618">प्रिंटर आणि स्कॅनर</translation>
 <translation id="1157952955648710254">Google Search साइड पॅनल बंद करा</translation>
 <translation id="1158080958325422608">अप्परकेस करा</translation>
 <translation id="1158238185437008462">मेमरी पहा</translation>
@@ -1506,7 +1507,6 @@
 <translation id="2162705204091149050">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर, आणि फाइल याविषयीची माहिती वाचा</translation>
 <translation id="2162926944953615670">कोणत्याही उपलब्ध eSIM प्रोफाइल नाहीत</translation>
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
-<translation id="2163996651553460171">Chrome चा पुरेपूर वापर करा</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
 <translation id="2165102982098084499">तुम्ही QR कोड स्कॅन करून ही डिव्हाइस लिंक केली आहेत.</translation>
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
@@ -3225,6 +3225,7 @@
 <translation id="3551320343578183772">टॅब बंद करा</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">बाहेर पडताना साफ केले</translation>
+<translation id="3553487194781590058">तुम्ही वेगळ्या टॅबवर बदलता, तेव्हा साइटना चित्रात-चित्र विंडो उघडण्याची अनुमती देऊ नका</translation>
 <translation id="3554493885489666172">तुमचे डिव्हाइस <ph name="PROFILE_NAME" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर या डिव्हाइसवरील कोणत्याही प्रोफाइलचा डेटा ॲक्सेस करू शकतो.</translation>
 <translation id="3555812735919707620">एक्स्टेंशन काढून टाका</translation>
 <translation id="3556000484321257665">तुमचे शोध इंजीन <ph name="URL" /> मध्‍ये बदलले.</translation>
@@ -4023,6 +4024,7 @@
 <translation id="4176463684765177261">अक्षम केले</translation>
 <translation id="4176864026061939326">हे डिव्हाइस व्यवस्थापित केलेले आहे. तुमच्या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरद्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="4177501066905053472">जाहिरातीचे विषय</translation>
+<translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> उघडा</translation>
 <translation id="4178220097446335546">हे सदस्यत्व आणि त्याच्याशी संबंधित नेटवर्क विसरण्यासाठी, सदस्यत्व काढून टाकण्याकरिता पासपॉइंट सदस्यत्व पेजवर जा.</translation>
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटवायचे?</translation>
 <translation id="4181602000363099176">२०x</translation>
@@ -5388,6 +5390,7 @@
 <translation id="5327912693242073631">सूचनांची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="532943162177641444">तुम्ही या डिव्हाइसने वापरू शकत असलेले मोबाइल हॉटस्पॉट सेट अप करण्यासाठी तुमच्या <ph name="PHONE_NAME" />वरील सूचनेवर टॅप करा.</translation>
 <translation id="5329858601952122676">&amp;हटवा</translation>
+<translation id="5330592967519769658">तुम्ही वेगळ्या टॅबवर बदलता, तेव्हा चित्रात-चित्र विंडो उघडण्याची अनुमती आहे</translation>
 <translation id="5331069282670671859">तुमच्याकडे या श्रेणीतील कोणतीही प्रमाणपत्रे नाहीत</translation>
 <translation id="5331568967879689647">ChromeOS सिस्टीम अ‍ॅप</translation>
 <translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
@@ -5429,6 +5432,7 @@
 <translation id="536638840841140142">काहीही नाही</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> वरील '<ph name="NETWORK_NAME" />' सेव्ह केले</translation>
 <translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> पासवर्ड तयार करा</translation>
+<translation id="5368441245151140827">हे एक्स्टेंशन साइट माहिती वाचू आणि बदलू शकत नाही किंवा बॅकग्राउंडमध्ये रन करू शकत नाही</translation>
 <translation id="5368720394188453070">तुमचा फोन लॉक केला आहे. प्रविष्‍ट करण्‍यासाठी तो अनलॉक करा.</translation>
 <translation id="5368779022775404937"><ph name="REALM" /> मध्ये साइन इन करा</translation>
 <translation id="536882527576164740">{0,plural, =1{गुप्त}other{गुप्त (#)}}</translation>
@@ -5564,6 +5568,7 @@
 <translation id="5473099001878321374">पुढे सुरू ठेवून, तुम्ही सहमती दर्शवता, की हे डिव्हाइस कदाचित मोबाइल डेटा वापरून Google, तुमच्या लहान मुलाचा वाहक आणि या डिव्हाइसचा उत्पादक यांच्याकडून अपडेट व अ‍ॅप्स आपोआप डाउनलोड आणि इंस्टॉलदेखील करू शकेल. यांपैकी काही अ‍ॅप्स अ‍ॅपमधील खरेदी करण्याचा पर्याय देऊ शकतात.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{पिन हा किमान एका वर्णाचा असणे आवश्यक आहे}other{पिन हा किमान # वर्णांचा असणे आवश्यक आहे}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्क लागू शकते).</translation>
+<translation id="5478520208448702555">तुम्ही वेगळ्या टॅबवर बदलता, तेव्हा साइट कदाचित चित्रात-चित्र विंडो उघडू शकतात</translation>
 <translation id="5481273127572794904">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती नाही</translation>
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
 <translation id="5484462543003267273">कुटुंब व्यवस्थापित करा</translation>
@@ -5805,7 +5810,6 @@
 <translation id="567740581294087470">तुम्ही कोणत्या प्रकारचा फीडबॅक देत आहात?</translation>
 <translation id="5677503058916217575">पेज भाषा:</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
-<translation id="5677946354068040947">अधिक पर्याय</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> ला रीड आणि राइट ॲक्सेस मंजूर केला आहे.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> ला पाठवत आहे</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा</translation>
@@ -5842,6 +5846,7 @@
 <translation id="5707185214361380026">यावरून एक्स्टेंशन लोड करण्यात अयशस्वी:</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Chrome ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
+<translation id="5710122160114032242">तुम्ही वेगळ्या टॅबवर बदलता, तेव्हा चित्रात-चित्र विंडो उघडण्यास अनुमती नाही</translation>
 <translation id="5711010025974903573">सेवा लॉग</translation>
 <translation id="5711983031544731014">अनलॉक करता आले नाही. तुमचा पासवर्ड एंटर करा.</translation>
 <translation id="5712153969432126546">साइट काहीवेळा दस्तऐवज, करार आणि फॉर्म यांसारख्या PDF प्रकाशित करतात</translation>
@@ -5858,6 +5863,7 @@
 <translation id="5723508132121499792">कोणतेही पार्श्वभूमी ॲप्लिकेशन चालत नाहीत</translation>
 <translation id="5723967018671998714">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक केल्या जातात</translation>
 <translation id="5727728807527375859">एक्स्टेंशन, ॲप्लिकेशन आणि थीम तुमच्या कॉंप्युटरला हानी पोहोचवू शकतात. तुमची खात्री आहे की तुम्ही सुरू ठेवू इच्छिता?</translation>
+<translation id="5728290366864286776">हे एक्स्टेंशन साइट माहिती वाचू आणि बदलू शकते किंवा बॅकग्राउंडमध्ये रन करू शकते</translation>
 <translation id="5728450728039149624">Smart Lock चे स्क्रीन लॉक करण्याचे पर्याय</translation>
 <translation id="572914206753951782">तुमचे Chromebook नवीनतम आवृत्तीवर असल्याची खात्री करा. त्यानंतर, तुमचे Chromebook रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5729712731028706266">&amp;दृश्य</translation>
@@ -6717,6 +6723,7 @@
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" हे एक्स्टेंशन तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केले आहे</translation>
 <translation id="6438234780621650381">सेटिंग्ज रीसेट करा</translation>
 <translation id="6438475350605608554">तुम्ही आधीच दुसऱ्या टॅबमध्ये पासवर्ड इंपोर्ट करत आहात</translation>
+<translation id="6438480100790416671">स्टोरेज जागा तपासत आहे…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ऑडिओ प्ले करीत आहे</translation>
 <translation id="6440291723980579689">तुम्ही पेज उघडल्यानंतरच ती लोड होतात</translation>
 <translation id="6441377161852435370">वाचन सूचीवर टॅब जोडा</translation>
@@ -8117,6 +8124,7 @@
 <translation id="7585106857920830898">तुमच्या संस्थेची सुरक्षा धोरणे तपासत आहे...</translation>
 <translation id="7586498138629385861">Chrome Apps उघडे असताना Chrome सुरू रहाणे सुरू ठेवेल.</translation>
 <translation id="7589461650300748890">ओहो, तेथेच. काळजी घ्या.</translation>
+<translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7592060599656252486">काही</translation>
 <translation id="7593653750169415785">तुम्ही काहीवेळा सूचना नाकारल्यामुळे, आपोआप ब्लॉक केले आहे</translation>
 <translation id="7594725637786616550">तुमचे <ph name="DEVICE_TYPE" /> अगदी नवीन डिव्हाइससारखे रीसेट करण्यासाठी Powerwash.</translation>
@@ -8467,6 +8475,7 @@
 <translation id="7853747251428735">अधिक साध&amp;ने</translation>
 <translation id="7853999103056713222">आणखी सुरक्षित पासवर्ड वापरा</translation>
 <translation id="7855678561139483478">टॅब नवीन विंडोवर हलवा</translation>
+<translation id="7855729579456690716">तुम्ही वेगळ्या टॅबवर बदलता, तेव्हा साइट चित्रात-चित्र विंडो उघडू शकतात</translation>
 <translation id="7857004848504343806">तुमच्या कॉंप्युटरमध्ये सुरक्षित मॉड्युल आहे, जे ChromeOS Flex मध्ये अनेक महत्त्वाची सुरक्षा वैशिष्ट्ये लागू करण्यासाठी वापरले जाते. अधिक जाणून घेण्यासाठी Chromebook मदत केंद्र ला भेट द्या: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">मजकुराबाबत सूचना</translation>
 <translation id="7857949311770343000">तुम्हाला हवे असलेले हे नवीन टॅब पेज आहे का?</translation>
@@ -9236,6 +9245,7 @@
 <translation id="8472623782143987204">हार्डवेअर-बॅक्ड</translation>
 <translation id="8473540203671727883">माउसखाली मजकूर बोला</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
+<translation id="8474378002946546633">सूचनांना अनुमती द्या</translation>
 <translation id="8474733733775441349">तुमच्या Google खाते मधील पासवर्ड दाखवा</translation>
 <translation id="8475313423285172237">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा एक्स्टेंशन जोडला.</translation>
 <translation id="8476408756881832830">ChromeVox बोलत असताना प्लेबॅकला विराम द्या</translation>
@@ -9540,6 +9550,7 @@
 <translation id="8725178340343806893">मनपसंत/बुकमार्क</translation>
 <translation id="87254326763805752">पासकी कंफर्म करा</translation>
 <translation id="8726206820263995930">सर्व्हरवरून धोरण सेटिंग्ज आणताना एरर: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Chrome चा पुरेपूर वापर करा</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ऑटोफिल मेटाडेटा<ph name="END_LINK1" /> पाठवा
           <ph name="LINE_BREAK" />
           (तुमचा ऑटोफिल डेटा शेअर केला जाणार नाही)</translation>
@@ -9640,6 +9651,7 @@
 <translation id="8808686172382650546">मांजर</translation>
 <translation id="8809147117840417135">फिकट टील</translation>
 <translation id="8811862054141704416">Crostini मायक्रोफोन अ‍ॅक्सेस</translation>
+<translation id="8811923271770626905">हे एक्स्टेंशन बॅकग्राउंडमध्ये सुरू करू शकतो</translation>
 <translation id="8812593354822910461">तसेच ब्राउझिंग डेटा (<ph name="URL" />) साफ करा ज्यामुळे तुम्ही <ph name="DOMAIN" /> वरून साइन आउट व्हाल. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> मध्ये साइन इन करू शकत नाही</translation>
 <translation id="8813872945700551674">पालकाला "<ph name="EXTENSION_NAME" />" मंजूर करायला सांगा</translation>

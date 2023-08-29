@@ -1227,6 +1227,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1974043046396539880">Points de distribution de listes de révocation des certificats</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1974159333077206889">Même son sur tous les haut-parleurs</translation>
+<translation id="1974216844776165821">Chrome a enregistré votre mot de passe sur cet appareil, mais vous pouvez l'enregistrer dans votre compte Google à la place. Ensuite, tous les mots de passe et les clés d'accès stockés dans votre compte Google seront également accessibles lorsque vous serez connecté.</translation>
 <translation id="1974821797477522211">Se connecter au réseau</translation>
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
@@ -1445,6 +1446,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2143915448548023856">Paramètres d'affichage</translation>
 <translation id="2144536955299248197">Lecteur de certificat : <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Conception d'applications Android pour Linux</translation>
+<translation id="2144873026585036769">Utiliser votre compte Google pour enregistrer et remplir les mots de passe et les clés d'accès?</translation>
 <translation id="2146263598007866206">Les sites peuvent télécharger automatiquement et en même temps les fichiers associés pour vous faire gagner du temps</translation>
 <translation id="2147151613919729065">Pour effacer l'historique du mode Invité, fermez toutes les fenêtres de ce mode.</translation>
 <translation id="2147218225094845757">Masquer le panneau latéral</translation>
@@ -1473,7 +1475,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2162705204091149050">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés et des fichiers</translation>
 <translation id="2162926944953615670">Aucun profil eSIM disponible</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour accéder à votre <ph name="DEVICE_TYPE" />.</translation>
-<translation id="2163996651553460171">Tirer le meilleur parti de Chrome</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre commutateur</translation>
 <translation id="2165102982098084499">Vous avez lié ces appareils en numérisant un code QR.</translation>
 <translation id="2165177462441582039">Sélectionnez la durée d'affichage de l'élément en surbrillance</translation>
@@ -1580,6 +1581,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2252017960592955005">Protection de l'affichage (bêta)</translation>
 <translation id="2253318212986772520">Impossible de récupérer le PPD pour <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Choisissez quoi partager avec <ph name="APP_NAME" /></translation>
+<translation id="2254263139042585032">Afficher les mots de passe et les clés d'accès de votre compte Google</translation>
 <translation id="2255077166240162850">Cet appareil a été verrouillé dans un autre mode ou avec un autre domaine.</translation>
 <translation id="2255317897038918278">Enregistrement des informations de date Microsoft</translation>
 <translation id="2256115617011615191">Redémarrer maintenant</translation>
@@ -2360,6 +2362,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2850672011315104382">Style de ponctuation</translation>
 <translation id="2852385257476173980">Une liste de sites que vous visitez peut s'afficher ici au fur et à mesure que vous naviguez sur le Web</translation>
 <translation id="285241945869362924">Génère automatiquement des sous-titres pour les contenus audio et vidéo. L'audio et les sous-titres ne quittent jamais votre appareil.</translation>
+<translation id="2853415089995957805">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
@@ -3594,6 +3597,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="3875815154304214043">L'application <ph name="APP_NAME" /> est configurée pour s'ouvrir dans un nouvel onglet du navigateur, les liens pris en charge s'ouvriront aussi dans le navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Paramètres de partage à proximité pour l'appareil de <ph name="USER_NAME" />. Partage sous le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
+<translation id="3880513902716032002">Certaines des pages que vous visitez sont préchargées</translation>
 <translation id="3883482240657453056">Obtenez des rabais pour <ph name="MERCHANT_NAME_1" /> et <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
@@ -3860,6 +3864,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4093955363990068916">Fichier local :</translation>
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement incompatible : <ph name="BAD_VAR" />. Cela aura un impact sur la stabilité et la sécurité.</translation>
 <translation id="4095264805865317199">Ouvrir l'IU d'activation cellulaire</translation>
+<translation id="4095425503313512126">La navigation et la recherche sont plus rapides</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="4096508467498758490">Désactiver les extensions du mode développeur</translation>
 <translation id="4096797685681362305">Consulté la semaine dernière</translation>
@@ -3883,6 +3888,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
 <translation id="4110490973560452005">Téléchargement terminé : <ph name="FILE_NAME" />. Appuyer sur Maj+F6 pour aller à la barre des téléchargements.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors ligne)</translation>
+<translation id="4113743276555482284">Mot de passe du fichier</translation>
 <translation id="4114524937989710624">Des fichiers suggérés sont affichés pour vous permettre de reprendre votre activité la plus récente dans Google Disque de façon conviviale.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3998,6 +4004,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4217558091331485702">Analyser avant d'ouvrir?</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4218081191298393750">Cliquez sur l'icône de haut-parleur pour désactiver le son de cet onglet</translation>
+<translation id="4220157655212610908">Utiliser une clé de sécurité externe</translation>
 <translation id="4220648711404560261">Une erreur s'est produite lors de l'activation.</translation>
 <translation id="4222917615373664617">Le suivi des prix est activé. Le prix est de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">Créez une clé d'accès</translation>
@@ -4212,6 +4219,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4403266582403435904">Restaurez des données ou changez d'appareil aisément en tout temps. Les sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe du compte Google de votre enfant.</translation>
 <translation id="4403775189117163360">Choisir un autre dossier</translation>
 <translation id="4404136731284211429">Analyser à nouveau</translation>
+<translation id="4404619268534288383">Groupes d'onglets Enregistrer et synchroniser</translation>
 <translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par ton parent. Pour l'utiliser, demande l'autorisation à ton parent.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
@@ -4639,6 +4647,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4761104368405085019">Utiliser votre microphone</translation>
 <translation id="4762489666082647806">Couleur du pointeur</translation>
 <translation id="4762718786438001384">Vous n'avez presque plus d'espace disque sur votre appareil</translation>
+<translation id="4762849514113423887">Mot de passe incorrect. Réessayez.</translation>
 <translation id="4763408175235639573">Les témoins suivants ont été définis lorsque vous avez consulté cette page</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> n'est pas un compte Google for Education valide. Communiquez avec votre administrateur. Si vous êtes administrateur, vous pouvez configurer votre organisation en accédant à la page g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Cet appareil sera mémorisé pendant 1 mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {MONTHS} mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {MONTHS} mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
@@ -5403,6 +5412,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5417353542809767994">Utilisez rapidement un mot de passe fort</translation>
 <translation id="541737483547792035">Agrandir l'écran</translation>
 <translation id="5419405654816502573">Fonction Voice Match</translation>
+<translation id="5420061891386124792">Permet de sauvegarder et de rappeler des groupes d'onglets. Faites un clic droit sur un groupe d'onglets pour l'enregistrer. Rappelez les groupes à partir de la barre de favoris.</translation>
 <translation id="5420274697768050645">Demander un mot de passe pour déverrouiller l'appareil comme mesure de sécurité supplémentaire</translation>
 <translation id="5420438158931847627">Détermine la netteté du texte et des images</translation>
 <translation id="5420935737933866496">Copier le lien</translation>
@@ -5715,7 +5725,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="567740581294087470">Quel type de commentaires soumettez-vous?</translation>
 <translation id="5677503058916217575">Langue de la page :</translation>
 <translation id="5677928146339483299">Bloqué</translation>
-<translation id="5677946354068040947">autres options</translation>
 <translation id="5678550637669481956">Accès à <ph name="VOLUME_NAME" /> en lecture et en écriture accordé.</translation>
 <translation id="5678821117681811450">Envoi à <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Lire vos données sur <ph name="WEBSITE_1" /></translation>
@@ -6616,7 +6625,9 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6436778875248895551">L'extension « <ph name="EXTENSION_NAME" /> » a été bloquée par votre administrateur</translation>
 <translation id="6438234780621650381">Réinitialiser les paramètres</translation>
 <translation id="6438475350605608554">Vous importez déjà des mots de passe dans un autre onglet</translation>
+<translation id="6438480100790416671">Vérification de l'espace de stockage en cours…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Lecture audio</translation>
+<translation id="6440291723980579689">Les pages se chargent uniquement lorsque vous les ouvrez</translation>
 <translation id="6441377161852435370">Ajouter l'onglet à la liste de lecture</translation>
 <translation id="6442187272350399447">Impressionnant</translation>
 <translation id="6442445294758185945">Impossible de télécharger la mise à jour. Veuillez réessayer plus tard.</translation>
@@ -7654,6 +7665,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="730515362922783851">Échanger des données avec tout appareil sur le réseau local ou sur Internet</translation>
 <translation id="7306521477691455105">Ouvrez le menu Paramètres pour connecter <ph name="USB_DEVICE_NAME" /> à <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Suspendue</translation>
+<translation id="7307647374092371434">Les clés d'accès et les mots de passe stockés dans votre compte Google seront également accessibles sur cet appareil lorsque vous serez connecté</translation>
 <translation id="7308643132139167865">Langues du site Web</translation>
 <translation id="7310598146671372464">Échec de la connexion. Le serveur ne prend pas en charge les types de chiffrement Kerberos spécifiés. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="7311005168897771689">Accéder facilement à vos fichiers Google Disque lorsque vous êtes hors ligne</translation>
@@ -7997,6 +8009,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7585106857920830898">Vérification de la conformité du fichier aux politiques de sécurité de votre organisation en cours…</translation>
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome seront ouvertes.</translation>
 <translation id="7589461650300748890">Attention!</translation>
+<translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7592060599656252486">Certains</translation>
 <translation id="7593653750169415785">Automatiquement bloquée parce que vous avez refusé les notifications à quelques reprises</translation>
 <translation id="7594725637786616550">La fonctionnalité Powerwash réinitialise votre <ph name="DEVICE_TYPE" />, qui redevient comme neuf.</translation>
@@ -9111,6 +9124,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser les appareils ChromeOS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans ChromeOS. Ces rapports peuvent comprendre des éléments, comme le moment où ChromeOS plante, les fonctionnalités utilisées, la quantité de mémoire généralement utilisée ainsi que les données de diagnostic et d'utilisation des applications Android. Certaines données agrégées contribueront également à améliorer les applications Google et à aider nos partenaires tels que les développeurs Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de l'appareil ChromeOS de votre enfant. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Si le paramètre Activité sur le Web et dans les applications est activé pour le compte Google de votre enfant, ses données peuvent être enregistrées dans son compte Google. Pour en savoir plus à propos de ces paramètres ou pour découvrir comment les régler, rendez-vous sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="8476630458761527665">Entrez le mot de passe du fichier</translation>
 <translation id="8477241577829954800">Remplacé</translation>
 <translation id="8477384620836102176">&amp;Général</translation>
 <translation id="8479176401914456949">Code incorrect. Veuillez réessayer.</translation>
@@ -9403,6 +9417,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8725178340343806893">Favoris ou signets</translation>
 <translation id="87254326763805752">Confirmer la clé d'accès</translation>
 <translation id="8726206820263995930">Une erreur est survenue lors de la récupération des paramètres des politiques sur le serveur : <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727043961453758442">Tirez le meilleur parti de Chrome</translation>
 <translation id="8727751378406387165">Envoyez des <ph name="BEGIN_LINK1" />métadonnées de remplissage automatique<ph name="END_LINK1" />
           <ph name="LINE_BREAK" /> (vos données de remplissage automatique ne seront pas partagées)</translation>
 <translation id="8729133765463465108">Utiliser l'appareil photo pour numériser le code QR</translation>

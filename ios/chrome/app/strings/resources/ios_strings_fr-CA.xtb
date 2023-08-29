@@ -200,6 +200,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2178545675770638239">Sélectionner un mot de passe</translation>
 <translation id="2195124168004379331">Votre navigateur semble correct</translation>
+<translation id="2213327331203157297">Pour désactiver le mode de verrouillage dans Chrome, désactivez-le sur votre iPhone.</translation>
 <translation id="2218443599109088993">Zoom arrière</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2239626343334228536">Effacement des données de navigation en cours…</translation>
@@ -466,7 +467,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3771033907050503522">Onglets nav. priv.</translation>
 <translation id="3775743491439407556">La synchronisation ne fonctionne pas</translation>
 <translation id="3779810277399252432">Pas de connexion Internet.</translation>
-<translation id="3783017676699494206">Enregistrer l'image</translation>
 <translation id="3789294999358192700">Suivez ces étapes :</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -1337,6 +1337,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8843129975935593190">Votre organisation impose une limite quant à ce que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Caché</translation>
 <translation id="8855242995793521265">Ne ralentit pas de manière perceptible votre navigateur ou votre appareil.</translation>
+<translation id="8855781063981781621">Pour désactiver le mode de verrouillage dans Chrome, désactivez-le sur votre iPad.</translation>
 <translation id="8863431381414769983">Obtenez des itinéraires et des informations locales à partir de Google Maps</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} onglet}one{{count} onglets}other{{count} onglets}}</translation>
 <translation id="8870413625673593573">Éléments récemment fermés</translation>

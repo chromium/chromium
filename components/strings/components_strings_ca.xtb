@@ -522,7 +522,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2048261947532620704">S'està traduint la pàgina</translation>
 <translation id="205212645995975601">Barbacoa i cuina a la brasa</translation>
 <translation id="2053111141626950936">Les pàgines en <ph name="LANGUAGE" /> no es traduiran.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quan aquest control està activat i la prova està activa, Chrome determina en quin grup gran de persones, o cohort, hi ha una activitat de navegació recent més semblant a la teva. Els anunciants poden seleccionar anuncis per al grup i la teva activitat de navegació es manté privada al teu dispositiu. El teu grup s'actualitza cada dia.}=1{Quan aquest control està activat i la prova està activa, Chrome determina en quin grup gran de persones, o cohort, hi ha una activitat de navegació recent més semblant a la teva. Els anunciants poden seleccionar anuncis per al grup i la teva activitat de navegació es manté privada al teu dispositiu. El teu grup s'actualitza cada dia.}other{Quan aquest control està activat i la prova està activa, Chrome determina en quin grup gran de persones, o cohort, hi ha una activitat de navegació recent més semblant a la teva. Els anunciants poden seleccionar anuncis per al grup i la teva activitat de navegació es manté privada al teu dispositiu. El teu grup s'actualitza cada {NUM_DAYS} dies}}</translation>
 <translation id="2056658168519009885">Els llocs web poden demanar informació a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="2059202684901022309">22 x 34 polzades</translation>
 <translation id="2064568741209980952">Crèdit i préstec</translation>
@@ -669,7 +668,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2355395290879513365">És possible que els atacants puguin veure les imatges que miris en aquest lloc i que les modifiquin per enganyar-te.</translation>
 <translation id="2356070529366658676">Pregunta-ho</translation>
 <translation id="2357481397660644965">El dispositiu està gestionat per <ph name="DEVICE_MANAGER" /> i el compte està gestionat per <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{En menys d'un dia}=1{En un dia}other{D'aquí a {NUM_DAYS} dies}}</translation>
 <translation id="2359629602545592467">Diverses</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1231,7 +1229,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3586833803451155175">Pel·lícula humida</translation>
 <translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587738293690942763">Mitjà</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Pots restablir el teu grup en qualsevol moment. Ha de transcórrer aproximadament un dia per unir-te a un grup nou.}=1{Pots restablir el teu grup en qualsevol moment. Ha de transcórrer aproximadament un dia per unir-te a un grup nou.}other{Pots restablir el teu grup en qualsevol moment. Han de transcórrer aproximadament {NUM_DAYS} dies per unir-te a un grup nou.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botó Gestiona la configuració de privadesa de Google: activa'l per visitar la configuració de privadesa del teu Compte de Google</translation>
 <translation id="3603507503523709">Aplicació bloquejada per l'administrador</translation>
@@ -1578,7 +1575,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4285498937028063278">No fixis</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Aquesta targeta s'ha desat al Compte de Google}other{Aquestes targetes s'han desat al Compte de Google}}</translation>
 <translation id="4287495839370498922">Privadesa d'anuncis millorada a Chrome</translation>
-<translation id="4287885627794386150">Apte per a la prova, però no actiu</translation>
 <translation id="4290920330097335010">No permetis mai</translation>
 <translation id="4296207570293932800">La nova funció de privadesa d'anuncis ja està disponible</translation>
 <translation id="4297502707443874121">Miniatura de la pàgina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2313,7 +2309,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5847181246682413476">Fonts d'alimentació</translation>
 <translation id="5851548754964597211">Llista de pestanyes</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Desactivat</translation>
 <translation id="5862579898803147654">Apiladora 8</translation>
 <translation id="5863847714970149516">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
 <translation id="5866257070973731571">Afegeix un número de telèfon</translation>
@@ -3047,7 +3042,6 @@ Detalls addicionals:
 <translation id="7378877318020334501">Comèdies de televisió</translation>
 <translation id="7380398842872229465">10 x 15 polzades</translation>
 <translation id="738439098860678026">Ensenyament preescolar</translation>
-<translation id="7386364858855961704">No aplicable</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositiu es reiniciarà d'aquí a 1 minut}other{El dispositiu es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7390545607259442187">Confirma la targeta</translation>
 <translation id="7392089738299859607">Actualitza l'adreça</translation>
@@ -3143,7 +3137,6 @@ Detalls addicionals:
 <translation id="7549584377607005141">Aquesta pàgina web necessita dades que heu introduït anteiorment per poder mostrar-la correctament. Podeu tornar a enviar les dades, però es tornarà a repetir qualsevol acció que la pàgina hagi dut a terme prèviament.</translation>
 <translation id="7550637293666041147">El nom d'usuari del dispositiu i el nom d'usuari de Chrome</translation>
 <translation id="7551484245293639699">Assegurança de viatges</translation>
-<translation id="755279583747225797">La prova està activa</translation>
 <translation id="7552846755917812628">Prova els consells següents:</translation>
 <translation id="7554475479213504905">Torna'l a carregar i mostra'l igualment</translation>
 <translation id="7554791636758816595">Pestanya nova</translation>

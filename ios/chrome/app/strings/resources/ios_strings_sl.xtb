@@ -155,6 +155,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{Zaznamki so shranjeni v računu Google, {email}}two{Zaznamki so shranjeni v računu Google, {email}}few{Zaznamki so shranjeni v računu Google, {email}}other{Zaznamki so shranjeni v računu Google, {email}}}</translation>
 <translation id="1870148520156231997">Razkrijte geslo</translation>
 <translation id="1872096359983322073">Svetilka</translation>
+<translation id="1882901927376062252">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{{count} zaznamek je shranjen v računu Google, {email}}two{{count} zaznamka sta shranjena v računu Google, {email}}few{{count} zaznamki so shranjeni v računu Google, {email}}other{{count} zaznamkov je shranjenih v računu Google, {email}}}</translation>
 <translation id="1883255238294161206">Strni seznam</translation>
 <translation id="1894023287452300670">Spremljajte ceno tukaj.</translation>
 <translation id="189531189292803889">iPad je bil nedavno obnovljen, zaradi česar se je morda spremenil privzeti brskalnik.</translation>
@@ -475,7 +476,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sinhronizacija ne deluje</translation>
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
-<translation id="3783017676699494206">Shrani sliko</translation>
 <translation id="3789294999358192700">Upoštevajte spodnja navodila:</translation>
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -692,6 +692,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5083464117946352670">Velikost datoteke ni mogoče določiti.</translation>
 <translation id="5090832849094901128">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tvit je dokončan.</translation>
+<translation id="5100848274708256363">Pridružitev skupini družinskih članov</translation>
 <translation id="5109892411553231226">Upravljanje plačilnih sredstev</translation>
 <translation id="5118713593561876160">Zanimanja</translation>
 <translation id="5118764316110575523">Izklopljeno</translation>
@@ -994,6 +995,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6642362222295953972">Preklop na obstoječi zavihek</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645899968535965230">Koda QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Zadnje izvajanje: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Urejanje mape</translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6668619169535738264">Uredi zaznamek</translation>
@@ -1107,6 +1109,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7351537303876921605">V kontekstnem meniju se dotaknite »Create Link« (Ustvari povezavo)</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
 <translation id="7353432112255316844">Potrditev identitete</translation>
+<translation id="7380220816562673297">Za zdaj lahko gesla delite samo z družinskimi člani. <ph name="BEGIN_LINK" />Ustvarite skupino družinskih članov<ph name="END_LINK" />, v kateri je do 6 članov, ter še bolje izkoristite svoje izdelke in naročnine v Googlu.</translation>
 <translation id="7383797227493018512">Seznam za branje</translation>
 <translation id="7398893703713203428">Ustvari povezavo</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
@@ -1430,6 +1433,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="9223358826628549784">Poročilo o zrušitvi poslano.</translation>
 <translation id="941747855997058526">Izbira gesla ...</translation>
 <translation id="948048872540558976">Ustvarjanje novega zavihka</translation>
+<translation id="952218985181984374">{count,plural, =1{Zaznamek je shranjen}one{{count} zaznamek je shranjen}two{{count} zaznamka sta shranjena}few{{count} zaznamki so shranjeni}other{{count} zaznamkov je shranjenih}}</translation>
 <translation id="952704832371081537">Preklic</translation>
 <translation id="953008885340860025">Chrome je odjavljen</translation>
 <translation id="959066944189734975">Spremljate kanal <ph name="CHANNEL_NAME" /></translation>

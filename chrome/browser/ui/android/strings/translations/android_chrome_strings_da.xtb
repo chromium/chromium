@@ -1044,6 +1044,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6433501201775827830">Vælg en søgemaskine</translation>
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6437478888915024427">Sideoplysninger</translation>
+<translation id="6440291723980579689">Sider indlæses først, efter du har åbnet dem</translation>
 <translation id="6441734959916820584">Navnet er for langt</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# billede}one{# billede}other{# billeder}}</translation>
 <translation id="6447558397796644647">Bogmærket blev ikke fundet. Kontrollér din stavning, eller tilføj et nyt bogmærker.</translation>

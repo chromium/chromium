@@ -522,7 +522,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2048261947532620704">Menterjemah halaman</translation>
 <translation id="205212645995975601">BBQ &amp; menggril</translation>
 <translation id="2053111141626950936">Halaman dalam <ph name="LANGUAGE" /> tidak akan diterjemah.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}=1{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}other{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap {NUM_DAYS} hari.}}</translation>
 <translation id="2056658168519009885">Laman boleh meminta maklumat daripada Chrome untuk membantu laman memeribadikan iklan yang anda lihat.</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064568741209980952">Kredit &amp; Pinjaman</translation>
@@ -669,7 +668,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2355395290879513365">Penyerang mungkin dapat melihat imej yang anda lihat di tapak ini dan menipu anda dengan mengubah suainya.</translation>
 <translation id="2356070529366658676">Tanya</translation>
 <translation id="2357481397660644965">Peranti anda diurus oleh <ph name="DEVICE_MANAGER" /> dan akaun anda diurus oleh <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Dalam masa kurang daripada sehari}=1{Dalam masa sehari}other{Dalam masa {NUM_DAYS} hari}}</translation>
 <translation id="2359629602545592467">Berbilang</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
@@ -1231,7 +1229,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3586833803451155175">Saput Basah</translation>
 <translation id="3586931643579894722">Sembunyikan butiran</translation>
 <translation id="3587738293690942763">Tengah</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Proses menyertai kumpulan baharu mengambil masa kira-kira sehari.}=1{Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Proses menyertai kumpulan baharu mengambil masa kira-kira sehari.}other{Anda boleh menetapkan semula kumpulan anda pada bila-bila masa. Proses menyertai kumpulan baharu mengambil masa kira-kira {NUM_DAYS} hari.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Butang urus tetapan Privasi Google, aktifkan untuk mengakses tetapan privasi Google Account anda</translation>
 <translation id="3603507503523709">Aplikasi disekat oleh pentadbir anda</translation>
@@ -1581,7 +1578,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kad ini telah disimpan ke Akaun Google anda}other{Kad ini telah disimpan ke Akaun Google anda}}</translation>
 <translation id="4287495839370498922">Privasi iklan dipertingkatkan dalam Chrome</translation>
-<translation id="4287885627794386150">Layak untuk percubaan tetapi tidak aktif</translation>
 <translation id="4290920330097335010">Jangan sekali-kali benarkan</translation>
 <translation id="4296207570293932800">Ciri privasi iklan baharu kini tersedia</translation>
 <translation id="4297502707443874121">Lakaran kecil untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2317,7 +2313,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5847181246682413476">Bekalan Elektrik</translation>
 <translation id="5851548754964597211">Senarai tab</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5862579898803147654">Petak 8</translation>
 <translation id="5863847714970149516">Halaman yang seterusnya mungkin cuba mengenakan bayaran kepada anda</translation>
 <translation id="5866257070973731571">Tambahkan Nombor Telefon</translation>
@@ -3051,7 +3046,6 @@ Butiran tambahan:
 <translation id="7378877318020334501">Komedi TV</translation>
 <translation id="7380398842872229465">10 x 15 in</translation>
 <translation id="738439098860678026">Pendidikan awal kanak-kanak</translation>
-<translation id="7386364858855961704">Tidak berkenaan</translation>
 <translation id="7388594495505979117">{0,plural, =1{Peranti anda akan dimulakan semula dalam masa 1 minit}other{Peranti anda akan dimulakan semula dalam masa # minit}}</translation>
 <translation id="7390545607259442187">Sahkan Kad</translation>
 <translation id="7392089738299859607">Kemas Kini Alamat</translation>
@@ -3147,7 +3141,6 @@ Butiran tambahan:
 <translation id="7549584377607005141">Halaman web ini memerlukan data yang anda masukkan sebelum ini agar dapat dipaparkan dengan betul. Anda boleh menghantar data ini semula, tetapi dengan berbuat demikian anda akan mengulangi sebarang tindakan terdahulu yang telah dilakukan oleh halaman ini.</translation>
 <translation id="7550637293666041147">Nama pengguna peranti dan nama pengguna Chrome anda</translation>
 <translation id="7551484245293639699">Insurans perjalanan</translation>
-<translation id="755279583747225797">Percubaan aktif</translation>
 <translation id="7552846755917812628">Cuba petua berikut:</translation>
 <translation id="7554475479213504905">Muatkan semula dan tunjukkan juga</translation>
 <translation id="7554791636758816595">Tab Baharu</translation>

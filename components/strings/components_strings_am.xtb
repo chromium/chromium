@@ -522,7 +522,6 @@
 <translation id="2048261947532620704">ገጽን በመተርጎም ላይ</translation>
 <translation id="205212645995975601">ባርበኩ እና ጥብስ</translation>
 <translation id="2053111141626950936">በ<ph name="LANGUAGE" /> ያሉ ገጾች አይተረጎሙም።</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየቀኑ ይዘምናል።}=1{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየቀኑ ይዘምናል።}one{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየ{NUM_DAYS} ቀኖች ይዘመናል።}other{ይህ መቆጣጠሪያ ሲበራ እና ሁኔታው ንቁ ሲሆን Chrome የቅርብ ጊዜ የአሰሳ እንቅስቃሴዎ ከየትኛው የብዙ ሰዎች ስብስብ ወይም «የተመሳሳይ ሰዎች ስብስቦች» ጋር በጣም እንደሚቀራረብ ይወስናል። ማስታወቂያ ሰሪዎች ለቡድኑ ማስታወቂያዎችን መምረጥ ይችላሉ፣ እንዲሁም የአሰሳ እንቅስቃሴዎ በመሣሪያዎ ላይ በግል ሆኖ ይቀመጣል። የእርስዎ ቡድን በየ{NUM_DAYS} ቀኖች ይዘመናል።}}</translation>
 <translation id="2056658168519009885">ጣቢያዎች እርስዎ የሚያዩዋቸው ማስታወቂያዎች ግላዊነት እንዲላበሱ ለማገዝ Chromeን መረጃ ሊጠይቁ ይችላሉ።</translation>
 <translation id="2059202684901022309">22 x 34 ኢንች</translation>
 <translation id="2064568741209980952">ክሬዲት እና ማበደር</translation>
@@ -669,7 +668,6 @@
 <translation id="2355395290879513365">አጥቂዎች በዚህ ጣቢያ ላይ እርስዎ እየተመለከቱዋቸው ያሉ ምስሎችን ማየት እና በላያቸው ላይ ለውጦችን በማድረግ ሊያታልልዎት ይችሉ ይሆናል።</translation>
 <translation id="2356070529366658676">ጠይቅ</translation>
 <translation id="2357481397660644965">የእርስዎ መሣሪያ የሚተዳደረው በ<ph name="DEVICE_MANAGER" /> ሲሆን መለያዎ የሚተዳደረው በ<ph name="ACCOUNT_MANAGER" /> ነው።</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{ከአንድ ቀን ባነሰ ጊዜ ውስጥ}=1{በአንድ ቀን ውስጥ}one{በ{NUM_DAYS} ቀኖች ውስጥ}other{በ{NUM_DAYS} ቀኖች ውስጥ}}</translation>
 <translation id="2359629602545592467">በርካታ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2361263712565360498">275 x 395 ሚሜ</translation>
@@ -1230,7 +1228,6 @@
 <translation id="3586833803451155175">እርጥብ ፊልም</translation>
 <translation id="3586931643579894722">ዝርዝር ደብቅ</translation>
 <translation id="3587738293690942763">መሃል</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል አንድ ቀን ያህል ጊዜ ይወስዳል።}=1{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል አንድ ቀን ያህል ጊዜ ይወስዳል።}one{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል {NUM_DAYS} ቀኖች ያህል ጊዜ ይወስዳል።}other{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል {NUM_DAYS} ቀኖች ያህል ጊዜ ይወስዳል።}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />፣ <ph name="DOMAIN" />፣ <ph name="TIME" /></translation>
 <translation id="3600492954573979888">የGoogle ግላዊነት ቅንብሮችን ቁልፍ አዝራርን ያስተዳድሩ፣ የGoogle መለያዎን የግላዊነት ቅንብሮች ለመጎብኘት ያግብሩ</translation>
 <translation id="3603507503523709">መተግበሪያ በእርስዎ አስተዳዳሪ ታግዷል</translation>
@@ -1245,6 +1242,7 @@
 <translation id="36224234498066874">የአሰሳ ውሂብ አስወግድ…</translation>
 <translation id="362276910939193118">ሙሉ ታሪክ አሳይ</translation>
 <translation id="3624292976554877583">መሰየሚያዎች (ድብዳብ)</translation>
+<translation id="3625929652356389713">በራስ-ሰር የስዕል-ላይ-ስዕል መስኮቶችን ለመክፈት መጠየቅ ይችላል</translation>
 <translation id="3628905806504633297">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማስተላለፍን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል ወደ <ph name="DESTINATION_NAME" /> ማስተላለፍን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች ወደ <ph name="DESTINATION_NAME" /> ማስተላለፍን አይመክርም}}</translation>
 <translation id="3630155396527302611">አውታረ መረቡ እንዲደርስ የተፈቀደለት መሣሪያ ነው ተብሎ አስቀድሞ ከተዘረዘረ ከዝርዝሩ
         አስወግደው እንደገና ለማከል ይሞክሩ።</translation>
@@ -1378,6 +1376,7 @@
 <translation id="388632593194507180">ክትትል እንዳለ ተደርሶበታል</translation>
 <translation id="3886948180919384617">ቁልል 3</translation>
 <translation id="3890664840433101773">ኢሜይል ያክሉ</translation>
+<translation id="3893306401511601929">ራስ-ሰር ስዕል-ላይ-ስዕል</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3901925938762663762">ካርዱ አገልግሎት ጊዜው አብቅቷል</translation>
 <translation id="390391808978419508">የእረፍት ጊዜን በመክፈት ላይ</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ይህ ካርድ በእርስዎ የGoogle መለያ ላይ ተቀምጧል}one{እነዚህ ካርዶች በእርስዎ የGoogle መለያ ላይ ተቀምጠዋል}other{እነዚህ ካርዶች በእርስዎ የGoogle መለያ ላይ ተቀምጠዋል}}</translation>
 <translation id="4287495839370498922">በChrome ውስጥ የተሻሻለ የማስታወቂያ ግላዊነት</translation>
-<translation id="4287885627794386150">ለሙከራ ብቁ ነው፣ ነገር ግን ንቁ አይደለም</translation>
 <translation id="4290920330097335010">መቼም አትፍቀድ</translation>
 <translation id="4296207570293932800">አዲስ የማስታወቂያ የግላዊነት ባህሪ አሁን ይገኛል</translation>
 <translation id="4297502707443874121">የገጽ <ph name="THUMBNAIL_PAGE" /> ድንክዬ</translation>
@@ -2157,6 +2155,7 @@
 <translation id="5512812358367123529">የቢሮ ዕቃዎች</translation>
 <translation id="5513528801833998679">የመሣሪያ በመለያ መግባትን ተጠቀም</translation>
 <translation id="5515388687005870733">55 x 85 ሚሜ</translation>
+<translation id="5516095341424241911">የክፍያ መረጃዎን ደህንነት ጠብቆ ለማቆየት የGoogleን የደህንነት ቴክኖሎጂ በመጠቀም ላይ</translation>
 <translation id="5518670652865028077">ስነ ጥበቦች እና መዝናኛ</translation>
 <translation id="5519516356611866228">ከእርስዎ ለውጦች ጋር</translation>
 <translation id="5519696598216267194">ወረቀት (ቀድሞ የተመታ)</translation>
@@ -2312,7 +2311,6 @@
 <translation id="5847181246682413476">የኃይል አቅርቦቶች</translation>
 <translation id="5851548754964597211">የትር ዝርዝር</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5862579898803147654">ቁልል 8</translation>
 <translation id="5863847714970149516">ከፊት ያለው ገፅ እርስዎን ገንዘብ ለማስከፈል ሊሞክር ይችላል</translation>
 <translation id="5866257070973731571">ስልክ ቁጥር ያክሉ</translation>
@@ -3046,7 +3044,6 @@
 <translation id="7378877318020334501">የቲቪ ኮሜዲዎች</translation>
 <translation id="7380398842872229465">10 x 15 ኢንች</translation>
 <translation id="738439098860678026">የቀድሞ ልጅነት ትምህርት</translation>
-<translation id="7386364858855961704">አይመለከተውም</translation>
 <translation id="7388594495505979117">{0,plural, =1{መሣሪያዎ በ1 ደቂቃ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="7390545607259442187">ካርድ ያረጋግጡ</translation>
 <translation id="7392089738299859607">አድራሻን ያዘምኑ</translation>
@@ -3142,7 +3139,6 @@
 <translation id="7549584377607005141">ይህ ድረ-ገፅ በአግባቡ እንዲታይ ቀደም ብለው ያስገቡት ውሂብ ያስፈልገዋል። ይህን ውሂብ እንደገና መላክ ይችላሉ፣ ነገር ግን ይህን በማድረግዎ ይህ ገፅ ከዚህ በፊት ያከናወነው ማንኛውም እርምጃ ይደግማሉ።</translation>
 <translation id="7550637293666041147">የእርስዎ መሣሪያ ተጠቃሚ ስም እና የ Chrome ተጠቃሚ ስም</translation>
 <translation id="7551484245293639699">የጉዞ መድህን</translation>
-<translation id="755279583747225797">ሙከራ ንቁ ነው</translation>
 <translation id="7552846755917812628">የሚከተሉትን ጠቃሚ ምክሮች ይሞክሩ፦</translation>
 <translation id="7554475479213504905">ለማንኛውም እንደገና ጫን እና አሳይ</translation>
 <translation id="7554791636758816595">አዲስ ትር</translation>
@@ -3990,5 +3986,6 @@
     &lt;li&gt;ከሌላ አውታረ መረብ ጋር ለመገናኘት ይሞክሩ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">ራስ-ሰር ስዕል-ላይ-ስዕል</translation>
 <translation id="997986563973421916">ከGoogle Pay</translation>
 </translationbundle>

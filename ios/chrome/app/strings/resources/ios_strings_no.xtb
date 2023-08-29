@@ -155,6 +155,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1836891464494477513">{count,plural, =1{Bokmerket er lagret i Google-kontoen din, {email}}other{Bokmerkene er lagret i Google-kontoen din, {email}}}</translation>
 <translation id="1870148520156231997">Vis passordet</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
+<translation id="1882901927376062252">{count,plural, =1{Bokmerket er lagret i Google-kontoen din, {email}}other{{count} bokmerker er lagret i Google-kontoen din, {email}}}</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
 <translation id="1894023287452300670">Spor prisen her</translation>
 <translation id="189531189292803889">iPaden din ble nylig gjenopprettet, noe som kan ha medført at standardnettleseren ble endret.</translation>
@@ -475,7 +476,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
-<translation id="3783017676699494206">Lagre bildet</translation>
 <translation id="3789294999358192700">Gjør dette:</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
@@ -692,6 +692,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelsen.</translation>
 <translation id="5090832849094901128">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Twitter-meldingen er fullført.</translation>
+<translation id="5100848274708256363">Bli med i en familiegruppe</translation>
 <translation id="5109892411553231226">Administrer betalingsmåter</translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5118764316110575523">Av</translation>
@@ -994,6 +995,7 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6642362222295953972">Bytt til den eksisterende fanen</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6645899968535965230">QR-kode: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Sist kjørt <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Mapperedigering</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6668619169535738264">Rediger bokmerke</translation>
@@ -1107,6 +1109,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7351537303876921605">Trykk på Opprett link på den kontekstuelle menyen</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7353432112255316844">Bekreft at det er deg</translation>
+<translation id="7380220816562673297">Foreløpig kan du bare dele passord med familiemedlemmer. <ph name="BEGIN_LINK" />Opprett en familiegruppe<ph name="END_LINK" /> med opptil seks medlemmer, og få mer ut av Google-produktene og -abonnementene dine.</translation>
 <translation id="7383797227493018512">Leseliste</translation>
 <translation id="7398893703713203428">Opprett link</translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
@@ -1430,6 +1433,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
 <translation id="941747855997058526">Velg passord…</translation>
 <translation id="948048872540558976">Åpne en ny fane</translation>
+<translation id="952218985181984374">{count,plural, =1{Bokmerket er lagret}other{{count} bokmerker er lagret}}</translation>
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="953008885340860025">Chrome er logget av</translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>

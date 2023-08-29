@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS autentifikācijas atslēga</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Atspējot tumšo krāsu režīmu</translation>
+<translation id="2728460467788544679">Drukāšanas vēstures notīrīšana</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2744221223678373668">Koplietojamie</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">Atvērt VPN</translation>
 <translation id="6439505561246192797">Vājš (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pāriet uz konta iestatījumiem</translation>
+<translation id="6461047516875166066">Uzzināt vairāk</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vai atkārtoti skenēt lapu?}=1{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}zero{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}one{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}other{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}}</translation>
 <translation id="6472207088655375767">VRP</translation>
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>

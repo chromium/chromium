@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Ufunguo wa uthibitishaji wa TLS</translation>
 <translation id="2713444072780614174">Nyeupe</translation>
 <translation id="2717139507051041123">Washa hali ya rangi yenye giza</translation>
+<translation id="2728460467788544679">Futa historia yote ya uchapishaji</translation>
 <translation id="2740531572673183784">Sawa</translation>
 <translation id="2744221223678373668">Inayoshirikiwa</translation>
 <translation id="2751739896257479635">Uthibitisho wa EAP wa awamu ya pili</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Dhaifu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Nenda kwenye mipangilio ya akaunti</translation>
+<translation id="6461047516875166066">Niambie zaidi</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ungependa kuchanganua ukurasa huu upya?}=1{Ungependa kuchanganua ukurasa wa {PAGE_NUMBER} upya?}other{Ungependa kuchanganua ukurasa wa {PAGE_NUMBER} upya?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
@@ -935,6 +937,7 @@
 <translation id="8318753676953949627">Hakuna Picha</translation>
 <translation id="8329018942023753850">programu ya kikokotoo</translation>
 <translation id="8336739000755212683">Badilisha picha ya akaunti ya kifaa</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> au <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8351855506390808906">Sehemu za kugusa za kukabidhi majukumu ya kitufe</translation>
 <translation id="8352772353338965963">Ongeza akaunti ya uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja. Akaunti zote zilizoingiwa zinaweza kufikiwa bila nenosiri, hivyo kipengee hiki lazima kitumike kwenye akaunti zinazoaminika pekee.</translation>

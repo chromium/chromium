@@ -519,7 +519,6 @@
 <translation id="2048261947532620704">הדף בתהליך תרגום…</translation>
 <translation id="205212645995975601">ברביקיו וצלייה</translation>
 <translation id="2053111141626950936">דפים ב<ph name="LANGUAGE" /> לא יתורגמו.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יום.}=1{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יום.}one{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי {NUM_DAYS} ימים.}two{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי יומיים ({NUM_DAYS}).}other{‏כשהפקד הזה פועל והסטטוס פעיל, Chrome בודק מהי הקבוצה הגדולה של אנשים, או "הקבוצה בעלת המאפיינים המשותפים", שפעילות הגלישה האחרונה שלך הכי דומה לה. מפרסמים יכולים לבחור מודעות שמתאימות לקבוצה, ופעילות הגלישה שלך נשמרת באופן פרטי במכשיר. הקבוצה מתעדכנת מדי {NUM_DAYS} ימים.}}</translation>
 <translation id="2056658168519009885">‏אתרים יכולים לשלוח ל-Chrome בקשה לקבלת מידע שיעזור להם להתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="2059202684901022309">‏22x34 אינץ'</translation>
 <translation id="2064568741209980952">אשראי והלוואות</translation>
@@ -610,6 +609,7 @@
 <translation id="2225927550500503913">הכרטיס הווירטואלי מופעל</translation>
 <translation id="2226636330183131181">‏<ph name="BEGIN_LINK" />התחברות<ph name="END_LINK" /> לרשת ה-Wi-Fi</translation>
 <translation id="2228057197024893428">‏הכתובת הזו שמורה ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
+<translation id="2228466771983364669">הביקור שלך בכתובת <ph name="TOP_LEVEL_URL" /> יהיה ידוע ל-<ph name="EMBEDDED_URL" />.</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2239100178324503013">שליחה</translation>
 <translation id="2241693394036365668">הורדת קובץ</translation>
@@ -664,7 +664,6 @@
 <translation id="2355395290879513365">ייתכן שתוקפים יוכלו לראות את התמונות שבהן צפית באתר זה, ולאחר מכן הם ינסו להונות אותך על ידי שינוי התמונות.</translation>
 <translation id="2356070529366658676">לשאול</translation>
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{בעוד פחות מיום}=1{בעוד יום}one{בעוד {NUM_DAYS} ימים}two{בעוד יומיים ({NUM_DAYS})}other{בעוד {NUM_DAYS} ימים}}</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2361263712565360498">‏275x395 מ"מ</translation>
@@ -1214,7 +1213,6 @@
 <translation id="3586833803451155175">Wet Film</translation>
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
 <translation id="3587738293690942763">אמצעי</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}=1{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יום אחד.}one{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}two{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב יומיים ({NUM_DAYS}).}other{ניתן לאפס את הקבוצה מתי שרוצים. הצטרפות לקבוצה חדשה נמשכת סביב {NUM_DAYS} ימים.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏הלחצן לניהול הגדרות הפרטיות ב-Google, מפעילים אותו כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
 <translation id="3603507503523709">האפליקציה נחסמה על ידי מנהל המערכת</translation>
@@ -1229,6 +1227,7 @@
 <translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
 <translation id="3624292976554877583">Labels (Matte)</translation>
+<translation id="3625929652356389713">האתר יכול לבקש הרשאה לפתוח אוטומטית חלונות עם תמונה בתוך תמונה</translation>
 <translation id="3628905806504633297">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">אם היא כבר רשומה כתוכנית המורשית לגשת לרשת, יש לנסות
       להסיר אותה מהרשימה ולהוסיף אותה שוב.</translation>
@@ -1362,6 +1361,7 @@
 <translation id="388632593194507180">זוהה מעקב</translation>
 <translation id="3886948180919384617">מערים 3</translation>
 <translation id="3890664840433101773">הוספת כתובת אימייל</translation>
+<translation id="3893306401511601929">הצגת אוטומטית של תמונה בתוך תמונה</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3901925938762663762">תוקף הכרטיס פג</translation>
 <translation id="390391808978419508">פג הזמן הקצוב לפתיחה</translation>
@@ -1560,7 +1560,6 @@
 <translation id="4285498937028063278">ביטול הצמדה</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏הכרטיס הזה נשמר בחשבון Google שלך}one{‏הכרטיסים האלה נשמרו בחשבון Google שלך}two{‏הכרטיסים האלה נשמרו בחשבון Google שלך}other{‏הכרטיסים האלה נשמרו בחשבון Google שלך}}</translation>
 <translation id="4287495839370498922">‏הגדרות פרטיות משופרות בפרסום ב-Chrome</translation>
-<translation id="4287885627794386150">מתאים להשתתפות בניסוי, לא פעיל</translation>
 <translation id="4290920330097335010">אף פעם לא לאפשר</translation>
 <translation id="4296207570293932800">תכונה חדשה לשמירה על פרטיות בפרסום זמינה עכשיו</translation>
 <translation id="4297502707443874121">תמונה ממוזערת של הדף <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2111,6 +2110,7 @@ Del</translation>
 <translation id="5430298929874300616">הסרת סימנייה</translation>
 <translation id="54430913453805768">‏נשלחה מהכתובת <ph name="URL" /> בקשה לשלוט במכשירי MIDI‏ (SysEx) ולתכנת אותם מחדש.</translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
+<translation id="5447235695608032700">מתן הרשאה לאתר <ph name="SITE" /> להשתמש במידע עליך שנשמר בו</translation>
 <translation id="5447765697759493033">האתר הזה לא יתורגם</translation>
 <translation id="5452270690849572955">לא ניתן למצוא את הדף של <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">חותמת הזמן של המדיניות שגויה</translation>
@@ -2144,6 +2144,7 @@ Del</translation>
 <translation id="5512812358367123529">ריהוט משרדי</translation>
 <translation id="5513528801833998679">שימוש בכניסה לחשבון במכשיר</translation>
 <translation id="5515388687005870733">‏55x85 מ"מ</translation>
+<translation id="5516095341424241911">‏טכנולוגיית האבטחה של Google משמשת לשמירה על אבטחת פרטי התשלום</translation>
 <translation id="5518670652865028077">אומנות ובידור</translation>
 <translation id="5519516356611866228">עם השינויים שלך</translation>
 <translation id="5519696598216267194">Paper (Prepunched)</translation>
@@ -2209,6 +2210,7 @@ Del</translation>
 <translation id="5633259641094592098">סרטי אינדי וקאלט</translation>
 <translation id="563371367637259496">נייד</translation>
 <translation id="5635237618724097525">מכשירי סמארטפון</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">רכיבים ומערכות סטריאו</translation>
 <translation id="5644090287519800334">‏הזזה של תמונה בצד 1 על ציר X</translation>
 <translation id="5645132789250840550">Plastic (Semi-Gloss)</translation>
@@ -2296,7 +2298,6 @@ Del</translation>
 <translation id="5847181246682413476">ספקי כוח</translation>
 <translation id="5851548754964597211">רשימת כרטיסיות</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">כבוי</translation>
 <translation id="5862579898803147654">מערים 8</translation>
 <translation id="5863847714970149516">בדף הבא עשויה להיות דרישה לתשלום</translation>
 <translation id="5866257070973731571">הוספת מספר טלפון</translation>
@@ -3019,7 +3020,6 @@ Del</translation>
 <translation id="7378877318020334501">סדרות קומיות</translation>
 <translation id="7380398842872229465">‏10x15 אינץ'</translation>
 <translation id="738439098860678026">חינוך לגיל הרך</translation>
-<translation id="7386364858855961704">לא רלוונטי</translation>
 <translation id="7388594495505979117">{0,plural, =1{המכשיר יופעל מחדש בתוך דקה}one{המכשיר יופעל מחדש בתוך # דקות}two{המכשיר יופעל מחדש בתוך # דקות}other{המכשיר יופעל מחדש בתוך # דקות}}</translation>
 <translation id="7390545607259442187">אישור הכרטיס</translation>
 <translation id="7392089738299859607">עדכון הכתובת</translation>
@@ -3114,7 +3114,6 @@ Del</translation>
 <translation id="7549584377607005141">דף אינטרנט זה זקוק לנתונים שהזנת קודם לכן כדי שהוא יוצג כראוי. ניתן לשלוח שוב את הנתונים, אך פעולה זו תגרום לחזרה על כל פעולה שדף זה ביצע בעבר.</translation>
 <translation id="7550637293666041147">‏שם המשתמש במכשיר ושם המשתמש ב-Chrome</translation>
 <translation id="7551484245293639699">ביטוח נסיעות</translation>
-<translation id="755279583747225797">הניסוי הופעל</translation>
 <translation id="7552846755917812628">אולי הטיפים האלו יעזרו לך:</translation>
 <translation id="7554475479213504905">לטעון מחדש ולהציג בכל זאת?</translation>
 <translation id="7554791636758816595">כרטיסייה חדשה</translation>
@@ -3740,6 +3739,7 @@ Del</translation>
 <translation id="885730110891505394">‏שיתוף עם Google</translation>
 <translation id="8858065207712248076">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
 <translation id="885906927438988819">‏אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת של Windows<ph name="END_LINK" />.</translation>
+<translation id="8863218129525348270">רוצה לשלם מהר יותר בפעם הבאה? כדאי לשמור את פרטי הכרטיס במכשיר</translation>
 <translation id="8864939224504814334">חליפות ערב ולבוש עסקי</translation>
 <translation id="8866132857352163524">פסקולים</translation>
 <translation id="8866481888320382733">שגיאה בניתוח הגדרות המדיניות</translation>
@@ -3915,6 +3915,7 @@ Del</translation>
 <translation id="937804173274050966">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> נושאי המודעות מבוססים על היסטוריית הגלישה שלך מהזמן האחרון – רשימה של האתרים שבהם ביקרת באמצעות Chrome במכשיר הזה.</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="940053046584497293">נסיעות ותחבורה</translation>
+<translation id="944540589955480312">‏שימוש בסיסמאות ובמפתחות הגישה שנשמרו בחשבון Google</translation>
 <translation id="945855313015696284">יש לבדוק את המידע שבהמשך ולמחוק כרטיסים עם שגיאות</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
@@ -3950,5 +3951,6 @@ Del</translation>
     &lt;li&gt;להתחבר לרשת אחרת&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">הצגת אוטומטית של תמונה בתוך תמונה</translation>
 <translation id="997986563973421916">‏מ-Google Pay</translation>
 </translationbundle>

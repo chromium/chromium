@@ -45,7 +45,6 @@
 <translation id="1175944128323889279">Поточний рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />%, залишилося: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Видалити</translation>
-<translation id="1181431373490845924">Відхилити налаштування перегляду нещодавніх фотографій, медіафайлів і сповіщень із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Буде надано доступ для всіх додатків і веб-сайтів, які мають дозволи на доступ до камери й мікрофона</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183863904939664422">Мене не цікавить ця підказка</translation>
@@ -64,6 +63,7 @@
 <translation id="1217633719248931900">Перейти в додаток</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, додаток із Play Маркету</translation>
 <translation id="1225748608451425081">Ваш пристрій Chromebook заблоковано через відому проблему. Ви зможете ввійти через <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">неактивний робочий стіл</translation>
 <translation id="1229194443904279055">Припинити вибір</translation>
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
@@ -117,7 +117,6 @@
 <translation id="1415846719612499304">Показати список мереж. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Щоб виконати дію зі сповіщенням, розблокуйте пристрій</translation>
 <translation id="1420408895951708260">Увімкнути або вимкнути нічний екран. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Переглядайте нещодавні фотографії та медіаконтент із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
@@ -410,7 +409,6 @@
 <translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
 <translation id="2761723519669354964">Відкрити виділений елемент на панелі запуску</translation>
-<translation id="2774327524281966309">Відхилити налаштування сповіщень і додатків із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + пошук + s</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
@@ -489,7 +487,6 @@
 <translation id="3095995014811312755">версія</translation>
 <translation id="309749186376891736">Курсор переміщення</translation>
 <translation id="3100274880412651815">Вийти з режиму зйомки</translation>
-<translation id="3103732015595029598">Налаштувати сповіщення й додатки з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Зробити знімок екрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Виділити попередній елемент на панелі запуску</translation>
@@ -557,6 +554,7 @@
 <translation id="3386978599540877378">лупу для повноекранного режиму</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Увімкнути диктування?</translation>
+<translation id="3394432020929931914">, розгорнуто</translation>
 <translation id="3400357268283240774">Додаткові налаштування</translation>
 <translation id="3405101454990027959">Надати доступ до мікрофона</translation>
 <translation id="3408735331120433841">Зараз ви транслюєте екран.</translation>
@@ -658,7 +656,6 @@
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3738664582935948253">Тепер на записі відео з екрана можна показувати кліки мишею та комбінації клавіш</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
-<translation id="375335662788363456">Відхилити налаштування нещодавніх фотографій, медіафайлів, сповіщень і додатків із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="3756485814916578707">Трансляція екрана</translation>
 <translation id="3765841382945324995">Комбінацію клавіш для дії "<ph name="SIX_PACK_KEY_NAME" />" змінено з "<ph name="OLD_SHORTCUT" />" на "<ph name="NEW_SHORTCUT" />"</translation>
 <translation id="3765841986579723851">Змінено сьогодні</translation>
@@ -781,6 +778,7 @@
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="425364040945105958">Немає SIM-карти</translation>
 <translation id="4261870227682513959">Показати налаштування сповіщень. Сповіщення вимкнено</translation>
+<translation id="4264977415328155183">, згорнуто</translation>
 <translation id="4269883910223712419">Адміністратор цього пристрою може:</translation>
 <translation id="4274537685965975248">Комбінацію клавіш Ctrl + Alt + стрілка вниз змінено. Щоб скористатися клавішею End, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вправо.</translation>
 <translation id="4275283744500212192">Відкрити варіанти макета вікна</translation>
@@ -792,7 +790,6 @@
 <translation id="428715201724021596">Триває підключення до профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4294319844246081198">Доброго ранку, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Видаліть усі сповіщення (<ph name="COUNT" />)</translation>
-<translation id="4300367807227655672">Налаштувати перегляд сповіщень із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642">Додаток <ph name="MOVED_APP_NAME" /> переміщено в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="4302592941791324970">Недоступно</translation>
 <translation id="4303223480529385476">Розгорнути панель стану</translation>
@@ -818,18 +815,15 @@
 <translation id="4405151984121254935">Тип підключеного периферійного пристрою не підтримується</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
-<translation id="4414595745967164324">Налаштувати нещодавні фотографії, медіафайли, сповіщення й додатки з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">Робочий стіл 5</translation>
 <translation id="4427695046139341014">Ігрова панель</translation>
 <translation id="4430019312045809116">Гучність</translation>
-<translation id="4435022394553622295">Переглядайте сповіщення й додатки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Додатки відсортовано за назвою</translation>
 <translation id="4445159312344259901">Увійдіть, щоб розблокувати</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важливе сповіщення}one{# важливе сповіщення}few{# важливі сповіщення}many{# важливих сповіщень}other{# важливого сповіщення}}</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="4451374464530248585">Комбінацію клавіш Alt + стрілка вниз змінено. Щоб скористатися клавішею Page Down, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вниз.</translation>
 <translation id="4453876312474547652">Утримуйте комбінацію клавіш Ctrl + V, щоб з’явився буфер обміну. Щоб відключити цю комбінацію клавіш, зніміть прапорець #clipboard-history-longpress на сторінці chrome://flags (або os://flags в ОС Lacros).</translation>
-<translation id="4455051983450390249">Переглядайте сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Доброго вечора!</translation>
 <translation id="4458688154122353284">Зупинити запис екрана</translation>
 <translation id="445923051607553918">Увійти в мережу Wi-Fi</translation>
@@ -912,7 +906,6 @@
 <translation id="4798888871844665150">Об’єкт уже скопійовано в буфер обміну. Щоб переглянути його, натисніть <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
-<translation id="4810227386592387399">Налаштувати перегляд додатків із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="481455355267255546">Найближчі події</translation>
@@ -1008,6 +1001,7 @@
 <translation id="5197255632782567636">Інтернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, подій: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Щоб створити нову папку, об'єднано додатки <ph name="MOVED_APP_NAME" /> і <ph name="IN_PLACE_APP" />.</translation>
+<translation id="5203299837691351876">активний робочий стіл</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}many{# інших сповіщень}other{# іншого сповіщення}}</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
@@ -1097,7 +1091,6 @@
 <translation id="5551456515017410630">Відкрити або закрити календар</translation>
 <translation id="5551974246223970793">Під час пошуку на сторінці перейти до наступного збігу</translation>
 <translation id="5558091555391176027">Перемикач режиму високої видимості для функції "Передавання поблизу"</translation>
-<translation id="5560420195677022218">Переглядайте додатки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Відкрити нову вкладку в новому вікні в режимі анонімного перегляду</translation>
 <translation id="5571066253365925590">Bluetooth увімкнено</translation>
@@ -1195,6 +1188,7 @@
 <translation id="595202126637698455">Відстеження ефективності ввімкнено</translation>
 <translation id="5955304353782037793">додаток</translation>
 <translation id="5958529069007801266">Контрольований користувач</translation>
+<translation id="5960410286721553511">Переглядайте останні фотографії та медіафайли з телефона</translation>
 <translation id="5961960957587052807">Легке</translation>
 <translation id="5965524703725988602">Увімкнути або вимкнути темну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Переходити вперед між вікнами</translation>
@@ -1251,13 +1245,11 @@
 <translation id="616543563528926612">Комбінація клавіш для імітації кліку правою кнопкою миші змінилася з "<ph name="LAUNCHER_KEY_NAME" /> + клік" на "Alt + клік"</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166852626429024716">Шукайте на пристрої, в додатках, налаштуваннях та Інтернеті…</translation>
-<translation id="6167922743323004256">Відхилити налаштування перегляду нещодавніх фотографій і медіафайлів із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Відкрити додаток Діагностика</translation>
 <translation id="6173151025443907148">Під час роботи Lacros вхід у кілька облікових записів не підтримується. Скористайтесь іншим профілем веб-переглядача або закрийте Lacros і повторіть спробу.</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
 <translation id="6182592640011875895">Відкрити робочий стіл</translation>
 <translation id="6185696379715117369">Сторінка вгору</translation>
-<translation id="619279033188484792">Переглядайте нещодавні фотографії, медіаконтент і сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Зарядити повністю</translation>
 <translation id="6193431488227440296">Версія для розробників</translation>
 <translation id="6199775032047436064">Перезавантажити поточну сторінку</translation>
@@ -1271,7 +1263,6 @@
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Відхилити налаштування перегляду сповіщень із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6244986124527896815">Щоб відкрити додаток Диспетчер завдань, натисніть <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Відкрити сповіщення</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
@@ -1406,6 +1397,7 @@
 <translation id="6819327813400217281">Зображення з камери закріплено в нижньому лівому куті</translation>
 <translation id="6820676911989879663">Зробіть перерву!</translation>
 <translation id="6827049576281411231">Закрити панель подій</translation>
+<translation id="6831561626108366035">Перейти до кнопки <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Небезпечний файл</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6855029042976311970">Змінено щойно</translation>
@@ -1418,7 +1410,6 @@
 <translation id="6884665277231944629">Повернутися до сьогоднішнього дня</translation>
 <translation id="6886172995547742638">Продуктивність пристрою <ph name="DEVICE_TYPE" /> може знизитися. Використовуйте сертифікований адаптер живлення USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт або більше.</translation>
 <translation id="688631446150864480">Щоб переходити між вікнами, використовуйте клавішу зі стрілкою вниз</translation>
-<translation id="6891721121089053234">Переглядайте нещодавно додані на телефон фотографії, медіафайли й додатки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6901883536534621389">Спробуйте навігацію за допомогою жестів</translation>
 <translation id="6912841030378044227">Виділити адресний рядок</translation>
@@ -1442,6 +1433,7 @@
 <translation id="6981982820502123353">Доступність</translation>
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
 <translation id="6985306450422696113">Доступний обсяг пам’яті: <ph name="USED_MEMORY" /> з <ph name="TOTAL_MEMORY" /></translation>
+<translation id="6989752354829085073">Ознайомтеся з коротким оглядом Chromebook. Щоб почати роботу, виконайте 6 кроків.</translation>
 <translation id="7004910047186208204">Підключіться до мобільного Інтернету</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>
 <translation id="7007983414944123363">Не вдалося підтвердити PIN-код або пароль. Повторіть спробу.</translation>
@@ -1480,6 +1472,8 @@
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144942256906679589">Стан акумулятора</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Попередня роздільна здатність повернеться через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
@@ -1565,6 +1559,7 @@
 <translation id="7557816257942363084">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
+<translation id="7567950130372125778">Вітаємо! Chromebook трохи відрізняється.</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
 <translation id="7571361473021531288">Рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />% | До розрядження залишилося <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Активне вікно закріплено праворуч.</translation>
@@ -1606,6 +1601,7 @@
 <translation id="7723703419796509666">Показати або сховати консоль Інструментів розробника</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7725108879223146004">Показати відомості про точку доступу. Точка доступу вимикається.</translation>
+<translation id="7726391492136714301">Переглядати сповіщення й додатки на вашому телефоні</translation>
 <translation id="7727952505535211425">Відкрити веб-сайт в адресному рядку на новій вкладці</translation>
 <translation id="7742327441377685481">Немає сповіщень</translation>
 <translation id="7748275671948949022">Виділити кнопку запуску на панелі</translation>
@@ -1623,7 +1619,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
 <translation id="7837740436429729974">Час минув</translation>
-<translation id="7838712802972544930">Відхилити налаштування перегляду додатків із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="7842569679327885685">Попередження. Експериментальна функція</translation>
 <translation id="7846634333498149051">Клавіатура</translation>
 <translation id="7848989271541991537">Переміщено на сторінку <ph name="PAGE_NUMBER" />, рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
@@ -1689,7 +1684,6 @@
 <translation id="8051716679295756675">Шаблон <ph name="DESK_TEMPLATE_NAME" /> вже існує</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
-<translation id="8077971003886736669">Налаштуйте перегляд нещодавніх фотографій і медіафайлів із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Показ екрана</translation>
 <translation id="8083540854303889870">Збережено на потім</translation>
 <translation id="8091153018031979607">Початок о <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1719,7 +1713,6 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Цим налаштуванням керує адміністратор.</translation>
 <translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Переглядайте нещодавно додані на телефон фотографії, медіафайли, сповіщення й додатки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
 <translation id="8192202700944119416">Сповіщення сховано.</translation>
 <translation id="8196787716797768628">Переходьте між додатками та взаємодійте з пристроєм Chromebook у режимі планшета за допомогою жестів.</translation>
@@ -1846,7 +1839,6 @@
 <translation id="875593634123171288">Показати налаштування VPN</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>
 <translation id="8763883995157866248">Перевести пристрій у режим сну</translation>
-<translation id="8773962395093246071">Налаштувати перегляд нещодавніх фотографій, медіафайлів і сповіщень із телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, установлений додаток, заблоковано</translation>
 <translation id="8785070478575117577">Підключитися: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

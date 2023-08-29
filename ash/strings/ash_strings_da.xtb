@@ -45,7 +45,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1175944128323889279">Aktuelt batteriniveau <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> tilbage</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
-<translation id="1181431373490845924">Afvis konfigurationen af visning af din telefons seneste billeder, medier og notifikationer på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1182225749592316782">Dette giver alle apps og websites, der har kamera- og mikrofontilladelserne, adgang</translation>
 <translation id="1182876754474670069">Home</translation>
 <translation id="1183863904939664422">Jeg er ikke interesseret i dette forslag</translation>
@@ -118,7 +117,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1415846719612499304">Vis netværksliste. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Lås enheden op for at udføre notifikationshandlingen</translation>
 <translation id="1420408895951708260">Slå Nattelys til/fra. <ph name="STATE_TEXT" /></translation>
-<translation id="1420732223884894666">Se de seneste billeder og mediefiler fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
@@ -411,7 +409,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2750932254614666392">"Slet"</translation>
 <translation id="2750941250130734256">Det aktive vindue er frigjort.</translation>
 <translation id="2761723519669354964">Åbn det fremhævede element på hylden</translation>
-<translation id="2774327524281966309">Afvis konfiguration af din telefons notifikationer og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+søgetast+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" /></translation>
@@ -490,7 +487,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3095995014811312755">version</translation>
 <translation id="309749186376891736">Flyttemarkør</translation>
 <translation id="3100274880412651815">Luk optagelsestilstand</translation>
-<translation id="3103732015595029598">Konfigurer din telefons notifikationer og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3105917916468784889">Tag screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Fremhæv forrige element på hylden</translation>
@@ -558,6 +554,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3386978599540877378">luppen i fuld skærm</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vil du aktivere diktering?</translation>
+<translation id="3394432020929931914">, udvidet</translation>
 <translation id="3400357268283240774">Yderligere indstillinger</translation>
 <translation id="3405101454990027959">Aktivér mikrofonadgang</translation>
 <translation id="3408735331120433841">Du caster i øjeblikket din skærm.</translation>
@@ -659,7 +656,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3735740477244556633">Sortér efter</translation>
 <translation id="3738664582935948253">Du kan nu vise klik og tastaturgenveje i skærmoptagelser</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
-<translation id="375335662788363456">Afvis konfigurationen af din telefons seneste billeder, medier, notifikationer og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3756485814916578707">Skærmen castes</translation>
 <translation id="3765841382945324995">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er opdateret til <ph name="NEW_SHORTCUT" /> fra <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Redigeret i dag</translation>
@@ -782,6 +778,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Intet SIM-kort</translation>
 <translation id="4261870227682513959">Vis indstillinger for notifikationer. Notifikationer er slået fra</translation>
+<translation id="4264977415328155183">, skjult</translation>
 <translation id="4269883910223712419">Administratoren af denne enhed kan gøre følgende:</translation>
 <translation id="4274537685965975248">Tastaturgenvejen Ctrl+Alt+pil ned er blevet ændret. Hvis du vil bruge End-tasten, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+højrepil.</translation>
 <translation id="4275283744500212192">Åbn layoutmuligheder for vinduer</translation>
@@ -793,7 +790,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="428715201724021596">Der oprettes forbindelse til profilen. Dette kan tage et par minutter.</translation>
 <translation id="4294319844246081198">Godmorgen <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Ryd alle <ph name="COUNT" /> notifikationer</translation>
-<translation id="4300367807227655672">Konfigurer visning af din telefons notifikationer på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> blev flyttet til mappen <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Ikke tilgængelig</translation>
 <translation id="4303223480529385476">Udvid statusområde</translation>
@@ -819,18 +815,15 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4405151984121254935">Den tilsluttede tilbehørstype understøttes ikke</translation>
 <translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er deaktiveret.</translation>
-<translation id="4414595745967164324">Konfigurer din telefons seneste billeder, medier, notifikationer og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
 <translation id="4427695046139341014">Spilpanel</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
-<translation id="4435022394553622295">Se din telefons notifikationer og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Apps er sorteret efter navn</translation>
 <translation id="4445159312344259901">Log ind for at låse op</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 vigtig notifikation}one{# vigtig notifikation}other{# vigtige notifikationer}}</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
 <translation id="4451374464530248585">Tastaturgenvejen Alt+pil ned er blevet ændret. Hvis du vil bruge tasten Page Down, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+pil ned.</translation>
 <translation id="4453876312474547652">Du kan se udklipsholderen ved at holde fingeren på Ctrl+V. Hvis du vil deaktivere denne genvej, skal du deaktivere demofunktionen #clipboard-history-longpress i chrome://flags (os://flags ved brug af Lacros).</translation>
-<translation id="4455051983450390249">Se din telefons notifikationer på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Godaften</translation>
 <translation id="4458688154122353284">Stop skærmoptagelse</translation>
 <translation id="445923051607553918">Vælg Wi-Fi-netværk</translation>
@@ -913,7 +906,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4798888871844665150">Det kopierede element er allerede i udklipsholderen. Brug <ph name="SHORTCUT_KEY_NAME" /> + V for at se det.</translation>
 <translation id="479989351350248267">søg</translation>
 <translation id="4804818685124855865">Afbryd</translation>
-<translation id="4810227386592387399">Konfigurer visning af din telefons apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4813311884204119883">Træk linket til et tomt område på fanelinjen</translation>
 <translation id="4814539958450445987">Loginskærm</translation>
 <translation id="481455355267255546">Næste</translation>
@@ -1099,7 +1091,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5551456515017410630">Åbn/luk kalender</translation>
 <translation id="5551974246223970793">Når du søger på en side, kan du gå til næste match for at søge</translation>
 <translation id="5558091555391176027">Slå høj synlighed til/fra for Deling tæt på</translation>
-<translation id="5560420195677022218">Se din telefons apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5570122939431135380">Åbn ny fane i et nyt inkognitovindue</translation>
 <translation id="5571066253365925590">Bluetooth er aktiveret</translation>
@@ -1197,6 +1188,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Overvåget bruger</translation>
+<translation id="5960410286721553511">Se de seneste billeder og mediefiler fra din telefon</translation>
 <translation id="5961960957587052807">Let</translation>
 <translation id="5965524703725988602">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Skift til et af de efterfølgende vinduer</translation>
@@ -1253,13 +1245,11 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="616543563528926612">Genvejen for højreklik er opdateret til Alt + klik fra tasten <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6166852626429024716">Søg på din enhed, i dine apps, i indstillingerne, på nettet...</translation>
-<translation id="6167922743323004256">Afvis konfiguration af visning af din telefons seneste billeder og medier på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6168318496333165060">Åbn appen Diagnostik</translation>
 <translation id="6173151025443907148">Det er ikke muligt at logge ind med en yderligere bruger, hvis Lacros er aktiveret. Du skal i stedet bruge en yderligere browserprofil i Lacros, eller du kan deaktivere Lacros og prøve igen.</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
 <translation id="6182592640011875895">Åbn skrivebord</translation>
 <translation id="6185696379715117369">Gå en side op</translation>
-<translation id="619279033188484792">Se de seneste billeder, mediefiler og notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Oplad helt nu</translation>
 <translation id="6193431488227440296">Udv</translation>
 <translation id="6199775032047436064">Genindlæs den aktuelle side</translation>
@@ -1273,7 +1263,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> anvender i øjeblikket dit kamera og din mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6243908713912479677">Afvis konfiguration af visning af telefonens notifikationer på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6244986124527896815">Åbn Jobliste med "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Åbn notifikationer</translation>
 <translation id="6254629735336163724">Altid vandret</translation>
@@ -1421,7 +1410,6 @@ Installeret for nylig</translation>
 <translation id="6884665277231944629">Gå tilbage til i dag</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>
-<translation id="6891721121089053234">Se din telefons seneste billeder, medier og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901883536534621389">Prøv at navigere ved hjælp af bevægelser</translation>
 <translation id="6912841030378044227">Fokuser på adresselinjen</translation>
@@ -1484,6 +1472,8 @@ Installeret for nylig</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
+<translation id="7167913274352523149"><ph name="HOTSPOT" />,
+        <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Fortryder og vender tilbage til den gamle opløsning om <ph name="TIMEOUT_SECONDS" /> sekunder.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7188494361780961876">Menuen blev flyttet til øverste venstre hjørne af skærmen.</translation>
@@ -1611,6 +1601,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7723703419796509666">Vis eller skjul konsollen i Udviklerværktøjer</translation>
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7725108879223146004">Vis oplysninger om hotspot. Hotspot deaktiveres.</translation>
+<translation id="7726391492136714301">Se din telefons notifikationer og apps</translation>
 <translation id="7727952505535211425">Åbn websitet i adresselinjen på en ny fane</translation>
 <translation id="7742327441377685481">Ingen notifikationer</translation>
 <translation id="7748275671948949022">Fremhæv knappen til applisten på hylden</translation>
@@ -1628,7 +1619,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Stærkt signal</translation>
 <translation id="7837740436429729974">Tiden er gået</translation>
-<translation id="7838712802972544930">Afvis konfiguration af visning af din telefons apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7842569679327885685">Advarsel! Eksperimentel funktion</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7848989271541991537">Flyttet til side <ph name="PAGE_NUMBER" />, række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
@@ -1694,7 +1684,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
-<translation id="8077971003886736669">Konfigurer din telefons seneste billeder og medier på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8079538659226626406">Skærmdeling</translation>
 <translation id="8083540854303889870">Gemt til senere</translation>
 <translation id="8091153018031979607">Starter <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1724,7 +1713,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne indstilling administreres af din administrator.</translation>
 <translation id="8155628902202578800">Åbn dialogboks med oplysninger om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
-<translation id="8183592608247778598">Se din telefons seneste billeder, medier, notifikationer og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8185090165691050712">Aktivér/deaktiver menuen til justering af størrelse i låst tilstand</translation>
 <translation id="8192202700944119416">Notifikationer er skjult.</translation>
 <translation id="8196787716797768628">Brug bevægelser til hurtigt at skifte mellem apps og bruge din Chromebook i tablettilstand.</translation>
@@ -1851,7 +1839,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>
 <translation id="8759408218731716181">Samlet login fra flere konti kan ikke konfigureres</translation>
 <translation id="8763883995157866248">Aktivér dvaletilstand på enheden</translation>
-<translation id="8773962395093246071">Konfigurer din telefons seneste billeder, medier og notifikationer på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installeret app, blokeret</translation>
 <translation id="8785070478575117577">Opret forbindelse til <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

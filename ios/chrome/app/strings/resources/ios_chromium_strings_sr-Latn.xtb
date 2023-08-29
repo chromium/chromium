@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Izaberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2590893390871230428">Sinhronizujte Chromium podatke</translation>
 <translation id="2618596336309823556">U Podešavanjima uređaja otvorite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ i izaberite „Chromium“</translation>
+<translation id="2631735236435791495">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji se prijavljujete i načinom na koji Chromium može da se koristi. Administrator može da podesi ili ograniči određene funkcije.</translation>
 <translation id="2650312721222849884">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, uključite sinhronizaciju</translation>
 <translation id="2684230048001240293">Podesite Chromium kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="2730884209570016437">Chromium ne može da koristi kameru zato što je već koristi druga aplikacija</translation>

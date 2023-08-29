@@ -642,7 +642,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Sfondo predefinito</translation>
 <translation id="6017514345406065928">Verde</translation>
-<translation id="6019566113895157499">Key Shortcuts</translation>
+<translation id="6019566113895157499">Scorciatoie da tastiera</translation>
 <translation id="6034694447310538551">Attiva la reimpostazione mensile automatica</translation>
 <translation id="6037291330010597344">L'alimentatore di documenti dello scanner è vuoto. Aggiungi documenti e riprova.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
@@ -937,6 +937,7 @@
 <translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8329018942023753850">app calcolatrice</translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8351855506390808906">Mappatura tasti per il punto di contatto</translation>
 <translation id="8352772353338965963">Aggiungi un account per l'accesso simultaneo. Poiché gli account che hanno effettuato l'accesso sono tutti accessibili senza password, devi utilizzare questa funzione solo con gli account attendibili.</translation>
