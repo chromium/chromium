@@ -3113,9 +3113,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of the touchpad.">
     Touchpad speed
   </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of touchpad scrolling.">
-    Touchpad scroll speed
-  </message>
   <message name="IDS_SETTINGS_POINTER_SPEED_SLOW_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the pointer (mouse/touch) speed (sensitivity).">
     Slow
   </message>
@@ -3190,9 +3187,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_DESCRIPTION" desc="In Device Settings, the description of the label next to the checkbox to disable touchpad acceleration.">
     Faster movements on your touchpad will move the cursor farther
-  </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL" desc="In Device Settings, the text next to the toggle for touchpad scroll acceleration.">
-    Enable touchpad scroll acceleration
   </message>
   <message name="IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE" desc="In Device Settings, the title of the mouse and touchpad settings subpage (when the user has both types of devices).">
     Mouse and touchpad
