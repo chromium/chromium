@@ -66,7 +66,7 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
   void FinalizeVirtualKeyboardChanges();
   bool SupportsFinalizeVirtualKeyboardChanges();
 
-  // zwp_text_input_v1_listener
+  // zwp_text_input_v1_listener callbacks:
   static void OnEnter(void* data,
                       struct zwp_text_input_v1* text_input,
                       struct wl_surface* surface);
@@ -118,7 +118,7 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
                               uint32_t serial,
                               uint32_t direction);
 
-  // zcr_extended_text_input_v1_listener
+  // zcr_extended_text_input_v1_listener callbacks:
   static void OnSetPreeditRegion(
       void* data,
       struct zcr_extended_text_input_v1* extended_text_input,

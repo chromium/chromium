@@ -110,45 +110,46 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
     zwp_text_input_manager_v1* text_input_manager,
     zcr_text_input_extension_v1* text_input_extension)
     : connection_(connection), client_(client) {
-  static constexpr zwp_text_input_v1_listener text_input_listener = {
-      &OnEnter,                  // text_input_enter,
-      &OnLeave,                  // text_input_leave,
-      &OnModifiersMap,           // text_input_modifiers_map,
-      &OnInputPanelState,        // text_input_input_panel_state,
-      &OnPreeditString,          // text_input_preedit_string,
-      &OnPreeditStyling,         // text_input_preedit_styling,
-      &OnPreeditCursor,          // text_input_preedit_cursor,
-      &OnCommitString,           // text_input_commit_string,
-      &OnCursorPosition,         // text_input_cursor_position,
-      &OnDeleteSurroundingText,  // text_input_delete_surrounding_text,
-      &OnKeysym,                 // text_input_keysym,
-      &OnLanguage,               // text_input_language,
-      &OnTextDirection,          // text_input_text_direction
+  static constexpr zwp_text_input_v1_listener kTextInputListener = {
+      .enter = &OnEnter,
+      .leave = &OnLeave,
+      .modifiers_map = &OnModifiersMap,
+      .input_panel_state = &OnInputPanelState,
+      .preedit_string = &OnPreeditString,
+      .preedit_styling = &OnPreeditStyling,
+      .preedit_cursor = &OnPreeditCursor,
+      .commit_string = &OnCommitString,
+      .cursor_position = &OnCursorPosition,
+      .delete_surrounding_text = &OnDeleteSurroundingText,
+      .keysym = &OnKeysym,
+      .language = &OnLanguage,
+      .text_direction = &OnTextDirection,
   };
 
   static constexpr zcr_extended_text_input_v1_listener
-      extended_text_input_listener = {
-          &OnSetPreeditRegion,       // extended_text_input_set_preedit_region,
-          &OnClearGrammarFragments,  // extended_text_input_clear_grammar_fragments,
-          &OnAddGrammarFragment,   // extended_text_input_add_grammar_fragment,
-          &OnSetAutocorrectRange,  // extended_text_input_set_autocorrect_range,
-          &OnSetVirtualKeyboardOccludedBounds,  // extended_text_input_set_virtual_keyboard_occluded_bounds,
-          &OnConfirmPreedit,  // extended_text_input_confirm_preedit,
-          &OnInsertImage,     // extended_text_input_insert_image
+      kExtendedTextInputListener = {
+          .set_preedit_region = &OnSetPreeditRegion,
+          .clear_grammar_fragments = &OnClearGrammarFragments,
+          .add_grammar_fragment = &OnAddGrammarFragment,
+          .set_autocorrect_range = &OnSetAutocorrectRange,
+          .set_virtual_keyboard_occluded_bounds =
+              &OnSetVirtualKeyboardOccludedBounds,
+          .confirm_preedit = &OnConfirmPreedit,
+          .insert_image = &OnInsertImage,
       };
 
   obj_ = wl::Object<zwp_text_input_v1>(
       zwp_text_input_manager_v1_create_text_input(text_input_manager));
   DCHECK(obj_.get());
-  zwp_text_input_v1_add_listener(obj_.get(), &text_input_listener, this);
+  zwp_text_input_v1_add_listener(obj_.get(), &kTextInputListener, this);
 
   if (text_input_extension) {
     extended_obj_ = wl::Object<zcr_extended_text_input_v1>(
         zcr_text_input_extension_v1_get_extended_text_input(
             text_input_extension, obj_.get()));
     DCHECK(extended_obj_.get());
-    zcr_extended_text_input_v1_add_listener(
-        extended_obj_.get(), &extended_text_input_listener, this);
+    zcr_extended_text_input_v1_add_listener(extended_obj_.get(),
+                                            &kExtendedTextInputListener, this);
   }
 }
 

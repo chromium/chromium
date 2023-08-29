@@ -78,47 +78,50 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
 #endif
       ;
 
-  // wl_keyboard_listener
-  static void Keymap(void* data,
-                     wl_keyboard* obj,
-                     uint32_t format,
-                     int32_t fd,
-                     uint32_t size);
-  static void Enter(void* data,
-                    wl_keyboard* obj,
+  // wl_keyboard_listener callbacks:
+  static void OnKeymap(void* data,
+                       wl_keyboard* keyboard,
+                       uint32_t format,
+                       int32_t fd,
+                       uint32_t size);
+  static void OnEnter(void* data,
+                      wl_keyboard* keyboard,
+                      uint32_t serial,
+                      wl_surface* surface,
+                      wl_array* keys);
+  static void OnLeave(void* data,
+                      wl_keyboard* keyboard,
+                      uint32_t serial,
+                      wl_surface* surface);
+  static void OnKey(void* data,
+                    wl_keyboard* keyboard,
                     uint32_t serial,
-                    wl_surface* surface,
-                    wl_array* keys);
-  static void Leave(void* data,
-                    wl_keyboard* obj,
-                    uint32_t serial,
-                    wl_surface* surface);
-  static void Key(void* data,
-                  wl_keyboard* obj,
-                  uint32_t serial,
-                  uint32_t time,
-                  uint32_t key,
-                  uint32_t state);
-  static void Modifiers(void* data,
-                        wl_keyboard* obj,
-                        uint32_t serial,
-                        uint32_t mods_depressed,
-                        uint32_t mods_latched,
-                        uint32_t mods_locked,
-                        uint32_t group);
-  static void RepeatInfo(void* data,
-                         wl_keyboard* obj,
-                         int32_t rate,
-                         int32_t delay);
+                    uint32_t time,
+                    uint32_t key,
+                    uint32_t state);
+  static void OnModifiers(void* data,
+                          wl_keyboard* keyboard,
+                          uint32_t serial,
+                          uint32_t mods_depressed,
+                          uint32_t mods_latched,
+                          uint32_t mods_locked,
+                          uint32_t group);
+  static void OnRepeatInfo(void* data,
+                           wl_keyboard* keyboard,
+                           int32_t rate,
+                           int32_t delay);
 
-  static void SyncCallback(void* data, struct wl_callback* cb, uint32_t time);
+  // wl_callback_listener callbacks:
+  static void OnSyncDone(void* data,
+                         struct wl_callback* callback,
+                         uint32_t time);
 
   // Callback for wl_keyboard::key and extended_keyboard::peek_key.
-  void OnKey(uint32_t serial,
-             uint32_t time,
-             uint32_t key,
-             uint32_t state,
-             KeyEventKind kind);
+  void ProcessKey(uint32_t serial,
+                  uint32_t time,
+                  uint32_t key,
+                  uint32_t state,
+                  KeyEventKind kind);
 
   // Dispatches the key event.
   void DispatchKey(unsigned int key,
@@ -147,7 +150,6 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
   const raw_ptr<Delegate> delegate_;
 
   // Key repeat handler.
-  static const wl_callback_listener callback_listener_;
   EventAutoRepeatHandler auto_repeat_handler_;
   base::OnceClosure auto_repeat_closure_;
   wl::Object<wl_callback> sync_callback_;

@@ -41,11 +41,17 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
                            WaylandConnection* connection,
                            Delegate* delegate)
     : obj_(touch), connection_(connection), delegate_(delegate) {
-  static constexpr wl_touch_listener listener = {
-      &Down, &Up, &Motion, &Frame, &Cancel, &Shape, &Orientation,
+  static constexpr wl_touch_listener kTouchListener = {
+      .down = &OnTouchDown,
+      .up = &OnTouchUp,
+      .motion = &OnTouchMotion,
+      .frame = &OnTouchFrame,
+      .cancel = &OnTouchCancel,
+      .shape = &OnTouchShape,
+      .orientation = &OnTouchOrientation,
   };
 
-  wl_touch_add_listener(obj_.get(), &listener, this);
+  wl_touch_add_listener(obj_.get(), &kTouchListener, this);
 
   SetupStylus();
 }
@@ -55,102 +61,102 @@ WaylandTouch::~WaylandTouch() {
 }
 
 // static
-void WaylandTouch::Down(void* data,
-                        wl_touch* obj,
-                        uint32_t serial,
-                        uint32_t time,
-                        struct wl_surface* surface,
-                        int32_t id,
-                        wl_fixed_t x,
-                        wl_fixed_t y) {
+void WaylandTouch::OnTouchDown(void* data,
+                               wl_touch* touch,
+                               uint32_t serial,
+                               uint32_t time,
+                               struct wl_surface* surface,
+                               int32_t id,
+                               wl_fixed_t x,
+                               wl_fixed_t y) {
   if (!surface)
     return;
 
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
-  touch->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
-                                                    serial);
+  self->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
+                                                   serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   if (!window) {
     return;
   }
 
-  gfx::PointF location = touch->connection_->MaybeConvertLocation(
+  gfx::PointF location = self->connection_->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchPressEvent(window, location, timestamp, id,
-                                      EventDispatchPolicyForPlatform());
+  self->delegate_->OnTouchPressEvent(window, location, timestamp, id,
+                                     EventDispatchPolicyForPlatform());
 }
 
 // static
-void WaylandTouch::Up(void* data,
-                      wl_touch* obj,
-                      uint32_t serial,
-                      uint32_t time,
-                      int32_t id) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+void WaylandTouch::OnTouchUp(void* data,
+                             wl_touch* touch,
+                             uint32_t serial,
+                             uint32_t time,
+                             int32_t id) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchReleaseEvent(timestamp, id,
-                                        EventDispatchPolicyForPlatform());
-}
-
-// static
-void WaylandTouch::Motion(void* data,
-                          wl_touch* obj,
-                          uint32_t time,
-                          int32_t id,
-                          wl_fixed_t x,
-                          wl_fixed_t y) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
-
-  const WaylandWindow* target = touch->delegate_->GetTouchTarget(id);
-  if (!target) {
-    LOG(WARNING) << "Touch event fired with wrong id";
-    return;
-  }
-  gfx::PointF location = touch->connection_->MaybeConvertLocation(
-      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
-  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchMotionEvent(location, timestamp, id,
+  self->delegate_->OnTouchReleaseEvent(timestamp, id,
                                        EventDispatchPolicyForPlatform());
 }
 
 // static
-void WaylandTouch::Shape(void* data,
-                         wl_touch* obj,
-                         int32_t id,
-                         wl_fixed_t major,
-                         wl_fixed_t minor) {
+void WaylandTouch::OnTouchMotion(void* data,
+                                 wl_touch* touch,
+                                 uint32_t time,
+                                 int32_t id,
+                                 wl_fixed_t x,
+                                 wl_fixed_t y) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
+
+  const WaylandWindow* target = self->delegate_->GetTouchTarget(id);
+  if (!target) {
+    LOG(WARNING) << "Touch event fired with wrong id";
+    return;
+  }
+  gfx::PointF location = self->connection_->MaybeConvertLocation(
+      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
+  self->delegate_->OnTouchMotionEvent(location, timestamp, id,
+                                      EventDispatchPolicyForPlatform());
+}
+
+// static
+void WaylandTouch::OnTouchShape(void* data,
+                                wl_touch* touch,
+                                int32_t id,
+                                wl_fixed_t major,
+                                wl_fixed_t minor) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void WaylandTouch::Orientation(void* data,
-                               wl_touch* obj,
-                               int32_t id,
-                               wl_fixed_t orientation) {
+void WaylandTouch::OnTouchOrientation(void* data,
+                                      wl_touch* touch,
+                                      int32_t id,
+                                      wl_fixed_t orientation) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
-void WaylandTouch::Cancel(void* data, wl_touch* obj) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+void WaylandTouch::OnTouchCancel(void* data, wl_touch* touch) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
-  touch->delegate_->OnTouchCancelEvent();
+  self->delegate_->OnTouchCancelEvent();
 }
 
 // static
-void WaylandTouch::Frame(void* data, wl_touch* obj) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+void WaylandTouch::OnTouchFrame(void* data, wl_touch* touch) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
-  touch->delegate_->OnTouchFrame();
+  self->delegate_->OnTouchFrame();
 }
 
 void WaylandTouch::SetupStylus() {
@@ -161,19 +167,21 @@ void WaylandTouch::SetupStylus() {
   zcr_touch_stylus_v2_.reset(
       zcr_stylus_v2_get_touch_stylus(stylus_v2, obj_.get()));
 
-  static zcr_touch_stylus_v2_listener kTouchStylusV2Listener = {&Tool, &Force,
-                                                                &Tilt};
+  static constexpr zcr_touch_stylus_v2_listener kTouchStylusListener = {
+      .tool = &OnTouchStylusTool,
+      .force = &OnTouchStylusForce,
+      .tilt = &OnTouchStylusTilt};
   zcr_touch_stylus_v2_add_listener(zcr_touch_stylus_v2_.get(),
-                                   &kTouchStylusV2Listener, this);
+                                   &kTouchStylusListener, this);
 }
 
 // static
-void WaylandTouch::Tool(void* data,
-                        struct zcr_touch_stylus_v2* obj,
-                        uint32_t id,
-                        uint32_t stylus_type) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+void WaylandTouch::OnTouchStylusTool(void* data,
+                                     struct zcr_touch_stylus_v2* stylus,
+                                     uint32_t id,
+                                     uint32_t stylus_type) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
   ui::EventPointerType pointer_type = ui::EventPointerType::kTouch;
   switch (stylus_type) {
@@ -187,32 +195,32 @@ void WaylandTouch::Tool(void* data,
       break;
   }
 
-  touch->delegate_->OnTouchStylusToolChanged(id, pointer_type);
+  self->delegate_->OnTouchStylusToolChanged(id, pointer_type);
 }
 
 // static
-void WaylandTouch::Force(void* data,
-                         struct zcr_touch_stylus_v2* obj,
-                         uint32_t time,
-                         uint32_t id,
-                         wl_fixed_t force) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+void WaylandTouch::OnTouchStylusForce(void* data,
+                                      struct zcr_touch_stylus_v2* stylus,
+                                      uint32_t time,
+                                      uint32_t id,
+                                      wl_fixed_t force) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
-  touch->delegate_->OnTouchStylusForceChanged(id, wl_fixed_to_double(force));
+  self->delegate_->OnTouchStylusForceChanged(id, wl_fixed_to_double(force));
 }
 
 // static
-void WaylandTouch::Tilt(void* data,
-                        struct zcr_touch_stylus_v2* obj,
-                        uint32_t time,
-                        uint32_t id,
-                        wl_fixed_t tilt_x,
-                        wl_fixed_t tilt_y) {
-  auto* touch = static_cast<WaylandTouch*>(data);
-  DCHECK(touch);
+void WaylandTouch::OnTouchStylusTilt(void* data,
+                                     struct zcr_touch_stylus_v2* stylus,
+                                     uint32_t time,
+                                     uint32_t id,
+                                     wl_fixed_t tilt_x,
+                                     wl_fixed_t tilt_y) {
+  auto* self = static_cast<WaylandTouch*>(data);
+  DCHECK(self);
 
-  touch->delegate_->OnTouchStylusTiltChanged(
+  self->delegate_->OnTouchStylusTiltChanged(
       id,
       gfx::Vector2dF(wl_fixed_to_double(tilt_x), wl_fixed_to_double(tilt_y)));
 }
