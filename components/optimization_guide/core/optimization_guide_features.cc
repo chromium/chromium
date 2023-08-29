@@ -157,7 +157,7 @@ BASE_FEATURE(kTextEmbeddingPageContentAnnotations,
 // prefix filters.
 BASE_FEATURE(kPageEntitiesModelBypassFilters,
              "PageEntitiesModelBypassFilters",
-             enabled_by_default_desktop_only);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature flag enables resetting the entities model on shutdown.
 BASE_FEATURE(kPageEntitiesModelResetOnShutdown,
