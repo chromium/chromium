@@ -14,7 +14,6 @@
 class GURL;
 
 namespace views {
-class Combobox;
 class Label;
 }
 
@@ -24,6 +23,7 @@ class ComboboxModel;
 
 namespace ash {
 
+class Combobox;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 struct GlanceablesClassroomAssignment;
@@ -76,7 +76,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> header_view_ = nullptr;
-  raw_ptr<views::Combobox, ExperimentalAsh> combo_box_view_ = nullptr;
+  raw_ptr<Combobox, ExperimentalAsh> combo_box_view_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> list_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;

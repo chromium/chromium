@@ -16,6 +16,7 @@
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "ash/style/combobox.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/calendar_view.h"
@@ -37,7 +38,6 @@
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -738,12 +738,12 @@ TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsWithTeacherGlanceableViews) {
   const int calendar_view_bottom = calendar_view->GetBoundsInScreen().bottom();
   const int tasks_view_top = tasks_view->GetBoundsInScreen().y();
 
-  views::Combobox* assignment_selector =
-      views::AsViewClass<views::Combobox>(teacher_view->GetViewByID(
+  Combobox* assignment_selector =
+      views::AsViewClass<Combobox>(teacher_view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
   ASSERT_TRUE(assignment_selector);
 
-  assignment_selector->MenuSelectionAt(2);
+  assignment_selector->SelectMenuItemForTest(2);
   ASSERT_TRUE(glanceables_classroom_client()
                   ->RespondToNextPendingTeacherAssignmentsCallback(
                       CreateAssignmentsForTeachers(/*count=*/1)));
@@ -807,15 +807,15 @@ TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsWithStudentGlanceableView) {
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
       calendar_view->GetBoundsInScreen()));
 
-  views::Combobox* assignment_selector =
-      views::AsViewClass<views::Combobox>(student_view->GetViewByID(
+  Combobox* assignment_selector =
+      views::AsViewClass<Combobox>(student_view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
   ASSERT_TRUE(assignment_selector);
 
   const int calendar_view_bottom = calendar_view->GetBoundsInScreen().bottom();
   const int tasks_view_top = tasks_view->GetBoundsInScreen().y();
 
-  assignment_selector->MenuSelectionAt(2);
+  assignment_selector->SelectMenuItemForTest(2);
   ASSERT_TRUE(glanceables_classroom_client()
                   ->RespondToNextPendingStudentAssignmentsCallback(
                       CreateAssignmentsForStudents(/*count=*/1)));
@@ -874,15 +874,15 @@ TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsUpward) {
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
       calendar_view->GetBoundsInScreen()));
 
-  views::Combobox* assignment_selector =
-      views::AsViewClass<views::Combobox>(teacher_view->GetViewByID(
+  Combobox* assignment_selector =
+      views::AsViewClass<Combobox>(teacher_view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
   ASSERT_TRUE(assignment_selector);
 
   teacher_view->ScrollViewToVisible();
 
   const int calendar_view_bottom = calendar_view->GetBoundsInScreen().bottom();
-  assignment_selector->MenuSelectionAt(2);
+  assignment_selector->SelectMenuItemForTest(2);
   ASSERT_TRUE(glanceables_classroom_client()
                   ->RespondToNextPendingTeacherAssignmentsCallback(
                       CreateAssignmentsForTeachers(/*count=*/2)));
@@ -939,8 +939,8 @@ TEST_P(GlanceablesDateTrayTest,
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
       calendar_view->GetBoundsInScreen()));
 
-  views::Combobox* assignment_selector =
-      views::AsViewClass<views::Combobox>(teacher_view->GetViewByID(
+  Combobox* assignment_selector =
+      views::AsViewClass<Combobox>(teacher_view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
   ASSERT_TRUE(assignment_selector);
 
@@ -952,7 +952,7 @@ TEST_P(GlanceablesDateTrayTest,
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
       assignment_selector->GetBoundsInScreen()));
 
-  assignment_selector->MenuSelectionAt(2);
+  assignment_selector->SelectMenuItemForTest(2);
 
   ASSERT_TRUE(glanceables_classroom_client()
                   ->RespondToNextPendingTeacherAssignmentsCallback(
@@ -1105,8 +1105,8 @@ TEST_P(GlanceablesDateTrayTest,
   // Focus the student assignment selector, and verify the whole student
   // glanceable becomes visible.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
-  views::Combobox* assignment_selector =
-      views::AsViewClass<views::Combobox>(student_view->GetViewByID(
+  Combobox* assignment_selector =
+      views::AsViewClass<Combobox>(student_view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
   assignment_selector->RequestFocus();
   scroll_view->GetWidget()->LayoutRootViewIfNecessary();

@@ -17,6 +17,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/combobox.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -76,11 +76,11 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
 
   combo_box_view_ = header_view_->AddChildView(
-      std::make_unique<views::Combobox>(std::move(combobox_model)));
+      std::make_unique<Combobox>(std::move(combobox_model)));
   combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
   combo_box_view_->SetSelectedIndex(0);
-  combo_box_view_->SetTooltipTextAndAccessibleName(l10n_util::GetStringUTF16(
+  combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
   combo_box_view_->SetAccessibleDescription(u"");
   combobox_view_observation_.Observe(combo_box_view_);

@@ -14,6 +14,7 @@
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
+#include "ash/style/combobox.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -93,7 +94,7 @@ ClassroomBubbleTeacherView::ClassroomBubbleTeacherView(
           delegate,
           std::make_unique<ClassroomTeacherComboboxModel>()) {
   CHECK(features::IsGlanceablesV2ClassroomTeacherViewEnabled());
-  combo_box_view_->SetCallback(base::BindRepeating(
+  combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &ClassroomBubbleTeacherView::SelectedAssignmentListChanged,
       base::Unretained(this),
       /*initial_update=*/false));

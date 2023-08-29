@@ -403,12 +403,13 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest,
 
   // Expect that the correct menu items are shown for the student glanceable.
   const views::View* const due_soon_menu_item =
-      WaitForMenuItemWithLabel(u"Due soon");
+      FindMenuItemLabelWithString(u"Due soon");
   const views::View* const no_due_date_menu_item =
-      WaitForMenuItemWithLabel(u"No due date");
+      FindMenuItemLabelWithString(u"No due date");
   const views::View* const missing_menu_item =
-      WaitForMenuItemWithLabel(u"Missing");
-  const views::View* const done_menu_item = WaitForMenuItemWithLabel(u"Done");
+      FindMenuItemLabelWithString(u"Missing");
+  const views::View* const done_menu_item =
+      FindMenuItemLabelWithString(u"Done");
   EXPECT_TRUE(due_soon_menu_item);
   EXPECT_TRUE(no_due_date_menu_item);
   EXPECT_TRUE(missing_menu_item);

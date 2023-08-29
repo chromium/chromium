@@ -13,6 +13,7 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/combobox.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -96,7 +97,7 @@ ClassroomBubbleStudentView::ClassroomBubbleStudentView(
     : ClassroomBubbleBaseView(
           delegate,
           std::make_unique<ClassroomStudentComboboxModel>()) {
-  combo_box_view_->SetCallback(base::BindRepeating(
+  combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &ClassroomBubbleStudentView::SelectedAssignmentListChanged,
       base::Unretained(this),
       /*initial_update=*/false));
