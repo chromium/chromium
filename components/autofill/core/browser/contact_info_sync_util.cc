@@ -58,10 +58,43 @@ VerificationStatus ConvertSpecificsToProfileVerificationStatus(
   }
 }
 
+class EntryTokenDeleter {
+ public:
+  bool Delete(ContactInfoSpecifics::StringToken* token) {
+    // Delete the supported metadata from the token and delete the complete
+    // metadata message when there are no fields left.
+    if (DeleteMetadata(token->mutable_metadata())) {
+      token->clear_metadata();
+    }
+
+    token->clear_value();
+    return token->ByteSize() == 0;
+  }
+
+  bool Delete(ContactInfoSpecifics::IntegerToken* token) {
+    // Delete the supported metadata from the token and delete the complete
+    // metadata message when there are no fields left.
+    if (DeleteMetadata(token->mutable_metadata())) {
+      token->clear_metadata();
+    }
+
+    token->clear_value();
+    return token->ByteSize() == 0;
+  }
+
+ private:
+  bool DeleteMetadata(ContactInfoSpecifics::TokenMetadata* metadata) {
+    metadata->clear_status();
+    metadata->clear_observations();
+    return metadata->ByteSize() == 0;
+  }
+};
+
 }  // namespace
 
 // Helper class to simplify setting the value and metadata of
 // ContactInfoSpecifics String- and IntegerTokens from an AutofillProfile.
+// Outside of the anonymous namespace to be befriended by `ProfileTokenQuality`.
 class ContactInfoEntryDataSetter {
  public:
   explicit ContactInfoEntryDataSetter(const AutofillProfile& profile)
@@ -103,40 +136,9 @@ class ContactInfoEntryDataSetter {
   const raw_ref<const AutofillProfile> profile_;
 };
 
-class EntryTokenDeleter {
- public:
-  bool Delete(ContactInfoSpecifics::StringToken* token) {
-    // Delete the supported metadata from the token and delete the complete
-    // metadata message when there are no fields left.
-    if (DeleteMetadata(token->mutable_metadata())) {
-      token->clear_metadata();
-    }
-
-    token->clear_value();
-    return token->ByteSize() == 0;
-  }
-
-  bool Delete(ContactInfoSpecifics::IntegerToken* token) {
-    // Delete the supported metadata from the token and delete the complete
-    // metadata message when there are no fields left.
-    if (DeleteMetadata(token->mutable_metadata())) {
-      token->clear_metadata();
-    }
-
-    token->clear_value();
-    return token->ByteSize() == 0;
-  }
-
- private:
-  bool DeleteMetadata(ContactInfoSpecifics::TokenMetadata* metadata) {
-    metadata->clear_status();
-    metadata->clear_observations();
-    return metadata->ByteSize() == 0;
-  }
-};
-
 // Helper class to set the info and verification status of an AutofillProfile
 // from ContactInfoSpecifics String- and Integer tokens.
+// Outside of the anonymous namespace to be befriended by `ProfileTokenQuality`.
 class ContactInfoProfileSetter {
  public:
   explicit ContactInfoProfileSetter(AutofillProfile& profile)
