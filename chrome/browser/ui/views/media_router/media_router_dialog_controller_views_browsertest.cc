@@ -4,7 +4,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
@@ -64,12 +63,7 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
   void ShowDialogForPresentation() {
     dialog_controller_->ShowMediaRouterDialogForPresentation(
         CreateStartPresentationContext(initiator_));
-    base::RunLoop run_loop;
-    // RunUntilIdle() should work here, but it was somehow leading to flakiness,
-    // so we add some delay instead. See crbug.com/1444794.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
-    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
   }
 
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> initiator_;
