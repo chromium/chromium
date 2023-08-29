@@ -79,6 +79,19 @@ gfx::RectF ConvertRectFToChildCoords(RenderWidgetHostViewAura* parent,
       child->TransformRootPointToViewCoordSpace(rect.bottom_right()));
 }
 
+// Converts a point from `view` coordinates to the coordinate system used by
+// `generator_delegate`.
+gfx::Point ConvertPointFromView(
+    RenderWidgetHostViewAura* view,
+    const ui::test::EventGeneratorDelegate* generator_delegate,
+    const gfx::PointF& point_in_view) {
+  gfx::Point point_in_generator = gfx::ToRoundedPoint(point_in_view);
+  generator_delegate->ConvertPointFromTarget(view->GetNativeView(),
+                                             &point_in_generator);
+  return gfx::ScaleToRoundedPoint(point_in_generator,
+                                  view->GetDeviceScaleFactor());
+}
+
 // A mock touch selection menu runner to use whenever a default one is not
 // installed.
 class TestTouchSelectionMenuRunner : public ui::TouchSelectionMenuRunner {
@@ -1721,6 +1734,8 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 class TouchSelectionControllerClientAuraScaleFactorTest
     : public TouchSelectionControllerClientAuraTest {
  public:
+  static constexpr float kScaleFactor = 2.0f;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
   }
@@ -1741,107 +1756,151 @@ class TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest
   }
 };
 
-// Tests that selection handles are properly positioned at 2x DSF and that the
-// quick menu and magnifier are updated with the selection handles.
+// Tests that selection handles are properly positioned at 2x DSF.
 IN_PROC_BROWSER_TEST_P(
     TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
     SelectionHandleCoordinates) {
-  // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
 
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
-
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
-            rwhva->selection_controller()->active_status());
-  EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
-  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
-  EXPECT_EQ(2.f, rwhva->GetDeviceScaleFactor());
-  EXPECT_EQ(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
-
-  // Long-press on the text and wait for handles to appear.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLES_SHOWN);
-  gfx::PointF point = GetPointInText(2);
-  ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
-  long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
-  ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                              long_press_details);
-  rwhva->OnGestureEvent(&long_press);
-  selection_controller_client()->Wait();
-
-  // Check that selection is active and the quick menu is showing.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
-  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
-  EXPECT_NE(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
   const ui::TouchSelectionController* controller =
-      GetRenderWidgetHostViewAura()->selection_controller();
+      rwhva->selection_controller();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  gfx::PointF start_top = controller->start().edge_start();
+  // Long-press to select some text, then release to make selection handles
+  // appear.
+  SelectWithLongPress(
+      generator,
+      ConvertPointFromView(rwhva, generator.delegate(), GetPointInText(2)));
+  generator.ReleaseTouch();
 
-  // The selection start should be uppper left, and selection end should be
-  // upper right.
-  EXPECT_LT(controller->start().edge_start().x(), point.x());
-  EXPECT_LT(controller->start().edge_end().x(), point.x());
+  // Selection bounds should be non-empty.
+  const gfx::RectF initial_selection_bounds =
+      controller->GetVisibleRectBetweenBounds();
+  EXPECT_GT(initial_selection_bounds.width(), 0);
+  EXPECT_EQ(initial_selection_bounds.height(), kCharacterHeight);
 
-  EXPECT_LT(point.x(), controller->end().edge_start().x());
-  EXPECT_LT(point.x(), controller->end().edge_end().x());
+  // Handles should be shown just below the selection.
+  const float start_handle_top = controller->GetStartHandleRect().y();
+  const float end_handle_top = controller->GetEndHandleRect().y();
+  EXPECT_EQ(start_handle_top, end_handle_top);
+  EXPECT_LE(initial_selection_bounds.bottom(), end_handle_top);
+  EXPECT_LE(end_handle_top, initial_selection_bounds.bottom() + 10);
+}
 
-  // Handles are created below the selection. The top position should roughly
-  // be within the handle size from the touch position.
-  float handle_size =
-      controller->start().edge_end().y() - controller->start().edge_start().y();
-  float handle_max_bottom = point.y() + handle_size;
-  EXPECT_GT(handle_max_bottom, controller->start().edge_start().y());
-  EXPECT_GT(handle_max_bottom, controller->end().edge_start().y());
+// Tests that selection handle coordinates are updated after dragging at 2x DSF.
+IN_PROC_BROWSER_TEST_P(
+    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
+    SelectionHandleCoordinatesAfterDrag) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController(true);
 
-  gfx::Point handle_point = gfx::ToRoundedPoint(
-      rwhva->selection_controller()->GetStartHandleRect().CenterPoint());
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  const ui::TouchSelectionController* controller =
+      rwhva->selection_controller();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  // Move the selection handle. Touch the handle first.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLE_DRAG_STARTED);
-  ui::TouchEvent touch_down(
-      ui::ET_TOUCH_PRESSED, handle_point, ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  rwhva->OnTouchEvent(&touch_down);
-  selection_controller_client()->Wait();
+  // Long-press to select some text, then release to make selection handles
+  // appear.
+  SelectWithLongPress(
+      generator,
+      ConvertPointFromView(rwhva, generator.delegate(), GetPointInText(2)));
+  generator.ReleaseTouch();
+  const gfx::RectF start_handle_rect = controller->GetStartHandleRect();
+  const gfx::RectF end_handle_rect = controller->GetEndHandleRect();
+  // Drag to move the end handle one character left. Close the menu if needed
+  // before dragging so that it doesn't get in the way.
+  ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
+  generator.PressTouch(ConvertPointFromView(rwhva, generator.delegate(),
+                                            end_handle_rect.CenterPoint()));
+  DragAndWaitForSelectionUpdate(generator, -kScaleFactor * kCharacterWidth, 0);
 
-  // Move the selection handle.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLES_MOVED);
-  handle_point.Offset(10, 0);
-  ui::TouchEvent touch_move(
-      ui::ET_TOUCH_MOVED, handle_point, ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  rwhva->OnTouchEvent(&touch_move);
-  selection_controller_client()->Wait();
+  // The start handle should have remained in its initial position while the end
+  // handle should have been dragged one character left.
+  EXPECT_EQ(controller->GetStartHandleRect(), start_handle_rect);
+  EXPECT_EQ(controller->GetEndHandleRect(),
+            end_handle_rect - gfx::Vector2dF(kCharacterWidth, 0));
+}
 
-  // The magnifier should be shown after the selection handle moves.
+// Tests that the menu is correctly shown after dragging a selection handle.
+IN_PROC_BROWSER_TEST_P(
+    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
+    SelectionHandleDragShowsMenu) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+
+  InitSelectionController(true);
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  const ui::TouchSelectionController* controller =
+      rwhva->selection_controller();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Long-press to select some text, then release to make selection handles
+  // appear.
+  SelectWithLongPress(
+      generator,
+      ConvertPointFromView(rwhva, generator.delegate(), GetPointInText(2)));
+  generator.ReleaseTouch();
+
+  // Menu should be shown if no drag is in progress.
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Drag to move the end handle one character left. Close the menu before
+  // dragging so that it doesn't get in the way.
+  ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
+  generator.PressTouch(
+      ConvertPointFromView(rwhva, generator.delegate(),
+                           controller->GetEndHandleRect().CenterPoint()));
+  DragAndWaitForSelectionUpdate(generator, -kScaleFactor * kCharacterWidth, 0);
+
+  // Menu should remain hidden while dragging.
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Release touch to end the drag.
+  generator.ReleaseTouch();
+
+  // Menu should be shown after drag finishes.
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+}
+
+// Tests that the magnifier is correctly shown when dragging a selection handle.
+IN_PROC_BROWSER_TEST_P(
+    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
+    SelectionHandleDragShowsMagnifier) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+
+  InitSelectionController(true);
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  const ui::TouchSelectionController* controller =
+      rwhva->selection_controller();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+
+  // Long-press to select some text, then release to make selection handles
+  // appear.
+  SelectWithLongPress(
+      generator,
+      ConvertPointFromView(rwhva, generator.delegate(), GetPointInText(2)));
+  generator.ReleaseTouch();
+
+  // Magnifier should be hidden if no drag is in progress.
+  EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
+
+  // Drag to move the end handle one character left. Close the menu before
+  // dragging so that it doesn't get in the way.
+  ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
+  generator.PressTouch(
+      ConvertPointFromView(rwhva, generator.delegate(),
+                           controller->GetEndHandleRect().CenterPoint()));
+  DragAndWaitForSelectionUpdate(generator, -kScaleFactor * kCharacterWidth, 0);
+
+  // Magnifier should be shown while dragging the handle.
   EXPECT_TRUE(selection_controller_client()->IsMagnifierVisible());
 
-  // Then release.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLE_DRAG_STOPPED);
-  ui::TouchEvent touch_up(ui::ET_TOUCH_RELEASED, handle_point,
-                          ui::EventTimeForNow(),
-                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  rwhva->OnTouchEvent(&touch_up);
-  selection_controller_client()->Wait();
+  // Release touch to end the drag.
+  generator.ReleaseTouch();
 
-  // The handle should have moved to the right and the magnifier should no
-  // longer be shown.
-  EXPECT_EQ(start_top.y(), controller->start().edge_start().y());
-  EXPECT_LT(start_top.x(), controller->start().edge_start().x());
+  // Magnifier should be hidden after the drag is released.
   EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
-
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
-  EXPECT_NE(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
 }
 
 INSTANTIATE_TEST_SUITE_P(
