@@ -56,6 +56,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -1143,6 +1144,8 @@ void OverviewItem::CreateItemWidget() {
   item_widget_->Init(std::move(params));
   aura::Window* widget_window = item_widget_->GetNativeWindow();
   widget_window->parent()->StackChildBelow(widget_window, GetWindow());
+  // Overview uses custom animations so remove the default ones.
+  wm::SetWindowVisibilityAnimationTransition(widget_window, wm::ANIMATE_NONE);
 
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(kDefaultShadowType);
   auto* shadow_layer = shadow_->GetLayer();
