@@ -449,66 +449,6 @@ class CrossContextData {
   CrossContextMap cross_context_data_;
 };
 
-// This class is a singleton that tracks a bitmap of event types for a given
-// request ID.
-class SignaledRequestIDTracker {
- public:
-  using EventTypes = ExtensionWebRequestEventRouter::EventTypes;
-
-  // The instance is leaked.
-  ~SignaledRequestIDTracker() = delete;
-  SignaledRequestIDTracker(const SignaledRequestIDTracker&) = delete;
-  SignaledRequestIDTracker& operator=(const SignaledRequestIDTracker&) = delete;
-
-  static SignaledRequestIDTracker& Get() {
-    static base::NoDestructor<SignaledRequestIDTracker> instance;
-    return *instance.get();
-  }
-
-  // Clears the request.
-  void ClearRequest(uint64_t request_id) {
-    signaled_requests_.erase(request_id);
-  }
-
-  // Gets the previous state of the event and sets the flag for that event.
-  bool GetAndSet(uint64_t request_id, EventTypes event_type) {
-    auto iter = signaled_requests_.find(request_id);
-    if (iter == signaled_requests_.end()) {
-      signaled_requests_[request_id] = event_type;
-      return false;
-    }
-    bool was_signaled_before = iter->second & event_type;
-    iter->second |= event_type;
-    return was_signaled_before;
-  }
-
-  // Clears the flag that `event_type` has been signaled for `request_id`.
-  void ClearEventType(uint64_t request_id, EventTypes event_type) {
-    auto iter = signaled_requests_.find(request_id);
-    if (iter != signaled_requests_.end()) {
-      iter->second &= ~event_type;
-    }
-  }
-
-  // Returns true if `request_id` was already signaled to some event handlers.
-  bool WasSignaled(uint64_t request_id) const {
-    auto flag = signaled_requests_.find(request_id);
-    return flag != signaled_requests_.end() && flag->second;
-  }
-
- private:
-  friend class base::NoDestructor<SignaledRequestIDTracker>;
-
-  SignaledRequestIDTracker() = default;
-
-  // Map of request_id -> bit vector of EventTypes already signaled
-  using SignaledRequestMap = std::map<uint64_t, int>;
-
-  // A map of request IDs to a bitvector indicating which events have been
-  // signaled and should not be sent again.
-  SignaledRequestMap signaled_requests_;
-};
-
 }  // namespace
 
 // static
@@ -820,6 +760,35 @@ ExtensionWebRequestEventRouter::RequestFilter&
 ExtensionWebRequestEventRouter::RequestFilter::operator=(
     RequestFilter&& other) = default;
 
+ExtensionWebRequestEventRouter::SignaledRequestIDTracker ::
+    SignaledRequestIDTracker() = default;
+ExtensionWebRequestEventRouter::SignaledRequestIDTracker ::
+    ~SignaledRequestIDTracker() = default;
+ExtensionWebRequestEventRouter::SignaledRequestIDTracker ::
+    SignaledRequestIDTracker(SignaledRequestIDTracker&&) = default;
+
+bool ExtensionWebRequestEventRouter::SignaledRequestIDTracker::GetAndSet(
+    uint64_t request_id,
+    EventTypes event_type) {
+  auto iter = signaled_requests_.find(request_id);
+  if (iter == signaled_requests_.end()) {
+    signaled_requests_[request_id] = event_type;
+    return false;
+  }
+  bool was_signaled_before = iter->second & event_type;
+  iter->second |= event_type;
+  return was_signaled_before;
+}
+
+void ExtensionWebRequestEventRouter::SignaledRequestIDTracker::ClearEventType(
+    uint64_t request_id,
+    EventTypes event_type) {
+  auto iter = signaled_requests_.find(request_id);
+  if (iter != signaled_requests_.end()) {
+    iter->second &= ~event_type;
+  }
+}
+
 ExtensionWebRequestEventRouter::BrowserContextData::BrowserContextData() =
     default;
 ExtensionWebRequestEventRouter::BrowserContextData::BrowserContextData(
@@ -938,7 +907,8 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
   RawListeners listeners = GetMatchingListeners(
       browser_context, web_request::OnBeforeRequest::kEventName, request,
       &extra_info_spec);
-  if (!listeners.empty() && !GetAndSetSignaled(request->id, kOnBeforeRequest)) {
+  if (!listeners.empty() &&
+      !GetAndSetSignaled(browser_context, request->id, kOnBeforeRequest)) {
     std::unique_ptr<WebRequestEventDetails> event_details(
         CreateEventDetails(*request, extra_info_spec));
     event_details->SetRequestBody(request);
@@ -1081,7 +1051,7 @@ int ExtensionWebRequestEventRouter::OnBeforeSendHeaders(
       GetMatchingListeners(browser_context, keys::kOnBeforeSendHeadersEvent,
                            request, &extra_info_spec);
   if (!listeners.empty() &&
-      !GetAndSetSignaled(request->id, kOnBeforeSendHeaders)) {
+      !GetAndSetSignaled(browser_context, request->id, kOnBeforeSendHeaders)) {
     std::unique_ptr<WebRequestEventDetails> event_details(
         CreateEventDetails(*request, extra_info_spec));
     event_details->SetRequestHeaders(*headers);
@@ -1118,11 +1088,11 @@ void ExtensionWebRequestEventRouter::OnSendHeaders(
     return;
   }
 
-  if (GetAndSetSignaled(request->id, kOnSendHeaders)) {
+  if (GetAndSetSignaled(browser_context, request->id, kOnSendHeaders)) {
     return;
   }
 
-  ClearSignaled(request->id, kOnBeforeRedirect);
+  ClearSignaled(browser_context, request->id, kOnBeforeRedirect);
 
   int extra_info_spec = 0;
   RawListeners listeners = GetMatchingListeners(
@@ -1168,7 +1138,7 @@ int ExtensionWebRequestEventRouter::OnHeadersReceived(
                            request, &extra_info_spec);
 
   if (!listeners.empty() &&
-      !GetAndSetSignaled(request->id, kOnHeadersReceived)) {
+      !GetAndSetSignaled(browser_context, request->id, kOnHeadersReceived)) {
     std::unique_ptr<WebRequestEventDetails> event_details(
         CreateEventDetails(*request, extra_info_spec));
     event_details->SetResponseHeaders(*request, original_response_headers);
@@ -1248,14 +1218,14 @@ void ExtensionWebRequestEventRouter::OnBeforeRedirect(
     return;
   }
 
-  if (GetAndSetSignaled(request->id, kOnBeforeRedirect)) {
+  if (GetAndSetSignaled(browser_context, request->id, kOnBeforeRedirect)) {
     return;
   }
 
-  ClearSignaled(request->id, kOnBeforeRequest);
-  ClearSignaled(request->id, kOnBeforeSendHeaders);
-  ClearSignaled(request->id, kOnSendHeaders);
-  ClearSignaled(request->id, kOnHeadersReceived);
+  ClearSignaled(browser_context, request->id, kOnBeforeRequest);
+  ClearSignaled(browser_context, request->id, kOnBeforeSendHeaders);
+  ClearSignaled(browser_context, request->id, kOnSendHeaders);
+  ClearSignaled(browser_context, request->id, kOnHeadersReceived);
 
   int extra_info_spec = 0;
   RawListeners listeners = GetMatchingListeners(
@@ -1315,7 +1285,7 @@ void ExtensionWebRequestEventRouter::OnCompleted(
   if (!browser_context ||
       (WebRequestPermissions::HideRequest(
            PermissionHelper::Get(browser_context), *request) &&
-       !WasSignaled(request->id))) {
+       !WasSignaled(browser_context, request->id))) {
     return;
   }
 
@@ -1325,7 +1295,7 @@ void ExtensionWebRequestEventRouter::OnCompleted(
   // See comment in OnErrorOccurred regarding net::ERR_WS_UPGRADE.
   DCHECK(net_error == net::OK || net_error == net::ERR_WS_UPGRADE);
 
-  DCHECK(!GetAndSetSignaled(request->id, kOnCompleted));
+  DCHECK(!GetAndSetSignaled(browser_context, request->id, kOnCompleted));
 
   ClearPendingCallbacks(browser_context, *request);
 
@@ -1369,7 +1339,7 @@ void ExtensionWebRequestEventRouter::OnErrorOccurred(
   if (!browser_context ||
       (WebRequestPermissions::HideRequest(
            PermissionHelper::Get(browser_context), *request) &&
-       !WasSignaled(request->id))) {
+       !WasSignaled(browser_context, request->id))) {
     return;
   }
 
@@ -1379,7 +1349,7 @@ void ExtensionWebRequestEventRouter::OnErrorOccurred(
   DCHECK_NE(net::OK, net_error);
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
 
-  DCHECK(!GetAndSetSignaled(request->id, kOnErrorOccurred));
+  DCHECK(!GetAndSetSignaled(browser_context, request->id, kOnErrorOccurred));
 
   ClearPendingCallbacks(browser_context, *request);
 
@@ -1407,7 +1377,7 @@ void ExtensionWebRequestEventRouter::OnRequestWillBeDestroyed(
     content::BrowserContext* browser_context,
     const WebRequestInfo* request) {
   ClearPendingCallbacks(browser_context, *request);
-  SignaledRequestIDTracker::Get().ClearRequest(request->id);
+  GetSignaledRequestIDTracker(browser_context).ClearRequest(request->id);
   GetExtensionWebRequestTimeTracker().LogRequestEndTime(request->id,
                                                         base::TimeTicks::Now());
 }
@@ -2031,8 +2001,12 @@ content::BrowserContext* ExtensionWebRequestEventRouter::GetCrossBrowserContext(
   return CrossContextData::Get().GetCrossBrowserContext(browser_context);
 }
 
-bool ExtensionWebRequestEventRouter::WasSignaled(uint64_t request_id) const {
-  return SignaledRequestIDTracker::Get().WasSignaled(request_id);
+bool ExtensionWebRequestEventRouter::WasSignaled(
+    content::BrowserContext* browser_context,
+    uint64_t request_id) const {
+  const SignaledRequestIDTracker* const tracker =
+      GetSignaledRequestIDTracker(browser_context);
+  return !tracker ? false : tracker->WasSignaled(request_id);
 }
 
 ExtensionWebRequestEventRouter::RawListeners
@@ -2505,14 +2479,20 @@ void ExtensionWebRequestEventRouter::OnRulesRegistryReady(
                       nullptr, 0 /* extra_info_spec */);
 }
 
-bool ExtensionWebRequestEventRouter::GetAndSetSignaled(uint64_t request_id,
-                                                       EventTypes event_type) {
-  return SignaledRequestIDTracker::Get().GetAndSet(request_id, event_type);
+bool ExtensionWebRequestEventRouter::GetAndSetSignaled(
+    content::BrowserContext* browser_context,
+    uint64_t request_id,
+    EventTypes event_type) {
+  return GetSignaledRequestIDTracker(browser_context)
+      .GetAndSet(request_id, event_type);
 }
 
-void ExtensionWebRequestEventRouter::ClearSignaled(uint64_t request_id,
-                                                   EventTypes event_type) {
-  SignaledRequestIDTracker::Get().ClearEventType(request_id, event_type);
+void ExtensionWebRequestEventRouter::ClearSignaled(
+    content::BrowserContext* browser_context,
+    uint64_t request_id,
+    EventTypes event_type) {
+  GetSignaledRequestIDTracker(browser_context)
+      .ClearEventType(request_id, event_type);
 }
 
 }  // namespace extensions

@@ -409,6 +409,44 @@ class ExtensionWebRequestEventRouter {
   using ListenerMap = std::map<std::string, Listeners>;
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
 
+  class SignaledRequestIDTracker {
+   public:
+    using EventTypes = ExtensionWebRequestEventRouter::EventTypes;
+
+    SignaledRequestIDTracker();
+    ~SignaledRequestIDTracker();
+    SignaledRequestIDTracker(SignaledRequestIDTracker&&);
+
+    SignaledRequestIDTracker(const SignaledRequestIDTracker&) = delete;
+    SignaledRequestIDTracker& operator=(const SignaledRequestIDTracker&) =
+        delete;
+
+    // Clears the request.
+    void ClearRequest(uint64_t request_id) {
+      signaled_requests_.erase(request_id);
+    }
+
+    // Gets the previous state of the event and sets the flag for that event.
+    bool GetAndSet(uint64_t request_id, EventTypes event_type);
+
+    // Clears the flag that `event_type` has been signaled for `request_id`.
+    void ClearEventType(uint64_t request_id, EventTypes event_type);
+
+    // Returns true if `request_id` was already signaled to some event handlers.
+    bool WasSignaled(uint64_t request_id) const {
+      auto flag = signaled_requests_.find(request_id);
+      return flag != signaled_requests_.end() && flag->second;
+    }
+
+   private:
+    // Map of request_id -> bit vector of EventTypes already signaled
+    using SignaledRequestMap = std::map<uint64_t, int>;
+
+    // A map of request IDs to a bitvector indicating which events have been
+    // signaled and should not be sent again.
+    SignaledRequestMap signaled_requests_;
+  };
+
   // A collection of data associated with a given BrowserContext.
   struct BrowserContextData {
     BrowserContextData();
@@ -434,6 +472,8 @@ class ExtensionWebRequestEventRouter {
     // to respond. Blocked requests are stored on the regular BrowserContext for
     // both it and any off-the-record BrowserContext that exists.
     BlockedRequestMap blocked_requests;
+
+    SignaledRequestIDTracker signaled_request_id_tracker;
   };
 
   using DataMap = std::map<BrowserContextID, BrowserContextData>;
@@ -572,10 +612,14 @@ class ExtensionWebRequestEventRouter {
 
   // Sets the flag that |event_type| has been signaled for |request_id|.
   // Returns the value of the flag before setting it.
-  bool GetAndSetSignaled(uint64_t request_id, EventTypes event_type);
+  bool GetAndSetSignaled(content::BrowserContext* browser_context,
+                         uint64_t request_id,
+                         EventTypes event_type);
 
   // Clears the flag that |event_type| has been signaled for |request_id|.
-  void ClearSignaled(uint64_t request_id, EventTypes event_type);
+  void ClearSignaled(content::BrowserContext* browser_context,
+                     uint64_t request_id,
+                     EventTypes event_type);
 
   // Returns whether |request| represents a top level window navigation.
   bool IsPageLoad(const WebRequestInfo& request) const;
@@ -589,7 +633,8 @@ class ExtensionWebRequestEventRouter {
       content::BrowserContext* browser_context) const;
 
   // Returns true if |request_id| was already signaled to some event handlers.
-  bool WasSignaled(uint64_t request_id) const;
+  bool WasSignaled(content::BrowserContext* browser_context,
+                   uint64_t request_id) const;
 
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);
@@ -597,6 +642,24 @@ class ExtensionWebRequestEventRouter {
   // Returns the instance of the BlockedRequestMap for `browser_context`.
   BlockedRequestMap& GetBlockedRequestMap(
       content::BrowserContext* browser_context);
+
+  // Returns the instance of the SignaledRequestIDTracker for
+  // `browser_context`, if the BrowserContext exists in the
+  // BrowserContextData map. Otherwise, it returns nullptr.
+  const SignaledRequestIDTracker* GetSignaledRequestIDTracker(
+      content::BrowserContext* browser_context) const {
+    auto it = data_.find(GetBrowserContextID(browser_context));
+    return it == data_.end() ? nullptr
+                             : &it->second.signaled_request_id_tracker;
+  }
+
+  // Returns the instance of the SignaledRequestIDTracker for
+  // `browser_context`.
+  SignaledRequestIDTracker& GetSignaledRequestIDTracker(
+      content::BrowserContext* browser_context) {
+    return data_[GetBrowserContextID(browser_context)]
+        .signaled_request_id_tracker;
+  }
 
   // Clears any entries in the BlockedRequestMap for `browser_context` with
   // `id`.
