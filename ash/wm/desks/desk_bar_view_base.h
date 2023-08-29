@@ -354,6 +354,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // be moved when performing the mini_view creation or deletion animations.
   int GetFirstMiniViewXOffset() const;
 
+  // Returns the descendant views of the desk bar which animate on desk addition
+  // / removal, mapped to their current X screen coordinates.
+  base::flat_map<views::View*, int> GetAnimatableViewsCurrentXMap() const;
+
   // Determine the new index of the dragged desk at the position of
   // `location_in_screen`.
   int DetermineMoveIndex(int location_in_screen) const;

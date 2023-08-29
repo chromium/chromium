@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include "base/containers/flat_map.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -25,46 +26,36 @@ class DeskBarViewBase;
 class DeskMiniView;
 class ExpandedDesksBarButton;
 
-// Animates new desk mini_views, fading them into their final positions in the
-// desk bar view. It will also animate existing desks to show them moving as a
-// result of creating the new mini_views. `new_mini_views` contains a list of
-// the newly-created mini_views. `mini_views_left` are the mini views on the
-// left of the new mini views in the desk bar, while `mini_views_right` are the
-// mini views on the right side of the new mini views.
-// The new desk button and the library button (if it exists) will be moved to
-// the right. `shift_x` is the amount by which the mini_views (new and existing)
-// will be moved horizontally as a result of creating the new mini_views.
-//
-// * Notes:
-// - It assumes that the new mini_views have already been created, and all
-//   mini_views (new and existing) have already been laid out in their final
-//   positions.
-void PerformNewDeskMiniViewAnimation(
-    DeskBarViewBase* bar_view,
-    std::vector<DeskMiniView*> new_mini_views,
-    std::vector<DeskMiniView*> mini_views_left,
-    std::vector<DeskMiniView*> mini_views_right,
-    int shift_x);
+// When deleting a desk on overview desk bar, this performs a fade out animation
+// on `removed_mini_view`'s layer by changing its opacity from 1 to 0 and
+// scaling it down around the center of desk bar view while switching back to
+// zero state. `removed_mini_view` will be deleted when the animation is
+// complete or aborted.
+void PerformRemoveDeskMiniViewAnimation(DeskMiniView* removed_mini_view,
+                                        const bool to_zero_state);
 
-// Performs the mini_view removal animation. It is in charge of removing the
-// `removed_mini_view` from the views hierarchy and deleting it. We also update
-// the `bar_view` desk buttons visibility once the animation completes.
-// `mini_views_left`, and `mini_views_right` are lists of the remaining
-// mini_views to left and to the right of the removed mini_view respectively.
-// The new desk button will be moved to right the same as `mini_views_right`. If
-// the library button is non-null, it will also be moved to the right the same
-// as `mini_views_right`. Either list can be empty (e.g. if the removed
-// mini_view is the last one on the right). `shift_x` is the amount by which the
-// remaining mini_views will be moved horizontally to occupy the space that the
-// removed mini_view used to occupy. It assumes that the remaining mini_views
-// have been laid out in their final positions as if the removed mini_view no
-// longer exists.
-void PerformRemoveDeskMiniViewAnimation(
+// Performs the animation on desk mini view when adding a new desk.
+// `new_mini_views` contains a list of the newly-created mini_views. `shift_x`
+// is the amount by which the mini_views will be moved horizontally as a result
+// of creating the new mini_views. With Jelly disabled, the newly added mini
+// view will shift with `shift_x` and fade in. When Jelly is enabled, the new
+// mini view will scale up and fade in.
+// * Notes:
+// - It assumes that the new_mini_views have already been created, and all
+// mini_views have already been laid out in their final positions.
+void PerformAddDeskMiniViewAnimation(std::vector<DeskMiniView*> new_mini_views,
+                                     int shift_x);
+
+// Performs individual animation for views that belong to `bar_view` during
+// desk adding/removing. On both overview and desk button bar, on desk
+// removal, all other views (mini views, library button etc.) animate towards
+// filling out the empty space created by removed desk mini view. On desk
+// addition, all other views move away from newly added desk view to make space.
+// `views_previous_x_map` is passed here with all the previous x locations of
+// each view to calculate the individual transform.
+void PerformDeskBarChildViewShiftAnimation(
     DeskBarViewBase* bar_view,
-    DeskMiniView* removed_mini_view,
-    std::vector<DeskMiniView*> mini_views_left,
-    std::vector<DeskMiniView*> mini_views_right,
-    int shift_x);
+    const base::flat_map<views::View*, int>& views_previous_x_map);
 
 // Performs the animation of switching from zero state desk bar to expanded
 // state desk bar. It scales up and fades in the current mini views and the

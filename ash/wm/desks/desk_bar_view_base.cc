@@ -1516,28 +1516,30 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     return;
   }
 
-  const int begin_x = GetFirstMiniViewXOffset();
   // Remove the mini view from the list now. And remove it from its parent
   // after the animation is done.
   DeskMiniView* removed_mini_view = *iter;
-  auto partition_iter = mini_views_.erase(iter);
+  mini_views_.erase(iter);
 
   // End dragging desk if remove a dragged desk.
   if (drag_view_ == removed_mini_view) {
     EndDragDesk(removed_mini_view, /*end_by_user=*/false);
   }
 
+  // Document all the current X coordinates of the views before we perform a
+  // layout operation.
+  const auto views_previous_x_map = GetAnimatableViewsCurrentXMap();
+
   // There is desk removal animation for overview bar but not for desk button
   // desk bar.
   if (type_ == Type::kOverview) {
     Layout();
-    PerformRemoveDeskMiniViewAnimation(
-        this, removed_mini_view,
-        std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
-        std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
-        begin_x - GetFirstMiniViewXOffset());
+    // Overview bar desk removal will preform mini view removal animation, while
+    // desk button bar removes mini view immediately.
+    PerformRemoveDeskMiniViewAnimation(removed_mini_view,
+                                       /*to_zero_state=*/false);
   } else {
-    const auto old_background_bounds = background_view_->bounds();
+    const auto old_background_bounds = background_view_->GetBoundsInScreen();
     // Desk button bar does not have mini view removal animation, mini view will
     // disappear immediately. Desk button bar will shrink during desk removal.
     removed_mini_view->parent()->RemoveChildViewT(removed_mini_view);
@@ -1547,7 +1549,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     Layout();
     PerformDeskBarRemoveDeskAnimation(this, old_background_bounds);
   }
-
+  PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
   MaybeUpdateCombineDesksTooltips();
 }
 
@@ -1600,6 +1602,9 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   const int begin_x = GetFirstMiniViewXOffset();
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);
+  // Document all the current X coordinates of the views before we perform a
+  // layout operation.
+  const auto views_previous_x_map = GetAnimatableViewsCurrentXMap();
 
   // New mini views can be added at any index, so we need to iterate through and
   // insert new mini views in a position in `mini_views_` that corresponds to
@@ -1631,7 +1636,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
     }
   }
 
-  const gfx::Rect old_bar_bounds = this->bounds();
+  const gfx::Rect old_bar_bounds = this->GetBoundsInScreen();
 
   Layout();
 
@@ -1639,26 +1644,12 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
     return;
   }
 
-  // We need to compile lists of the mini views on either side of the new mini
-  // views so that they can be moved to make room for the new mini views in the
-  // desk bar.
-  auto left_partition_iter =
-      base::ranges::find(mini_views_, new_mini_views.front());
-  auto right_partition_iter =
-      std::next(base::ranges::find(mini_views_, new_mini_views.back()));
-
-  // A vector between `left_partition_iter` and `right_partition_iter` should be
-  // the same as `new_mini_views` if they were added correctly.
-  DCHECK(std::vector<DeskMiniView*>(left_partition_iter,
-                                    right_partition_iter) == new_mini_views);
   if (type_ == Type::kDeskButton) {
     PerformDeskBarAddDeskAnimation(this, old_bar_bounds);
   }
-  PerformNewDeskMiniViewAnimation(
-      this, new_mini_views,
-      std::vector<DeskMiniView*>(mini_views_.begin(), left_partition_iter),
-      std::vector<DeskMiniView*>(right_partition_iter, mini_views_.end()),
-      begin_x - GetFirstMiniViewXOffset());
+  PerformAddDeskMiniViewAnimation(new_mini_views,
+                                  begin_x - GetFirstMiniViewXOffset());
+  PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
 }
 
 void DeskBarViewBase::SwitchToZeroState() {
@@ -1714,6 +1705,23 @@ int DeskBarViewBase::GetFirstMiniViewXOffset() const {
   // removing and adding a desk transform is correct while in RTL layout.
   return mini_views_.empty() ? bounds().CenterPoint().x()
                              : mini_views_[0]->GetBoundsInScreen().x();
+}
+
+base::flat_map<views::View*, int>
+DeskBarViewBase::GetAnimatableViewsCurrentXMap() const {
+  base::flat_map<views::View*, int> result;
+  auto insert_view = [&](views::View* view) {
+    if (view) {
+      result.emplace(view, view->GetBoundsInScreen().x());
+    }
+  };
+
+  for (auto* mini_view : mini_views_) {
+    insert_view(mini_view);
+  }
+  insert_view(new_desk_button_);
+  insert_view(library_button_);
+  return result;
 }
 
 int DeskBarViewBase::DetermineMoveIndex(int location_screen_x) const {
