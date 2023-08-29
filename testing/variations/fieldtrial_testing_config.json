@@ -14022,6 +14022,21 @@
             ]
         }
     ],
+    "ScreenCaptureKitMacScreen": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenCaptureKitMacScreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenCaptureKitMacWindow": [
         {
             "platforms": [
