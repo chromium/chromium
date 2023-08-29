@@ -41,13 +41,6 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
     // original page title.
     const std::u16string& original_title = last_committed_item->GetTitle();
     if (!original_title.empty()) {
-      // If the original page title exists, it is expected to match the Tab's
-      // title. If this ever changes, then a decision has to be made on which
-      // one should be used for sharing.
-      CHECK([tab_util::GetTabTitle(web_state)
-          isEqualToString:base::SysUTF16ToNSString(original_title)])
-          << "Original title is'" << original_title << "' and tab's title is '"
-          << web_state->GetTitle() << "'";
       is_original_title = YES;
     }
   }
