@@ -127,6 +127,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.SidePanel.ShowUiSuccess" enum="BooleanSuccess"
+    expires_after="2023-12-31">
+  <owner>mercerd@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether the UI for side panel was successfully shown to the user
+    have the side panel opened. Recorded after the side panel is opened and all
+    listeners to the main active tab are setup.
+  </summary>
+</histogram>
+
 <histogram name="Companion.SidePanelAvailabilityChanged"
     enum="CompanionSidePanelAvailabilityChanged" expires_after="2024-02-25">
   <owner>tbansal@chromium.org</owner>

@@ -252,6 +252,7 @@ void CompanionPageHandler::ShowUI() {
     // page.
     auto* browser = GetBrowser();
     if (!browser) {
+      base::UmaHistogramBoolean("Companion.SidePanel.ShowUiSuccess", false);
       return;
     }
 
@@ -271,6 +272,8 @@ void CompanionPageHandler::ShowUI() {
     // Register a modal dialog manager to show permissions dialog like those
     // requested from the feedback UI.
     RegisterModalDialogManager(browser);
+
+    base::UmaHistogramBoolean("Companion.SidePanel.ShowUiSuccess", true);
 
     // If searching the text query succeeds, then early return.
     if (OnSearchTextQuery()) {

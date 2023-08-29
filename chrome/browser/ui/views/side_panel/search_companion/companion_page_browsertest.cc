@@ -1564,6 +1564,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ExpectUkmEntry(
       &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
       static_cast<int>(SidePanelOpenTrigger::kContextMenuSearchOption));
+  histogram_tester_->ExpectBucketCount("Companion.SidePanel.ShowUiSuccess",
+                                       true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -1612,6 +1614,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // The language params should be unset when is_image_translate=false.
   EXPECT_EQ(GetLastSourceLang(), "");
   EXPECT_EQ(GetLastTargetLang(), "");
+  histogram_tester_->ExpectBucketCount("Companion.SidePanel.ShowUiSuccess",
+                                       true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -1659,6 +1663,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                  static_cast<int>(SidePanelOpenTrigger::kLensContextMenu));
   EXPECT_EQ(GetLastSourceLang(), source_lang);
   EXPECT_EQ(GetLastTargetLang(), target_lang);
+  histogram_tester_->ExpectBucketCount("Companion.SidePanel.ShowUiSuccess",
+                                       true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
@@ -1683,6 +1689,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kOpenTriggerName,
                  static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
+  histogram_tester_->ExpectBucketCount("Companion.SidePanel.ShowUiSuccess",
+                                       true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
