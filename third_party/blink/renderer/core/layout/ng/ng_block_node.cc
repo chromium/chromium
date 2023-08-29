@@ -460,8 +460,14 @@ const NGLayoutResult* NGBlockNode::Layout(
   // clamping the offset.
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
+  absl::optional<PhysicalSize> optional_old_box_size;
+  if (layout_result->Status() == NGLayoutResult::kSuccess &&
+      !layout_result->PhysicalFragment().BreakToken()) {
+    optional_old_box_size = box_->Size();
+  }
+
   FinishLayout(block_flow, constraint_space, break_token, layout_result,
-               box_->Size());
+               optional_old_box_size);
 
   // We may be intrinsicly sized (shrink-to-fit), if our intrinsic logical
   // widths are now dirty, re-calculate our inline-size for comparison.
@@ -750,11 +756,12 @@ void NGBlockNode::PrepareForLayout() const {
     To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 }
 
-void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
-                               const NGConstraintSpace& constraint_space,
-                               const NGBlockBreakToken* break_token,
-                               const NGLayoutResult* layout_result,
-                               PhysicalSize old_box_size) const {
+void NGBlockNode::FinishLayout(
+    LayoutBlockFlow* block_flow,
+    const NGConstraintSpace& constraint_space,
+    const NGBlockBreakToken* break_token,
+    const NGLayoutResult* layout_result,
+    const absl::optional<PhysicalSize>& old_box_size) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
   if (NGDisableSideEffectsScope::IsDisabled())
@@ -833,9 +840,11 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   }
 
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !layout_result->PhysicalFragment().BreakToken() &&
-      box_->Size() != old_box_size) {
-    box_->SizeChanged();
+      !layout_result->PhysicalFragment().BreakToken()) {
+    DCHECK(old_box_size);
+    if (box_->Size() != *old_box_size) {
+      box_->SizeChanged();
+    }
   }
   CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
 }
