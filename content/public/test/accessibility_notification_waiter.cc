@@ -33,7 +33,7 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
       generated_event_to_wait_for_(absl::nullopt),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
-  Setup(web_contents);
+  ListenToAllFrames(web_contents);
 }
 
 AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
@@ -45,7 +45,14 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
       generated_event_to_wait_for_(absl::nullopt),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
-  Setup(web_contents, accessibility_mode);
+  ListenToAllFrames(web_contents);
+  static_cast<WebContentsImpl*>(web_contents)
+      ->AddAccessibilityMode(accessibility_mode);
+  // Add the the accessibility mode on BrowserAccessibilityState so it can be
+  // also be added to AXPlatformNode, auralinux uses this to determine if it
+  // should enable accessibility or not.
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      accessibility_mode);
 }
 
 AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
@@ -57,51 +64,30 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
       generated_event_to_wait_for_(event_type),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
-  Setup(web_contents, accessibility_mode);
-}
-
-AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
-    WebContents* web_contents,
-    ui::AXMode accessibility_mode,
-    ax::mojom::Event event_type,
-    std::set<GURL> urls_to_listen_to)
-    : WebContentsObserver(web_contents),
-      event_to_wait_for_(event_type),
-      generated_event_to_wait_for_(absl::nullopt),
-      urls_to_listen_to(urls_to_listen_to),
-      loop_runner_(std::make_unique<base::RunLoop>()),
-      loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
-  Setup(web_contents, accessibility_mode);
-}
-
-void AccessibilityNotificationWaiter::Setup(WebContents* web_contents,
-                                            ui::AXMode accessibility_mode) {
-  DCHECK(web_contents);
-  ListenToFrames(web_contents);
-  if (accessibility_mode != ui::AXMode::kNone) {
-    static_cast<WebContentsImpl*>(web_contents)
-        ->AddAccessibilityMode(accessibility_mode);
-    // Add the the accessibility mode on BrowserAccessibilityState so it can be
-    // also be added to AXPlatformNode, auralinux uses this to determine if it
-    // should enable accessibility or not.
-    BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
-        accessibility_mode);
-  }
+  ListenToAllFrames(web_contents);
+  static_cast<WebContentsImpl*>(web_contents)
+      ->AddAccessibilityMode(accessibility_mode);
+  // Add the the accessibility mode on BrowserAccessibilityState so it can be
+  // also be added to AXPlatformNode, auralinux uses this to determine if it
+  // should enable accessibility or not.
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      accessibility_mode);
 }
 
 AccessibilityNotificationWaiter::~AccessibilityNotificationWaiter() = default;
 
-void AccessibilityNotificationWaiter::ListenToFrames(
+void AccessibilityNotificationWaiter::ListenToAllFrames(
     WebContents* web_contents) {
   if (event_to_wait_for_)
     VLOG(1) << "Waiting for AccessibilityEvent " << *event_to_wait_for_;
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
 
-  auto frames = GetFramesToListenTo(web_contents_impl);
-  for (RenderFrameHostImpl* frame : frames) {
+  FrameTree::NodeRange nodes =
+      web_contents_impl->GetPrimaryFrameTree().NodesIncludingInnerTreeNodes();
+  for (FrameTreeNode* node : nodes) {
     frame_count_++;
-    ListenToFrame(frame);
+    ListenToFrame(node->current_frame_host());
   }
   BrowserPluginGuestManager* guest_manager =
       web_contents_impl->GetBrowserContext()->GetGuestManager();
@@ -114,30 +100,9 @@ void AccessibilityNotificationWaiter::ListenToFrames(
   }
 }
 
-std::vector<RenderFrameHostImpl*>
-AccessibilityNotificationWaiter::GetFramesToListenTo(
-    WebContentsImpl* web_contents_impl) const {
-  FrameTree::NodeRange all_frames =
-      web_contents_impl->GetPrimaryFrameTree().NodesIncludingInnerTreeNodes();
-  std::vector<RenderFrameHostImpl*> frames_to_listen_to;
-
-  for (auto* frame : all_frames) {
-    // A consumer might want to specify the exact list of URLs to listen to.
-    // For example, we might have a test scenario where there is a broken frame
-    // that is never expected to load, but we want to listen to all other URLs.
-    if (urls_to_listen_to.size() > 0 &&
-        !urls_to_listen_to.contains(frame->current_url())) {
-      continue;
-    }
-    frames_to_listen_to.push_back(frame->current_frame_host());
-  }
-
-  return frames_to_listen_to;
-}
-
 bool AccessibilityNotificationWaiter::ListenToGuestWebContents(
     WebContents* web_contents) {
-  ListenToFrames(web_contents);
+  ListenToAllFrames(web_contents);
   return true;
 }
 
