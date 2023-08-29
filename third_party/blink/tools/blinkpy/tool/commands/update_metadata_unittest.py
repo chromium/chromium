@@ -23,6 +23,7 @@ from blinkpy.tool.commands.update_metadata import (
 )
 from blinkpy.w3c.wpt_metadata import TestConfigurations
 from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.port.base import VirtualTestSuite
 
 path_finder.bootstrap_wpt_imports()
 from manifest.manifest import Manifest
@@ -127,6 +128,7 @@ class BaseUpdateMetadataTest(LoggingTestCase):
             default_port.FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
             default_port.default_smoke_test_only.return_value = False
             default_port.skipped_due_to_smoke_tests.return_value = False
+            default_port.virtual_test_suites.return_value = []
             stack.enter_context(
                 patch.object(self.tool.port_factory,
                              'get',
@@ -579,22 +581,37 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                                                 'testdriver.html.ini')))
 
     def test_generate_configs(self):
-        linux, linux_highdpi, mac = sorted(
-            TestConfigurations.generate(self.tool),
-            key=lambda config: (config['os'], config['flag_specific']))
+        virtual_suite = VirtualTestSuite(
+            prefix='fake-vts',
+            platforms=['Mac', 'Linux'],
+            bases=['external/wpt/fail.html'],
+            args=['--enable-features=FakeFeature'])
+        with patch('blinkpy.web_tests.port.test.TestPort.virtual_test_suites',
+                   return_value=[virtual_suite]):
+            config_order = lambda config: (
+                config['os'],
+                config['flag_specific'],
+                config['virtual_suite'],
+            )
+            linux, _, linux_highdpi, _, mac, mac_virtual = sorted(
+                TestConfigurations.generate(self.tool), key=config_order)
 
-        self.assertEqual(linux['os'], 'linux')
-        self.assertEqual(linux['port'], 'trusty')
-        self.assertFalse(linux['debug'])
-        self.assertEqual(linux['flag_specific'], '')
+            self.assertEqual(linux['os'], 'linux')
+            self.assertEqual(linux['port'], 'trusty')
+            self.assertFalse(linux['debug'])
+            self.assertEqual(linux['flag_specific'], '')
+            self.assertEqual(linux['virtual_suite'], '')
 
-        self.assertEqual(linux_highdpi['os'], 'linux')
-        self.assertEqual(linux_highdpi['flag_specific'], 'highdpi')
+            self.assertEqual(linux_highdpi['os'], 'linux')
+            self.assertEqual(linux_highdpi['flag_specific'], 'highdpi')
 
-        self.assertEqual(mac['os'], 'mac')
-        self.assertEqual(mac['port'], 'mac10.11')
-        self.assertTrue(mac['debug'])
-        self.assertEqual(mac['flag_specific'], '')
+            self.assertEqual(mac['os'], 'mac')
+            self.assertEqual(mac['port'], 'mac10.11')
+            self.assertTrue(mac['debug'])
+            self.assertEqual(mac['flag_specific'], '')
+
+            self.assertEqual(mac_virtual['os'], 'mac')
+            self.assertEqual(mac_virtual['virtual_suite'], 'fake-vts')
 
 
 class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
@@ -614,14 +631,13 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             'known_intermittent': [],
         }
         with self._patch_builtins():
-            manifests = load_and_update_manifests(self.finder)
+            manifests, configs = load_and_update_manifests(self.finder), {}
             for report in reports:
-                report['run_info'] = {
+                report['run_info'] = base_run_info = {
                     'product': 'content_shell',
                     'os': 'mac',
                     'port': 'mac12',
                     'flag_specific': '',
-                    'virtual_suite': '',
                     'debug': False,
                     **(report.get('run_info') or {}),
                 }
@@ -629,13 +645,18 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     **result_defaults,
                     **result
                 } for result in report['results']]
+                subsuites = report.get('subsuites', {})
+                subsuites.setdefault('', {'virtual_suite': ''})
+                test_port = report.pop('test_port',
+                                       self.tool.port_factory.get())
+                for subsuite_run_info in subsuites.values():
+                    run_info = metadata.RunInfo({
+                        **base_run_info,
+                        **subsuite_run_info,
+                    })
+                    configs[run_info] = test_port
 
-            configs = TestConfigurations(
-                self.tool.filesystem, {
-                    metadata.RunInfo(report['run_info']): report.pop(
-                        'test_port', self.tool.port_factory.get())
-                    for report in reports
-                })
+            configs = TestConfigurations(self.tool.filesystem, configs)
             updater = MetadataUpdater.from_manifests(
                 manifests, configs, self.tool.port_factory.get(), **options)
             updater.collect_results(
@@ -770,7 +791,6 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'run_info': {
                     'product': 'content_shell',
                     'os': 'mac',
-                    'virtual_suite': '',
                 },
                 'results': [],
                 'test_port': self.tool.port_factory.get('test-mac-mac10.11'),
@@ -778,7 +798,14 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'run_info': {
                     'product': 'content_shell',
                     'os': 'linux',
-                    'virtual_suite': '',
+                },
+                'subsuites': {
+                    '': {
+                        'virtual_suite': '',
+                    },
+                    'fake-vts': {
+                        'virtual_suite': 'fake-vts',
+                    },
                 },
                 'results': [],
                 'test_port': self.tool.port_factory.get('test-linux-trusty'),
@@ -786,15 +813,6 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'run_info': {
                     'product': 'chrome',
                     'os': 'linux',
-                    'virtual_suite': '',
-                },
-                'results': [],
-                'test_port': self.tool.port_factory.get('test-linux-trusty'),
-            }, {
-                'run_info': {
-                    'product': 'content_shell',
-                    'os': 'linux',
-                    'virtual_suite': 'fake-vts',
                 },
                 'results': [],
                 'test_port': self.tool.port_factory.get('test-linux-trusty'),
@@ -884,7 +902,6 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'run_info': {
                     'product': 'chrome',
                     'os': 'linux',
-                    'virtual_suite': '',
                 },
                 'results': [],
                 'test_port': self.tool.port_factory.get('test-linux-trusty'),
@@ -892,15 +909,14 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 'run_info': {
                     'product': 'content_shell',
                     'os': 'linux',
-                    'virtual_suite': '',
                 },
-                'results': [],
-                'test_port': self.tool.port_factory.get('test-linux-trusty'),
-            }, {
-                'run_info': {
-                    'product': 'content_shell',
-                    'os': 'linux',
-                    'virtual_suite': 'fake-vts',
+                'subsuites': {
+                    '': {
+                        'virtual_suite': '',
+                    },
+                    'fake-vts': {
+                        'virtual_suite': 'fake-vts',
+                    },
                 },
                 'results': [],
                 'test_port': self.tool.port_factory.get('test-linux-trusty'),
@@ -931,7 +947,6 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             }, {
                 'run_info': {
                     'os': 'linux',
-                    'virtual_suite': '',
                 },
                 'results': [],
                 'test_port': self.tool.port_factory.get('test-linux-trusty'),
@@ -1291,6 +1306,40 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         # should fix upstream to avoid create spurious diffs.
         self.assertEqual(sorted(lines, reverse=True), expected.splitlines())
 
+    def test_condition_split_on_virtual_suite(self):
+        # The test relies on a feature only enabled by `fake-vts`.
+        self.update(
+            {
+                'subsuites': {
+                    '': {
+                        'virtual_suite': '',
+                    },
+                    'fake-vts': {
+                        'virtual_suite': 'fake-vts',
+                    },
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'FAIL',
+                    'expected': 'PASS',
+                }, {
+                    'test': '/fail.html',
+                    'subsuite': 'fake-vts',
+                    'status': 'PASS',
+                }],
+            }, {
+                'run_info': {
+                    'product': 'chrome'
+                },
+                'results': [],
+            })
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected:
+                if (product == "content_shell") and (virtual_suite == ""): FAIL
+            """)
+
     def test_condition_merge(self):
         """Results that become property-agnostic consolidate conditions."""
         self.write_contents(
@@ -1435,8 +1484,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             """)
 
         smoke_test_port = Mock()
-        smoke_test_port.default_smoke_test_only.return_value = True
-        smoke_test_port.skipped_due_to_smoke_tests.return_value = True
+        smoke_test_port.skips_test.return_value = True
         self.update(
             {
                 'run_info': {
@@ -1483,7 +1531,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 if product == "content_shell": needs webdriver
               expected: FAIL
             """)
-        smoke_test_port.skipped_due_to_smoke_tests.assert_has_calls([
+        smoke_test_port.skips_test.assert_has_calls([
             call('external/wpt/variant.html?foo=baz'),
         ])
 
@@ -1515,6 +1563,64 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         # `update-metadata` should write the expectation unconditionally instead
         # of as:
         #   if product == "chrome": FAIL
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
+            """)
+
+    def test_no_fill_for_exclusive_virtual_test(self):
+        """Check that exclusive tests restrict the configurations recognized.
+
+        In particular, no implicit PASS should be preserved for configurations
+        that don't apply.
+        """
+        test_port = self.tool.port_factory.get('test-mac-mac10.11')
+        exclusive_suite = VirtualTestSuite(
+            prefix='exclusive-vts',
+            platforms=['Mac'],
+            bases=['external/wpt/fail.html'],
+            exclusive_tests=['external/wpt/fail.html'],
+            args=['--enable-features=FakeFeature'])
+        unrelated_suite = VirtualTestSuite(
+            prefix='unrelated-vts',
+            platforms=['Mac'],
+            bases=['external/wpt/variant.html'],
+            args=['--enable-features=FakeFeature'])
+        with patch.object(test_port,
+                          'virtual_test_suites',
+                          return_value=[exclusive_suite, unrelated_suite]):
+            self.update(
+                {
+                    'run_info': {
+                        'product': 'content_shell',
+                    },
+                    'subsuites': {
+                        '': {
+                            'virtual_suite': '',
+                        },
+                        'exclusive-vts': {
+                            'virtual_suite': 'exclusive-vts',
+                        },
+                        'unrelated-vts': {
+                            'virtual_suite': 'unrelated-vts',
+                        },
+                    },
+                    'results': [{
+                        'test': '/fail.html',
+                        'status': 'FAIL',
+                        'expected': 'PASS',
+                        'subsuite': 'exclusive-vts',
+                    }],
+                    'test_port':
+                    test_port,
+                }, {
+                    'run_info': {
+                        'product': 'chrome',
+                    },
+                    'results': [],
+                    'test_port': test_port,
+                })
         self.assert_contents(
             'external/wpt/fail.html.ini', """\
             [fail.html]

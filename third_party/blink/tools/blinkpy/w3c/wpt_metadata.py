@@ -106,7 +106,7 @@ class TestConfigurations(collections.abc.Mapping):
 
             for step in host.builders.step_names_for_builder(builder):
                 flag_specific = host.builders.flag_specific_option(
-                    builder, step)
+                    builder, step) or ''
                 port = host.port_factory.get(
                     port_name,
                     optparse.Values({
@@ -115,17 +115,20 @@ class TestConfigurations(collections.abc.Mapping):
                     }))
                 product = host.builders.product_for_build_step(builder, step)
                 debug = port.get_option('configuration') == 'Debug'
-                config = metadata.RunInfo({
-                    'product': product,
-                    'os': port.operating_system(),
-                    'port': port.version(),
-                    'debug': debug,
-                    'flag_specific': flag_specific or '',
-                    # TODO(crbug.com/1152503): Fully support virtual suites.
-                    # Will be addressed by crrev.com/c/4717388.
-                    'virtual_suite': '',
-                })
-                configs[config] = port
+                virtual_suites = {
+                    suite.full_prefix.split('/')[1]
+                    for suite in port.virtual_test_suites()
+                }
+                for virtual_suite in {'', *virtual_suites}:
+                    config = metadata.RunInfo({
+                        'product': product,
+                        'os': port.operating_system(),
+                        'port': port.version(),
+                        'debug': debug,
+                        'flag_specific': flag_specific,
+                        'virtual_suite': virtual_suite,
+                    })
+                    configs[config] = port
         return cls(host.filesystem, configs)
 
     def enabled_configs(self, test: manifestupdate.TestNode,
@@ -154,15 +157,15 @@ class TestConfigurations(collections.abc.Mapping):
     ) -> bool:
         with contextlib.suppress(KeyError):
             port = self._configs[config]
-            if port.default_smoke_test_only():
-                test_id = test.id
-                if test_id.startswith('/'):
-                    test_id = test_id[1:]
-                if (not self._finder.is_wpt_internal_path(test_id)
-                        and not self._finder.is_wpt_path(test_id)):
-                    test_id = self._finder.wpt_prefix() + test_id
-                if port.skipped_due_to_smoke_tests(test_id):
+            test_name = wpt_url_to_exp_test(test.id)
+            virtual_suite = config['virtual_suite']
+            if virtual_suite:
+                test_name = f'virtual/{virtual_suite}/{test_name}'
+                # Check whether this is a valid virtual test.
+                if not port.lookup_virtual_test_base(test_name):
                     return True
+            if port.skips_test(test_name):
+                return True
         with contextlib.suppress(KeyError):
             product = products.Product({}, config['product'])
             executor_cls = product.executor_classes.get(test.test_type)

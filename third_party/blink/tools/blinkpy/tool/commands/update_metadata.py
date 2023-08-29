@@ -790,6 +790,8 @@ class MetadataUpdater:
         for retry_report in retry_reports:
             retry_report['run_info'] = config = self._reduce_config(
                 retry_report['run_info'])
+            retry_report.setdefault('subsuites', {})
+            retry_report['subsuites'].setdefault('', {'virtual_suite': ''})
             if config != report.get('run_info', config):
                 raise ValueError('run info values should be identical '
                                  'across retries')
