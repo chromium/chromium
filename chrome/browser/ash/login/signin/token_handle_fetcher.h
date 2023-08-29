@@ -24,13 +24,15 @@ class IdentityManager;
 namespace ash {
 class TokenHandleUtil;
 
-// This class is resposible for obtaining new token handle for user.
-// It can be used in two ways. When user have just used GAIA signin there is
+// This class is responsible for obtaining new token handle for user.
+// It can be used in two ways. When a user has just used Gaia signin there is
 // an OAuth2 token available. If there is profile already loaded, then
 // minting additional access token might be required.
 class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
  public:
-  TokenHandleFetcher(TokenHandleUtil* util, const AccountId& account_id);
+  TokenHandleFetcher(Profile* profile,
+                     TokenHandleUtil* util,
+                     const AccountId& account_id);
 
   TokenHandleFetcher(const TokenHandleFetcher&) = delete;
   TokenHandleFetcher& operator=(const TokenHandleFetcher&) = delete;
@@ -40,13 +42,12 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   using TokenFetchingCallback =
       base::OnceCallback<void(const AccountId&, bool success)>;
 
-  // Get token handle for user who have just signed in via GAIA. This
-  // request will be performed using signin profile.
+  // Fetch token handle for a user who has just signed in via Gaia online auth.
   void FillForNewUser(const std::string& access_token,
                       TokenFetchingCallback callback);
 
-  // Get token handle for existing user.
-  void BackfillToken(Profile* profile, TokenFetchingCallback callback);
+  // Fetch token handle for an existing user.
+  void BackfillToken(TokenFetchingCallback callback);
 
   static void EnsureFactoryBuilt();
 
@@ -65,11 +66,11 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // This is called before profile is detroyed.
   void OnProfileDestroyed();
 
-  raw_ptr<TokenHandleUtil, ExperimentalAsh> token_handle_util_ = nullptr;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<TokenHandleUtil, ExperimentalAsh> token_handle_util_;
   AccountId account_id_;
   raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   base::TimeTicks tokeninfo_response_start_time_ = base::TimeTicks();
   TokenFetchingCallback callback_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;
