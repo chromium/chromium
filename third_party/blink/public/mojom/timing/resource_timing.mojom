@@ -49,9 +49,9 @@ struct ResourceTimingInfo {
   // in PerformanceResourceTiming (http://www.w3.org/TR/resource-timing-1/).
   string name;
 
-  // The start time of the request. Corresponds to
-  // |requestStart| in PerformanceResourceTiming
-  // (http://www.w3.org/TR/resource-timing-1/).
+  // This timestamp is set at the time when ResourceFetcher::RequestResource is
+  // called and will end up as the startTime of the corresponding performance
+  // timeline resource timing entry.
   mojo_base.mojom.TimeTicks start_time;
 
   // Corresponds to |nextHopProtocol| in PerformanceResourceTiming
