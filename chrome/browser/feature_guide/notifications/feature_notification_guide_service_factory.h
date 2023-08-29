@@ -34,7 +34,7 @@ class FeatureNotificationGuideServiceFactory
   FeatureNotificationGuideServiceFactory();
   ~FeatureNotificationGuideServiceFactory() override = default;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

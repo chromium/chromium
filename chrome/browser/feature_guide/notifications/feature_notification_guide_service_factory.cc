@@ -102,7 +102,8 @@ FeatureNotificationGuideServiceFactory::FeatureNotificationGuideServiceFactory()
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }
 
-KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FeatureNotificationGuideServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   auto* notification_scheduler =
@@ -124,7 +125,7 @@ KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_ANDROID)
   delegate.reset(new FeatureNotificationGuideBridge());
 #endif
-  return new FeatureNotificationGuideServiceImpl(
+  return std::make_unique<FeatureNotificationGuideServiceImpl>(
       std::move(delegate), config, notification_scheduler, tracker,
       segmentation_platform_service, base::DefaultClock::GetInstance());
 }
