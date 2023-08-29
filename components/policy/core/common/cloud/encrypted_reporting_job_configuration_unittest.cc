@@ -66,8 +66,8 @@ constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 // Configuration file request key
 constexpr char kAttachConfigurationFileKey[] = "attachConfigurationFile";
 
-// Client automated test key
-constexpr char kClientAutomatedTestKey[] = "attachConfigurationFile";
+// Source key
+constexpr char kSourceKey[] = "source";
 
 // Keys for EncryptedRecord
 constexpr char kEncryptedWrappedRecordKey[] = "encryptedWrappedRecord";
@@ -112,7 +112,7 @@ class RequestPayloadBuilder {
       payload_.Set(kAttachConfigurationFileKey, true);
     }
     if (client_automated_test) {
-      payload_.Set(kClientAutomatedTestKey, true);
+      payload_.Set(kSourceKey, "tast");
     }
     payload_.Set(kEncryptedRecordListKey, base::Value::List());
   }
@@ -302,12 +302,11 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
            attach_encryption_settings.value();
   }
 
-  bool GetClientAutomatedTest(
-      EncryptedReportingJobConfiguration* configuration) {
+  bool VerifySourceIsTast(EncryptedReportingJobConfiguration* configuration) {
     base::Value* const payload = GetPayload(configuration);
-    const auto client_automated_test =
-        payload->GetDict().FindBool(kClientAutomatedTestKey);
-    return client_automated_test.has_value() && client_automated_test.value();
+    auto* client_automated_test = payload->GetDict().Find(kSourceKey);
+    return client_automated_test->is_string() &&
+           *client_automated_test->GetIfString() == "tast";
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
@@ -616,7 +615,7 @@ TEST_F(
   EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
 }
 
-TEST_F(EncryptedReportingJobConfigurationTest, AllowsClientAutomatedTestAlone) {
+TEST_F(EncryptedReportingJobConfigurationTest, AllowsSourceTastAlone) {
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/false,
                                 /*attach_configuration_file=*/false,
                                 /*client_automated_test=*/true};
@@ -632,12 +631,12 @@ TEST_F(EncryptedReportingJobConfigurationTest, AllowsClientAutomatedTestAlone) {
 
   EXPECT_TRUE(record_list->empty());
 
-  EXPECT_TRUE(GetClientAutomatedTest(&configuration));
+  EXPECT_TRUE(VerifySourceIsTast(&configuration));
 }
 
 TEST_F(
     EncryptedReportingJobConfigurationTest,
-    AllowsAttachConfigurationFileEncryptionSettingsAndClientAutomatedTestWithoutRecords) {
+    AllowsAttachConfigurationFileEncryptionSettingsAndSourceTastWithoutRecords) {
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/true,
                                 /*attach_configuration_file=*/true,
                                 /*client_automated_test=*/true};
@@ -655,12 +654,12 @@ TEST_F(
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
   EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
-  EXPECT_TRUE(GetClientAutomatedTest(&configuration));
+  EXPECT_TRUE(VerifySourceIsTast(&configuration));
 }
 
 TEST_F(
     EncryptedReportingJobConfigurationTest,
-    CorrectlyAddsMultipleRecordsWithAttachConfigurationFileAttachEncryptionKeyAndClientAutomatedTest) {
+    CorrectlyAddsMultipleRecordsWithAttachConfigurationFileAttachEncryptionKeyAndSourceTast) {
   const std::vector<std::string> kEncryptedWrappedRecords{
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   base::Value::List records;
@@ -691,7 +690,7 @@ TEST_F(
 
   EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
   EXPECT_TRUE(GetAttachConfigurationFile(&configuration));
-  EXPECT_TRUE(GetClientAutomatedTest(&configuration));
+  EXPECT_TRUE(VerifySourceIsTast(&configuration));
 }
 
 // Ensures that the context can be updated.
@@ -961,7 +960,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
   request.Set(kEncryptedRecordListKey, base::Value::List());
   request.Set(kAttachConfigurationFileKey, true);
   request.Set(kAttachEncryptionSettingsKey, true);
-  request.Set(kClientAutomatedTestKey, true);
+  request.Set(kSourceKey, "tast");
   request.Set(kDeviceKey, base::Value::Dict());
   request.Set(kBrowserKey, base::Value::Dict());
   request.Set(kInvalidKey, base::Value::Dict());
@@ -979,7 +978,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
   EXPECT_TRUE(payload->GetDict().FindList(kEncryptedRecordListKey));
   EXPECT_TRUE(payload->GetDict().FindBool(kAttachEncryptionSettingsKey));
   EXPECT_TRUE(payload->GetDict().FindBool(kAttachConfigurationFileKey));
-  EXPECT_TRUE(payload->GetDict().FindBool(kClientAutomatedTestKey));
+  EXPECT_TRUE(payload->GetDict().FindString(kSourceKey));
   EXPECT_TRUE(payload->GetDict().FindDict(kDeviceKey));
   EXPECT_TRUE(payload->GetDict().FindDict(kBrowserKey));
   EXPECT_FALSE(payload->GetDict().FindDict(kInvalidKey));

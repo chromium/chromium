@@ -358,8 +358,7 @@ TEST_P(RecordUploadRequestBuilderTest, ClientAutomatedTestExperimentEnabled) {
   scoped_feature_list.InitAndEnableFeature(kClientAutomatedTest);
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
 
-  EXPECT_THAT(builder.Build().value(),
-              IsClientAutomatedTestRequestUploadRequestValid(true));
+  EXPECT_THAT(builder.Build().value(), IsSourceRequestUploadRequestValid(true));
 }
 
 TEST_P(RecordUploadRequestBuilderTest, ClientAutomatedTestExperimentDisabled) {
@@ -368,7 +367,7 @@ TEST_P(RecordUploadRequestBuilderTest, ClientAutomatedTestExperimentDisabled) {
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
 
   EXPECT_THAT(builder.Build().value(),
-              IsClientAutomatedTestRequestUploadRequestValid(false));
+              IsSourceRequestUploadRequestValid(false));
 }
 
 INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,

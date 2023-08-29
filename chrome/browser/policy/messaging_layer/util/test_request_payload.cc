@@ -145,54 +145,47 @@ std::string NoAttachConfigurationFileMatcher::Name() const {
   return "no-attach-configuration-file-matcher";
 }
 
-bool ClientAutomatedTestMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
-    MatchResultListener* listener) const {
-  const auto client_automated_test = arg.FindBool("clientAutomatedTest");
-  if (!client_automated_test) {
-    *listener << "No key named \"clientAutomatedTest\" in the argument or "
-                 "the value is not of bool type.";
-    return false;
-  }
-  if (!client_automated_test.value()) {
-    *listener << "The value of \"clientAutomatedTest\" is false.";
+bool SourceMatcher::MatchAndExplain(const base::Value::Dict& arg,
+                                    MatchResultListener* listener) const {
+  if (arg.FindString("source") == nullptr) {
+    *listener << "No key named \"source\" or the value "
+                 "is not a string in the argument.";
     return false;
   }
   return true;
 }
 
-void ClientAutomatedTestMatcher::DescribeTo(std::ostream* os) const {
-  *os << "has a valid clientAutomatedTest field.";
+void SourceMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid source field.";
 }
 
-void ClientAutomatedTestMatcher::DescribeNegationTo(std::ostream* os) const {
-  *os << "has an invalid clientAutomatedTest field.";
+void SourceMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "has an invalid source field.";
 }
 
-std::string ClientAutomatedTestMatcher::Name() const {
-  return "client-automated-test-matcher";
+std::string SourceMatcher::Name() const {
+  return "source-test-matcher";
 }
 
-bool NoClientAutomatedTestMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
-    MatchResultListener* listener) const {
-  if (arg.Find("clientAutomatedTest") != nullptr) {
-    *listener << "Found \"clientAutomatedTest\" in the argument.";
+bool NoSourceMatcher::MatchAndExplain(const base::Value::Dict& arg,
+                                      MatchResultListener* listener) const {
+  if (arg.Find("source") != nullptr) {
+    *listener << "Found \"source\" in the argument.";
     return false;
   }
   return true;
 }
 
-void NoClientAutomatedTestMatcher::DescribeTo(std::ostream* os) const {
-  *os << "expectedly has no clientAutomatedTest field.";
+void NoSourceMatcher::DescribeTo(std::ostream* os) const {
+  *os << "expectedly has no source field.";
 }
 
-void NoClientAutomatedTestMatcher::DescribeNegationTo(std::ostream* os) const {
-  *os << "unexpectedly has an clientAutomatedTest field.";
+void NoSourceMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "unexpectedly has an Source field.";
 }
 
-std::string NoClientAutomatedTestMatcher::Name() const {
-  return "no-client-automated-test-matcher";
+std::string NoSourceMatcher::Name() const {
+  return "source-test-matcher";
 }
 
 void CompressionInformationMatcher::DescribeTo(std::ostream* os) const {

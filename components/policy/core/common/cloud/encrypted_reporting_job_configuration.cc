@@ -26,7 +26,7 @@ constexpr char kGenerationId[] = "generationId";
 constexpr char kPriority[] = "priority";
 constexpr char kAttachConfigurationFileKey[] = "attachConfigurationFile";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
-constexpr char kClientAutomatedTestKey[] = "clientAutomatedTest";
+constexpr char kSourceKey[] = "source";
 constexpr char kDeviceKey[] = "device";
 constexpr char kBrowserKey[] = "browser";
 constexpr char kRequestId[] = "requestId";
@@ -326,10 +326,10 @@ EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
       kAttachConfigurationFileKey,
       kAttachEncryptionSettingsKey,
       kBrowserKey,
-      kClientAutomatedTestKey,
       kDeviceKey,
       kEncryptedRecordListKey,
-      kRequestId};
+      kRequestId,
+      kSourceKey};
   return kTopLevelKeyAllowList;
 }
 

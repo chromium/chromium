@@ -70,8 +70,9 @@ namespace reporting {
 //   // optional field, only used by the client tast tests to signal to the
 //   // server that this is an automated test from the lab. In production, this
 //   // should always be absent. Even if it is erroneously present in production
-//   // code, server ignores it.
-//   "clientAutomatedTest": true
+//   // code, server ignores it. Marked as string to make it reusable in the
+//   // future. Value should be "tast" in the tast tests.
+//    "source": "SomeString"
 // }
 //
 // This payload is added to the common payload of all reporting jobs, which
@@ -126,7 +127,7 @@ class UploadEncryptedReportingRequestBuilder {
   static std::string_view GetEncryptedRecordListPath();
   static std::string_view GetAttachEncryptionSettingsPath();
   static std::string_view GetAttachConfigurationFilePath();
-  static std::string_view GetClientAutomatedTestPath();
+  static std::string_view GetSourcePath();
 
   absl::optional<base::Value::Dict> result_;
 };

@@ -82,8 +82,8 @@ class NoAttachConfigurationFileMatcher
   std::string Name() const override;
 };
 
-// clientAutomatedTest must be of bool type and true.
-class ClientAutomatedTestMatcher : public RequestValidityMatcherInterface {
+// source must be of string type.
+class SourceMatcher : public RequestValidityMatcherInterface {
  public:
   bool MatchAndExplain(const base::Value::Dict& arg,
                        MatchResultListener* listener) const override;
@@ -92,8 +92,8 @@ class ClientAutomatedTestMatcher : public RequestValidityMatcherInterface {
   std::string Name() const override;
 };
 
-// clientAutomatedTest must be absent.
-class NoClientAutomatedTestMatcher : public RequestValidityMatcherInterface {
+// source must be absent.
+class NoSourceMatcher : public RequestValidityMatcherInterface {
  public:
   bool MatchAndExplain(const base::Value::Dict& arg,
                        MatchResultListener* listener) const override;
@@ -285,15 +285,15 @@ class RequestValidityMatcherBuilder {
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying a client automated test
   // request. If client_automated_test is false the matcher will ensure the
-  // request does not include the field clientAutomatedTest.
-  static RequestValidityMatcherBuilder<T>
-  CreateClientAutomatedTestRequestUpload(bool client_automated_test) {
+  // request does not include the field source.
+  static RequestValidityMatcherBuilder<T> CreateSourceRequestUpload(
+      bool client_automated_test) {
     auto builder = RequestValidityMatcherBuilder<T>::CreateEmpty();
     builder.AppendMatcher(RequestIdMatcher());
     if (client_automated_test) {
-      builder.AppendMatcher(ClientAutomatedTestMatcher());
+      builder.AppendMatcher(SourceMatcher());
     } else {
-      builder.AppendMatcher(NoClientAutomatedTestMatcher());
+      builder.AppendMatcher(NoSourceMatcher());
     }
     return builder;
   }
@@ -421,14 +421,12 @@ Matcher<T> IsConfigurationFileRequestUploadRequestValid(
       .Build();
 }
 
-// Match a configuration file request upload request that is valid. If
-// client_automated_test is false, this matcher will ensure the request does not
-// request a configuration file.
+// Match a source upload request that is valid.
 template <class T = base::Value::Dict>
-Matcher<T> IsClientAutomatedTestRequestUploadRequestValid(
+Matcher<T> IsSourceRequestUploadRequestValid(
     bool client_automated_test = false) {
-  return RequestValidityMatcherBuilder<
-             T>::CreateClientAutomatedTestRequestUpload(client_automated_test)
+  return RequestValidityMatcherBuilder<T>::CreateSourceRequestUpload(
+             client_automated_test)
       .Build();
 }
 

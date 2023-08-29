@@ -25,7 +25,7 @@ namespace {
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 constexpr char kAttachConfigurationFile[] = "attachConfigurationFile";
-constexpr char kClientAutomatedTestPath[] = "clientAutomatedTest";
+constexpr char kSourcePath[] = "source";
 
 // EncryptedRecordDictionaryBuilder strings
 constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
@@ -72,7 +72,7 @@ UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
 
   // This feature signals the server that this is an automated client test.
   if (base::FeatureList::IsEnabled(kClientAutomatedTest)) {
-    result_->Set(GetClientAutomatedTestPath(), true);
+    result_->Set(GetSourcePath(), "tast");
   }
 }
 
@@ -156,9 +156,8 @@ UploadEncryptedReportingRequestBuilder::GetAttachConfigurationFilePath() {
 }
 
 // static
-std::string_view
-UploadEncryptedReportingRequestBuilder::GetClientAutomatedTestPath() {
-  return kClientAutomatedTestPath;
+std::string_view UploadEncryptedReportingRequestBuilder::GetSourcePath() {
+  return kSourcePath;
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
