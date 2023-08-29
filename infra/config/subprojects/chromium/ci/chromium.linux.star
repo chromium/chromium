@@ -159,6 +159,9 @@ ci.builder(
     ),
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -171,6 +174,9 @@ ci.builder(
         short_name = "det",
     ),
     execution_timeout = 7 * time.hour,
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -223,6 +229,9 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
 )
 
 ci.builder(
@@ -245,6 +254,9 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -273,6 +285,9 @@ ci.builder(
         short_name = "bld-wl",
     ),
     cq_mirrors_console_view = "mirrors",
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 

@@ -46,11 +46,13 @@
   },
   "Deterministic Linux": {
     "gn_args": {
+      "concurrent_links": 50,
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "Deterministic Linux (dbg)": {
@@ -71,10 +73,12 @@
     },
     "reclient": {
       "gn_args": {
+        "concurrent_links": 50,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 1,
-        "use_remoteexec": true
+        "use_remoteexec": true,
+        "use_remoteexec_links": true
       }
     }
   },
@@ -88,17 +92,20 @@
   },
   "Linux Builder": {
     "gn_args": {
+      "concurrent_links": 50,
       "dcheck_always_on": false,
       "devtools_skip_typecheck": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "Linux Builder (Wayland)": {
     "gn_args": {
+      "concurrent_links": 50,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -109,17 +116,20 @@
       "ozone_platform_wayland": true,
       "proprietary_codecs": true,
       "use_bundled_weston": true,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "Linux Builder (dbg)": {
     "gn_args": {
+      "concurrent_links": 50,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "Network Service Linux": {
