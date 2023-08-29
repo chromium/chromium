@@ -237,6 +237,10 @@ void CheckClientDownloadRequest::MaybeStorePingsForDownload(
       result, upload_requested, item_, request_data, response_body);
 }
 
+void CheckClientDownloadRequest::LogDeepScanningPrompt() const {
+  LogDeepScanEvent(item_, DeepScanEvent::kPromptShown);
+}
+
 absl::optional<enterprise_connectors::AnalysisSettings>
 CheckClientDownloadRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
@@ -324,11 +328,13 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
     return false;
 
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
-  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()))
+  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
     return true;
+  }
 
-  if (IsUnderAdvancedProtection(profile))
+  if (IsUnderAdvancedProtection(profile)) {
     return true;
+  }
 
   return false;
 }

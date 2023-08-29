@@ -834,13 +834,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       SetOpenWhenComplete(true);
 #endif
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
-        base::UmaHistogramEnumeration(
-            "SBClientDownload.DeepScanEvent2",
-            safe_browsing::DeepScanEvent::kScanCanceled);
+        LogDeepScanEvent(download_,
+                         safe_browsing::DeepScanEvent::kScanCanceled);
       } else {
-        base::UmaHistogramEnumeration(
-            "SBClientDownload.DeepScanEvent2",
-            safe_browsing::DeepScanEvent::kPromptBypassed);
+        LogDeepScanEvent(download_,
+                         safe_browsing::DeepScanEvent::kPromptBypassed);
       }
       [[fallthrough]];
     case DownloadCommands::KEEP:

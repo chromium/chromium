@@ -594,12 +594,8 @@ void DeepScanningRequest::OnScanComplete(
   if (result == BinaryUploadService::Result::SUCCESS) {
     request_tokens_.push_back(response.request_token());
     ResponseToDownloadCheckResult(response, &download_result);
-    base::UmaHistogramEnumeration(
-        "SBClientDownload.MalwareDeepScanResult." + GetTriggerName(trigger_),
-        download_result);
     if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
-      base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent2",
-                                    DeepScanEvent::kScanCompleted);
+      LogDeepScanEvent(item_, DeepScanEvent::kScanCompleted);
     }
   } else if (!base::FeatureList::IsEnabled(kDeepScanningUpdatedUX) &&
              trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT &&
@@ -619,6 +615,9 @@ void DeepScanningRequest::OnScanComplete(
   } else if (base::FeatureList::IsEnabled(kDeepScanningUpdatedUX) &&
              trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
+    if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
+      LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
+    }
 
     if (base::FeatureList::IsEnabled(kDeepScanningEncryptedArchives) &&
         result == BinaryUploadService::Result::FILE_ENCRYPTED) {
@@ -639,6 +638,16 @@ void DeepScanningRequest::OnScanComplete(
                  BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE &&
              analysis_settings_.block_unsupported_file_types) {
     download_result = DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE;
+  }
+
+  base::UmaHistogramEnumeration(
+      "SBClientDownload.MalwareDeepScanResult2." + GetTriggerName(trigger_),
+      download_result);
+  if (DownloadItemWarningData::IsEncryptedArchive(item_)) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.PasswordProtectedMalwareDeepScanResult." +
+            GetTriggerName(trigger_),
+        download_result);
   }
 
   Profile* profile = Profile::FromBrowserContext(

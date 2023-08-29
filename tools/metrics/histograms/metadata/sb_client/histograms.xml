@@ -66,19 +66,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DeepScanEvent2" enum="SBDeepScanEvent"
-    expires_after="2024-03-28">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records events related to user interaction with deep scanning prompts. This
-    is recorded a few times during the process of each prompt for deep scanning:
-    - Once when the prompt is shown. - Once when the prompt is
-    accepted/bypassed. - Once when the scan is completed, either through
-    cancelation or completion. This is only logged for consumer scans.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
     expires_after="2024-02-11">
   <owner>drubery@chromium.org</owner>
@@ -312,28 +299,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SBClientDownload.MalwareDeepScanResult.{trigger}"
-    enum="SBClientDownloadCheckResult" expires_after="2024-04-28">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of a malware deep scan, split by the reason the file was
-    uploaded for scanning. This is logged only for succesful scans. The overall
-    rate of successful scans is logged in
-    SafeBrowsingBinaryUploadRequest.MalwareResult.
-
-    Warning: this histogram was expired from 2021-04-29 to 2021-05-19; data may
-    be missing.
-  </summary>
-  <token key="trigger">
-    <variant name="ConsumerPrompt"
-        summary="Advanced Protection or Enhanced Protection user selected
-                 'Scan'"/>
-    <variant name="Policy" summary="Triggered by enterprise policy"/>
-    <variant name="Unknown" summary="Unknown trigger"/>
-  </token>
-</histogram>
-
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"
     units="ms" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
@@ -523,6 +488,46 @@ chromium-metrics-reviews@google.com.
     <variant name="Rar"/>
     <variant name="SevenZip"/>
     <variant name="Zip"/>
+  </token>
+</histogram>
+
+<histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
+    enum="SBDeepScanEvent" expires_after="2024-03-28">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records events related to user interaction with deep scanning prompts. This
+    is recorded a few times during the process of each prompt for deep scanning:
+    - Once when the prompt is shown. - Once when the prompt is
+    accepted/bypassed. - Once when the scan is completed, either through
+    cancelation or completion. This is logged for consumer scans of
+    {Encryption}.
+  </summary>
+  <token key="Encryption">
+    <variant name="" summary="a file"/>
+    <variant name="PasswordProtected" summary="an encrypted archive"/>
+  </token>
+</histogram>
+
+<histogram name="SBClientDownload.{Encryption}MalwareDeepScanResult2.{trigger}"
+    enum="SBClientDownloadCheckResult" expires_after="2024-04-28">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of deep scanning {Encryption}, split by the reason the
+    file was uploaded for scanning. This is logged after every deep scan of a
+    download.
+  </summary>
+  <token key="Encryption">
+    <variant name="" summary="a file"/>
+    <variant name="PasswordProtected" summary="an encrypted archive"/>
+  </token>
+  <token key="trigger">
+    <variant name="ConsumerPrompt"
+        summary="Advanced Protection or Enhanced Protection user selected
+                 'Scan'"/>
+    <variant name="Policy" summary="Triggered by enterprise policy"/>
+    <variant name="Unknown" summary="Unknown trigger"/>
   </token>
 </histogram>
 

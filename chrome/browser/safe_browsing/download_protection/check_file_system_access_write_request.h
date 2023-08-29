@@ -64,6 +64,7 @@ class CheckFileSystemAccessWriteRequest
   void NotifyRequestFinished(DownloadCheckResult result,
                              DownloadCheckResultReason reason) override;
   bool IsAllowlistedByPolicy() const override;
+  void LogDeepScanningPrompt() const override;
 
   const std::unique_ptr<content::FileSystemAccessWriteItem> item_;
   std::unique_ptr<ReferrerChainData> referrer_chain_data_;

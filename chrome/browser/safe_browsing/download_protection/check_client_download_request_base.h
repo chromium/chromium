@@ -148,6 +148,9 @@ class CheckClientDownloadRequestBase {
   // |client_download_request_| with their origin.
   void SanitizeRequest();
 
+  // Called when a deep scanning prompt is about to be shown.
+  virtual void LogDeepScanningPrompt() const = 0;
+
   // Source URL being downloaded from. This shuold always be set, but could be
   // for example an artificial blob: URL if there is no source URL.
   const GURL source_url_;

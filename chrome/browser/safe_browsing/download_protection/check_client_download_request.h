@@ -71,6 +71,7 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
                                   bool upload_requested,
                                   const std::string& request_data,
                                   const std::string& response_body) override;
+  void LogDeepScanningPrompt() const override;
 
   // Uploads the binary for deep scanning if the reason and policies indicate
   // it should be. ShouldUploadBinary will returns the settings to apply for

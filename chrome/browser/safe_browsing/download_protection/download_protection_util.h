@@ -91,8 +91,10 @@ enum class DeepScanEvent {
   kPromptAccepted = 2,
   kScanCanceled = 3,
   kScanCompleted = 4,
-  kMaxValue = kScanCompleted,
+  kScanFailed = 5,
+  kMaxValue = kScanFailed,
 };
+void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
 
 // Callback type which is invoked once the download request is done.
 typedef base::OnceCallback<void(DownloadCheckResult)> CheckDownloadCallback;
