@@ -4,13 +4,12 @@
 
 #include "ash/wm/desks/desk_action_view.h"
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 
@@ -18,7 +17,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kButtonSpacing = 0;
 constexpr int kCornerRadius = 20;
 constexpr int kDeskCloseButtonSize = 24;
 
@@ -37,13 +35,10 @@ DeskActionView::DeskActionView(
           std::make_unique<CloseButton>(std::move(close_all_callback),
                                         CloseButton::Type::kMediumFloating))),
       focus_change_callback_(std::move(focus_change_callback)) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
   blurred_background_ = std::make_unique<BlurredBackgroundShield>(
       this, kColorAshShieldAndBase80, ColorProvider::kBackgroundBlurSigma,
       gfx::RoundedCornersF(kCornerRadius));
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  SetBetweenChildSpacing(kButtonSpacing);
   combine_desks_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   close_all_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
@@ -80,12 +75,6 @@ void DeskActionView::SetCombineDesksButtonVisibility(bool visible) {
     return;
 
   combine_desks_button_->SetVisible(visible);
-
-  // When `combine_desks_button_` is invisible, we want to make sure that there
-  // is no space between the invisible `combine_desks_button_` and the
-  // `close_all_button_`. Otherwise, the desk action view will appear lopsided
-  // when the `combine_desks_button_` isn't visible.
-  SetBetweenChildSpacing(visible ? kButtonSpacing : 0);
 }
 
 void DeskActionView::OnViewFocused(views::View* observed) {

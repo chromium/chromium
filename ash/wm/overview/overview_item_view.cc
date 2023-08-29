@@ -109,6 +109,9 @@ OverviewItemView::OverviewItemView(
   }
 
   header_view()->UpdateIconView(window);
+
+  close_button_->SetPaintToLayer();
+  close_button_->layer()->SetFillsBoundsOpaquely(false);
 }
 
 OverviewItemView::~OverviewItemView() = default;
