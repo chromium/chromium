@@ -17,7 +17,7 @@
 
 namespace ash {
 
-enum class State { INITIALIZING, SUCCESS, FAILED };
+enum class State { kInitializing, kSuccess, kFailed };
 
 // Work that runs on a base::TaskRunner. It determines the accelerometer
 // configuration, and reads the data. Upon a successful read it will notify
@@ -93,11 +93,11 @@ class AccelerometerFileReader : public AccelerometerProviderInterface {
   // Initialize function. It is needed because on some devices the sensor hub
   // isn't available at the time the call to Initialize is made.
   // If the sensor is found to be missing we'll request a re-run of this
-  // function by returning State::INITIALIZING. TryScheduleInitializeInternal.
+  // function by returning State::kInitializing. TryScheduleInitializeInternal.
   InitializationResult InitializeInternal();
 
   // Attempt to finish the initialization with the result state. If it's
-  // State::INITIALIZING, it means something is missing and need to re-run
+  // State::kInitializing, it means something is missing and need to re-run
   // |TryScheduleInitialize|, if not timed out yet.
   void SetStatesWithInitializationResult(InitializationResult result);
 
@@ -120,7 +120,7 @@ class AccelerometerFileReader : public AccelerometerProviderInterface {
   void DisableAccelerometerReading();
 
   // The current initialization state of reader.
-  State initialization_state_ = State::INITIALIZING;
+  State initialization_state_ = State::kInitializing;
 
   // Attempts to read the accelerometer data in |blocking_task_runner_|. Upon a
   // success, converts the raw reading to an AccelerometerUpdate and notifies
