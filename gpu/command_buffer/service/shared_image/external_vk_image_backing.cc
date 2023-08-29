@@ -37,6 +37,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -1042,7 +1043,8 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
         command_buffer->TransitionImageLayout(
             image_info.fImage, image_info.fImageLayout,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        vk_textures_[plane].backend_texture.setVkImageLayout(
+        GrBackendTextures::SetVkImageLayout(
+            &vk_textures_[plane].backend_texture,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
       }
 
@@ -1148,7 +1150,8 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
         command_buffer->TransitionImageLayout(
             image_info.fImage, image_info.fImageLayout,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-        vk_textures_[plane].backend_texture.setVkImageLayout(
+        GrBackendTextures::SetVkImageLayout(
+            &vk_textures_[plane].backend_texture,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
       }
 

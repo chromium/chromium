@@ -19,6 +19,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -233,7 +234,8 @@ void ExternalVkImageSkiaImageRepresentation::EndAccess(bool readonly) {
   // the client TakeEndState() and asserting that the |end_state_| is null here.
 #if DCHECK_IS_ON()
   GrVkImageInfo info;
-  auto result = backing_impl()->backend_texture().getVkImageInfo(&info);
+  auto result = GrBackendTextures::GetVkImageInfo(
+      backing_impl()->backend_texture(), &info);
   DCHECK(result);
   DCHECK(!backing_impl()->need_synchronization() ||
          info.fCurrentQueueFamily == VK_QUEUE_FAMILY_EXTERNAL);

@@ -20,6 +20,7 @@
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "ui/base/ui_base_features.h"
@@ -425,8 +426,9 @@ uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
 #if BUILDFLAG(ENABLE_VULKAN)
     case GrBackendApi::kVulkan: {
       GrVkImageInfo image_info;
-      if (backend_texture.getVkImageInfo(&image_info))
+      if (GrBackendTextures::GetVkImageInfo(backend_texture, &image_info)) {
         return reinterpret_cast<uint64_t>(image_info.fImage);
+      }
       break;
     }
 #endif

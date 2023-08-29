@@ -53,6 +53,7 @@
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -1293,7 +1294,8 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
       << static_cast<int>(GrBackendFormats::AsGLFormat(backend_format))
 #if BUILDFLAG(ENABLE_VULKAN)
       << "\n  backend_format.asVkFormat()="
-      << static_cast<int>(backend_format.asVkFormat(&vk_format))
+      << static_cast<int>(
+             GrBackendFormats::AsVkFormat(backend_format, &vk_format))
       << "\n  backend_format.asVkFormat() vk_format="
       << static_cast<int>(vk_format)
 #endif
@@ -1474,7 +1476,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == gpu::GrContextType::kVulkan) {
     if (!ycbcr_info) {
-      return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format, plane_index));
+      return GrBackendFormats::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
 
     // Assume optimal tiling.
@@ -1486,8 +1488,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #if BUILDFLAG(IS_LINUX)
     // Textures that were allocated _on linux_ with ycbcr info came from
     // VaapiVideoDecoder, which exports using DRM format modifiers.
-    return GrBackendFormat::MakeVk(gr_ycbcr_info,
-                                   /*willUseDRMFormatModifiers=*/true);
+    return GrBackendFormats::MakeVk(gr_ycbcr_info,
+                                    /*willUseDRMFormatModifiers=*/true);
 #else
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
 #endif  // BUILDFLAG(IS_LINUX)

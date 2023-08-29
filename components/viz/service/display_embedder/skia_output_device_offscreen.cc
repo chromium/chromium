@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
@@ -109,7 +110,8 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
     if (backend_texture_.backend() == GrBackendApi::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
       GrVkImageInfo vk_image_info;
-      bool result = backend_texture_.getVkImageInfo(&vk_image_info);
+      bool result =
+          GrBackendTextures::GetVkImageInfo(backend_texture_, &vk_image_info);
       DCHECK(result);
       backbuffer_estimated_size_ = vk_image_info.fAlloc.fSize;
 #else

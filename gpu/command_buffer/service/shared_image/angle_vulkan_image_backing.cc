@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
@@ -542,7 +543,8 @@ void AngleVulkanImageBacking::PrepareBackendTexture() {
 
   for (size_t i = 0; i < vk_textures_.size(); ++i) {
     auto vk_layout = GLImageLayoutToVkImageLayout(gl_layouts_[i]);
-    vk_textures_[i].backend_texture.setVkImageLayout(vk_layout);
+    GrBackendTextures::SetVkImageLayout(&vk_textures_[i].backend_texture,
+                                        vk_layout);
   }
 }
 

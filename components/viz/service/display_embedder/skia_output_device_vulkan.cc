@@ -29,6 +29,7 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -205,8 +206,8 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
     vk_image_info.fProtected = GrProtected::kNo;
     const auto& vk_image_size = vulkan_surface_->image_size();
-    GrBackendTexture backend_texture(vk_image_size.width(),
-                                     vk_image_size.height(), vk_image_info);
+    GrBackendTexture backend_texture = GrBackendTextures::MakeVk(
+        vk_image_size.width(), vk_image_size.height(), vk_image_info);
 
     // Estimate size of GPU memory needed for the GrBackendRenderTarget.
     VkMemoryRequirements requirements;
@@ -226,7 +227,8 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
   } else {
     auto backend = SkSurfaces::GetBackendRenderTarget(
         sk_surface.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
-    backend.setVkImageLayout(scoped_write.image_layout());
+    GrBackendRenderTargets::SetVkImageLayout(&backend,
+                                             scoped_write.image_layout());
   }
 
   VkSemaphore vk_semaphore = scoped_write.begin_semaphore();
@@ -257,8 +259,9 @@ void SkiaOutputDeviceVulkan::EndPaint() {
         sk_surface.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
 #if DCHECK_IS_ON()
   GrVkImageInfo vk_image_info;
-  if (UNLIKELY(!context_provider_->GetGrContext()->abandoned() &&
-               !backend.getVkImageInfo(&vk_image_info))) {
+  if (UNLIKELY(
+          !context_provider_->GetGrContext()->abandoned() &&
+          !GrBackendRenderTargets::GetVkImageInfo(backend, &vk_image_info))) {
     NOTREACHED() << "Failed to get the image info.";
   }
   DCHECK_EQ(vk_image_info.fImageLayout, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);

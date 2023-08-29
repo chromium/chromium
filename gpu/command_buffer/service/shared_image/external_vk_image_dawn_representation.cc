@@ -13,6 +13,7 @@
 #include "gpu/vulkan/vulkan_image.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 
 namespace gpu {
@@ -75,7 +76,7 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
 
   const GrBackendTexture& backend_texture = backing_impl()->backend_texture();
   GrVkImageInfo image_info;
-  backend_texture.getVkImageInfo(&image_info);
+  GrBackendTextures::GetVkImageInfo(backend_texture, &image_info);
   // We should either be importing the image from the external queue, or it
   // was just created with no queue ownership.
   DCHECK(image_info.fCurrentQueueFamily == VK_QUEUE_FAMILY_IGNORED ||
