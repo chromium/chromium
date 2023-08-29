@@ -36,6 +36,7 @@ LacrosExtensionProxyTracker::LacrosExtensionProxyTracker(Profile* profile)
       base::BindRepeating(&LacrosExtensionProxyTracker::OnProxyPrefChanged,
                           base::Unretained(this)));
   OnProxyPrefChanged(proxy_config::prefs::kProxy);
+  extension_observation_.Observe(extensions::ExtensionRegistry::Get(profile));
 }
 
 LacrosExtensionProxyTracker::~LacrosExtensionProxyTracker() = default;
@@ -64,11 +65,16 @@ void LacrosExtensionProxyTracker::OnProxyPrefChanged(
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingProxy(profile_);
 
-  // This can happen in a new Chrome session, if the extension proxy was set
-  // in a previous Chrome session. In this case, it's safe to exit here since
-  // Ash-Chrome already has the information of the extension which set the
-  // proxy. The reason is that the extension store where the pref is stored is
-  // loaded before the extension which is controlling the pref.
+  // The the extension-set proxy pref update is received before the extension is
+  // enabled. This happens when the extension store where the pref is stored is
+  // loaded before the extension, in one of the following cases:
+  // - A new Chrome session is started, where the extension has set the proxy
+  // pref in a previous session;
+  // - Ash to Lacros migration;
+  // - Disabling and then enabling an extension which is controlling the proxy.
+  // It's safe to ignore the update here because this case is handled by
+  // listening to the ExtensionRegistry events and re-sending the proxy config
+  // to Ash when the extension which is controlling the proxy is loaded.
   if (!extension) {
     return;
   }
@@ -90,6 +96,22 @@ void LacrosExtensionProxyTracker::OnProxyPrefChanged(
   proxy_config->extension = std::move(extension_info);
   // TODO(acostinas, b/267719988) Remove this deprecated call in 118.
   GetNetworkSettingsApi()->SetExtensionProxy(std::move(proxy_config));
+}
+
+void LacrosExtensionProxyTracker::OnExtensionReady(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension) {
+  if (!extension_proxy_active_) {
+    return;
+  }
+  if (profile_ != Profile::FromBrowserContext(browser_context)) {
+    return;
+  }
+  if (extensions::GetExtensionOverridingProxy(profile_) != extension) {
+    return;
+  }
+
+  OnProxyPrefChanged(proxy_config::prefs::kProxy);
 }
 
 // static

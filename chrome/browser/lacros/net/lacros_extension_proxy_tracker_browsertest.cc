@@ -5,7 +5,7 @@
 #include "chrome/browser/lacros/net/lacros_extension_proxy_tracker.h"
 
 #include "base/files/file_util.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
@@ -38,17 +38,27 @@ class FakeNetworkSettingsService
       override {}
 
   void SetExtensionProxy(crosapi::mojom::ProxyConfigPtr proxy_config) override {
-    set_extension_proxy_future_.AddValue(std::move(proxy_config));
+    // When enabling an extension, the same "ExtensionReady" ExtensionRegistry
+    // event is triggered twice resulting in the same extension metadata being
+    // sent twice. We only care for the latest update.
+    set_extension_proxy_future_.Clear();
+    set_extension_proxy_future_.SetValue(std::move(proxy_config));
   }
   void ClearExtensionProxy() override {
-    clear_extension_proxy_future_.AddValue(true);
+    clear_extension_proxy_future_.Clear();
+    clear_extension_proxy_future_.SetValue(true);
   }
   void SetExtensionControllingProxyMetadata(
       crosapi::mojom::ExtensionControllingProxyPtr extension) override {
-    set_extension_metadata_future_.AddValue(std::move(extension));
+    // When enabling an extension, the same "ExtensionReady" ExtensionRegistry
+    // event is triggered twice resulting in the same extension metadata being
+    // sent twice. We only care for the latest update.
+    set_extension_metadata_future_.Clear();
+    set_extension_metadata_future_.SetValue(std::move(extension));
   }
   void ClearExtensionControllingProxyMetadata() override {
-    clear_extension_metadata_future_.AddValue(true);
+    clear_extension_metadata_future_.Clear();
+    clear_extension_metadata_future_.SetValue(true);
   }
 
   crosapi::mojom::ProxyConfigPtr WaitSetExtensionProxy() {
@@ -66,13 +76,12 @@ class FakeNetworkSettingsService
   }
 
  private:
-  base::test::RepeatingTestFuture<crosapi::mojom::ProxyConfigPtr>
+  base::test::TestFuture<crosapi::mojom::ProxyConfigPtr>
       set_extension_proxy_future_;
-  // TODO(crbug/1379290): Replace with `RepeatingTestFuture<void>`
-  base::test::RepeatingTestFuture<bool> clear_extension_proxy_future_;
-  base::test::RepeatingTestFuture<crosapi::mojom::ExtensionControllingProxyPtr>
+  base::test::TestFuture<bool> clear_extension_proxy_future_;
+  base::test::TestFuture<crosapi::mojom::ExtensionControllingProxyPtr>
       set_extension_metadata_future_;
-  base::test::RepeatingTestFuture<bool> clear_extension_metadata_future_;
+  base::test::TestFuture<bool> clear_extension_metadata_future_;
   mojo::Receiver<crosapi::mojom::NetworkSettingsService> receiver_{this};
 };
 
@@ -104,6 +113,35 @@ class LacrosExtensionProxyTrackerTest
                ->IsAvailable<crosapi::mojom::NetworkSettingsService>() &&
            LacrosExtensionProxyTracker::AshVersionSupportsExtensionMetadata();
   }
+
+  void VerifyExtensionMetadataSent(const std::string& extension_id,
+                                   const std::string& extension_name) {
+    if (IsExtensionMetadataSupported()) {
+      auto extension = service_->WaitSetExtensionControllingProxyMetadata();
+      ASSERT_TRUE(extension);
+      EXPECT_EQ(extension->id, extension_id);
+      EXPECT_EQ(extension->name, extension_name);
+      return;
+    }
+    auto proxy_config = service_->WaitSetExtensionProxy();
+    ASSERT_TRUE(proxy_config);
+    ASSERT_TRUE(proxy_config->extension);
+    EXPECT_EQ(proxy_config->extension->id, extension_id);
+    EXPECT_EQ(proxy_config->extension->name, extension_name);
+    // Verify that the proxy config set by the extension hosted at
+    // //chrome/test/data/extensions/api_test/proxy/pac is sent to Ash.
+    ASSERT_TRUE(proxy_config->proxy_settings->is_pac());
+    EXPECT_EQ(proxy_config->proxy_settings->get_pac()->pac_url,
+              GURL("http://wpad/windows.pac"));
+  }
+
+  void VerifyExtensionClearRequestSent() {
+    if (IsExtensionMetadataSupported()) {
+      EXPECT_TRUE(service_->WaitClearExtensionControllingProxyMetadata());
+      return;
+    }
+    EXPECT_TRUE(service_->WaitClearExtensionProxy());
+  }
   std::unique_ptr<FakeNetworkSettingsService> service_;
 };
 
@@ -123,26 +161,36 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionProxyTrackerTest, ExtensionSetProxy) {
   // //chrome/test/data/extensions/api_test/proxy/pac/.
   extension_id = LoadExtension(extension_path)->id();
 
-  if (IsExtensionMetadataSupported()) {
-    auto extension = service_->WaitSetExtensionControllingProxyMetadata();
-    ASSERT_TRUE(extension);
-    EXPECT_EQ(extension->id, extension_id);
-    EXPECT_EQ(extension->name, "chrome.proxy");
+  VerifyExtensionMetadataSent(extension_id, "chrome.proxy");
 
-  } else {
-    auto proxy_config = service_->WaitSetExtensionProxy();
-    ASSERT_TRUE(proxy_config);
-    ASSERT_TRUE(proxy_config->proxy_settings->is_pac());
-    EXPECT_EQ(proxy_config->proxy_settings->get_pac()->pac_url,
-              GURL("http://wpad/windows.pac"));
-  }
   UninstallExtension(extension_id);
 
-  if (IsExtensionMetadataSupported()) {
-    EXPECT_TRUE(service_->WaitClearExtensionControllingProxyMetadata());
-  } else {
-    EXPECT_TRUE(service_->WaitClearExtensionProxy());
+  VerifyExtensionClearRequestSent();
+}
+
+// Test that the extension metadata is sent when the extension is loaded, by
+// reacting to ExtensionRegistry events. Specifically, this test checks that the
+// mextension data is sent after disabling and re-enabling the extension. In
+// this case, the proxy pref is available before the extensio is loaded.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionProxyTrackerTest,
+                       SendUpdatesOnExtensionLoaded) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath extension_path = base::MakeAbsoluteFilePath(
+      test_data_dir_.AppendASCII("api_test/proxy/pac"));
+  if (extension_path.empty()) {
+    return;
   }
+  std::string extension_id;
+  // The test extension code is hosted at
+  // //chrome/test/data/extensions/api_test/proxy/pac/.
+  extension_id = LoadExtension(extension_path)->id();
+  VerifyExtensionMetadataSent(extension_id, "chrome.proxy");
+
+  DisableExtension(extension_id);
+  VerifyExtensionClearRequestSent();
+
+  EnableExtension(extension_id);
+  VerifyExtensionMetadataSent(extension_id, "chrome.proxy");
 }
 
 }  // namespace net
