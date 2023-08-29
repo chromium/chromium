@@ -42,6 +42,7 @@ namespace mojom {
 using ::chromeos::settings::mojom::kFingerprintSubpagePathV2;
 using ::chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2;
 using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
+using ::chromeos::settings::mojom::kPrivacyHubMicrophoneSubpagePath;
 using ::chromeos::settings::mojom::kPrivacyHubSubpagePath;
 using ::chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2;
 using ::chromeos::settings::mojom::kSmartPrivacySubpagePath;
@@ -433,6 +434,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "isPrivacyHubHatsEnabled",
       base::FeatureList::IsEnabled(
           ::features::kHappinessTrackingPrivacyHubPostLaunch));
+  html_source->AddBoolean(
+      "showAppPermissionsInsidePrivacyHub",
+      ash::features::IsCrosPrivacyHubAppPermissionsEnabled());
   html_source->AddBoolean("showPrivacyHubPage",
                           ash::features::IsCrosPrivacyHubEnabled());
   html_source->AddBoolean("showPrivacyHubMVPPage",
@@ -590,6 +594,13 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::Setting::kGeolocationOnOff,
         mojom::Setting::kSpeakOnMuteDetectionOnOff}},
       generator);
+
+  // Privacy hub microphone.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_TITLE,
+      mojom::Subpage::kPrivacyHubMicrophone, mojom::SearchResultIcon::kShield,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPrivacyHubMicrophoneSubpagePath);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

@@ -28,7 +28,7 @@ const PrivacyHubVersion = {
   Dogfood: 'Privacy Hub with dogfooded features (camera and microphone only).',
 };
 
-function overridedValues(privacyHubVersion: string) {
+function overriddenValues(privacyHubVersion: string) {
   switch (privacyHubVersion) {
     case PrivacyHubVersion.Future: {
       return {
@@ -36,6 +36,7 @@ function overridedValues(privacyHubVersion: string) {
         showPrivacyHubMVPPage: true,
         showPrivacyHubFuturePage: true,
         showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
     case PrivacyHubVersion.Dogfood: {
@@ -44,6 +45,7 @@ function overridedValues(privacyHubVersion: string) {
         showPrivacyHubMVPPage: false,
         showPrivacyHubFuturePage: false,
         showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
     case PrivacyHubVersion.MVP: {
@@ -52,6 +54,7 @@ function overridedValues(privacyHubVersion: string) {
         showPrivacyHubMVPPage: true,
         showPrivacyHubFuturePage: false,
         showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
     default: {
@@ -67,7 +70,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(
   let mediaDevices: FakeMediaDevices;
 
   setup(async () => {
-    loadTimeData.overrideValues(overridedValues(privacyHubVersion));
+    loadTimeData.overrideValues(overriddenValues(privacyHubVersion));
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     if (enforceCameraLedFallback) {
@@ -565,6 +568,28 @@ async function parametrizedPrivacyHubSubpageTestsuite(
         fakeMetricsPrivate.countBoolean(
             'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', true),
         1);
+  });
+
+  test('Navigate to microphone subpage', () => {
+    loadTimeData.overrideValues({
+      showAppPermissionsInsidePrivacyHub: true,
+    });
+
+    privacyHubSubpage.remove();
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
+    document.body.appendChild(privacyHubSubpage);
+    flush();
+
+    const microphoneSubpageLinkWrapper =
+        privacyHubSubpage.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#microphoneSubpageLinkWrapper');
+    assertTrue(!!microphoneSubpageLinkWrapper);
+
+    microphoneSubpageLinkWrapper.click();
+    flush();
+
+    assertEquals(
+        routes.PRIVACY_HUB_MICROPHONE, Router.getInstance().currentRoute);
   });
 
   test('Send HaTS messages', async () => {

@@ -7,6 +7,7 @@
  * 'os-settings-privacy-hub-subpage' contains privacy hub configurations.
  */
 
+import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/settings/controls/settings_toggle_button.js';
@@ -24,7 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Route, routes} from '../router.js';
+import {Route, Router, routes} from '../router.js';
 
 import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
@@ -117,6 +118,18 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
       },
 
       /**
+       * Whether the features related to app permissions should be displayed in
+       * privacy hub.
+       */
+      showAppPermissions_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => {
+          return loadTimeData.getBoolean('showAppPermissionsInsidePrivacyHub');
+        },
+      },
+
+      /**
        * Whether the part of speak-on-mute detection should be displayed.
        */
       showSpeakOnMuteDetectionPage_: {
@@ -152,6 +165,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private microphonesConnected_: string[];
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
+  private showAppPermissions_: boolean;
   private showPrivacyHubMVPPage_: boolean;
   private showSpeakOnMuteDetectionPage_: boolean;
 
@@ -260,6 +274,19 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     chrome.metricsPrivate.recordBoolean(
         'ChromeOS.PrivacyHub.Microphone.Settings.Enabled',
         (event.target as SettingsToggleButtonElement).checked);
+  }
+
+  private navigateToMicrophoneSubpage_(): void {
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB_MICROPHONE);
+  }
+
+  private onMicrophoneWrapperClick_(): void {
+    this.navigateToMicrophoneSubpage_();
+  }
+
+  private onMicrophoneSubpageArrowClick_(e: Event): void {
+    this.navigateToMicrophoneSubpage_();
+    e.stopPropagation();
   }
 }
 

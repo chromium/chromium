@@ -205,6 +205,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   POWER: Route;
   PRIVACY: Route;
   PRIVACY_HUB: Route;
+  PRIVACY_HUB_MICROPHONE: Route;
   SEARCH: Route;
   SEARCH_SUBPAGE: Route;
   SMART_PRIVACY: Route;
@@ -527,6 +528,9 @@ export function createRoutes(): OsSettingsRoutes {
       Subpage.kSmartPrivacy);
   r.PRIVACY_HUB = createSubpage(
       r.OS_PRIVACY, routesMojom.PRIVACY_HUB_SUBPAGE_PATH, Subpage.kPrivacyHub);
+  r.PRIVACY_HUB_MICROPHONE = createSubpage(
+      r.OS_PRIVACY, routesMojom.PRIVACY_HUB_MICROPHONE_SUBPAGE_PATH,
+      Subpage.kPrivacyHubMicrophone);
 
   // Languages and Input section.
   r.OS_LANGUAGES = createSection(

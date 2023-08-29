@@ -50,31 +50,60 @@
   </div>
 </div>
 
-<div id="microphone">
-  <settings-toggle-button
-      class="hr"
-      pref="{{prefs.ash.user.microphone_allowed}}"
-      id="microphoneToggle"
-      label="$i18n{microphoneToggleTitle}"
-      deep-link-focus-id$="[[Setting.kMicrophoneOnOff]]"
-      sub-label="$i18n{microphoneToggleSubtext}"
-      disabled="[[shouldDisableMicrophoneToggle_]]"
-      on-change="onMicrophoneToggleChanged_">
-    <cr-tooltip-icon
-      hidden$="[[!microphoneHardwareToggleActive_]]"
-      tooltip-text="$i18n{microphoneHwToggleTooltip}"
-      icon-class="cr:info-outline"
-      slot="more-actions">
-    </cr-tooltip-icon>
-  </settings-toggle-button>
-
+<div id="microphoneSection">
+  <template is="dom-if" if="[[!showAppPermissions_]]">
+    <settings-toggle-button
+        id="microphoneToggle"
+        class="hr"
+        pref="{{prefs.ash.user.microphone_allowed}}"
+        label="$i18n{microphoneToggleTitle}"
+        deep-link-focus-id$="[[Setting.kMicrophoneOnOff]]"
+        sub-label="$i18n{microphoneToggleSubtext}"
+        disabled="[[shouldDisableMicrophoneToggle_]]"
+        on-change="onMicrophoneToggleChanged_">
+      <cr-tooltip-icon
+        hidden$="[[!microphoneHardwareToggleActive_]]"
+        tooltip-text="$i18n{microphoneHwToggleTooltip}"
+        icon-class="cr:info-outline"
+        slot="more-actions">
+      </cr-tooltip-icon>
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[showAppPermissions_]]">
+    <div class="settings-box no-padding">
+      <div id ="microphoneSubpageLinkWrapper"
+          class="link-wrapper" actionable on-click="onMicrophoneWrapperClick_">
+        <iron-icon
+            id="microphoneIcon"
+            icon="app-management:microphone">
+        </iron-icon>
+        <div
+            id="microphoneSectionTitle"
+            class="middle settings-box-text"
+            aria-hidden="true">
+          $i18n{microphoneToggleTitle}
+          <div class="secondary" id="microphoneSectionSubtext">
+            $i18n{microphoneToggleSubtext}
+          </div>
+        </div>
+        <cr-icon-button
+            id="microphoneSubpageArrow"
+            class="subpage-arrow"
+            aria-label="$i18n{microphoneToggleTitle}"
+            on-click="onMicrophoneSubpageArrowClick_">
+        </cr-icon-button>
+      </div>
+      <div class="separator"></div>
+      <cr-toggle id="microphoneToggle" class="margin-matches-padding">
+      </cr-toggle>
+    </div>
+  </template>
   <div class="list-frame">
     <template is="dom-if" if="[[isMicListEmpty_]]" restamp>
       <div id="noMic" class="list-item">
         $i18n{noMicrophoneConnectedText}
       </div>
     </template>
-
     <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
       <template id="micList" is="dom-repeat" items="[[microphonesConnected_]]">
         <div class="list-item">
