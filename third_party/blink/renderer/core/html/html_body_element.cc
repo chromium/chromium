@@ -298,10 +298,4 @@ const QualifiedName& HTMLBodyElement::SubResourceAttributeName() const {
   return html_names::kBackgroundAttr;
 }
 
-bool HTMLBodyElement::SupportsFocus() const {
-  // This override is needed because the inherited method bails if the parent is
-  // editable.  The <body> should be focusable even if <html> is editable.
-  return IsEditable(*this) || HTMLElement::SupportsFocus();
-}
-
 }  // namespace blink

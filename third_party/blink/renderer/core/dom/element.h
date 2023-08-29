@@ -790,8 +790,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // while not *being focusable*, for example if the element is disconnected
   // from the document. This method can be called when layout is not clean, and
   // it will *not* update layout itself.
+ protected:
   virtual bool SupportsFocus() const;
 
+ public:
   // IsFocusable is true if the element SupportsFocus(), and is currently
   // focusable (using the mouse). This method can be called when layout is not
   // clean, but the method might trigger a lifecycle update in that case. This

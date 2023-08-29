@@ -26,7 +26,6 @@ class CORE_EXPORT FencedFrameMPArchDelegate
   void Navigate(const KURL&, const String&) override;
   void Dispose() override;
   void AttachLayoutTree() override;
-  bool SupportsFocus() override;
   void MarkFrozenFrameSizeStale() override;
   void MarkContainerSizeStale() override;
   void DidChangeFramePolicy(const FramePolicy&) override;
@@ -34,6 +33,8 @@ class CORE_EXPORT FencedFrameMPArchDelegate
   void Trace(Visitor* visitor) const override;
 
  private:
+  bool SupportsFocus() override;
+
   HeapMojoAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;
 };
 

@@ -59,8 +59,6 @@ class CORE_EXPORT SVGElement : public Element {
  public:
   ~SVGElement() override;
 
-  bool SupportsFocus() const override { return false; }
-
   bool IsOutermostSVGSVGElement() const;
 
   bool HasTagName(const SVGQualifiedName& name) const {
@@ -301,6 +299,8 @@ class CORE_EXPORT SVGElement : public Element {
       delete;  // This will catch anyone doing an unnecessary check.
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
+
+  bool SupportsFocus() const override { return false; }
 
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();

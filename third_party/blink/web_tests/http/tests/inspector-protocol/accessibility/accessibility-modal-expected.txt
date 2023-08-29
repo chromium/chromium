@@ -29,13 +29,6 @@ Tests accessibility values in modal dialog.
     parentId : <string>
     properties : [
         [0] : {
-            name : focused
-            value : {
-                type : booleanOrUndefined
-                value : true
-            }
-        }
-        [1] : {
             name : modal
             value : {
                 type : boolean
@@ -266,6 +259,13 @@ Tests accessibility values in modal dialog.
     parentId : <string>
     properties : [
         [0] : {
+            name : focused
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
             name : modal
             value : {
                 type : boolean

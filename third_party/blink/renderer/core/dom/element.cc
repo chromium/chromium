@@ -2420,7 +2420,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       // DOM-level focusability here.
       GetDocument().UpdateStyleAndLayoutTreeForNode(
           this, DocumentUpdateReason::kFocus);
-      if (!SupportsFocus() && !GetFocusableArea()) {
+      if (!IsFocusable() && !GetFocusableArea()) {
         blur();
       }
     }

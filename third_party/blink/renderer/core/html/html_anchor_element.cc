@@ -135,6 +135,7 @@ bool HTMLAnchorElement::SupportsFocus() const {
 }
 
 bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
+  // TODO(crbug.com/1444450): Can't this be done with focus-visible now?
   return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
          HTMLElement::SupportsFocus();
 }

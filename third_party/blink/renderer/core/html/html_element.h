@@ -183,7 +183,6 @@ class CORE_EXPORT HTMLElement : public Element {
   static const AtomicString& EventNameForAttributeName(
       const QualifiedName& attr_name);
 
-  bool SupportsFocus() const override;
   bool IsDisabledFormControl() const override;
   bool MatchesEnabledPseudoClass() const override;
   bool MatchesReadOnlyPseudoClass() const override;
@@ -286,6 +285,8 @@ class CORE_EXPORT HTMLElement : public Element {
       InputDeviceCapabilities* source_capabilities) override;
 
  protected:
+  bool SupportsFocus() const override;
+
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
   void AddHTMLLengthToStyle(MutableCSSPropertyValueSet*,

@@ -68,8 +68,6 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement,
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
   const QualifiedName& SubResourceAttributeName() const override;
 
-  bool SupportsFocus() const override;
-
   Document& GetDocumentForWindowEventHandler() const override {
     return GetDocument();
   }
