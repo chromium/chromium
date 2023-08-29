@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("language_packs") {
   sources = [
+    "diff.cc",
+    "diff.h",
     "handwriting.cc",
     "handwriting.h",
     "language_pack_manager.cc",
@@ -32,6 +34,7 @@ static_library("language_packs") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "diff_unittest.cc",
     "handwriting_unittest.cc",
     "language_pack_manager_unittest.cc",
     "language_packs_util_unittest.cc",
