@@ -303,7 +303,7 @@ template("generate_runner_script") {
                            "test_exe",
                          ])
 
-  if (!defined(skip_generating_board_args)) {
+  if (!defined(skip_generating_board_args) && !is_skylab) {
     skip_generating_board_args = false
   }
 
@@ -441,7 +441,7 @@ template("generate_runner_script") {
       executable_args += [ "--strip-chrome" ]
     }
 
-    if (!skip_generating_board_args || is_skylab) {
+    if (!skip_generating_board_args) {
       executable_args += [
         "--board",
         cros_board,
