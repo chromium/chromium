@@ -96,21 +96,19 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   const bool enable_brp = false;
 #endif
 
-  const auto brp_setting = enable_brp
-                               ? PartitionOptions::BackupRefPtr::kEnabled
-                               : PartitionOptions::BackupRefPtr::kDisabled;
+  const auto brp_setting =
+      enable_brp ? PartitionOptions::kEnabled : PartitionOptions::kDisabled;
 
   const bool enable_memory_tagging = base::allocator::PartitionAllocSupport::
       ShouldEnableMemoryTaggingInRendererProcess();
   const auto memory_tagging =
-      enable_memory_tagging
-          ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-          : partition_alloc::PartitionOptions::MemoryTagging::kDisabled;
+      enable_memory_tagging ? partition_alloc::PartitionOptions::kEnabled
+                            : partition_alloc::PartitionOptions::kDisabled;
   // No need to call ChangeMemoryTaggingModeForAllThreadsPerProcess() as it will
   // be handled in ReconfigureAfterFeatureListInit().
 
   return PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
+      .star_scan_quarantine = PartitionOptions::kAllowed,
       .backup_ref_ptr = brp_setting,
       .memory_tagging = {.enabled = memory_tagging},
   };
@@ -136,7 +134,7 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
 
   scan_is_enabled_ =
-      (options.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled) &&
+      (options.backup_ref_ptr == PartitionOptions::kDisabled) &&
 #if BUILDFLAG(USE_STARSCAN)
       (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
        base::FeatureList::IsEnabled(kPCScanBlinkPartitions));
@@ -156,7 +154,7 @@ bool Partitions::InitializeOnce() {
   // --enable-features=PartitionAllocPCScanBlinkPartitions is specified.
   if (scan_is_enabled_ || !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)) {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    options.thread_cache = PartitionOptions::ThreadCache::kEnabled;
+    options.thread_cache = PartitionOptions::kEnabled;
 #endif
     static base::NoDestructor<partition_alloc::PartitionAllocator>
         fast_malloc_allocator(options);
@@ -190,10 +188,8 @@ void Partitions::InitializeArrayBufferPartition() {
   // aligned as required by ArrayBufferContents.
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       array_buffer_allocator(partition_alloc::PartitionOptions{
-          .star_scan_quarantine =
-              partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
-          .backup_ref_ptr =
-              partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+          .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
+          .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
           // When the V8 virtual memory cage is enabled, the ArrayBuffer
           // partition must be placed inside of it. For that, PA's
           // ConfigurablePool is created inside the V8 Cage during
@@ -201,11 +197,9 @@ void Partitions::InitializeArrayBufferPartition() {
           // we'd like to use that Pool if it has been created by now (if it
           // hasn't been created, the cage isn't enabled, and so we'll use the
           // default Pool).
-          .use_configurable_pool = partition_alloc::PartitionOptions::
-              UseConfigurablePool::kIfAvailable,
-          .memory_tagging =
-              {.enabled =
-                   partition_alloc::PartitionOptions::MemoryTagging::kDisabled},
+          .use_configurable_pool = partition_alloc::PartitionOptions::kAllowed,
+          .memory_tagging = {.enabled =
+                                 partition_alloc::PartitionOptions::kDisabled},
       });
 
   array_buffer_root_ = array_buffer_allocator->root();

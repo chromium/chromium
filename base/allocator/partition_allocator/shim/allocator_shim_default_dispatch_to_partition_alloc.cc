@@ -141,28 +141,25 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
 class MainPartitionConstructor {
  public:
   static partition_alloc::PartitionRoot* New(void* buffer) {
-    constexpr partition_alloc::PartitionOptions::ThreadCache thread_cache =
+    constexpr partition_alloc::PartitionOptions::EnableToggle thread_cache =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // Additional partitions may be created in ConfigurePartitions(). Since
         // only one partition can have thread cache enabled, postpone the
         // decision to turn the thread cache on until after that call.
         // TODO(bartekn): Enable it here by default, once the "split-only" mode
         // is no longer needed.
-        partition_alloc::PartitionOptions::ThreadCache::kDisabled;
+        partition_alloc::PartitionOptions::kDisabled;
 #else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // Other tests, such as the ThreadCache tests create a thread cache,
         // and only one is supported at a time.
-        partition_alloc::PartitionOptions::ThreadCache::kDisabled;
+        partition_alloc::PartitionOptions::kDisabled;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     auto* new_root = new (buffer)
         partition_alloc::PartitionRoot(partition_alloc::PartitionOptions{
-            .aligned_alloc =
-                partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+            .aligned_alloc = partition_alloc::PartitionOptions::kAllowed,
             .thread_cache = thread_cache,
-            .star_scan_quarantine =
-                partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
-            .backup_ref_ptr =
-                partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+            .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
+            .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
         });
 
     return new_root;
@@ -571,26 +568,19 @@ void ConfigurePartitions(
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
       new_main_allocator(partition_alloc::PartitionOptions{
-          .aligned_alloc =
-              !use_dedicated_aligned_partition
-                  ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
-                  : partition_alloc::PartitionOptions::AlignedAlloc::
-                        kDisallowed,
-          .thread_cache =
-              partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-          .star_scan_quarantine =
-              partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
-          .backup_ref_ptr =
-              enable_brp
-                  ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
-                  : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+          .aligned_alloc = !use_dedicated_aligned_partition
+                               ? partition_alloc::PartitionOptions::kAllowed
+                               : partition_alloc::PartitionOptions::kDisallowed,
+          .thread_cache = partition_alloc::PartitionOptions::kDisabled,
+          .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
+          .backup_ref_ptr = enable_brp
+                                ? partition_alloc::PartitionOptions::kEnabled
+                                : partition_alloc::PartitionOptions::kDisabled,
           .ref_count_size = ref_count_size,
           .memory_tagging = {
               .enabled = enable_memory_tagging
-                             ? partition_alloc::PartitionOptions::
-                                   MemoryTagging::kEnabled
-                             : partition_alloc::PartitionOptions::
-                                   MemoryTagging::kDisabled,
+                             ? partition_alloc::PartitionOptions::kEnabled
+                             : partition_alloc::PartitionOptions::kDisabled,
               .reporting_mode = memory_tagging_reporting_mode}});
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
@@ -601,14 +591,10 @@ void ConfigurePartitions(
     static partition_alloc::internal::base::NoDestructor<
         partition_alloc::PartitionAllocator>
         new_aligned_allocator(partition_alloc::PartitionOptions{
-            .aligned_alloc =
-                partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-            .thread_cache =
-                partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-            .star_scan_quarantine =
-                partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
-            .backup_ref_ptr =
-                partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+            .aligned_alloc = partition_alloc::PartitionOptions::kAllowed,
+            .thread_cache = partition_alloc::PartitionOptions::kDisabled,
+            .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
+            .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
         });
     new_aligned_root = new_aligned_allocator->root();
   } else {

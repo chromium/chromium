@@ -62,11 +62,11 @@ class DeltaCounter {
 std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
   std::unique_ptr<PartitionAllocatorForTesting> allocator =
       std::make_unique<PartitionAllocatorForTesting>(PartitionOptions {
-        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+        .aligned_alloc = PartitionOptions::kAllowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        .thread_cache = PartitionOptions::ThreadCache::kEnabled,
+        .thread_cache = PartitionOptions::kEnabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
+        .star_scan_quarantine = PartitionOptions::kAllowed,
       });
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
@@ -272,8 +272,8 @@ TEST_P(PartitionAllocThreadCacheTest, Purge) {
 
 TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   PartitionAllocatorForTesting allocator(PartitionOptions{
-      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
-      .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
+      .aligned_alloc = PartitionOptions::kAllowed,
+      .star_scan_quarantine = PartitionOptions::kAllowed,
   });
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);

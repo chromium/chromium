@@ -76,12 +76,9 @@ ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {
 void ArrayBufferAllocator::InitializePartition() {
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       partition_allocator(partition_alloc::PartitionOptions{
-          .star_scan_quarantine =
-              partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
-          .backup_ref_ptr =
-              partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-          .use_configurable_pool = partition_alloc::PartitionOptions::
-              UseConfigurablePool::kIfAvailable,
+          .star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed,
+          .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
+          .use_configurable_pool = partition_alloc::PartitionOptions::kAllowed,
       });
 
   partition_ = partition_allocator->root();

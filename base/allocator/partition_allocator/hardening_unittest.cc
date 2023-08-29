@@ -28,7 +28,7 @@ TEST(HardeningTest, PartialCorruption) {
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
   PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+      .aligned_alloc = PartitionOptions::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 
@@ -53,7 +53,7 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
   PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+      .aligned_alloc = PartitionOptions::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 
@@ -74,7 +74,7 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
 
 TEST(HardeningTest, MetadataPointerCrashing) {
   PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+      .aligned_alloc = PartitionOptions::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 
@@ -101,7 +101,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
 
 TEST(HardeningTest, SuccessfulCorruption) {
   PartitionRoot root(PartitionOptions{
-      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+      .aligned_alloc = PartitionOptions::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 

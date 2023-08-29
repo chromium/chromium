@@ -1860,8 +1860,7 @@ void HandleOOM(size_t unused_size) {
 // testing purpose.
 static constexpr partition_alloc::PartitionOptions
     kOnlyEnableBackupRefPtrOptions = {
-        .backup_ref_ptr =
-            partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+        .backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled,
 };
 
 class BindUnretainedDanglingInternalFixture : public BindTest {

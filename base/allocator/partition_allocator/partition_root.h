@@ -146,50 +146,39 @@ struct PurgeFlags {
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {
-  enum class AlignedAlloc : uint8_t {
-    // By default all allocations will be aligned to `kAlignment`,
-    // likely to be 8B or 16B depending on platforms and toolchains.
-    // AlignedAlloc() allows to enforce higher alignment.
-    // This option determines whether it is supported for the partition.
-    // Allowing AlignedAlloc() comes at a cost of disallowing extras in front
-    // of the allocation.
+  enum class AllowToggle : uint8_t {
     kDisallowed,
     kAllowed,
   };
-
-  enum class ThreadCache : uint8_t {
+  enum class EnableToggle : uint8_t {
     kDisabled,
     kEnabled,
   };
 
-  enum class StarScanQuarantine : uint8_t {
-    kDisallowed,
-    kAllowed,
-  };
+  // Expose the enum arms directly at the level of `PartitionOptions`,
+  // since the variant names are already sufficiently descriptive.
+  using AllowToggle::kAllowed;
+  using AllowToggle::kDisallowed;
+  using EnableToggle::kDisabled;
+  using EnableToggle::kEnabled;
 
-  enum class BackupRefPtr : uint8_t {
-    kDisabled,
-    kEnabled,
-  };
+  // By default all allocations will be aligned to `kAlignment`,
+  // likely to be 8B or 16B depending on platforms and toolchains.
+  // AlignedAlloc() allows to enforce higher alignment.
+  // This option determines whether it is supported for the partition.
+  // Allowing AlignedAlloc() comes at a cost of disallowing extras in front
+  // of the allocation.
+  AllowToggle aligned_alloc = kDisallowed;
 
-  enum class UseConfigurablePool : uint8_t {
-    kNo,
-    kIfAvailable,
-  };
+  EnableToggle thread_cache = kDisabled;
+  AllowToggle star_scan_quarantine = kDisallowed;
+  EnableToggle backup_ref_ptr = kDisabled;
+  AllowToggle use_configurable_pool = kDisallowed;
 
-  enum class MemoryTagging : uint8_t {
-    kEnabled,
-    kDisabled,
-  };
-
-  AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
-  ThreadCache thread_cache = ThreadCache::kDisabled;
-  StarScanQuarantine star_scan_quarantine = StarScanQuarantine::kDisallowed;
-  BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
-  UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size = 0;
+
   struct {
-    MemoryTagging enabled = MemoryTagging::kDisabled;
+    EnableToggle enabled = kDisabled;
     TagViolationReportingMode reporting_mode =
         TagViolationReportingMode::kUndefined;
   } memory_tagging;

@@ -1569,14 +1569,11 @@ class BackupRefPtrTest : public testing::Test {
 
   partition_alloc::PartitionAllocator allocator_ =
       partition_alloc::PartitionAllocator(partition_alloc::PartitionOptions{
-          .backup_ref_ptr =
-              partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-          .memory_tagging = {.enabled =
-                                 base::CPU::GetInstanceNoAllocation().has_mte()
-                                     ? partition_alloc::PartitionOptions::
-                                           MemoryTagging::kEnabled
-                                     : partition_alloc::PartitionOptions::
-                                           MemoryTagging::kDisabled}});
+          .backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled,
+          .memory_tagging = {
+              .enabled = base::CPU::GetInstanceNoAllocation().has_mte()
+                             ? partition_alloc::PartitionOptions::kEnabled
+                             : partition_alloc::PartitionOptions::kDisabled}});
 };
 
 TEST_F(BackupRefPtrTest, Basic) {

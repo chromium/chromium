@@ -114,7 +114,7 @@ PartitionAllocator::~PartitionAllocator() {
 
 void PartitionAllocator::init(PartitionOptions opts) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  PA_CHECK(opts.thread_cache == PartitionOptions::ThreadCache::kDisabled)
+  PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled)
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);

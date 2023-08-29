@@ -112,7 +112,7 @@ declare_args() {
   #
   # Note that |enable_backup_ref_ptr_support = true| doesn't necessarily enable
   # BRP protection. It'll be enabled only for partition created with
-  # partition_alloc::PartitionOptions::BackupRefPtr::kEnabled.
+  # partition_alloc::PartitionOptions::kEnabled.
   enable_backup_ref_ptr_support =
       use_partition_alloc && enable_backup_ref_ptr_support_default
 

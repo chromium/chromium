@@ -25,7 +25,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   PA_CHECK(slot_count > 0);
 
   constexpr PartitionOptions kConfig{
-      .backup_ref_ptr = PartitionOptions::BackupRefPtr::kEnabled,
+      .backup_ref_ptr = PartitionOptions::kEnabled,
   };
   static internal::base::NoDestructor<PartitionRoot> root(kConfig);
 

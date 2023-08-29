@@ -967,30 +967,27 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif
 
     settings.allow_aligned_alloc =
-        opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
+        opts.aligned_alloc == PartitionOptions::kAllowed;
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     settings.use_cookie = true;
 #else
     static_assert(!Settings::use_cookie);
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    settings.brp_enabled_ =
-        opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kEnabled;
+    settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     EnableMac11MallocSizeHackIfNeeded(opts.ref_count_size);
 #endif
 #else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
+    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     settings.use_configurable_pool =
-        (opts.use_configurable_pool ==
-         PartitionOptions::UseConfigurablePool::kIfAvailable) &&
+        (opts.use_configurable_pool == PartitionOptions::kAllowed) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
-        opts.memory_tagging.enabled ==
-        PartitionOptions::MemoryTagging::kEnabled;
+        opts.memory_tagging.enabled == PartitionOptions::kEnabled;
     // Memory tagging is not supported in the configurable pool because MTE
     // stores tagging information in the high bits of the pointer, it causes
     // issues with components like V8's ArrayBuffers which use custom pointer
@@ -1011,7 +1008,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // BRP and thread isolated mode use different pools, so they can't be
     // enabled at the same time.
     PA_CHECK(!opts.thread_isolation.enabled ||
-             opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
+             opts.backup_ref_ptr == PartitionOptions::kDisabled);
     settings.thread_isolation = opts.thread_isolation;
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
@@ -1060,8 +1057,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     settings.quarantine_mode =
 #if BUILDFLAG(USE_STARSCAN)
-        (opts.star_scan_quarantine ==
-                 PartitionOptions::StarScanQuarantine::kDisallowed
+        (opts.star_scan_quarantine == PartitionOptions::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
              : QuarantineMode::kDisabledByDefault);
 #else
@@ -1102,7 +1098,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #else
     ThreadCache::EnsureThreadSpecificDataInitialized();
     settings.with_thread_cache =
-        (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
+        (opts.thread_cache == PartitionOptions::kEnabled);
 
     if (settings.with_thread_cache) {
       ThreadCache::Init(this);
