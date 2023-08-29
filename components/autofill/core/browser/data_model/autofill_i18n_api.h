@@ -7,25 +7,32 @@
 
 #include "components/autofill/core/browser/data_model/autofill_i18n_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 
 namespace autofill::i18n_model_definition {
 
-enum class AutofillModelType {
-  kAddressModel = 0,
-  kNameModel = 1,
-};
-
-// Creates an instance of the hierarchy model corresponding to the
-// given `AutofillModelType` in the provided country. All the nodes have
-// empty values, except for the country node (if exist).
+// Creates an instance of the address hierarchy model corresponding to the
+// provided country. All the nodes have empty values, except for the country
+// node (if exist). If no country is provided, returns the legacy address
+// hierarchy.
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
-    AutofillModelType model_type,
     std::string_view country_code);
 
 // Returns the formatting expression corresponding to the provided parameters.
-// If the expression can't be found, an empty string is returned.
+// If the expression can't be found or the country is empty, it attempts to look
+// for a legacy expression. Returns an empty string if none can be found.
 std::u16string GetFormattingExpression(ServerFieldType field_type,
                                        std::string_view country_code);
+
+// Parses the given `value` using a custom parsing process (if available) for
+// the corresponding `field_type` and `country_code`. If the country is empty or
+// there is no expression available, it attempts to parse the value using one of
+// the legacy regular expressions. If no matching is found, `nullopt` is
+// returned.
+i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
+    std::string_view value,
+    ServerFieldType field_type,
+    std::string_view country_code);
 
 }  // namespace autofill::i18n_model_definition
 

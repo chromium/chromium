@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
@@ -23,21 +24,12 @@ namespace autofill::i18n_model_definition {
 namespace {
 using i18n_model_definition::kAutofillFormattingRulesMap;
 using i18n_model_definition::kAutofillModelRules;
+using i18n_model_definition::kAutofillParsingRulesMap;
 
 // Adjacency mapping, stores for each field type X the list of field types
 // which are children of X.
 using TreeDefinition =
     base::flat_map<ServerFieldType, base::span<const ServerFieldType>>;
-
-ServerFieldType GetRootFieldType(AutofillModelType model_type) {
-  switch (model_type) {
-    case AutofillModelType::kAddressModel:
-      return ADDRESS_HOME_ADDRESS;
-    case AutofillModelType::kNameModel:
-      return NAME_FULL;
-  }
-  NOTREACHED_NORETURN();
-}
 
 std::unique_ptr<I18nAddressComponent> BuildSubTree(
     const TreeDefinition& tree_def,
@@ -54,41 +46,29 @@ std::unique_ptr<I18nAddressComponent> BuildSubTree(
                                                 MergeMode::kDefault);
 }
 
-std::unique_ptr<AddressComponent> GetLegacyHierarchy(
-    AutofillModelType model_type) {
-  switch (model_type) {
-    case AutofillModelType::kAddressModel:
-      return std::make_unique<AddressNode>();
-    case AutofillModelType::kNameModel:
-      if (HonorificPrefixEnabled()) {
-        return std::make_unique<NameFullWithPrefix>();
-      }
-      return std::make_unique<NameFull>();
-  }
-  NOTREACHED_NORETURN();
-}
 
 }  // namespace
 
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
-    AutofillModelType model_type,
     std::string_view country_code) {
   auto* it = kAutofillModelRules.find(country_code);
-  if (it == kAutofillModelRules.end()) {
-    return GetLegacyHierarchy(model_type);
-  }
+
+  // If the entry is not defined, use the legacy rules.
+  auto tree_edges = it == kAutofillModelRules.end()
+                        ? kAutofillModelRules.find("XX")->second
+                        : it->second;
 
   // Convert the list of node properties into an adjacency lookup table.
   // For each field type it stores the list of children of the field type.
   TreeDefinition tree_def =
       base::MakeFlatMap<ServerFieldType, base::span<const ServerFieldType>>(
-          it->second, {}, [](const auto& item) {
+          tree_edges, {}, [](const auto& item) {
             return std::make_pair(item.field_type, item.children);
           });
 
-  auto result = BuildSubTree(tree_def, GetRootFieldType(model_type));
+  auto result = BuildSubTree(tree_def, ADDRESS_HOME_ADDRESS);
 
-  if (model_type == AutofillModelType::kAddressModel) {
+  if (!country_code.empty()) {
     // Set the address model country to the one requested.
     result->SetValueForType(ADDRESS_HOME_COUNTRY,
                             base::UTF8ToUTF16(country_code),
@@ -99,14 +79,36 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 
 std::u16string GetFormattingExpression(ServerFieldType field_type,
                                        std::string_view country_code) {
-  if (auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
-      it != kAutofillFormattingRulesMap.end()) {
+  auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
+  // If `country_code` is specified return a custom formatting expression if
+  // exist.
+  if (!country_code.empty() && it != kAutofillFormattingRulesMap.end()) {
     return std::u16string(it->second);
   }
-  // TODO(crbug/1464568): Add new address format rules that override all the
-  // legacy ones.
-  return StructuredAddressesFormatProvider::GetInstance()->GetPattern(
-      field_type, country_code);
+
+  // Otherwise return a legacy formatting expression that exists.
+  auto* legacy_it = kAutofillFormattingRulesMap.find({"XX", field_type});
+  return legacy_it != kAutofillFormattingRulesMap.end()
+             ? std::u16string(legacy_it->second)
+             : u"";
+}
+
+i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
+    std::string_view value,
+    ServerFieldType field_type,
+    std::string_view country_code) {
+  auto* it = kAutofillParsingRulesMap.find({country_code, field_type});
+  // If `country_code` is specified, attempt to parse the `value` using a custom
+  // parsing structure (if exist).
+  if (!country_code.empty() && it != kAutofillParsingRulesMap.end()) {
+    return it->second->Parse(value);
+  }
+
+  // Otherwise try using a legacy parsing expression (if exist).
+  auto* legacy_it = kAutofillParsingRulesMap.find({"XX", field_type});
+  return legacy_it != kAutofillParsingRulesMap.end()
+             ? legacy_it->second->Parse(value)
+             : absl::nullopt;
 }
 
 }  // namespace autofill::i18n_model_definition

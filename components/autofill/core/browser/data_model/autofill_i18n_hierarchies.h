@@ -14,35 +14,33 @@
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/field_types.h"
 
-namespace autofill {
-namespace i18n_model_definition {
+namespace autofill::i18n_model_definition {
 // Field types for country BR.
-constexpr ServerFieldType kFieldTypeChildren_BR_NAME_FULL[] = {NAME_FIRST, NAME_LAST};
 constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
 constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_SUBPREMISE[] = {ADDRESS_HOME_FLOOR, ADDRESS_HOME_APT_NUM};
 constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_OVERFLOW[] = {ADDRESS_HOME_SUBPREMISE, COMPANY_NAME};
 constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_OVERFLOW_AND_LANDMARK[] = {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LANDMARK};
 constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_OVERFLOW_AND_LANDMARK};
-constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_ADDRESS[] = {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
+constexpr ServerFieldType kFieldTypeChildren_BR_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 // Field types for country IN.
-constexpr ServerFieldType kFieldTypeChildren_IN_NAME_LAST[] = {NAME_LAST_FIRST, NAME_LAST_CONJUNCTION, NAME_LAST_SECOND};
-constexpr ServerFieldType kFieldTypeChildren_IN_NAME_FULL[] = {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST, NAME_SUFFIX};
 constexpr ServerFieldType kFieldTypeChildren_IN_ADDRESS_HOME_SUBPREMISE[] = {ADDRESS_HOME_FLOOR, ADDRESS_HOME_APT_NUM};
 constexpr ServerFieldType kFieldTypeChildren_IN_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_STREET_NAME, COMPANY_NAME, ADDRESS_HOME_LANDMARK};
-constexpr ServerFieldType kFieldTypeChildren_IN_ADDRESS_HOME_ADDRESS[] = {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
+constexpr ServerFieldType kFieldTypeChildren_IN_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 // Field types for country MX.
-constexpr ServerFieldType kFieldTypeChildren_MX_NAME_LAST[] = {NAME_LAST_FIRST, NAME_LAST_CONJUNCTION, NAME_LAST_SECOND};
-constexpr ServerFieldType kFieldTypeChildren_MX_NAME_FULL[] = {NAME_FIRST, NAME_MIDDLE, NAME_LAST};
 constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
 constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_SUBPREMISE[] = {ADDRESS_HOME_FLOOR, ADDRESS_HOME_APT_NUM};
 constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_BETWEEN_STREETS[] = {ADDRESS_HOME_BETWEEN_STREETS_1, ADDRESS_HOME_BETWEEN_STREETS_2};
 constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK[] = {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_BETWEEN_STREETS};
 constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_OVERFLOW[] = {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, COMPANY_NAME, DELIVERY_INSTRUCTIONS};
 constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_OVERFLOW};
-constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_ADDRESS[] = {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
+constexpr ServerFieldType kFieldTypeChildren_MX_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 // Field types for country US.
-constexpr ServerFieldType kFieldTypeChildren_US_NAME_FULL[] = {NAME_FIRST, NAME_MIDDLE, NAME_LAST};
-constexpr ServerFieldType kFieldTypeChildren_US_ADDRESS_HOME_ADDRESS[] = {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
+constexpr ServerFieldType kFieldTypeChildren_US_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
+// Field types for country XX.
+constexpr ServerFieldType kFieldTypeChildren_XX_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
+constexpr ServerFieldType kFieldTypeChildren_XX_ADDRESS_HOME_SUBPREMISE[] = {ADDRESS_HOME_FLOOR, ADDRESS_HOME_APT_NUM};
+constexpr ServerFieldType kFieldTypeChildren_XX_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION, COMPANY_NAME, ADDRESS_HOME_SUBPREMISE};
+constexpr ServerFieldType kFieldTypeChildren_XX_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 
 // Contains the properties of a node in the tree. Currently these are the node's
 // type and the list of children.
@@ -54,7 +52,6 @@ struct FieldTypeDescription {
 // Collection of arrays of node properties for each country.
 // Node properties for country BR.
 constexpr FieldTypeDescription kModel_BR[] = {
-    FieldTypeDescription{.field_type = NAME_FULL, .children = kFieldTypeChildren_BR_NAME_FULL},
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_BR_ADDRESS_HOME_STREET_LOCATION},
     FieldTypeDescription{.field_type = ADDRESS_HOME_SUBPREMISE, .children = kFieldTypeChildren_BR_ADDRESS_HOME_SUBPREMISE},
     FieldTypeDescription{.field_type = ADDRESS_HOME_OVERFLOW, .children = kFieldTypeChildren_BR_ADDRESS_HOME_OVERFLOW},
@@ -63,15 +60,11 @@ constexpr FieldTypeDescription kModel_BR[] = {
     FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_BR_ADDRESS_HOME_ADDRESS}};
 // Node properties for country IN.
 constexpr FieldTypeDescription kModel_IN[] = {
-    FieldTypeDescription{.field_type = NAME_LAST, .children = kFieldTypeChildren_IN_NAME_LAST},
-    FieldTypeDescription{.field_type = NAME_FULL, .children = kFieldTypeChildren_IN_NAME_FULL},
     FieldTypeDescription{.field_type = ADDRESS_HOME_SUBPREMISE, .children = kFieldTypeChildren_IN_ADDRESS_HOME_SUBPREMISE},
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_ADDRESS, .children = kFieldTypeChildren_IN_ADDRESS_HOME_STREET_ADDRESS},
     FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_IN_ADDRESS_HOME_ADDRESS}};
 // Node properties for country MX.
 constexpr FieldTypeDescription kModel_MX[] = {
-    FieldTypeDescription{.field_type = NAME_LAST, .children = kFieldTypeChildren_MX_NAME_LAST},
-    FieldTypeDescription{.field_type = NAME_FULL, .children = kFieldTypeChildren_MX_NAME_FULL},
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_MX_ADDRESS_HOME_STREET_LOCATION},
     FieldTypeDescription{.field_type = ADDRESS_HOME_SUBPREMISE, .children = kFieldTypeChildren_MX_ADDRESS_HOME_SUBPREMISE},
     FieldTypeDescription{.field_type = ADDRESS_HOME_BETWEEN_STREETS, .children = kFieldTypeChildren_MX_ADDRESS_HOME_BETWEEN_STREETS},
@@ -81,8 +74,13 @@ constexpr FieldTypeDescription kModel_MX[] = {
     FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_MX_ADDRESS_HOME_ADDRESS}};
 // Node properties for country US.
 constexpr FieldTypeDescription kModel_US[] = {
-    FieldTypeDescription{.field_type = NAME_FULL, .children = kFieldTypeChildren_US_NAME_FULL},
     FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_US_ADDRESS_HOME_ADDRESS}};
+// Node properties for country XX.
+constexpr FieldTypeDescription kModel_XX[] = {
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_XX_ADDRESS_HOME_STREET_LOCATION},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_SUBPREMISE, .children = kFieldTypeChildren_XX_ADDRESS_HOME_SUBPREMISE},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_ADDRESS, .children = kFieldTypeChildren_XX_ADDRESS_HOME_STREET_ADDRESS},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_XX_ADDRESS_HOME_ADDRESS}};
 
 
 // The lookup map for the autofill hierarchy connections per country. The value
@@ -93,10 +91,10 @@ constexpr auto kAutofillModelRules =
       {"BR", kModel_BR},
       {"IN", kModel_IN},
       {"MX", kModel_MX},
-      {"US", kModel_US}
+      {"US", kModel_US},
+      {"XX", kModel_XX}
       });
 
-}  // namespace i18n_model_definition
-}  // namespace autofill
+}  // namespace autofill::i18n_model_definition
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_HIERARCHIES_H_
