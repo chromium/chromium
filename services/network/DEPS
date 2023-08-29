@@ -24,6 +24,7 @@ include_rules = [
   "+services/service_manager/public",
   "+third_party/boringssl/src/include",
   "+url",
+  "+sql",
 ]
 
 specific_include_rules = {

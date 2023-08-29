@@ -109,6 +109,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/android/http_auth_negotiate_android.h"
+#include "services/network/sandboxed_vfs_delegate.h"
+#include "sql/database.h"
+#include "sql/sandboxed_vfs.h"
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -126,6 +129,10 @@ namespace network {
 namespace {
 
 NetworkService* g_network_service = nullptr;
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kSandboxedVfsName[] = "network_service";
+#endif
 
 std::unique_ptr<net::NetworkChangeNotifier> CreateNetworkChangeNotifierIfNeeded(
     net::NetworkChangeNotifier::ConnectionType initial_connection_type,
@@ -595,6 +602,14 @@ void NetworkService::DeregisterNetworkContext(NetworkContext* network_context) {
   network_contexts_.erase(network_context);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void NetworkService::InvalidateNetworkContextPath(const base::FilePath& path) {
+  if (sandboxed_vfs_delegate_ptr_) {
+    sandboxed_vfs_delegate_ptr_->InvalidateFileBrokerPath(path);
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void NetworkService::CreateNetLogEntriesForActiveObjects(
     net::NetLog::ThreadSafeObserver* observer) {
   std::set<net::URLRequestContext*> contexts;
@@ -822,6 +837,16 @@ void NetworkService::OnApplicationStateChange(
       listener->Notify(state);
     }
   }
+}
+
+void NetworkService::SetSandboxedVFS() {
+  // TODO(crbug.com/1117049): stop disabling mmaping by default once
+  // sql::Database is more configurable.
+  sql::Database::DisableMmapByDefault();
+  auto delegate = std::make_unique<SandboxedVfsDelegate>();
+  sandboxed_vfs_delegate_ptr_ = delegate.get();
+  sql::SandboxedVfs::Register(kSandboxedVfsName, std::move(delegate),
+                              /*make_default=*/true);
 }
 #endif
 
