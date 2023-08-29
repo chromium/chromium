@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/devtools/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -95,6 +96,13 @@ static_library("devtools") {
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
   ]
+
+  if (enable_aida) {
+    defines = [
+      "AIDA_ENDPOINT=\"$aida_endpoint\"",
+      "AIDA_SCOPE=\"$aida_scope\"",
+    ]
+  }
 
   deps = [
     "//base",
@@ -233,6 +241,12 @@ static_library("devtools") {
       sources += [
         "device/cast_device_provider.cc",
         "device/cast_device_provider.h",
+      ]
+    }
+    if (enable_aida) {
+      sources += [
+        "aida_client.cc",
+        "aida_client.h",
       ]
     }
   }

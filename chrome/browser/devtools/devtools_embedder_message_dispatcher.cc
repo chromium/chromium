@@ -270,5 +270,9 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandlerWithCallback("showSurvey", &Delegate::ShowSurvey, delegate);
   d->RegisterHandlerWithCallback("canShowSurvey", &Delegate::CanShowSurvey,
                                  delegate);
+#if defined(AIDA_SCOPE)
+  d->RegisterHandlerWithCallback("doAidaConversation",
+                                 &Delegate::DoAidaConversation, delegate);
+#endif
   return d;
 }

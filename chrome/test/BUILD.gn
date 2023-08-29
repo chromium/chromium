@@ -12,6 +12,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//chrome/browser/buildflags.gni")
+import("//chrome/browser/devtools/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
@@ -7799,6 +7800,11 @@ test("unit_tests") {
     if (is_posix) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
     }
+
+    if (enable_aida) {
+      sources += [ "../browser/devtools/aida_client_unittest.cc" ]
+    }
+
     if (is_linux) {
       deps += [ "//ui/linux:linux_ui_factory" ]
     }

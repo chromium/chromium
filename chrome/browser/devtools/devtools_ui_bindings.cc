@@ -86,12 +86,12 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/google_api_keys.h"
 #include "ipc/ipc_channel.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -364,6 +364,12 @@ std::string SanitizeFrontendQueryParam(
   if (key == "noJavaScriptCompletion" && value == "true") {
     return value;
   }
+
+#if defined(AIDA_SCOPE)
+  if (key == "enableAida" && value == "true") {
+    return value;
+  }
+#endif
 
   return std::string();
 }
@@ -800,6 +806,17 @@ void DevToolsUIBindings::SetIsDocked(DispatchCallback callback,
   delegate_->SetIsDocked(dock_requested);
   std::move(callback).Run(nullptr);
 }
+
+#if defined(AIDA_SCOPE)
+void DevToolsUIBindings::OnAidaConverstaionResponse(
+    DispatchCallback callback,
+    const std::string& response) {
+  base::Value::Dict response_dict;
+  response_dict.Set("response", response);
+  auto response_value = base::Value(std::move(response_dict));
+  std::move(callback).Run(&response_value);
+}
+#endif
 
 void DevToolsUIBindings::InspectElementCompleted() {
   delegate_->InspectElementCompleted();
@@ -1658,6 +1675,23 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
+
+#if defined(AIDA_SCOPE)
+void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
+                                            const std::string& request) {
+  if (!aida_client_) {
+    aida_client_ = std::make_unique<AidaClient>(
+        profile_, DevToolsWindow::AsDevToolsWindow(web_contents_)
+                      ->GetInspectedWebContents()
+                      ->GetPrimaryMainFrame()
+                      ->GetStoragePartition()
+                      ->GetURLLoaderFactoryForBrowserProcess());
+  }
+  aida_client_->DoConversation(
+      request, base::BindOnce(&DevToolsUIBindings::OnAidaConverstaionResponse,
+                              base::Unretained(this), std::move(callback)));
+}
+#endif
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {
   delegate_.reset(delegate);

@@ -1217,6 +1217,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
         url += "&targetType=tab";
       }
+#if defined(AIDA_SCOPE)
+        url += "&enableAida=true";
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (channel >= version_info::Channel::DEV &&
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
