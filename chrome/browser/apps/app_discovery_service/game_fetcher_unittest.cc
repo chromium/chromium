@@ -58,7 +58,6 @@ TEST_F(GameFetcherTest, RegisterForUpdates) {
             auto* game_extras = results[0].GetSourceExtras()->AsGameExtras();
             EXPECT_TRUE(game_extras);
             EXPECT_EQ(game_extras->GetSource(), u"LuckyMe");
-            EXPECT_EQ(game_extras->GetPublisher(), u"FUN GAME STUDIOS");
             EXPECT_EQ(
                 game_extras->GetDeeplinkUrl(),
                 GURL("https://todo.com/games?game-id=jrioj324j2095245234320o"));
@@ -72,7 +71,6 @@ TEST_F(GameFetcherTest, RegisterForUpdates) {
             game_extras = results[1].GetSourceExtras()->AsGameExtras();
             EXPECT_TRUE(game_extras);
             EXPECT_EQ(game_extras->GetSource(), u"LuckyMe");
-            EXPECT_EQ(game_extras->GetPublisher(), u"Cool Games");
             EXPECT_EQ(game_extras->GetDeeplinkUrl(),
                       GURL("https://todo.com/"
                            "games?game-id=reijarowaiore131983u12jkljs893"));

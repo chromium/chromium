@@ -94,13 +94,10 @@ class TestAppDiscoveryService : public apps::AppDiscoveryService {
 };
 
 apps::Result MakeAppsResult(bool masking_allowed) {
-  return apps::Result(
-      apps::AppSource::kGames, "12345", u"Title",
-      std::make_unique<apps::GameExtras>(
-          absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png"), masking_allowed,
-          GURL("https://game.com/game")));
+  return apps::Result(apps::AppSource::kGames, "12345", u"Title",
+                      std::make_unique<apps::GameExtras>(
+                          u"SourceName", base::FilePath("/icons/test.png"),
+                          masking_allowed, GURL("https://game.com/game")));
 }
 
 }  // namespace

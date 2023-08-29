@@ -44,21 +44,6 @@ bool AvailableInCurrentTimezoneLocale(
   return false;
 }
 
-absl::optional<std::vector<std::u16string>> GetPlatforms(
-    const apps::proto::App& app) {
-  if (app.available_stores_size() == 0) {
-    return absl::nullopt;
-  }
-
-  std::vector<std::u16string> store_names;
-  for (const auto& store : app.available_stores()) {
-    if (!store.store_label().empty()) {
-      store_names.push_back(base::UTF8ToUTF16(store.store_label()));
-    }
-  }
-  return store_names;
-}
-
 std::string ReadFileToString(const base::FilePath& path) {
   std::string result;
   if (!base::ReadFileToString(path, &result)) {
@@ -176,9 +161,7 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
     }
 
     auto extras = std::make_unique<GameExtras>(
-        GetPlatforms(app_with_locale.app()),
         base::UTF8ToUTF16(app_with_locale.app().source_name()),
-        base::UTF8ToUTF16(app_with_locale.app().publisher_name()),
         base::FilePath(app_with_locale.app().icon_info().icon_path()),
         app_with_locale.app().icon_info().is_masking_allowed(),
         GURL(app_with_locale.app().deeplink()));
