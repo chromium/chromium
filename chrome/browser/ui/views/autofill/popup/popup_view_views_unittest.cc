@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
+#include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
 #include <memory>
 
@@ -17,12 +18,14 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -115,7 +118,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view_ = std::make_unique<PopupViewViews>(controller().GetWeakPtr(),
                                              widget_.get());
     widget().SetContentsView(view_.get());
-    view().DoShow();
+    view().Show(AutoselectFirstSuggestion(false));
   }
 
   void CreateAndShowView(const std::vector<PopupItemId>& ids) {
@@ -125,7 +128,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
 
   void UpdateSuggestions(const std::vector<PopupItemId>& ids) {
     controller().set_suggestions(ids);
-    view().OnSuggestionsChanged();
+    static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged();
   }
 
   void Paint() {
@@ -175,20 +178,20 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
         blink::WebKeyboardEvent::Type::kRawKeyDown, modifiers,
         ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;
-    view().HandleKeyPressEvent(event);
+    test_api(view()).HandleKeyPressEvent(event);
   }
 
  protected:
   views::View& GetRowViewAt(size_t index) {
     return *absl::visit([](views::View* view) { return view; },
-                        view().GetRowsForTesting()[index]);
+                        test_api(view()).rows()[index]);
   }
 
   PopupRowView& GetPopupRowViewAt(size_t index) {
-    return view().GetPopupRowViewAt(index);
+    return *absl::get<PopupRowView*>(test_api(view()).rows()[index]);
   }
 
-  size_t GetNumberOfRows() { return view().GetRowsForTesting().size(); }
+  size_t GetNumberOfRows() { return test_api(view()).rows().size(); }
 
   MockAutofillPopupController& controller() {
     return autofill_popup_controller_;
@@ -240,14 +243,14 @@ TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
   const int kElementHeight = 15;
   controller().set_element_bounds({10, kElementY, 100, kElementHeight});
 
-  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting({0, 0, 100, 35}));
+  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 100, 35}));
 
   // Test a smaller than the popup height (-10px) available space.
-  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting(
+  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds(
       {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
 
   // Test a larger than the popup height (+10px) available space.
-  EXPECT_TRUE(view().CanShowDropdownInBoundsForTesting(
+  EXPECT_TRUE(test_api(view()).CanShowDropdownInBounds(
       {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
 
   view().Hide();
@@ -258,10 +261,10 @@ TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
                      PopupItemId::kAutocompleteEntry,
                      PopupItemId::kAutocompleteEntry, PopupItemId::kSeparator,
                      PopupItemId::kAutofillOptions});
-  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting({0, 0, 100, 35}));
-  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting(
+  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 100, 35}));
+  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds(
       {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
-  EXPECT_TRUE(view().CanShowDropdownInBoundsForTesting(
+  EXPECT_TRUE(test_api(view()).CanShowDropdownInBounds(
       {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
 }
 

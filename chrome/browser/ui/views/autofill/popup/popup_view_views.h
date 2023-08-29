@@ -70,13 +70,8 @@ class PopupViewViews : public PopupBaseView,
   // PopupBaseView:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
-  bool CanShowDropdownInBoundsForTesting(const gfx::Rect& bounds) const;
-
  private:
-  friend class PopupViewViewsBrowsertest;
-  friend class PopupViewViewsTest;
-
-  const std::vector<RowPointer>& GetRowsForTesting() { return rows_; }
+  friend class PopupViewViewsTestApi;
 
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will

@@ -364,11 +364,6 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
 }
 
-bool PopupViewViews::CanShowDropdownInBoundsForTesting(
-    const gfx::Rect& bounds) const {
-  return CanShowDropdownInBounds(bounds);
-}
-
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
          absl::holds_alternative<PopupRowView*>(rows_[index]);
