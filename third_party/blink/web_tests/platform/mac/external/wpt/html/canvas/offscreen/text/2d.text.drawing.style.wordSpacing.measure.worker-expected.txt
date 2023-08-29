@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing word spacing with different length units assert_approx_equals: word spacing doesn't work. expected 90.58702256944444 +/- 0.1 but got 81.5283203125
-Harness: the test ran to completion.
-

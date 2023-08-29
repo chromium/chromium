@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing letter spacing with different length units assert_approx_equals: letter spacing doesn't work. expected 104 +/- 0.1 but got 52
-Harness: the test ran to completion.
-
