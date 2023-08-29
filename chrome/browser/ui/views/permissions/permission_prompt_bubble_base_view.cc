@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -115,6 +116,10 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     extra_text_label->SetMultiLine(true);
     extra_text_label->SetID(permissions::PermissionPromptViewID::
                                 VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT);
+    if (features::IsChromeRefresh2023()) {
+      extra_text_label->SetTextStyle(views::style::STYLE_BODY_3);
+      extra_text_label->SetEnabledColorId(kColorPermissionPromptRequestText);
+    }
   }
   if (is_one_time_permission_) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
