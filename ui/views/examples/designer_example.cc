@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -38,6 +39,7 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/examples_color_id.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -153,7 +155,11 @@ class ClassRegistration<Combobox> : public BaseClassRegistration,
   ClassRegistration() = default;
   ~ClassRegistration() override = default;
   std::unique_ptr<View> CreateView() override {
-    return std::make_unique<Combobox>(this);
+    return Builder<Combobox>()
+        .SetModel(this)
+        .SetAccessibleName(
+            l10n_util::GetStringUTF16(IDS_DESIGNER_COMBOBOX_NAME))
+        .Build();
   }
   std::u16string GetViewClassName() override {
     return base::ASCIIToUTF16(Combobox::MetaData()->type_name());
@@ -188,6 +194,8 @@ class ClassRegistration<Textfield> : public BaseClassRegistration {
     return Builder<Textfield>()
         .SetText(text)
         .SetDefaultWidthInChars(text.size())
+        .SetAccessibleName(
+            l10n_util::GetStringUTF16(IDS_DESIGNER_TEXTFIELD_NAME))
         .Build();
   }
   std::u16string GetViewClassName() override {
@@ -227,7 +235,10 @@ class ClassRegistration<ToggleButton> : public BaseClassRegistration {
   ClassRegistration() = default;
   ~ClassRegistration() override = default;
   std::unique_ptr<View> CreateView() override {
-    return std::make_unique<ToggleButton>();
+    return Builder<ToggleButton>()
+        .SetAccessibleName(
+            l10n_util::GetStringUTF16(IDS_DESIGNER_IMAGEBUTTON_NAME))
+        .Build();
   }
   std::u16string GetViewClassName() override {
     return base::ASCIIToUTF16(ToggleButton::MetaData()->type_name());
@@ -243,6 +254,8 @@ class ClassRegistration<ImageButton> : public BaseClassRegistration {
     return Builder<ImageButton>()
         .SetImage(Button::ButtonState::STATE_NORMAL,
                   gfx::CreateVectorIcon(kPinIcon, ui::kColorIcon))
+        .SetAccessibleName(
+            l10n_util::GetStringUTF16(IDS_DESIGNER_IMAGEBUTTON_NAME))
         .Build();
   }
   std::u16string GetViewClassName() override {

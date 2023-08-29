@@ -65,21 +65,22 @@ void TableExample::CreateExampleView(View* container) {
                                      MaximumFlexSizeRule::kUnbounded)
                        .WithWeight(1);
 
-  const auto make_checkbox =
-      [](const std::u16string& label, int id,
-         raw_ptr<TableView, DanglingUntriaged>* table,
-         raw_ptr<Checkbox>* checkbox, FlexSpecification full_flex) {
-        return Builder<Checkbox>()
-            .CopyAddressTo(checkbox)
-            .SetText(label)
-            .SetCallback(base::BindRepeating(
-                [](int id, TableView* table, Checkbox* checkbox) {
-                  table->SetColumnVisibility(id, checkbox->GetChecked());
-                },
-                id, *table, *checkbox))
-            .SetChecked(true)
-            .SetProperty(kFlexBehaviorKey, full_flex);
-      };
+  const auto make_checkbox = [](const std::u16string& label, int id,
+                                raw_ptr<TableView, DanglingUntriaged>* table,
+                                raw_ptr<Checkbox>* checkbox,
+                                FlexSpecification full_flex) {
+    return Builder<Checkbox>()
+        .CopyAddressTo(checkbox)
+        .SetText(label)
+        .SetCallback(base::BindRepeating(
+            [](int id, raw_ptr<TableView, DanglingUntriaged>* table,
+               Checkbox* checkbox) {
+              (*table)->SetColumnVisibility(id, checkbox->GetChecked());
+            },
+            id, table, *checkbox))
+        .SetChecked(true)
+        .SetProperty(kFlexBehaviorKey, full_flex);
+  };
 
   // Make table
   Builder<View>(container)
@@ -87,13 +88,13 @@ void TableExample::CreateExampleView(View* container) {
           TableView::CreateScrollViewBuilderWithTable(
               Builder<TableView>()
                   .CopyAddressTo(&table_)
-                  .SetModel(this)
-                  .SetTableType(ICON_AND_TEXT)
                   .SetColumns(
                       {TestTableColumn(0, u"Fruit", ui::TableColumn::LEFT, 1.0),
                        TestTableColumn(1, u"Color"),
                        TestTableColumn(2, u"Origin"),
                        TestTableColumn(3, u"Price", ui::TableColumn::RIGHT)})
+                  .SetTableType(ICON_AND_TEXT)
+                  .SetModel(this)
                   .SetGrouper(this)
                   .SetObserver(this))
               .SetProperty(kFlexBehaviorKey, full_flex),

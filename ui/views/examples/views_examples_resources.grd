@@ -87,6 +87,20 @@
         Combo Box 2
       </message>
 
+      <!-- designer example -->
+      <message translateable="false" name="IDS_DESIGNER_COMBOBOX_NAME">
+        Combo Box
+      </message>
+      <message translateable="false" name="IDS_DESIGNER_TEXTFIELD_NAME">
+        Textfield
+      </message>
+      <message translateable="false" name="IDS_DESIGNER_TOGGLEBUTTON_NAME">
+        ToggleButton
+      </message>
+      <message translateable="false" name="IDS_DESIGNER_IMAGEBUTTON_NAME">
+        ImageButton
+      </message>
+
       <!-- dialog example -->
       <message translateable="false" name="IDS_DIALOG_SELECT_LABEL">
         Dialog
