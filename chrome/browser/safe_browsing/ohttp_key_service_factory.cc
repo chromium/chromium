@@ -38,7 +38,8 @@ OhttpKeyServiceFactory::OhttpKeyServiceFactory()
   DependsOn(NetworkContextServiceFactory::GetInstance());
 }
 
-KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // TODO(crbug.com/1441654) [Also TODO(thefrog)]: For now we simply return
   // nullptr for Android. If it becomes settled that Android should not use this
@@ -59,7 +60,7 @@ KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
           g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
               profile));
-  return new OhttpKeyService(
+  return std::make_unique<OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       profile->GetPrefs());
 #endif
