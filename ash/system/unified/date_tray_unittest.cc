@@ -305,6 +305,9 @@ class DateTrayTest
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override {
+    if (AreGlanceablesV2Enabled()) {
+      GetDateTray()->HideGlanceableBubble();
+    }
     GetUnifiedSystemTray()->CloseBubble();
   }
 
@@ -350,6 +353,25 @@ INSTANTIATE_TEST_SUITE_P(GlanceablesV2,
 // close upon activation. See crbug/1419499 for details.
 TEST_P(DateTrayTest, AcceleratorOpenAndImmediateCloseDoesNotCrash) {
   ImmediatelyCloseBubbleOnActivation();
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  if (AreGlanceablesV2Enabled()) {
+    // The glanceables bubble cannot be closed during activation, so expect it
+    // to still be shown.
+    EXPECT_TRUE(IsBubbleShown());
+  } else {
+    EXPECT_FALSE(IsBubbleShown());
+  }
+}
+
+// Test that search + c shows and hides a glanceables or calendar bubble.
+TEST_P(DateTrayTest, AcceleratorTogglesBubble) {
+  EXPECT_FALSE(IsBubbleShown());
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(IsBubbleShown());
+
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
   EXPECT_FALSE(IsBubbleShown());
