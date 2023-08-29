@@ -143,8 +143,8 @@ void AnalyserHandler::UpdatePullStatusIfNeeded() {
   Context()->AssertGraphOwner();
 
   if (Output(0).IsConnected()) {
-    // When an AudioBasicInspectorNode is connected to a downstream node, it
-    // will get pulled by the downstream node, thus remove it from the context's
+    // When an AnalyserHandler is connected to a downstream node, it will get
+    // pulled by the downstream node, thus remove it from the context's
     // automatic pull list.
     if (need_automatic_pull_) {
       Context()->GetDeferredTaskHandler().RemoveAutomaticPullNode(this);
@@ -153,14 +153,13 @@ void AnalyserHandler::UpdatePullStatusIfNeeded() {
   } else {
     unsigned number_of_input_connections =
         Input(0).NumberOfRenderingConnections();
-    // When an AnalyserNode is not connected to any downstream node
-    // while still connected from upstream node(s), add it to the context's
-    // automatic pull list.
+    // When an AnalyserHandler is not connected to any downstream node while
+    // still connected from upstream node(s), add it to the context's automatic
+    // pull list.
     //
-    // But don't remove the AnalyserNode if there are no inputs
-    // connected to the node.  The node needs to be pulled so that the
-    // internal state is updated with the correct input signal (of
-    // zeroes).
+    // But don't remove the AnalyserHandler if there are no inputs connected to
+    // the node.  The node needs to be pulled so that the internal state is
+    // updated with the correct input signal (of zeroes).
     if (number_of_input_connections && !need_automatic_pull_) {
       Context()->GetDeferredTaskHandler().AddAutomaticPullNode(this);
       need_automatic_pull_ = true;
