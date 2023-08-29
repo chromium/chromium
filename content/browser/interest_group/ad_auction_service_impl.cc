@@ -344,8 +344,8 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindOnce(
           &AdAuctionServiceImpl::OnAuctionComplete, base::Unretained(this),
           std::move(callback), std::move(urn_uuid.value()),
-          fenced_frame_urls_map.unique_id(), base::Unretained(GetFrame()),
-          base::Unretained(&(GetFrame()->GetPage()))));
+          fenced_frame_urls_map.unique_id(), GetFrame()->GetGlobalId(),
+          GetFrame()->GetPage().GetWeakPtrImpl()));
   AuctionRunner* raw_auction = auction.get();
   auctions_.emplace(raw_auction, std::move(auction));
 }
@@ -645,8 +645,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     GURL urn_uuid,
     FencedFrameURLMapping::Id fenced_frame_urls_map_id,
-    const RenderFrameHostImpl* render_frame_host_impl,
-    const PageImpl* page_impl,
+    GlobalRenderFrameHostId render_frame_host_id,
+    const base::WeakPtr<PageImpl> page_impl,
     AuctionRunner* auction,
     bool manually_aborted,
     absl::optional<blink::InterestGroupKey> winning_group_key,
@@ -722,10 +722,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   // Each possible scenario is checked below. They are put in separate if branch
   // in order to identify from the dump.
   bool mismatch_with_auction_start = false;
-  if (render_frame_host_impl != GetFrame()) {
+  if (render_frame_host_id != GetFrame()->GetGlobalId()) {
     base::debug::DumpWithoutCrashing();
     mismatch_with_auction_start = true;
-  } else if (page_impl != &(GetFrame()->GetPage())) {
+  } else if (page_impl.get() != &(GetFrame()->GetPage())) {
     base::debug::DumpWithoutCrashing();
     mismatch_with_auction_start = true;
   } else if (fenced_frame_urls_map_id !=
