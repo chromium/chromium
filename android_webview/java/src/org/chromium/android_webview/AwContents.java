@@ -4134,7 +4134,7 @@ public class AwContents implements SmartClipProvider {
         // was removed too recently to have had its functor reclaimed, we still collect data.
         // This likely doesn't matter too much, especially since as noted below, the metrics are
         // expected to only be useful to tell whether the experiment produces a signal.
-        if (AwContentsLifecycleNotifier.getAppState() != AppState.BACKGROUND) return;
+        if (AwContentsLifecycleNotifier.getInstance().getAppState() != AppState.BACKGROUND) return;
 
         // Comment below from base/android/meminfo_dump_provider.cc:
         //

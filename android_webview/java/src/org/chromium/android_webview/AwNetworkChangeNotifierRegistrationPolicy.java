@@ -23,7 +23,7 @@ public class AwNetworkChangeNotifierRegistrationPolicy
 
     @Override
     protected void destroy() {
-        AwContentsLifecycleNotifier.removeObserver(this);
+        AwContentsLifecycleNotifier.getInstance().removeObserver(this);
     }
 
     // AwContentsLifecycleNotifier.Observer

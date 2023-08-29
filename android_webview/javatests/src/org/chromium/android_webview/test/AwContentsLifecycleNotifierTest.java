@@ -50,7 +50,7 @@ public class AwContentsLifecycleNotifierTest {
         LifecycleObserver observer = new LifecycleObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AwContentsLifecycleNotifier.addObserver(observer);
-            Assert.assertFalse(AwContentsLifecycleNotifier.hasWebViewInstances());
+            Assert.assertFalse(AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
         });
 
         AwTestContainerView awTestContainerView =
@@ -58,13 +58,14 @@ public class AwContentsLifecycleNotifierTest {
         observer.mFirstWebViewCreatedCallback.waitForCallback(0, 1);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(AwContentsLifecycleNotifier.hasWebViewInstances());
+            Assert.assertTrue(AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
             mActivityTestRule.getActivity().removeAllViews();
         });
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
         observer.mLastWebViewDestroyedCallback.waitForCallback(0, 1);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertFalse(AwContentsLifecycleNotifier.hasWebViewInstances()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
+        });
     }
 
     @Test
@@ -72,23 +73,26 @@ public class AwContentsLifecycleNotifierTest {
     @Feature({"AndroidWebView"})
     public void testAppState() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(AwContentsLifecycleNotifier.hasWebViewInstances());
-            Assert.assertEquals(AppState.DESTROYED, AwContentsLifecycleNotifier.getAppState());
+            Assert.assertFalse(AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
+            Assert.assertEquals(
+                    AppState.DESTROYED, AwContentsLifecycleNotifier.getInstance().getAppState());
         });
 
         AwTestContainerView awTestContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
 
-        CriteriaHelper.pollUiThread(
-                () -> { return AwContentsLifecycleNotifier.getAppState() == AppState.FOREGROUND; });
+        CriteriaHelper.pollUiThread(() -> {
+            return AwContentsLifecycleNotifier.getInstance().getAppState() == AppState.FOREGROUND;
+        });
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivityTestRule.getActivity().removeAllViews(); });
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(AwContentsLifecycleNotifier.hasWebViewInstances());
-            Assert.assertEquals(AppState.DESTROYED, AwContentsLifecycleNotifier.getAppState());
+            Assert.assertFalse(AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
+            Assert.assertEquals(
+                    AppState.DESTROYED, AwContentsLifecycleNotifier.getInstance().getAppState());
         });
     }
 }

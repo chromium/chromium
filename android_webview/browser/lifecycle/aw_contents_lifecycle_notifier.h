@@ -107,6 +107,8 @@ class AwContentsLifecycleNotifier {
   WebViewAppStateObserver::State app_state_ =
       WebViewAppStateObserver::State::kDestroyed;
 
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
