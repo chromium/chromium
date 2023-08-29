@@ -145,6 +145,7 @@ enum class TransportAvailabilityParam {
   kBleDisabled,
   kBleAccessDenied,
   kHasICloudKeychain,
+  kHasICloudKeychainCreds,
   kCreateInICloudKeychain,
   kNoTouchId,
 };
@@ -190,6 +191,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kBleAccessDenied";
     case TransportAvailabilityParam::kHasICloudKeychain:
       return "kHasICloudKeychain";
+    case TransportAvailabilityParam::kHasICloudKeychainCreds:
+      return "kHasICloudKeychainCreds";
     case TransportAvailabilityParam::kCreateInICloudKeychain:
       return "kCreateInICloudKeychain";
     case TransportAvailabilityParam::kNoTouchId:
@@ -281,6 +284,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto cred2 = CredentialInfoFrom(kCred2);
   const auto phonecred1 = CredentialInfoFrom(kPhoneCred1);
   const auto phonecred2 = CredentialInfoFrom(kPhoneCred2);
+  const auto ickc_cred1 = CredentialInfoFrom(kCred1FromICloudKeychain);
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
@@ -310,6 +314,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       TransportAvailabilityParam::kCreateInICloudKeychain;
   [[maybe_unused]] const auto no_touchid =
       TransportAvailabilityParam::kNoTouchId;
+  [[maybe_unused]] const auto ickc_creds =
+      TransportAvailabilityParam::kHasICloudKeychainCreds;
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
@@ -806,6 +812,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {pqr("a")},
        {p("a"), add},
        mss},
+      // iCloud Keychain counts as a recognised platform credential too.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, has_ickc, ickc_creds},
+       {pqr("a")},
+       {c(ickc_cred1), p("a"), add},
+       plat_ui},
 #else
       // Phone confirmation sheet: Get assertion should jump to it if there is
       // a single phone paired.
@@ -1053,6 +1067,19 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
 
     if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHasICloudKeychainCreds)) {
+      transports_info.has_icloud_keychain_credential =
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential;
+      transports_info.recognized_credentials.emplace_back(
+          kCred1FromICloudKeychain);
+    } else {
+      transports_info.has_icloud_keychain_credential =
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kNoRecognizedCredential;
+    }
+
+    if (base::Contains(test.params,
                        TransportAvailabilityParam::kOneRecognizedCred)) {
       transports_info.recognized_credentials = {kCred1};
     } else if (base::Contains(
@@ -1147,6 +1174,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       model.set_local_biometrics_override_for_testing(true);
     }
 #endif
+
+    model.SetAccountPreselectedCallback(
+        base::BindRepeating([](device::PublicKeyCredentialDescriptor cred) {}));
 
     if (has_v2_cable_extension.has_value() || !test.phones.empty() ||
         base::Contains(test.transports,
