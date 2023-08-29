@@ -17,6 +17,7 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -64,7 +65,14 @@ class UrlBarViewBinder {
             view.setIgnoreTextChangesForAutocomplete(true);
 
             try (TraceEvent te1 = TraceEvent.scoped("UrlBarViewBinder.setText")) {
-                view.setText(state.text);
+                try (TimingMetric t = TimingMetric.shortUptime("Ominbox.SetText.Duration")) {
+                    if (OmniboxFeatures.shouldTruncateVisibleUrl()) {
+                        view.setTextWithTruncation(
+                                state.text, state.scrollType, state.scrollToIndex);
+                    } else {
+                        view.setText(state.text);
+                    }
+                }
             }
 
             view.setTextForAutofillServices(state.textForAutofillServices);

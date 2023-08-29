@@ -96,6 +96,9 @@ public class OmniboxFeatures {
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
 
+    private static final MutableFlagWithSafeDefault sVisibleUrlTruncationFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION, false);
+
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
     /**
@@ -245,5 +248,12 @@ public class OmniboxFeatures {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
                 "max_prefetches_per_omnibox_session", DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
+    }
+
+    /**
+     * Returns whether the visible url in the url bar should be truncated.
+     */
+    public static boolean shouldTruncateVisibleUrl() {
+        return sVisibleUrlTruncationFlag.isEnabled();
     }
 }

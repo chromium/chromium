@@ -1694,6 +1694,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SetText.Duration" units="ms"
+    expires_after="2023-11-12">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Measures the amount of time it takes to call UrlBar.setText(). Logged once
+    per call.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.setText.TruncatedTooMuch" units="boolean"
+    expires_after="2023-12-24">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Records whether the truncated text was enough to fill the urlbar. Recorded
+    every time urlbar text is updated and truncation was applied.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Shortcuts.NumberOfDuplicatesPerShortcutIterated"
     units="matches" expires_after="2023-11-30">
   <owner>manukh@chromium.org</owner>

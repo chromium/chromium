@@ -548,6 +548,21 @@
             ]
         }
     ],
+    "AndroidVisibleUrlTruncation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidVisibleUrlTruncation"
+                    ]
+                }
+            ]
+        }
+    ],
     "AntiPhishingTelemetry": [
         {
             "platforms": [

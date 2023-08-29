@@ -21,6 +21,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -49,6 +50,8 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,6 +75,11 @@ public abstract class UrlBar extends AutocompleteEditText {
     // committed to Url bar's Edit text. Ex: google.com search field.
     private static final String IME_OPTION_RESTRICT_STYLUS_WRITING_AREA =
             "restrictDirectWritingArea=true";
+
+    // The text must be at least this long to be truncated. Safety measure to prevent accidentally
+    // over truncating text for large tablets and external displays. Also, tests can continue to
+    // check for text equality, instead of worrying about partial equality with truncated text.
+    static final int MIN_LENGTH_FOR_TRUNCATION = 500;
 
     static final MutableFlagWithSafeDefault sScrollToTLDOptimizationsFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.SCROLL_TO_TLD_OPTIMIZATION, false);
@@ -119,6 +127,11 @@ public abstract class UrlBar extends AutocompleteEditText {
      * ensure that the end of the origin is not scrolled out of view for long hostnames.
      */
     private int mOriginEndIndex;
+
+    // TODO (peilinwang) Currently only used for logging the cases where truncation was incorrect.
+    // Remove once the kAndroidVisibleUrlTruncation experiment is complete.
+    private boolean mIsTextTruncated;
+    private boolean mDidJustTruncate;
 
     @ScrollType
     private int mScrollType;
@@ -526,6 +539,56 @@ public abstract class UrlBar extends AutocompleteEditText {
 
         return super.onTextContextMenuItem(id);
     }
+    /**
+     * Estimates how many characters fit in the viewport and truncates {@link text} before calling
+     * setText({@link text}.
+     *
+     * @param text The text to set.
+     * @param scrollType What type of scroll should be applied to the text.
+     * @param scrollToIndex The index that should be scrolled to, which only applies to
+     *                      {@link ScrollType#SCROLL_TO_TLD}.
+     */
+    public void setTextWithTruncation(
+            CharSequence text, @ScrollType int scrollType, int scrollToIndex) {
+        if (mFocused || TextUtils.isEmpty(text) || text.length() < MIN_LENGTH_FOR_TRUNCATION
+                || getLayoutParams().width == LayoutParams.WRAP_CONTENT || containsRtl(text)) {
+            mIsTextTruncated = false;
+            mDidJustTruncate = false;
+            setText(text);
+            return;
+        }
+
+        // Find the width of the url bar in device independent pixels (dp), then guess how many
+        // characters are able to fit.
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(getContext());
+
+        // Conservatively use the width/height of the entire screen while estimating how many
+        // characters to truncate, to avoid dealing with changes in window size and orientation.
+        int maxScreenDimension = Math.max(display.getDisplayHeight(), display.getDisplayWidth());
+        int dp = DisplayUtil.pxToDp(display, maxScreenDimension);
+
+        // Conservately estimates each char is 0.8mm on average.
+        // 1 dp = 1/160 inches = ~0.158mm, so 5 dp = ~0.8mm.
+        // This is a very rough estimate, chosen arbitrarily. The goal is not to truncate the url
+        // so that it fits exactly in the url bar, but rather to truncate extremely long
+        // (thousands of characters) urls down to something much shorter (tens or 100 characters).
+        int truncationIndex = dp / 5;
+
+        // We don't want to remove any part of the TLD. But, if we think that the TLD can fill up
+        // the url bar, then we can truncate everything after the TLD, since nothing past the end of
+        // the TLD is visible after scrolling.
+        if (scrollType == ScrollType.SCROLL_TO_TLD) {
+            truncationIndex = Math.max(scrollToIndex, truncationIndex);
+        }
+
+        truncationIndex = Math.min(text.length(), truncationIndex);
+
+        mIsTextTruncated = truncationIndex < text.length();
+        mDidJustTruncate = mIsTextTruncated;
+
+        CharSequence truncatedText = text.subSequence(0, truncationIndex);
+        setText(truncatedText);
+    }
 
     /**
      * Specified how text should be scrolled within the UrlBar.
@@ -684,13 +747,13 @@ public abstract class UrlBar extends AutocompleteEditText {
         int measuredWidth = getVisibleMeasuredViewportWidth();
         int urlTextLength = url.length();
         int finalVisibleCharIndexSlow = getLayout().getOffsetForHorizontal(0, measuredWidth);
-        String errorMessage = "scrollToTLD incorrect optimized"
-                + " finalVisibleCharIndex. old index: " + String.valueOf(finalVisibleCharIndexSlow)
-                + " optimized index: " + String.valueOf(incorrectIndex)
-                + " viewport: " + String.valueOf(measuredWidth)
+        String errorMessage = "scrollToTLD bad index. old final visible index: "
+                + String.valueOf(finalVisibleCharIndexSlow) + " incorrect index: "
+                + String.valueOf(incorrectIndex) + " viewport: " + String.valueOf(measuredWidth)
                 + " prefix: " + url.subSequence(0, Math.max(mOriginEndIndex - 4, 0))
                 + " suffix: " + url.subSequence(mOriginEndIndex, urlTextLength)
-                + " url length: " + String.valueOf(urlTextLength);
+                + " url length: " + String.valueOf(urlTextLength) + " incorrect index horizontal: "
+                + getLayout().getPrimaryHorizontal(Math.min(incorrectIndex + 1, urlTextLength));
         return errorMessage;
     }
 
@@ -759,13 +822,8 @@ public abstract class UrlBar extends AutocompleteEditText {
 
                     int finalVisibleCharIndexExclusive =
                             Math.min(finalVisibleCharIndex + 1, urlTextLength);
-
-                    BidiFormatter bidi = new BidiFormatter.Builder()
-                                                 .setTextDirectionHeuristic(
-                                                         TextDirectionHeuristicsCompat.ANYRTL_LTR)
-                                                 .build();
                     boolean visibleUrlContainsRtl =
-                            bidi.isRtl(url.subSequence(0, finalVisibleCharIndexExclusive));
+                            containsRtl(url.subSequence(0, finalVisibleCharIndexExclusive));
                     if (visibleUrlContainsRtl) {
                         // getOffsetForAdvance does not calculate the correct index if there is RTL
                         // text before finalVisibleCharIndex, so clear the visible text hint. If RTL
@@ -878,6 +936,25 @@ public abstract class UrlBar extends AutocompleteEditText {
                 && (text == null || TextUtils.indexOf(text, mVisibleTextPrefixHint) != 0)) {
             mVisibleTextPrefixHint = null;
         }
+
+        if (OmniboxFeatures.shouldTruncateVisibleUrl()) {
+            // Make sure we didn't truncate too much.
+            int measuredWidth = getVisibleMeasuredViewportWidth();
+            int textLength = text.length();
+            if (mIsTextTruncated) {
+                Layout layout = getLayout();
+                boolean truncatedTooMuch =
+                        layout != null && layout.getPrimaryHorizontal(textLength) < measuredWidth;
+                RecordHistogram.recordBooleanHistogram(
+                        "Omnibox.setText.TruncatedTooMuch", truncatedTooMuch);
+                assert !truncatedTooMuch
+                    : "If discovered locally, please update crbug.com/1476013: "
+                      + getWrongIndexErrorMessage(textLength - 1);
+            }
+
+            mIsTextTruncated = mDidJustTruncate;
+            mDidJustTruncate = false;
+        }
     }
 
     private void limitDisplayableLength() {
@@ -951,6 +1028,14 @@ public abstract class UrlBar extends AutocompleteEditText {
         Log.w(TAG, "Text change observed, triggering autocomplete.");
 
         mUrlTextChangeListener.onTextChanged(getTextWithoutAutocomplete());
+    }
+
+    private boolean containsRtl(CharSequence text) {
+        BidiFormatter bidi =
+                new BidiFormatter.Builder()
+                        .setTextDirectionHeuristic(TextDirectionHeuristicsCompat.ANYRTL_LTR)
+                        .build();
+        return bidi.isRtl(text);
     }
 
     /**
