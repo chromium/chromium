@@ -410,13 +410,16 @@ String RTCDataChannel::binaryType() const {
 
 void RTCDataChannel::setBinaryType(const String& binary_type,
                                    ExceptionState& exception_state) {
-  if (binary_type == "blob")
-    ThrowNoBlobSupportException(&exception_state);
-  else if (binary_type == "arraybuffer")
+  if (binary_type == "arraybuffer") {
     binary_type_ = kBinaryTypeArrayBuffer;
-  else
-    exception_state.ThrowDOMException(DOMExceptionCode::kTypeMismatchError,
-                                      "Unknown binary type : " + binary_type);
+    return;
+  }
+  if (binary_type == "blob") {
+    // TODO(crbug.com/webrtc/2276): the default is specified as "blob".
+    ThrowNoBlobSupportException(&exception_state);
+    return;
+  }
+  NOTREACHED();
 }
 
 bool RTCDataChannel::ValidateSendLength(size_t length,
