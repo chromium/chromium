@@ -398,4 +398,39 @@ void LogUserInteractionsInPasswordManagementBubble(
       password_management_bubble_interaction);
 }
 
+#if BUILDFLAG(IS_IOS)
+void RecordMigrationToOSCryptLatency(bool success,
+                                     base::TimeDelta latency,
+                                     base::StringPiece store_infix) {
+  if (success) {
+    base::UmaHistogramLongTimes(
+        base::StrCat({"PasswordManager.MigrationToOSCrypt.", store_infix,
+                      ".SuccessLatency"}),
+        latency);
+    return;
+  }
+  base::UmaHistogramLongTimes(
+      base::StrCat({"PasswordManager.MigrationToOSCrypt.", store_infix,
+                    ".ErrorLatency"}),
+      latency);
+}
+
+void RecordMigrationToOSCryptStatus(base::TimeTicks migration_start_time,
+                                    bool is_account_store,
+                                    MigrationToOSCrypt status) {
+  base::StringPiece infix_for_store =
+      is_account_store ? "AccountStore" : "ProfileStore";
+  if (status != MigrationToOSCrypt::kStarted) {
+    RecordMigrationToOSCryptLatency(
+        status == MigrationToOSCrypt::kSuccess,
+        base::TimeTicks::Now() - migration_start_time, infix_for_store);
+  }
+
+  base::UmaHistogramEnumeration("PasswordManager.MigrationToOSCrypt", status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PasswordManager.MigrationToOSCrypt.", infix_for_store}),
+      status);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace password_manager::metrics_util
