@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -17,6 +18,9 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kSearchEngineChoice};
+  base::AutoReset<bool> scoped_chrome_build_override_ =
+      SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+          /*force_chrome_build=*/true);
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTest,

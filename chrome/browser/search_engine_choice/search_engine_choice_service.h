@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/template_url_data.h"
 
 class Browser;
 class BrowserListObserver;
@@ -45,6 +46,10 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns whether a Search Engine Choice dialog is currently open or not for
   // `browser`.
   bool IsShowingDialog(Browser* browser);
+
+  // Returns the list of search engines.
+  // Virtual to be able to mock in tests.
+  virtual std::vector<std::unique_ptr<TemplateURLData>> GetSearchEngines();
 
   // Returns whether the Search Engine Choice dialog should be displayed or not.
   static bool ShouldDisplayDialog(Browser& browser);

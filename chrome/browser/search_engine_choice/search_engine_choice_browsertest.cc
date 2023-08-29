@@ -41,8 +41,7 @@ using testing::_;
 
 namespace {
 
-// Class that mocks `SearchEngineChoiceService`. This class calls the parent
-// class' functions but is needed to be able to use `EXPECT_CALL`.
+// Class that mocks `SearchEngineChoiceService`.
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
   explicit MockSearchEngineChoiceService(Profile* profile)

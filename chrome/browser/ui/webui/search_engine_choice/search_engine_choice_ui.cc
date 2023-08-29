@@ -30,10 +30,10 @@
 namespace {
 std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
-  auto* pref_service = profile.GetPrefs();
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(&profile);
   const std::vector<std::unique_ptr<TemplateURLData>> choices =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service, /*default_search_provider_index=*/nullptr);
+      search_engine_choice_service->GetSearchEngines();
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;

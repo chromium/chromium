@@ -6,7 +6,9 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +17,9 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +32,39 @@
 
 // Tests for the chrome://search-engine-choice WebUI page.
 namespace {
+// Class that mocks `SearchEngineChoiceService`.
+class MockSearchEngineChoiceService : public SearchEngineChoiceService {
+ public:
+  explicit MockSearchEngineChoiceService(Profile* profile)
+      : SearchEngineChoiceService(*profile) {
+    ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
+      std::vector<std::unique_ptr<TemplateURLData>> choices;
+      auto choice = TemplateURLData();
+
+      // TODO(b/280753754): Update this to 12 search engines when the UI is
+      // ready to handle more than 5.
+      for (int i = 0; i < 5; i++) {
+        const std::u16string kShortName = u"Test" + base::NumberToString16(i);
+        choice.SetShortName(kShortName);
+        choices.push_back(std::make_unique<TemplateURLData>(choice));
+      }
+      return choices;
+    });
+  }
+  ~MockSearchEngineChoiceService() override = default;
+
+  static std::unique_ptr<KeyedService> Create(
+      content::BrowserContext* context) {
+    return std::make_unique<testing::NiceMock<MockSearchEngineChoiceService>>(
+        Profile::FromBrowserContext(context));
+  }
+
+  MOCK_METHOD(std::vector<std::unique_ptr<TemplateURLData>>,
+              GetSearchEngines,
+              (),
+              (override));
+};
+
 struct TestParam {
   std::string test_suffix;
   bool use_dark_theme = false;
@@ -63,6 +101,19 @@ class SearchEngineChoiceUIPixelTest
 
   ~SearchEngineChoiceUIPixelTest() override = default;
 
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  SearchEngineChoiceServiceFactory::GetInstance()
+                      ->SetTestingFactoryAndUse(
+                          context, base::BindRepeating(
+                                       &MockSearchEngineChoiceService::Create));
+                }));
+  }
+
   // TestBrowserDialog
   void ShowUi(const std::string& name) override {
     SearchEngineChoiceService::SetDialogDisabledForTests(
@@ -85,6 +136,7 @@ class SearchEngineChoiceUIPixelTest
   base::AutoReset<bool> scoped_chrome_build_override_;
   base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
   PixelTestConfigurationMixin pixel_test_mixin_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {

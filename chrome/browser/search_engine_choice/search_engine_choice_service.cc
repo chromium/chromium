@@ -91,6 +91,13 @@ bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
   return base::Contains(browsers_with_open_dialogs_, browser);
 }
 
+std::vector<std::unique_ptr<TemplateURLData>>
+SearchEngineChoiceService::GetSearchEngines() {
+  auto* pref_service = profile_->GetPrefs();
+  return TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(
+      pref_service);
+}
+
 bool SearchEngineChoiceService::ShouldDisplayDialog(Browser& browser) {
   if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
     return false;
