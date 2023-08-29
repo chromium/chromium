@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/transferred_media_stream_component.h"
@@ -128,13 +129,20 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
     Member<TransferredMediaStreamTrack> transferred_track_;
   };
 
+  struct ConstraintsPair : GarbageCollected<ConstraintsPair> {
+    ConstraintsPair(ScriptPromiseResolver* resolver,
+                    const MediaTrackConstraints* constraints);
+    void Trace(Visitor*) const;
+
+    const Member<ScriptPromiseResolver> resolver;
+    const Member<const MediaTrackConstraints> constraints;
+  };
+
   Member<TransferredMediaStreamComponent> transferred_component_;
   Member<MediaStreamTrack> track_;
-  using ConstraintsPair =
-      std::pair<ScriptPromiseResolver*, const MediaTrackConstraints*>;
   Vector<SetterFunction> setter_call_order_;
   WTF::Deque<String> content_hint_list_;
-  WTF::Deque<ConstraintsPair> constraints_list_;
+  HeapDeque<Member<ConstraintsPair>> constraints_list_;
   WTF::Deque<bool> enabled_state_list_;
   HeapDeque<Member<TransferredMediaStreamTrack>> clone_list_;
   WeakMember<ExecutionContext> execution_context_;
