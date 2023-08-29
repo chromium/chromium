@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -1141,6 +1142,140 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
     ASSERT_FALSE(agent_foo->NeedsAttachment());
 
     // Now that the ancestor has size TextFinder should attach.
+    EXPECT_TRUE(agent_foo->IsAttached());
+  }
+}
+
+// kTextFinder annotations should fail to find text within an opacity:0
+// subtree.
+TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOpacityZero) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #container {
+        opacity: 0;
+      }
+    </style>
+    <div id="container">
+      <div>
+        <p id="text">FOO BAR</p>
+      </di>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* p = GetDocument().getElementById(AtomicString("text"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 0, 3, "FOO");
+
+  {
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    ASSERT_TRUE(agent_foo->NeedsAttachment());
+    Compositor().BeginFrame();
+    ASSERT_FALSE(agent_foo->NeedsAttachment());
+
+    // TextFinder should refuse to attach to the text since it has an opacity:
+    // 0 ancestor.
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // Ensure that setting the opacity to a non-zero value makes it findable.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            AtomicString("opacity: 0.1"));
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    ASSERT_TRUE(agent_foo->NeedsAttachment());
+    Compositor().BeginFrame();
+    ASSERT_FALSE(agent_foo->NeedsAttachment());
+
+    EXPECT_TRUE(agent_foo->IsAttached());
+  }
+}
+
+// kTextFinder annotations should fail to find text that's offscreen if it is
+// in a position: fixed subtree.
+TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #container {
+        position:fixed;
+        width: 100px;
+        height: 20px;
+        font: 10px/1 Ahem;
+      }
+      p {
+        position: relative;
+        margin: 0;
+      }
+    </style>
+    <div id="container">
+      <div>
+        <p id="text">FOO BAR</p>
+      </di>
+    </div>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* p = GetDocument().getElementById(AtomicString("text"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 0, 3, "FOO");
+
+  // Ensure that putting the container offscreen makes the text unfindable.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            AtomicString("left: 0; top: -25px"));
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    ASSERT_TRUE(agent_foo->NeedsAttachment());
+    Compositor().BeginFrame();
+    ASSERT_FALSE(agent_foo->NeedsAttachment());
+
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // The container partially intersects the viewport but the range doesn't.
+  // This should still be considered unfindable.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            AtomicString("left: 0; top: -15px"));
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    ASSERT_TRUE(agent_foo->NeedsAttachment());
+    Compositor().BeginFrame();
+    ASSERT_FALSE(agent_foo->NeedsAttachment());
+
+    // Text is still offscreen.
+    ASSERT_LT(p->getBoundingClientRect()->bottom(), 0);
+
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // Push the <p> down so the text now intersects the viewport; this should
+  // make it findable.
+  {
+    p->setAttribute(html_names::kStyleAttr, AtomicString("top: 10px"));
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    ASSERT_TRUE(agent_foo->NeedsAttachment());
+    Compositor().BeginFrame();
+    ASSERT_FALSE(agent_foo->NeedsAttachment());
+
+    // Text is now within the viewport.
+    ASSERT_GT(p->getBoundingClientRect()->bottom(), 0);
+
     EXPECT_TRUE(agent_foo->IsAttached());
   }
 }

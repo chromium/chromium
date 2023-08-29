@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -43,15 +44,13 @@ bool IsValidRange(const RangeInFlatTree* range) {
          !range->ToEphemeralRange().IsCollapsed();
 }
 
-// It's common for collapsible sections to be implemented by hiding collapsed
-// text within a `height:0; overflow: hidden` box. However, FindBuffer does
-// find this text (as typically overflow: hidden can still be programmatically
-// scrolled). The TextFinder use case wants to prevent offering scrolls to
-// these sections as its confusing (in fact, document Markers will avoid
-// creating a highlight for these, despite the fact we can scroll to it). We
-// probably want to do this for general SharedHighlights as well but that will
-// require some more thought and spec changes but we can experiment with this
-// for TextFinder to see how it works.
+// There are several cases where text isn't visible/presented to the user but
+// does appear findable to FindBuffer. The TextFinder use case wants to prevent
+// offering scrolls to these sections as its confusing (in fact, document
+// Markers will avoid creating a highlight for these, despite the fact we can
+// scroll to it). We probably want to do this for general SharedHighlights as
+// well but that will require some more thought and spec changes but we can
+// experiment with this for TextFinder to see how it works.
 bool IsValidRangeForTextFinder(const RangeInFlatTree* range) {
   if (!IsValidRange(range)) {
     return false;
@@ -69,18 +68,42 @@ bool IsValidRangeForTextFinder(const RangeInFlatTree* range) {
 
   for (; !object->IsLayoutView(); object = object->Parent()) {
     LayoutBox* box = DynamicTo<LayoutBox>(object);
-    if (!box || !box->HasNonVisibleOverflow()) {
+    if (!box) {
       continue;
     }
 
-    if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
-        box->Size().width.RawValue() <= 0) {
+    // It's common for collapsible sections to be implemented by hiding
+    // collapsed text within a `height:0; overflow: hidden` box. However,
+    // FindBuffer does find this text (as typically overflow: hidden can still
+    // be programmatically scrolled).
+    if (box->HasNonVisibleOverflow()) {
+      if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
+          box->Size().width.RawValue() <= 0) {
+        return false;
+      }
+
+      if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
+          box->Size().height.RawValue() <= 0) {
+        return false;
+      }
+    }
+
+    // If an ancestor is set to opacity 0, consider the target invisible.
+    if (box->StyleRef().Opacity() == 0) {
       return false;
     }
 
-    if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
-        box->Size().height.RawValue() <= 0) {
-      return false;
+    // If the range is in a fixed subtree, scrolling the view won't change its
+    // viewport-relative location so report the range as unfindable if its
+    // currently offscreen.
+    if (box->StyleRef().GetPosition() == EPosition::kFixed) {
+      PhysicalRect view_rect =
+          PhysicalRect::EnclosingRect(box->View()->AbsoluteBoundingBoxRectF());
+      if (!view_rect.Intersects(
+              common_node->GetLayoutObject()
+                  ->AbsoluteBoundingBoxRectForScrollIntoView())) {
+        return false;
+      }
     }
   }
 
