@@ -70,7 +70,8 @@ enum BrowserThemePack::PersistentID : int {
   kToolbar = 5,
   kTabBackground = 6,
   kTabBackgroundIncognito = 7,
-  kTabBackgroundV = 8,
+  // kTabBackgroundV = 8, Deprecated and unused. Previously supported windows
+  // vista aero glass theme.
   kNtpBackground = 9,
   kFrameOverlay = 10,
   kFrameOverlayInactive = 11,
@@ -142,8 +143,6 @@ constexpr PersistingImagesTable kPersistingImages[] = {
     {PRS::kTabBackgroundIncognitoInactive,
      IDR_THEME_TAB_BACKGROUND_INCOGNITO_INACTIVE,
      "theme_tab_background_incognito_inactive"},
-    {PRS::kTabBackgroundV, IDR_THEME_TAB_BACKGROUND_V,
-     "theme_tab_background_v"},
     {PRS::kNtpBackground, IDR_THEME_NTP_BACKGROUND, "theme_ntp_background"},
     {PRS::kFrameOverlay, IDR_THEME_FRAME_OVERLAY, "theme_frame_overlay"},
     {PRS::kFrameOverlayInactive, IDR_THEME_FRAME_OVERLAY_INACTIVE,

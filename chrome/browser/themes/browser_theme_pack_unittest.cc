@@ -374,7 +374,6 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
 #if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_TAB_BACKGROUND_INCOGNITO));
 #endif
-  EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_TAB_BACKGROUND_V));
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_NTP_BACKGROUND));
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_FRAME_OVERLAY));
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_FRAME_OVERLAY_INACTIVE));
