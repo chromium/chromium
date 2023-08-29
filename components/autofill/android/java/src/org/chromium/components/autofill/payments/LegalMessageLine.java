@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill.payments;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -69,6 +71,22 @@ public class LegalMessageLine {
         this.text = text;
     }
 
+    /**
+     * Creates a new instance of the legal message line with text and links.
+     * @param text The plain text legal message.
+     * @param links List of {@link Link} objects representing the links.
+     */
+    @VisibleForTesting
+    public LegalMessageLine(String text, List<Link> links) {
+        this.text = text;
+        links.forEach(this::addLink);
+    }
+
+    /**
+     * Adds a link to this legal message
+     *
+     * @param link The link to be added.
+     */
     @CalledByNative
     /*package*/ void addLink(Link link) {
         links.add(link);

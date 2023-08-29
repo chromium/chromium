@@ -57,7 +57,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Helper methods that can be used across multiple Autofill UIs.
@@ -477,7 +477,7 @@ public class AutofillUiUtils {
      * @return A {@link SpannableStringBuilder} that can directly be set on a TextView.
      */
     public static SpannableStringBuilder getSpannableStringForLegalMessageLines(Context context,
-            LinkedList<LegalMessageLine> legalMessageLines, boolean underlineLinks,
+            List<LegalMessageLine> legalMessageLines, boolean underlineLinks,
             Callback<String> onClickCallback) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         for (LegalMessageLine line : legalMessageLines) {
