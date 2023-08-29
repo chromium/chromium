@@ -29,7 +29,6 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         document.createElement('settings-per-device-touchpad-subsection');
     assert(subsection);
     subsection.set('touchpad', {...fakeTouchpads[0]});
-    subsection.set('allowTouchpadScrollSettings_', true);
     document.body.appendChild(subsection);
     await flushTasks();
   });
@@ -79,30 +78,6 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     assertEquals(
         updatedTouchpads[0]!.settings.accelerationEnabled,
         touchpadAccelerationButton.pref!.value);
-
-    const touchpadScrollAccelerationButton =
-        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#touchpadScrollAcceleration');
-    assert(touchpadScrollAccelerationButton);
-    touchpadScrollAccelerationButton.click();
-    await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
-    assertEquals(
-        updatedTouchpads[0]!.settings.scrollAcceleration,
-        touchpadScrollAccelerationButton.pref!.value);
-
-    const touchpadScrollSpeedSlider =
-        subsection.shadowRoot!.querySelector<SettingsSliderElement>(
-            '#touchpadScrollSpeedSlider');
-    assert(touchpadScrollSpeedSlider);
-    pressAndReleaseKeyOn(
-        touchpadScrollSpeedSlider.shadowRoot!.querySelector('cr-slider')!, 39,
-        [], 'ArrowRight');
-    await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
-    assertEquals(
-        updatedTouchpads[0]!.settings.scrollSensitivity,
-        touchpadScrollSpeedSlider.pref!.value);
 
     const touchpadSensitivitySlider =
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
@@ -174,20 +149,6 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     assertEquals(
         fakeTouchpads[0]!.settings.accelerationEnabled,
         touchpadAcceleration!.pref!.value);
-    let touchpadScrollAccelerationButton =
-        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#touchpadScrollAcceleration');
-    assertTrue(isVisible(touchpadScrollAccelerationButton));
-    assertEquals(
-        fakeTouchpads[0]!.settings.scrollAcceleration,
-        touchpadScrollAccelerationButton!.pref!.value);
-    let touchpadScrollSpeedSlider =
-        subsection.shadowRoot!.querySelector<SettingsSliderElement>(
-            '#touchpadScrollSpeedSlider');
-    assertTrue(isVisible(touchpadScrollSpeedSlider));
-    assertEquals(
-        fakeTouchpads[0]!.settings.scrollSensitivity,
-        touchpadScrollSpeedSlider!.pref!.value);
     let touchpadSensitivitySlider =
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
             '#touchpadSensitivity');
@@ -213,7 +174,6 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         subsection.get('reverseScrollValue'));
 
     subsection.set('touchpad', fakeTouchpads[1]);
-    subsection.set('allowTouchpadScrollSettings_', false);
 
     await flushTasks();
     enableTapToClickButton =
@@ -231,12 +191,6 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     assertEquals(
         fakeTouchpads[1]!.settings.accelerationEnabled,
         touchpadAcceleration!.pref!.value);
-    touchpadScrollAccelerationButton =
-        subsection.shadowRoot!.querySelector('#touchpadScrollAcceleration');
-    assertFalse(isVisible(touchpadScrollAccelerationButton));
-    touchpadScrollSpeedSlider =
-        subsection.shadowRoot!.querySelector('#touchpadScrollSpeedSlider');
-    assertFalse(isVisible(touchpadScrollSpeedSlider));
     touchpadSensitivitySlider =
         subsection.shadowRoot!.querySelector('#touchpadSensitivity');
     assertEquals(

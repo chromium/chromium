@@ -94,28 +94,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
         },
       },
 
-      scrollAccelerationPref: {
-        type: Object,
-        value() {
-          return {
-            key: 'fakeScrollAccelerationPref',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          };
-        },
-      },
-
-      scrollSensitivityPref: {
-        type: Object,
-        value() {
-          return {
-            key: 'fakeScrollSensitivityPref',
-            type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: 3,
-          };
-        },
-      },
-
       hapticClickSensitivityPref: {
         type: Object,
         value() {
@@ -159,16 +137,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
                   loadTimeData.getString('touchpadSimulateRightClickOptionAlt'),
             },
           ];
-        },
-      },
-
-      /**
-       * TODO(khorimoto): Remove this conditional once the feature is launched.
-       */
-      allowTouchpadScrollSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowTouchpadScrollSettings');
         },
       },
 
@@ -262,8 +230,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
           'enableTapDraggingPref.value,' +
           'accelerationPref.value,' +
           'sensitivityPref.value,' +
-          'scrollAccelerationPref.value,' +
-          'scrollSensitivityPref.value,' +
           'hapticClickSensitivityPref.value,' +
           'simulateRightClickPref.value,' +
           'reverseScrollValue,' +
@@ -289,8 +255,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private enableTapDraggingPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
-  private scrollAccelerationPref: chrome.settingsPrivate.PrefObject;
-  private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
   private hapticClickSensitivityPref: chrome.settingsPrivate.PrefObject;
   private simulateRightClickPref: chrome.settingsPrivate.PrefObject;
   private reverseScrollValue: boolean;
@@ -319,12 +283,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
     this.set(
         'accelerationPref.value', this.touchpad.settings.accelerationEnabled);
     this.set('sensitivityPref.value', this.touchpad.settings.sensitivity);
-    this.set(
-        'scrollAccelerationPref.value',
-        this.touchpad.settings.scrollAcceleration);
-    this.set(
-        'scrollSensitivityPref.value',
-        this.touchpad.settings.scrollSensitivity);
     this.set(
         'hapticClickSensitivityPref.value',
         this.touchpad.settings.hapticSensitivity);
@@ -364,8 +322,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       tapDraggingEnabled: this.enableTapDraggingPref.value,
       accelerationEnabled: this.accelerationPref.value,
       sensitivity: this.sensitivityPref.value,
-      scrollAcceleration: this.scrollAccelerationPref.value,
-      scrollSensitivity: this.scrollSensitivityPref.value,
       hapticSensitivity: this.hapticClickSensitivityPref.value,
       simulateRightClick: this.simulateRightClickPref.value,
       reverseScrolling: this.reverseScrollValue,
