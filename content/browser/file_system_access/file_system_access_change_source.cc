@@ -53,10 +53,12 @@ void FileSystemAccessChangeSource::DidInitialize(bool result) {
 
   initialization_result_ = result;
 
-  for (auto& callback : initialization_callbacks_) {
+  // Move the callbacks to the stack since they may cause |this| to be deleted.
+  auto initialization_callbacks = std::move(initialization_callbacks_);
+  initialization_callbacks_.clear();
+  for (auto& callback : initialization_callbacks) {
     std::move(callback).Run(result);
   }
-  initialization_callbacks_.clear();
 }
 
 base::WeakPtr<FileSystemAccessChangeSource>
