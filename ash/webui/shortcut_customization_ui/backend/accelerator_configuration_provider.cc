@@ -555,6 +555,12 @@ void LogAddAccelerator(mojom::AcceleratorSource source,
           << " with error: " << error;
 }
 
+void LogRestoreDefault(uint32_t action_id,
+                       mojom::AcceleratorConfigResult error) {
+  VLOG(1) << "RestoreDefault called for action ID: " << action_id
+          << " with error code: " << error;
+}
+
 void RecordEncodedAcceleratorHistogram(const std::string& histogram_name,
                                        uint32_t action_id,
                                        const ui::Accelerator& accelerator) {
@@ -673,6 +679,10 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
       *error_result != AcceleratorConfigResult::kActionLocked) {
     result_data->result = *error_result;
     std::move(callback).Run(std::move(result_data));
+    VLOG(1) << "Attempted to add accelerator: " << accelerator.GetShortcutText()
+            << " to an invalid source or action."
+            << " source: " << static_cast<int>(source)
+            << " action ID: " << action_id;
     return;
   }
 
@@ -683,6 +693,8 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
     result_data->result = AcceleratorConfigResult::kConflict;
     result_data->shortcut_name = std::move(reserved_accelerator_name.value());
     std::move(callback).Run(std::move(result_data));
+    VLOG(1) << " Attempted to add a reserved accelerator: "
+            << accelerator.GetShortcutText();
     return;
   }
 
@@ -699,6 +711,8 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
                                            *non_configurable_conflict_id)]
             .description_string_id);
     std::move(callback).Run(std::move(result_data));
+    VLOG(1) << "Attempted to add accelerator: " << accelerator.GetShortcutText()
+            << " to a locked source: " << static_cast<int>(source);
     return;
   }
 
@@ -715,6 +729,9 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
                                            *found_ash_action)]
             .description_string_id);
     std::move(callback).Run(std::move(result_data));
+    VLOG(1) << "Conflict detected for attempting to add accelerator: "
+            << accelerator.GetShortcutText() << " to action ID: " << action_id
+            << ". With conflicts with action ID: " << *found_ash_action;
     return;
   }
 
@@ -1034,6 +1051,7 @@ void AcceleratorConfigurationProvider::RestoreDefault(
                               ash_accelerator_configuration_);
   if (validated_source_action_result.has_value()) {
     result_data->result = *validated_source_action_result;
+    LogRestoreDefault(action_id, result_data->result);
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -1043,6 +1061,7 @@ void AcceleratorConfigurationProvider::RestoreDefault(
   result_data->result = result;
   base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
                                 ShortcutCustomizationAction::kResetAction);
+  LogRestoreDefault(action_id, result_data->result);
   std::move(callback).Run(std::move(result_data));
 }
 
