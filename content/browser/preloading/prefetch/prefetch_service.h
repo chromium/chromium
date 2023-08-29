@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_status.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/service_worker_context.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -161,6 +162,17 @@ class CONTENT_EXPORT PrefetchService {
       const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
       OnEligibilityResultCallback result_callback) const;
+
+  void CheckHasServiceWorker(
+      const GURL& url,
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnEligibilityResultCallback result_callback) const;
+
+  void OnGotServiceWorkerResult(
+      const GURL& url,
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnEligibilityResultCallback result_callback,
+      ServiceWorkerCapability service_worker_capability) const;
 
   // Called after getting the existing cookies associated with
   // |prefetch_container|. If there are any cookies, then the prefetch is not
