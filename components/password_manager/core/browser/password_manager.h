@@ -191,6 +191,11 @@ class PasswordManager : public PasswordManagerInterface {
     return GetSubmittedManager();
   }
 
+  const std::map<autofill::FormSignature, FormPredictions>&
+  GetFormPredictionsForTesting() const {
+    return predictions_;
+  }
+
   void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {
     leak_delegate_.set_leak_factory(std::move(factory));
   }

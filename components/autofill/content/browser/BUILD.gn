@@ -21,6 +21,8 @@ static_library("browser") {
     "form_forest.cc",
     "form_forest.h",
     "form_forest_util_inl.h",
+    "renderer_forms_with_server_predictions.cc",
+    "renderer_forms_with_server_predictions.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
     "scoped_autofill_managers_observation.cc",
@@ -29,6 +31,7 @@ static_library("browser") {
 
   public_deps = [
     ":risk_proto",
+    "//base",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -39,7 +42,6 @@ static_library("browser") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
-    "//base",
     "//base:i18n",
     "//components/os_crypt/sync",
     "//components/prefs",

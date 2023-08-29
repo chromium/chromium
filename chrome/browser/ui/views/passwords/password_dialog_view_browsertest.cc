@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -215,7 +216,9 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   content::WebContents* raw_new_tab = new_tab.get();
   EXPECT_TRUE(raw_new_tab);
 
-  // ManagePasswordsUIController needs ChromePasswordManagerClient for logging.
+  // ManagePasswordsUIController needs ChromePasswordManagerClient for logging
+  // and ChromePasswordManagerClient needs ChromeAutofillClient.
+  autofill::ChromeAutofillClient::CreateForWebContents(raw_new_tab);
   ChromePasswordManagerClient::CreateForWebContents(raw_new_tab);
   EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(raw_new_tab));
   controller_ = new TestManagePasswordsUIController(raw_new_tab);

@@ -29,6 +29,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
@@ -1001,6 +1002,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
 // Verify that "Show all passwords" is displayed on a password field.
 TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
   // Set up password manager stuff.
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
   ChromePasswordManagerClient::CreateForWebContents(web_contents());
 
   NavigateAndCommit(GURL("http://www.foo.com/"));
@@ -1022,6 +1024,8 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
 
   // Set up password manager stuff.
+  autofill::ChromeAutofillClient::CreateForWebContents(
+      incognito_web_contents.get());
   ChromePasswordManagerClient::CreateForWebContents(
       incognito_web_contents.get());
 

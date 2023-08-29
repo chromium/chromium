@@ -32,6 +32,7 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -382,6 +383,16 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
   PasswordsPrivateDelegate::UiEntries GetCredentials(
       PasswordsPrivateDelegate& delegate);
 
+  // Returns a test `WebContents` with an initialized Autofill client, which is
+  // needed for PasswordManager client to work properly.
+  std::unique_ptr<content::WebContents> CreateWebContents() {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(),
+                                                          /*instance=*/nullptr);
+    autofill::ChromeAutofillClient::CreateForWebContents(web_contents.get());
+    return web_contents;
+  }
+
  protected:
   raw_ptr<extensions::TestEventRouter, DanglingUntriaged> event_router_ =
       nullptr;
@@ -537,8 +548,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -590,8 +600,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   auto delegate = CreateDelegate();
@@ -624,8 +633,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        ImportPasswordsDoesNotUpdateDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   auto delegate = CreateDelegate();
@@ -647,8 +655,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   auto delegate = CreateDelegate();
@@ -671,9 +678,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        ImportPasswordsLogsImportResultsStatus) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(),
-                                                        /*instance=*/nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   auto delegate = CreateDelegate();
@@ -705,9 +710,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(),
-                                                        /*instance=*/nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
 
@@ -750,9 +753,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        ContinueImportLogsImportResultsStatus) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(),
-                                                        /*instance=*/nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
@@ -1011,8 +1012,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestShouldReauthForOptIn) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -1028,8 +1028,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestShouldReauthForOptIn) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        TestShouldNotReauthForOptOutAndShouldSetPref) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   password_manager::MockPasswordFeatureManager* feature_manager =
@@ -1267,8 +1266,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -1286,8 +1284,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -1449,8 +1446,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kBiometricAuthenticationForFilling);
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   client->SetDeviceAuthenticator(biometric_authenticator_);
@@ -1471,8 +1467,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kBiometricAuthenticationForFilling);
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   client->SetDeviceAuthenticator(biometric_authenticator_);

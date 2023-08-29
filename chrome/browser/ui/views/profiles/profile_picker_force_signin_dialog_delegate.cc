@@ -6,6 +6,7 @@
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -40,6 +41,8 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
 
   web_view_->GetWebContents()->SetDelegate(this);
 
+  autofill::ChromeAutofillClient::CreateForWebContents(
+      web_view_->GetWebContents());
   ChromePasswordManagerClient::CreateForWebContents(
       web_view_->GetWebContents());
 

@@ -30,6 +30,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -3975,6 +3976,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_FALSE(chrome::FindBrowserWithWebContents(new_web_contents.get()));
 
   // Create ChromePasswordManagerClient for newly created web_contents.
+  autofill::ChromeAutofillClient::CreateForWebContents(new_web_contents.get());
   ChromePasswordManagerClient::CreateForWebContents(new_web_contents.get());
 
   ChromePasswordManagerClient* client =
