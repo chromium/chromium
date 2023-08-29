@@ -122,13 +122,6 @@
     overflow: hidden;  /* Reduces file icon flicker on initial load. */
   }
 
-  #content:-webkit-any(.show-progress, .dangerous) #file-icon-wrapper {
-    /* TODO(dbeam): animate from top-aligned to centered when items finish?
-     */
-    align-self: flex-start;
-    padding-top: 16px;
-  }
-
   #content:not(.is-active) .icon {
     -webkit-filter: grayscale(100%);
     opacity: .5;
