@@ -103,7 +103,7 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
   {
     name: 'kLanguagesAndInput',
     availableBeforeRevamp: true,
-    availableAfterRevamp: true,
+    availableAfterRevamp: false,
     availableForGuest: true,
   },
   {

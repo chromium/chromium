@@ -532,29 +532,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_PRIVACY, routesMojom.PRIVACY_HUB_MICROPHONE_SUBPAGE_PATH,
       Subpage.kPrivacyHubMicrophone);
 
-  // Languages and Input section.
-  r.OS_LANGUAGES = createSection(
-      r.ADVANCED, routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
-      Section.kLanguagesAndInput);
-  r.OS_LANGUAGES_LANGUAGES = createSubpage(
-      r.OS_LANGUAGES, routesMojom.LANGUAGES_SUBPAGE_PATH, Subpage.kLanguages);
-  r.OS_LANGUAGES_INPUT = createSubpage(
-      r.OS_LANGUAGES, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
-  r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
-      r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
-      Subpage.kInputMethodOptions);
-  r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
-      r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
-      Subpage.kEditDictionary);
-  r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
-      r.OS_LANGUAGES_INPUT,
-      routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
-      Subpage.kJapaneseManageUserDictionary);
-  r.OS_LANGUAGES_SMART_INPUTS = createSubpage(
-      r.OS_LANGUAGES, routesMojom.SMART_INPUTS_SUBPAGE_PATH,
-      Subpage.kSmartInputs);
-
-
   // Files section.
   if (!isGuest()) {
     r.FILES = createSection(
@@ -601,6 +578,26 @@ export function createRoutes(): OsSettingsRoutes {
         r.SYSTEM_PREFERENCES, routesMojom.TIME_ZONE_SUBPAGE_PATH,
         Subpage.kTimeZone);
 
+    // Languages and Input subpages.
+    r.OS_LANGUAGES_LANGUAGES = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.LANGUAGES_SUBPAGE_PATH,
+        Subpage.kLanguages);
+    r.OS_LANGUAGES_INPUT = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
+    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
+        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
+        Subpage.kInputMethodOptions);
+    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
+        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
+        Subpage.kEditDictionary);
+    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
+        r.OS_LANGUAGES_INPUT,
+        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
+        Subpage.kJapaneseManageUserDictionary);
+    r.OS_LANGUAGES_SMART_INPUTS = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.SMART_INPUTS_SUBPAGE_PATH,
+        Subpage.kSmartInputs);
+
     // Search and Assistant subpages.
     r.SEARCH_SUBPAGE = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
@@ -614,6 +611,28 @@ export function createRoutes(): OsSettingsRoutes {
         Section.kDateAndTime);
     r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
         r.DATETIME, routesMojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
+
+    // Languages and Input section.
+    r.OS_LANGUAGES = createSection(
+        r.ADVANCED, routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
+        Section.kLanguagesAndInput);
+    r.OS_LANGUAGES_LANGUAGES = createSubpage(
+        r.OS_LANGUAGES, routesMojom.LANGUAGES_SUBPAGE_PATH, Subpage.kLanguages);
+    r.OS_LANGUAGES_INPUT = createSubpage(
+        r.OS_LANGUAGES, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
+    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
+        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
+        Subpage.kInputMethodOptions);
+    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
+        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
+        Subpage.kEditDictionary);
+    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
+        r.OS_LANGUAGES_INPUT,
+        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
+        Subpage.kJapaneseManageUserDictionary);
+    r.OS_LANGUAGES_SMART_INPUTS = createSubpage(
+        r.OS_LANGUAGES, routesMojom.SMART_INPUTS_SUBPAGE_PATH,
+        Subpage.kSmartInputs);
 
     // Reset section.
     if (isPowerwashAllowed()) {

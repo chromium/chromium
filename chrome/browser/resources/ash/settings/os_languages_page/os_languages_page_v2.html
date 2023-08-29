@@ -50,7 +50,6 @@
   }
 </style>
 
-<div route-path="default">
   <div class="cr-row first">
     <div class="flex cr-padded-text" aria-hidden="true">
       $i18n{deviceLanguageTitle}
@@ -183,7 +182,6 @@
       </cr-action-menu>
     </template>
   </cr-lazy-render>
-</div>
 
 <template is="dom-if" if="[[showChangeDeviceLanguageDialog_]]" restamp>
   <os-settings-change-device-language-dialog languages="[[languages]]"

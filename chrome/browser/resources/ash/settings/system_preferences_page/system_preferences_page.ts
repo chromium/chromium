@@ -9,6 +9,8 @@
  */
 
 import '../date_time_page/date_time_card.js';
+import '../os_languages_page/language_settings_card.js';
+import '../os_languages_page/languages.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_card.js';
@@ -23,6 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {isAssistantAllowed, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 
 import {getTemplate} from './system_preferences_page.html.js';
 
@@ -52,8 +55,20 @@ export class SettingsSystemPreferencesPageElement extends
       },
 
       /**
+       * This is used to cache the set of languages from <settings-languages>
+       * via bi-directional data-binding.
+       */
+      languages: Object,
+
+      /**
+       * This is used to cache the language helper API from <settings-languages>
+       * via bi-directional data-binding.
+       */
+      languageHelper: Object,
+
+      /**
        * This is used to cache the current time zone display name selected from
-       * <timezone-selector> via bi-directional binding.
+       * <timezone-selector> via bi-directional data-binding.
        */
       activeTimeZoneDisplayName_: {
         type: String,
@@ -84,6 +99,11 @@ export class SettingsSystemPreferencesPageElement extends
   }
 
   prefs: PrefsState;
+
+  // Languages and Inputs subsection
+  languages: LanguagesModel|undefined;
+  languageHelper: LanguageHelper|undefined;
+
   private section_: Section;
 
   // Date and Time subsection

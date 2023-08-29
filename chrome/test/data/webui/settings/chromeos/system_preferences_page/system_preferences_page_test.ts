@@ -12,11 +12,16 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {ensureLazyLoaded, Route, Router, routes, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
+import {ensureLazyLoaded, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+interface SubpageData {
+  routeName: keyof OsSettingsRoutes;
+  elementTagName: string;
+}
 
 suite('<settings-system-preferences-page>', () => {
   let page: SettingsSystemPreferencesPageElement;
@@ -31,6 +36,20 @@ suite('<settings-system-preferences-page>', () => {
     await ensureLazyLoaded();
     Router.getInstance().navigateTo(route);
     await flushTasks();
+  }
+
+  /**
+   * Expects the os-settings-subpage parent element containing the subpage
+   * element with the given tag name to be visible on the page.
+   */
+  function assertSubpageIsVisible(elementTagName: string) {
+    const subpageElement = page.shadowRoot!.querySelector(elementTagName);
+    assertTrue(!!subpageElement);
+    const subpageParentElement = subpageElement.parentNode as HTMLElement;
+    assertTrue(subpageParentElement instanceof OsSettingsSubpageElement);
+    assertTrue(
+        isVisible(subpageParentElement),
+        `${elementTagName} should be visible.`);
   }
 
   teardown(() => {
@@ -55,6 +74,67 @@ suite('<settings-system-preferences-page>', () => {
       await navigateToSubpage(routes.DATETIME_TIMEZONE_SUBPAGE);
       const subpage = page.shadowRoot!.querySelector('timezone-subpage');
       assertTrue(isVisible(subpage), 'Subpage should be visible.');
+    });
+  });
+
+  suite('Languages and Input subsection', () => {
+    setup(() => {
+      // Necessary for os-settings-edit-dictionary-page which uses
+      // GlobalScrollTargetMixin
+      setGlobalScrollTargetForTesting(document.body);
+    });
+
+    teardown(() => {
+      resetGlobalScrollTargetForTesting();
+    });
+
+    test('Language settings card is visible', async () => {
+      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
+      await createPage();
+
+      const languageSettingsCard =
+          page.shadowRoot!.querySelector('language-settings-card');
+      assertTrue(
+          isVisible(languageSettingsCard),
+          'Language settings card should be visible.');
+    });
+
+    const languageSubpages: SubpageData[] = [
+      {
+        routeName: 'OS_LANGUAGES_LANGUAGES',
+        elementTagName: 'os-settings-languages-page-v2',
+      },
+      {
+        routeName: 'OS_LANGUAGES_INPUT',
+        elementTagName: 'os-settings-input-page',
+      },
+      {
+        routeName: 'OS_LANGUAGES_INPUT_METHOD_OPTIONS',
+        elementTagName: 'settings-input-method-options-page',
+      },
+      {
+        routeName: 'OS_LANGUAGES_SMART_INPUTS',
+        elementTagName: 'os-settings-smart-inputs-page',
+      },
+      {
+        routeName: 'OS_LANGUAGES_EDIT_DICTIONARY',
+        elementTagName: 'os-settings-edit-dictionary-page',
+      },
+      {
+        routeName: 'OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY',
+        elementTagName: 'os-settings-japanese-manage-user-dictionary-page',
+      },
+    ];
+    languageSubpages.forEach(({routeName, elementTagName}) => {
+      test(
+          `${elementTagName} subpage element is visible for route ${routeName}`,
+          async () => {
+            Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
+            await createPage();
+
+            await navigateToSubpage(routes[routeName]);
+            assertSubpageIsVisible(elementTagName);
+          });
     });
   });
 

@@ -18,11 +18,11 @@ interface SubpageTriggerData {
 }
 
 suite('<language-settings-card>', () => {
-  let card: LanguageSettingsCardElement;
+  let languageSettingsCard: LanguageSettingsCardElement;
 
   function createLanguagesCard(): void {
-    card = document.createElement('language-settings-card');
-    document.body.appendChild(card);
+    languageSettingsCard = document.createElement('language-settings-card');
+    document.body.appendChild(languageSettingsCard);
     flush();
   }
 
@@ -31,7 +31,7 @@ suite('<language-settings-card>', () => {
   });
 
   teardown(() => {
-    card.remove();
+    languageSettingsCard.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -39,7 +39,8 @@ suite('<language-settings-card>', () => {
     loadTimeData.overrideValues({allowEmojiSuggestion: true});
     createLanguagesCard();
     const smartInputsRow =
-        card.shadowRoot!.querySelector<HTMLElement>('#smartInputsRow');
+        languageSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+            '#smartInputsRow');
     assertTrue(isVisible(smartInputsRow));
   });
 
@@ -47,7 +48,8 @@ suite('<language-settings-card>', () => {
     loadTimeData.overrideValues({allowEmojiSuggestion: false});
     createLanguagesCard();
     const smartInputsRow =
-        card.shadowRoot!.querySelector<HTMLElement>('#smartInputsRow');
+        languageSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+            '#smartInputsRow');
     assertFalse(isVisible(smartInputsRow));
   });
 
@@ -69,11 +71,15 @@ suite('<language-settings-card>', () => {
     test(
         `Row for ${routeName} is focused when returning from subpage`,
         async () => {
-          Router.getInstance().navigateTo(routes.OS_LANGUAGES);
+          const languageSettingsCardRoute = languageSettingsCard.route;
+          assertTrue(!!languageSettingsCardRoute);
+          Router.getInstance().navigateTo(languageSettingsCardRoute);
+
           createLanguagesCard();
 
           const subpageTrigger =
-              card.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+              languageSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+                  triggerSelector);
           assertTrue(!!subpageTrigger);
 
           // Sub-page trigger navigates to subpage for route
@@ -84,10 +90,10 @@ suite('<language-settings-card>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           Router.getInstance().navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitAfterNextRender(card);
+          await waitAfterNextRender(languageSettingsCard);
 
           assertEquals(
-              subpageTrigger, card.shadowRoot!.activeElement,
+              subpageTrigger, languageSettingsCard.shadowRoot!.activeElement,
               `${triggerSelector} should be focused.`);
         });
   });

@@ -119,6 +119,7 @@ export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-ic
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+export {resetGlobalScrollTargetForTesting, setGlobalScrollTarget as setGlobalScrollTargetForTesting} from './common/global_scroll_target_mixin.js';
 export {LacrosExtensionControlBrowserProxy, LacrosExtensionControlBrowserProxyImpl} from './common/lacros_extension_control_browser_proxy.js';
 export {LacrosExtensionControlledIndicatorElement} from './common/lacros_extension_controlled_indicator.js';
 export {PrefsState} from './common/types.js';
@@ -209,6 +210,7 @@ export {SettingsSearchAndAssistantCardElement} from './os_search_page/search_and
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
+export {OsSettingsSubpageElement} from './os_settings_page/os_settings_subpage.js';
 export {SettingsCardElement} from './os_settings_page/settings_card.js';
 export {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 export {OsSettingsRoutes} from './os_settings_routes.js';

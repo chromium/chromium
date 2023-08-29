@@ -20,7 +20,6 @@
   }
 </style>
 
-<div route-path="default">
   <template is="dom-repeat" items="[[optionSections_]]" as="section">
     <template is="dom-if" if="[[shouldShowTitle(section)]]">
       <h2>[[section.title]]</h2>
@@ -125,7 +124,6 @@
       </template>
     </div>
   </template>
-</div>
 
 <template is="dom-if" if="[[showClearPersonalizedData_]]" restamp>
   <!-- TODO(b/238031866): Remove languages and language-helper if not used. -->

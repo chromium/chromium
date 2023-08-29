@@ -42,7 +42,6 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kDevice]: !!routes.DEVICE,
     [Section.kFiles]: !!routes.FILES,
     [Section.kKerberos]: !!routes.KERBEROS,
-    [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
     [Section.kMultiDevice]: !!routes.MULTIDEVICE,
     [Section.kNetwork]: !!routes.INTERNET,
     [Section.kPeople]: !!routes.OS_PEOPLE,
@@ -55,6 +54,7 @@ export function createPageAvailability(): OsPageAvailability {
 
     // Only available when OsSettingsRevampWayfinding feature is disabled.
     [Section.kDateAndTime]: !!routes.DATETIME,
+    [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
     [Section.kReset]: !!routes.OS_RESET,
     [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
   };

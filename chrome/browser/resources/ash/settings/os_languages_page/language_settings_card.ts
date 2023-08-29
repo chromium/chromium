@@ -15,6 +15,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Router, routes} from '../router.js';
@@ -50,6 +51,8 @@ export class LanguageSettingsCardElement extends
 
       languageHelper: Object,
 
+      isRevampWayfindingEnabled_: Boolean,
+
       /**
        * This is enabled when any of the smart inputs features are allowed.
        */
@@ -71,13 +74,17 @@ export class LanguageSettingsCardElement extends
   languageHelper: LanguageHelper|undefined;
 
   // Internal state.
+  private isRevampWayfindingEnabled_: boolean;
   private smartInputsEnabled_: boolean;
 
   constructor() {
     super();
 
+    this.isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
+
     /** RouteOriginMixin override */
-    this.route = routes.OS_LANGUAGES;
+    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
+                                                   routes.OS_LANGUAGES;
   }
 
   override ready(): void {

@@ -101,7 +101,6 @@
   }
 </style>
 
-<div route-path="default">
   <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
     <div class="cr-row first bottom-margin">
       <localized-link id="languagePacksNotice"
@@ -288,7 +287,6 @@
       </div>
     </div>
   </iron-collapse>
-</div>
 
 <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
   <os-settings-add-input-methods-dialog languages="[[languages]]"

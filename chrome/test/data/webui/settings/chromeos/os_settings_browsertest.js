@@ -666,6 +666,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsLanguagesPageLanguageSettingsCard',
    'os_languages_page/language_settings_card_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsLanguagesPageOsClearPersonalizationDataPage',
@@ -856,6 +857,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'SystemPreferencesPageDateTimeCard',
    'date_time_page/date_time_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'SystemPreferencesPageLanguageSettingsCard',
+   'os_languages_page/language_settings_card_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
