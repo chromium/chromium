@@ -891,6 +891,11 @@ FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service
 
 See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
 
+<a name="TOC-What-is-the-security-model-for-Chrome-Custom-Tabs-"></a>
+### What's the security model for Chrome Custom Tabs?
+
+See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
+
 <a name="TOC-Are-all-Chrome-updates-important--"></a>
 ### Are all Chrome updates important?
 
@@ -938,3 +943,4 @@ backported. This can happen for several reasons, for example: because they
 depend upon architectural changes (e.g. breaking API changes); because the
 security improvement is a significant new feature; or because the security
 improvement is the removal of a broken feature.
+
