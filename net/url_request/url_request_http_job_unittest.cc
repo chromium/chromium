@@ -1764,6 +1764,7 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_allow_credentials(false);
     req->Start();
     delegate.RunUntilComplete();
     EXPECT_EQ("0", delegate.data_received());
@@ -1773,6 +1774,7 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
+    req->set_allow_credentials(false);
     req->Start();
     delegate.RunUntilComplete();
     EXPECT_EQ("0", delegate.data_received());
@@ -1791,6 +1793,7 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
+    req->set_allow_credentials(false);
     req->Start();
     delegate.RunUntilComplete();
     EXPECT_EQ("1", delegate.data_received());
