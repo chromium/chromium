@@ -4050,9 +4050,9 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
 // the a-page, then navigates to the b-page and changes the reading to have
 // alpha=1. While on the b-page it captures 3 more events. If the a-page is
 // still receiving events it should receive one or more of these. Finally it
-// resets the reasing back to have alpha=0 and navigates back to the a-page and
+// resets the reading back to have alpha=0 and navigates back to the a-page and
 // captures 3 more events and verifies that all events on the a-page have
-// alpha=1.
+// alpha=0.
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
                        SensorPausedWhileCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
@@ -4095,15 +4095,16 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
     }
 
     // Ensure that that |expectedAlpha| matches the alpha of all events.
-    function validateEvents(expectedAlpha = null) {
-      if (expectedAlpha !== null) {
-        let count = 0;
-        for (event of events) {
-          count++;
-          if (Math.abs(event.alpha - expectedAlpha) > 0.01) {
-            return `fail - ${count}/${events.length}: ` +
-                `${expectedAlpha} != ${event.alpha} (${eventToString(event)})`;
-          }
+    function validateEvents(expectedAlpha) {
+      if (expectedAlpha === null) {
+        return "fail expectedAlpha === null";
+      }
+      let count = 0;
+      for (event of events) {
+        count++;
+        if (Math.abs(event.alpha - expectedAlpha) > 0.01) {
+          return `fail - ${count}/${events.length}: ` +
+              `${expectedAlpha} != ${event.alpha} (${eventToString(event)})`;
         }
       }
       return 'pass';
@@ -4138,17 +4139,20 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
   ASSERT_THAT(rfh_a, InBackForwardCache());
   ASSERT_NE(rfh_a, rfh_b);
 
+  // Change the orientation data before executing |sensor_js|, otherwise a
+  // deviceorientation event might be fired before the call below and the first
+  // registered event will have the previous data (0 0 0.4).
+  provider_->SetRelativeOrientationSensorData(1, 0, 0);
   ASSERT_TRUE(ExecJs(rfh_b, sensor_js));
 
   // Collect 3 orientation events.
-  provider_->SetRelativeOrientationSensorData(1, 0, 0);
   ASSERT_EQ(1, EvalJs(rfh_b, "waitForEventsPromise(1)"));
   provider_->UpdateRelativeOrientationSensorData(1, 0, 0.2);
   ASSERT_EQ(2, EvalJs(rfh_b, "waitForEventsPromise(2)"));
   provider_->UpdateRelativeOrientationSensorData(1, 0, 0.4);
   ASSERT_EQ(3, EvalJs(rfh_b, "waitForEventsPromise(3)"));
   // We should have 3 events with alpha=1.
-  ASSERT_EQ("pass", EvalJs(rfh_b, "validateEvents()"));
+  ASSERT_EQ("pass", EvalJs(rfh_b, "validateEvents(1)"));
 
   // 3) Go back to A.
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0);
