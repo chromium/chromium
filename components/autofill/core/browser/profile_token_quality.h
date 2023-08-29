@@ -177,6 +177,11 @@ class ProfileTokenQuality {
 
  private:
   friend class ProfileTokenQualityTestApi;
+  // To send/receive observations to/from Sync, the entire `Observation`s need
+  // to be accessed, not just the `ObservationType`. This is implemented in
+  // terms of friend classes to keep the `form_hash`es private.
+  friend class ContactInfoEntryDataSetter;
+  friend class ContactInfoProfileSetter;
 
   // For every form and stored type, at most a single observation is stored
   // (among the `kMaxObservationsPerToken` observations stored in total).

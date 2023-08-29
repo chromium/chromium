@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,6 +112,16 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
   profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
   profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
+
+  // Add some `ProfileTokenQuality` observations.
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST,
+                      ProfileTokenQuality::ObservationType::kAccepted,
+                      ProfileTokenQualityTestApi::FormSignatureHash(12));
+  test_api(profile.token_quality())
+      .AddObservation(ADDRESS_HOME_CITY,
+                      ProfileTokenQuality::ObservationType::kEditedFallback,
+                      ProfileTokenQualityTestApi::FormSignatureHash(21));
 
   return profile;
 }
@@ -218,6 +229,18 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_birthdate_year(), 1997,
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
 
+  // Add some `ProfileTokenQuality` observations.
+  ContactInfoSpecifics::Observation* observation =
+      specifics.mutable_name_first()->mutable_metadata()->add_observations();
+  observation->set_type(
+      static_cast<int>(ProfileTokenQuality::ObservationType::kAccepted));
+  observation->set_form_hash(12);
+  observation =
+      specifics.mutable_address_city()->mutable_metadata()->add_observations();
+  observation->set_type(
+      static_cast<int>(ProfileTokenQuality::ObservationType::kEditedFallback));
+  observation->set_form_hash(21);
+
   return specifics;
 }
 
@@ -229,7 +252,8 @@ class ContactInfoSyncUtilTest : public testing::Test {
     features_.InitWithFeatures(
         {features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2},
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillTrackProfileTokenQuality},
         {});
   }
 

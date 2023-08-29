@@ -368,8 +368,14 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(birthdate_year);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::Observation& proto) {
+  VISIT(type);
+  VISIT(form_hash);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::TokenMetadata& proto) {
   VISIT_ENUM(status);
+  VISIT_REP(observations);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::StringToken& proto) {

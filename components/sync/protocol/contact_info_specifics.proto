@@ -39,9 +39,22 @@ message ContactInfoSpecifics {
     SERVER_PARSED = 5;
   }
 
+  message Observation {
+    // An `autofill::ProfileTokenQuality::ObservationType`. Represented as a
+    // uint32 to retain future enum values (since this is proto2).
+    // The `ObservationType`'s underlying type is uint8_t, but this is not
+    // supported by protos. Since the uint32 Proto type uses variable-length
+    // encoding, uint32 has a similar size as a single element byte[].
+    optional uint32 type = 1;
+    // The `autofill::ProfileTokenQuality::FormSignatureHash` has type uint8_t.
+    // Like for `type`, this should have the (non-existing) data type uint8.
+    optional uint32 form_hash = 2;
+  }
+
   // Metadata that is attached to every token type.
   message TokenMetadata {
     optional VerificationStatus status = 1;
+    repeated Observation observations = 2;
   }
 
   // A token with a string interpretation of the value.
