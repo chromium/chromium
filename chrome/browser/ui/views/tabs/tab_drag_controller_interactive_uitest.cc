@@ -1850,9 +1850,18 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // This test doesn't make sense on Mac, since it has no concept of "maximized".
 #if !BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1476904) Test is flaky on ChromeOS/Lacros.
+#define MAYBE_DetachToOwnWindowFromMaximizedWindow \
+  DISABLED_DetachToOwnWindowFromMaximizedWindow
+#else
+#define MAYBE_DetachToOwnWindowFromMaximizedWindow \
+  DetachToOwnWindowFromMaximizedWindow
+#endif
 // Drags from browser to a separate window and releases mouse.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DetachToOwnWindowFromMaximizedWindow) {
+                       MAYBE_DetachToOwnWindowFromMaximizedWindow) {
   // Maximize the initial browser window.
   browser()->window()->Maximize();
   MaximizedBrowserWindowWaiter(browser()->window()).Wait();
