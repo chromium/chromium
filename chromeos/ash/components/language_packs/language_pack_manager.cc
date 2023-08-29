@@ -148,22 +148,6 @@ const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
   return *all_dlc_ids;
 }
 
-// Finds the ID of the DLC corresponding to the given spec.
-// Returns the DLC ID if the DLC exists or absl::nullopt otherwise.
-absl::optional<std::string> GetDlcIdForLanguagePack(
-    const std::string& feature_id,
-    const std::string& locale) {
-  // We search in the static list for the given Pack spec.
-  const PackSpecPair spec(feature_id, locale);
-  const auto it = GetAllLanguagePackDlcIds().find(spec);
-
-  if (it == GetAllLanguagePackDlcIds().end()) {
-    return absl::nullopt;
-  }
-
-  return it->second;
-}
-
 // Finds the ID of the DLC corresponding to the Base Pack for a feature.
 // Returns the DLC ID if the feature has a Base Pack or absl::nullopt
 // otherwise.
@@ -252,6 +236,27 @@ void OnGetDlcState(GetPackStateCallback callback,
 }
 
 }  // namespace
+
+// TODO: b/294162606 - Calling this function with a `std::string_view` or a
+// `const char*` argument causes two string copies per argument - one to call
+// the function, and one to create the `PackSpecPair` to look up in the map.
+// Either refactor this function to take in a `std::string_view` to reduce it
+// down to one string copy per argument, use heterogeneous lookup
+// (https://abseil.io/tips/144) to reduce it down to zero string copies, or
+// rewrite this function completely.
+absl::optional<std::string> GetDlcIdForLanguagePack(
+    const std::string& feature_id,
+    const std::string& locale) {
+  // We search in the static list for the given Pack spec.
+  const PackSpecPair spec(feature_id, locale);
+  const auto it = GetAllLanguagePackDlcIds().find(spec);
+
+  if (it == GetAllLanguagePackDlcIds().end()) {
+    return absl::nullopt;
+  }
+
+  return it->second;
+}
 
 ///////////////////////////////////////////////////////////
 // PackResult constructors and destructors.

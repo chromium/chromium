@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::language_packs {
 
@@ -133,6 +134,12 @@ struct PackSpecPair {
     }
   };
 };
+
+// Finds the ID of the DLC corresponding to the given spec.
+// Returns the DLC ID if the DLC exists or absl::nullopt otherwise.
+absl::optional<std::string> GetDlcIdForLanguagePack(
+    const std::string& feature_id,
+    const std::string& locale);
 
 using OnInstallCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;

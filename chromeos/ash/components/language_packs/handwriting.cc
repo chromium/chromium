@@ -5,12 +5,14 @@
 #include "chromeos/ash/components/language_packs/handwriting.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::language_packs {
@@ -30,6 +32,13 @@ base::flat_set<std::string> EngineIdsToHandwritingLocales(
   }
 
   return handwriting_locales;
+}
+
+absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {
+  // TODO: b/285993323 - Replace this with a set lookup (to see if it is a valid
+  // locale) and concatenation (to produce the DLC ID) to eventually deprecate
+  // `GetAllLanguagePackDlcIds`.
+  return GetDlcIdForLanguagePack(kHandwritingFeatureId, std::string(locale));
 }
 
 }  // namespace ash::language_packs

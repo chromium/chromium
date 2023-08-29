@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/language_packs/handwriting.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -75,6 +76,35 @@ TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesSomeNullopt) {
                   base::BindRepeating(GetSecondUnderscorePart)),
               UnorderedElementsAre("en", "de"));
 }
+
+struct HandwritingLocaleToDlcTestCase {
+  std::string test_name;
+  std::string_view locale;
+  absl::optional<std::string> expected;
+};
+
+class HandwritingLocaleToDlcTest
+    : public HandwritingTest,
+      public testing::WithParamInterface<HandwritingLocaleToDlcTestCase> {};
+
+TEST_P(HandwritingLocaleToDlcTest, Test) {
+  const HandwritingLocaleToDlcTestCase& test_case = GetParam();
+
+  EXPECT_EQ(HandwritingLocaleToDlc(test_case.locale), test_case.expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HandwritingLocaleToDlcTests,
+    HandwritingLocaleToDlcTest,
+    testing::ValuesIn<HandwritingLocaleToDlcTestCase>(
+        {{"InvalidEmpty", "", absl::nullopt},
+         {"InvalidEn", "en", absl::nullopt},
+         {"InvalidDeDe", "de-DE", absl::nullopt},
+         {"InvalidCy", "cy", absl::nullopt},
+         {"ValidDe", "de", "handwriting-de"},
+         {"ValidZhHk", "zh-HK", "handwriting-zh-HK"}}),
+    [](const testing::TestParamInfo<HandwritingLocaleToDlcTest::ParamType>&
+           info) { return info.param.test_name; });
 
 }  // namespace
 
