@@ -833,6 +833,18 @@ FOO_TEST_SUITE_WITH_SWARMING_DIMENSION_SETS = """\
 }
 """
 
+FOO_TEST_SUITE_WITH_NAME = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_test': {
+        'name': 'bar_test',
+      },
+    },
+  },
+}
+"""
+
 FOO_TEST_SUITE_WITH_SWARMING_NAMED_CACHES = """\
 {
   'basic_suites': {
@@ -1063,11 +1075,34 @@ REUSING_TEST_WITH_DIFFERENT_NAME = """\
 }
 """
 
-COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST = """\
+COMPOSITION_SUITE_WITH_TELEMETRY_TEST_WITH_INVALID_NAME = """\
 {
   'basic_suites': {
     'foo_tests': {
       'foo': {
+        'telemetry_test_name': 'foo',
+        'swarming': {
+          'dimensions': {
+            'os': 'Linux',
+          },
+        },
+      },
+    },
+  },
+  'compound_suites': {
+    'composition_tests': [
+      'foo_tests',
+    ],
+  },
+}
+"""
+
+COMPOSITION_SUITE_WITH_TELEMETRY_TEST = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_tests': {
+        'telemetry_test_name': 'foo',
         'swarming': {
           'dimensions': {
             'os': 'Linux',
@@ -1098,7 +1133,8 @@ COMPOSITION_SUITE_WITH_GPU_ARGS = """\
 {
   'basic_suites': {
     'foo_tests': {
-      'foo': {
+      'foo_tests': {
+        'telemetry_test_name': 'foo',
         'swarming': {
           'dimensions': {
             'os': 'Linux',
@@ -1707,6 +1743,15 @@ class UnitTest(TestCase):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_name_causes_error(self):
+    fbb = FakeBBGen(self.args, FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
+                    FOO_TEST_SUITE_WITH_NAME, LUCI_MILO_CFG)
+    fbb.check_input_file_consistency(verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                r'.*name field is set*'):
+      fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_good_test_suites_are_ok(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL, FOO_TEST_SUITE,
                     LUCI_MILO_CFG)
@@ -1958,10 +2003,23 @@ class UnitTest(TestCase):
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_gpu_telemetry_test_with_invalid_name(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GPU_TELEMETRY_TEST_WATERFALL,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST_WITH_INVALID_NAME,
+                    LUCI_MILO_CFG,
+                    exceptions=NO_BAR_TEST_EXCEPTIONS,
+                    gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP)
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        'telemetry test names must end with test or tests.*'):
+      fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_gpu_telemetry_tests(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL,
-                    COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP)
@@ -1971,7 +2029,7 @@ class UnitTest(TestCase):
   def test_gpu_telemetry_tests_android(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_ANDROID,
-                    COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP_ANDROID)
@@ -1981,7 +2039,7 @@ class UnitTest(TestCase):
   def test_gpu_telemetry_tests_android_webview(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_ANDROID_WEBVIEW,
-                    COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP_ANDROID_WEBVIEW)
@@ -1991,7 +2049,7 @@ class UnitTest(TestCase):
   def test_gpu_telemetry_tests_fuchsia(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_FUCHSIA,
-                    COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP_FUCHSIA)
@@ -2001,7 +2059,7 @@ class UnitTest(TestCase):
   def test_gpu_telemetry_tests_cast_streaming(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_CAST_STREAMING,
-                    COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP_CAST_STREAMING)
@@ -2011,7 +2069,7 @@ class UnitTest(TestCase):
   def test_gpu_telemetry_tests_skylab(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_SKYLAB,
-                    COMPOSITION_SUITE_WITH_NAME_NOT_ENDING_IN_TEST,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP)
@@ -2936,7 +2994,6 @@ TEST_SUITE_WITH_PARAMS = """\
           },
         },
         'should_retry_with_patch': False,
-        'name': 'bar_test'
       },
       'bar_test_test': {
         'swarming': {
@@ -2962,10 +3019,9 @@ TEST_SUITE_WITH_PARAMS = """\
           'hard_timeout': 1800
         }
       },
-      'foo_test_test': {
+      'pls': {
         'swarming': {
         },
-        'name': 'pls'
       },
     },
   },

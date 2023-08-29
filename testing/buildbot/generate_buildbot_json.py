@@ -258,20 +258,30 @@ def check_conflicting_definitions(basic_suites=None,
                                   sub_suite=None,
                                   suite=None,
                                   test_type=None,
+                                  target_test_suites=None,
                                   **kwargs):
   """Ensure that if a test is reachable via multiple basic suites,
   all of them have an identical definition of the tests.
   """
   del kwargs
+  variants = None
+  if test_type == 'matrix_compound_suites':
+    variants = target_test_suites[suite][sub_suite].get('variants')
+  variants = variants or [None]
   for test_name in basic_suites[sub_suite]:
-    if (test_name in seen_tests and
-        basic_suites[sub_suite][test_name] !=
-        basic_suites[seen_tests[test_name]][test_name]):
-      raise BBGenErr('Conflicting test definitions for %s from %s '
-                     'and %s in %s (error found while processing %s)'
-                     % (test_name, seen_tests[test_name], sub_suite,
-                     test_type, suite))
-    seen_tests[test_name] = sub_suite
+    for variant in variants:
+      key = (test_name, variant)
+      if ((seen_sub_suite := seen_tests.get(key)) is not None
+          and basic_suites[sub_suite][test_name] !=
+          basic_suites[seen_sub_suite][test_name]):
+        test_description = (test_name if variant is None else
+                            f'{test_name} with variant {variant} applied')
+        raise BBGenErr(
+            'Conflicting test definitions for %s from %s '
+            'and %s in %s (error found while processing %s)' %
+            (test_description, seen_tests[key], sub_suite, test_type, suite))
+      seen_tests[key] = sub_suite
+
 
 def check_matrix_identifier(sub_suite=None,
                             suite=None,
@@ -472,12 +482,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
   def is_win64(self, tester_config):
     return (tester_config.get('os_type') == 'win' and
         tester_config.get('browser_config') == 'release_x64')
-
-  def add_variant_to_test_name(self, test_name, variant_id):
-    return '{} {}'.format(test_name, variant_id)
-
-  def remove_variant_from_test_name(self, test_name, variant_id):
-    return test_name.split(variant_id)[0].strip()
 
   def get_exception_for_test(self, test_name, test_config):
     # gtests may have both "test" and "name" fields, and usually, if the "name"
@@ -942,16 +946,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # results to automatically show up on the flakiness dashboard.
     # (At least, this was true some time ago.) Continue to use this
     # naming convention for the time being to minimize changes.
+    #
+    # test name is the name of the test without the variant ID added
+    if not (test_name.endswith('test') or test_name.endswith('tests')):
+      raise BBGenErr(
+          f'telemetry test names must end with test or tests, got {test_name}')
     step_name = test_config.get('name', test_name)
-    variant_id = test_config.get('variant_id')
-    if variant_id:
-      step_name = self.remove_variant_from_test_name(step_name, variant_id)
-    if not (step_name.endswith('test') or step_name.endswith('tests')):
-      step_name = '%s_tests' % step_name
-    if variant_id:
-      step_name = self.add_variant_to_test_name(step_name, variant_id)
-      if 'name' in test_config:
-        test_config['name'] = step_name
     result = self.generate_isolated_script_test(
       waterfall, tester_name, tester_config, step_name, test_config)
     if not result:
@@ -1207,8 +1207,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # The identifier is used to make the name of the test unique.
         # Generators in the recipe uniquely identify a test by it's name, so we
         # don't want to have the same name for each variant.
-        new_test['name'] = self.add_variant_to_test_name(
-            new_test.get('name', test_name), identifier)
+        new_test['name'] = f'{test_name} {identifier}'
 
         # Attach the variant identifier to the test config so downstream
         # generators can make modifications based on the original name. This
@@ -1235,22 +1234,31 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # referenced by matrix suites exist.
     basic_suites = self.test_suites.get('basic_suites')
 
-    for test_name, matrix_config in matrix_compound_suites.items():
+    for matrix_suite_name, matrix_config in matrix_compound_suites.items():
       full_suite = {}
 
       for test_suite, mtx_test_suite_config in matrix_config.items():
         basic_test_def = copy.deepcopy(basic_suites[test_suite])
+
+        def update_tests(expanded):
+          for test_name, new_tests in expanded.items():
+            if not isinstance(new_tests, list):
+              new_tests = [new_tests]
+            tests_for_name = full_suite.setdefault(test_name, [])
+            for t in new_tests:
+              if t not in tests_for_name:
+                tests_for_name.append(t)
 
         if 'variants' in mtx_test_suite_config:
           mixins = mtx_test_suite_config.get('mixins', [])
           result = self.resolve_variants(basic_test_def,
                                          mtx_test_suite_config['variants'],
                                          mixins)
-          full_suite.update(result)
+          update_tests(result)
         else:
           suite = basic_suites[test_suite]
-          full_suite.update(suite)
-      matrix_compound_suites[test_name] = full_suite
+          update_tests(suite)
+      matrix_compound_suites[matrix_suite_name] = full_suite
 
   def link_waterfalls_to_test_suites(self):
     for waterfall in self.waterfalls:
@@ -1280,12 +1288,22 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.variants = self.load_pyl_file(self.args.variants_pyl_path)
 
   def resolve_configuration_files(self):
+    self.resolve_test_names()
     self.resolve_dimension_sets()
     self.resolve_test_id_prefixes()
     self.resolve_composition_test_suites()
     self.resolve_matrix_compound_test_suites()
     self.flatten_test_suites()
     self.link_waterfalls_to_test_suites()
+
+  def resolve_test_names(self):
+    for suite_name, suite in self.test_suites.get('basic_suites').items():
+      for test_name, test in suite.items():
+        if 'name' in test:
+          raise BBGenErr(
+              f'The name field is set in test {test_name} in basic suite '
+              f'{suite_name}, this is not supported, the test name is the key '
+              'within the basic suite')
 
   def resolve_dimension_sets(self):
 
@@ -2217,8 +2235,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       for test in test_suite:
         test_info = test_suite[test]
         test_name = test
-        if 'name' in test_info:
-          test_name = test_info['name']
         tests[test_name] = test_info
     return tests
 
