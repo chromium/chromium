@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 
 #include <memory>
 #include <string>
@@ -22,14 +22,18 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
@@ -42,6 +46,8 @@
 namespace web_app {
 
 namespace {
+
+using MaybeIwaLocation = IsolatedWebAppInstallationManager::MaybeIwaLocation;
 
 void OnGetBundlePathFromCommandLine(
     base::OnceCallback<void(MaybeIwaLocation)> callback,
@@ -128,9 +134,10 @@ MaybeIwaLocation GetProxyUrlFromCommandLine(
 
 }  // namespace
 
-void GetIsolatedWebAppLocationFromCommandLine(
-    const base::CommandLine& command_line,
-    base::OnceCallback<void(MaybeIwaLocation)> callback) {
+void IsolatedWebAppInstallationManager::
+    GetIsolatedWebAppLocationFromCommandLine(
+        const base::CommandLine& command_line,
+        base::OnceCallback<void(MaybeIwaLocation)> callback) {
   MaybeIwaLocation proxy_url = GetProxyUrlFromCommandLine(command_line);
 
   GetBundlePathFromCommandLine(
@@ -138,25 +145,27 @@ void GetIsolatedWebAppLocationFromCommandLine(
                                    std::move(callback), std::move(proxy_url)));
 }
 
-bool HasIwaInstallSwitch(const base::CommandLine& command_line) {
+bool IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
+    const base::CommandLine& command_line) {
   return command_line.HasSwitch(switches::kInstallIsolatedWebAppFromUrl) ||
          command_line.HasSwitch(switches::kInstallIsolatedWebAppFromFile);
 }
 
-IsolatedWebAppCommandLineInstallManager::
-    IsolatedWebAppCommandLineInstallManager(Profile& profile)
+IsolatedWebAppInstallationManager::IsolatedWebAppInstallationManager(
+    Profile& profile)
     : profile_(profile) {}
 
-IsolatedWebAppCommandLineInstallManager::
-    ~IsolatedWebAppCommandLineInstallManager() = default;
+IsolatedWebAppInstallationManager::~IsolatedWebAppInstallationManager() =
+    default;
 
-void IsolatedWebAppCommandLineInstallManager::SetProvider(
+void IsolatedWebAppInstallationManager::SetProvider(
     base::PassKey<WebAppProvider>,
     WebAppProvider& provider) {
   provider_ = &provider;
 }
 
-void IsolatedWebAppCommandLineInstallManager::Start() {
+void IsolatedWebAppInstallationManager::Start() {
+  MaybeScheduleGarbageCollection();
 #if BUILDFLAG(IS_CHROMEOS)
   auto& command_line = *base::CommandLine::ForCurrentProcess();
   if (!HasIwaInstallSwitch(command_line)) {
@@ -192,7 +201,7 @@ void IsolatedWebAppCommandLineInstallManager::Start() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void IsolatedWebAppCommandLineInstallManager::InstallFromCommandLine(
+void IsolatedWebAppInstallationManager::InstallFromCommandLine(
     const base::CommandLine& command_line,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -207,13 +216,13 @@ void IsolatedWebAppCommandLineInstallManager::InstallFromCommandLine(
                  base::BindOnce(
                      &GetIsolatedWebAppLocationFromCommandLine, command_line,
                      base::BindOnce(
-                         &IsolatedWebAppCommandLineInstallManager::
+                         &IsolatedWebAppInstallationManager::
                              OnGetIsolatedWebAppLocationFromCommandLine,
                          weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
                          std::move(optional_profile_keep_alive))));
 }
 
-void IsolatedWebAppCommandLineInstallManager::InstallIsolatedWebAppFromLocation(
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromLocation(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     MaybeIwaLocation location,
@@ -237,17 +246,16 @@ void IsolatedWebAppCommandLineInstallManager::InstallIsolatedWebAppFromLocation(
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       *optional_location,
       base::BindOnce(
-          &IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo,
+          &IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo,
           weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
           std::move(optional_profile_keep_alive), *optional_location,
           std::move(callback)));
 }
 
-void IsolatedWebAppCommandLineInstallManager::
-    InstallIsolatedWebAppFromDevModeProxy(
-        const GURL& gurl,
-        base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-            callback) {
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
+    const GURL& gurl,
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+        callback) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
 
@@ -281,7 +289,7 @@ void IsolatedWebAppCommandLineInstallManager::
                                     std::move(location), std::move(callback));
 }
 
-void IsolatedWebAppCommandLineInstallManager::
+void IsolatedWebAppInstallationManager::
     OnGetIsolatedWebAppLocationFromCommandLine(
         std::unique_ptr<ScopedKeepAlive> keep_alive,
         std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -290,11 +298,11 @@ void IsolatedWebAppCommandLineInstallManager::
       std::move(keep_alive), std::move(optional_profile_keep_alive),
       std::move(location),
       base::BindOnce(
-          &IsolatedWebAppCommandLineInstallManager::ReportInstallationResult,
+          &IsolatedWebAppInstallationManager::ReportInstallationResult,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
+void IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     const IsolatedWebAppLocation& location,
@@ -310,11 +318,11 @@ void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
       /*expected_version=*/absl::nullopt, std::move(keep_alive),
       std::move(optional_profile_keep_alive),
       base::BindOnce(
-          &IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp,
+          &IsolatedWebAppInstallationManager::OnInstallIsolatedWebApp,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp(
+void IsolatedWebAppInstallationManager::OnInstallIsolatedWebApp(
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
@@ -322,7 +330,7 @@ void IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp(
       result.transform_error([](auto error) { return error.message; }));
 }
 
-void IsolatedWebAppCommandLineInstallManager::ReportInstallationResult(
+void IsolatedWebAppInstallationManager::ReportInstallationResult(
     MaybeInstallIsolatedWebAppCommandSuccess result) {
   if (result.has_value()) {
     LOG(WARNING) << "Isolated Web App command line installation successful. "
@@ -335,8 +343,9 @@ void IsolatedWebAppCommandLineInstallManager::ReportInstallationResult(
   on_report_installation_result_.Run(std::move(result));
 }
 
-void MaybeInstallIwaFromCommandLine(const base::CommandLine& command_line,
-                                    Profile& profile) {
+void IsolatedWebAppInstallationManager::MaybeInstallIwaFromCommandLine(
+    const base::CommandLine& command_line,
+    Profile& profile) {
   if (!HasIwaInstallSwitch(command_line)) {
     // Early-exit for better performance when none of the IWA-specific command
     // line switches are present
@@ -375,18 +384,33 @@ void MaybeInstallIwaFromCommandLine(const base::CommandLine& command_line,
              std::unique_ptr<ScopedKeepAlive> keep_alive,
              std::unique_ptr<ScopedProfileKeepAlive>
                  optional_profile_keep_alive) {
-            provider.iwa_command_line_install_manager().InstallFromCommandLine(
-                command_line, std::move(keep_alive),
-                std::move(optional_profile_keep_alive),
-                // Use higher task priority here since the user may be actively
-                // waiting for the installation to finish. Also, using
-                // `base::TaskPriority::BEST_EFFORT` will not work if the
-                // installation is triggered in combination with
-                // `--no-startup-window`.
-                base::TaskPriority::USER_VISIBLE);
+            provider.isolated_web_app_installation_manager()
+                .InstallFromCommandLine(
+                    command_line, std::move(keep_alive),
+                    std::move(optional_profile_keep_alive),
+                    // Use higher task priority here since the user may be
+                    // actively waiting for the installation to finish. Also,
+                    // using `base::TaskPriority::BEST_EFFORT` will not work if
+                    // the installation is triggered in combination with
+                    // `--no-startup-window`.
+                    base::TaskPriority::USER_VISIBLE);
           },
           std::ref(*provider), command_line, std::move(keep_alive),
           std::move(optional_profile_keep_alive)));
+}
+
+void IsolatedWebAppInstallationManager::MaybeScheduleGarbageCollection() {
+  // We are migrating from `ExtensionsPref::kStorageGarbageCollect` to
+  // `prefs::kShouldGarbageCollectStoragePartitions`. During the migration,
+  // either one of the prefs can trigger garbage collection.
+  // TODO(crbug.com/1463825): Delete `ExtensionsPref::kStorageGarbageCollect`.
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kShouldGarbageCollectStoragePartitions) ||
+      provider_->extensions_manager().ShouldGarbageCollectStoragePartitions()) {
+    provider_->command_manager().ScheduleCommand(
+        std::make_unique<web_app::GarbageCollectStoragePartititonsCommand>(
+            &profile_.get(), base::DoNothing()));
+  }
 }
 
 }  // namespace web_app

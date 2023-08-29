@@ -26,8 +26,7 @@
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -54,8 +53,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -226,10 +223,10 @@ WebAppPolicyManager& WebAppProvider::policy_manager() {
   return *web_app_policy_manager_;
 }
 
-IsolatedWebAppCommandLineInstallManager&
-WebAppProvider::iwa_command_line_install_manager() {
+IsolatedWebAppInstallationManager&
+WebAppProvider::isolated_web_app_installation_manager() {
   CheckIsConnected();
-  return *iwa_command_line_install_manager_;
+  return *isolated_web_app_installation_manager_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -321,7 +318,6 @@ base::WeakPtr<WebAppProvider> WebAppProvider::AsWeakPtr() {
 
 void WebAppProvider::StartImpl() {
   StartSyncBridge();
-  MaybeScheduleGarbageCollection();
 }
 
 void WebAppProvider::CreateSubsystems(Profile* profile) {
@@ -334,8 +330,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   preinstalled_web_app_manager_ =
       std::make_unique<PreinstalledWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
-  iwa_command_line_install_manager_ =
-      std::make_unique<IsolatedWebAppCommandLineInstallManager>(*profile);
+  isolated_web_app_installation_manager_ =
+      std::make_unique<IsolatedWebAppInstallationManager>(*profile);
 #if BUILDFLAG(IS_CHROMEOS)
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
 #endif
@@ -403,7 +399,7 @@ void WebAppProvider::ConnectSubsystems() {
   os_integration_manager_->SetProvider(pass_key, *this);
   command_manager_->SetProvider(pass_key, *this);
   command_scheduler_->SetProvider(pass_key, *this);
-  iwa_command_line_install_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_installation_manager_->SetProvider(pass_key, *this);
 #if BUILDFLAG(IS_CHROMEOS)
   iwa_update_manager_->SetProvider(pass_key, *this);
   web_app_run_on_os_login_manager_->SetProvider(pass_key, *this);
@@ -455,7 +451,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   preinstalled_web_app_manager_->Start(external_manager_barrier);
   web_app_policy_manager_->Start(
       std::move(on_web_app_policy_manager_done_callback));
-  iwa_command_line_install_manager_->Start();
+  isolated_web_app_installation_manager_->Start();
 
 #if BUILDFLAG(IS_CHROMEOS)
   iwa_update_manager_->Start();
@@ -485,20 +481,6 @@ void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
       web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(iter.second));
     }
-  }
-}
-
-void WebAppProvider::MaybeScheduleGarbageCollection() {
-  // We are mirating from ExtensionsPref::kStorageGarbageCollect to
-  // prefs::kShouldGarbageCollectStoragePartitions. During migration, either
-  // one of the prefs can trigget garbge collection.
-  // TODO(crbug.com/1463825): Delete ExtensionsPref::kStorageGarbageCollect.
-  if (profile_->GetPrefs()->GetBoolean(
-          prefs::kShouldGarbageCollectStoragePartitions) ||
-      extensions_manager_->ShouldGarbageCollectStoragePartitions()) {
-    command_manager().ScheduleCommand(
-        std::make_unique<web_app::GarbageCollectStoragePartititonsCommand>(
-            profile_, base::DoNothing()));
   }
 }
 

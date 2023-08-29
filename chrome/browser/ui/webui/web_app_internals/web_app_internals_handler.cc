@@ -434,7 +434,7 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     return;
   }
 
-  auto& manager = provider->iwa_command_line_install_manager();
+  auto& manager = provider->isolated_web_app_installation_manager();
   manager.InstallIsolatedWebAppFromDevModeProxy(
       url, base::BindOnce(
                &WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy,
@@ -443,7 +443,8 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
 
 void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
     WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
-    web_app::MaybeInstallIsolatedWebAppCommandSuccess result) {
+    web_app::IsolatedWebAppInstallationManager::
+        MaybeInstallIsolatedWebAppCommandSuccess result) {
   ::mojom::InstallIsolatedWebAppFromDevProxyResult mojo_result;
   if (result.has_value()) {
     mojo_result.success = true;

@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -45,7 +45,8 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
  private:
   void OnInstallIsolatedWebAppFromDevModeProxy(
       InstallIsolatedWebAppFromDevProxyCallback callback,
-      web_app::MaybeInstallIsolatedWebAppCommandSuccess result);
+      web_app::IsolatedWebAppInstallationManager::
+          MaybeInstallIsolatedWebAppCommandSuccess result);
 
   const raw_ptr<Profile> profile_;
   mojo::Receiver<mojom::WebAppInternalsHandler> receiver_;

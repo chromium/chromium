@@ -139,7 +139,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #endif
 
 using content::BrowserThread;
@@ -1075,7 +1075,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
-  if (web_app::HasIwaInstallSwitch(command_line)) {
+  if (web_app::IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
+          command_line)) {
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
       auto* profile_manager = g_browser_process->profile_manager();
       LOG(ERROR) << "Command line switches to install IWAs are incompatible "
@@ -1089,8 +1090,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
                  << "').";
       return false;
     } else {
-      web_app::MaybeInstallIwaFromCommandLine(command_line,
-                                              *privacy_safe_profile);
+      web_app::IsolatedWebAppInstallationManager::
+          MaybeInstallIwaFromCommandLine(command_line, *privacy_safe_profile);
     }
   }
 #endif  //  !BUILDFLAG(IS_CHROMEOS)

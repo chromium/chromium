@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO: Rename this file since it's used for more than command-line
-// installations now.
-
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_FROM_COMMAND_LINE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_FROM_COMMAND_LINE_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLATION_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLATION_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -22,7 +19,7 @@
 namespace base {
 class CommandLine;
 enum class TaskPriority : uint8_t;
-}
+}  // namespace base
 
 class Profile;
 
@@ -31,23 +28,13 @@ namespace web_app {
 class IsolatedWebAppUrlInfo;
 class WebAppProvider;
 
-using MaybeInstallIsolatedWebAppCommandSuccess =
-    base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
-using MaybeIwaLocation =
-    base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
-
-void GetIsolatedWebAppLocationFromCommandLine(
-    const base::CommandLine& command_line,
-    base::OnceCallback<void(MaybeIwaLocation)> callback);
-
-bool HasIwaInstallSwitch(const base::CommandLine& command_line);
-
-// This class manages installation of Isolated Web Apps triggered by command
-// line switches (`switches::kInstallIsolatedWebAppFromUrl` and
-// `switches::kInstallIsolatedWebAppFromFile`).
+// This class manages Installation related operations for Isolated Web App.
 //
 // The `InstallFromCommandLine` method can be used to imperatively parse the
 // provided command line and install an IWA if specified.
+//
+// on `Start()`, `MaybeScheduleGarbageCollection()` will check pref values to
+// determine whether to schedule a `GarbageCollectStoragePartitionCommand`.
 //
 // On ChromeOS only, the command line will be parsed whenever a new manager is
 // started, which occurs on `Profile` initialization. This is done this way
@@ -57,10 +44,15 @@ bool HasIwaInstallSwitch(const base::CommandLine& command_line);
 //
 // TODO(cmfcmf): Revisit this behavior once using Ash instead of Lacros is no
 // longer possible.
-class IsolatedWebAppCommandLineInstallManager {
+class IsolatedWebAppInstallationManager {
  public:
-  explicit IsolatedWebAppCommandLineInstallManager(Profile& profile);
-  ~IsolatedWebAppCommandLineInstallManager();
+  using MaybeInstallIsolatedWebAppCommandSuccess =
+      base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
+  using MaybeIwaLocation =
+      base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
+
+  explicit IsolatedWebAppInstallationManager(Profile& profile);
+  ~IsolatedWebAppInstallationManager();
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
@@ -85,7 +77,24 @@ class IsolatedWebAppCommandLineInstallManager {
     on_report_installation_result_ = std::move(on_report_installation_result);
   }
 
+  // Attempts to install an IWA if the respective command line parameters are
+  // provided. It might silently fail for multiple reasons, such as:
+  // - missing command line parameters
+  // - missing `WebAppProvider`
+  // - browser shutting down
+  static void MaybeInstallIwaFromCommandLine(
+      const base::CommandLine& command_line_,
+      Profile& profile);
+
+  static bool HasIwaInstallSwitch(const base::CommandLine& command_line);
+
+  static void GetIsolatedWebAppLocationFromCommandLine(
+      const base::CommandLine& command_line,
+      base::OnceCallback<void(MaybeIwaLocation)> callback);
+
  private:
+  void MaybeScheduleGarbageCollection();
+
   void InstallIsolatedWebAppFromLocation(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -124,18 +133,10 @@ class IsolatedWebAppCommandLineInstallManager {
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
       on_report_installation_result_ = base::DoNothing();
 
-  base::WeakPtrFactory<IsolatedWebAppCommandLineInstallManager>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<IsolatedWebAppInstallationManager> weak_ptr_factory_{
+      this};
 };
-
-// Attempts to install an IWA if the respective command line parameters are
-// provided. It might silently fail for multiple reasons, such as:
-// - missing command line parameters
-// - missing `WebAppProvider`
-// - browser shutting down
-void MaybeInstallIwaFromCommandLine(const base::CommandLine& command_line_,
-                                    Profile& profile);
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_FROM_COMMAND_LINE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_MANAGER_H_

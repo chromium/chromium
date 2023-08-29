@@ -27,7 +27,7 @@ class AbstractWebAppDatabaseFactory;
 class ExtensionsManager;
 class ExternallyManagedAppManager;
 class FileUtilsWrapper;
-class IsolatedWebAppCommandLineInstallManager;
+class IsolatedWebAppInstallationManager;
 class ManifestUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
@@ -146,9 +146,9 @@ class WebAppProvider : public KeyedService {
   // Clients can use WebAppPolicyManager to request updates of policy installed
   // Web Apps.
   WebAppPolicyManager& policy_manager();
-  // Clients can use `IsolatedWebAppCommandLineInstallManager` to request the
-  // installation of IWAs based on command line switches.
-  IsolatedWebAppCommandLineInstallManager& iwa_command_line_install_manager();
+  // `IsolatedWebAppInstallationManager` is the entry point for Isolated Web App
+  // installation.
+  IsolatedWebAppInstallationManager& isolated_web_app_installation_manager();
 #if BUILDFLAG(IS_CHROMEOS)
   // Keeps Isolated Web Apps up to date by regularly checking for updates,
   // downloading them, and applying them.
@@ -229,8 +229,6 @@ class WebAppProvider : public KeyedService {
   // after 02-2022.
   void DoMigrateProfilePrefs(Profile* profile);
 
-  void MaybeScheduleGarbageCollection();
-
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
@@ -243,8 +241,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
-  std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
-      iwa_command_line_install_manager_;
+  std::unique_ptr<IsolatedWebAppInstallationManager>
+      isolated_web_app_installation_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
