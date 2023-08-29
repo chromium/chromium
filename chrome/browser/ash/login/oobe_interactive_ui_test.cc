@@ -516,7 +516,8 @@ class NativeWindowVisibilityBrowserMainExtraParts
   }
 
  private:
-  raw_ptr<NativeWindowVisibilityObserver, ExperimentalAsh> observer_;
+  raw_ptr<NativeWindowVisibilityObserver, DanglingUntriaged | ExperimentalAsh>
+      observer_;
 };
 
 class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {

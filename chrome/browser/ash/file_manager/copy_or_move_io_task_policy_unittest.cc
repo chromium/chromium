@@ -688,7 +688,7 @@ class CopyOrMoveIOTaskWithScansTest
       warned_files_;
   storage::FileSystemURLSet directory_scanning_expectations_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | DanglingUntriaged> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   raw_ptr<policy::MockFilesPolicyNotificationManager,
           DanglingUntriaged | ExperimentalAsh>
       fpnm_;

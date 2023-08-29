@@ -39,11 +39,12 @@ class AnsibleManagementTestHelper {
   void SendFailedApplySignal();
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Owned by ash::DBusThreadManager
-  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cicerone_client_;
 };
 
 }  // namespace crostini

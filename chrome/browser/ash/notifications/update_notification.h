@@ -30,7 +30,7 @@ class UpdateNotification {
   // Handles clicks on the notification.
   void OnNotificationClick(absl::optional<int> button_index);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   const raw_ptr<UpdateNotificationShowingController, ExperimentalAsh>
       controller_;
 

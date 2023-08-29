@@ -243,7 +243,8 @@ class OsUpdatesReporterPowerwashBrowserTest
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
-  raw_ptr<::policy::DeviceCloudPolicyManagerAsh, ExperimentalAsh>
+  raw_ptr<::policy::DeviceCloudPolicyManagerAsh,
+          DanglingUntriaged | ExperimentalAsh>
       policy_manager_;
 };
 

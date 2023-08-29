@@ -102,7 +102,7 @@ class NearbyShareDialogUI : public ui::MojoWebUIController,
   // A pointer to the Sharesheet controller is provided by
   // |NearbyShareAction::LaunchAction| when this WebUI controller is created. It
   // is used to close the Sharesheet in |HandleClose|.
-  raw_ptr<sharesheet::SharesheetController, ExperimentalAsh>
+  raw_ptr<sharesheet::SharesheetController, DanglingUntriaged | ExperimentalAsh>
       sharesheet_controller_ = nullptr;
 
   std::vector<std::unique_ptr<Attachment>> attachments_;

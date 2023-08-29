@@ -66,8 +66,10 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
     EXPECT_FALSE(menu_button->IsMenuShowing());
   }
 
-  raw_ptr<BrowserView, ExperimentalAsh> browser_view_ = nullptr;
-  raw_ptr<ImmersiveModeController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged | ExperimentalAsh> browser_view_ =
+      nullptr;
+  raw_ptr<ImmersiveModeController, DanglingUntriaged | ExperimentalAsh>
+      controller_ = nullptr;
 };
 
 // Test that the web app menu button opens a menu on click.

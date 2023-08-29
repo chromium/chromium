@@ -95,7 +95,8 @@ class VolumeControllerTest : public InProcessBrowserTest,
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<ash::CrasAudioHandler, ExperimentalAsh> audio_handler_;  // Not owned.
+  raw_ptr<ash::CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      audio_handler_;  // Not owned.
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp, VolumeControllerTest, testing::Bool());
@@ -231,7 +232,8 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<SoundsManagerTestImpl, ExperimentalAsh> sounds_manager_;
+  raw_ptr<SoundsManagerTestImpl, DanglingUntriaged | ExperimentalAsh>
+      sounds_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp, VolumeControllerSoundsTest, testing::Bool());

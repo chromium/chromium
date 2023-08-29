@@ -211,7 +211,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
   }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   base::Value::Dict config_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;

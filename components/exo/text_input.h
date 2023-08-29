@@ -288,14 +288,15 @@ class TextInput : public ui::TextInputClient,
   // |surface_| and |seat_| are non-null if and only if the TextInput is in a
   // pending or active state, in which case the TextInput will be observing the
   // Seat.
-  raw_ptr<Surface, ExperimentalAsh> surface_ = nullptr;
-  raw_ptr<Seat, ExperimentalAsh> seat_ = nullptr;
+  raw_ptr<Surface, DanglingUntriaged | ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<Seat, DanglingUntriaged | ExperimentalAsh> seat_ = nullptr;
 
   // If the TextInput is active (associated window has focus) and the
   // InputMethod is available, this is set and the TextInput will be its
   // focused client. Otherwise, it is null and the TextInput is not attached
   // to any InputMethod, so the TextInputClient overrides will not be called.
-  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_ = nullptr;
+  raw_ptr<ui::InputMethod, DanglingUntriaged | ExperimentalAsh> input_method_ =
+      nullptr;
 
   base::ScopedObservation<ash::input_method::InputMethodManager,
                           ash::input_method::InputMethodManager::Observer>

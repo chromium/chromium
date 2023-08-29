@@ -84,7 +84,7 @@ class KerberosInBrowserDialogButtonTest : public InProcessBrowserTest {
     }))->Wait();
   }
 
-  raw_ptr<content::WebUI, ExperimentalAsh> webui_;
+  raw_ptr<content::WebUI, DanglingUntriaged | ExperimentalAsh> webui_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -56,9 +56,10 @@ class CrostiniForceCloseViewTest : public DialogBrowserTest {
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
   std::unique_ptr<exo::ShellSurface> closable_surface_;
-  raw_ptr<views::Widget, ExperimentalAsh> closable_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> closable_widget_;
 
-  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> dialog_widget_ =
+      nullptr;
 
   int force_close_invocations_ = 0;
 

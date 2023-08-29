@@ -574,8 +574,10 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
-  raw_ptr<ArcAuthService, ExperimentalAsh> auth_service_ = nullptr;
-  raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_ = nullptr;
+  raw_ptr<ArcAuthService, DanglingUntriaged | ExperimentalAsh> auth_service_ =
+      nullptr;
+  raw_ptr<ArcBridgeService, DanglingUntriaged | ExperimentalAsh>
+      arc_bridge_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {

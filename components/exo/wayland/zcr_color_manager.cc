@@ -264,7 +264,7 @@ class ColorManagerObserver : public WaylandDisplayObserver {
  private:
   raw_ptr<WaylandDisplayHandler, ExperimentalAsh> wayland_display_handler_;
   const raw_ptr<wl_resource, ExperimentalAsh> color_management_output_resource_;
-  raw_ptr<wl_resource, ExperimentalAsh> output_resource_;
+  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh> output_resource_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

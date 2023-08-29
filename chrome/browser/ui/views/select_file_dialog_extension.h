@@ -93,7 +93,8 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     Owner& operator=(Owner&&);
 
     // The native window that opened the dialog.
-    raw_ptr<aura::Window, ExperimentalAsh> window = nullptr;
+    raw_ptr<aura::Window, LeakedDanglingUntriaged | ExperimentalAsh> window =
+        nullptr;
     // Android task ID if the owner window is an Android app.
     absl::optional<int> android_task_id;
     // Lacros window ID if the owner window is a Lacros browser. This field
@@ -175,13 +176,15 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // If System Files App is enabled it stores the web contents associated with
   // System File App dialog. Not owned by this class. Set only while System
   // Files App dialog is opened.
-  raw_ptr<content::WebContents, ExperimentalAsh> system_files_app_web_contents_;
+  raw_ptr<content::WebContents, LeakedDanglingUntriaged | ExperimentalAsh>
+      system_files_app_web_contents_;
 
   // ID of the tab that spawned this dialog, used to route callbacks.
   RoutingID routing_id_;
 
   // Pointer to the profile the dialog is running in.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> profile_ =
+      nullptr;
 
   // Information about the dialog's owner, such as the window or app type.
   Owner owner_;
@@ -201,7 +204,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   std::vector<ui::SelectedFileInfo> selection_files_;
   int selection_index_ = 0;
   bool can_resize_ = true;
-  raw_ptr<void, ExperimentalAsh> params_ = nullptr;
+  raw_ptr<void, LeakedDanglingUntriaged | ExperimentalAsh> params_ = nullptr;
   base::WeakPtrFactory<SelectFileDialogExtension> weak_factory_{this};
 };
 

@@ -237,7 +237,8 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
  protected:
   base::FilePath my_files_dir_;
   base::FilePath read_only_dir_;
-  raw_ptr<file_manager::test::FakeProvidedFileSystemOneDrive, ExperimentalAsh>
+  raw_ptr<file_manager::test::FakeProvidedFileSystemOneDrive,
+          DanglingUntriaged | ExperimentalAsh>
       provided_file_system_;  // Owned by Service.
 
  private:

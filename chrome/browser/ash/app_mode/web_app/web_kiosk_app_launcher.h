@@ -94,7 +94,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
 
   bool is_installed_ = false;  // Whether the installation was completed.
   // `profile_` may become nullptr if the profile is being destroyed.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   const AccountId account_id_;
   const bool should_skip_install_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

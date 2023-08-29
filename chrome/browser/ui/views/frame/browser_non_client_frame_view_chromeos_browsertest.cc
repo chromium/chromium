@@ -719,15 +719,18 @@ class WebAppNonClientFrameViewAshTest
 
   static SkColor GetThemeColor() { return SK_ColorBLUE; }
 
-  raw_ptr<Browser, ExperimentalAsh> app_browser_ = nullptr;
-  raw_ptr<BrowserView, ExperimentalAsh> browser_view_ = nullptr;
-  raw_ptr<chromeos::DefaultFrameHeader, ExperimentalAsh> frame_header_ =
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> app_browser_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged | ExperimentalAsh> browser_view_ =
       nullptr;
-  raw_ptr<WebAppFrameToolbarView, ExperimentalAsh> web_app_frame_toolbar_ =
-      nullptr;
-  raw_ptr<const std::vector<ContentSettingImageView*>, ExperimentalAsh>
+  raw_ptr<chromeos::DefaultFrameHeader, DanglingUntriaged | ExperimentalAsh>
+      frame_header_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged | ExperimentalAsh>
+      web_app_frame_toolbar_ = nullptr;
+  raw_ptr<const std::vector<ContentSettingImageView*>,
+          DanglingUntriaged | ExperimentalAsh>
       content_setting_views_ = nullptr;
-  raw_ptr<AppMenuButton, ExperimentalAsh> web_app_menu_button_ = nullptr;
+  raw_ptr<AppMenuButton, DanglingUntriaged | ExperimentalAsh>
+      web_app_menu_button_ = nullptr;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpCommandLine(command_line);

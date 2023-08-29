@@ -175,7 +175,8 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
                                           LoggedInUserMixin::LogInType::kChild,
                                           embedded_test_server(), this};
 
-  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_ = nullptr;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
+      arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;
 };
 

@@ -134,7 +134,7 @@ class CloudUploadNotificationManager
   // never decremented.
   static inline int notification_manager_counter_ = 0;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> profile_;
   CloudProvider provider_;
   std::string file_name_;
   std::string cloud_provider_name_;

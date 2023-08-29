@@ -74,13 +74,18 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
 
   void NotifyObservers();
 
-  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
+  raw_ptr<HotspotCapabilitiesProvider,
+          LeakedDanglingUntriaged | ExperimentalAsh>
       hotspot_capabilities_provider_;
-  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_;
-  raw_ptr<ash::HotspotController, ExperimentalAsh> hotspot_controller_;
-  raw_ptr<HotspotConfigurationHandler, ExperimentalAsh>
+  raw_ptr<HotspotStateHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+      hotspot_state_handler_;
+  raw_ptr<ash::HotspotController, LeakedDanglingUntriaged | ExperimentalAsh>
+      hotspot_controller_;
+  raw_ptr<HotspotConfigurationHandler,
+          LeakedDanglingUntriaged | ExperimentalAsh>
       hotspot_configuration_handler_;
-  raw_ptr<HotspotEnabledStateNotifier, ExperimentalAsh>
+  raw_ptr<HotspotEnabledStateNotifier,
+          LeakedDanglingUntriaged | ExperimentalAsh>
       hotspot_enabled_state_notifier_;
 
   mojo::RemoteSet<mojom::CrosHotspotConfigObserver> observers_;

@@ -425,7 +425,7 @@ class ASH_EXPORT LockContentsView
 
   std::vector<UserState> users_;
 
-  const raw_ptr<LoginDataDispatcher, ExperimentalAsh>
+  const raw_ptr<LoginDataDispatcher, LeakedDanglingUntriaged | ExperimentalAsh>
       data_dispatcher_;  // Unowned.
   std::unique_ptr<LoginDetachableBaseModel> detachable_base_model_;
 

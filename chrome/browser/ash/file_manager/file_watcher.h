@@ -84,7 +84,8 @@ class FileWatcher {
                         base::FilePathWatcher* file_path_watcher);
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  raw_ptr<base::FilePathWatcher, ExperimentalAsh> local_file_watcher_ = nullptr;
+  raw_ptr<base::FilePathWatcher, DanglingUntriaged | ExperimentalAsh>
+      local_file_watcher_ = nullptr;
   std::unique_ptr<guest_os::GuestOsFileWatcher> crostini_file_watcher_;
   base::FilePath virtual_path_;
   // Map of origin to counter. See the comment at AddListener() for

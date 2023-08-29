@@ -1661,12 +1661,12 @@ class DriveFsTestVolume : public TestVolume {
   absl::optional<drivefs::mojom::DialogResult> last_dialog_result_;
 
   // Profile associated with this volume: not owned.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
   // Integration service used for testing: not owned.
-  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
       integration_service_ = nullptr;
 
-  const raw_ptr<Profile, ExperimentalAsh> original_profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> original_profile_;
   std::map<base::FilePath, const AddEntriesMessage::TestEntryInfo> entries_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
@@ -1747,7 +1747,8 @@ class DocumentsProviderTestVolume : public TestVolume {
   }
 
  protected:
-  const raw_ptr<arc::FakeFileSystemInstance, ExperimentalAsh>
+  const raw_ptr<arc::FakeFileSystemInstance,
+                DanglingUntriaged | ExperimentalAsh>
       file_system_instance_;
   const std::string authority_;
   const std::string root_document_id_;
@@ -2125,7 +2126,8 @@ class GuestOsTestVolume : public LocalTestVolume {
 
   const base::FilePath& mount_path() const { return root_path(); }
 
-  raw_ptr<MockGuestOsMountProvider, ExperimentalAsh> provider_;
+  raw_ptr<MockGuestOsMountProvider, DanglingUntriaged | ExperimentalAsh>
+      provider_;
 };
 
 FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;

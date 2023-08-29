@@ -69,7 +69,8 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   void OnTabletModeEnded() override;
 
   // The owner of this class.
-  const raw_ptr<HoldingSpaceTray, ExperimentalAsh> holding_space_tray_;
+  const raw_ptr<HoldingSpaceTray, DanglingUntriaged | ExperimentalAsh>
+      holding_space_tray_;
 
   // The singleton delegate for holding space views that implements support
   // for context menu, drag-and-drop, and multiple selection.

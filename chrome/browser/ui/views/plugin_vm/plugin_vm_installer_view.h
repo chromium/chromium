@@ -106,7 +106,8 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
       nullptr;
   raw_ptr<views::BoxLayout, ExperimentalAsh> lower_container_layout_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> big_image_ = nullptr;
-  raw_ptr<views::Link, ExperimentalAsh> learn_more_link_ = nullptr;
+  raw_ptr<views::Link, DanglingUntriaged | ExperimentalAsh> learn_more_link_ =
+      nullptr;
 
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;

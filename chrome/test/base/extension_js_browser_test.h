@@ -40,7 +40,7 @@ class ExtensionJSBrowserTest : public JavaScriptBrowserTest {
   std::string extension_id_;
   // The browser context associated with the ExtensionHost loaded from
   // WaitForExtension().
-  raw_ptr<content::BrowserContext, ExperimentalAsh>
+  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
       extension_host_browser_context_ = nullptr;
   bool libs_loaded_ = false;
 

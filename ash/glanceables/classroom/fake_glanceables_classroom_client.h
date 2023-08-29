@@ -42,7 +42,8 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
   void OnGlanceablesBubbleClosed() override;
 
  private:
-  const raw_ptr<GlanceablesClassroomClient, ExperimentalAsh> original_client_;
+  const raw_ptr<GlanceablesClassroomClient, DanglingUntriaged | ExperimentalAsh>
+      original_client_;
 };
 
 }  // namespace ash

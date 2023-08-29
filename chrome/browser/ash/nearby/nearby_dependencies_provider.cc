@@ -137,7 +137,7 @@ class MdnsResponderFactory : public sharing::mojom::MdnsResponderFactory {
   void Shutdown() { is_shutdown_ = true; }
 
   bool is_shutdown_ = false;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> profile_;
   base::CallbackListSubscription shutdown_subscription_;
 };
 

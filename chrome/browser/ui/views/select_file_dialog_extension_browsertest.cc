@@ -783,8 +783,8 @@ class SelectFileDialogExtensionPolicyTest
         .WillByDefault(testing::Return(mock_files_controller_.get()));
   }
 
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      rules_manager_ = nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
   raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
       nullptr;

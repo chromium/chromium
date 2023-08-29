@@ -303,11 +303,14 @@ class VideoConferenceIntegrationTest
   }
 
  protected:
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_bt_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> mic_bt_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> share_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged | ExperimentalAsh>
+      camera_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged | ExperimentalAsh>
+      mic_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged | ExperimentalAsh>
+      share_bt_ = nullptr;
 
-  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

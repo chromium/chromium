@@ -254,9 +254,10 @@ class SigninHelperTest : public InProcessBrowserTest,
 
   void OnAccountRemoved(const account_manager::Account& account) override {}
 
-  raw_ptr<account_manager::AccountManager, ExperimentalAsh> account_manager_ =
-      nullptr;
-  raw_ptr<crosapi::AccountManagerMojoService, ExperimentalAsh>
+  raw_ptr<account_manager::AccountManager, DanglingUntriaged | ExperimentalAsh>
+      account_manager_ = nullptr;
+  raw_ptr<crosapi::AccountManagerMojoService,
+          DanglingUntriaged | ExperimentalAsh>
       account_manager_mojo_service_ = nullptr;
   int signin_helper_created_count_ = 0;
   int signin_helper_deleted_count_ = 0;
@@ -402,7 +403,7 @@ class SigninHelperTestWithArcAccountRestrictions
   absl::optional<account_manager::Account> on_account_available_in_arc_account_;
   absl::optional<account_manager::Account>
       on_account_unavailable_in_arc_account_;
-  raw_ptr<ash::AccountAppsAvailability, ExperimentalAsh>
+  raw_ptr<ash::AccountAppsAvailability, DanglingUntriaged | ExperimentalAsh>
       account_apps_availability_;
   base::test::ScopedFeatureList feature_list_;
 };

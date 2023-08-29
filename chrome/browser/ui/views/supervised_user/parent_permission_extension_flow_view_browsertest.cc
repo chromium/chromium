@@ -176,7 +176,8 @@ class ExtensionEnableFlowTestSupervised
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<ParentPermissionDialogView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<ParentPermissionDialogView, DanglingUntriaged | ExperimentalAsh>
+      view_ = nullptr;
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
   ParentPermissionDialog::Result result_;
 

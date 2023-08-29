@@ -83,7 +83,7 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   mojo::RemoteSet<mojom::ArcObserver> observers_;
 
   // profile_ should not be overridden.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 
   // This must come last to make sure weak pointers are invalidated first.
   base::WeakPtrFactory<ArcAsh> weak_ptr_factory_{this};

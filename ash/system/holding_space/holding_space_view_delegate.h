@@ -196,13 +196,13 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // Caches a view for which mouse released events should be temporarily
   // ignored. This is to prevent us from selecting a view on mouse pressed but
   // then unselecting that same view on mouse released.
-  raw_ptr<HoldingSpaceItemView, ExperimentalAsh> ignore_mouse_released_ =
-      nullptr;
+  raw_ptr<HoldingSpaceItemView, DanglingUntriaged | ExperimentalAsh>
+      ignore_mouse_released_ = nullptr;
 
   // Caches views from which range-based selections should start and end. This
   // is used when determining the range for selection performed via shift-click.
-  raw_ptr<HoldingSpaceItemView, ExperimentalAsh> selected_range_start_ =
-      nullptr;
+  raw_ptr<HoldingSpaceItemView, DanglingUntriaged | ExperimentalAsh>
+      selected_range_start_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION HoldingSpaceItemView* selected_range_end_ = nullptr;

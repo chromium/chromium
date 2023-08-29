@@ -245,8 +245,10 @@ class AccountManagerUIHandlerTest
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<AccountManager, ExperimentalAsh> account_manager_ = nullptr;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<AccountManager, DanglingUntriaged | ExperimentalAsh>
+      account_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_ = nullptr;
   content::TestWebUI web_ui_;
   AccountId primary_account_id_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
@@ -457,7 +459,8 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<AccountAppsAvailability, ExperimentalAsh> account_apps_availability_;
+  raw_ptr<AccountAppsAvailability, DanglingUntriaged | ExperimentalAsh>
+      account_apps_availability_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
 };
 

@@ -150,7 +150,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList features_{features::kGlanceables};
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {
@@ -301,7 +301,7 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<DateTray, ExperimentalAsh> date_tray_;
+  raw_ptr<DateTray, DanglingUntriaged | ExperimentalAsh> date_tray_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);

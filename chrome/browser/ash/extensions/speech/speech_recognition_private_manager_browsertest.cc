@@ -81,7 +81,8 @@ class SpeechRecognitionPrivateManagerTest
   }
 
  private:
-  raw_ptr<SpeechRecognitionPrivateManager, ExperimentalAsh> manager_;
+  raw_ptr<SpeechRecognitionPrivateManager, DanglingUntriaged | ExperimentalAsh>
+      manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

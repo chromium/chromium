@@ -559,8 +559,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     return std::move(controller);
   }
 
-  raw_ptr<TestController, ExperimentalAsh> test_controller_ =
-      nullptr;  // Not owned.
+  raw_ptr<TestController, DanglingUntriaged | ExperimentalAsh>
+      test_controller_ = nullptr;  // Not owned.
 };
 
 namespace {

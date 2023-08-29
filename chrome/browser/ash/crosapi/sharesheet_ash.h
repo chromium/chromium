@@ -43,7 +43,7 @@ class SharesheetAsh : public mojom::Sharesheet {
   void CloseBubble(const std::string& window_id) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
   mojo::ReceiverSet<mojom::Sharesheet> receivers_;
   base::WeakPtrFactory<SharesheetAsh> weak_factory_{this};
 };

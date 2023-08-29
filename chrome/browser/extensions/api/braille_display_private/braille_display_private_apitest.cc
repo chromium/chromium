@@ -141,7 +141,8 @@ class MockBrlapiConnection : public BrlapiConnection {
     }
   }
 
-  raw_ptr<MockBrlapiConnectionData, ExperimentalAsh> data_;
+  raw_ptr<MockBrlapiConnectionData, LeakedDanglingUntriaged | ExperimentalAsh>
+      data_;
   OnDataReadyCallback on_data_ready_;
 };
 

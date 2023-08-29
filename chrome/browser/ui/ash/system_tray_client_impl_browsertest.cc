@@ -590,7 +590,7 @@ class SystemTrayClientShowVideoConferenceTest
     ASSERT_TRUE(browser_);
   }
 
-  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientShowVideoConferenceTest,

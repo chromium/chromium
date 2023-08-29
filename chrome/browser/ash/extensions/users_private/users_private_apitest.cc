@@ -113,7 +113,7 @@ class TestDelegate : public UsersPrivateDelegate {
   }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // weak
+  raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> profile_;  // weak
   std::unique_ptr<TestPrefsUtil> prefs_util_;
 };
 

@@ -214,7 +214,7 @@ class CloudOpenTask : public BrowserListObserver,
       std::unique_ptr<std::vector<std::string>> mime_types);
   void RecordUploadLatencyUMA();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::vector<storage::FileSystemURL> file_urls_;
   CloudProvider cloud_provider_;
   gfx::NativeWindow modal_parent_;

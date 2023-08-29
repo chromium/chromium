@@ -785,8 +785,8 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
 
   // MockDlpRulesManager is owned by KeyedService and is guaranteed to outlive
   // this class.
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
 
   std::unique_ptr<file_access::MockScopedFileAccessDelegate>
       scoped_file_access_delegate_;

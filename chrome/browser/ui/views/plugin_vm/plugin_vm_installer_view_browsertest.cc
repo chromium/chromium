@@ -154,9 +154,11 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<PluginVmInstallerView, ExperimentalAsh> view_;
-  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
-  raw_ptr<ash::FakeVmPluginDispatcherClient, ExperimentalAsh>
+  raw_ptr<PluginVmInstallerView, DanglingUntriaged | ExperimentalAsh> view_;
+  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
+      fake_concierge_client_;
+  raw_ptr<ash::FakeVmPluginDispatcherClient,
+          DanglingUntriaged | ExperimentalAsh>
       fake_vm_plugin_dispatcher_client_;
 
  private:

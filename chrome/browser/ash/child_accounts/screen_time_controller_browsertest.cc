@@ -142,7 +142,8 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
-  raw_ptr<Profile, ExperimentalAsh> child_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> child_profile_ =
+      nullptr;
 
  private:
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,

@@ -194,10 +194,12 @@ class CONTENT_EXPORT TtsControllerImpl
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   TtsControllerDelegate* GetTtsControllerDelegate();
   void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
-  raw_ptr<TtsControllerDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<TtsControllerDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_ = nullptr;
 #endif
 
-  raw_ptr<RemoteTtsEngineDelegate> remote_engine_delegate_ = nullptr;
+  raw_ptr<RemoteTtsEngineDelegate, DanglingUntriaged> remote_engine_delegate_ =
+      nullptr;
 
   raw_ptr<TtsEngineDelegate, DanglingUntriaged> engine_delegate_ = nullptr;
 

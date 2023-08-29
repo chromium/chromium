@@ -117,18 +117,22 @@ class ESimManager : public mojom::ESimManager,
   // exist. Returns true if a new object was created.
   bool CreateEuiccIfNew(const dbus::ObjectPath& euicc_path);
 
-  raw_ptr<CellularConnectionHandler, ExperimentalAsh>
+  raw_ptr<CellularConnectionHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       cellular_connection_handler_;
-  raw_ptr<CellularESimInstaller, ExperimentalAsh> cellular_esim_installer_;
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+  raw_ptr<CellularESimInstaller, LeakedDanglingUntriaged | ExperimentalAsh>
+      cellular_esim_installer_;
+  raw_ptr<CellularESimProfileHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       cellular_esim_profile_handler_;
-  raw_ptr<CellularESimUninstallHandler, ExperimentalAsh>
+  raw_ptr<CellularESimUninstallHandler,
+          LeakedDanglingUntriaged | ExperimentalAsh>
       cellular_esim_uninstall_handler_;
-  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;
+  raw_ptr<CellularInhibitor, LeakedDanglingUntriaged | ExperimentalAsh>
+      cellular_inhibitor_;
 
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+  raw_ptr<NetworkConnectionHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       network_connection_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+      network_state_handler_;
 
   std::vector<std::unique_ptr<Euicc>> available_euiccs_;
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;

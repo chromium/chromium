@@ -91,7 +91,8 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
                                                    base::NullCallback());
   }
 
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
+  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
+      controller_;
 
   web_app::AppId app_id_;
   ash::ShelfID app_shelf_id_;

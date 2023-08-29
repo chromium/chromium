@@ -738,8 +738,8 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
   }
 
  protected:
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      rules_manager_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {

@@ -452,7 +452,7 @@ class WaylandXdgToplevelDecoration {
   }
 
   const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<WaylandToplevel, ExperimentalAsh> top_level_;
+  raw_ptr<WaylandToplevel, DanglingUntriaged | ExperimentalAsh> top_level_;
   // Keeps track of the xdg-decoration mode on server side.
   uint32_t default_mode_ = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
 };
@@ -562,7 +562,8 @@ class WaylandPopup : aura::WindowObserver {
   }
 
   const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  const raw_ptr<wl_resource, ExperimentalAsh> surface_resource_;
+  const raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
+      surface_resource_;
   raw_ptr<WaylandXdgSurface, ExperimentalAsh> shell_surface_data_;
   base::WeakPtrFactory<WaylandPopup> weak_ptr_factory_{this};
 };

@@ -178,10 +178,14 @@ class TestAshTraceDestinationIO : public hud_display::AshTraceDestinationIO {
     CHECK_EQ(test_ash_trace_destination_io_registry->id(), registry_id_);
   }
 
-  raw_ptr<const TestAshTraceDestinationIORegistry, ExperimentalAsh> registry_;
+  raw_ptr<const TestAshTraceDestinationIORegistry,
+          LeakedDanglingUntriaged | ExperimentalAsh>
+      registry_;
   const uint64_t registry_id_;
 
-  raw_ptr<TestAshTraceDestinationIORegistry::IOStatus, ExperimentalAsh> status_;
+  raw_ptr<TestAshTraceDestinationIORegistry::IOStatus,
+          LeakedDanglingUntriaged | ExperimentalAsh>
+      status_;
 };
 
 // Keeps track of all test TracingSession objects.

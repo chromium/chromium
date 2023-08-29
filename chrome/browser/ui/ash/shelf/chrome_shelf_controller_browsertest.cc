@@ -308,7 +308,8 @@ class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
+      controller_ = nullptr;
 
  private:
   apps::AppServiceTest app_service_test_;
@@ -428,7 +429,8 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
                            /*filter_predicate=*/base::NullCallback());
   }
 
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
+      controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -663,7 +665,8 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
   }
 
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
+      controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2998,7 +3001,8 @@ class PerDeskShelfAppBrowserTest : public ShelfAppBrowserTest,
       std::move(run_loop_)->Quit();
   }
 
-  raw_ptr<ash::ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ash::ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_ =
+      nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -264,7 +264,8 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath my_files_dir_;
-  raw_ptr<content::WebContents, ExperimentalAsh> dialog_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
+      dialog_contents_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

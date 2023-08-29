@@ -452,9 +452,10 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
                ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SINCE_VERSION;
   }
 
-  raw_ptr<wl_resource, ExperimentalAsh> text_input_;
-  raw_ptr<wl_resource, ExperimentalAsh> extended_text_input_ = nullptr;
-  raw_ptr<wl_resource, ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh> text_input_;
+  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
+      extended_text_input_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh> surface_ = nullptr;
 
   // Owned by Seat, which is updated before calling the callbacks of this
   // class.

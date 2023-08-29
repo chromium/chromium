@@ -268,11 +268,11 @@ class PlatformKeysServiceBrowserTestBase
 
   // Unowned pointer to the profile selected by the current TestConfig.
   // Valid after SetUpOnMainThread().
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
   // Unowned pointer to the PlatformKeysService for |profile_|. Valid after
   // SetUpOnMainThread().
-  raw_ptr<PlatformKeysService, ExperimentalAsh> platform_keys_service_ =
-      nullptr;
+  raw_ptr<PlatformKeysService, DanglingUntriaged | ExperimentalAsh>
+      platform_keys_service_ = nullptr;
   // The private slot for the profile under test. This should be null if the
   // test parameter mandates testing with the sign-in profile.
   crypto::ScopedPK11Slot user_slot_;

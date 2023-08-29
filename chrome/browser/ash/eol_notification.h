@@ -84,7 +84,7 @@ class EolNotification final : public message_center::NotificationObserver {
   void ResetDismissedPrefs();
 
   // Overridden for testing pending EOL notifications.
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged | ExperimentalAsh> clock_;
 
   // Profile which is associated with the EndOfLife notification.
   const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;

@@ -120,7 +120,7 @@ class DictationTestUtils {
   bool wait_for_accessibility_common_extension_load_;
   speech::SpeechRecognitionType speech_recognition_type_;
   EditableType editable_type_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<SpeechRecognitionTestHelper> test_helper_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<ui::test::EventGenerator> generator_;

@@ -112,7 +112,7 @@ class DeviceWilcoDtcConfigurationExternalPolicyHandlerTest
   base::test::ScopedFeatureList feature_list_;
   base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
       policy_changed_repeating_future_;
-  raw_ptr<PolicyService, ExperimentalAsh> policy_service_ =
+  raw_ptr<PolicyService, DanglingUntriaged | ExperimentalAsh> policy_service_ =
       nullptr;  // owned by BrowserPolicyConnector.
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   std::string external_data_;

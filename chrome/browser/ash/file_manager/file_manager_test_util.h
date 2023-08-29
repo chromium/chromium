@@ -55,7 +55,7 @@ class FolderInMyFiles {
   FolderInMyFiles(const FolderInMyFiles&) = delete;
   FolderInMyFiles& operator=(const FolderInMyFiles&) = delete;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   base::FilePath folder_;
   std::vector<base::FilePath> files_;
 };

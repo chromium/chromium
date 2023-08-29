@@ -812,7 +812,8 @@ class ClipboardHistoryPasteTypeBrowserTest
     return std::move(paste_list_value).TakeList();
   }
 
-  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
+      web_contents_ = nullptr;
   int paste_num_ = 1;
 };
 

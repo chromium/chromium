@@ -46,7 +46,8 @@ class FamilyUserDeviceMetricsTest
   }
   bool IsUserExisting() const { return std::get<1>(GetParam()); }
 
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
 
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
