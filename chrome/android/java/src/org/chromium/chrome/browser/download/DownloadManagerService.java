@@ -22,6 +22,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -738,10 +739,14 @@ public class DownloadManagerService implements DownloadController.Observer,
     private static Intent createLaunchIntent(Uri fileUri, Uri contentUri, String mimeType,
             boolean isSupportedMimeType, String originalUrl, String referrer) {
         if (isSupportedMimeType) {
+            // Sharing for media files is disabled on automotive.
+            boolean isAutomotive = BuildInfo.getInstance().isAutomotive;
+
             // Redirect the user to an internal media viewer.  The file path is necessary to show
             // the real file path to the user instead of a content:// download ID.
             return MediaViewerUtils.getMediaViewerIntent(fileUri, contentUri, mimeType,
-                    true /* allowExternalAppHandlers */, ContextUtils.getApplicationContext());
+                    !isAutomotive /* allowExternalAppHandlers */,
+                    !isAutomotive /* allowShareAction */, ContextUtils.getApplicationContext());
         }
         return MediaViewerUtils.createViewIntentForUri(contentUri, mimeType, originalUrl, referrer);
     }

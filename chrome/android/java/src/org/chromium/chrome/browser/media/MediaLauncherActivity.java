@@ -13,6 +13,7 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -61,9 +62,10 @@ public class MediaLauncherActivity extends Activity {
             return;
         }
 
+        boolean allowShareAction = !BuildInfo.getInstance().isAutomotive;
         // TODO(https://crbug.com/800880): Determine file:// URI when possible.
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(
-                contentUri, contentUri, mimeType, false /* allowExternalAppHandlers */, this);
+        Intent intent = MediaViewerUtils.getMediaViewerIntent(contentUri, contentUri, mimeType,
+                false /* allowExternalAppHandlers */, allowShareAction, this);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
                 CustomTabIntentDataProvider.LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY);

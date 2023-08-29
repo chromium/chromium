@@ -53,14 +53,13 @@ public class MediaViewerUtils {
      * @param mimeType                 MIME type of the file.
      * @param allowExternalAppHandlers Whether the viewer should allow the user to open with another
      *                                 app.
+     * @param allowShareAction         Whether the view should allow the share action.
      * @return Intent that can be fired to open the file.
      */
     public static Intent getMediaViewerIntent(Uri displayUri, Uri contentUri, String mimeType,
-            boolean allowExternalAppHandlers, Context context) {
+            boolean allowExternalAppHandlers, boolean allowShareAction, Context context) {
         Bitmap closeIcon = BitmapFactory.decodeResource(
                 context.getResources(), R.drawable.ic_arrow_back_white_24dp);
-        Bitmap shareIcon = BitmapFactory.decodeResource(
-                context.getResources(), R.drawable.ic_share_white_24dp);
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setToolbarColor(Color.BLACK);
@@ -93,7 +92,10 @@ public class MediaViewerUtils {
         // Create a PendingIntent that shares the file with external apps.
         // If the URI is a file URI and the Android version is N or later, this will throw a
         // FileUriExposedException. In this case, we just don't add the share button.
-        if (!willExposeFileUri(contentUri)) {
+        if (allowShareAction && !willExposeFileUri(contentUri)) {
+            Bitmap shareIcon = BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.ic_share_white_24dp);
+
             // TODO(https://crbug.com/1428364): PendingIntents are no longer allowed to be both
             // mutable and implicit. Since this must be mutable, we need to set a component and then
             // remove the FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT flag.
@@ -104,6 +106,8 @@ public class MediaViewerUtils {
                                     | getAllowUnsafeImplicitIntentFlag());
             builder.setActionButton(
                     shareIcon, context.getString(R.string.share), pendingShareIntent, true);
+        } else {
+            builder.setShareState(CustomTabsIntent.SHARE_STATE_OFF);
         }
 
         // The color of the media viewer is dependent on the file type.

@@ -23,6 +23,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -421,9 +422,11 @@ public class DownloadUtils {
             }
             String normalizedMimeType = Intent.normalizeMimeType(mimeType);
 
+            // Sharing for media files is disabled on automotive.
+            boolean isAutomotive = BuildInfo.getInstance().isAutomotive;
             Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri /*displayUri*/,
-                    contentUri /*contentUri*/, normalizedMimeType,
-                    true /* allowExternalAppHandlers */, context);
+                    contentUri /*contentUri*/, normalizedMimeType, !isAutomotive, !isAutomotive,
+                    context);
             IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileID);
             return true;
