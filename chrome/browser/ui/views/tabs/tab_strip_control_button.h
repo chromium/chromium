@@ -10,6 +10,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/masked_targeter_delegate.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -17,7 +18,8 @@ struct VectorIcon;
 
 class TabStrip;
 
-class TabStripControlButton : public views::LabelButton {
+class TabStripControlButton : public views::LabelButton,
+                              public views::MaskedTargeterDelegate {
  public:
   METADATA_HEADER(TabStripControlButton);
 
@@ -35,6 +37,8 @@ class TabStripControlButton : public views::LabelButton {
   // change.
   void UpdateIcon();
 
+  virtual int GetCornerRadius() const;
+
   // Helper function for changing the state for TabStripRegionView tests.
   void AnimateToStateForTesting(views::InkDropState state);
 
@@ -43,6 +47,9 @@ class TabStripControlButton : public views::LabelButton {
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnThemeChanged() override;
+
+  // views::MaskedTargeterDelegate
+  bool GetHitTestMask(SkPath* mask) const override;
 
  protected:
   // Returns colors based on the Frame active status.
@@ -83,8 +90,6 @@ class TabStripControlButton : public views::LabelButton {
     paint_transparent_for_custom_image_theme_ =
         paint_transparent_for_custom_image_theme;
   }
-
-  virtual int GetCornerRadius();
 
  private:
   void UpdateBackground();

@@ -33,7 +33,6 @@ TabSearchButton::TabSearchButton(TabStrip* tab_strip)
           this,
           tab_strip->controller()->GetProfile())) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
-  SetFocusRingCornerRadius(GetCornerRadius());
 
   UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   UpdateForegroundFrameInactiveColorId(
@@ -64,7 +63,7 @@ void TabSearchButton::NotifyClick(const ui::Event& event) {
       ->Activate(&event);
 }
 
-int TabSearchButton::GetCornerRadius() {
+int TabSearchButton::GetCornerRadius() const {
   return features::IsChromeRefresh2023()
              ? kCRTabSearchCornerRadius
              : TabStripControlButton::kButtonSize.width() / 2;
