@@ -104,6 +104,22 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
              [self isRunningTest:@selector(testSyncHistoryDownload)]) {
     config.features_enabled.push_back(syncer::kSyncEnableHistoryDataType);
   }
+
+  // Several datatypes, as well as logic related to initial sync, become
+  // unused and cannot be tested if kReplaceSyncPromosWithSignInPromos is
+  // enabled.
+  if ([self isRunningTest:@selector(testSyncUploadBookmarkOnFirstSync)] ||
+      [self isRunningTest:@selector(testSyncDeleteAutofillProfile)] ||
+      [self isRunningTest:@selector(testSyncDownloadAutofillProfile)] ||
+      [self isRunningTest:@selector(testSyncUpdateAutofillProfile)] ||
+      [self isRunningTest:@selector(testSyncTypedURLDeleteFromClient)] ||
+      [self isRunningTest:@selector(testSyncTypedURLDeleteFromServer)] ||
+      [self isRunningTest:@selector(testSyncTypedURLUpload)] ||
+      [self isRunningTest:@selector(testSyncTypedUrlDownload)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
   return config;
 }
 
@@ -135,20 +151,26 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey
-      addBookmarkWithTitle:@"goo"
-                       URL:@"https://www.goo.com"
-                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  bookmarks::StorageType inStorage =
+      [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
+          ? bookmarks::StorageType::kAccount
+          : bookmarks::StorageType::kLocalOrSyncable;
+  [BookmarkEarlGrey addBookmarkWithTitle:@"goo"
+                                     URL:@"https://www.goo.com"
+                               inStorage:inStorage];
   WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
 }
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
 // client.
 - (void)testSyncDownloadBookmark {
-  [BookmarkEarlGrey
-      verifyBookmarksWithTitle:@"hoo"
-                 expectedCount:0
-                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  bookmarks::StorageType inStorage =
+      [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
+          ? bookmarks::StorageType::kAccount
+          : bookmarks::StorageType::kLocalOrSyncable;
+  [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
+                               expectedCount:0
+                                   inStorage:inStorage];
   const GURL URL = web::test::HttpServer::MakeUrl("http://www.hoo.com");
   [ChromeEarlGrey addFakeSyncServerBookmarkWithURL:URL title:"hoo"];
 
@@ -159,10 +181,9 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  [BookmarkEarlGrey
-      verifyBookmarksWithTitle:@"hoo"
-                 expectedCount:1
-                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
+                               expectedCount:1
+                                   inStorage:inStorage];
 }
 
 // Tests that the local cache guid changes when the user signs out and then
@@ -514,14 +535,17 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   NSString* title1 = @"title1";
   NSString* title2 = @"title2";
 
-  [BookmarkEarlGrey
-      verifyBookmarksWithTitle:title1
-                 expectedCount:0
-                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
-  [BookmarkEarlGrey
-      verifyBookmarksWithTitle:title2
-                 expectedCount:0
-                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  bookmarks::StorageType inStorage =
+      [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
+          ? bookmarks::StorageType::kAccount
+          : bookmarks::StorageType::kLocalOrSyncable;
+
+  [BookmarkEarlGrey verifyBookmarksWithTitle:title1
+                               expectedCount:0
+                                   inStorage:inStorage];
+  [BookmarkEarlGrey verifyBookmarksWithTitle:title2
+                               expectedCount:0
+                                   inStorage:inStorage];
 
   // Mimic the creation of two bookmarks from two different devices, with the
   // same client item ID.
@@ -542,14 +566,12 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
-  [BookmarkEarlGrey
-      verifyBookmarksWithTitle:title1
-                 expectedCount:1
-                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
-  [BookmarkEarlGrey
-      verifyBookmarksWithTitle:title2
-                 expectedCount:1
-                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey verifyBookmarksWithTitle:title1
+                               expectedCount:1
+                                   inStorage:inStorage];
+  [BookmarkEarlGrey verifyBookmarksWithTitle:title2
+                               expectedCount:1
+                                   inStorage:inStorage];
 }
 
 - (void)testSyncInvalidationsEnabled {
