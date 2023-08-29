@@ -120,7 +120,8 @@ class UserSelectionScreen
       const AccountId& account_id) const;
 
   void OnUserStatusChecked(const AccountId& account_id,
-                           TokenHandleUtil::TokenHandleStatus status);
+                           const std::string& token,
+                           const TokenHandleUtil::TokenHandleStatus& status);
   void OnAllowedInputMethodsChanged();
 
   // Purpose of the screen.

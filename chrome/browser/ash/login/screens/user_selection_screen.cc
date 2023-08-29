@@ -704,7 +704,8 @@ void UserSelectionScreen::OnBeforeShow() {
 
 void UserSelectionScreen::OnUserStatusChecked(
     const AccountId& account_id,
-    TokenHandleUtil::TokenHandleStatus status) {
+    const std::string& token,
+    const TokenHandleUtil::TokenHandleStatus& status) {
   if (status == TokenHandleUtil::INVALID) {
     RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);
     SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,

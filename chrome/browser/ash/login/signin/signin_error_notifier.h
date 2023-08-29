@@ -78,7 +78,8 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
           account_dummy_token_list);
 
   void OnTokenHandleCheck(const AccountId& account_id,
-                          TokenHandleUtil::TokenHandleStatus status);
+                          const std::string& token,
+                          const TokenHandleUtil::TokenHandleStatus& status);
 
   // Handles clicks on the Secondary Account reauth notification. See
   // `message_center::HandleNotificationClickDelegate`.

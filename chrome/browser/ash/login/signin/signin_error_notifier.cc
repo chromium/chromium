@@ -193,7 +193,8 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
 
 void SigninErrorNotifier::OnTokenHandleCheck(
     const AccountId& account_id,
-    TokenHandleUtil::TokenHandleStatus status) {
+    const std::string& token,
+    const TokenHandleUtil::TokenHandleStatus& status) {
   if (status != TokenHandleUtil::INVALID)
     return;
   RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);
