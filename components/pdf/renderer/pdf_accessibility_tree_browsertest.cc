@@ -2541,8 +2541,9 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
   ui::AXNode* status_node = status_wrapper_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, status_node);
   ASSERT_EQ(ax::mojom::Role::kStatus, status_node->GetRole());
-  // Note that the string below needs to be synced with `IDS_PDF_OCR_NO_RESULT`.
-  constexpr char kPdfOcrNoResult[] = "No text converted from images";
+  // Note that the string below must be synced with `IDS_PDF_OCR_NO_RESULT`.
+  constexpr char kPdfOcrNoResult[] =
+      "This PDF is inaccessible. No text extracted";
   ASSERT_EQ(kPdfOcrNoResult,
             status_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
 }

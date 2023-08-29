@@ -165,7 +165,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "id=-2 region child_ids=-3,-5,-7 (0, 0)-(800, 900) "
         "is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
-        "    id=-4 staticText name=Start of converted text (0, 0)-(1, 1)\n"
+        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 staticText name=Hello world child_ids=-6 "
         "offset_container_id=-2 (100, 100)-(500, 20) "
         "text_direction=rtl language=en\n"
@@ -173,7 +173,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "background_color=&FFFFFF00 color=&0 text_direction=rtl language=en "
         "word_starts=0,6 word_ends=6,11\n"
         "  id=-7 contentInfo child_ids=-8 (800, 900)-(1, 1)\n"
-        "    id=-8 staticText name=End of converted text (800, 900)-(1, 1)\n");
+        "    id=-8 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
