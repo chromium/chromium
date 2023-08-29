@@ -78,23 +78,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
 
-id<GREYMatcher> AccessibilityLabelPrefix(NSString* prefix) {
-  GREYMatchesBlock matches = ^BOOL(id element) {
-    if ([element respondsToSelector:@selector(accessibilityLabel)]) {
-      NSString* label = [element accessibilityLabel];
-      return [label hasPrefix:prefix];
-    }
-    return NO;
-  };
-  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
-    NSString* name =
-        [NSString stringWithFormat:@"accessibilityLabelPrefix: %@", prefix];
-    [description appendText:name];
-  };
-  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                              descriptionBlock:describe];
-}
-
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
@@ -188,16 +171,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabel:(NSString*)label {
-  if (@available(iOS 17, *)) {
-    // On iOS 17 beta 6, context menu item labels contain a comma
-    // followed by the alt text for the item's icon. On iOS 17 beta 5
-    // and earlier, the context menu item labels are simply the item's
-    // title.
-    NSString* commaStr = [label stringByAppendingString:@","];
-    return grey_allOf(grey_anyOf(grey_accessibilityLabel(label),
-                                 AccessibilityLabelPrefix(commaStr), nil),
-                      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
-  }
   return grey_allOf(grey_accessibilityLabel(label),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
