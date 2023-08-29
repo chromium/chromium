@@ -53,6 +53,8 @@ class SensorProviderProxyImpl final
                                     blink::mojom::PermissionStatus);
   void OnConnectionError();
 
+  void BindToDeviceServiceIfNeeded();
+
   // Callbacks from |receiver_set_| are passed to |sensor_provider_| and so
   // the ReceiverSet should be destroyed first so that the callbacks are
   // invalidated before being discarded.

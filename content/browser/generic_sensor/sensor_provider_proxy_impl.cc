@@ -59,17 +59,7 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
     return;
   }
 
-  if (!sensor_provider_) {
-    auto receiver = sensor_provider_.BindNewPipeAndPassReceiver();
-    sensor_provider_.set_disconnect_handler(base::BindOnce(
-        &SensorProviderProxyImpl::OnConnectionError, base::Unretained(this)));
-
-    const auto& binder = GetBinderOverride();
-    if (binder)
-      binder.Run(std::move(receiver));
-    else
-      GetDeviceService().BindSensorProvider(std::move(receiver));
-  }
+  BindToDeviceServiceIfNeeded();
 
   render_frame_host()
       .GetBrowserContext()
@@ -155,6 +145,23 @@ void SensorProviderProxyImpl::OnConnectionError() {
   // GetSensorCallbacks will never be called.
   receiver_set_.Clear();
   sensor_provider_.reset();
+}
+
+void SensorProviderProxyImpl::BindToDeviceServiceIfNeeded() {
+  if (sensor_provider_) {
+    return;
+  }
+
+  auto receiver = sensor_provider_.BindNewPipeAndPassReceiver();
+  sensor_provider_.set_disconnect_handler(base::BindOnce(
+      &SensorProviderProxyImpl::OnConnectionError, base::Unretained(this)));
+
+  const auto& binder = GetBinderOverride();
+  if (binder) {
+    binder.Run(std::move(receiver));
+  } else {
+    GetDeviceService().BindSensorProvider(std::move(receiver));
+  }
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(SensorProviderProxyImpl);
