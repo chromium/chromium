@@ -74,6 +74,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "proto/merchant_trust.proto",
+    "proto/parcel.proto",
     "proto/price_insights.proto",
     "proto/price_tracking.proto",
     "proto/shopping_page_types.proto",
@@ -100,6 +101,12 @@ if (is_android) {
     proto_in_dir = "//"
     sources = [ "proto/coupon_db_content.proto" ]
   }
+}
+
+proto_library("parcel_tracking_db_content_proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/parcel_tracking_db_content.proto" ]
+  deps = [ ":proto" ]
 }
 
 proto_library("persisted_state_db_content_proto") {
