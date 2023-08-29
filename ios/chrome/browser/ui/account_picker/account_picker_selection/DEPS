@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h",
+  "+ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+]

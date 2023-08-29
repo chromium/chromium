@@ -13,3 +13,7 @@ source_set("account_picker_layout") {
   sources = [ "account_picker_layout_delegate.h" ]
   deps = [ "//ui/base" ]
 }
+
+source_set("account_picker_logger") {
+  sources = [ "account_picker_logger.h" ]
+}
