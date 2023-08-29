@@ -245,6 +245,10 @@ const device::DiscoverableCredentialMetadata
     kPhoneCred1(device::AuthenticatorType::kPhone, "rp.com", {2}, kPhoneUser1);
 const device::DiscoverableCredentialMetadata
     kPhoneCred2(device::AuthenticatorType::kPhone, "rp.com", {3}, kPhoneUser2);
+const device::DiscoverableCredentialMetadata
+    kWinCred1(device::AuthenticatorType::kWinNative, "rp.com", {0}, kUser1);
+const device::DiscoverableCredentialMetadata
+    kWinCred2(device::AuthenticatorType::kWinNative, "rp.com", {1}, kUser2);
 
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
     const device::DiscoverableCredentialMetadata& metadata) {
@@ -285,6 +289,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto phonecred1 = CredentialInfoFrom(kPhoneCred1);
   const auto phonecred2 = CredentialInfoFrom(kPhoneCred2);
   const auto ickc_cred1 = CredentialInfoFrom(kCred1FromICloudKeychain);
+  const auto wincred1 = CredentialInfoFrom(kWinCred1);
+  const auto wincred2 = CredentialInfoFrom(kWinCred2);
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
@@ -349,6 +355,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   };
 
 #define L __LINE__
+  // clang-format off
   Test kTests[]{
       // If there's only a single mechanism, it should activate.
       {L, mc, {usb}, {}, {}, {t(usb)}, usb_ui},
@@ -362,10 +369,20 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L, ga, {usb, cable}, {}, {}, {add, t(usb)}, mss},
 #endif
 
-      // If the platform authenticator has a credential it should activate.
 #if defined(NEW_UI)
-      {L, ga, {usb, internal}, {has_plat, one_cred}, {}, {c(cred1), t(usb)},
-       plat_ui},
+      // If the platform authenticator has a credential it should activate.
+      {L,
+       ga,
+       {usb, internal},
+       {has_plat, one_cred},
+       {},
+       {c(cred1), t(usb)},
+#if BUILDFLAG(IS_MAC)
+       plat_ui
+#else
+       use_pk
+#endif
+      },
 #if BUILDFLAG(IS_MAC)
        // Without Touch ID, the profile authenticator will show a confirmation
        // prompt.
@@ -439,14 +456,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       // If the Windows API is available without caBLE, it should activate.
       {L, mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
       {L, ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
-      // ... even if, somehow, there's another transport.
-      {L, mc, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
 #if defined(NEW_UI)
-      // TODO(NEWUI): This is seemingly broken with the new UI, but we've not
-      // enabled that on Windows yet.
-      {L, ga, {usb}, {has_winapi}, {}, {t(usb), winapi}, mss},
-#else
-      {L, ga, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
+      // ...even if there are discovered Windows credentials.
+      {L, ga, {}, {has_winapi, one_cred}, {}, {c(wincred1), winapi}, plat_ui},
 #endif
 
       // A caBLEv1 extension should cause us to go directly to caBLE.
@@ -710,7 +722,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {empty_al, has_winapi, has_plat, one_cred},
        {},
-       {c(cred1), add, winapi},
+       {c(wincred1), add, winapi},
        hero},
 #else
       // QR code first: Get assertion should jump to the QR code with empty
@@ -978,7 +990,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(cred1), c(cred2), c(phonecred1), add},
+       {c(wincred1), c(wincred2), c(phonecred1), add},
        mss},
       // Mix of phone, internal credentials, and USB/NFC.
       // This should offer dispatching to the Windows API for USB/NFC.
@@ -987,7 +999,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi},
        {psync("a")},
-       {c(cred1), c(cred2), c(phonecred1), add, winapi},
+       {c(wincred1), c(wincred2), c(phonecred1), add, winapi},
        mss},
       // Phone credentials and unknown Windows Hello credential status.
       // This should offer dispatching to the Windows API for Windows Hello.
@@ -1008,18 +1020,19 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(cred1), c(cred2), c(phonecred1), winapi},
+       {c(wincred1), c(wincred2), c(phonecred1), winapi},
        mss},
       // Internal credentials only.
-      // This should not offer dispatching directly to the Windows API.
+      // This should dispatch directly to the Windows API.
       {L,
        ga,
        {},
        {two_cred, has_winapi, only_internal},
        {},
-       {c(cred1), c(cred2)},
-       mss},
+       {c(wincred1), c(wincred2)},
+       plat_ui},
   };
+  // clang-format on
 #undef L
 
 #if BUILDFLAG(IS_WIN)
@@ -1066,6 +1079,17 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
           FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }
 
+    device::DiscoverableCredentialMetadata cred1;
+    device::DiscoverableCredentialMetadata cred2;
+    if (base::Contains(
+            test.params,
+            TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
+      cred1 = kWinCred1;
+      cred2 = kWinCred2;
+    } else {
+      cred1 = kCred1;
+      cred2 = kCred2;
+    }
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasICloudKeychainCreds)) {
       transports_info.has_icloud_keychain_credential =
@@ -1081,11 +1105,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kOneRecognizedCred)) {
-      transports_info.recognized_credentials = {kCred1};
+      transports_info.recognized_credentials = {std::move(cred1)};
     } else if (base::Contains(
                    test.params,
                    TransportAvailabilityParam::kTwoRecognizedCreds)) {
-      transports_info.recognized_credentials = {kCred1, kCred2};
+      transports_info.recognized_credentials = {std::move(cred1),
+                                                std::move(cred2)};
     }
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kOnePhoneRecognizedCred)) {
@@ -1123,6 +1148,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
         windows_has_hybrid) {
       transports_info.has_win_native_api_authenticator = true;
       transports_info.win_native_ui_shows_resident_credential_notice = true;
+      transports_info.win_is_uvpaa = true;
     }
     transports_info.resident_key_requirement =
         base::Contains(test.params,

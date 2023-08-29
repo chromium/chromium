@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -480,6 +481,20 @@ void AuthenticatorRequestDialogModel::
         StartPlatformAuthenticatorFlow();
         return;
       }
+    }
+    // If a request only includes mechanisms that can be serviced by the Windows
+    // API and local credentials, there is no point showing Chrome UI as an
+    // extra step. Jump to Windows instead.
+    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
+        transport_availability_.has_win_native_api_authenticator &&
+        std::ranges::all_of(mechanisms_, [](const auto& mech) {
+          return absl::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
+                 (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
+                  absl::get<Mechanism::Credential>(mech.type).value().source ==
+                      device::AuthenticatorType::kWinNative);
+        })) {
+      StartWinNativeApi();
+      return;
     }
     SetCurrentStep(Step::kMechanismSelection);
   }
