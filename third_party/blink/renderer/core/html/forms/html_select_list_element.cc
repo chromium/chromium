@@ -156,6 +156,10 @@ void HTMLSelectListElement::SelectMutationCallback::DidChangeChildren(
             element->getAttribute(html_names::kBehaviorAttr);
         PartInserted(part, element);
         SlotChanged(element->SlotName());
+
+        if (element->HasTagName(html_names::kSelectedoptionTag)) {
+          select_->UpdateSelectedValuePart();
+        }
       }
     }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
@@ -812,7 +816,8 @@ HTMLElement* HTMLSelectListElement::FirstValidSelectedValuePart() const {
     }
 
     if (element->getAttribute(html_names::kBehaviorAttr) ==
-        kSelectedValuePartName) {
+            kSelectedValuePartName ||
+        element->HasTagName(html_names::kSelectedoptionTag)) {
       return element;
     }
   }
@@ -840,6 +845,7 @@ void HTMLSelectListElement::EnsureSelectedValuePartIsValid() {
   if (!selected_value_part_ ||
       selected_value_part_->getAttribute(html_names::kBehaviorAttr) !=
           kSelectedValuePartName ||
+      !selected_value_part_->HasTagName(html_names::kSelectedoptionTag) ||
       !SelectListPartTraversal::IsDescendantOf(*selected_value_part_, *this)) {
     UpdateSelectedValuePart();
   }

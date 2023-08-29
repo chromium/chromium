@@ -434,6 +434,11 @@
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
+      name: "selectedoption",
+      interfaceName: "HTMLElement",
+      runtimeEnabled: "HTMLSelectListElement",
+    },
+    {
       name: "selectlist",
       interfaceName: "HTMLSelectListElement",
       runtimeEnabled: "HTMLSelectListElement",

@@ -995,6 +995,7 @@ html element select
     property validity
     property value
     property willValidate
+html element selectedoption
 html element selectlist
     property checkValidity
     property disabled
