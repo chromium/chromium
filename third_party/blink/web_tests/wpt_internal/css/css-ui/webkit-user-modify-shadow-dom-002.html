@@ -1,0 +1,23 @@
+<!doctype html>
+<title>-webkit-user-modify shadow reset and MatchedPropertiesCache</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="host" contenteditable>
+  <template shadowrootmode="open">
+    <div contenteditable>
+      <span id="s1"></span>
+    </div>
+    <span id="s2"></span>
+  </template>
+</div>
+<script>
+  let s1 = host.shadowRoot.querySelector("#s1");
+  let s2 = host.shadowRoot.querySelector("#s2");
+
+  test(() => {
+    assert_equals(getComputedStyle(s1).webkitUserModify, "read-write",
+                  "inherited from contenteditable parent");
+    assert_equals(getComputedStyle(s2).webkitUserModify, "read-only",
+                  "contenteditable from shadow host reset at shadow boundary");
+  }, "Check that -webkit-user-modify style is reset at shadow boundary and style not incorrectly shared");
+</script>

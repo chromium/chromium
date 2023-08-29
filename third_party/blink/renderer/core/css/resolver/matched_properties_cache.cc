@@ -158,6 +158,16 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
       style_resolver_state.InsideLink()) {
     return nullptr;
   }
+  if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
+      cache_item->parent_computed_style->UserModify() !=
+          ComputedStyleInitialValues::InitialUserModify()) {
+    // An element at a shadow boundary will reset UserModify() back to its
+    // initial value for inheritance. If the cached item was computed for an
+    // element not at a shadow boundary, the cached computed style will not
+    // have that reset, and we cannot use it as a cache hit unless the parent
+    // UserModify() is the initial value.
+    return nullptr;
+  }
   if (!cache_item->DependenciesEqual(style_resolver_state)) {
     return nullptr;
   }
