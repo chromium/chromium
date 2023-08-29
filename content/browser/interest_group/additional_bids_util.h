@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_ADDITIONAL_BIDS_UTIL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_ADDITIONAL_BIDS_UTIL_H_
 
+#include <stdint.h>
+
+#include <array>
 #include <string>
 #include <vector>
 
@@ -62,6 +65,29 @@ DecodeAdditionalBid(InterestGroupAuction* auction,
                     const base::Uuid& auction_nonce,
                     const url::Origin& seller,
                     base::optional_ref<const url::Origin> top_level_seller);
+
+struct CONTENT_EXPORT SignedAdditionalBid {
+  struct Signature {
+    std::array<uint8_t, 32> key;
+    std::array<uint8_t, 64> signature;
+  };
+
+  SignedAdditionalBid();
+  SignedAdditionalBid(const SignedAdditionalBid& other) = delete;
+  SignedAdditionalBid(SignedAdditionalBid&& other);
+  ~SignedAdditionalBid();
+
+  SignedAdditionalBid& operator=(const SignedAdditionalBid&) = delete;
+  SignedAdditionalBid& operator=(SignedAdditionalBid&&);
+
+  std::string additional_bid_json;
+  std::vector<Signature> signatures;
+};
+
+// Tries to decode a signed additional bid JSON represented as
+// `signed_additional_bid_in`.
+CONTENT_EXPORT base::expected<SignedAdditionalBid, std::string>
+DecodeSignedAdditionalBid(base::Value signed_additional_bid_in);
 
 }  // namespace content
 

@@ -4,11 +4,16 @@
 
 #include "content/browser/interest_group/additional_bids_util.h"
 
+#include <stdint.h>
+
+#include <array>
 #include <limits>
 #include <string>
 
+#include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -17,6 +22,38 @@
 
 namespace content {
 namespace {
+
+// Some test data for key/signature fields. These are just random sequences
+// of bytes of the right length.
+const uint8_t kKey1[] =
+    "\xF5\x30\x88\xE9\x9B\xC7\xB0\x2A\x8C\xBE\x11\x8D\xD3\xEC\xEF\xEB\xB5\x71"
+    "\xDF\xF9\x7D\x67\xEF\xFF\x9A\xAD\xE1\x63\x86\xAD\x57\x5E";
+const char kKey1Base64[] = "9TCI6ZvHsCqMvhGN0+zv67Vx3/l9Z+//mq3hY4atV14=";
+
+const uint8_t kKey2[] =
+    "\x79\x34\x0E\x99\xF6\x02\x98\xB2\xF6\x82\xAA\xDA\x3C\x95\xFA\x62\x3A\xF2"
+    "\x53\xA8\x56\xEB\x21\xC4\xC2\x67\x6C\x5D\xE3\x4B\xDA\xA0";
+const char kKey2Base64[] = "eTQOmfYCmLL2gqraPJX6YjryU6hW6yHEwmdsXeNL2qA=";
+
+const uint8_t kSig1[] =
+    "\x49\xD1\x27\x01\x29\x9E\xC8\x34\xE3\x12\x46\xA0\xFA\x17\x33\x1E\xD2\x7B"
+    "\xC0\x63\x7D\x7F\x63\xF6\x12\x49\x39\x40\x80\x2F\x31\x93\x99\xD7\x93\x16"
+    "\x58\x4D\x3B\xEC\x0F\x46\x07\x29\xE4\xE6\x13\x0D\xD7\xEA\x6D\x35\x60\xB8"
+    "\x27\x9E\x86\xC7\xE0\x10\x63\xEA\x44\xE6";
+const char kSig1Base64[] =
+    "SdEnASmeyDTjEkag+hczHtJ7wGN9f2P2Ekk5QIAvMZOZ15MWWE077A9GBynk5hMN1+"
+    "ptNWC4J56Gx+AQY+pE5g==";
+
+const uint8_t kSig2[] =
+    "\x91\x2C\xF4\x82\x8F\x62\x6B\x1F\x4A\x34\x1B\x8C\x4C\xB8\xD6\xA1\x41\xD0"
+    "\xBD\xCC\x67\xBA\xCF\x08\xE4\x32\x09\x5D\x97\x06\x09\x41\xFA\xEA\x12\x8E"
+    "\x49\x05\x73\xE2\xA4\x57\x7B\xA5\x3B\x00\xAE\x23\xAF\x61\xE9\x5F\xA4\x39"
+    "\xBD\x07\x9B\xB7\x49\x31\x52\xDD\x69\xDD";
+const char kSig2Base64[] =
+    "kSz0go9iax9KNBuMTLjWoUHQvcxnus8I5DIJXZcGCUH66hKOSQVz4qRXe6U7AK4jr2HpX6Q5vQ"
+    "ebt0kxUt1p3Q==";
+
+const char kPretendBid[] = "Hi, I am a base64-encoded JSON bid.";
 
 class AdditionalBidsUtilTest : public testing::Test {
  protected:
@@ -51,6 +88,25 @@ class AdditionalBidsUtilTest : public testing::Test {
     additional_bid_dict.Set("negativeInterestGroups",
                             std::move(negative_igs_dict));
     return additional_bid_dict;
+  }
+
+  static base::Value::Dict MakeValidSignedBid() {
+    base::Value::Dict signed_dict;
+    signed_dict.Set("bid", kPretendBid);
+
+    base::Value::List sigs_list;
+    base::Value::Dict sig1;
+    sig1.Set("key", kKey1Base64);
+    sig1.Set("signature", kSig1Base64);
+    sigs_list.Append(std::move(sig1));
+
+    base::Value::Dict sig2;
+    sig2.Set("key", kKey2Base64);
+    sig2.Set("signature", kSig2Base64);
+    sigs_list.Append(std::move(sig2));
+
+    signed_dict.Set("signatures", std::move(sigs_list));
+    return signed_dict;
   }
 
   const base::Uuid kAuctionNonce{base::Uuid::GenerateRandomV4()};
@@ -821,6 +877,131 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG7) {
       "Additional bid on auction with seller 'https://seller.test' rejected "
       "due to non-dictionary 'negativeInterestGroups'.",
       result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeBasicSignedBid) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_EQ(kPretendBid, result->additional_bid_json);
+  ASSERT_EQ(2u, result->signatures.size());
+  ASSERT_EQ(sizeof(kKey1) - 1, result->signatures[0].key.size());
+  ASSERT_EQ(sizeof(kSig1) - 1, result->signatures[0].signature.size());
+  EXPECT_EQ(0,
+            memcmp(kKey1, result->signatures[0].key.data(), sizeof(kKey1) - 1));
+  EXPECT_EQ(0, memcmp(kSig1, result->signatures[0].signature.data(),
+                      sizeof(kSig1) - 1));
+
+  ASSERT_EQ(sizeof(kKey2) - 1, result->signatures[1].key.size());
+  ASSERT_EQ(sizeof(kSig2) - 1, result->signatures[1].signature.size());
+  EXPECT_EQ(0,
+            memcmp(kKey2, result->signatures[1].key.data(), sizeof(kKey2) - 1));
+  EXPECT_EQ(0, memcmp(kSig2, result->signatures[1].signature.data(),
+                      sizeof(kSig2) - 1));
+}
+
+TEST_F(AdditionalBidsUtilTest, SignedNotDict) {
+  auto result = DecodeSignedAdditionalBid(base::Value(10));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Signed additional bid not a dictionary.", result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingBid) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  signed_bid_dict.Remove("bid");
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Signed additional bid missing string 'bid' field.",
+            result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatures) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  signed_bid_dict.Remove("signatures");
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Signed additional bid missing list 'signatures' field.",
+            result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatures) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  signed_bid_dict.FindList("signatures")->Append(40);
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Signed additional bid 'signatures' list entry not a dictionary.",
+            result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatureKey) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  (*signed_bid_dict.FindList("signatures"))[0].GetDict().Remove("key");
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      "Signed additional bid 'signatures' list entry missing 'key' string.",
+      result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureKey) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("key", "$$$");
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Field 'key' is not valid base64.", result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureKeyLength) {
+  const char kLength31[] = "r7J39NbxqA5AvGD57ENOYdOvxzHPwA6KoehNIFCjDw==";
+
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("key", kLength31);
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Field 'key' has unexpected length.", result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatureSig) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  (*signed_bid_dict.FindList("signatures"))[0].GetDict().Remove("signature");
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      "Signed additional bid 'signatures' list entry missing 'signature' "
+      "string.",
+      result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSig) {
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("signature",
+                                                             "$$$");
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Field 'signature' is not valid base64.", result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSigLength) {
+  const char kLength65[] =
+      "rq9Nm5seElZB7vH9u8o6Cjt4v72LkPKGVKVl6k4uOlmV8Y7n023fmOk47R2bPRNYx/"
+      "EzpBSXdJainpItZwK5DTI=";
+
+  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("signature",
+                                                             kLength65);
+  auto result =
+      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Field 'signature' has unexpected length.", result.error());
 }
 
 }  // namespace

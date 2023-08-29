@@ -4,12 +4,18 @@
 
 #include "content/browser/interest_group/additional_bids_util.h"
 
+#include <stdint.h>
+
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 
+#include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -20,6 +26,27 @@
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+
+// Returns error string on failure.
+template <size_t N>
+absl::optional<std::string> DecodeBase64Fixed(std::string_view field,
+                                              const std::string& in,
+                                              std::array<uint8_t, N>& out) {
+  std::string decoded;
+  if (!base::Base64Decode(in, &decoded)) {
+    return base::StrCat({"Field '", field, "' is not valid base64."});
+  }
+  if (decoded.size() != N) {
+    return base::StrCat({"Field '", field, "' has unexpected length."});
+  }
+  std::copy(decoded.begin(), decoded.end(), out.data());
+
+  return absl::nullopt;
+}
+
+}  // namespace
 
 AdditionalBidDecodeResult::AdditionalBidDecodeResult() = default;
 AdditionalBidDecodeResult::AdditionalBidDecodeResult(
@@ -315,6 +342,74 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       result.bid_state.get(), auction);
 
   // TODO(http://crbug.com/1464874): Do we need to fill in any k-anon info?
+
+  return result;
+}
+
+SignedAdditionalBid::SignedAdditionalBid() = default;
+SignedAdditionalBid::SignedAdditionalBid(SignedAdditionalBid&& other) = default;
+SignedAdditionalBid::~SignedAdditionalBid() = default;
+
+SignedAdditionalBid& SignedAdditionalBid::operator=(SignedAdditionalBid&&) =
+    default;
+
+base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
+    base::Value signed_additional_bid_in) {
+  base::Value::Dict* in_dict = signed_additional_bid_in.GetIfDict();
+  if (!in_dict) {
+    return base::unexpected("Signed additional bid not a dictionary.");
+  }
+
+  SignedAdditionalBid result;
+
+  std::string* bid_json = in_dict->FindString("bid");
+  if (!bid_json) {
+    return base::unexpected(
+        "Signed additional bid missing string 'bid' field.");
+  }
+  result.additional_bid_json = std::move(*bid_json);
+
+  const base::Value::List* signature_list = in_dict->FindList("signatures");
+  if (!signature_list) {
+    return base::unexpected(
+        "Signed additional bid missing list 'signatures' field.");
+  }
+
+  for (const base::Value& sig_entry : *signature_list) {
+    SignedAdditionalBid::Signature decoded_signature;
+
+    const base::Value::Dict* sig_entry_dict = sig_entry.GetIfDict();
+    if (!sig_entry_dict) {
+      return base::unexpected(
+          "Signed additional bid 'signatures' list entry not a dictionary.");
+    }
+    const std::string* key = sig_entry_dict->FindString("key");
+    if (!key) {
+      return base::unexpected(
+          "Signed additional bid 'signatures' list entry missing 'key' "
+          "string.");
+    }
+
+    absl::optional<std::string> maybe_key_error =
+        DecodeBase64Fixed("key", *key, decoded_signature.key);
+    if (maybe_key_error.has_value()) {
+      return base::unexpected(maybe_key_error.value());
+    }
+
+    const std::string* signature = sig_entry_dict->FindString("signature");
+    if (!signature) {
+      return base::unexpected(
+          "Signed additional bid 'signatures' list entry missing 'signature' "
+          "string.");
+    }
+
+    absl::optional<std::string> maybe_signature_error =
+        DecodeBase64Fixed("signature", *signature, decoded_signature.signature);
+    if (maybe_signature_error.has_value()) {
+      return base::unexpected(maybe_signature_error.value());
+    }
+    result.signatures.push_back(std::move(decoded_signature));
+  }
 
   return result;
 }
