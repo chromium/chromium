@@ -28,7 +28,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 public class CardboardOverlayDelegate
         implements XrImmersiveOverlay.Delegate, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "CardboardOverlay";
-    private static final String ABOUT_VR_URL = "google.com/cardboard";
+    private static final String PRODUCT_SAFETY_URL = "google.com/get/cardboard/product-safety";
     private static final boolean DEBUG_LOGS = false;
     static final int VR_SYSTEM_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -90,8 +90,8 @@ public class CardboardOverlayDelegate
             XrSessionCoordinator.onActiveXrSessionButtonTouched();
             XrSessionCoordinator.endActiveSession();
             return true;
-        } else if (item.getItemId() == R.id.cardboard_menu_option_about_vr) {
-            LoadUrlParams url = new LoadUrlParams(ABOUT_VR_URL);
+        } else if (item.getItemId() == R.id.cardboard_menu_option_product_safety) {
+            LoadUrlParams url = new LoadUrlParams(PRODUCT_SAFETY_URL);
             // Storing this value in a new variable as the ending the active
             // session  could clear it otherwise.
             VrCompositorDelegate delegate = mCompositorDelegate;
