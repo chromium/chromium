@@ -147,10 +147,15 @@ class PolicyTestContentBrowserClient
     allowlisted_origins_.insert(origin);
   }
 
-  bool ShouldAllowInsecurePrivateNetworkRequests(
+  ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+  ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override {
-    return allowlisted_origins_.find(origin) != allowlisted_origins_.end();
+    return allowlisted_origins_.find(origin) != allowlisted_origins_.end()
+               ? ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+                     kForceAllow
+               : ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+                     kDefault;
   }
 
  private:

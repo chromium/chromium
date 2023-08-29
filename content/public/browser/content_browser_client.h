@@ -2384,17 +2384,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
       const GURL& url);
 
-  // Returns whether a context with the given |origin| should be allowed to make
-  // insecure private network requests.
+  enum class PrivateNetworkRequestPolicyOverride {
+    kForceAllow,
+    kForcePreflightBlock,
+    kDefault,
+  };
+
+  // Returns whether and how we should override the default private network
+  // request policy.
   //
-  // See the CORS-RFC1918 spec for more details:
-  // https://wicg.github.io/cors-rfc1918.
+  // See the Private Network Access spec for more details:
+  // https://wicg.github.io/private-network-access.
   //
   // |browser_context| must not be nullptr. Caller retains ownership.
   // |origin| is the origin of a navigation ready to commit.
-  virtual bool ShouldAllowInsecurePrivateNetworkRequests(
-      BrowserContext* browser_context,
-      const url::Origin& origin);
+  virtual PrivateNetworkRequestPolicyOverride
+  ShouldOverridePrivateNetworkRequestPolicy(BrowserContext* browser_context,
+                                            const url::Origin& origin);
 
   // Whether the JIT should be disabled for the given |browser_context| and
   // |site_url|. Pass an empty GURL for |site_url| to get the default JIT policy
