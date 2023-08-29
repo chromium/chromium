@@ -53,7 +53,8 @@ SendTabToSelfClientServiceFactory::~SendTabToSelfClientServiceFactory() =
     default;
 
 // BrowserStateKeyedServiceFactory implementation.
-KeyedService* SendTabToSelfClientServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   SendTabToSelfSyncService* sync_service =
@@ -76,8 +77,8 @@ KeyedService* SendTabToSelfClientServiceFactory::BuildServiceInstanceFor(
 #endif
 
   // TODO(crbug.com/976741) refactor profile out of STTSClient constructor.
-  return new SendTabToSelfClientService(profile,
-                                        sync_service->GetSendTabToSelfModel());
+  return std::make_unique<SendTabToSelfClientService>(
+      profile, sync_service->GetSendTabToSelfModel());
 }
 
 bool SendTabToSelfClientServiceFactory::ServiceIsCreatedWithBrowserContext()
