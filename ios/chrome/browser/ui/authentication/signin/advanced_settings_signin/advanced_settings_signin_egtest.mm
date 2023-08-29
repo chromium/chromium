@@ -76,12 +76,14 @@ void WaitForSettingDoneButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  // When kReplaceSyncPromosWithSignInPromos is enabled, the advanced sync
+  // setup view doesn't exist.
+  // All tests in AdvancedSettingsSigninTestCase are for this view.
+  config.features_disabled.push_back(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   if ([self isRunningTest:@selector
             (testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings)]) {
-    // When kReplaceSyncPromosWithSignInPromos is enabled, the advanced sync
-    // setup doesn't exist.
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
     // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
     config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   }
@@ -368,7 +370,6 @@ void WaitForSettingDoneButton() {
 // Tests interrupting sign-in by opening an URL from another app.
 // Sign-in opened from: bookmark view.
 // Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testInterruptAdvancedSigninBookmarksFromAdvancedSigninSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
