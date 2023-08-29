@@ -39,7 +39,11 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     // Transferred from |kWaitForBody| or |kRedirect|. The state indicates data
     // has been received.
     kResponseReceived,
-    // Transferred from |kResponseReceived| or |kDataTransferFinished|. Once
+    // Transferred from |kResponseReceived|. This state indicates the response
+    // from the original data pipe is read and start transferring the response
+    // to new data pipes.
+    kDataTransferStarted,
+    // Transferred from |kDataTransferStarted| or |kDataTransferFinished|. Once
     // data is available, the consumer handle will be committed to the original
     // client based on |owner_|'s commit responsibility.
     //

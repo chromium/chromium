@@ -6210,6 +6210,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
   EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
@@ -6228,6 +6231,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
             GetInnerText());
   EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest

@@ -200,6 +200,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
   if (!owner_) {
     return;
   }
+  TransitionState(State::kResponseCommitted);
   owner_->RecordFetchResponseFrom();
   owner_->CommitResponseHeaders(head_);
   owner_->CommitResponseBody(
@@ -208,10 +209,21 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
-  if (!owner_ || state_ != State::kResponseReceived) {
+  if (!owner_) {
     return;
   }
-  TransitionState(State::kResponseCommitted);
+
+  if (state_ == State::kResponseReceived) {
+    TransitionState(State::kDataTransferStarted);
+    forwarding_client_->OnReceiveResponse(
+        head_->Clone(), std::move(data_pipe_for_fetch_handler_.consumer),
+        absl::nullopt);
+  }
+
+  if (state_ != State::kDataTransferStarted) {
+    return;
+  }
+
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
@@ -247,10 +259,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
       NOTREACHED_NORETURN();
   }
-
-  forwarding_client_->OnReceiveResponse(
-      head_->Clone(), std::move(data_pipe_for_fetch_handler_.consumer),
-      absl::nullopt);
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCompleteResponse() {
@@ -495,16 +503,25 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
       CHECK_EQ(state_, State::kWaitForBody);
       break;
     case State::kResponseReceived:
-      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect);
+      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect)
+          << "state_:" << static_cast<int>(state_);
       break;
-    case State::kResponseCommitted:
+    case State::kDataTransferStarted:
       CHECK_EQ(state_, State::kResponseReceived);
       break;
+    case State::kResponseCommitted:
+      CHECK(state_ == State::kDataTransferStarted ||
+            state_ == State::kDataTransferFinished)
+          << "state_:" << static_cast<int>(state_);
+      break;
     case State::kDataTransferFinished:
-      CHECK_EQ(state_, State::kResponseCommitted);
+      CHECK(state_ == State::kDataTransferStarted ||
+            state_ == State::kResponseCommitted)
+          << "state_:" << static_cast<int>(state_);
       break;
     case State::kCompleted:
       CHECK(state_ == State::kWaitForBody ||
+            state_ == State::kDataTransferStarted ||
             state_ == State::kResponseCommitted ||
             state_ == State::kDataTransferFinished)
           << "state_:" << static_cast<int>(state_);
