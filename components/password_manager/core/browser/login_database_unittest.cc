@@ -48,6 +48,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_IOS)
+#import <Security/Security.h>
+#endif  // BUILDFLAG(IS_IOS)
+
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
 using signin::GaiaIdHash;
@@ -1328,8 +1332,9 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
   EXPECT_EQ(u"my_encrypted_password", result[0].get()->password_value);
 
   std::u16string decrypted;
-  EXPECT_TRUE(GetTextFromKeychainIdentifier(
-      result[0].get()->keychain_identifier, &decrypted));
+  EXPECT_EQ(errSecSuccess,
+            GetTextFromKeychainIdentifier(result[0].get()->keychain_identifier,
+                                          &decrypted));
   EXPECT_EQ(u"my_encrypted_password", decrypted);
 }
 
@@ -1356,8 +1361,9 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPasswordAndValue) {
   EXPECT_NE(form.keychain_identifier, result[0].get()->keychain_identifier);
 
   std::u16string decrypted;
-  EXPECT_TRUE(GetTextFromKeychainIdentifier(
-      result[0].get()->keychain_identifier, &decrypted));
+  EXPECT_EQ(errSecSuccess,
+            GetTextFromKeychainIdentifier(result[0].get()->keychain_identifier,
+                                          &decrypted));
   EXPECT_EQ(u"my_password_value", decrypted);
 }
 #endif

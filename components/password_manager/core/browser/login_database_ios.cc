@@ -87,11 +87,11 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
   return true;
 }
 
-bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
-                                   std::u16string* plain_text) {
+OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
+                                       std::u16string* plain_text) {
   if (keychain_identifier.size() == 0) {
     *plain_text = std::u16string();
-    return true;
+    return errSecSuccess;
   }
 
   ScopedCFTypeRef<CFStringRef> item_ref(
@@ -109,7 +109,7 @@ bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
   OSStatus status = SecItemCopyMatching(query, data_cftype.InitializeInto());
   if (status != errSecSuccess) {
     OSSTATUS_LOG(INFO, status) << "Failed to retrieve password from keychain";
-    return false;
+    return status;
   }
 
   CFDataRef data = base::mac::CFCast<CFDataRef>(data_cftype);
@@ -120,7 +120,7 @@ bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
   *plain_text = base::UTF8ToUTF16(
       std::string(static_cast<char*>(static_cast<void*>(buffer.get())),
                   static_cast<size_t>(size)));
-  return true;
+  return errSecSuccess;
 }
 
 void DeleteEncryptedPasswordFromKeychain(

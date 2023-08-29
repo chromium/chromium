@@ -107,8 +107,8 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
-  EXPECT_TRUE(
-      GetTextFromKeychainIdentifier(keychain_identifier, &password_value));
+  EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(keychain_identifier,
+                                                         &password_value));
   EXPECT_EQ(form.password_value, password_value);
 
   // Clear item from the keychain to ensure this test doesn't affect other
@@ -139,13 +139,13 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
-  EXPECT_TRUE(
-      GetTextFromKeychainIdentifier(keychain_identifier, &password_value));
+  EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(keychain_identifier,
+                                                         &password_value));
   EXPECT_EQ(form.password_value, password_value);
   // Check that keychain item corresponding to the old password value is
   // deleted.
-  EXPECT_FALSE(
-      GetTextFromKeychainIdentifier(old_keychain_identifier, &password_value));
+  EXPECT_EQ(errSecItemNotFound, GetTextFromKeychainIdentifier(
+                                    old_keychain_identifier, &password_value));
 
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
@@ -165,8 +165,8 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
 
   // Verify that password is no longer available in the keychain.
   std::u16string password_value;
-  EXPECT_FALSE(
-      GetTextFromKeychainIdentifier(keychain_identifier, &password_value));
+  EXPECT_EQ(errSecItemNotFound, GetTextFromKeychainIdentifier(
+                                    keychain_identifier, &password_value));
 }
 
 TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
@@ -204,8 +204,8 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   // Verify that for each password exist a keychain item with a password.
   for (const auto& login : logins) {
     std::u16string password_value;
-    EXPECT_TRUE(GetTextFromKeychainIdentifier(login->keychain_identifier,
-                                              &password_value));
+    EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
+                                 login->keychain_identifier, &password_value));
     EXPECT_EQ(login->password_value, password_value);
   }
 
@@ -222,12 +222,15 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
 
   // Verify that keychain entry is removed.
   std::u16string password_value;
-  EXPECT_TRUE(GetTextFromKeychainIdentifier(logins[0]->keychain_identifier,
-                                            &password_value));
-  EXPECT_FALSE(GetTextFromKeychainIdentifier(logins[1]->keychain_identifier,
-                                             &password_value));
-  EXPECT_TRUE(GetTextFromKeychainIdentifier(logins[2]->keychain_identifier,
-                                            &password_value));
+  EXPECT_EQ(errSecSuccess,
+            GetTextFromKeychainIdentifier(logins[0]->keychain_identifier,
+                                          &password_value));
+  EXPECT_EQ(errSecItemNotFound,
+            GetTextFromKeychainIdentifier(logins[1]->keychain_identifier,
+                                          &password_value));
+  EXPECT_EQ(errSecSuccess,
+            GetTextFromKeychainIdentifier(logins[2]->keychain_identifier,
+                                          &password_value));
 
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
@@ -435,6 +438,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
               BucketsInclude(
                   Bucket(MigrationToOSCrypt::kStarted, 1),
                   Bucket(MigrationToOSCrypt::kFailedToDecryptFromKeychain, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MigrationToOSCrypt.ProfileStore.KeychainRetrievalError",
+      static_cast<int>(errSecItemNotFound), 1);
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.MigrationToOSCrypt.ProfileStore.SuccessLatency", 0);
@@ -465,6 +471,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
               BucketsInclude(
                   Bucket(MigrationToOSCrypt::kStarted, 1),
                   Bucket(MigrationToOSCrypt::kFailedToDecryptFromKeychain, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.MigrationToOSCrypt.AccountStore.KeychainRetrievalError",
+      static_cast<int>(errSecItemNotFound), 1);
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.MigrationToOSCrypt.AccountStore.SuccessLatency", 0);
