@@ -30,6 +30,10 @@
     --cr-icon-button-fill-color: var(--cros-sys-primary);
   }
 
+  #addManualPrinterButtonRevamp {
+    background: none;
+  }
+
   #cloudOffIcon {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     margin-top: 10px;
@@ -154,7 +158,7 @@
   }
 
   #addPrinterSectionRevampContainer {
-    padding-inline-start: 20px;
+    padding-inline-start: 10px;
     padding-top: 8px;
   }
 
@@ -319,7 +323,8 @@
           hidden="[[!isPrinterSettingsRevampEnabled_]]">
         <div id="addPrinterSectionRevampContainer"
             class="layout horizontal center custom-list-item-top">
-          <cr-button class="prefix-icon" on-click="onAddPrinterClick_"
+          <cr-button id="addManualPrinterButtonRevamp"
+              class="prefix-icon" on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
                   prefs.native_printing.user_native_printers_allowed.value)]]"
               deep-link-focus-id$="[[Setting.kAddPrinter]]">
