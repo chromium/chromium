@@ -45,6 +45,10 @@ BASE_FEATURE(kScrollUnification,
              "ScrollUnification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas,
+             "ScrollSnapCoveringAvoidNestedSnapAreas",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kScrollSnapCoveringUseNativeFling,
              "ScrollSnapCoveringUseNativeFling",
              base::FEATURE_ENABLED_BY_DEFAULT);

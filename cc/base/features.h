@@ -29,6 +29,20 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveMobileViewportDoubleTap);
 // https://docs.google.com/document/d/1smLAXs-DSLLmkEt4FIPP7PVglJXOcwRc7A5G0SEwxaY/edit
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollUnification);
 
+// When enabled, scrolling within a covering snap area avoids or snaps to inner
+// nested areas, avoiding resting on positions which do not snap the inner area.
+// E.g. when scrolling within snap area A, it will stop either before/after
+// snap area B or with B snapped.
+//   --------
+//  | A      |
+//  |        |
+//  |  ---   |
+//  | | B |  |
+//  |  ---   |
+//  |        |
+//   --------
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas);
+
 // When enabled, scrolling within a covering snap area uses the native fling,
 // allowing much more natural scrolling within these areas.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringUseNativeFling);
