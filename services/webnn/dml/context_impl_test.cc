@@ -77,6 +77,11 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
           }));
   run_loop_create_graph.Run();
   EXPECT_TRUE(is_callback_called);
+
+  // Ensure `WebNNContextImpl::OnConnectionError()` is called and
+  // `WebNNContextImpl` is released.
+  webnn_context_remote.reset();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace webnn::dml
