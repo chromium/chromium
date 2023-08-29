@@ -2697,6 +2697,11 @@ __RECORD_REPLAY_ARGUMENTS__.internal = {
   getCdpObjectByRrpId,
   getBlinkNodeIdByCdpId,
   getPlainObjectByRrpId,
+  registerPlainObject,
+  gLastBoundingClientRectsByNodeRrpId,
+  getNextStackingContextId: () => gNextStackingContextId,
+  setNextStackingContextId: (id) => { gNextStackingContextId = id; },
+  updateNextStackingContextId: (f) => { gNextStackingContextId = f(gNextStackingContextId); },
 };
 
 } catch (e) {
