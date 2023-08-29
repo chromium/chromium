@@ -21,7 +21,8 @@ class AnnotationsTextObserver : public base::CheckedObserver {
   // Called on page load, after `text` has been extracted.
   virtual void OnTextExtracted(WebState* web_state,
                                const std::string& text,
-                               int seq_id) {}
+                               int seq_id,
+                               const base::Value::Dict& metadata) {}
 
   // Called when decorations have been applied. `successes` is the number of
   // annotations that were successfully stylized in the page. `annotations` is

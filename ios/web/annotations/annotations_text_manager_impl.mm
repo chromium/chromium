@@ -98,15 +98,17 @@ void AnnotationsTextManagerImpl::WebStateDestroyed(WebState* web_state) {
 
 #pragma mark - JS Methods
 
-void AnnotationsTextManagerImpl::OnTextExtracted(WebState* web_state,
-                                                 const std::string& text,
-                                                 int seq_id) {
+void AnnotationsTextManagerImpl::OnTextExtracted(
+    WebState* web_state,
+    const std::string& text,
+    int seq_id,
+    const base::Value::Dict& metadata) {
   if (!web_state_ || seq_id != seq_id_) {
     return;
   }
   DCHECK(web_state_ == web_state);
   for (auto& observer : observers_) {
-    observer.OnTextExtracted(web_state, text, seq_id);
+    observer.OnTextExtracted(web_state, text, seq_id, metadata);
   }
 }
 

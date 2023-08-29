@@ -68,9 +68,17 @@ void AnnotationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
                                            const std::string& text,
-                                           int seq_id) {
+                                           int seq_id,
+                                           const base::Value::Dict& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(web_state_, web_state);
+
+  // Check if this page requested "nointentdetection"
+  absl::optional<bool> has_no_intent_detection =
+      metadata.FindBool("hasNoIntentDetection");
+  if (!has_no_intent_detection || has_no_intent_detection.value()) {
+    return;
+  }
 
   TextClassifierModelService* service =
       TextClassifierModelServiceFactory::GetForBrowserState(

@@ -41,7 +41,8 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   // AnnotationsTextObserver methods:
   void OnTextExtracted(web::WebState* web_state,
                        const std::string& text,
-                       int seq_id) override;
+                       int seq_id,
+                       const base::Value::Dict& metadata) override;
   void OnDecorated(web::WebState* web_state,
                    int successes,
                    int annotations) override;

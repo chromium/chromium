@@ -27,12 +27,8 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeaturesForContent(
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
       TextFragmentsJavaScriptFeature::GetInstance(),
-      WebUIMessagingJavaScriptFeature::GetInstance()};
-
-  if (web::WebPageAnnotationsEnabled()) {
-    features.push_back(AnnotationsJavaScriptFeature::GetInstance());
-  }
-
+      WebUIMessagingJavaScriptFeature::GetInstance(),
+      AnnotationsJavaScriptFeature::GetInstance()};
   return features;
 }
 

@@ -140,11 +140,12 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   if (*command == "annotations.extractedText") {
     const std::string* text = dict.FindString("text");
     absl::optional<double> seq_id = dict.FindDouble("seqId");
-    if (!text || !seq_id) {
+    const base::Value::Dict* metadata = dict.FindDict("metadata");
+    if (!text || !seq_id || !metadata) {
       return;
     }
-    manager->OnTextExtracted(web_state, *text,
-                             static_cast<int>(seq_id.value()));
+    manager->OnTextExtracted(web_state, *text, static_cast<int>(seq_id.value()),
+                             *metadata);
   } else if (*command == "annotations.decoratingComplete") {
     absl::optional<double> optional_annotations =
         dict.FindDouble("annotations");

@@ -63,9 +63,11 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
 
   void OnTextExtracted(WebState* web_state,
                        const std::string& text,
-                       int seq_id) override {
+                       int seq_id,
+                       const base::Value::Dict& metadata) override {
     extracted_text_ = text;
     seq_id_ = seq_id;
+    metadata_ = metadata.Clone();
   }
 
   void OnDecorated(WebState* web_state,
@@ -87,10 +89,12 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   int annotations() const { return annotations_; }
   int clicks() const { return clicks_; }
   int seq_id() const { return seq_id_; }
+  const base::Value::Dict& metadata() const { return metadata_; }
 
  private:
   std::string extracted_text_;
   int successes_, annotations_, clicks_, seq_id_;
+  base::Value::Dict metadata_;
 };
 
 }  // namespace
@@ -266,18 +270,39 @@ TEST_F(AnnotationTextManagerTest, ExtractText) {
             observer()->extracted_text());
 }
 
-// Tests intents disabled
-TEST_F(AnnotationTextManagerTest, ExtractTextDisabled) {
-  LoadHtmlAndExtractText("<html>"
+TEST_F(AnnotationTextManagerTest, CheckMetadata) {
+  LoadHtmlAndExtractText("<html lang=\"fr\">"
                          "<head>"
+                         "<meta http-equiv=\"content-language\" content=\"fr\">"
                          "<meta name=\"chrome\" content=\"nointentdetection\"/>"
+                         "<meta name=\"google\" content=\"notranslate\"/>"
                          "</head>"
                          "<body>"
                          "<p>You'll find it on</p>"
                          "<p>Castro Street, <span>Mountain View</span>, CA</p>"
                          "<p>Enjoy</p>"
                          "</body></html>");
-  EXPECT_EQ("", observer()->extracted_text());
+  std::string fr = "fr";
+  EXPECT_TRUE(observer()->metadata().FindBool("hasNoIntentDetection").value());
+  EXPECT_TRUE(observer()->metadata().FindBool("hasNoTranslate").value());
+  EXPECT_EQ(fr, *observer()->metadata().FindString("htmlLang"));
+  EXPECT_EQ(fr, *observer()->metadata().FindString("httpContentLanguage"));
+}
+
+TEST_F(AnnotationTextManagerTest, CheckNoMetadata) {
+  LoadHtmlAndExtractText("<html>"
+                         "<head>"
+                         "</head>"
+                         "<body>"
+                         "<p>You'll find it on</p>"
+                         "<p>Castro Street, <span>Mountain View</span>, CA</p>"
+                         "<p>Enjoy</p>"
+                         "</body></html>");
+  std::string empty = "";
+  EXPECT_FALSE(observer()->metadata().FindBool("hasNoIntentDetection").value());
+  EXPECT_FALSE(observer()->metadata().FindBool("hasNoTranslate").value());
+  EXPECT_EQ(empty, *observer()->metadata().FindString("htmlLang"));
+  EXPECT_EQ(empty, *observer()->metadata().FindString("httpContentLanguage"));
 }
 
 // Tests page decoration when page doesn't change.

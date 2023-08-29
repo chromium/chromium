@@ -110,7 +110,11 @@ class MutationsDuringClickTracker {
   }
 }
 
-function areIntentsDisabled() {
+/**
+ * Searches page elements for "nointentdetection" meta tag. Returns true if
+ * "nointentdetection" meta tag is defined.
+ */
+function hasNoIntentDetection() {
   const metas = document.getElementsByTagName('meta');
   for (let i = 0; i < metas.length; i++) {
     if (metas[i]!.getAttribute('name') === 'chrome' &&
@@ -120,6 +124,35 @@ function areIntentsDisabled() {
   }
 
   return false;
+}
+
+/**
+ * Searches page elements for "notranslate" meta tag. Returns true if
+ * "notranslate" meta tag is defined.
+ */
+function hasNoTranslate(): boolean {
+  const metas = document.getElementsByTagName('meta');
+  for (let i = 0; i < metas.length; i++) {
+    if (metas[i]!.getAttribute('name') === 'google' &&
+        metas[i]!.getAttribute('content') === 'notranslate') {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Gets the content of a meta tag by httpEquiv for `httpEquiv`. The function is
+ * case insensitive.
+ */
+function getMetaContentByHttpEquiv(httpEquiv: string) {
+  const metaTags = document.getElementsByTagName('meta');
+  for (let metaTag of metaTags) {
+    if (metaTag.httpEquiv.toLowerCase() === httpEquiv) {
+      return metaTag.content;
+    }
+  }
+  return '';
 }
 
 const highlightTextColor = "#000";
@@ -157,6 +190,12 @@ function extractText(maxChars: number, seqId: number): void {
     command: 'annotations.extractedText',
     text: getPageText(maxChars),
     seqId: seqId,
+    metadata: {
+      hasNoIntentDetection: hasNoIntentDetection(),
+      hasNoTranslate: hasNoTranslate(),
+      htmlLang: document.documentElement.lang,
+      httpContentLanguage: getMetaContentByHttpEquiv('content-language'),
+    },
   });
 }
 
@@ -461,9 +500,6 @@ function enumerateSectionsNodes(process: EnumNodesFunction): void {
  * @param maxChars - maximum number of characters to parse out.
  */
 function getPageText(maxChars: number): string {
-  if (areIntentsDisabled()) {
-    return '';
-  }
   const parts: string[] = [];
   sections = [];
   enumerateTextNodes(document.body, function(node, index, text) {
