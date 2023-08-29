@@ -7,16 +7,27 @@
  * to interact with the browser.
  */
 
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-
 const requestPrefix = 'login.AssistantOptInFlowScreen.';
 
+/**
+ * Indicates the type of the opt-in flow.
+ * @enum {number}
+ * */
+export const AssistantOptinFlowType = {
+  // The whole consent flow.
+  CONSENT_FLOW: 0,
+  // The voice match enrollment flow.
+  SPEAKER_ID_ENROLLMENT: 1,
+  // The voice match retrain flow.
+  SPEAKER_ID_RETRAIN: 2,
+};
+
 /** @interface */
-class BrowserProxy {
+export class BrowserProxy {
   /**
    * Send user action to the handler.
    * @param {string} screenId ID of the screen.
-   * @param {data} action The user action.
+   * @param {!Array<string>} action The user action.
    */
   userActed(screenId, action) {}
 
@@ -34,7 +45,7 @@ class BrowserProxy {
 
   /**
    * Send initialized signal.
-   * @param {FlowType} flowType The flow type.
+   * @param {!Array<AssistantOptinFlowType>} flowType
    */
   initialized(flowType) {}
 
@@ -42,7 +53,8 @@ class BrowserProxy {
   dialogClose() {}
 }
 
-export class BrowserProxyImpl extends BrowserProxy {
+/** @implements {BrowserProxy} */
+export class BrowserProxyImpl {
   /** @override */
   userActed(screenId, action) {
     chrome.send(requestPrefix + screenId + '.userActed', action);
@@ -72,8 +84,12 @@ export class BrowserProxyImpl extends BrowserProxy {
   dialogClose() {
     chrome.send('dialogClose');
   }
+
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxyImpl());
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(BrowserProxyImpl);
+/** @type {?BrowserProxy} */
+let instance = null;
