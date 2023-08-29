@@ -14,17 +14,25 @@ build_webui("build") {
     "webxr_internals.css",
   ]
 
-  web_component_files = [ "device_info_table.ts" ]
-
-  non_web_component_files = [
-    "webxr_internals.ts",
-    "browser_proxy.ts",
+  web_component_files = [
+    "device_info_table.ts",
+    "session_info_table.ts",
   ]
 
-  mojo_files = [ "$root_gen_dir/content/browser/xr/webxr_internals/mojom/webxr_internals.mojom-webui.ts" ]
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "webxr_internals.ts",
+    "xr_session_util.ts",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/content/browser/xr/webxr_internals/mojom/webxr_internals.mojom-webui.ts",
+    "$root_gen_dir/device/vr/public/mojom/xr_session.mojom-webui.ts",
+  ]
 
   mojo_files_deps = [
     "//content/browser/xr/webxr_internals/mojom:mojo_bindings_ts__generator",
+    "//device/vr/public/mojom:xr_session_ts__generator",
   ]
 
   html_to_wrapper_template = "native"

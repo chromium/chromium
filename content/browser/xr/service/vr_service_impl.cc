@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -23,6 +24,8 @@
 #include "content/browser/xr/service/browser_xr_runtime_impl.h"
 #include "content/browser/xr/service/xr_permission_results.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
+#include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
+#include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -448,6 +451,13 @@ void VRServiceImpl::RequestSession(
     device::mojom::VRService::RequestSessionCallback callback) {
   DVLOG(2) << __func__;
   DCHECK(options);
+
+  webxr::mojom::SessionRequestRecordPtr session_request_record =
+      webxr::mojom::SessionRequestRecord::New();
+  session_request_record->options = options->Clone();
+  session_request_record->requested_time = base::Time::Now();
+  runtime_manager_->GetLoggerManager().RecordSessionRequest(
+      std::move(session_request_record));
 
   // Queue the request to get to when initialization has completed.
   if (!initialization_complete_) {

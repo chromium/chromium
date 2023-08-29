@@ -3437,6 +3437,8 @@ source_set("browser") {
       "xr/webxr_internals/webxr_internals_handler_impl.h",
       "xr/webxr_internals/webxr_internals_ui.cc",
       "xr/webxr_internals/webxr_internals_ui.h",
+      "xr/webxr_internals/webxr_logger_manager.cc",
+      "xr/webxr_internals/webxr_logger_manager.h",
       "xr/xr_utils.cc",
       "xr/xr_utils.h",
     ]

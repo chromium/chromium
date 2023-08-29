@@ -201,6 +201,10 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetRuntime(
   return it->second.get();
 }
 
+content::WebXrLoggerManager& XRRuntimeManagerImpl::GetLoggerManager() {
+  return logger_manager_;
+}
+
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetRuntimeForOptions(
     device::mojom::XRSessionOptions* options) {
   BrowserXRRuntimeImpl* runtime = nullptr;

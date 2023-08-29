@@ -4,12 +4,21 @@
 
 module webxr.mojom;
 
+import "device/vr/public/mojom/xr_session.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
 // Human readable information about the device
 struct DeviceInfo {
     string operating_system_name;
     string operating_system_version;
     string gpu_gl_vendor;
     string gpu_gl_renderer;
+};
+
+// Human readable information about the session request
+struct SessionRequestRecord {
+    device.mojom.XRSessionOptions options;
+    mojo_base.mojom.Time requested_time;
 };
 
 // Interface for controlling WebXR Internals.
@@ -19,5 +28,15 @@ struct DeviceInfo {
 interface WebXrInternalsHandler {
     // Returns information about the operating system name,
     // operating system version, GPU driver and GPU vendor ID.
-    GetDeviceInfo() => (DeviceInfo deviceInfo);
+    GetDeviceInfo() => (DeviceInfo device_info);
+
+    // Subscribes to events with a pending remote XrInternalsSessionListener
+    SubscribeToEvents(pending_remote<XRInternalsSessionListener> listener);
+};
+
+// Used by webxr internals WebUI to query browser process about session
+// events.
+interface XRInternalsSessionListener {
+    // Begin listening for updates to add session request.
+    AddXrSessionRequest(SessionRequestRecord session_request_record);
 };

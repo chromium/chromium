@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "content/browser/xr/service/browser_xr_runtime_impl.h"
 #include "content/browser/xr/service/vr_service_impl.h"
+#include "content/browser/xr/webxr_internals/webxr_logger_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/xr_integration_client.h"
@@ -97,6 +98,8 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   void ForEachRuntime(
       base::RepeatingCallback<void(BrowserXRRuntime*)> fn) override;
 
+  content::WebXrLoggerManager& GetLoggerManager();
+
   // VRDeviceProviderClient implementation
   void AddRuntime(
       device::mojom::XRDeviceId id,
@@ -149,6 +152,7 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   CHROME_LUID default_gpu_ = {0, 0};
 #endif
 
+  content::WebXrLoggerManager logger_manager_;
   std::set<VRServiceImpl*> services_;
 
   THREAD_CHECKER(thread_checker_);

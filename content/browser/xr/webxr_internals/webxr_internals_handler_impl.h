@@ -6,9 +6,12 @@
 #define CONTENT_BROWSER_XR_WEBXR_INTERNALS_WEBXR_INTERNALS_HANDLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
@@ -29,9 +32,13 @@ class WebXrInternalsHandlerImpl : public webxr::mojom::WebXrInternalsHandler {
 
   // webxr::mojom::WebXrInternalsHandler overrides:
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
+  void SubscribeToEvents(
+      mojo::PendingRemote<webxr::mojom::XRInternalsSessionListener>
+          pending_remote) override;
 
  private:
   mojo::Receiver<webxr::mojom::WebXrInternalsHandler> receiver_;
+  scoped_refptr<XRRuntimeManagerImpl> runtime_manager_;
 };
 
 }  // namespace content

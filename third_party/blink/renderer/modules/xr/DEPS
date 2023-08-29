@@ -4,6 +4,8 @@ include_rules = [
     "+device/vr/public/mojom/rgba_tuple_f16.h",
     "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+device/vr/public/mojom/vr_service.mojom-blink-forward.h",
+    "+device/vr/public/mojom/xr_session.mojom-blink.h",
+    "+device/vr/public/mojom/xr_session.mojom-blink-forward.h",
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/common/mailbox_holder.h",
     "+services/metrics/public/cpp/ukm_builders.h",

@@ -106,7 +106,6 @@
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
-#include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/public/browser/ax_inspect_factory.h"
@@ -205,6 +204,10 @@
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/browser/media/session/pepper_playback_observer.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VR)
+#include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #endif
 
 #if defined(USE_AURA)

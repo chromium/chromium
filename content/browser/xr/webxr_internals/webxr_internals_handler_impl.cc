@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/config/gpu_info.h"
@@ -41,7 +42,8 @@ std::string GetOSVersion() {
 
 WebXrInternalsHandlerImpl::WebXrInternalsHandlerImpl(
     mojo::PendingReceiver<webxr::mojom::WebXrInternalsHandler> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)),
+      runtime_manager_(XRRuntimeManagerImpl::GetOrCreateInstance()) {}
 
 WebXrInternalsHandlerImpl::~WebXrInternalsHandlerImpl() = default;
 
@@ -58,6 +60,13 @@ void WebXrInternalsHandlerImpl::GetDeviceInfo(GetDeviceInfoCallback callback) {
   info->gpu_gl_renderer = gpu_info.gl_renderer;
 
   std::move(callback).Run(std::move(info));
+}
+
+void WebXrInternalsHandlerImpl::SubscribeToEvents(
+    mojo::PendingRemote<webxr::mojom::XRInternalsSessionListener>
+        pending_remote) {
+  runtime_manager_->GetLoggerManager().SubscribeToEvents(
+      std::move(pending_remote));
 }
 
 }  // namespace content

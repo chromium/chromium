@@ -4,6 +4,9 @@
 
 module device.mojom;
 
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // These correspond with the features from the WebXR Spec:
 // https://immersive-web.github.io/webxr/#feature-descriptor
 enum XRSessionFeature {
@@ -34,4 +37,63 @@ enum XRSessionMode {
   kInline = 1,
   kImmersiveVr = 2,
   kImmersiveAr = 3,
+};
+
+struct XRTrackedImage {
+  skia.mojom.BitmapN32 bitmap;
+  gfx.mojom.Size size_in_pixels;
+  float width_in_meters;
+};
+
+enum XRDepthUsage {
+  kCPUOptimized = 1,
+  kGPUOptimized = 2,
+};
+
+enum XRDepthDataFormat {
+  kLuminanceAlpha = 1,
+  kFloat32 = 2,
+};
+
+// Structure used to configure depth sensing API at session creation.
+// If the device is unable to create the session given the preferences expressed
+// in the options, the session will not have depth sensing API enabled. In case
+// it was a required feature, this means that session creation will fail.
+struct XRDepthOptions {
+  // Ordered array of depth sensing usage preferences. At session creation,
+  // the device will pick the depth sensing usage value that it supports,
+  /// starting from the lowest-indexed one. `kNone` entry is not allowed to
+  // appear in this array, and the array should not be empty.
+  array<XRDepthUsage> usage_preferences;
+  // Ordered array of depth sensing data format preferences. At session
+  // creation, the device will pick the depth sensing data format value that it
+  // supports, starting from the lowest-indexed one. `kNone` entry is not
+  // allowed to appear in this array, and the array should not be empty.
+  // The data format selection happens after the device has selected depth
+  // sensing usage.
+  array<XRDepthDataFormat> data_format_preferences;
+};
+
+struct XRSessionOptions {
+  // Represents the type of session that is being requested.
+  XRSessionMode mode;
+
+  // Represents the set of requested features that have been marked "required",
+  // if any of these features are missing, a session will not be created.
+  array<XRSessionFeature> required_features;
+
+  // Represents the set of requested features that have been marked "optional",
+  // if any of these features are missing, a session will still be created, but
+  // the feature will not be added to the enabled_features set on the XRSession
+  // struct that is returned.
+  array<XRSessionFeature> optional_features;
+
+  array<XRTrackedImage> tracked_images;
+
+  // Must be present if either optional or required features contain
+  // depth sensing API.
+  XRDepthOptions? depth_options;
+
+  // ID of this request, used for tracing.
+  uint64 trace_id;
 };

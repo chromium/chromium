@@ -9,17 +9,14 @@ mojom_component("vr_service") {
   output_prefix = "device_vr_service_mojo_bindings"
   macro_prefix = "DEVICE_VR_SERVICE_MOJO_BINDINGS"
 
-  sources = [
-    "vr_service.mojom",
-    "xr_session.mojom",
-  ]
+  sources = [ "vr_service.mojom" ]
 
   public_deps = [
     ":test_mojom",
+    ":xr_session",
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
-    "//skia/public/mojom",
     "//ui/display/mojom:mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
@@ -79,6 +76,7 @@ mojom_component("isolated_xr_service") {
   public_deps = [
     ":test_mojom",
     ":vr_service",
+    ":xr_session",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
@@ -117,4 +115,21 @@ component("vr_public_typemaps") {
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
   ]
+}
+
+mojom_component("xr_session") {
+  output_prefix = "device_xr_session_mojo_bindings"
+  macro_prefix = "DEVICE_XR_SESSION_MOJO_BINDINGS"
+
+  sources = [ "xr_session.mojom" ]
+
+  public_deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+
+  webui_module_path = "/"
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 }

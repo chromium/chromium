@@ -12,10 +12,16 @@
   </div>
   <div class="container">
     <div class="sidebar">
-      <button class="tab-button active">Device Info</button>
+      <button id="device-info-button" class="tab-button active">
+        Device Info
+      </button>
+      <button id="session-info-button" class="tab-button">
+        XRSession Info
+      </button>
     </div>
     <div class="content">
-      <div class="tab-content active" id="device-info-content"></div>
+      <div id="device-info-content" class="tab-content active"></div>
+      <div id="session-info-content" class="tab-content"></div>
     </div>
   </div>
   <script type="module" src="webxr_internals.js"></script>
