@@ -887,6 +887,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WebStates.NativeRestoreHasFetchers"
+    enum="BooleanHasFetchers" expires_after="2024-01-28">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    Records whether the WKWebView native session restore has any fetchers or
+    not. Recorded each time a native session restore is attempted.
+  </summary>
+</histogram>
+
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
     expires_after="2024-01-07">
   <owner>justincohen@chromium.org</owner>
@@ -894,7 +904,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether generic WKWebView native session restore succeeded in
     creating navigation items. Recorded each time a generic native session
-    restore is attempted.
+    restore is attempted (if data exists).
   </summary>
 </histogram>
 
@@ -905,7 +915,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether WKWebView native session restore from cached data succeeded
     in creating navigation items. Recorded each time a cached native session
-    restore is attempted.
+    restore is attempted (if data exists).
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.NativeRestoreSessionFromCacheHasData"
+    enum="BooleanHasData" expires_after="2024-01-28">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    Records whether the WKWebView native session restore from cached data
+    fetcher has data or not. Recorded each time a cached native session restore
+    is attempted.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.NativeRestoreSessionHasData"
+    enum="BooleanHasData" expires_after="2024-01-28">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    Records whether the generic WKWebView native session restore fetcher has
+    data or not. Recorded each time a generic native session restore is
+    attempted.
   </summary>
 </histogram>
 
