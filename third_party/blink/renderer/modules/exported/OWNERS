@@ -7,3 +7,5 @@ per-file web_embedded_worker_impl.cc=file://content/browser/service_worker/OWNER
 # Accessibility
 per-file web_ax_object.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
 per-file web_ax_object.cc=file://third_party/blink/renderer/modules/accessibility/OWNERS
+per-file web_ax_context.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
+per-file web_ax_context.cc=file://third_party/blink/renderer/modules/accessibility/OWNERS
