@@ -1265,6 +1265,9 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
     if (use_software_renderer()) {
       expected_result = expected_result.InsertBeforeExtensionASCII("_sw");
     }
+    if (use_skia_graphite()) {
+      expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+    }
     RunPixelTest(std::move(root), expected_result);
   }
 

@@ -222,6 +222,9 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   bool use_skia_vulkan() const {
     return renderer_type_ == viz::RendererType::kSkiaVk;
   }
+  bool use_skia_graphite() const {
+    return renderer_type_ == viz::RendererType::kSkiaGraphite;
+  }
 
   const viz::RendererType renderer_type_;
 

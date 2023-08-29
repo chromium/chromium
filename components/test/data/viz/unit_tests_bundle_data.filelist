@@ -92,8 +92,10 @@
 //components/test/data/viz/intersecting_light_dark_squares_video_angle_metal.png
 //components/test/data/viz/intersecting_non_flipped_blue_green_half_size_rectangles.png
 //components/test/data/viz/invert_backdrop_filter_1x.png
+//components/test/data/viz/invert_backdrop_filter_1x_graphite.png
 //components/test/data/viz/invert_backdrop_filter_1x_sw.png
 //components/test/data/viz/invert_backdrop_filter_2x.png
+//components/test/data/viz/invert_backdrop_filter_2x_graphite.png
 //components/test/data/viz/invert_backdrop_filter_2x_sw.png
 //components/test/data/viz/layer_sort_cubes.json
 //components/test/data/viz/layer_sort_rubik.json
