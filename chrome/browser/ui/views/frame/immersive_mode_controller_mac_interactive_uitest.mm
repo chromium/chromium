@@ -10,12 +10,14 @@
 
 #include "base/apple/foundation_util.h"
 #import "base/mac/mac_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #include "content/public/test/browser_test.h"
@@ -208,10 +210,16 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ([overlay_widget_window contentView], overlay_widget_content_view);
 }
 
-// Tests that minimum content offset is nonzero iff the find bar is shown.
+// Tests that minimum content offset is nonzero iff the find bar is shown and
+// "Always Show Toolbar in Full Screen" is off.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
   chrome::DisableFindBarAnimationsDuringTesting(true);
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  bool original_always_show = prefs->GetBoolean(prefs::kShowFullscreenToolbar);
+
+  prefs->SetBoolean(prefs::kShowFullscreenToolbar, false);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeController* controller =
@@ -219,14 +227,31 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   controller->SetEnabled(true);
   EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
 
-  views::NamedWidgetShownWaiter shown_waiter(
-      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
-  chrome::Find(browser());
-  std::ignore = shown_waiter.WaitIfNeededAndGet();
-  EXPECT_GT(controller->GetMinimumContentOffset(), 0);
+  {
+    views::NamedWidgetShownWaiter shown_waiter(
+        views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+    chrome::Find(browser());
+    std::ignore = shown_waiter.WaitIfNeededAndGet();
+    EXPECT_GT(controller->GetMinimumContentOffset(), 0);
+  }
 
   chrome::CloseFind(browser());
   EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+
+  // Now, with "Always Show..." on
+  prefs->SetBoolean(prefs::kShowFullscreenToolbar, true);
+  {
+    views::NamedWidgetShownWaiter shown_waiter(
+        views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+    chrome::Find(browser());
+    std::ignore = shown_waiter.WaitIfNeededAndGet();
+    EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+  }
+  chrome::CloseFind(browser());
+  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+
+  // Reset the pref.
+  prefs->SetBoolean(prefs::kShowFullscreenToolbar, original_always_show);
 
   chrome::DisableFindBarAnimationsDuringTesting(false);
 }

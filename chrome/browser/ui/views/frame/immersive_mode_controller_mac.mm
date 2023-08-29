@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
@@ -21,7 +22,9 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -143,6 +146,9 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // Returns true if the child should be moved.
   bool ShouldMoveChild(views::Widget* child);
+
+  // Whether the "Always Show Toolbar in Full Screen" pref is enabled.
+  bool IsAlwaysShowToolbarEnabled() const;
 
   raw_ptr<BrowserView> browser_view_ = nullptr;  // weak
   std::unique_ptr<ImmersiveRevealedLock> focus_lock_;
@@ -403,7 +409,10 @@ void ImmersiveModeControllerMac::OnWidgetActivationChanged(
     bool active) {}
 
 int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
-  return find_bar_visible_ ? overlay_height_ : 0;
+  if (!IsAlwaysShowToolbarEnabled() && find_bar_visible_) {
+    return overlay_height_;
+  }
+  return 0;
 }
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
@@ -512,6 +521,17 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
 
   // All other widgets will stay put.
   return false;
+}
+
+// TODO(https://crbug.com/1476662): Put this logic in a common place.
+bool ImmersiveModeControllerMac::IsAlwaysShowToolbarEnabled() const {
+  Browser* browser = browser_view_->browser();
+  if (web_app::AppBrowserController::IsWebApp(browser)) {
+    const web_app::AppBrowserController* controller = browser->app_controller();
+    return controller->AlwaysShowToolbarInFullscreen();
+  }
+  return browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kShowFullscreenToolbar);
 }
 
 views::FocusSearch* ImmersiveModeControllerMac::GetFocusSearch() {
