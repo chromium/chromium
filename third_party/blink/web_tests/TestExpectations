@@ -6782,3 +6782,6 @@ crbug.com/1475824 [ Mac10.15 ] external/wpt/fetch/api/basic/scheme-blob.sub.any.
 crbug.com/1475824 [ Mac10.15 ] external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html [ Failure Pass ]
 crbug.com/1475824 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/basic/scheme-blob.sub.any.html [ Failure Pass ]
 crbug.com/1475824 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html [ Failure Pass ]
+
+# Gardener 2023-08-29
+crbug.com/1476723 [ Mac10.15 ] external/wpt/webrtc/RTCDataChannel-binaryType.window.html [ Failure ]
