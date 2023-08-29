@@ -17,8 +17,8 @@ cookies) with the browser app. Chromium therefore imposes a strict boundary
 between the embedding app and the browsing engine, and the app can normally
 only get very limited access to web page data and state.
 
-All considered, there are four parties to consider when evaluating Custom Tabs
-- the user, the embedding app, the web publisher, and the browser. The native
+All considered, there are four parties to consider when evaluating Custom Tabs:
+the user, the embedding app, the web publisher, and the browser. The native
 app chooses how they want to bring the web in their app, and users choose which
 apps to install and use.
 
