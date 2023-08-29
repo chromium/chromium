@@ -14293,6 +14293,34 @@
             ]
         }
     ],
+    "SerializeAccessibilityPostLifecycle": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Baseline",
+                    "enable_features": [
+                        "SerializeAccessibilityPostLifecycle"
+                    ]
+                },
+                {
+                    "name": "HoldBack",
+                    "disable_features": [
+                        "SerializeAccessibilityPostLifecycle"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServerBasedTranscriptionForScreencast": [
         {
             "platforms": [
