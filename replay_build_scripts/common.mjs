@@ -96,8 +96,20 @@ export function syncRepo(dir, treeish) {
   });
 }
 
+function maybeDeleteGitLockFile(dir) {
+  const lockFile = path.join(dir, ".git", "index.lock");
+  if (fs.existsSync(lockFile)) {
+    fs.unlinkSync(lockFile);
+  }
+}
+
 export function updateRepo() {
   const chromium = process.cwd();
+  // delete git lock file if it exists on Windows
+  if (currentPlatform() == Platform.windows) {
+    maybeDeleteGitLockFile(chromium);
+  }
+  maybeDeleteGitLockFile(chromium);
 
   const branch = process.env["BUILDKITE_BRANCH"];
 
