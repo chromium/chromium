@@ -79,7 +79,6 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader);
-BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleDiscounts);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleTextOnly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
 BASE_DECLARE_FEATURE(kNtpChromeCartInHistoryClusterModule);

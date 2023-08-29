@@ -5,6 +5,7 @@
 module ntp.history_clusters.mojom;
 
 import "chrome/browser/new_tab_page/modules/history_clusters/cart/cart.mojom";
+import "chrome/browser/new_tab_page/modules/history_clusters/discount/discount.mojom";
 import "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_layout_type.mojom";
 import "components/history_clusters/public/mojom/history_cluster_types.mojom";
 import "url/mojom/url.mojom";
@@ -17,6 +18,10 @@ interface PageHandler {
   // Get the most relevant cart for given `cluster`.
   GetCartForCluster(history_clusters.mojom.Cluster cluster)
     => (ntp.history_clusters.cart.mojom.Cart? cart);
+
+  // Get the discounts for the given `cluster`.
+  GetDiscountsForCluster(history_clusters.mojom.Cluster cluster)
+    => (map<url.mojom.Url, array<ntp.history_clusters.discount.mojom.Discount>> discounts);
 
   // Open or make visible the Journeys UI on the Side Panel.
   ShowJourneysSidePanel(string query);
