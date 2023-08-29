@@ -290,6 +290,7 @@ if (!is_android && !is_mac) {
           # On Linux, link the dependencies (libraries) that make up actual
           # Chromium functionality directly into the executable.
           ":dependencies",
+          "//chrome/common:version_header",
 
           # For the sampling profiler.
           "//chrome/common/profiler",
@@ -437,6 +438,7 @@ if (is_win) {
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/chrome_elf",
       "//chrome/common:buildflags",
+      "//chrome/common:version_header",
       "//chrome/common/profiler",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static:secondary_module",
@@ -1184,6 +1186,7 @@ if (is_win) {
       "//chrome/app:command_ids",
       "//chrome/app:notification_metrics",
       "//chrome/common:buildflags",
+      "//chrome/common:version_header",
       "//chrome/common/profiler",
       "//components/crash/core/app",
       "//components/memory_system",
@@ -1702,6 +1705,7 @@ if (is_android) {
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",
+      "//chrome/common:version_header",
       "//chrome/common/profiler",
       "//chrome/gpu",
       "//chrome/renderer",

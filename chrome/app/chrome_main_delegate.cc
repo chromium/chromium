@@ -105,12 +105,15 @@
 
 #include <algorithm>
 
+#include "base/base_switches.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
+#include "base/win/resource_exhaustion.h"
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/child_process_logging.h"
+#include "chrome/common/chrome_version.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
@@ -641,6 +644,28 @@ void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
 
   startup_metric_utils::GetCommon().RecordChromeMainEntryTime(now);
 }
+
+#if BUILDFLAG(IS_WIN)
+void OnResourceExhausted() {
+  // RegisterClassEx will fail if the session's pool of ATOMs is exhausted. This
+  // appears to happen most often when the browser is being driven by automation
+  // tools, though the underlying reason for this remains a mystery
+  // (https://crbug.com/1470483). There is nothing that Chrome can do to
+  // meaningfully run until the user restarts their session by signing out of
+  // Windows or restarting their computer.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kNoErrorDialogs)) {
+    static constexpr wchar_t kMessageBoxTitle[] = L"System resource exhausted";
+    static constexpr wchar_t kMessage[] =
+        L"Your computer has run out of resources and cannot start "
+        PRODUCT_SHORTNAME_STRING
+        L". Sign out of Windows or restart your computer and try again.";
+    ::MessageBox(nullptr, kMessage, kMessageBoxTitle, MB_OK);
+  }
+  base::Process::TerminateCurrentProcessImmediately(
+      chrome::RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED);
+}
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -1786,6 +1811,9 @@ absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
 #endif
 
 #if BUILDFLAG(IS_WIN)
+  // Register callback to handle resource exhaustion.
+  base::win::SetOnResourceExhaustedFunction(&OnResourceExhausted);
+
   if (IsExtensionPointDisableSet()) {
     sandbox::SandboxFactory::GetBrokerServices()->SetStartingMitigations(
         sandbox::MITIGATION_EXTENSION_POINT_DISABLE);

@@ -1838,6 +1838,8 @@ component("base") {
       "win/reference.h",
       "win/registry.cc",
       "win/registry.h",
+      "win/resource_exhaustion.cc",
+      "win/resource_exhaustion.h",
       "win/resource_util.cc",
       "win/resource_util.h",
       "win/scoped_bstr.cc",

@@ -163,6 +163,7 @@ static_library("test_support") {
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",
+    "//chrome/common:version_header",
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",

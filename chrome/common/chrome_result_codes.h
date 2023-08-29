@@ -122,11 +122,15 @@ enum ResultCode {
   // An early startup command was executed and the browser must exit.
   RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS,
 
+  // The browser process exited because system resource are exhausted. The
+  // system state can't be recovered and will be unstable.
+  RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED,
+
   // Last return code (keep this last).
   RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(RESULT_CODE_CHROME_LAST_CODE == 37,
+static_assert(RESULT_CODE_CHROME_LAST_CODE == 38,
               "Please make sure the enum values are in sync with enums.xml");
 
 // Returns true if the result code should be treated as a normal exit code i.e.
