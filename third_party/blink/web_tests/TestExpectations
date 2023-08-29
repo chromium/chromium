@@ -314,10 +314,6 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.w.html [ Failure ]
-# Tests failed due to missing OpenType table reading capabilities:
-crbug.com/1473117 external/wpt/html/canvas/element/text/2d.text.measure.baselines.html [ Failure ]
-crbug.com/1473117 external/wpt/html/canvas/offscreen/text/2d.text.measure.baselines.html [ Failure ]
-crbug.com/1473117 external/wpt/html/canvas/offscreen/text/2d.text.measure.baselines.worker.html [ Failure ]
 # Context lost.
 crbug.com/1476080 [ Linux ] virtual/no-alloc-direct-call/fast/canvas/offscreencanvas-oncontextlost.html [ Failure Pass ]
 crbug.com/1476080 [ Linux ] virtual/oopr-canvas2d/fast/canvas/offscreencanvas-lost-gpu-context.html [ Failure Pass ]
