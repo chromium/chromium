@@ -175,6 +175,8 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   // contents.
   BrowserAccessibilityManager* GetManager() const;
 
+  const ui::AXTree* GetAXTree() const;
+
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
 
   // Returns a list of captured events fired after the invoked action.
@@ -247,7 +249,7 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   // e.g., in support of the @NO-LOAD-EXPECTED directive, when an element has an
   // invalid src attribute.
   std::map<std::string, unsigned> CollectAllFrameUrls(
-      const std::vector<std::string>& skip_urls);
+      const std::vector<std::string>& skip_urls) const;
 
   // Wait until all initial content is completely loaded, included within
   // subframes, objects and portals with given AXMode.

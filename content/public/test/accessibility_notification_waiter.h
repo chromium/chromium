@@ -41,6 +41,10 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   AccessibilityNotificationWaiter(WebContents* web_contents,
                                   ui::AXMode accessibility_mode,
                                   ui::AXEventGenerator::Event event);
+  AccessibilityNotificationWaiter(WebContents* web_contents,
+                                  ui::AXMode accessibility_mode,
+                                  ax::mojom::Event event,
+                                  std::set<GURL> urls_to_listen_to);
 
   AccessibilityNotificationWaiter(const AccessibilityNotificationWaiter&) =
       delete;
@@ -87,8 +91,17 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   void Quit();
 
  private:
-  // Listen to all frames within the frame tree of this WebContents.
-  void ListenToAllFrames(WebContents* web_contents);
+  void Setup(WebContents* web_contents,
+             ui::AXMode accessibility_mode = ui::AXMode::kNone);
+
+  // Listens to the frames specified by the consumer.
+  void ListenToFrames(WebContents* web_contents);
+
+  // Returns the frames having URLs specified by the consumer in
+  // `urls_to_listen_to`, or all frames within the frame tree of this
+  // WebContents by default.
+  std::vector<RenderFrameHostImpl*> GetFramesToListenTo(
+      WebContentsImpl* web_contents) const;
 
   // Called when iterating over guest web contents so we can listen to
   // all frames within guests.
@@ -133,6 +146,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
 
   absl::optional<ax::mojom::Event> event_to_wait_for_;
   absl::optional<ui::AXEventGenerator::Event> generated_event_to_wait_for_;
+  std::set<GURL> urls_to_listen_to;
   std::unique_ptr<base::RunLoop> loop_runner_;
   base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;

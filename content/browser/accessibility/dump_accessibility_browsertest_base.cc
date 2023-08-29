@@ -291,14 +291,26 @@ void DumpAccessibilityTestBase::WaitForEndOfTest(ui::AXMode mode) const {
   // calling SignalEndOfTest on each frame and waiting for a kEndOfTest event
   // in response.
   auto hosts = content::CollectAllRenderFrameHosts(GetWebContents());
-  for (auto* host : hosts) {
-    ui::AXActionData action_data;
-    action_data.action = ax::mojom::Action::kSignalEndOfTest;
-    host->AccessibilityPerformAction(action_data);
+
+  // URLS listed in a @NO-LOAD-EXPECTED directive will never fire a kEndOfTest
+  // event. So we'll only wait for frames we expect to load.
+  std::set<GURL> urls_to_listen_to;
+  for (const auto& [url, ignored] :
+       CollectAllFrameUrls(scenario_.no_load_expected)) {
+    urls_to_listen_to.insert(GURL(url));
   }
 
-  AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
-                                         ax::mojom::Event::kEndOfTest);
+  AccessibilityNotificationWaiter waiter(
+      GetWebContents(), mode, ax::mojom::Event::kEndOfTest, urls_to_listen_to);
+
+  for (auto* host : hosts) {
+    if (urls_to_listen_to.contains(host->GetLastCommittedURL())) {
+      ui::AXActionData action_data;
+      action_data.action = ax::mojom::Action::kSignalEndOfTest;
+      host->AccessibilityPerformAction(action_data);
+    }
+  }
+
   ASSERT_TRUE(waiter.WaitForNotification(true));
 }
 
@@ -380,11 +392,17 @@ void DumpAccessibilityTestBase::WaitForFinalTreeContents(ui::AXMode mode) {
   if (scenario_.wait_for.size()) {
     // Wait for expected text from @WAIT-FOR.
     WaitForExpectedText(mode);
-  } else {
-    // Wait until all accessibility events and dirty objects have been
-    // processed.
-    WaitForEndOfTest(mode);
   }
+
+  // Wait until all accessibility events and dirty objects have been
+  // processed.
+  WaitForEndOfTest(mode);
+
+  const ui::AXTree* tree = GetAXTree();
+  DCHECK(tree);
+  DCHECK(!tree->GetTreeUpdateInProgressState())
+      << "The accessibility tree should be clean, but there are still updates "
+         "to be made.";
 }
 
 void DumpAccessibilityTestBase::RunTestForPlatform(
@@ -510,7 +528,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 }
 
 std::map<std::string, unsigned> DumpAccessibilityTestBase::CollectAllFrameUrls(
-    const std::vector<std::string>& skip_urls) {
+    const std::vector<std::string>& skip_urls) const {
   std::map<std::string, unsigned> all_frame_urls;
   // Get the url of every frame in the frame tree.
   for (FrameTreeNode* node : GetWebContents()->GetPrimaryFrameTree().Nodes()) {
@@ -599,6 +617,15 @@ BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() const {
 
 WebContentsImpl* DumpAccessibilityTestBase::GetWebContents() const {
   return static_cast<WebContentsImpl*>(shell()->web_contents());
+}
+
+const ui::AXTree* DumpAccessibilityTestBase::GetAXTree() const {
+  BrowserAccessibilityManager* manager = GetManager();
+  if (!manager) {
+    return nullptr;
+  }
+
+  return manager->ax_tree();
 }
 
 std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
