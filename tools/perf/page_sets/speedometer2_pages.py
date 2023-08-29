@@ -9,7 +9,7 @@ import re
 from page_sets import press_story
 
 _SPEEDOMETER_SUITE_NAME_BASE = '{0}-TodoMVC'
-_SPEEDOMETER_SUITES = [
+_SPEEDOMETER_SUITES = (
     'VanillaJS',
     'Vanilla-ES2015',
     'Vanilla-ES2015-Babel-Webpack',
@@ -26,7 +26,7 @@ _SPEEDOMETER_SUITES = [
     'Inferno',
     'Elm',
     'Flight',
-]
+)
 
 
 class _Speedometer2Story(press_story.PressStory):
