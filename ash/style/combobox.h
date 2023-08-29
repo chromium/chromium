@@ -58,6 +58,7 @@ class ASH_EXPORT Combobox : public views::Button,
   void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnBlur() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   std::u16string GetTextForRow(size_t row) const;
 

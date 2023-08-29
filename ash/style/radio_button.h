@@ -51,7 +51,6 @@ class ASH_EXPORT RadioButton : public OptionButtonBase {
   // OptionButtonBase::
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool IsIconOnTheLeftSide() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   const IconDirection icon_direction_;

@@ -14,7 +14,9 @@ namespace {}  // namespace
 RadioButtonGroup::RadioButtonGroup(int group_width)
     : OptionButtonGroup(group_width),
       icon_direction_(RadioButton::IconDirection::kLeading),
-      icon_type_(RadioButton::IconType::kCircle) {}
+      icon_type_(RadioButton::IconType::kCircle) {
+  SetAccessibilityProperties(ax::mojom::Role::kRadioGroup);
+}
 
 RadioButtonGroup::RadioButtonGroup(int group_width,
                                    const gfx::Insets& inside_border_insets,
@@ -29,7 +31,9 @@ RadioButtonGroup::RadioButtonGroup(int group_width,
                         radio_button_padding,
                         image_label_spacing),
       icon_direction_(icon_direction),
-      icon_type_(icon_type) {}
+      icon_type_(icon_type) {
+  SetAccessibilityProperties(ax::mojom::Role::kRadioGroup);
+}
 
 RadioButtonGroup::~RadioButtonGroup() = default;
 

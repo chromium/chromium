@@ -50,6 +50,9 @@ void OptionButtonBase::SetSelected(bool selected) {
 
   if (delegate_)
     delegate_->OnButtonSelected(this);
+
+  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                           /*send_native_event=*/true);
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {

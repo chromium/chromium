@@ -31,7 +31,9 @@ RadioButton::RadioButton(int button_width,
                        insets,
                        image_label_spacing),
       icon_direction_(icon_direction),
-      icon_type_(icon_type) {}
+      icon_type_(icon_type) {
+  SetAccessibilityProperties(ax::mojom::Role::kRadioButton);
+}
 
 RadioButton::~RadioButton() = default;
 
@@ -53,11 +55,6 @@ const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
 
 bool RadioButton::IsIconOnTheLeftSide() {
   return icon_direction_ == IconDirection::kLeading;
-}
-
-void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  OptionButtonBase::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kRadioButton;
 }
 
 BEGIN_METADATA(RadioButton, OptionButtonBase)
