@@ -7,14 +7,6 @@
     "platforms": {
         "cros-lts": {
             "description": "CrOS LTS"
-        },
-        "mac": {
-            "description": "extended stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "extended stable",
-            "sheriff_rotation": "chrome_browser_release"
         }
     }
 }
