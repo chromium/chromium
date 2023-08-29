@@ -281,12 +281,11 @@ def check_matrix_identifier(sub_suite=None,
   """Ensure 'idenfitier' is defined for each variant"""
   del kwargs
   sub_suite_config = suite_def[sub_suite]
-  for variant in sub_suite_config.get('variants', []):
-    if isinstance(variant, str):
-      if variant not in all_variants:
-        raise BBGenErr('Missing variant definition for %s in variants.pyl'
-                       % variant)
-      variant = all_variants[variant]
+  for variant_name in sub_suite_config.get('variants', []):
+    if variant_name not in all_variants:
+      raise BBGenErr('Missing variant definition for %s in variants.pyl' %
+                     variant_name)
+    variant = all_variants[variant_name]
 
     if not 'identifier' in variant:
       raise BBGenErr('Missing required identifier field in matrix '

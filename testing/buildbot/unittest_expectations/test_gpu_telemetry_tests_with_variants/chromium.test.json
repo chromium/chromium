@@ -42,14 +42,16 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "a",
-          "b"
+          "--platform",
+          "sim",
+          "--version",
+          "2"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "swarming_test ab",
+        "name": "swarming_test b_variant",
         "should_retry_with_patch": false,
         "swarming": {
           "dimensions": {
@@ -59,7 +61,7 @@
           "idempotent": false
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "ab"
+        "variant_id": "b_variant"
       }
     ]
   }

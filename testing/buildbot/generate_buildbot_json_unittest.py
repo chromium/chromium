@@ -3716,17 +3716,17 @@ MATRIX_COMPOUND_MISSING_IDENTIFIER = """\
     'matrix_tests': {
       'foo_tests': {
         'variants': [
-          {
-            'swarming': {
-              'dimensions': {
-                'foo': 'bar',
-              },
-            },
-          },
+          'missing-identifier',
         ],
       },
     },
   },
+}
+"""
+
+VARIANTS_FILE_MISSING_IDENTIFIER = """\
+{
+  'missing-identifier': {}
 }
 """
 
@@ -3741,15 +3741,21 @@ MATRIX_COMPOUND_EMPTY_IDENTIFIER = """\
     'matrix_tests': {
       'foo_tests': {
         'variants': [
-          {
-            'identifier': '',
-            'swarming': {
-              'dimensions': {
-                'foo': 'empty identifier not allowed',
-              },
-            },
-          },
+          'empty-identifier',
         ],
+      },
+    },
+  },
+}
+"""
+
+EMPTY_IDENTIFIER_VARIANTS = """\
+{
+  'empty-identifier': {
+    'identifier': '',
+    'swarming': {
+      'dimensions': {
+        'foo': 'empty identifier not allowed',
       },
     },
   },
@@ -3767,27 +3773,21 @@ MATRIX_COMPOUND_TRAILING_IDENTIFIER = """\
     'matrix_tests': {
       'foo_tests': {
         'variants': [
-          {
-            'identifier': ' ',
-            'swarming': {
-              'dimensions': {
-                'foo': 'strip to empty not allowed',
-              },
-            },
-          },
+          'trailing-whitespace',
         ],
       },
-      'foo_tests': {
-        'variants': [
-          {
-            'identifier': 'id ',
-            'swarming': {
-              'dimensions': {
-                'foo': 'trailing whitespace not allowed',
-              },
-            },
-          },
-        ],
+    },
+  },
+}
+"""
+
+TRAILING_WHITESPACE_VARIANTS = """\
+{
+  'trailing-whitespace': {
+    'identifier': 'id ',
+    'swarming': {
+      'dimensions': {
+        'foo': 'trailing whitespace not allowed',
       },
     },
   },
@@ -3943,16 +3943,12 @@ MATRIX_COMPOUND_CONFLICTING_TEST_SUITES = """\
     'matrix_tests': {
       'bar_tests': {
         'variants': [
-          {
-            'identifier': 'bar',
-          }
+          'a_variant',
         ],
       },
       'foo_tests': {
         'variants': [
-          {
-            'identifier': 'foo'
-          }
+          'a_variant',
         ]
       }
     },
@@ -3975,28 +3971,21 @@ MATRIX_COMPOUND_TARGETS_ARGS = """\
     'matrix_tests': {
       'foo_tests': {
         'variants': [
-          {
-            'identifier': 'args',
-            'args': [
-              '--anarg',
-            ],
-          },
-          {
-            'identifier': 'swarming',
-            'swarming': {
-              'a': 'b',
-              'dimensions': {
-                'hello': 'world',
-              },
-            }
-          },
-          {
-            'identifier': 'mixins',
-            'mixins': [ 'dimension_mixin' ],
-          }
+          'an-arg',
         ],
       },
     },
+  },
+}
+"""
+
+ARGS_VARIANTS_FILE = """\
+{
+  'an-arg': {
+    'identifier': 'args',
+    'args': [
+      '--anarg',
+    ],
   },
 }
 """
@@ -4015,28 +4004,19 @@ MATRIX_COMPOUND_TARGETS_MIXINS = """\
       'foo_tests': {
         'mixins': [ 'random_mixin' ],
         'variants': [
-          {
-            'identifier': 'args',
-            'args': [
-              '--anarg',
-            ],
-          },
-          {
-            'identifier': 'swarming',
-            'swarming': {
-              'a': 'b',
-              'dimensions': {
-                'hello': 'world',
-              },
-            }
-          },
-          {
-            'identifier': 'mixins',
-            'mixins': [ 'dimension_mixin' ],
-          }
+          'mixins',
         ],
       },
     },
+  },
+}
+"""
+
+MIXINS_VARIANTS_FILE = """\
+{
+  'mixins': {
+    'identifier': 'mixins',
+    'mixins': [ 'dimension_mixin' ],
   },
 }
 """
@@ -4059,26 +4039,22 @@ MATRIX_COMPOUND_TARGETS_SWARMING = """\
     'matrix_tests': {
       'foo_tests': {
         'variants': [
-          {
-            'identifier': 'args',
-            'args': [
-              '--anarg',
-            ],
-          },
-          {
-            'identifier': 'swarming',
-            'swarming': {
-              'a': 'b',
-              'dimensions': {
-                'hello': 'world',
-              }
-            }
-          },
-          {
-            'identifier': 'mixins',
-            'mixins': [ 'dimension_mixin' ],
-          }
+          'swarming-variant',
         ],
+      },
+    },
+  },
+}
+"""
+
+SWARMING_VARIANTS_FILE = """\
+{
+  'swarming-variant': {
+    'identifier': 'swarming',
+    'swarming': {
+      'a': 'b',
+      'dimensions': {
+        'hello': 'world',
       },
     },
   },
@@ -4158,13 +4134,7 @@ MATRIX_COMPOUND_MIXED_VARIANTS_REF = """\
       'foo_tests': {
         'variants': [
           'a_variant',
-          {
-            'args': [
-              'a',
-              'b'
-            ],
-            'identifier': 'ab',
-          }
+          'b_variant',
         ],
       },
     },
@@ -4271,27 +4241,34 @@ MATRIX_COMPOUND_SKYLAB_REF = """\
     'cros_skylab_basic_x86': {
       'cros_skylab_basic': {
         'variants': [
-          {
-            'skylab': {
-              'cros_board': 'octopus',
-              'cros_chrome_version': '89.0.3234.0',
-              'cros_img': 'octopus-release/R89-13655.0.0',
-            },
-            'enabled': True,
-            'identifier': 'OCTOPUS_TOT',
-          },
-          {
-            'skylab': {
-              'cros_board': 'octopus',
-              'cros_chrome_version': '88.0.2324.0',
-              'cros_img': 'octopus-release/R88-13597.23.0',
-            },
-            'enabled': True,
-            'identifier': 'OCTOPUS_TOT-1',
-          },
-        ]
+          'octopus-89',
+          'octopus-88',
+        ],
       },
     },
+  },
+}
+"""
+
+SKYLAB_VARIANTS = """\
+{
+  'octopus-89': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_chrome_version': '89.0.3234.0',
+      'cros_img': 'octopus-release/R89-13655.0.0',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT',
+  },
+  'octopus-88': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_chrome_version': '88.0.2324.0',
+      'cros_img': 'octopus-release/R88-13597.23.0',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT-1',
   },
 }
 """
@@ -4315,27 +4292,34 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
     'cros_skylab_basic_x86': {
       'cros_skylab_basic': {
         'variants': [
-          {
-            'skylab': {
-              'cros_board': 'octopus',
-              'cros_chrome_version': '89.0.3234.0',
-              'cros_img': 'octopus-release/R89-13655.0.0',
-            },
-            'enabled': True,
-            'identifier': 'OCTOPUS_TOT',
-          },
-          {
-            'skylab': {
-              'cros_board': 'octopus',
-              'cros_chrome_version': '88.0.2324.0',
-              'cros_img': 'octopus-release/R88-13597.23.0',
-            },
-            'enabled': False,
-            'identifier': 'OCTOPUS_TOT-1',
-          },
-        ]
+          'enabled',
+          'disabled',
+        ],
       },
     },
+  },
+}
+"""
+
+ENABLED_AND_DISABLED_VARIANTS = """\
+{
+  'enabled': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_chrome_version': '89.0.3234.0',
+      'cros_img': 'octopus-release/R89-13655.0.0',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT',
+  },
+  'disabled': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_chrome_version': '88.0.2324.0',
+      'cros_img': 'octopus-release/R88-13597.23.0',
+    },
+    'enabled': False,
+    'identifier': 'OCTOPUS_TOT-1',
   },
 }
 """
@@ -4366,8 +4350,11 @@ class MatrixCompositionTests(TestCase):
     """
     Variant is missing an identifier
     """
-    fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
-                    MATRIX_COMPOUND_MISSING_IDENTIFIER, LUCI_MILO_CFG)
+    fbb = FakeBBGen(self.args,
+                    MATRIX_GTEST_SUITE_WATERFALL,
+                    MATRIX_COMPOUND_MISSING_IDENTIFIER,
+                    LUCI_MILO_CFG,
+                    variants=VARIANTS_FILE_MISSING_IDENTIFIER)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'Missing required identifier field in matrix compound suite*'):
@@ -4377,8 +4364,11 @@ class MatrixCompositionTests(TestCase):
     """
     Variant identifier is empty.
     """
-    fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
-                    MATRIX_COMPOUND_EMPTY_IDENTIFIER, LUCI_MILO_CFG)
+    fbb = FakeBBGen(self.args,
+                    MATRIX_GTEST_SUITE_WATERFALL,
+                    MATRIX_COMPOUND_EMPTY_IDENTIFIER,
+                    LUCI_MILO_CFG,
+                    variants=EMPTY_IDENTIFIER_VARIANTS)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'Identifier field can not be "" in matrix compound suite*'):
@@ -4388,8 +4378,11 @@ class MatrixCompositionTests(TestCase):
     """
     Variant identifier has trailing whitespace.
     """
-    fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
-                    MATRIX_COMPOUND_TRAILING_IDENTIFIER, LUCI_MILO_CFG)
+    fbb = FakeBBGen(self.args,
+                    MATRIX_GTEST_SUITE_WATERFALL,
+                    MATRIX_COMPOUND_TRAILING_IDENTIFIER,
+                    LUCI_MILO_CFG,
+                    variants=TRAILING_WHITESPACE_VARIANTS)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         'Identifier field can not have leading and trailing whitespace in'
@@ -4429,8 +4422,11 @@ class MatrixCompositionTests(TestCase):
       fbb.check_output_file_consistency(verbose=True)
 
   def test_conflicting_names(self):
-    fbb = FakeBBGen(self.args, MATRIX_GTEST_SUITE_WATERFALL,
-                    MATRIX_COMPOUND_CONFLICTING_TEST_SUITES, LUCI_MILO_CFG)
+    fbb = FakeBBGen(self.args,
+                    MATRIX_GTEST_SUITE_WATERFALL,
+                    MATRIX_COMPOUND_CONFLICTING_TEST_SUITES,
+                    LUCI_MILO_CFG,
+                    variants=VARIANTS_FILE)
     with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
                                 'Conflicting test definitions.*'):
       fbb.check_input_file_consistency(verbose=True)
@@ -4444,7 +4440,8 @@ class MatrixCompositionTests(TestCase):
                     MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_TARGETS_ARGS,
                     LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS)
+                    mixins=SWARMING_MIXINS,
+                    variants=ARGS_VARIANTS_FILE)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -4456,7 +4453,8 @@ class MatrixCompositionTests(TestCase):
                     MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_TARGETS_MIXINS,
                     LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS)
+                    mixins=SWARMING_MIXINS,
+                    variants=MIXINS_VARIANTS_FILE)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -4468,7 +4466,7 @@ class MatrixCompositionTests(TestCase):
                     MATRIX_GTEST_SUITE_WATERFALL,
                     MATRIX_COMPOUND_TARGETS_SWARMING,
                     LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS)
+                    variants=SWARMING_VARIANTS_FILE)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
@@ -4526,7 +4524,7 @@ class MatrixCompositionTests(TestCase):
     """Test targets with variants in variants.pyl, unreferenced in tests"""
     fbb = FakeBBGen(self.args,
                     MATRIX_GTEST_SUITE_WATERFALL,
-                    MATRIX_COMPOUND_MIXED_VARIANTS_REF,
+                    MATRIX_COMPOUND_VARIANTS_REF,
                     LUCI_MILO_CFG,
                     variants=MULTI_VARIANTS_FILE)
     with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
@@ -4538,7 +4536,8 @@ class MatrixCompositionTests(TestCase):
                     MATRIX_SKYLAB_WATERFALL,
                     MATRIX_COMPOUND_SKYLAB_REF,
                     LUCI_MILO_CFG,
-                    exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS)
+                    exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS,
+                    variants=SKYLAB_VARIANTS)
     fbb.check_input_file_consistency(verbose=True)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
@@ -4549,7 +4548,8 @@ class MatrixCompositionTests(TestCase):
                     MATRIX_SKYLAB_WATERFALL,
                     ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF,
                     LUCI_MILO_CFG,
-                    exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS)
+                    exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS,
+                    variants=ENABLED_AND_DISABLED_VARIANTS)
     # some skylab test variant is disabled; the corresponding skylab tests
     # is not generated.
     fbb.check_input_file_consistency(verbose=True)
