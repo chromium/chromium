@@ -133,21 +133,23 @@ public class PasswordAccessoryIntegrationTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1111770
-    @DisabledTest(message = "https://crbug.com/1467320")
     public void testFillsPasswordOnTap() throws TimeoutException {
-        mHelper.loadTestPage(false);
-        mHelper.cacheCredentials("mpark@abc.com", "ShorterPassword");
-
-        // Focus the field to bring up the accessory.
-        mHelper.focusPasswordField();
+        preparePasswordBridge();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPasswordStoreBridge.insertPasswordCredential(new PasswordStoreCredential(
+                    new GURL(mTestServer.getURL("/")), "mpark@abc.com", "ShorterPassword"));
+        });
+        mHelper.loadUrl("/chrome/test/data/password/password_form.html");
+        mHelper.focusPasswordField(false);
         mHelper.waitForKeyboardAccessoryToBeShown();
+        mHelper.waitForKeyboardToShow();
         whenDisplayed(isKeyboardAccessoryTabLayout()).perform(selectTabAtPosition(0));
 
         // Click the suggestion.
         whenDisplayed(withText("ShorterPassword")).perform(click());
-
+        whenDisplayed(withText("Got it")).perform(click());
         // The callback should have triggered and set the reference to the selected Item.
         CriteriaHelper.pollInstrumentationThread(
                 () -> mHelper.getPasswordText().equals("ShorterPassword"));
