@@ -123,6 +123,8 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
       prefs::kDeviceActiveLastKnown28DayActivePingTimestamp);
   base::Time cohort_ts =
       local_state->GetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp);
+  base::Time observation_ts = local_state->GetTime(
+      prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp);
   int churn_active_status =
       local_state->GetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus);
   bool period_0 = local_state->GetBoolean(
@@ -164,19 +166,23 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
     cohort_status.set_last_ping_date(
         utils::FormatTimestampToMidnightGMTString(cohort_ts));
     cohort_status.set_churn_active_status(churn_active_status);
+    *save_request.add_active_status() = cohort_status;
 
     // Store Monthly Observation data.
-    ActiveStatus observation_status;
-    observation_status.set_use_case(
-        PrivateComputingUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION);
-    ChurnObservationStatus* period_status =
-        observation_status.mutable_period_status();
-    period_status->set_is_active_current_period_minus_0(period_0);
-    period_status->set_is_active_current_period_minus_1(period_1);
-    period_status->set_is_active_current_period_minus_2(period_2);
-
-    *save_request.add_active_status() = cohort_status;
-    *save_request.add_active_status() = observation_status;
+    //
+    // Observation active status will only be saved to preserved file,
+    // if it is aligned with when Cohort use case last pinged.
+    if (utils::IsSameYearAndMonth(observation_ts, cohort_ts)) {
+      ActiveStatus observation_status;
+      observation_status.set_use_case(
+          PrivateComputingUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION);
+      ChurnObservationStatus* period_status =
+          observation_status.mutable_period_status();
+      period_status->set_is_active_current_period_minus_0(period_0);
+      period_status->set_is_active_current_period_minus_1(period_1);
+      period_status->set_is_active_current_period_minus_2(period_2);
+      *save_request.add_active_status() = observation_status;
+    }
   }
 
   return save_request;
