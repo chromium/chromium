@@ -4,8 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
-#include <atomic>
-
 #include <dawn/native/DawnNative.h>
 
 #include "base/bits.h"
@@ -1070,13 +1068,15 @@ bool DawnImageRepresentationFallback::UploadToBacking() {
   struct MapCallbackData {
     base::AtomicFlag map_complete;
     WGPUBufferMapAsyncStatus status;
-  } map_callback_data;
+  };
 
   // Map the staging buffer for read.
   std::vector<SkPixmap> staging_pixmaps;
   for (int plane_index = 0;
        plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
     const auto& staging_buffer_entry = staging_buffers[plane_index];
+
+    MapCallbackData map_callback_data;
     staging_buffer_entry.buffer.MapAsync(
         wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
         [](WGPUBufferMapAsyncStatus status, void* void_userdata) {

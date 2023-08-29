@@ -49,21 +49,6 @@ void LogDeviceLost(WGPUDeviceLostReason reason,
   LOG(FATAL) << message;
 }
 
-wgpu::BackendType GetDefaultBackendType() {
-#if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kSkiaGraphiteDawnUseD3D12)
-             ? wgpu::BackendType::D3D12
-             : wgpu::BackendType::D3D11;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  return wgpu::BackendType::Vulkan;
-#elif BUILDFLAG(IS_APPLE)
-  return wgpu::BackendType::Metal;
-#else
-  NOTREACHED();
-  return wgpu::BackendType::Null;
-#endif
-}
-
 class Platform : public webgpu::DawnPlatform {
  public:
   using webgpu::DawnPlatform::DawnPlatform;
@@ -140,6 +125,21 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
   }
   return context_provider;
 }
+// static
+wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kSkiaGraphiteDawnUseD3D12)
+             ? wgpu::BackendType::D3D12
+             : wgpu::BackendType::D3D11;
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  return wgpu::BackendType::Vulkan;
+#elif BUILDFLAG(IS_APPLE)
+  return wgpu::BackendType::Metal;
+#else
+  NOTREACHED();
+  return wgpu::BackendType::Null;
+#endif
+}
 
 DawnContextProvider::DawnContextProvider(
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory)
@@ -179,6 +179,15 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("skip_validation");
 #endif
+
+#if BUILDFLAG(IS_APPLE)
+  if (backend_type == wgpu::BackendType::Vulkan) {
+    // Vulkan doesn't support IOSurface image backing, so we need
+    // MultiPlanarFormatExtendedUsages to copy to/from multiplanar texture.
+    // And this feature is currently experimental.
+    enabled_toggles.push_back("allow_unsafe_apis");
+  }
+#endif  // BUILDFLAG(IS_APPLE)
 
   wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();
@@ -232,6 +241,9 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   }
   if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
     features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
+  }
+  if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatExtendedUsages)) {
+    features.push_back(wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
   }
 
   descriptor.requiredFeatures = features.data();

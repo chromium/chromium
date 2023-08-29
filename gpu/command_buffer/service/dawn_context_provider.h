@@ -46,6 +46,8 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
       CacheBlobCallback callback = {});
 
+  static wgpu::BackendType GetDefaultBackendType();
+
   DawnContextProvider(const DawnContextProvider&) = delete;
   DawnContextProvider& operator=(const DawnContextProvider&) = delete;
 

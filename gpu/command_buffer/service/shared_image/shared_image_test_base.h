@@ -81,6 +81,9 @@ class SharedImageTestBase : public testing::Test {
   std::unique_ptr<viz::MetalContextProvider> metal_context_provider_;
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
+  // Subclass can customize this method to configure a specific Dawn backend
+  // when InitializeContext()
+  virtual wgpu::BackendType GetDawnBackendType() const;
   std::unique_ptr<DawnContextProvider> dawn_context_provider_;
 #endif
 

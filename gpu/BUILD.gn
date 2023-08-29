@@ -471,6 +471,11 @@ test("gl_tests") {
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]
+
+    sources += [
+      "command_buffer/service/shared_image/dawn_image_representation_unittest_common.cc",
+      "command_buffer/service/shared_image/dawn_image_representation_unittest_common.h",
+    ]
   }
 
   data_deps = [ "//testing/buildbot/filters:gl_tests_filters" ]
