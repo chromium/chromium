@@ -167,6 +167,28 @@ async def test_add_intercept_type_pattern_protocol_empty_invalid(websocket):
 
 
 @pytest.mark.asyncio
+async def test_add_intercept_type_pattern_protocol_non_special_success(
+        websocket):
+    result = await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{
+                    "type": "pattern",
+                    "protocol": "sftp",
+                    "hostname": "www.example.com",
+                    "port": "22",
+                }],
+            },
+        })
+
+    assert result == {
+        "intercept": ANY_UUID,
+    }
+
+
+@pytest.mark.asyncio
 async def test_add_intercept_type_pattern_hostname_empty_invalid(websocket):
     with pytest.raises(Exception) as exception_info:
         await execute_command(

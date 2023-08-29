@@ -502,4 +502,14 @@ describe('NetworkStorage', () => {
       });
     });
   });
+
+  describe('isSpecialScheme', () => {
+    it('http', () => {
+      expect(NetworkStorage.isSpecialScheme('http')).to.be.true;
+    });
+
+    it('sftp', () => {
+      expect(NetworkStorage.isSpecialScheme('sftp')).to.be.false;
+    });
+  });
 });

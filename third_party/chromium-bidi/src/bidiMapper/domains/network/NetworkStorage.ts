@@ -169,7 +169,9 @@ export class NetworkStorage {
         url += ':';
       }
 
-      url += '//';
+      if (NetworkStorage.isSpecialScheme(protocol)) {
+        url += '//';
+      }
     }
 
     if (hostname) {
@@ -216,6 +218,20 @@ export class NetworkStorage {
           'AuthRequired is not a valid intercept phase for request stage.'
         );
     }
+  }
+
+  /**
+   * Returns true if the given protocol is special.
+   * Special protocols are those that have a default port.
+   *
+   * Example inputs: 'http', 'http:'
+   *
+   * @see https://url.spec.whatwg.org/#special-scheme
+   */
+  static isSpecialScheme(protocol: string): boolean {
+    return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(
+      protocol.replace(/:$/, '')
+    );
   }
 
   // XXX: Replace getters with custom operations, follow suit of Browsing Context Storage.

@@ -110,6 +110,9 @@ export class NetworkProcessor {
       switch (urlPattern.type) {
         case 'string': {
           try {
+            // XXX: Switch to URLPattern.
+            // Note: This would require polyfilling as URLPattern is not yet in Node.
+            // https://github.com/nodejs/node/issues/40844
             new URL(urlPattern.pattern);
           } catch (error) {
             throw new InvalidArgumentException(
