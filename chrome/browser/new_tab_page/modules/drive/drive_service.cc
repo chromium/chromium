@@ -279,8 +279,7 @@ bool DriveService::GetDriveModuleSegmentationData() {
 
 void DriveService::GetDriveFilesInternal() {
   // Bail if module is still dismissed.
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
-      !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
+  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
       base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
           kDismissDuration) {
     for (auto& callback : callbacks_) {
