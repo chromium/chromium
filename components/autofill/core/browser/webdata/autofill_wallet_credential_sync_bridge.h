@@ -19,6 +19,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/mutable_data_batch.h"
 
 namespace autofill {
 
@@ -90,6 +91,10 @@ class AutofillWalletCredentialSyncBridge
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.
   void LoadMetadata();
+
+  // Returns the `server_cvc_list` as MutableDataBatch.
+  std::unique_ptr<syncer::MutableDataBatch> ConvertToDataBatch(
+      const std::vector<std::unique_ptr<ServerCvc>>& server_cvc_list);
 
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);

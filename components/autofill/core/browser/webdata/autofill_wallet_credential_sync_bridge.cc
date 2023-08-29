@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
@@ -144,12 +145,26 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
 
 void AutofillWalletCredentialSyncBridge::GetData(StorageKeyList storage_keys,
                                                  DataCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ranges::sort(storage_keys);
+  std::vector<std::unique_ptr<ServerCvc>> filterd_server_cvc_list;
+  for (std::unique_ptr<ServerCvc>& server_cvc_from_list :
+       GetAutofillTable()->GetAllServerCvcs()) {
+    if (base::ranges::binary_search(
+            storage_keys,
+            base::NumberToString(server_cvc_from_list->instrument_id))) {
+      filterd_server_cvc_list.push_back(std::move(server_cvc_from_list));
+    }
+  }
+  std::move(callback).Run(ConvertToDataBatch(filterd_server_cvc_list));
 }
 
 void AutofillWalletCredentialSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::vector<std::unique_ptr<ServerCvc>>& server_cvc_list =
+      GetAutofillTable()->GetAllServerCvcs();
+  std::move(callback).Run(ConvertToDataBatch(server_cvc_list));
 }
 
 std::string AutofillWalletCredentialSyncBridge::GetClientTag(
@@ -241,6 +256,25 @@ void AutofillWalletCredentialSyncBridge::LoadMetadata() {
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));
+}
+
+std::unique_ptr<syncer::MutableDataBatch>
+AutofillWalletCredentialSyncBridge::ConvertToDataBatch(
+    const std::vector<std::unique_ptr<ServerCvc>>& server_cvc_list) {
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::unique_ptr<ServerCvc>& server_cvc_from_list :
+       server_cvc_list) {
+    auto entity_data = std::make_unique<syncer::EntityData>();
+    sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics =
+        AutofillWalletCredentialSpecificsFromStructData(*server_cvc_from_list);
+    *entity_data->specifics.mutable_autofill_wallet_credential() =
+        wallet_credential_specifics;
+
+    const std::string& storage_key = GetStorageKey(*entity_data);
+    entity_data->name = storage_key;
+    batch->Put(storage_key, std::move(entity_data));
+  }
+  return batch;
 }
 
 }  // namespace autofill

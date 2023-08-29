@@ -40,6 +40,18 @@ using syncer::MockModelTypeChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
+std::vector<ServerCvc> ExtractServerCvcDataFromDataBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<ServerCvc> server_cvc_data;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    server_cvc_data.push_back(
+        AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
+            data_pair.second->specifics.autofill_wallet_credential()));
+  }
+  return server_cvc_data;
+}
+
 }  // namespace
 
 class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
@@ -391,6 +403,54 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, ApplyDisableSyncChanges) {
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
   EXPECT_TRUE(GetAllServerCvcDataFromTable().empty());
+}
+
+// Test to get all the server cvc data for a user which is filtered on the list
+// of `instrument_id` provided.
+TEST_F(AutofillWalletCredentialSyncBridgeTest, GetData) {
+  const ServerCvc server_cvc1 =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+  const ServerCvc server_cvc2 =
+      ServerCvc(2, u"890", base::Time::UnixEpoch() + base::Milliseconds(50000));
+  table()->AddServerCvc(server_cvc1);
+  table()->AddServerCvc(server_cvc2);
+
+  // Synchronously get data of `server_cvc1`.
+  std::vector<ServerCvc> server_cvc_from_get_data;
+  base::RunLoop loop;
+  bridge()->GetData(
+      {base::NumberToString(server_cvc1.instrument_id)},
+      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
+        server_cvc_from_get_data =
+            ExtractServerCvcDataFromDataBatch(std::move(batch));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  EXPECT_THAT(server_cvc_from_get_data, testing::ElementsAre(server_cvc1));
+}
+
+// Test to get all the server cvc data for a user while debugging.
+TEST_F(AutofillWalletCredentialSyncBridgeTest, GetAllDataForDebugging) {
+  const ServerCvc server_cvc1 =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+  const ServerCvc server_cvc2 =
+      ServerCvc(2, u"890", base::Time::UnixEpoch() + base::Milliseconds(50000));
+  table()->AddServerCvc(server_cvc1);
+  table()->AddServerCvc(server_cvc2);
+
+  std::vector<ServerCvc> server_cvc_from_get_all;
+  base::RunLoop loop;
+  bridge()->GetAllDataForDebugging(
+      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
+        server_cvc_from_get_all =
+            ExtractServerCvcDataFromDataBatch(std::move(batch));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  EXPECT_THAT(server_cvc_from_get_all,
+              testing::UnorderedElementsAre(server_cvc1, server_cvc2));
 }
 
 }  // namespace autofill
