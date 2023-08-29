@@ -88,6 +88,12 @@ class PrintJobWorker {
   // Setup the document in preparation for printing.
   bool SetupDocument(const std::u16string& document_name);
 
+  // Get the document.  Only to be called from the worker thread.
+  PrintedDocument* document() {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    return document_.get();
+  }
+
 #if BUILDFLAG(IS_WIN)
   // Renders a page in the printer.  Returns false if any errors occur.
   // This is applicable when using the Windows GDI print API.
@@ -136,6 +142,7 @@ class PrintJobWorker {
   const std::unique_ptr<PrintingContext> printing_context_;
 
   // The printed document. Only has read-only access.
+  // Only accessed from worker thread.
   scoped_refptr<PrintedDocument> document_;
 
   // The print job owning this worker thread. It is guaranteed to outlive this

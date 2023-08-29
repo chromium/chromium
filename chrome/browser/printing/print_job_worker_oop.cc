@@ -203,7 +203,9 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
   UnregisterServiceManagerClient();
   base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName,
                                 PrintOopResult::kSuccessful);
-  FinishDocumentDone(job_id);
+  task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&PrintJobWorkerOop::FinishDocumentDone,
+                                worker_weak_factory_.GetWeakPtr(), job_id));
 
   // Also done with private document reference.
   document_oop_ = nullptr;
@@ -239,7 +241,7 @@ bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
   DCHECK_NE(page_number(), PageNumber::npos());
 
 #if !defined(NDEBUG)
-  DCHECK(document_oop_->IsPageInList(*page));
+  DCHECK(document()->IsPageInList(*page));
 #endif
 
   const MetafilePlayer* metafile = page->metafile();
@@ -270,7 +272,7 @@ bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
 bool PrintJobWorkerOop::SpoolDocument() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
-  const MetafilePlayer* metafile = document_oop_->GetMetafile();
+  const MetafilePlayer* metafile = document()->GetMetafile();
   DCHECK(metafile);
   base::MappedReadOnlyRegion region_mapping =
       metafile->GetDataAsSharedMemoryRegion();
@@ -395,6 +397,10 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
   SendCancel(base::BindOnce(&PrintJobWorkerOop::OnDidCancel,
                             ui_weak_factory_.GetWeakPtr(),
                             base::WrapRefCounted(print_job()), result));
+}
+
+void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
+  PrintJobWorker::FinishDocumentDone(job_id);
 }
 
 void PrintJobWorkerOop::SendEstablishPrintingContext() {
