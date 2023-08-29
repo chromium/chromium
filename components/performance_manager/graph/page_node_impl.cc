@@ -14,6 +14,7 @@
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 
 namespace performance_manager {
 
@@ -250,6 +251,11 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
   return embedder_frame_node_;
 }
 
+resource_attribution::PageContext PageNodeImpl::resource_context() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_context_;
+}
+
 PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
@@ -479,6 +485,11 @@ const FrameNode* PageNodeImpl::GetOpenerFrameNode() const {
 const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return embedder_frame_node();
+}
+
+resource_attribution::PageContext PageNodeImpl::GetResourceContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_context();
 }
 
 PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {

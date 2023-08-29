@@ -37,7 +37,8 @@ namespace performance_manager::resource_attribution {
 
 // Tokens for PerformanceManager nodes. There is one *Context type for each
 // node type.
-// TODO(https://crbug.com/1471683): Add Frame, Page and Worker tokens.
+// TODO(https://crbug.com/1471683): Add Frame  and Worker tokens.
+using PageContext = base::TokenType<class PageContextTag>;
 using ProcessContext = base::TokenType<class ProcessContextTag>;
 
 // A generic token representing any resource context.
@@ -45,7 +46,7 @@ using ProcessContext = base::TokenType<class ProcessContextTag>;
 // Implementation note: this doesn't use blink::MultiToken because it can only
 // hold concrete instantiations of base::TokenType, not subclasses of it or
 // nested MultiTokens.
-using ResourceContext = absl::variant<ProcessContext>;
+using ResourceContext = absl::variant<PageContext, ProcessContext>;
 
 // Returns true iff `context` currently holds a resource context of type T.
 template <typename T,

@@ -19,6 +19,7 @@ const PublicNode* ToPublic(const TestNodeWrapper<NodeImpl>& wrapper) {
 }
 
 using ResourceContextTest = GraphTestHarness;
+using ResourceContextDeathTest = ResourceContextTest;
 
 // Tests the context tokens returned from PM nodes.
 TEST_F(ResourceContextTest, NodeContexts) {
@@ -28,6 +29,8 @@ TEST_F(ResourceContextTest, NodeContexts) {
   // they use different constructors.
 
   // Ensure the public and private accessors return the same value.
+  EXPECT_EQ(ToPublic<PageNode>(mock_graph.page)->GetResourceContext(),
+            mock_graph.page->resource_context());
   EXPECT_EQ(
       ToPublic<ProcessNode>(mock_graph.browser_process)->GetResourceContext(),
       mock_graph.browser_process->resource_context());
@@ -38,6 +41,8 @@ TEST_F(ResourceContextTest, NodeContexts) {
       mock_graph.utility_process->resource_context());
 
   // Ensure each node gets a fresh token.
+  EXPECT_NE(mock_graph.page->resource_context(),
+            mock_graph.other_page->resource_context());
   const std::set<ProcessContext> process_contexts{
       mock_graph.browser_process->resource_context(),
       mock_graph.process->resource_context(),
@@ -72,6 +77,17 @@ TEST_F(ResourceContextTest, ResourceContextComparators) {
   EXPECT_NE(mock_graph.process->resource_context(), other_process_context);
   // ResourceContext != ResourceContext
   EXPECT_NE(process_context, other_process_context);
+
+  // Ensure tokens of different types can be compared when wrapped in
+  // ResourceContext, although they'll never be equal.
+  const ResourceContext page_context = mock_graph.page->resource_context();
+
+  // ResourceContext != node context
+  EXPECT_NE(process_context, mock_graph.page->resource_context());
+  // node context != Resource Context
+  EXPECT_NE(mock_graph.process->resource_context(), page_context);
+  // ResourceContext != ResourceContext
+  EXPECT_NE(process_context, page_context);
 }
 
 TEST_F(ResourceContextTest, ResourceContextConverters) {
@@ -81,8 +97,10 @@ TEST_F(ResourceContextTest, ResourceContextConverters) {
 
   const ResourceContext process_context =
       mock_graph.process->resource_context();
+  const ResourceContext page_context = mock_graph.page->resource_context();
 
   EXPECT_TRUE(ContextIs<ProcessContext>(process_context));
+  EXPECT_FALSE(ContextIs<ProcessContext>(page_context));
 
   const ProcessContext unwrapped_process_context =
       AsContext<ProcessContext>(process_context);
@@ -90,6 +108,13 @@ TEST_F(ResourceContextTest, ResourceContextConverters) {
 
   EXPECT_THAT(AsOptionalContext<ProcessContext>(process_context),
               Optional(mock_graph.process->resource_context()));
+  EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), absl::nullopt);
+}
+
+TEST_F(ResourceContextDeathTest, FailedResourceContextConverters) {
+  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+  const ResourceContext page_context = mock_graph.page->resource_context();
+  EXPECT_DEATH(AsContext<ProcessContext>(page_context), "Bad variant access");
 }
 
 }  // namespace

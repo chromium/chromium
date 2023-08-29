@@ -85,6 +85,7 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   }
   result.Set("freezing_vote",
              FreezingVoteToString(page_node_impl->freezing_vote()));
+  result.Set("resource_context", page_node_impl->resource_context().ToString());
 
   base::Value::Dict estimates;
   estimates.Set(
