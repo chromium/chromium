@@ -11,7 +11,7 @@
 #include <lib/ui/scenic/cpp/testing/fake_flatland.h>
 #include <lib/ui/scenic/cpp/testing/fake_touch_source.h>
 #include <lib/ui/scenic/cpp/testing/fake_view_ref_focused.h>
-#include <lib/ui/scenic/cpp/view_creation_tokens.h>
+#include <lib/zx/channel.h>
 
 #include <memory>
 #include <string>
@@ -25,6 +25,7 @@
 #include "ui/events/fuchsia/util/pointer_event_utility.h"
 #include "ui/ozone/platform/flatland/flatland_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
+#include "ui/platform_window/fuchsia/view_ref_pair.h"
 
 using ::scenic::FakeGraph;
 using ::scenic::FakeTransform;
@@ -126,15 +127,19 @@ class FlatlandWindowTest : public ::testing::Test {
   void CreateWindow() {
     EXPECT_FALSE(flatland_window_);
 
-    auto token_pair = scenic::ViewCreationTokenPair::New();
-    viewport_token_ = std::move(token_pair.viewport_token);
+    fuchsia::ui::views::ViewCreationToken view_token;
+    fuchsia::ui::views::ViewportCreationToken viewport_token;
+    auto status =
+        zx::channel::create(0, &viewport_token.value, &view_token.value);
+    CHECK_EQ(ZX_OK, status);
+    viewport_token_ = std::move(viewport_token);
 
     EXPECT_CALL(window_delegate_, OnAcceleratedWidgetAvailable(_))
         .WillOnce(SaveArg<0>(&window_widget_));
 
     PlatformWindowInitProperties properties;
-    properties.view_ref_pair = scenic::ViewRefPair::New();
-    properties.view_creation_token = std::move(token_pair.view_token);
+    properties.view_ref_pair = ViewRefPair::New();
+    properties.view_creation_token = std::move(view_token);
     flatland_window_ = std::make_unique<FlatlandWindow>(
         &window_manager_, &window_delegate_, std::move(properties));
   }
@@ -330,8 +335,12 @@ TEST_F(FlatlandWindowTest, WaitsForNonZeroSizeToAttachSurfaceContent) {
   task_environment_.RunUntilIdle();
 
   // Try attaching the content. It should only be a closure.
-  auto token_pair = scenic::ViewCreationTokenPair::New();
-  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  CHECK_EQ(ZX_OK, status);
+  flatland_window_->AttachSurfaceContent(std::move(viewport_token));
   EXPECT_TRUE(HasPendingAttachSurfaceContentClosure());
 
   // Setting layout info should trigger the closure and delegate calls.
@@ -363,9 +372,8 @@ TEST_F(FlatlandWindowTest, WaitsForNonZeroSizeToAttachSurfaceContent) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2u, presents_called);
   EXPECT_THAT(fake_flatland_.graph(),
-              IsWindowGraph(
-                  parent_viewport_watcher(), viewport_token_,
-                  Contains(IsViewport(token_pair.view_token, expected_size))));
+              IsWindowGraph(parent_viewport_watcher(), viewport_token_,
+                            Contains(IsViewport(view_token, expected_size))));
 }
 
 // Verify that surface is cleared when the window is disconnected from the
@@ -378,8 +386,12 @@ TEST_F(FlatlandWindowTest, ResetSurfaceOnDisconnect) {
   task_environment_.RunUntilIdle();
 
   // Try attaching the content. It should only be a closure.
-  auto token_pair = scenic::ViewCreationTokenPair::New();
-  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  CHECK_EQ(ZX_OK, status);
+  flatland_window_->AttachSurfaceContent(std::move(viewport_token));
 
   SetWindowStatus(
       fuchsia::ui::composition::ParentViewportStatus::CONNECTED_TO_DISPLAY);
@@ -434,8 +446,12 @@ TEST_F(FlatlandWindowTest, SurfaceHasHitTestHitShield) {
   // Spin the loop to propagate layout.
   task_environment_.RunUntilIdle();
 
-  auto token_pair = scenic::ViewCreationTokenPair::New();
-  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+  fuchsia::ui::views::ViewCreationToken view_token;
+  fuchsia::ui::views::ViewportCreationToken viewport_token;
+  auto status =
+      zx::channel::create(0, &viewport_token.value, &view_token.value);
+  CHECK_EQ(ZX_OK, status);
+  flatland_window_->AttachSurfaceContent(std::move(viewport_token));
 
   // Show() the window, to trigger creation of the scene graph, including
   // surface and hit shield.
@@ -449,12 +465,12 @@ TEST_F(FlatlandWindowTest, SurfaceHasHitTestHitShield) {
   task_environment_.RunUntilIdle();
 
   // Surface should be accompanied by input shield, in that order.
-  EXPECT_THAT(fake_flatland_.graph(),
-              Field("root_transform", &FakeGraph::root_transform,
-                    Pointee(Field("children", &FakeTransform::children,
-                                  ElementsAre(IsViewport(token_pair.view_token,
-                                                         expected_size),
-                                              IsHitShield())))));
+  EXPECT_THAT(
+      fake_flatland_.graph(),
+      Field("root_transform", &FakeGraph::root_transform,
+            Pointee(Field("children", &FakeTransform::children,
+                          ElementsAre(IsViewport(view_token, expected_size),
+                                      IsHitShield())))));
 }
 
 class ParameterizedViewInsetTest : public FlatlandWindowTest,

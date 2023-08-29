@@ -1617,8 +1617,7 @@
         'ui/gl/gl_.*ozone'
     },
     'ozone_fuchsia': {
-      'filepath': 'ui/ozone/platform/flatland/|'\
-                  'ui/ozone/platform/scenic/'
+      'filepath': 'ui/ozone/platform/flatland/',
     },
     'page_info' : {
       'filepath': 'chrome/browser/ui/page_info/'\

@@ -20,7 +20,7 @@
 #include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
+#include <ui/platform_window/fuchsia/view_ref_pair.h>
 #endif
 
 namespace gfx {
@@ -91,7 +91,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   fuchsia::ui::views::ViewToken view_token;
   fuchsia::ui::views::ViewCreationToken view_creation_token;
 
-  scenic::ViewRefPair view_ref_pair;
+  ViewRefPair view_ref_pair;
 
   // Used to coordinate window closure requests with the shell.
   fuchsia::element::ViewControllerPtr view_controller;

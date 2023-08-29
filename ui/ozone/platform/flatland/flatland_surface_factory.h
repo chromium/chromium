@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_manager.h"
-#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
+#include "ui/ozone/platform/flatland/mojom/scenic_gpu_host.mojom.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 

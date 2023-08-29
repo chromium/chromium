@@ -4,7 +4,6 @@
 
 #include <fuchsia/element/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_creation_tokens.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
 #include <lib/zx/time.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
@@ -94,15 +93,6 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
       });
   loop.Run();
   return visibility->data;
-}
-
-::fuchsia::ui::views::ViewRef CloneViewRef(
-    const ::fuchsia::ui::views::ViewRef& view_ref) {
-  ::fuchsia::ui::views::ViewRef dup;
-  zx_status_t status =
-      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
-  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
-  return dup;
 }
 
 }  // namespace
@@ -330,8 +320,11 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
   base::RunLoop().RunUntilIdle();
   FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
 
-  auto view_tokens = scenic::ViewTokenPair::New();
-  frame->CreateView(std::move(view_tokens.view_token));
+  scenic::ViewCreationTokenPair token_pair =
+      scenic::ViewCreationTokenPair::New();
+  fuchsia::web::CreateView2Args create_view_args;
+  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  frame->CreateView2(std::move(create_view_args));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(frame_impl->has_view_for_test());
 
@@ -878,17 +871,16 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Stop) {
 #define MAYBE_SetPageScale DISABLED_SetPageScale
 #endif
 IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
-  // This test uses the `fuchsia.ui.gfx` variant of `Frame.CreateView*()`.
   ASSERT_EQ(ui::OzonePlatform::GetInstance()->GetPlatformNameForTest(),
-            "scenic");
+            "flatland");
 
   auto frame = FrameForTest::Create(context(), {});
 
-  auto view_tokens = scenic::ViewTokenPair::New();
-  auto view_ref_pair = scenic::ViewRefPair::New();
-  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
-                               std::move(view_ref_pair.control_ref),
-                               CloneViewRef(view_ref_pair.view_ref));
+  scenic::ViewCreationTokenPair token_pair =
+      scenic::ViewCreationTokenPair::New();
+  fuchsia::web::CreateView2Args create_view_args;
+  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  frame->CreateView2(std::move(create_view_args));
 
   // Attach the View to a Presenter, the page should be visible.
   auto presenter = base::ComponentContextForProcess()
@@ -900,8 +892,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   });
 
   ::fuchsia::element::ViewSpec view_spec;
-  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
-  view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+  view_spec.set_viewport_creation_token(std::move(token_pair.viewport_token));
+  view_spec.set_annotations({});
   ::fuchsia::element::ViewControllerPtr view_controller;
   presenter->PresentView(std::move(view_spec), nullptr,
                          view_controller.NewRequest(),
@@ -979,15 +971,12 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   // Create another frame. Verify that the scale factor is not applied to the
   // new frame.
   auto frame2 = FrameForTest::Create(context(), {});
+  token_pair = scenic::ViewCreationTokenPair::New();
+  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  frame2->CreateView2(std::move(create_view_args));
 
-  view_tokens = scenic::ViewTokenPair::New();
-  view_ref_pair = scenic::ViewRefPair::New();
-  frame2->CreateViewWithViewRef(std::move(view_tokens.view_token),
-                                std::move(view_ref_pair.control_ref),
-                                CloneViewRef(view_ref_pair.view_ref));
-
-  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
-  view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+  view_spec.set_viewport_creation_token(std::move(token_pair.viewport_token));
+  view_spec.set_annotations({});
   presenter->PresentView(std::move(view_spec), nullptr,
                          view_controller.NewRequest(), [](auto) {});
 
@@ -1024,8 +1013,11 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page1_url, kPage1Title);
 
   // Request a View from the Frame, and pump the loop to process the request.
-  auto view_tokens = scenic::ViewTokenPair::New();
-  frame->CreateView(std::move(view_tokens.view_token));
+  scenic::ViewCreationTokenPair token_pair =
+      scenic::ViewCreationTokenPair::New();
+  fuchsia::web::CreateView2Args create_view_args;
+  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  frame->CreateView2(std::move(create_view_args));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(frame_impl->has_view_for_test());
 
@@ -1037,8 +1029,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(page2_url, kPage2Title);
 
   // Create new View tokens and request a new view.
-  auto view_tokens2 = scenic::ViewTokenPair::New();
-  frame->CreateView(std::move(view_tokens2.view_token));
+  token_pair = scenic::ViewCreationTokenPair::New();
+  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
+  frame->CreateView2(std::move(create_view_args));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(frame_impl->has_view_for_test());
 

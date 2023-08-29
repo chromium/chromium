@@ -32,6 +32,8 @@ component("platform_window") {
       "fuchsia/initialize_presenter_api_view.cc",
       "fuchsia/initialize_presenter_api_view.h",
       "fuchsia/scenic_window_delegate.h",
+      "fuchsia/view_ref_pair.cc",
+      "fuchsia/view_ref_pair.h",
     ]
 
     public_deps += [

@@ -25,7 +25,7 @@ fuchsia::ui::views::ViewRef DupViewRef(
 }
 
 ui::PlatformWindowInitProperties CreatePlatformWindowInitProperties(
-    scenic::ViewRefPair view_ref_pair,
+    ui::ViewRefPair view_ref_pair,
     ui::ScenicWindowDelegate* scenic_window_delegate) {
   ui::PlatformWindowInitProperties properties;
   properties.view_ref_pair = std::move(view_ref_pair);
@@ -66,7 +66,7 @@ class FrameWindowTreeHost::WindowParentingClientImpl
 
 FrameWindowTreeHost::FrameWindowTreeHost(
     fuchsia::ui::views::ViewToken view_token,
-    scenic::ViewRefPair view_ref_pair,
+    ui::ViewRefPair view_ref_pair,
     content::WebContents* web_contents,
     OnPixelScaleUpdateCallback on_pixel_scale_update)
     : view_ref_(DupViewRef(view_ref_pair.view_ref)),
@@ -85,7 +85,7 @@ FrameWindowTreeHost::FrameWindowTreeHost(
 
 FrameWindowTreeHost::FrameWindowTreeHost(
     fuchsia::ui::views::ViewCreationToken view_creation_token,
-    scenic::ViewRefPair view_ref_pair,
+    ui::ViewRefPair view_ref_pair,
     content::WebContents* web_contents,
     OnPixelScaleUpdateCallback on_pixel_scale_update)
     : view_ref_(DupViewRef(view_ref_pair.view_ref)),

@@ -6,9 +6,9 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_WINDOW_H_
 
 #include <fidl/fuchsia.ui.input3/cpp/fidl.h>
+#include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <memory>
 #include <string>

@@ -11,7 +11,6 @@
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <limits>
 
@@ -79,6 +78,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/platform_window/fuchsia/view_ref_pair.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -810,7 +810,7 @@ void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
   TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/Frame.CreateView",
               perfetto::Flow::FromPointer(this));
 
-  auto view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = ui::ViewRefPair::New();
   CreateViewImpl(std::move(view_token), std::move(view_ref_pair.control_ref),
                  std::move(view_ref_pair.view_ref));
 }
@@ -844,7 +844,7 @@ void FrameImpl::CreateViewImpl(fuchsia::ui::views::ViewToken view_token,
   // If a View to this Frame is already active then disconnect it.
   DestroyWindowTreeHost();
 
-  scenic::ViewRefPair view_ref_pair;
+  ui::ViewRefPair view_ref_pair;
   view_ref_pair.control_ref = std::move(control_ref);
   view_ref_pair.view_ref = std::move(view_ref);
   SetupWindowTreeHost(std::move(view_token), std::move(view_ref_pair));
@@ -872,7 +872,7 @@ void FrameImpl::CreateView2(fuchsia::web::CreateView2Args view_args) {
   // If a View to this Frame is already active then disconnect it.
   DestroyWindowTreeHost();
 
-  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = ui::ViewRefPair::New();
   SetupWindowTreeHost(std::move(*view_args.mutable_view_creation_token()),
                       std::move(view_ref_pair));
 
@@ -1125,7 +1125,7 @@ void FrameImpl::EnableHeadlessRendering() {
     return;
   }
 
-  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = ui::ViewRefPair::New();
   SetupWindowTreeHost(fuchsia::ui::views::ViewToken(),
                       std::move(view_ref_pair));
 
@@ -1159,7 +1159,7 @@ void FrameImpl::DisableHeadlessRendering() {
 }
 
 void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                                    scenic::ViewRefPair view_ref_pair) {
+                                    ui::ViewRefPair view_ref_pair) {
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
@@ -1172,7 +1172,7 @@ void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
 
 void FrameImpl::SetupWindowTreeHost(
     fuchsia::ui::views::ViewCreationToken view_creation_token,
-    scenic::ViewRefPair view_ref_pair) {
+    ui::ViewRefPair view_ref_pair) {
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(

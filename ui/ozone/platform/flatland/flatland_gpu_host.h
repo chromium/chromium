@@ -14,8 +14,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
-#include "ui/ozone/platform/scenic/mojom/scenic_gpu_service.mojom.h"
+#include "ui/ozone/platform/flatland/mojom/scenic_gpu_host.mojom.h"
+#include "ui/ozone/platform/flatland/mojom/scenic_gpu_service.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 
 namespace ui {

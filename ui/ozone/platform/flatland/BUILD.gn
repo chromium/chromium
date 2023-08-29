@@ -70,12 +70,12 @@ source_set("flatland") {
     "//ui/events/ozone/layout",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/platform/scenic/mojom",
+    "//ui/ozone/platform/flatland/mojom",
   ]
 
   public_deps = [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition:fuchsia.ui.composition_hlcpp",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx:fuchsia.ui.gfx_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3:fuchsia.ui.input3_cpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer:fuchsia.ui.pointer_cpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer:fuchsia.ui.pointer_cpp_hlcpp_conversion",

@@ -653,8 +653,9 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr info
   // here must match the values passed for the same buffer in
   // ui::SysmemBufferCollection::CreateVkImage() (see
-  // ui/ozone/platform/scenic/sysmem_buffer_collection.cc). |format_features|
-  // are resolved later in the GPU process before this info is passed to Skia.
+  // ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.cc).
+  // |format_features| are resolved later in the GPU process before this info is
+  // passed to Skia.
   frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
       vk_format, /*external_format=*/0, ycbcr_conversion,
       VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,

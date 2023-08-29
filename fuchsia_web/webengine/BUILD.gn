@@ -614,8 +614,6 @@ test("web_engine_browsertests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3:fuchsia.ui.input3_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
-    "//ui/gfx",
     "//ui/ozone",
   ]
 

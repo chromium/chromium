@@ -357,7 +357,7 @@ ninja -C out/OzoneCaca content_shell
 ### drm
 Ash-chrome client implementation.
 
-### flatland / scenic
+### flatland
 For fuchsia.
 
 ## Communication
