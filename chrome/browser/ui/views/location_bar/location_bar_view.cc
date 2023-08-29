@@ -293,8 +293,7 @@ void LocationBarView::Init() {
   }
 
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
-      this, TemplateURLServiceFactory::GetForProfile(profile_),
-      omnibox_chip_font_list));
+      this, TemplateURLServiceFactory::GetForProfile(profile_), font_list));
 
   if (browser_ && apps::features::LinkCapturingUiUpdateEnabled()) {
     intent_chip_ =
