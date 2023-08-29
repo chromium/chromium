@@ -5,19 +5,26 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,8 +34,14 @@ namespace ash {
 
 namespace {
 
+using base::test::RunClosure;
+using base::test::TestFuture;
 using drivefs::pinning::Progress;
+using drivefs::pinning::Stage;
+using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::ElementsAre;
+using ::testing::Field;
 
 constexpr char kDrivePinningId[] = "drive-pinning";
 
@@ -41,11 +54,9 @@ const test::UIPath kNextButtonPath = {kDrivePinningId, "nextButton"};
 
 }  // namespace
 
-class DrivePinningScreenTest
-    : public OobeBaseTest,
-      public ::testing::WithParamInterface<drivefs::pinning::Stage> {
+class DrivePinningBaseScreenTest : public OobeBaseTest {
  public:
-  DrivePinningScreenTest() {
+  DrivePinningBaseScreenTest() {
     feature_list_.InitWithFeatures(
         {ash::features::kOobeChoobe, ash::features::kOobeDrivePinning,
          ash::features::kDriveFsBulkPinning,
@@ -61,7 +72,7 @@ class DrivePinningScreenTest
 
     original_callback_ = drive_pining_screen->get_exit_callback_for_testing();
     drive_pining_screen->set_exit_callback_for_testing(base::BindRepeating(
-        &DrivePinningScreenTest::HandleScreenExit, base::Unretained(this)));
+        &DrivePinningBaseScreenTest::HandleScreenExit, base::Unretained(this)));
   }
 
   void SetPinManagerProgress(Progress progress) {
@@ -109,6 +120,10 @@ class DrivePinningScreenTest
   base::OnceClosure quit_closure_;
 };
 
+class DrivePinningScreenTest
+    : public DrivePinningBaseScreenTest,
+      public ::testing::WithParamInterface<drivefs::pinning::Stage> {};
+
 IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
   Progress current_progress = Progress();
   current_progress.stage = drivefs::pinning::Stage::kSuccess;
@@ -138,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
 
 IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Decline) {
   Progress current_progress = Progress();
-  current_progress.stage = drivefs::pinning::Stage::kSuccess;
+  current_progress.stage = Stage::kSuccess;
   // Expect the free space to be 100 GB (107,374,182,400  bytes), the required
   // space to be 512 MB.
   current_progress.free_space = 100LL * 1024LL * 1024LL * 1024LL;
@@ -172,12 +187,117 @@ IN_PROC_BROWSER_TEST_P(DrivePinningScreenTest, ScreenSkippedOnError) {
   EXPECT_EQ(result_.value(), DrivePinningScreen::Result::NOT_APPLICABLE);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DrivePinningScreenTest,
-    ::testing::Values(drivefs::pinning::Stage::kCannotGetFreeSpace,
-                      drivefs::pinning::Stage::kCannotListFiles,
-                      drivefs::pinning::Stage::kNotEnoughSpace,
-                      drivefs::pinning::Stage::kCannotEnableDocsOffline));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DrivePinningScreenTest,
+                         ::testing::Values(Stage::kCannotGetFreeSpace,
+                                           Stage::kCannotListFiles,
+                                           Stage::kNotEnoughSpace,
+                                           Stage::kCannotEnableDocsOffline));
+
+class DrivePinningMockObserver : public drive::DriveIntegrationServiceObserver {
+ public:
+  MOCK_METHOD(void, OnBulkPinProgress, (const Progress& progress), (override));
+};
+
+class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    create_drive_integration_service_ = base::BindRepeating(
+        &DrivePinningIntegrationServiceTest::CreateDriveIntegrationService,
+        base::Unretained(this));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
+  }
+
+  drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath mount_path = profile->GetPath().Append("drivefs");
+    fake_drivefs_helpers_[profile] =
+        std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
+    auto* integration_service = new drive::DriveIntegrationService(
+        profile, std::string(), mount_path,
+        fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
+    return integration_service;
+  }
+
+  drive::DriveIntegrationService* GetDriveServiceForActiveProfile() {
+    auto* drive_service = drive::DriveIntegrationServiceFactory::FindForProfile(
+        ProfileManager::GetActiveUserProfile());
+    EXPECT_NE(drive_service, nullptr);
+    return drive_service;
+  }
+
+  void WaitForSuccessStateChange() {
+    auto* drive_service = GetDriveServiceForActiveProfile();
+    auto* const pin_manager = drive_service->GetPinManager();
+    if (pin_manager && pin_manager->GetProgress().stage == Stage::kSuccess) {
+      return;
+    }
+    if (!drive_service->HasObserver(&observer_)) {
+      drive_service->AddObserver(&observer_);
+    }
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_, OnBulkPinProgress(_)).Times(AnyNumber());
+    EXPECT_CALL(observer_,
+                OnBulkPinProgress(Field(&Progress::stage, Stage::kSuccess)))
+        .Times(1)
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&observer_);
+  }
+
+ private:
+  drive::DriveIntegrationServiceFactory::FactoryCallback
+      create_drive_integration_service_;
+  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
+      service_factory_for_test_;
+  std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
+      fake_drivefs_helpers_;
+  DrivePinningMockObserver observer_;
+};
+
+IN_PROC_BROWSER_TEST_F(DrivePinningIntegrationServiceTest,
+                       UnmountRestartsCalculation) {
+  base::HistogramTester histogram_tester;
+
+  ash::FakeSpacedClient::Get()->set_free_disk_space(int64_t(3) << 30);
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->skip_choobe_for_tests = true;
+
+  // Login as a user and bypass the consolidated consent screen. This is
+  // required as the bulk pinning required space is kicked off on exit of this
+  // screen.
+  login_manager_mixin_.LoginAsNewRegularUser();
+  ash::test::WaitForConsolidatedConsentScreen();
+  ash::test::TapConsolidatedConsentAccept();
+
+  // Wait for bulk pinning to get to `kSuccess` before clearing the cache and
+  // remounting the file system, this simulates a restart by DriveFS
+  WaitForSuccessStateChange();
+  TestFuture<bool> future;
+  GetDriveServiceForActiveProfile()->ClearCacheAndRemountFileSystem(
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  // Wait for the `kSuccess` again as after a successful remount the
+  // `DrivePinningScreen` should kick off another space calculation if it was
+  // previously started.
+  WaitForSuccessStateChange();
+
+  // Advance directly to the drive pinning screen and then click "Next".
+  WizardController::default_controller()->AdvanceToScreen(
+      DrivePinningScreenView::kScreenId);
+  test::OobeJS().ExpectVisiblePath(kDrivePinningDialoguePath);
+  test::OobeJS().TapOnPath(kNextButtonPath);
+
+  WaitForScreenExit();
+
+  histogram_tester.ExpectUniqueSample(
+      "FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenInitializations", 1, 2);
+}
 
 }  // namespace ash

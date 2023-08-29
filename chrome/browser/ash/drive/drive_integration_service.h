@@ -100,6 +100,9 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
   // Triggered when the bulk pinning manager reports progress.
   virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {}
 
+  // Triggered when the bulk pinning manger is fully initialized.
+  virtual void OnBulkPinInitialized() {}
+
   // Triggered when the network connection to Drive could have changed.
   virtual void OnDriveConnectionStatusChanged(
       util::ConnectionStatusType status) {}
@@ -179,6 +182,7 @@ class DriveIntegrationService : public KeyedService,
   using Observer = DriveIntegrationServiceObserver;
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  [[nodiscard]] bool HasObserver(Observer* observer);
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;

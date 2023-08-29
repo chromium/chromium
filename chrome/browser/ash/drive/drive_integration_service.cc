@@ -933,6 +933,11 @@ void DriveIntegrationService::RemoveObserver(Observer* const observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool DriveIntegrationService::HasObserver(Observer* const observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return observers_.HasObserver(observer);
+}
+
 void DriveIntegrationService::ClearCacheAndRemountFileSystem(
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1260,6 +1265,10 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 
     RecordBulkPinningMountFailureReason(
         profile_, BulkPinningMountFailureReason::kSuccess);
+
+    for (Observer& observer : observers_) {
+      observer.OnBulkPinInitialized();
+    }
   }
 }
 
