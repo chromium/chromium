@@ -38,11 +38,6 @@ enum class ContentSettingsType : int32_t {
   DEPRECATED_PPAPI_BROKER,
   AUTOMATIC_DOWNLOADS,
 
-  // MIDI stands for Musical Instrument Digital Interface. It is a standard that
-  // allows electronic musical instruments, computers, and other devices to
-  // communicate with each other.
-  MIDI,
-
   // Advanced device-specific functions on MIDI devices. MIDI-SysEx
   // communications can be used for changing the MIDI device's persistent state
   // such as firmware.
@@ -64,6 +59,11 @@ enum class ContentSettingsType : int32_t {
   // Website setting which stores metadata for the subresource filter to aid in
   // decisions for whether or not to show the UI.
   ADS_DATA,
+
+  // MIDI stands for Musical Instrument Digital Interface. It is a standard that
+  // allows electronic musical instruments, computers, and other devices to
+  // communicate with each other.
+  MIDI,
 
   // This content setting type is for caching password protection service's
   // verdicts of each origin.
