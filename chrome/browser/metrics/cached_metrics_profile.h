@@ -29,7 +29,11 @@ class CachedMetricsProfile {
   // The profile for which metrics can be gathered. Once a profile is found,
   // its value is cached here so that GetMetricsProfile() can return a
   // consistent value.
-  raw_ptr<Profile> cached_profile_ = nullptr;
+  // Note: This may be dangling if the profile being pointed to is deleted
+  // before |this|. However, this is safe because GetMetricsProfile() above
+  // verifies that this is still valid before returning it. If new accesses are
+  // made to this field, care must be taken to ensure that it is still valid.
+  raw_ptr<Profile, DisableDanglingPtrDetection> cached_profile_ = nullptr;
 };
 
 }  // namespace metrics
