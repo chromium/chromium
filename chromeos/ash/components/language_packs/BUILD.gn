@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("language_packs") {
   sources = [
+    "handwriting.cc",
+    "handwriting.h",
     "language_pack_manager.cc",
     "language_pack_manager.h",
     "language_packs_impl.cc",
@@ -24,11 +26,13 @@ static_library("language_packs") {
     "//components/session_manager:base",
     "//components/session_manager/core:core",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "handwriting_unittest.cc",
     "language_pack_manager_unittest.cc",
     "language_packs_util_unittest.cc",
     "metrics_unittest.cc",
