@@ -105,8 +105,9 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
    * @param observer The instance that was observing the store.
    */
   unsubscribe(observer: StoreObserver<StateType>) {
-    const index = this.observers_.indexOf(observer);
-    this.observers_.splice(index, 1);
+    // Create new copy of `observers_` to ensure elements are not removed
+    // from the array in the middle of the loop in `notifyObservers_()`.
+    this.observers_ = this.observers_.filter(o => o !== observer);
   }
 
   /**
