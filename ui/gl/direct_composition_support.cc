@@ -13,13 +13,10 @@
 #include "base/synchronization/lock.h"
 #include "base/win/windows_version.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_features.h"
-#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gpu_switching_manager.h"
 
 namespace gl {
 namespace {
@@ -190,8 +187,7 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {
     DLOG(ERROR) << "Failed to retrieve D3D11 device";
     return;
@@ -515,29 +511,6 @@ void InitializeDirectComposition(
   g_d3d11_device = d3d11_device.Detach();
 }
 
-void InitializeDirectCompositionANGLE(GLDisplayEGL* display) {
-  // Direct composition can only be used with ANGLE.
-  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) {
-    return;
-  }
-
-  // EGL_KHR_no_config_context surface compatibility is required to be able to
-  // MakeCurrent with the default pbuffer surface.
-  if (!display->ext->b_EGL_KHR_no_config_context) {
-    DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
-    return;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to retrieve D3D11 device";
-    return;
-  }
-
-  InitializeDirectComposition(std::move(d3d11_device));
-}
-
 void ShutdownDirectComposition() {
   if (g_dcomp_device) {
     g_dcomp_device->Release();
@@ -717,8 +690,7 @@ gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo() {
 
 bool DXGISwapChainTearingSupported() {
   static const bool supported = [] {
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
     if (!d3d11_device) {
       DLOG(ERROR) << "Not using swap chain tearing because failed to retrieve "
                      "D3D11 device from ANGLE";

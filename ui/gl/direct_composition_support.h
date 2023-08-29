@@ -19,15 +19,9 @@
 
 namespace gl {
 
-class GLDisplayEGL;
-
 // Initialize direct composition with the given d3d11 device.
 GL_EXPORT void InitializeDirectComposition(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
-
-// Initialize direct composition with the given ANGLE egl display. It calls
-// InitializeDirectComposition() with ANGLE's d3d11 device internally.
-GL_EXPORT void InitializeDirectCompositionANGLE(GLDisplayEGL* display);
 
 GL_EXPORT void ShutdownDirectComposition();
 
