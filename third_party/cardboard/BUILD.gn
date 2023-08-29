@@ -131,6 +131,7 @@ static_library("cardboard") {
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
     "src_overrides/sdk/cardboard.cc",
+    "src_overrides/sdk/jni_utils/android/jni_registration.h",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
     "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
   ]

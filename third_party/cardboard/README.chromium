@@ -15,6 +15,7 @@ Local Modifications:
 * Created local top-level BUILD.gn based on src/sdk/build.gradle
 * Created local proguard-rules.pro to create more scoped proto-specific rules
 * Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
+* Created local native jni registration due to splits.
 * Created local override for CardboardQrCode_getSavedDeviceParams function in cardboard.cc to prevent undefined behavior.
 * Created local fork of GL ES2 renderer to override GLES2 headers with chromium bindings.
   No other code changes except marked by CARDBOARD_USE_CUSTOM_GL_BINDINGS ifdefs.

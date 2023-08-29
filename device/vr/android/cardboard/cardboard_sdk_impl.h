@@ -21,6 +21,9 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardSdkImpl : public CardboardSdk {
 
   CardboardSdkImpl(const CardboardSdkImpl&) = delete;
   CardboardSdkImpl& operator=(const CardboardSdkImpl&) = delete;
+
+ private:
+  bool initialized_ = false;
 };
 
 }  // namespace device
