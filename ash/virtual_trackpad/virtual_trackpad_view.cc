@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -261,6 +262,11 @@ VirtualTrackpadView::~VirtualTrackpadView() = default;
 
 // static
 void VirtualTrackpadView::Toggle() {
+  // If we have a real trackpad, we should use that instead.
+  if (!ui::DeviceDataManager::GetInstance()->GetTouchpadDevices().empty()) {
+    return;
+  }
+
   if (g_fake_trackpad_widget) {
     g_fake_trackpad_widget->Close();
     g_fake_trackpad_widget = nullptr;
