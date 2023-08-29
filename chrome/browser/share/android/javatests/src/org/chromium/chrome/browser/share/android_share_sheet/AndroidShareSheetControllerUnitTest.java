@@ -102,7 +102,6 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 /**
  * Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}.
@@ -110,7 +109,7 @@ import org.chromium.url.ShadowGURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(
         {ChromeFeatureList.WEBNOTES_STYLIZE, ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
-@Config(shadows = {ShadowShareImageFileUtils.class, ShadowGURL.class, ShadowPostTask.class})
+@Config(shadows = {ShadowShareImageFileUtils.class, ShadowPostTask.class})
 public class AndroidShareSheetControllerUnitTest {
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";

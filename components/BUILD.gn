@@ -1153,5 +1153,6 @@ if (is_android) {
       "//components/webapk/android/libs/client:junit",
       "//components/webapps/browser/android:junit",
     ]
+    shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
   }
 }

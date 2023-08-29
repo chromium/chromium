@@ -32,7 +32,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -40,7 +39,7 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
  * Unit tests for CachedImageFetcher.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowPostTask.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
 public class CachedImageFetcherTest {
     private static final String UMA_CLIENT_NAME = "TestUmaClient";
     private static final String URL = JUnitTestGURLs.RED_1;

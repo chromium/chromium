@@ -53,13 +53,12 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 /**
  * Tests for SearchEngineLogoUtils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
+@Config(manifest = Config.NONE)
 public class SearchEngineLogoUtilsUnitTest {
     private static final String LOGO_URL = JUnitTestGURLs.URL_1;
     private static final String EVENTS_HISTOGRAM = "AndroidSearchEngineLogo.Events";

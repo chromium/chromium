@@ -365,7 +365,6 @@ robolectric_library("junit") {
     "//ui/android:ui_recycler_view_java",
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
   resources_package = "org.chromium.chrome.browser.feed.test"

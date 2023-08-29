@@ -49,7 +49,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -58,8 +57,7 @@ import java.util.NoSuchElementException;
  * Robolectric tests running {@link OptionalNewTabButtonController} in a {@link
  * ChromeTabbedActivity}.
  */
-@Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class,
-                ShadowGURL.class})
+@Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @CommandLineFlags.

@@ -22,13 +22,12 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersMetricsLogger
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 
 /** Unit tests for HistoryClustersMetricsLogger. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
+@Config(manifest = Config.NONE)
 public class HistoryClustersMetricsLoggerTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();

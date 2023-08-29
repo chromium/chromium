@@ -108,8 +108,7 @@ public class SearchEngineLogoUtils {
             return logoUrlWithPath;
         }
 
-        // The extra "/" would be added by GURL anyway and is required for ShadowGURL to work
-        // correctly in unit tests.
+        // The extra "/" would be added by GURL anyway.
         return UrlUtilities.stripPath(logoUrlWithPath) + "/";
     }
 

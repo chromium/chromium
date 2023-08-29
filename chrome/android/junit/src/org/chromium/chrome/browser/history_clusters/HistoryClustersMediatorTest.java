@@ -87,7 +87,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -99,10 +98,8 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class, ShadowGURL.class})
-@SuppressWarnings("DoNotMock") // Mocks GURL
+@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class})
 public class HistoryClustersMediatorTest {
-    private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
     private static final String INCOGNITO_EXTRA = "history_clusters.incognito";
     private static final String NEW_TAB_EXTRA = "history_clusters.new_tab";
     private static final String TAB_GROUP_EXTRA = "history_clusters.tab_group";
@@ -120,19 +117,9 @@ public class HistoryClustersMediatorTest {
     @Mock
     private LargeIconBridge mLargeIconBridge;
     @Mock
-    private GURL mGurl1;
-    @Mock
-    private GURL mGurl2;
-    @Mock
-    private GURL mGurl3;
-    @Mock
-    private GURL mGurl4;
-    @Mock
     private Tab mTab;
     @Mock
     private Tab mTab2;
-    @Mock
-    private GURL mMockGurl;
     @Mock
     private HistoryClustersMediator.Clock mClock;
     @Mock
@@ -154,6 +141,11 @@ public class HistoryClustersMediatorTest {
     @Mock
     private Callback<String> mAnnounceCallback;
 
+    private GURL mItemGurl = new GURL("https://www.wombats.com/");
+    private GURL mGurl1 = new GURL("http://spec1.com");
+    private GURL mGurl2 = new GURL("http://spec2.com");
+    private GURL mGurl3 = new GURL("http://spec3.com");
+    private GURL mGurl4 = new GURL("http://spec4.com");
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
     private ClusterVisit mVisit3;
@@ -186,7 +178,6 @@ public class HistoryClustersMediatorTest {
         ContextUtils.initApplicationContextForTests(mContext);
         doReturn(mAccessibilityManager).when(mContext).getSystemService(ACCESSIBILITY_SERVICE);
         doReturn(mResources).when(mContext).getResources();
-        doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
         doReturn(mLayoutManager).when(mRecyclerView).getLayoutManager();
         mConfiguration.keyboard = Configuration.KEYBOARD_NOKEYS;
         doReturn(mConfiguration).when(mResources).getConfiguration();
@@ -268,10 +259,6 @@ public class HistoryClustersMediatorTest {
 
         mShouldShowPrivacyDisclaimerSupplier.set(true);
         mShouldShowClearBrowsingDataSupplier.set(true);
-        doReturn("http://spec1.com").when(mGurl1).getSpec();
-        doReturn("http://spec2.com").when(mGurl2).getSpec();
-        doReturn("http://spec3.com").when(mGurl3).getSpec();
-        doReturn("http://spec3.com").when(mGurl4).getSpec();
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
@@ -550,15 +537,15 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testNavigate() {
-        mMediator.navigateToUrlInCurrentTab(mMockGurl, false);
+        mMediator.navigateToUrlInCurrentTab(mItemGurl, false);
 
-        verify(mTab).loadUrl(argThat(hasSameUrl(ITEM_URL_SPEC)));
+        verify(mTab).loadUrl(argThat(hasSameUrl(mItemGurl.getSpec())));
     }
 
     @Test
     public void testNavigateSeparateActivity() {
         mIsSeparateActivity = true;
-        mMediator.navigateToUrlInCurrentTab(mMockGurl, false);
+        mMediator.navigateToUrlInCurrentTab(mItemGurl, false);
         verify(mContext).startActivity(mIntent);
     }
 

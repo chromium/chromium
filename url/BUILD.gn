@@ -331,16 +331,6 @@ if (is_android && !is_cronet_build) {
     deps = [ ":gurl_java" ]
   }
 
-  # Unlike gurl_junit_test_support targets depending on gurl_junit_shadows must
-  # bypass platform checks.
-  robolectric_library("gurl_junit_shadows") {
-    sources = [ "android/test/java/src/org/chromium/url/ShadowGURL.java" ]
-    deps = [
-      ":gurl_java",
-      ":gurl_junit_test_support",
-    ]
-  }
-
   android_library("url_java_unit_tests") {
     testonly = true
     sources = [
@@ -376,19 +366,6 @@ if (is_android && !is_cronet_build) {
       "android/javatests/src/org/chromium/url/OriginJavaTestHelper.java",
     ]
   }
-
-  robolectric_library("gurl_junit_tests") {
-    sources = [ "android/junit/src/org/chromium/url/ShadowGURLTest.java" ]
-    deps = [
-      ":gurl_java",
-      ":gurl_junit_shadows",
-      ":gurl_junit_test_support",
-      "//base:base_java_test_support",
-      "//base:base_junit_test_support",
-      "//base/test:test_support_java",
-      "//third_party/junit",
-    ]
-  }
 }
 
 # Use this in robolectric_binary() targets if you just need GURL and //base
@@ -400,6 +377,7 @@ if (!is_cronet_build && target_os == "android") {
     sources = [ "android/robolectric_test_main.cc" ]
     deps = [
       "//base",
+      "//url",
       "//url:gurl_android",
     ]
 

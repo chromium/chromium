@@ -38,14 +38,12 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUm
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 /**
  * Unit tests for {@link PartnerBrowserCustomizations}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class, ShadowGURL.class,
-                ShadowCustomizationProviderDelegate.class})
+@Config(shadows = {ShadowPostTask.class, ShadowCustomizationProviderDelegate.class})
 @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
     @Rule

@@ -58,13 +58,12 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 
 /** Tests for {@link MostVisitedTilesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
+@Config(manifest = Config.NONE)
 public class MostVisitedMediatorUnitTest {
     @Mock
     Resources mResources;

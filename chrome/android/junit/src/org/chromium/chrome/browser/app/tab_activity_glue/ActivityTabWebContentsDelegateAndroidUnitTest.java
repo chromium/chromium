@@ -38,16 +38,14 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.shadows.ShadowColorUtils;
 import org.chromium.url.GURL;
-import org.chromium.url.ShadowGURL;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class,
-                ShadowProfile.class, ShadowGURL.class})
+                ShadowProfile.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)
-@SuppressWarnings("DoNotMock") // Mocking GURL
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Implements(WebContentsDarkModeController.class)
     static class ShadowWebContentsDarkModeController {
@@ -83,10 +81,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     WebContents mWebContents;
     @Mock
     Tab mTab;
-    @Mock
-    GURL mUrl1;
-    @Mock
-    GURL mUrl2;
+
+    GURL mUrl1 = new GURL("https://url1.com");
+    GURL mUrl2 = new GURL("https://url2.com");
 
     private ActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
 

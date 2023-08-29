@@ -46,13 +46,12 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 /**
  * Tests for {@link BaseSuggestionViewProcessor}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowLog.class})
+@Config(manifest = Config.NONE, shadows = {ShadowLog.class})
 public class BaseSuggestionProcessorUnitTest {
     private class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
         private final Context mContext;

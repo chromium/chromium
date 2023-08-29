@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -31,7 +30,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.util.List;
 
@@ -39,7 +37,6 @@ import java.util.List;
  * Tests UsbNotificationManager behaviour and its delegate.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowGURL.class)
 public class UsbNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);

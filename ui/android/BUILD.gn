@@ -597,7 +597,6 @@ robolectric_binary("ui_junit_tests") {
     "//ui/android:ui_android_features_java",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
   android_manifest = "junit/AndroidManifest.xml"

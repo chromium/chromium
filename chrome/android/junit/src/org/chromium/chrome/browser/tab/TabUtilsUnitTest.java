@@ -40,13 +40,12 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 /**
  * Unit tests for {@link TabUtils}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {TabUtilsUnitTest.ShadowProfile.class, ShadowGURL.class})
+@Config(manifest = Config.NONE, shadows = {TabUtilsUnitTest.ShadowProfile.class})
 public class TabUtilsUnitTest {
     /**
      * A fake {@link Profile} used to reduce dependency.

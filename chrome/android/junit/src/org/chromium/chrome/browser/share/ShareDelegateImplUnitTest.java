@@ -60,7 +60,6 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -193,7 +192,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_link() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
                                      .setBypassFixingDomDistillerUrl(true)
@@ -213,7 +211,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_linkWithText() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
                                      .setBypassFixingDomDistillerUrl(true)
@@ -238,7 +235,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_Image() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", "")
                                      .setBypassFixingDomDistillerUrl(true)
@@ -265,7 +261,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_imageWithLink() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
                                      .setBypassFixingDomDistillerUrl(true)
@@ -280,7 +275,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_files() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", JUnitTestGURLs.EXAMPLE_URL)
                                      .setBypassFixingDomDistillerUrl(true)
@@ -294,7 +288,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_text() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", "")
                                      .setBypassFixingDomDistillerUrl(true)
@@ -308,7 +301,6 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowGURL.class)
     public void testGetShareContentType_unknown() {
         ShareParams params = new ShareParams.Builder(mWindowAndroid, "", "")
                                      .setBypassFixingDomDistillerUrl(true)

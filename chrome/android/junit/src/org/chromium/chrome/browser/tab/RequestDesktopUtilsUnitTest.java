@@ -87,7 +87,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.url.ShadowGURL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -98,9 +97,8 @@ import java.util.Map.Entry;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowProfile.class,
-                ShadowUmaSessionStats.class, ShadowDisplayAndroid.class,
-                ShadowDisplayAndroidManager.class})
+        shadows = {ShadowSysUtils.class, ShadowProfile.class, ShadowUmaSessionStats.class,
+                ShadowDisplayAndroid.class, ShadowDisplayAndroidManager.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
