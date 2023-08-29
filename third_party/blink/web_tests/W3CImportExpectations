@@ -333,9 +333,6 @@ external/wpt/html/semantics/forms/the-textarea-element/textarea-select-event-man
 external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-novalue-manual.html [ Skip ]
 external/wpt/html/webappapis/scripting/event-loops/task_microtask_ordering-manual.html [ Skip ]
 
-# Skip all bidi tests for now: crbug.com/1281421
-external/wpt/webdriver/tests/bidi [ Skip ]
-
 # WebVr was never supported on Chrome more than as an experimental feature,
 # and even that level of support is now removed. WebVr was replaced with WebXr.
 external/wpt/webvr [ Skip ]
