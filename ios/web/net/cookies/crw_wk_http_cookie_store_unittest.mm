@@ -190,7 +190,6 @@ TEST_F(CRWWKHTTPCookieStoreTest, ChangeCookieStore) {
   EXPECT_OCMOCK_VERIFY(mock_http_cookie_store_);
 
   // Change the internal cookie store.
-  [mock_http_cookie_store_ stopMocking];
   wk_website_data_store_ = CreateDataStore();
   mock_http_cookie_store_ =
       OCMPartialMock(wk_website_data_store_.httpCookieStore);
@@ -216,7 +215,6 @@ TEST_F(CRWWKHTTPCookieStoreTest, ChangeCookieStore) {
 // Tests that if the internal cookie store is nil, getAllCookie will still run
 // its callback.
 TEST_F(CRWWKHTTPCookieStoreTest, NilCookieStore) {
-  [mock_http_cookie_store_ stopMocking];
   crw_cookie_store_.HTTPCookieStore = nil;
   // GetCookies should return empty array when there is no cookie store.
   NSArray<NSHTTPCookie*>* result = GetCookies();
