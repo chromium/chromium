@@ -200,6 +200,9 @@ fyi_reclient_test_builder(
 
 fyi_reclient_test_builder(
     name = "Linux Builder reclient test (casng)",
+    # Trigger manually when testing is needed.
+    schedule = "triggered",
+    triggered_by = [],
     builder_spec = builder_config.copy_from(
         "ci/Linux Builder",
         lambda spec: structs.evolve(
