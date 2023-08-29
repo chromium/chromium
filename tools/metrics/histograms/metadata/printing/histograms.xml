@@ -161,17 +161,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.MigratedMakeAndModel" enum="BooleanMigrated"
-    expires_after="2023-08-20">
-  <owner>luum@chromium.org</owner>
-  <owner>cros-printing-dev@chromium.org</owner>
-  <summary>
-    Records when a synced printer's outdated separate make and model strings
-    have been migrated to the new merged form. Recorded during initial sync
-    across PrintersSyncBridge.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.NearbyNetworkAutomaticPrintersCount"
     units="printers" expires_after="2024-02-11">
   <owner>bmgordon@chromium.org</owner>

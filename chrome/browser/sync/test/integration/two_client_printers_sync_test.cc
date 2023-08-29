@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
@@ -237,7 +236,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimpleMerge) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
   ASSERT_TRUE(SetupClients());
-  base::HistogramTester histograms;
   const char kMake[] = "make";
   const char kModel[] = "model";
 
@@ -264,8 +262,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
   EXPECT_THAT(make_and_model, Not(IsEmpty()));
   EXPECT_THAT(make_and_model, StartsWith(kMake));
   EXPECT_THAT(make_and_model, EndsWith(kModel));
-  histograms.ExpectBucketCount("Printing.CUPS.MigratedMakeAndModel",
-                               1 /* kMigrated */, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,

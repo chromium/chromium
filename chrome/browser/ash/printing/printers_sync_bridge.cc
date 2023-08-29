@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/printing/specifics_translation.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -48,13 +47,11 @@ std::unique_ptr<EntityData> CopyToEntityData(
 // manufacturer and model strings.
 bool MigrateMakeAndModel(sync_pb::PrinterSpecifics* specifics) {
   if (specifics->has_make_and_model()) {
-    base::UmaHistogramBoolean("Printing.CUPS.MigratedMakeAndModel", false);
     return false;
   }
 
   specifics->set_make_and_model(
       MakeAndModel(specifics->manufacturer(), specifics->model()));
-  base::UmaHistogramBoolean("Printing.CUPS.MigratedMakeAndModel", true);
   return true;
 }
 
@@ -223,12 +220,10 @@ absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     for (const auto& entry : all_data_) {
       const std::string& local_entity_id = entry.first;
 
-      // TODO(crbug.com/737809): Remove when all data is expected to have been
-      // migrated.
+      // Migrate old schema to new combined one (crbug.com/737809).
       bool migrated = MigrateMakeAndModel(entry.second.get());
 
-      // TODO(crbug.com/987869): Remove when all data is expected to have been
-      // resolved.
+      // Clean up invalid ppd references (crbug.com/987869).
       bool resolved = ResolveInvalidPpdReference(entry.second.get());
 
       if (migrated || resolved ||
