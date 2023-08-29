@@ -300,6 +300,21 @@ public class CronetTestRule implements TestRule {
      * Creates and holds pointer to CronetEngine.
      */
     public static class CronetTestFramework implements AutoCloseable {
+        // This is the Context that Cronet will use. The specific Context instance can never change
+        // because that would break ContextUtils.initApplicationContext(). We work around this by
+        // using a static MutableContextWrapper whose identity is constant, but the wrapped
+        // Context isn't.
+        @SuppressWarnings("StaticFieldLeak")
+        private static final MutableContextWrapper sContextWrapper =
+                new MutableContextWrapper(null) {
+                    @Override
+                    public Context getApplicationContext() {
+                        // Ensure the code under test (in particular, the CronetEngineBuilderImpl
+                        // constructor) cannot use this method to "escape" context interception.
+                        return this;
+                    }
+                };
+
         private final CronetImplementation mImplementation;
         private final ExperimentalCronetEngine.Builder mBuilder;
         private final MutableContextWrapper mContextWrapper;
@@ -311,13 +326,15 @@ public class CronetTestRule implements TestRule {
         private CronetTestFramework(CronetImplementation implementation) {
             this.mContextWrapper =
                     new MutableContextWrapper(ApplicationProvider.getApplicationContext());
-            this.mBuilder = implementation.createBuilder(mContextWrapper)
-                                    .setUserAgent(UserAgent.from(mContextWrapper))
+            assert sContextWrapper.getBaseContext() == null;
+            sContextWrapper.setBaseContext(mContextWrapper);
+            this.mBuilder = implementation.createBuilder(sContextWrapper)
+                                    .setUserAgent(UserAgent.from(sContextWrapper))
                                     .enableQuic(true);
             this.mImplementation = implementation;
 
             System.loadLibrary("cronet_tests");
-            ContextUtils.initApplicationContext(getContext().getApplicationContext());
+            ContextUtils.initApplicationContext(sContextWrapper);
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             prepareTestStorage(getContext());
             mOldVmPolicy = StrictMode.getVmPolicy();
@@ -358,7 +375,7 @@ public class CronetTestRule implements TestRule {
          */
         public Context getContext() {
             checkNotClosed();
-            return mContextWrapper;
+            return sContextWrapper;
         }
 
         public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {
@@ -433,6 +450,8 @@ public class CronetTestRule implements TestRule {
                 return;
             }
             shutdownEngine();
+            assert sContextWrapper.getBaseContext() == mContextWrapper;
+            sContextWrapper.setBaseContext(null);
             mClosed = true;
 
             try {
