@@ -13,6 +13,30 @@ typedef NS_ENUM(NSInteger, FeedType) {
   FeedTypeFollowing
 };
 
+// Enum representing the reasons why the feed would be started.
+typedef NS_ENUM(NSUInteger, FeedStartReason) {
+  FeedStartReasonLaunch = 0,
+  FeedStartReasonAccountSwitch,
+  FeedStartReasonUserRequested,
+  FeedStartReasonOther,
+};
+
+// Enum representing the display strategy for reloads, indicating whether the
+// content is served from the cache or the server.
+typedef NS_ENUM(NSUInteger, FeedDisplayStrategy) {
+  FeedDisplayStrategyServer = 0,
+  FeedDisplayStrategyCache,
+  FeedDisplayStrategyOther,
+};
+
+// Enum representing the different types of feed updates.
+typedef NS_ENUM(NSInteger, FeedUpdateType) {
+  FeedUpdateTypeDefault = 0,
+  FeedUpdateTypeItemReloaded,
+  FeedUpdateTypeBackgroundFetch,
+  FeedUpdateTypeResumeFromBackground,
+};
+
 // The types of sorting for the Following feed.
 typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
   // Does not provide a sort type. Used for non-Following feeds.
