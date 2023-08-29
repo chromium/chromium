@@ -1159,6 +1159,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
   <suffix name="ARCVM" label="A client created by ARCVM."/>
+  <suffix name="BOREALIS" label="A client created by BOREALIS."/>
   <suffix name="Chrome" label="A client created by Chrome."/>
   <suffix name="CrOSVM" label="A client created by ChromeOS VM."/>
   <suffix name="InvalidType" label="Invalid client."/>
@@ -1243,16 +1244,19 @@ chromium-metrics-reviews@google.com.
   <suffix name="VoiceCommunication" label="WebRTC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARCVM"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.BOREALIS"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARCVM"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.BOREALIS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.Chrome"/>
   <affected-histogram name="Cras.StreamRuntime.Input.CrOSVM"/>
   <affected-histogram name="Cras.StreamRuntime.Input.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Output.ARC"/>
   <affected-histogram name="Cras.StreamRuntime.Output.ARCVM"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.BOREALIS"/>
   <affected-histogram name="Cras.StreamRuntime.Output.Chrome"/>
   <affected-histogram name="Cras.StreamRuntime.Output.CrOSVM"/>
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
