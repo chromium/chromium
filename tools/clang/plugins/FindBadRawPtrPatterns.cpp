@@ -47,27 +47,7 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
   }
 
   void Register(MatchFinder& match_finder) {
-    // Matches anything contains |raw_ptr<T>| / |raw_ref<T>|.
-    auto src_type =
-        type(isCastingUnsafe(casting_unsafe_predicate_)).bind("srcType");
-    auto dst_type =
-        type(isCastingUnsafe(casting_unsafe_predicate_)).bind("dstType");
-    // Matches |static_cast| on pointers, all |bit_cast|
-    // and all |reinterpret_cast|.
-    auto cast_kind = castExpr(anyOf(
-        hasCastKind(CK_BitCast), hasCastKind(CK_LValueBitCast),
-        hasCastKind(CK_LValueToRValueBitCast),
-        hasCastKind(CK_PointerToIntegral), hasCastKind(CK_IntegralToPointer)));
-    // Implicit/explicit casting from/to |raw_ptr<T>| matches.
-    // Both casting direction is unsafe.
-    //   https://godbolt.org/z/zqKMzcKfo
-    auto cast_matcher =
-        castExpr(
-            allOf(anyOf(hasSourceExpression(hasType(src_type)),
-                        implicitCastExpr(hasImplicitDestinationType(dst_type)),
-                        explicitCastExpr(hasDestinationType(dst_type))),
-                  cast_kind))
-            .bind("castExpr");
+    auto cast_matcher = BadRawPtrCastExpr(casting_unsafe_predicate_);
     match_finder.addMatcher(cast_matcher, this);
   }
 

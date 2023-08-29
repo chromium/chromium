@@ -303,6 +303,32 @@ RawPtrToStackAllocatedTypeLoc(
   return stack_allocated_rawptr_type_loc;
 }
 
+clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
+    const CastingUnsafePredicate casting_unsafe_predicate) {
+  // Matches anything contains |raw_ptr<T>| / |raw_ref<T>|.
+  auto src_type =
+      type(isCastingUnsafe(casting_unsafe_predicate)).bind("srcType");
+  auto dst_type =
+      type(isCastingUnsafe(casting_unsafe_predicate)).bind("dstType");
+  // Matches |static_cast| on pointers, all |bit_cast|
+  // and all |reinterpret_cast|.
+  auto cast_kind = castExpr(anyOf(hasCastKind(clang::CK_BitCast),
+                                  hasCastKind(clang::CK_LValueBitCast),
+                                  hasCastKind(clang::CK_LValueToRValueBitCast),
+                                  hasCastKind(clang::CK_PointerToIntegral),
+                                  hasCastKind(clang::CK_IntegralToPointer)));
+  // Implicit/explicit casting from/to |raw_ptr<T>| matches.
+  // Both casting direction is unsafe.
+  //   https://godbolt.org/z/zqKMzcKfo
+  auto cast_matcher =
+      castExpr(
+          allOf(anyOf(hasSourceExpression(hasType(src_type)),
+                      implicitCastExpr(hasImplicitDestinationType(dst_type)),
+                      explicitCastExpr(hasDestinationType(dst_type))),
+                cast_kind))
+          .bind("castExpr");
+}
+
 // If |field_decl| declares a field in an implicit template specialization, then
 // finds and returns the corresponding FieldDecl from the template definition.
 // Otherwise, just returns the original |field_decl| argument.
