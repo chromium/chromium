@@ -145,6 +145,25 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, ChildWidgetsReceiveThemeUpdates) {
       ->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
 }
 
+// Regression test for crbug.com/1476462. Ensures that browser theme change
+// notifications are always propagated correctly by the BrowserFrame with a
+// default frame type.
+IN_PROC_BROWSER_TEST_F(BrowserFrameTest,
+                       ReceivesBrowserThemeUpdatesForDefaultFrames) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserFrame* browser_frame =
+      static_cast<BrowserFrame*>(browser_view->GetWidget());
+
+  // Enure the BrowserFrame is set to the default (non-system) frame.
+  browser_frame->set_frame_type(views::Widget::FrameType::kDefault);
+
+  // Propagate a browser theme change notification to the root BrowserFrame
+  // widget and ensure ThemeChanged() is called.
+  MockThemeObserver widget_observer(browser_frame);
+  EXPECT_CALL(widget_observer, OnWidgetThemeChanged(testing::_)).Times(1);
+  browser_frame->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
+}
+
 // Runs browser color provider tests with ChromeRefresh2023 enabled and
 // disabled.
 class BrowserFrameColorProviderTest : public BrowserFrameTest,
