@@ -121,9 +121,11 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
 
 // AutofillPopupController implementation.
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
+    int index,
+    base::TimeTicks event_time) {
   if (controller_) {
-    controller_->AcceptSuggestion(OffsetIndexFor(index));
+    controller_->AcceptSuggestion(OffsetIndexFor(index), event_time);
   }
 }
 

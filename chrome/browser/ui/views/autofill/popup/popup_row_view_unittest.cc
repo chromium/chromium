@@ -265,8 +265,10 @@ TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   ASSERT_TRUE(row_view().GetControlView());
   row_view().SetSelectedCell(CellType::kContent);
 
-  StrictMock<base::MockCallback<base::RepeatingClosure>> content_callback;
-  StrictMock<base::MockCallback<base::RepeatingClosure>> control_callback;
+  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
+      content_callback;
+  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
+      control_callback;
 
   row_view().GetContentView().SetOnAcceptedCallback(content_callback.Get());
   row_view().GetControlView()->SetOnAcceptedCallback(control_callback.Get());

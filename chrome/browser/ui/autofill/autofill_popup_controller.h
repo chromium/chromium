@@ -28,9 +28,10 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual void SelectSuggestion(absl::optional<size_t> index) = 0;
 
   // Accepts the suggestion at `index`. The suggestion will only be accepted if
-  // the popup has been shown for at least `show_threshold` to allow
-  // ruling out accidental popup interactions (crbug.com/1279268).
-  virtual void AcceptSuggestion(int index) = 0;
+  // the popup has been shown for at least `show_threshold` compared to
+  // `event_time` to allow ruling out accidental popup interactions
+  // (crbug.com/1279268).
+  virtual void AcceptSuggestion(int index, base::TimeTicks event_time) = 0;
 
   // Accepts the suggestion at `index` without requiring a minimum show
   // threshold. This should only be used in cases in which user intent is

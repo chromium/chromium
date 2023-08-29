@@ -176,7 +176,8 @@ TEST_F(PopupCellViewTest, MouseEvents) {
 
   StrictMock<base::MockCallback<base::RepeatingClosure>> enter_callback;
   StrictMock<base::MockCallback<base::RepeatingClosure>> exit_callback;
-  StrictMock<base::MockCallback<base::RepeatingClosure>> accept_callback;
+  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
+      accept_callback;
 
   generator().MoveMouseTo(kOutOfBounds);
   ASSERT_FALSE(view().IsMouseHovered());
@@ -212,7 +213,8 @@ TEST_F(PopupCellViewTest, GestureEvents) {
 
   StrictMock<base::MockCallback<base::RepeatingClosure>> enter_callback;
   StrictMock<base::MockCallback<base::RepeatingClosure>> exit_callback;
-  StrictMock<base::MockCallback<base::RepeatingClosure>> accept_callback;
+  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
+      accept_callback;
 
   view().SetOnEnteredCallback(enter_callback.Get());
   view().SetOnExitedCallback(exit_callback.Get());
@@ -232,7 +234,8 @@ TEST_F(PopupCellViewTest,
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));
 
-  StrictMock<base::MockCallback<base::RepeatingClosure>> accept_callback;
+  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
+      accept_callback;
 
   view().SetOnAcceptedCallback(accept_callback.Get());
   generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
@@ -256,7 +259,8 @@ TEST_F(PopupCellViewTest,
       cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
   ShowView(std::move(cell));
 
-  StrictMock<base::MockCallback<base::RepeatingClosure>> accept_callback;
+  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
+      accept_callback;
 
   view().SetOnAcceptedCallback(accept_callback.Get());
   generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());

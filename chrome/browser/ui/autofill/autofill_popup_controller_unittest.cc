@@ -612,7 +612,9 @@ TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
 
   // The following should not crash:
-  popup_controller().AcceptSuggestion(1);  // Out of bounds!
+  popup_controller()
+      .AcceptSuggestion(                             /*index=*/
+                        1, base::TimeTicks::Now());  // Out of bounds!
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
@@ -621,13 +623,13 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(0, base::TimeTicks::Now());
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(400));
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
@@ -651,9 +653,9 @@ TEST_F(AutofillPopupControllerUnitTest,
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
 
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
@@ -663,14 +665,14 @@ TEST_F(AutofillPopupControllerUnitTest,
   ShowSuggestions({PopupItemId::kAddressEntry});
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   // After waiting, suggestions are accepted again.
   task_environment()->FastForwardBy(base::Milliseconds(500));
-  popup_controller().AcceptSuggestion(0);
+  popup_controller().AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());
   histogram_tester.ExpectTotalCount(
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 3);
 }

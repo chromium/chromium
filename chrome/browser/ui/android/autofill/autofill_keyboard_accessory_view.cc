@@ -135,7 +135,7 @@ void AutofillKeyboardAccessoryView::SuggestionSelected(
     jint list_index) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillKeyboardAccessoryAcceptanceDelayThreshold)) {
-    controller_->AcceptSuggestion(list_index);
+    controller_->AcceptSuggestion(list_index, base::TimeTicks::Now());
   } else {
     controller_->AcceptSuggestionWithoutThreshold(list_index);
   }

@@ -90,7 +90,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   // AutofillPopupController:
   // Hidden: void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(int index, base::TimeTicks event_time) override;
   void AcceptSuggestionWithoutThreshold(int index) override;
   int GetLineCount() const override;
   const autofill::Suggestion& GetSuggestionAt(int row) const override;

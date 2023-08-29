@@ -189,7 +189,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  _controller->AcceptSuggestion([sender tag]);
+  _controller->AcceptSuggestion([sender tag], base::TimeTicks::Now());
 }
 
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup {

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,10 +84,11 @@ class PopupCellView : public views::View {
   void SetOnExitedCallback(base::RepeatingClosure callback);
   // Gets and sets the callback that is run when the cell is accepted (left
   // mouse click, tap, enter key).
-  const base::RepeatingClosure& GetOnAcceptedCallback() const {
+  using OnAcceptedCallback = base::RepeatingCallback<void(base::TimeTicks)>;
+  const PopupCellView::OnAcceptedCallback& GetOnAcceptedCallback() const {
     return on_accepted_callback_;
   }
-  void SetOnAcceptedCallback(base::RepeatingClosure callback);
+  void SetOnAcceptedCallback(OnAcceptedCallback callback);
   // Gets and sets the callbacks for when the cell is (un)selected.
   const base::RepeatingClosure& GetOnSelectedCallback() const {
     return on_selected_callback_;
@@ -135,6 +137,10 @@ class PopupCellView : public views::View {
   // affected by whether or not the item is overlaid by another popup.
   bool IsMouseInsideItemBounds() const { return IsMouseHovered(); }
 
+  // Computes the actual `TimeTicks` at which the event occurred (taking latency
+  // into account) and runs the OnAccepted callback.
+  void RunOnAcceptedForEvent(const ui::Event& event);
+
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
@@ -145,7 +151,7 @@ class PopupCellView : public views::View {
 
   base::RepeatingClosure on_entered_callback_;
   base::RepeatingClosure on_exited_callback_;
-  base::RepeatingClosure on_accepted_callback_;
+  OnAcceptedCallback on_accepted_callback_;
 
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
@@ -183,7 +189,7 @@ VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
                       AccessibilityDelegate)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnEnteredCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnExitedCallback)
-VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnAcceptedCallback)
+VIEW_BUILDER_PROPERTY(PopupCellView::OnAcceptedCallback, OnAcceptedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnSelectedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnUnselectedCallback)
 END_VIEW_BUILDER

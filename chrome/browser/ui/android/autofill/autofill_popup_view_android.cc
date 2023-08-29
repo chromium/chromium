@@ -182,7 +182,7 @@ void AutofillPopupViewAndroid::SuggestionSelected(
     return;
   }
 
-  controller_->AcceptSuggestion(list_index);
+  controller_->AcceptSuggestion(list_index, base::TimeTicks::Now());
 }
 
 void AutofillPopupViewAndroid::DeletionRequested(

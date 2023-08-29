@@ -224,7 +224,7 @@ bool PopupViewViews::HandleKeyPressEvent(
       // We do not want to handle Mod+TAB for other modifiers because this may
       // have other purposes (e.g., change the tab).
       if (!kHasNonShiftModifier) {
-        AcceptSelectedContentOrCreditCardCell();
+        AcceptSelectedContentOrCreditCardCell(base::TimeTicks::Now());
       }
       return false;
     default:
@@ -267,7 +267,8 @@ void PopupViewViews::SelectNextRow() {
   SetSelectedCell(CellIndex{new_row, kNewCellType});
 }
 
-bool PopupViewViews::AcceptSelectedContentOrCreditCardCell() {
+bool PopupViewViews::AcceptSelectedContentOrCreditCardCell(
+    base::TimeTicks event_time) {
   absl::optional<CellIndex> index = GetSelectedCell();
   if (!controller_ || !index) {
     return false;
@@ -284,7 +285,7 @@ bool PopupViewViews::AcceptSelectedContentOrCreditCardCell() {
     return false;
   }
 
-  controller_->AcceptSuggestion(index->first);
+  controller_->AcceptSuggestion(index->first, event_time);
   return true;
 }
 

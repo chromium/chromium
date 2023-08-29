@@ -236,11 +236,6 @@ BASE_FEATURE(kAutofillEnableDevtoolsIssues,
              "AutofillEnableDevtoolsIssues",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the autofill popup is hidden when the context menu is open.
-BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
-             "AutofillPopupDoesNotOverlapWithContextMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
 //   like MM/YY from placeholders and labels in mind.
@@ -485,6 +480,17 @@ BASE_FEATURE(kAutofillPassRendererFormsToPasswordManager,
 // are disabled.
 BASE_FEATURE(kAutofillPopupDisablePaintChecks,
              "kutofillPopupDisablePaintChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the autofill popup is hidden when the context menu is open.
+BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
+             "AutofillPopupDoesNotOverlapWithContextMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the threshold for accepting Autofill popup suggestions
+// should take into account latency information of the user event.
+BASE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold,
+             "AutofillPopupUseLatencyInformationForAcceptThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If the feature is enabled, FormTracker's probable-form-submission detection

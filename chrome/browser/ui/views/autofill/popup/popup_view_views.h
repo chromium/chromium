@@ -115,8 +115,9 @@ class PopupViewViews : public PopupBaseView,
 
   // Attempts to accept the selected cell. It will return false if there is no
   // selected cell or the cell does not trigger field filling or scanning a
-  // credit card.
-  bool AcceptSelectedContentOrCreditCardCell();
+  // credit card. `event_time` must be the time the user input event was
+  // triggered.
+  bool AcceptSelectedContentOrCreditCardCell(base::TimeTicks event_time);
 
   // Attempts to remove the selected cell. Only content cells are allowed to be
   // selected.

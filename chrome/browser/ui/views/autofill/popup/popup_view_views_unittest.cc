@@ -47,6 +47,7 @@ namespace autofill {
 
 namespace {
 
+using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -360,7 +361,7 @@ TEST_F(PopupViewViewsTest, Gestures) {
   ui::GestureEvent tap_event(/*x=*/0, /*y=*/0, /*flags=*/0,
                              ui::EventTimeForNow(),
                              ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
   GetPopupRowViewAt(0).GetContentView().OnGestureEvent(&tap_event);
 
   // Canceling gesture clears any selection.
@@ -511,7 +512,7 @@ class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
 // Tests that hitting enter on a suggestion autofills it.
 TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_RETURN);
 }
@@ -519,7 +520,7 @@ TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
 // Tests that hitting tab on a suggestion autofills it.
 TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB);
 }
@@ -528,7 +529,7 @@ TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
 // autofill a selected suggestion.
 TEST_F(PopupViewViewsTestKeyboard, NoFillOnTabPressedWithModifiers) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _)).Times(0);
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false,
                    /*non_shift_modifier_pressed=*/true);
@@ -663,7 +664,7 @@ TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
 TEST_P(PopupViewViewsTestWithAnyPopupItemId, MAYBE_ShowClickTest) {
   CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(), AcceptSuggestion(0))
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _))
       .Times(IsClickable(popup_item_id()));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
@@ -677,7 +678,7 @@ TEST_P(PopupViewViewsTestWithAnyPopupItemId, MAYBE_ShowClickTest) {
 TEST_P(PopupViewViewsTestWithClickablePopupItemId,
        AcceptSuggestionIfUnfocusedAtPaint) {
   CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(1);
+  EXPECT_CALL(controller(), AcceptSuggestion(0, _)).Times(1);
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();

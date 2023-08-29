@@ -332,12 +332,13 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   std::ignore = view_.Call(&AutofillPopupView::OnSuggestionsChanged);
 }
 
-void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+void AutofillPopupControllerImpl::AcceptSuggestion(int index,
+                                                   base::TimeTicks event_time) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  DCHECK(!time_view_shown_.is_null());
-  const base::TimeDelta time_elapsed =
-      base::TimeTicks::Now() - time_view_shown_;
+  CHECK(!time_view_shown_.is_null());
+  CHECK(!event_time.is_null());
+  const base::TimeDelta time_elapsed = event_time - time_view_shown_;
   if ((time_elapsed < kIgnoreEarlyClicksOnPopupDuration) &&
       !disable_threshold_for_testing_) {
     base::UmaHistogramCustomTimes(
