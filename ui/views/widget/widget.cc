@@ -1776,6 +1776,13 @@ void Widget::OnMouseEvent(ui::MouseEvent* event) {
       }
       return;
 
+    case ui::ET_MOUSE_ENTERED:
+      last_mouse_event_was_move_ = false;
+      if (root_view) {
+        root_view->OnMouseEntered(*event);
+      }
+      return;
+
     case ui::ET_MOUSE_EXITED:
       last_mouse_event_was_move_ = false;
       if (root_view)

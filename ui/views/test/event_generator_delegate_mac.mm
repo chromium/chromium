@@ -175,12 +175,11 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
       [responder scrollWheel:event];
       break;
     case NSEventTypeMouseEntered:
+      [responder mouseEntered:event];
+      break;
     case NSEventTypeMouseExited:
-      // With the assumptions in NSEventTypeMouseMoved, it doesn't make sense
-      // for the generator to handle entered/exited separately. It's the
-      // responsibility of views::internal::RootView to convert the moved events
-      // into entered and exited events for the individual views.
-      NOTREACHED_NORETURN();
+      [responder mouseExited:event];
+      break;
     case NSEventTypeSwipe:
       // NSEventTypeSwipe events can't be generated using public interfaces on
       // NSEvent, so this will need to be handled at a higher level.
@@ -208,6 +207,18 @@ NSEvent* CreateMouseEventInWindow(NSWindow* window,
   NSPoint point = ConvertRootPointToTarget(window, point_in_root);
   NSUInteger modifiers = 0;
   NSEventType type = EventTypeToNative(event_type, flags, &modifiers);
+  if (event_type == ui::ET_MOUSE_ENTERED || event_type == ui::ET_MOUSE_EXITED) {
+    return
+        [NSEvent enterExitEventWithType:type
+                               location:point
+                          modifierFlags:modifiers
+                              timestamp:ui::EventTimeStampToSeconds(time_stamp)
+                           windowNumber:window.windowNumber
+                                context:nil
+                            eventNumber:0
+                         trackingNumber:0
+                               userData:nil];
+  }
   return [NSEvent mouseEventWithType:type
                             location:point
                        modifierFlags:modifiers

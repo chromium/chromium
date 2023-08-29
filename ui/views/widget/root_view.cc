@@ -560,105 +560,11 @@ void RootView::OnMouseCaptureLost() {
 }
 
 void RootView::OnMouseMoved(const ui::MouseEvent& event) {
-  View* v = GetEventHandlerForPoint(event.location());
-  // Check for a disabled move handler. If the move handler became
-  // disabled while handling moves, it's wrong to suddenly send
-  // ET_MOUSE_EXITED and ET_MOUSE_ENTERED events, because the mouse
-  // hasn't actually exited yet.
-  if (mouse_move_handler_ && !mouse_move_handler_->GetEnabled() &&
-      v->Contains(mouse_move_handler_))
-    v = mouse_move_handler_;
+  HandleMouseEnteredOrMoved(event);
+}
 
-  if (v && v != this) {
-    if (v != mouse_move_handler_) {
-      if (mouse_move_handler_ != nullptr &&
-          (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
-           !mouse_move_handler_->Contains(v))) {
-        MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
-        exit.ConvertLocationToTarget(static_cast<View*>(this),
-                                     mouse_move_handler_.get());
-        ui::EventDispatchDetails dispatch_details =
-            DispatchEvent(mouse_move_handler_, &exit);
-        if (dispatch_details.dispatcher_destroyed)
-          return;
-        // The mouse_move_handler_ could have been destroyed in the context of
-        // the mouse exit event.
-        if (!dispatch_details.target_destroyed) {
-          // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
-          // cleared, perhaps by a nested event handler, so return and wait for
-          // the next mouse move event.
-          if (!mouse_move_handler_)
-            return;
-          dispatch_details = NotifyEnterExitOfDescendant(
-              event, ui::ET_MOUSE_EXITED, mouse_move_handler_, v);
-          if (dispatch_details.dispatcher_destroyed)
-            return;
-        }
-      }
-      View* old_handler = mouse_move_handler_;
-      mouse_move_handler_ = v;
-      // TODO(crbug.com/1295290): This is for debug purpose only.
-      // Remove it after resolving the issue.
-      DanglingMouseMoveHandlerOnViewDestroyingChecker
-          mouse_move_handler_dangling_checker(mouse_move_handler_);
-      if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
-          !mouse_move_handler_->Contains(old_handler)) {
-        MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
-        entered.ConvertLocationToTarget(static_cast<View*>(this),
-                                        mouse_move_handler_.get());
-        ui::EventDispatchDetails dispatch_details =
-            DispatchEvent(mouse_move_handler_, &entered);
-        if (dispatch_details.dispatcher_destroyed ||
-            dispatch_details.target_destroyed) {
-          return;
-        }
-        // View was removed by ET_MOUSE_ENTERED, or |mouse_move_handler_| was
-        // cleared, perhaps by a nested event handler, so return and wait for
-        // the next mouse move event.
-        if (!mouse_move_handler_)
-          return;
-        dispatch_details = NotifyEnterExitOfDescendant(
-            event, ui::ET_MOUSE_ENTERED, mouse_move_handler_, old_handler);
-        if (dispatch_details.dispatcher_destroyed ||
-            dispatch_details.target_destroyed) {
-          return;
-        }
-      }
-    }
-    ui::MouseEvent moved_event(event, static_cast<View*>(this),
-                               mouse_move_handler_.get());
-    mouse_move_handler_->OnMouseMoved(moved_event);
-    // TODO(tdanderson): It may be possible to avoid setting the cursor twice
-    //                   (once here and once from CompoundEventFilter) on a
-    //                   mousemove. See crbug.com/351469.
-    if (!(moved_event.flags() & ui::EF_IS_NON_CLIENT))
-      widget_->SetCursor(mouse_move_handler_->GetCursor(moved_event));
-  } else if (mouse_move_handler_ != nullptr) {
-    MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
-    ui::EventDispatchDetails dispatch_details =
-        DispatchEvent(mouse_move_handler_, &exited);
-    if (dispatch_details.dispatcher_destroyed)
-      return;
-    // The mouse_move_handler_ could have been destroyed in the context of the
-    // mouse exit event.
-    if (!dispatch_details.target_destroyed) {
-      // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
-      // cleared, perhaps by a nested event handler, so return and wait for
-      // the next mouse move event.
-      if (!mouse_move_handler_)
-        return;
-      dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
-                                                     mouse_move_handler_, v);
-      if (dispatch_details.dispatcher_destroyed)
-        return;
-    }
-    // On Aura the non-client area extends slightly outside the root view for
-    // some windows.  Let the non-client cursor handling code set the cursor
-    // as we do above.
-    if (!(event.flags() & ui::EF_IS_NON_CLIENT))
-      widget_->SetCursor(ui::Cursor());
-    mouse_move_handler_ = nullptr;
-  }
+void RootView::OnMouseEntered(const ui::MouseEvent& event) {
+  HandleMouseEnteredOrMoved(event);
 }
 
 void RootView::OnMouseExited(const ui::MouseEvent& event) {
@@ -827,6 +733,121 @@ void RootView::SetMouseLocationAndFlags(const ui::MouseEvent& event) {
   last_mouse_event_flags_ = event.flags();
   last_mouse_event_x_ = event.x();
   last_mouse_event_y_ = event.y();
+}
+
+void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
+  View* v = GetEventHandlerForPoint(event.location());
+  // Check for a disabled move handler. If the move handler became
+  // disabled while handling moves, it's wrong to suddenly send
+  // ET_MOUSE_EXITED and ET_MOUSE_ENTERED events, because the mouse
+  // hasn't actually exited yet.
+  if (mouse_move_handler_ && !mouse_move_handler_->GetEnabled() &&
+      v->Contains(mouse_move_handler_)) {
+    v = mouse_move_handler_;
+  }
+
+  if (v && v != this) {
+    if (v != mouse_move_handler_) {
+      if (mouse_move_handler_ != nullptr &&
+          (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
+           !mouse_move_handler_->Contains(v))) {
+        MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
+        exit.ConvertLocationToTarget(static_cast<View*>(this),
+                                     mouse_move_handler_.get());
+        ui::EventDispatchDetails dispatch_details =
+            DispatchEvent(mouse_move_handler_, &exit);
+        if (dispatch_details.dispatcher_destroyed) {
+          return;
+        }
+        // The mouse_move_handler_ could have been destroyed in the context of
+        // the mouse exit event.
+        if (!dispatch_details.target_destroyed) {
+          // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
+          // cleared, perhaps by a nested event handler, so return and wait for
+          // the next mouse move event.
+          if (!mouse_move_handler_) {
+            return;
+          }
+          dispatch_details = NotifyEnterExitOfDescendant(
+              event, ui::ET_MOUSE_EXITED, mouse_move_handler_, v);
+          if (dispatch_details.dispatcher_destroyed) {
+            return;
+          }
+        }
+      }
+      View* old_handler = mouse_move_handler_;
+      mouse_move_handler_ = v;
+      // TODO(crbug.com/1295290): This is for debug purpose only.
+      // Remove it after resolving the issue.
+      DanglingMouseMoveHandlerOnViewDestroyingChecker
+          mouse_move_handler_dangling_checker(mouse_move_handler_);
+      if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
+          !mouse_move_handler_->Contains(old_handler)) {
+        MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
+        entered.ConvertLocationToTarget(static_cast<View*>(this),
+                                        mouse_move_handler_.get());
+        ui::EventDispatchDetails dispatch_details =
+            DispatchEvent(mouse_move_handler_, &entered);
+        if (dispatch_details.dispatcher_destroyed ||
+            dispatch_details.target_destroyed) {
+          return;
+        }
+        // View was removed by ET_MOUSE_ENTERED, or |mouse_move_handler_| was
+        // cleared, perhaps by a nested event handler, so return and wait for
+        // the next mouse move event.
+        if (!mouse_move_handler_) {
+          return;
+        }
+        dispatch_details = NotifyEnterExitOfDescendant(
+            event, ui::ET_MOUSE_ENTERED, mouse_move_handler_, old_handler);
+        if (dispatch_details.dispatcher_destroyed ||
+            dispatch_details.target_destroyed) {
+          return;
+        }
+      }
+    }
+
+    if (event.type() == ui::ET_MOUSE_MOVED) {
+      ui::MouseEvent moved_event(event, static_cast<View*>(this),
+                                 mouse_move_handler_.get());
+      mouse_move_handler_->OnMouseMoved(moved_event);
+      // TODO(tdanderson): It may be possible to avoid setting the cursor twice
+      //                   (once here and once from CompoundEventFilter) on a
+      //                   mousemove. See crbug.com/351469.
+      if (!(moved_event.flags() & ui::EF_IS_NON_CLIENT)) {
+        widget_->SetCursor(mouse_move_handler_->GetCursor(moved_event));
+      }
+    }
+  } else if (mouse_move_handler_ != nullptr) {
+    MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
+    ui::EventDispatchDetails dispatch_details =
+        DispatchEvent(mouse_move_handler_, &exited);
+    if (dispatch_details.dispatcher_destroyed) {
+      return;
+    }
+    // The mouse_move_handler_ could have been destroyed in the context of the
+    // mouse exit event.
+    if (!dispatch_details.target_destroyed) {
+      // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
+      // cleared, perhaps by a nested event handler, so return and wait for
+      // the next mouse move event.
+      if (!mouse_move_handler_) {
+        return;
+      }
+      dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
+                                                     mouse_move_handler_, v);
+      if (dispatch_details.dispatcher_destroyed) {
+        return;
+      }
+    }
+    // On Aura the non-client area extends slightly outside the root view for
+    // some windows.  Let the non-client cursor handling code set the cursor
+    // as we do above.
+    if (!(event.flags() & ui::EF_IS_NON_CLIENT)) {
+      widget_->SetCursor(ui::Cursor());
+    }
+    mouse_move_handler_ = nullptr;
+  }
 }
 
 ui::EventDispatchDetails RootView::NotifyEnterExitOfDescendant(

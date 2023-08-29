@@ -121,6 +121,7 @@ class VIEWS_EXPORT RootView : public View,
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void SetMouseAndGestureHandler(View* new_handler) override;
@@ -167,6 +168,10 @@ class VIEWS_EXPORT RootView : public View,
   // Returns announce_view_, a hidden view used to make announcements to the
   // screen reader via an alert or live region update.
   AnnounceTextView* GetOrCreateAnnounceView();
+
+  // ET_MOUSE_ENTERED events require the same handling as ET_MOUSE_MOVED, except
+  // that for the former we don't send ET_MOUSE_MOVED to |mouse_move_handler_|.
+  void HandleMouseEnteredOrMoved(const ui::MouseEvent& event);
 
   // |view| is the view receiving |event|. This function sends the event to all
   // the Views up the hierarchy that has |notify_enter_exit_on_child_| flag

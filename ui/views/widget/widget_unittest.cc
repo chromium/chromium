@@ -5347,6 +5347,101 @@ TEST_F(WidgetTest, MouseWheelEvent) {
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSEWHEEL));
 }
 
+// Test that ui::ET_MOUSE_ENTERED is dispatched even when not followed by
+// ui::ET_MOUSE_MOVED.
+TEST_F(WidgetTest, MouseEnteredWithoutMoved) {
+  WidgetAutoclosePtr widget(CreateTopLevelFramelessPlatformWidget());
+  widget->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+  auto* root_view = static_cast<internal::RootView*>(widget->GetRootView());
+  auto* v1 = root_view->AddChildView(std::make_unique<EventCountView>());
+  v1->SetBounds(10, 10, 10, 10);
+  auto* v2 = root_view->AddChildView(std::make_unique<EventCountView>());
+  v2->SetBounds(20, 10, 10, 10);
+
+  widget->Show();
+
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+
+  // Enter |v1| and check that it received ui::ET_MOUSE_ENTERED.
+  auto enter_location = v1->GetBoundsInScreen().CenterPoint();
+  generator->set_current_screen_location(enter_location);
+  generator->SendMouseEnter();
+  EXPECT_EQ(v1, GetMouseMoveHandler(root_view));
+  EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_EXITED));
+
+  // Enter |v2| and check that |v1| received ui::ET_MOUSE_EXITED and |v2|
+  // received ui::ET_MOUSE_ENTERED.
+  enter_location = v2->GetBoundsInScreen().CenterPoint();
+  generator->set_current_screen_location(enter_location);
+  generator->SendMouseEnter();
+  EXPECT_EQ(v2, GetMouseMoveHandler(root_view));
+  EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(1, v2->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_EXITED));
+
+  // Enter |root_view| and check that |v2| received ui::ET_MOUSE_EXITED.
+  enter_location = gfx::Point(0, 0);
+  generator->set_current_screen_location(enter_location);
+  generator->SendMouseEnter();
+  EXPECT_EQ(nullptr, GetMouseMoveHandler(root_view));
+  EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_EXITED));
+  EXPECT_EQ(1, v2->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_MOVED));
+  EXPECT_EQ(1, v2->GetEventCount(ui::ET_MOUSE_EXITED));
+}
+
+// Test that ui::ET_MOUSE_MOVED after ui::ET_MOUSE_ENTERED doesn't cause an
+// extra ui::ET_MOUSE_ENTERED.
+TEST_F(WidgetTest, MouseMovedAfterEnteredDoesntCauseEntered) {
+  WidgetAutoclosePtr widget(CreateTopLevelFramelessPlatformWidget());
+  widget->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+  auto* root_view = widget->GetRootView();
+  auto* v = root_view->AddChildView(std::make_unique<EventCountView>());
+  v->SetBounds(10, 10, 10, 10);
+
+  widget->Show();
+
+  auto generator =
+      CreateEventGenerator(GetContext(), widget->GetNativeWindow());
+
+  // Enter |v|.
+  auto enter_location = v->GetBoundsInScreen().CenterPoint();
+  generator->set_current_screen_location(enter_location);
+  generator->SendMouseEnter();
+
+  // Send ui::ET_MOUSE_MOVED at the same location and check that it didn't
+  // generate ui::ET_MOUSE_ENTERED again.
+  generator->MoveMouseBy(0, 0);
+  EXPECT_EQ(1, v->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(1, v->GetEventCount(ui::ET_MOUSE_MOVED));
+
+  // Reset state by entering |root_view|.
+  generator->MoveMouseTo(0, 0);
+
+  // Enter |v| again.
+  generator->set_current_screen_location(enter_location);
+  generator->SendMouseEnter();
+
+  // Send ui::ET_MOUSE_MOVED at a slightly offset location and check that it
+  // didn't generate ui::ET_MOUSE_ENTERED again.
+  generator->MoveMouseBy(1, 1);
+  EXPECT_EQ(2, v->GetEventCount(ui::ET_MOUSE_ENTERED));
+  EXPECT_EQ(2, v->GetEventCount(ui::ET_MOUSE_MOVED));
+}
+
 class CloseFromClosingObserver : public WidgetObserver {
  public:
   ~CloseFromClosingObserver() override {
