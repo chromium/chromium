@@ -78,6 +78,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/api/oauth2.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -337,6 +338,14 @@ void SimulateUrlRedirect(const std::string& url_prefix,
                          content::WebContents* auth_web_contents) {
   ASSERT_EQ(nullptr, content::EvalJs(auth_web_contents,
                                      "apply_consent(\"" + url_prefix + "\");"));
+}
+
+// Similar to SimulateUrlRedirect, but uses provided url instead of the pattern
+void SimulateCustomUrlRedirect(const std::string& redirect_url,
+                               content::WebContents* auth_web_contents) {
+  ASSERT_EQ(nullptr,
+            content::EvalJs(auth_web_contents, "window.location.replace(\"" +
+                                                   redirect_url + "\");"));
 }
 
 }  // namespace
@@ -3534,7 +3543,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, NonInteractiveSuccess) {
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(),
       "[{\"interactive\": false,"
@@ -3559,7 +3568,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   std::string args = base::StringPrintf(
       R"([{
         "interactive": false,
@@ -3581,7 +3590,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(),
       "[{\"interactive\": true,"
@@ -3604,7 +3613,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   std::string args =
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
   absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
@@ -3688,7 +3697,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("abcdefghij");
-  function->InitFinalRedirectURLPrefixForTest(extension_id);
+  function->InitFinalRedirectURLDomainsForTest(extension_id);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   const GURL final_url("https://" + extension_id + ".chromiumapp.org/");
@@ -3703,7 +3712,38 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   base::Value output;
   WaitForOneResult(function.get(), &output);
   EXPECT_FALSE(function->GetWebAuthFlowForTesting());
-  EXPECT_TRUE(output.GetString().find(final_url.spec()) != std::string::npos);
+  EXPECT_EQ(GURL(output.GetString()).Resolve("/"), final_url);
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
+                       PageNavigateFromInitURLToCustomFinalURL) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+
+  const GURL auth_url(https_server->GetURL("/consent_page.html"));
+  const GURL final_url("example://example.com/");
+
+  const std::string args =
+      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
+
+  browser()->profile()->GetPrefs()->SetDict(
+      extensions::pref_names::kOAuthRedirectUrls,
+      base::Value::Dict().Set(function->extension()->id(),
+                              base::Value::List().Append(final_url.spec())));
+  RunFunctionAndWaitForNavigation(function.get(), auth_url, args);
+
+  SimulateCustomUrlRedirect(
+      final_url.spec() + "#some_information",
+      function->GetWebAuthFlowForTesting()->web_contents());
+
+  base::Value output;
+  WaitForOneResult(function.get(), &output);
+  EXPECT_FALSE(function->GetWebAuthFlowForTesting());
+  EXPECT_EQ(GURL(output.GetString()).Resolve("/"), final_url);
   histogram_tester()->ExpectUniqueSample(
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
@@ -3720,8 +3760,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("final_url");
-  function1->InitFinalRedirectURLPrefixForTest(extension_id);
-  function2->InitFinalRedirectURLPrefixForTest(extension_id);
+  function1->InitFinalRedirectURLDomainsForTest(extension_id);
+  function2->InitFinalRedirectURLDomainsForTest(extension_id);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   const GURL final_url("https://" + extension_id + ".chromiumapp.org/");
@@ -3769,9 +3809,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id1("extension1");
-  function1->InitFinalRedirectURLPrefixForTest(extension_id1);
+  function1->InitFinalRedirectURLDomainsForTest(extension_id1);
   const std::string extension_id2("extension2");
-  function2->InitFinalRedirectURLPrefixForTest(extension_id2);
+  function2->InitFinalRedirectURLDomainsForTest(extension_id2);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   // Different final_urls.
@@ -3828,7 +3868,7 @@ IN_PROC_BROWSER_TEST_F(
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("extension");
-  function1->InitFinalRedirectURLPrefixForTest(extension_id);
+  function1->InitFinalRedirectURLDomainsForTest(extension_id);
 
   const GURL auth_url1(https_server->GetURL("/consent_page.html"));
   const GURL auth_url2(https_server->GetURL("/interaction_required.html"));
