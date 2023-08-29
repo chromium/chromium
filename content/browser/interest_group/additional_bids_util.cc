@@ -23,6 +23,7 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/origin.h"
 
 namespace content {
@@ -352,6 +353,19 @@ SignedAdditionalBid::~SignedAdditionalBid() = default;
 
 SignedAdditionalBid& SignedAdditionalBid::operator=(SignedAdditionalBid&&) =
     default;
+
+std::vector<size_t> SignedAdditionalBid::VerifySignatures() {
+  std::vector<size_t> verified;
+  for (size_t i = 0; i < signatures.size(); ++i) {
+    if (ED25519_verify(
+            reinterpret_cast<const uint8_t*>(additional_bid_json.data()),
+            additional_bid_json.size(), signatures[i].signature.data(),
+            signatures[i].key.data())) {
+      verified.push_back(i);
+    }
+  }
+  return verified;
+}
 
 base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
     base::Value signed_additional_bid_in) {

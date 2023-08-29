@@ -82,6 +82,9 @@ struct CONTENT_EXPORT SignedAdditionalBid {
 
   std::string additional_bid_json;
   std::vector<Signature> signatures;
+
+  // Returns a vector of indices of signatures that succeed in verifying.
+  std::vector<size_t> VerifySignatures();
 };
 
 // Tries to decode a signed additional bid JSON represented as

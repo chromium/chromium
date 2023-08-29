@@ -14,11 +14,16 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "crypto/openssl_util.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using testing::UnorderedElementsAre;
 
 namespace content {
 namespace {
@@ -1002,6 +1007,46 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSigLength) {
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ("Field 'signature' has unexpected length.", result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, VerifySignature) {
+  const int kKeys = 4;
+
+  crypto::EnsureOpenSSLInit();
+
+  struct {
+    uint8_t public_key[32];
+    uint8_t private_key[64];
+  } key_pairs[kKeys];
+
+  SignedAdditionalBid data;
+  data.additional_bid_json = "Greetings. I am a base-64 encoded JSON!";
+  for (int i = 0; i < kKeys; ++i) {
+    ED25519_keypair(key_pairs[i].public_key, key_pairs[i].private_key);
+
+    data.signatures.emplace_back();
+    memcpy(data.signatures[i].key.data(), key_pairs[i].public_key, 32);
+
+    bool ok = ED25519_sign(
+        data.signatures[i].signature.data(),
+        reinterpret_cast<const uint8_t*>(data.additional_bid_json.data()),
+        data.additional_bid_json.size(), key_pairs[i].private_key);
+    CHECK(ok);
+  }
+
+  EXPECT_THAT(data.VerifySignatures(), UnorderedElementsAre(0, 1, 2, 3));
+
+  // Flip a bit in the [1] signature.
+  data.signatures[1].signature[3] ^= 0x02;
+  EXPECT_THAT(data.VerifySignatures(), UnorderedElementsAre(0, 2, 3));
+
+  // Flip a couple of bits in the [2] key.
+  data.signatures[2].key[7] ^= 0x41;
+  EXPECT_THAT(data.VerifySignatures(), UnorderedElementsAre(0, 3));
+
+  // Change the payload.
+  data.additional_bid_json += "Boo. Bad unverified data appended!";
+  EXPECT_THAT(data.VerifySignatures(), UnorderedElementsAre());
 }
 
 }  // namespace
