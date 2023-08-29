@@ -34,57 +34,46 @@ message UMAMetrics {
       [(unit) = "n%_smallerIsBetter"];
   repeated double graphics_smoothness_checkerboarding_touch_scroll = 11
       [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_video = 12
+  repeated double graphics_smoothness_checkerboarding_wheel_scroll = 12
       [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_checkerboarding_wheel_scroll = 13
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_percent_dropped_frames_all_animations = 14
+  repeated double graphics_smoothness_percent_dropped_frames_all_animations = 13
       [(unit) = "n%_smallerIsBetter"];
   repeated double graphics_smoothness_percent_dropped_frames_all_interactions =
-      15 [(unit) = "n%_smallerIsBetter"];
-  repeated double graphics_smoothness_percent_dropped_frames_all_sequences = 16
+      14 [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_percent_dropped_frames_all_sequences = 15
       [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_main_thread_main_thread_animation =
-          17 [(unit) = "n%_smallerIsBetter"];
+          16 [(unit) = "n%_smallerIsBetter"];
   repeated double graphics_smoothness_percent_dropped_frames_main_thread_raf =
-      18 [(unit) = "n%_smallerIsBetter"];
+      17 [(unit) = "n%_smallerIsBetter"];
   repeated double
-      graphics_smoothness_percent_dropped_frames_main_thread_touch_scroll = 19
+      graphics_smoothness_percent_dropped_frames_main_thread_touch_scroll = 18
       [(unit) = "n%_smallerIsBetter"];
   repeated double
-      graphics_smoothness_percent_dropped_frames_main_thread_wheel_scroll = 20
+      graphics_smoothness_percent_dropped_frames_main_thread_wheel_scroll = 19
       [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_compositor_thread_compositor_animation =
-          21 [(unit) = "n%_smallerIsBetter"];
+          20 [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_compositor_thread_pinch_zoom =
-          22 [(unit) = "n%_smallerIsBetter"];
+          21 [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_compositor_thread_touch_scroll =
-          23 [(unit) = "n%_smallerIsBetter"];
+          22 [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_compositor_thread_wheel_scroll =
-          24 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_main_thread_universal = 25
-      [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_compositor_thread_universal =
-          26 [(unit) = "n%_smallerIsBetter"];
-  repeated double
-      graphics_smoothness_percent_dropped_frames_slower_thread_universal = 27
-      [(unit) = "n%_smallerIsBetter"];
+          23 [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_scrolling_thread_touch_scroll =
-          28 [(unit) = "n%_smallerIsBetter"];
+          24 [(unit) = "n%_smallerIsBetter"];
   repeated double
       graphics_smoothness_percent_dropped_frames_scrolling_thread_wheel_scroll =
-          29 [(unit) = "n%_smallerIsBetter"];
-  repeated double memory_gpu_peak_memory_usage_scroll = 30
+          25 [(unit) = "n%_smallerIsBetter"];
+  repeated double memory_gpu_peak_memory_usage_scroll = 26
       [(unit) = "sizeInBytes_smallerIsBetter"];
-  repeated double memory_gpu_peak_memory_usage_page_load = 31
+  repeated double memory_gpu_peak_memory_usage_page_load = 27
       [(unit) = "sizeInBytes_smallerIsBetter"];
 }
 
