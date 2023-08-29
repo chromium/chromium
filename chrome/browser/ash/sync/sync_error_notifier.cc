@@ -7,6 +7,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/trusted_vault/features.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,17 +70,33 @@ void ShowSyncSetup(Profile* profile) {
 }
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  OpenTabForSyncKeyRetrieval(
-      displayer.browser(),
-      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      base::FeatureList::IsEnabled(
+          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+    OpenDialogForSyncKeyRetrieval(
+        profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+  } else {
+    // TODO(crbug.com/1434656): clean up once not reachable.
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+    OpenTabForSyncKeyRetrieval(
+        displayer.browser(),
+        syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+  }
 }
 
 void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  OpenTabForSyncKeyRecoverabilityDegraded(
-      displayer.browser(),
-      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      base::FeatureList::IsEnabled(
+          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+    OpenDialogForSyncKeyRecoverabilityDegraded(
+        profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+  } else {
+    // TODO(crbug.com/1434656): clean up once not reachable.
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+    OpenTabForSyncKeyRecoverabilityDegraded(
+        displayer.browser(),
+        syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+  }
 }
 
 BubbleViewParameters GetBubbleViewParameters(

@@ -68,7 +68,8 @@ END_METADATA
 
 WebDialogView::WebDialogView(content::BrowserContext* context,
                              WebDialogDelegate* delegate,
-                             std::unique_ptr<WebContentsHandler> handler)
+                             std::unique_ptr<WebContentsHandler> handler,
+                             content::WebContents* web_contents)
     : ClientView(nullptr, nullptr),
       WebDialogWebContentsDelegate(context, std::move(handler)),
       delegate_(delegate),
@@ -88,6 +89,10 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
       AddAccelerator(accelerator);
     RegisterWindowWillCloseCallback(base::BindOnce(
         &WebDialogView::NotifyDialogWillClose, base::Unretained(this)));
+  }
+
+  if (web_contents) {
+    web_view_->SetWebContents(web_contents);
   }
 }
 

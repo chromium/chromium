@@ -78,7 +78,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // client frame view.
   WebDialogView(content::BrowserContext* context,
                 ui::WebDialogDelegate* delegate,
-                std::unique_ptr<WebContentsHandler> handler);
+                std::unique_ptr<WebContentsHandler> handler,
+                content::WebContents* web_contents = nullptr);
   WebDialogView(const WebDialogView&) = delete;
   WebDialogView& operator=(const WebDialogView&) = delete;
   ~WebDialogView() override;

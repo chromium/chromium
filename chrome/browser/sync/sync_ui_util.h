@@ -146,4 +146,20 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
     syncer::TrustedVaultUserActionTriggerForUMA trigger);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS only, WebUI dialog can be used instead of tab (depending on the
+// feature setup and eventually always).
+// Opens a WebUI dialog for the purpose of retrieving the trusted vault keys,
+// which usually requires a reauth.
+void OpenDialogForSyncKeyRetrieval(
+    Profile* profile,
+    syncer::TrustedVaultUserActionTriggerForUMA trigger);
+
+// Opens a WebUI dialog for the purpose of improving the recoverability of the
+// trusted vault keys, which usually requires a reauth.
+void OpenDialogForSyncKeyRecoverabilityDegraded(
+    Profile* profile,
+    syncer::TrustedVaultUserActionTriggerForUMA trigger);
+#endif
+
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_

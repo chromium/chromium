@@ -741,6 +741,10 @@ static_library("ui") {
   }
 
   if (is_chromeos) {
+    sources += [
+      "webui/trusted_vault/trusted_vault_dialog_delegate.cc",
+      "webui/trusted_vault/trusted_vault_dialog_delegate.h",
+    ]
     deps += [
       "//chromeos/components/kiosk",
       "//chromeos/constants",
