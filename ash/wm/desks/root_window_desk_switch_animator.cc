@@ -462,7 +462,7 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
   auto* root_layer = root_window_->layer();
   root_layer->Add(animation_layer);
 
-  if (for_remove_) {
+  if (for_remove_ && is_combine_desks_type_) {
     DCHECK(old_windows_layer_tree_owner_);
     auto* old_windows_layer = old_windows_layer_tree_owner_->root();
     DCHECK(old_windows_layer);

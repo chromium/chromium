@@ -330,11 +330,13 @@ DeskRemovalAnimation::DeskRemovalAnimation(DesksController* controller,
             controller_->desks()[desk_to_remove_index_].get());
 
   for (auto* root : Shell::GetAllRootWindows()) {
-    desk_switch_animators_.emplace_back(
-        std::make_unique<RootWindowDeskSwitchAnimator>(
-            root, DeskSwitchAnimationType::kQuickAnimation,
-            desk_to_remove_index_, desk_to_activate_index, this,
-            /*for_remove=*/true));
+    auto animator = std::make_unique<RootWindowDeskSwitchAnimator>(
+        root, DeskSwitchAnimationType::kQuickAnimation, desk_to_remove_index_,
+        desk_to_activate_index, this,
+        /*for_remove=*/true);
+    animator->set_is_combine_desks_type(close_type ==
+                                        DeskCloseType::kCombineDesks);
+    desk_switch_animators_.emplace_back(std::move(animator));
   }
 }
 
