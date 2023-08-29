@@ -37,18 +37,6 @@ const CFStringRef kMessageLoopExclusiveRunLoopMode =
 
 namespace {
 
-// Enables two optimizations in MessagePumpCFRunLoop:
-// - Skip calling CFRunLoopTimerSetNextFireDate if the next delayed wake up
-//  time hasn't changed.
-// - Cancel an already scheduled timer wake up if there is no delayed work.
-BASE_FEATURE(kMessagePumpMacDelayedWorkOptimizations,
-             "MessagePumpMacDelayedWorkOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Caches the state of the "MessagePumpMacDelayedWorkOptimizations"
-// feature for efficiency.
-std::atomic_bool g_enable_optimizations = false;
-
 // Mask that determines which modes to use.
 enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
 
@@ -190,20 +178,9 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
     const Delegate::NextWorkInfo& next_work_info) {
   DCHECK(!next_work_info.is_immediate());
 
-  if (g_enable_optimizations.load(std::memory_order_relaxed)) {
-    // No-op if the delayed run time hasn't changed.
-    if (next_work_info.delayed_run_time == delayed_work_scheduled_at_) {
-      return;
-    }
-  } else {
-    // Preserve the old behavior of not adjusting the timer when
-    // `delayed_run_time.is_max()`.
-    //
-    // TODO(crbug.com/1335524): Remove this once the
-    // "MessagePumpMacDelayedWorkOptimizations" feature is shipped.
-    if (next_work_info.delayed_run_time.is_max()) {
-      return;
-    }
+  // No-op if the delayed run time hasn't changed.
+  if (next_work_info.delayed_run_time == delayed_work_scheduled_at_) {
+    return;
   }
 
   if (next_work_info.delayed_run_time.is_max()) {
@@ -297,9 +274,6 @@ MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
 
 // static
 void MessagePumpCFRunLoopBase::InitializeFeatures() {
-  g_enable_optimizations.store(
-      base::FeatureList::IsEnabled(kMessagePumpMacDelayedWorkOptimizations),
-      std::memory_order_relaxed);
 }
 
 #if BUILDFLAG(IS_IOS)
