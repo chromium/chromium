@@ -122,21 +122,23 @@ inline constexpr char16_t kCountryLocationRe[] = u"location";
 inline constexpr char16_t kZipCodeRe[] =
     u"((?<!\\.))zip"  // .zip indicates a file extension
     u"|postal|post.*code|pcode"
-    u"|pin.?code"                    // en-IN
-    u"|postleitzahl"                 // de-DE
-    u"|\\bcp\\b"                     // es
-    u"|\\bcdp\\b"                    // fr-FR
-    u"|\\bcap\\b"                    // it-IT
-    u"|郵便番号"                     // ja-JP
-    u"|codigo|codpos|\\bcep\\b"      // pt-BR, pt-PT
-    u"|Почтовый.?Индекс"             // ru
-    u"|पिन.?कोड"                     // hi
-    u"|പിന്‍കോഡ്"  // ml
-    u"|邮政编码|邮编"                // zh-CN
-    u"|郵遞區號"                     // zh-TW
-    u"|(\\b|_)posta kodu(\\b|_)"     // tr
-    u"|우편.?번호"                   // ko-KR
-    u"|kode.?pos";                   // id
+    u"|pin.?code"     // en-IN
+    u"|postleitzahl"  // de-DE
+    u"|\\bcp\\b"      // es
+    u"|\\bcdp\\b"     // fr-FR
+    u"|\\bcap\\b"     // it-IT
+    u"|郵便番号"      // ja-JP
+    // The negative lookahead "segur" after codigo is for "código de segurança"
+    // (pt-BR) and "código de seguridad" (es), which refer to CVCs.
+    u"|codigo(?!.*segur)|codpos|\\bcep\\b"  // pt-BR, pt-PT
+    u"|Почтовый.?Индекс"                    // ru
+    u"|पिन.?कोड"                            // hi
+    u"|പിന്‍കോഡ്"         // ml
+    u"|邮政编码|邮编"                       // zh-CN
+    u"|郵遞區號"                            // zh-TW
+    u"|(\\b|_)posta kodu(\\b|_)"            // tr
+    u"|우편.?번호"                          // ko-KR
+    u"|kode.?pos";                          // id
 inline constexpr char16_t kZip4Re[] =
     u"((?<!\\.))zip"  // .zip indicates a file extension
     u"|^-$|post2"
@@ -231,20 +233,26 @@ inline constexpr char16_t kNumericQuantityRe[] =
 // credit_card_field.cc
 /////////////////////////////////////////////////////////////////////////////
 inline constexpr char16_t kNameOnCardRe[] =
-    u"card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card"
+    u"card.?(?:holder|owner)"
+    u"|name.*on.*card"
     u"|(?:card|cc).?name|cc.?full.?name"
-    u"|karteninhaber"                   // de-DE
-    u"|nombre.*tarjeta"                 // es
-    u"|nom.*carte"                      // fr-FR
-    u"|nome.*cart"                      // it-IT
-    u"|名前"                            // ja-JP
+    u"|karteninhaber"                            // de-DE
+    u"|nombre.*tarjeta"                          // es
+    u"|nombre.*titular|titular.*tarjeta"         // es-MX
+    u"|nom.*carte"                               // fr-FR
+    u"|nome.*cart"                               // it-IT
+    u"|名前"                                     // ja-JP
+    u"|nome do titular|nome impresso no cartão"  // pt-BR
+    // The negative prefix "do" exists because we see patterns like
+    // "CPF do Titular do Cartão" ("of the card holder").
+    u"|(?<!do )titular do cartão"       // pt-BR
     u"|Имя.*карты"                      // ru
     u"|nama.*kartu"                     // id
     u"|信用卡开户名|开户名|持卡人姓名"  // zh-CN
     u"|持卡人姓名";                     // zh-TW
 inline constexpr char16_t kNameOnCardContextualRe[] = u"name";
 inline constexpr char16_t kCardNumberRe[] =
-    u"(add)?(?:card|cc|acct).?(?:number|#|no|num|field|pan)"
+    u"(?:card|cc|acct).?(?:number|#|no|num|field|pan)"
     u"|(?<!telefon|haus|person|fødsels|kunden)nummer"  // de-DE, sv-SE, no
     u"|カード番号"                                     // ja-JP
     u"|Номер.*карты"                                   // ru
@@ -253,14 +261,21 @@ inline constexpr char16_t kCardNumberRe[] =
     u"|信用卡卡號"                                     // zh-TW
     u"|카드"                                           // ko-KR
     // es/pt/fr
-    u"|(numero|número|numéro)(?!.*(document|fono|phone|réservation))";
+    // E.g. "número de (?:la )?tarjeta" in es-MX, "número do cartão" in pt-BR
+    u"|(numero|número|numéro)(?!.*(document|fono|phone|réservation))"
+    u"|0000 ?0000 ?0000 ?0000"
+    u"|1234 ?1234 ?1234 ?1234";
 
 inline constexpr char16_t kCardCvcRe[] =
     u"verification|card.?identification|security.?code|card.?code"
     u"|security.?value"
     u"|security.?number|card.?pin|c-v-v"
-    u"|(cvn|cvv|cvc|csc|cvd|cid|ccv)(field)?"
-    u"|\\bcid\\b";
+    u"|código de segurança"  // pt-BR
+    u"|código de seguridad"  // es-MX
+    u"|(?:cvn|cvv|cvc|csc|cvd|ccv)"
+    // We used to match "cid", but it is a substring of "cidade" (Portuguese for
+    // "city") and needs to be handled carefully.
+    u"|\\bcid\\b|cccid";
 
 // "Expiration date" is the most common label here, but some pages have
 // "Expires", "exp. date" or "exp. month" and "exp. year".  We also look
@@ -275,23 +290,26 @@ inline constexpr char16_t kCardCvcRe[] =
 //   https://rps.fidelity.com/ftgw/rps/RtlCust/CreatePIN/Init.
 // Instead, we match only words beginning with "month".
 inline constexpr char16_t kExpirationMonthRe[] =
-    u"expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth"
+    u"expir|exp.*mo|exp.*date|cc.?month|cardmonth|addmonth"
     u"|gueltig|gültig|monat"         // de-DE
     u"|fecha"                        // es
     u"|date.*exp"                    // fr-FR
     u"|scadenza"                     // it-IT
     u"|有効期限"                     // ja-JP
     u"|validade"                     // pt-BR, pt-PT
+    u"|\\bmês\\b"                    // pt-BR
     u"|Срок действия карты"          // ru
     u"|masa berlaku|berlaku hingga"  // id
     u"|月";                          // zh-CN
 inline constexpr char16_t kExpirationYearRe[] =
-    u"exp|^/|(add)?year"
+    u"exp|^/|year"
     u"|ablaufdatum|gueltig|gültig|jahr"  // de-DE
     u"|fecha"                            // es
+    u"|año"                              // es
     u"|scadenza"                         // it-IT
     u"|有効期限"                         // ja-JP
     u"|validade"                         // pt-BR, pt-PT
+    u"|\\bano\\b"                        // pt-BR
     u"|Срок действия карты"              // ru
     u"|masa berlaku|berlaku hingga"      // id
     u"|年|有效期";                       // zh-CN

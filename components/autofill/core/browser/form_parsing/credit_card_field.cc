@@ -218,12 +218,16 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     // detection decision, we allow for 4 UNKONWN fields in between.
     // We can't allow for a lot of unknown fields, because the name on address
     // sections may sometimes be mistakenly detected as cardholder name.
-    if ((credit_card_field->verification_ ||
-         !credit_card_field->numbers_.empty() ||
-         credit_card_field->HasExpiration()) &&
-        (!credit_card_field->verification_ ||
-         credit_card_field->numbers_.empty() ||
-         !credit_card_field->HasExpiration()) &&
+    // Yet, it does happen that a field separates the name from the CC number
+    // (e.g. a tax payer ID). Therefore, we also allow a field between name
+    // and other fields.
+    bool has_name =
+        credit_card_field->cardholder_ || credit_card_field->cardholder_last_;
+    bool has_verification = credit_card_field->verification_;
+    bool has_numbers = !credit_card_field->numbers_.empty();
+    bool has_expiration = credit_card_field->HasExpiration();
+    if ((has_name || has_verification || has_numbers || has_expiration) &&
+        (!has_verification || !has_numbers || !has_expiration) &&
         nb_unknown_fields < 4) {
       scanner->Advance();
       fields--;  // We continue searching in the same credit card section, but
@@ -233,6 +237,9 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     break;
   }
 
+  bool has_verification = credit_card_field->verification_;
+  bool has_numbers = !credit_card_field->numbers_.empty();
+  bool has_expiration = credit_card_field->HasExpiration();
   // Some pages have a billing address field after the cardholder name field.
   // For that case, allow only just the cardholder name field.  The remaining
   // CC fields will be picked up in a following CreditCardField.
@@ -240,9 +247,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     // If we got the cardholder name with a dangerous check, require at least a
     // card number and one of expiration or verification fields.
     if (!cardholder_name_match_has_low_confidence ||
-        (!credit_card_field->numbers_.empty() &&
-         (credit_card_field->verification_ ||
-          credit_card_field->HasExpiration()))) {
+        (has_numbers && (has_verification || has_expiration))) {
       return std::move(credit_card_field);
     }
   }
@@ -254,11 +259,10 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   // a strong enough signal that this is a credit card.  It is possible that
   // the number and name were parsed in a separate part of the form.  So if
   // the cvc and date were found independently they are returned.
-  const bool has_cc_number_or_verification =
-      (credit_card_field->verification_ ||
-       !credit_card_field->numbers_.empty());
-  if (has_cc_number_or_verification && credit_card_field->HasExpiration())
+  const bool has_cc_number_or_verification = (has_verification || has_numbers);
+  if (has_cc_number_or_verification && credit_card_field->HasExpiration()) {
     return std::move(credit_card_field);
+  }
 
   scanner->RewindTo(saved_cursor);
   return nullptr;
@@ -673,6 +677,13 @@ CreditCardField::DetermineExpirationDateFormat(
     //                       ^^^^^^^^^^^^^^ year
     matches = MatchesRegex<kFormatRegex>(field.placeholder, &groups) ||
               MatchesRegex<kFormatRegex>(field.label, &groups);
+    // Support "--/--" and "--/----" as recognized placeholders.
+    if (!matches) {
+      static constexpr char16_t kFormatRegEx2[] =
+          u"(?:--|__)(\\s?/\\s?)(-{2,4}|_{2,4})";
+      matches = MatchesRegex<kFormatRegEx2>(field.placeholder, &groups) ||
+                MatchesRegex<kFormatRegEx2>(field.label, &groups);
+    }
   } else {
     static constexpr char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?(y{2,4})";
     //                                              ^^^^ opt white space
