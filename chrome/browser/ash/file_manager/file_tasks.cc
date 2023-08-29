@@ -199,11 +199,10 @@ inline bool IsFilesAppId(const std::string& app_id) {
 // sub-string compatible with the extension/legacy e.g.: "view-pdf".
 std::string ParseFilesAppActionId(const std::string& action_id) {
   if (base::StartsWith(action_id, kChromeUIFileManagerURL)) {
-    std::string result(action_id);
-    base::ReplaceFirstSubstringAfterOffset(
-        &result, 0, base::StrCat({kChromeUIFileManagerURL, "?"}), "");
-
-    return result;
+    // Length of `chrome://file-manager/?`.
+    constexpr static size_t kOffset =
+        std::char_traits<char>::length(kChromeUIFileManagerURL) + 1;
+    return action_id.substr(kOffset);
   }
 
   return action_id;

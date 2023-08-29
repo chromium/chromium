@@ -5,15 +5,14 @@
 #ifndef ASH_WEBUI_FILE_MANAGER_URL_CONSTANTS_H_
 #define ASH_WEBUI_FILE_MANAGER_URL_CONSTANTS_H_
 
-namespace ash {
-namespace file_manager {
+namespace ash::file_manager {
 
-extern const char kChromeUIFileManagerHost[];
-extern const char kChromeUIFileManagerURL[];
-extern const char kChromeUIFileManagerUntrustedHost[];
-extern const char kChromeUIFileManagerUntrustedURL[];
+constexpr char kChromeUIFileManagerHost[] = "file-manager";
+constexpr char kChromeUIFileManagerURL[] = "chrome://file-manager/";
+constexpr char kChromeUIFileManagerUntrustedHost[] = "file-manager";
+constexpr char kChromeUIFileManagerUntrustedURL[] =
+    "chrome-untrusted://file-manager/";
 
-}  // namespace file_manager
-}  // namespace ash
+}  // namespace ash::file_manager
 
 #endif  // ASH_WEBUI_FILE_MANAGER_URL_CONSTANTS_H_
