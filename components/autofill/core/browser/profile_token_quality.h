@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -46,17 +47,18 @@ class PersonalDataManager;
 //
 // TODO(crbug.com/1453650): Interface + logic to reset observations for
 // `kAccount` profiles and for edits via settings.
-// TODO(crbug.com/1453650): Interface + logic to initialize the class with
-// existing observations (when loading it from the DB).
 // TODO(crbug.com/1453650): Treat values entered through settings as `kAccepted`
 // observations.
 class ProfileTokenQuality {
  public:
   // Describes the different types of observations, derived from an autofilled
   // field at form submission.
-  enum class ObservationType {
-    // Default value. Not used for actual observations.
-    kNone = 0,
+  enum class ObservationType : uint8_t {
+    // An observation type that this client doesn't understand. This is possible
+    // if a newer client synced a new enum value that this client doesn't
+    // understand. Internally, the unknown value is stored as it's underlying
+    // type - but it is exposed as `kUnknown`. See `Observation`.
+    kUnknown = 0,
     // The autofilled value of a stored type was accepted as-filled.
     kAccepted = 1,
     // The autofilled value of a derived type was accepted as-filled. This is
@@ -193,7 +195,18 @@ class ProfileTokenQuality {
   // An observation, describing the type of observed observation and the form-
   // field it was collected from.
   struct Observation {
-    ObservationType type = ObservationType::kNone;
+    // Internally, observation types are not stored as an `ObservationType`, but
+    // as their underlying type. This way, new (future) observation types,
+    // synced in from newer clients can be handled:
+    // - Since the sync code uses proto2, the `ObservationType`s are synced as
+    //   ints. Otherwise old clients would lose future observation types.
+    // - Casting the int from sync to the enum class `ObservationType` would
+    //   technically preserve it's value. But it would come at the downside of
+    //   making switch statements with all cases non-exhaustive.
+    // For this reason, it is preferred to store the `ObservationType`s as their
+    // underlying type in the data model as well.
+    // Getters expose unknown values as `kUnknown`.
+    std::underlying_type_t<ObservationType> type;
     FormSignatureHash form_hash = FormSignatureHash(0);
   };
 
@@ -236,7 +249,6 @@ class ProfileTokenQuality {
   // `circular_deque`:
   // - The observations are ordered from oldest (`front()`) to newest
   //   (`back()`).
-  // - No stored observation has type `kNone`.
   // - No more than `kMaxObservationsPerToken` elements are stored.
   base::flat_map<ServerFieldType, base::circular_deque<Observation>>
       observations_;

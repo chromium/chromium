@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -239,10 +240,11 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       continue;
     }
     possible_observations.emplace_back(
-        stored_type, Observation{.type = GetObservationTypeFromField(
-                                     field, form_data.fields[i].value,
-                                     other_profiles, pdm.app_locale()),
-                                 .form_hash = hash});
+        stored_type,
+        Observation{.type = base::to_underlying(GetObservationTypeFromField(
+                        field, form_data.fields[i].value, other_profiles,
+                        pdm.app_locale())),
+                    .form_hash = hash});
   }
   return AddSubsetOfObservations(std::move(possible_observations)) > 0;
 }
@@ -286,7 +288,14 @@ ProfileTokenQuality::GetObservationTypesForFieldType(
   std::vector<ObservationType> types;
   types.reserve(it->second.size());
   for (const Observation& observation : it->second) {
-    types.push_back(observation.type);
+    if (observation.type <= base::to_underlying(ObservationType::kMaxValue)) {
+      types.push_back(static_cast<ObservationType>(observation.type));
+    } else {
+      // This is possible if the `observation.type` was synced from a newer
+      // client that supports additional `ObservationType`s that this client
+      // doesn't understand.
+      types.push_back(ObservationType::kUnknown);
+    }
   }
   return types;
 }
@@ -302,7 +311,7 @@ bool ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(
 void ProfileTokenQuality::AddObservation(ServerFieldType type,
                                          Observation observation) {
   CHECK(GetSupportedTypes(*profile_).contains(type));
-  CHECK_NE(observation.type, ObservationType::kNone);
+  CHECK_NE(observation.type, base::to_underlying(ObservationType::kUnknown));
   base::circular_deque<Observation>& observations =
       observations_[GetStoredTypeOf(type)];
   CHECK_LE(observations.size(), kMaxObservationsPerToken);
@@ -361,7 +370,7 @@ std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
   std::vector<uint8_t> serialized_data;
   if (auto it = observations_.find(type); it != observations_.end()) {
     for (const Observation& observation : it->second) {
-      serialized_data.push_back(static_cast<uint8_t>(observation.type));
+      serialized_data.push_back(observation.type);
       serialized_data.push_back(observation.form_hash.value());
     }
   }
@@ -378,10 +387,10 @@ void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
   for (size_t i = 0; i + 1 < serialized_data.size(); i += 2) {
     AddObservation(
         type,
-        Observation{.type = static_cast<ObservationType>(std::min(
-                        serialized_data[i],
-                        static_cast<uint8_t>(ObservationType::kMaxValue))),
-                    .form_hash = FormSignatureHash(serialized_data[i + 1])});
+        Observation{
+            .type = std::min(serialized_data[i],
+                             base::to_underlying(ObservationType::kMaxValue)),
+            .form_hash = FormSignatureHash(serialized_data[i + 1])});
   }
 }
 

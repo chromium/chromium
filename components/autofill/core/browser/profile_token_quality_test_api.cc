@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 
@@ -27,8 +28,9 @@ void ProfileTokenQualityTestApi::AddObservation(
     ProfileTokenQuality::ObservationType observation_type,
     FormSignatureHash hash) {
   quality_->AddObservation(
-      field_type, ProfileTokenQuality::Observation{.type = observation_type,
-                                                   .form_hash = hash});
+      field_type,
+      ProfileTokenQuality::Observation{
+          .type = base::to_underlying(observation_type), .form_hash = hash});
 }
 
 std::vector<ProfileTokenQualityTestApi::FormSignatureHash>
