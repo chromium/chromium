@@ -77,6 +77,7 @@ class AutofillAblationStudy;
 class AutofillDriver;
 class AutofillDownloadManager;
 struct AutofillErrorDialogContext;
+class AutofillMlPredictionModelHandler;
 class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillOptimizationGuide;
@@ -404,6 +405,11 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the AutofillOptimizationGuide instance associated with the client.
   virtual AutofillOptimizationGuide* GetAutofillOptimizationGuide() const;
+
+  // Gets the AutofillModelHandler instance for autofill machine learning
+  // predictions associated with the client.
+  virtual AutofillMlPredictionModelHandler*
+  GetAutofillMlPredictionModelHandler();
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;

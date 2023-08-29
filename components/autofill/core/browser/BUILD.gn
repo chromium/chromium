@@ -637,6 +637,7 @@ static_library("browser") {
     "//components/infobars/core",
     "//components/keyed_service/core",
     "//components/language/core/browser",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/sync",

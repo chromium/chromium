@@ -59,6 +59,11 @@ AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
   return nullptr;
 }
 
+AutofillMlPredictionModelHandler*
+AutofillClient::GetAutofillMlPredictionModelHandler() {
+  return nullptr;
+}
+
 IbanManager* AutofillClient::GetIbanManager() {
   return nullptr;
 }

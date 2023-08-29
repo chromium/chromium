@@ -79,6 +79,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
@@ -154,6 +155,11 @@
 #include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/autofill/autofill_ml_prediction_model_service_factory.h"
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#endif
+
 namespace autofill {
 
 // static
@@ -207,6 +213,17 @@ AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()
   return profile->ShutdownStarted()
              ? nullptr
              : AutofillOptimizationGuideFactory::GetForProfile(profile);
+}
+
+AutofillMlPredictionModelHandler*
+ChromeAutofillClient::GetAutofillMlPredictionModelHandler() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
+    return AutofillMlPredictionModelServiceFactory::GetForBrowserContext(
+        web_contents()->GetBrowserContext());
+  }
+#endif
+  return nullptr;
 }
 
 PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {

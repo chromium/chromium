@@ -103,6 +103,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDownloadManager* GetDownloadManager() override;
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override;
+  AutofillMlPredictionModelHandler* GetAutofillMlPredictionModelHandler()
+      override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IbanManager* GetIbanManager() override;

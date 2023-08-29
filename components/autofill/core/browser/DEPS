@@ -9,6 +9,7 @@ include_rules = [
   "+components/language/core/browser",
   "+components/leveldb_proto",
   "+components/metrics",
+  "+components/optimization_guide",
   "+components/optimization_guide/core",
   "+components/plus_addresses",
   "+components/profile_metrics",
