@@ -107,9 +107,10 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
-              OnAutofillProfileOrCreditCardFormFilled,
+              OnFillOrPreviewDataModelForm,
               (AutofillManager&,
                FormGlobalId,
+               mojom::AutofillActionPersistence action_persistence,
                (base::span<const std::pair<const FormFieldData*,
                                            const AutofillField*>>),
                (absl::variant<const AutofillProfile*, const CreditCard*>

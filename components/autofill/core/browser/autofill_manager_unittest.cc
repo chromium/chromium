@@ -401,7 +401,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnBeforeLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer, OnAfterLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer, OnFieldTypesDetermined).Times(0);
-  EXPECT_CALL(observer, OnAutofillProfileOrCreditCardFormFilled).Times(0);
+  EXPECT_CALL(observer, OnFillOrPreviewDataModelForm).Times(0);
   EXPECT_CALL(observer, OnFormSubmitted).Times(0);
 
   EXPECT_CALL(*manager_, ShouldParseForms)
@@ -475,13 +475,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff));
   manager_->OnJavaScriptChangedAutofilledValue(form, field, {});
 
-  AutofillProfile profile;
-  EXPECT_CALL(observer, OnAutofillProfileOrCreditCardFormFilled(
-                            m, f, ElementsAre(Pair(ff_property, ff_property)),
-                            VariantWith<const AutofillProfile*>(&profile)));
-  manager_->OnAutofillProfileOrCreditCardFormFilled(
-      form.global_id(),
-      {{{&field, std::make_unique<AutofillField>(field).get()}}}, &profile);
+  // TODO(crbug.com/) Test in browser_autofill_manager_unittest.cc that
+  // FillOrPreviewForm() triggers OnFillOrPreviewDataModelForm().
 
   EXPECT_CALL(observer, OnFormSubmitted(m, f));
   manager_->OnFormSubmitted(form, true,

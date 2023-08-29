@@ -139,15 +139,19 @@ class AutofillManager
                                         FormGlobalId form,
                                         FieldTypeSource source) {}
 
-    // Fired when form is filled.
-    // 'filled_fields' represents the fields that were actually sent to the
-    // renderer to be filled. `profile_or_credit_card` gives the information for
-    // which values were used to fill the form, being those either from credit
-    // card or an autofill profile.
+    // Fired when a form is filled or previewed with a AutofillProfile or
+    // CreditCard.
+    // `filled_fields` represents the fields that were sent to the renderer to
+    // be filled: each `FormFieldData::value` contains the filled or previewed
+    // value; the corresponding `AutofillField` contains the field type
+    // information. The field values come from `profile_or_credit_card`.
     // TODO(crbug.com/1331312): Get rid of FormFieldData.
-    virtual void OnAutofillProfileOrCreditCardFormFilled(
+    // TODO(crbug.com/1476488): Consider removing the event in favor of
+    // OnAfterDidFillAutofillFormData(), which is fired by the renderer.
+    virtual void OnFillOrPreviewDataModelForm(
         AutofillManager& manager,
-        autofill::FormGlobalId form,
+        FormGlobalId form,
+        mojom::AutofillActionPersistence action_persistence,
         base::span<const std::pair<const FormFieldData*, const AutofillField*>>
             filled_fields,
         absl::variant<const AutofillProfile*, const CreditCard*>
@@ -301,15 +305,6 @@ class AutofillManager
   virtual void OnContextMenuShownInField(
       const FormGlobalId& form_global_id,
       const FieldGlobalId& field_global_id) = 0;
-
-  // Notifies observers about a form being filled with an autofill address
-  // profile or credit card.
-  void OnAutofillProfileOrCreditCardFormFilled(
-      autofill::FormGlobalId form,
-      base::span<const std::pair<const FormFieldData*, const AutofillField*>>
-          filled_fields,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card);
 
   // translate::TranslateDriver::LanguageDetectionObserver:
   void OnTranslateDriverDestroyed(

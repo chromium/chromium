@@ -413,9 +413,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
 
   // Enabled events and emit event about forming being filled.
   SendCommandSync("Autofill.enable");
-  test_api(*main_autofill_manager())
-      .OnAutofillProfileOrCreditCardFormFilled(
-          form_id(), filled_fields_by_autofill, &profile);
+  main_autofill_manager()->NotifyObservers(
+      &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
+      form_id(), autofill::mojom::AutofillActionPersistence::kFill,
+      filled_fields_by_autofill, &profile);
 
   base::Value::Dict notification = WaitForNotification(
       "Autofill.addressFormFilled", /*allow_existing=*/true);

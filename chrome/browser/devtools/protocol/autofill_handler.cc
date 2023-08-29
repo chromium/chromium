@@ -213,9 +213,10 @@ void AutofillHandler::SetAddresses(
   std::move(callback)->sendSuccess();
 }
 
-void AutofillHandler::OnAutofillProfileOrCreditCardFormFilled(
+void AutofillHandler::OnFillOrPreviewDataModelForm(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
+    autofill::mojom::AutofillActionPersistence action_persistence,
     base::span<const std::pair<const FormFieldData*, const AutofillField*>>
         filled_fields,
     absl::variant<const autofill::AutofillProfile*, const autofill::CreditCard*>
@@ -226,7 +227,8 @@ void AutofillHandler::OnAutofillProfileOrCreditCardFormFilled(
   }
 
   // We only care about address forms that were filled.
-  if (!absl::holds_alternative<const autofill::AutofillProfile*>(
+  if (action_persistence != autofill::mojom::AutofillActionPersistence::kFill ||
+      !absl::holds_alternative<const autofill::AutofillProfile*>(
           profile_or_credit_card)) {
     return;
   }

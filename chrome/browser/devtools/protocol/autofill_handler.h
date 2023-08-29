@@ -56,9 +56,10 @@ class AutofillHandler : public protocol::Autofill::Backend,
   // devtools the filled fields details and information about the profile used.
   // These information is then used to build a UI inside devtools, which will
   // provide developers more visibility on how autofill works on their form.
-  void OnAutofillProfileOrCreditCardFormFilled(
+  void OnFillOrPreviewDataModelForm(
       autofill::AutofillManager& manager,
       autofill::FormGlobalId form,
+      autofill::mojom::AutofillActionPersistence action_persistence,
       base::span<const std::pair<const autofill::FormFieldData*,
                                  const autofill::AutofillField*>> filled_fields,
       absl::variant<const autofill::AutofillProfile*,
