@@ -2971,6 +2971,9 @@ TEST_F(LayerTreeHostImplTest, SnapFlingAnimationEndWithoutFinishing) {
 }
 
 TEST_F(LayerTreeHostImplTest, NativeFlingInSnapArea) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kScrollSnapCoveringUseNativeFling);
   gfx::Size view_size(100, 100);
   gfx::Size overflow_size(100, 1000);
   gfx::RectF snap_area_1(0, 0, 100, 700);
