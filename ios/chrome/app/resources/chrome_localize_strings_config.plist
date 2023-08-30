@@ -67,6 +67,30 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>vp7qIi</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_RECENT_TABS_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>h5ylvP</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_RECENT_TABS_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>Dnbiji</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_RECENT_TABS_DESCRIPTION</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>Lx9GhK</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_RECENT_TABS_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>NjxAwS</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_OPEN_BOOKMARKS_TITLE</string>
@@ -192,12 +216,12 @@
 					<key>output</key>
 					<string>NSBluetoothPeripheralUsageDescription</string>
 				</dict>
-                                <dict>
-                                     	<key>input</key>
-                                        <string>IDS_IOS_CONTACTS_USAGE_DESCRIPTION</string>
-                                        <key>output</key>
-                                        <string>NSContactsUsageDescription</string>
-                                </dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_CONTACTS_USAGE_DESCRIPTION</string>
+					<key>output</key>
+					<string>NSContactsUsageDescription</string>
+				</dict>
 				<dict>
 					<key>input</key>
 					<string>IDS_IOS_CAMERA_USAGE_DESCRIPTION</string>

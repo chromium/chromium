@@ -63,6 +63,7 @@ NSString* const kSiriShortcutSearchInChrome = @"SearchInChromeIntent";
 NSString* const kSiriShortcutOpenInIncognito = @"OpenInChromeIncognitoIntent";
 NSString* const kSiriOpenReadingList = @"OpenReadingListIntent";
 NSString* const kSiriOpenBookmarks = @"OpenBookmarksIntent";
+NSString* const kSiriOpenRecentTabs = @"OpenRecentTabsIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -302,21 +303,17 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                                 initStage:initStage];
 
   } else if ([userActivity.activityType isEqualToString:kSiriOpenReadingList]) {
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-        initWithExternalURL:GURL(kChromeUINewTabURL)
-                completeURL:GURL(kChromeUINewTabURL)
-            applicationMode:ApplicationModeForTabOpening::NORMAL];
-
-    startupParams.postOpeningAction = OPEN_READING_LIST;
-    [connectionInformation setStartupParameters:startupParams];
+    [connectionInformation
+        setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
+                                       OPEN_READING_LIST]];
   } else if ([userActivity.activityType isEqualToString:kSiriOpenBookmarks]) {
-    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-        initWithExternalURL:GURL(kChromeUINewTabURL)
-                completeURL:GURL(kChromeUINewTabURL)
-            applicationMode:ApplicationModeForTabOpening::NORMAL];
-
-    startupParams.postOpeningAction = OPEN_BOOKMARKS;
-    [connectionInformation setStartupParameters:startupParams];
+    [connectionInformation
+        setStartupParameters:
+            [self startupParametersForOpeningNewTabWithAction:OPEN_BOOKMARKS]];
+  } else if ([userActivity.activityType isEqualToString:kSiriOpenRecentTabs]) {
+    [connectionInformation
+        setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
+                                       OPEN_RECENT_TABS]];
   } else {
     // Do nothing for unknown activity type.
     return NO;
@@ -632,6 +629,18 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 }
 
 #pragma mark - Internal methods.
+
+// Returns an app startup parameter for opening a new tab with a post action.
++ (AppStartupParameters*)startupParametersForOpeningNewTabWithAction:
+    (TabOpeningPostOpeningAction)action {
+  AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+      initWithExternalURL:GURL(kChromeUINewTabURL)
+              completeURL:GURL(kChromeUINewTabURL)
+          applicationMode:ApplicationModeForTabOpening::NORMAL];
+
+  startupParams.postOpeningAction = action;
+  return startupParams;
+}
 
 + (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem
      connectionInformation:(id<ConnectionInformation>)connectionInformation

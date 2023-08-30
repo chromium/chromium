@@ -10,13 +10,15 @@
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
+#import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 
 @interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
                                     OpenInChromeIntentHandling,
                                     SearchInChromeIntentHandling,
                                     OpenReadingListIntentHandling,
-                                    OpenBookmarksIntentHandling>
+                                    OpenBookmarksIntentHandling,
+                                    OpenRecentTabsIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -136,6 +138,21 @@
 
   OpenBookmarksIntentResponse* response = [[OpenBookmarksIntentResponse alloc]
       initWithCode:OpenBookmarksIntentResponseCodeContinueInApp
+      userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - OpenRecentTabsIntentHandling
+
+- (void)handleOpenRecentTabs:(OpenRecentTabsIntent*)intent
+                  completion:
+                      (void (^)(OpenRecentTabsIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([OpenRecentTabsIntent class])];
+
+  OpenRecentTabsIntentResponse* response = [[OpenRecentTabsIntentResponse alloc]
+      initWithCode:OpenRecentTabsIntentResponseCodeContinueInApp
       userActivity:activity];
 
   completion(response);

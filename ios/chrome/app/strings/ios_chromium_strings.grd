@@ -737,6 +737,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_OPEN_BOOKMARKS_DESCRIPTION" desc="Shortcut description to open bookmarks in chrome [iOS only].">
         Opens the Chromium bookmarks.
       </message>
+      <message name="IDS_IOS_INTENTS_OPEN_RECENT_TABS_TITLE" desc="Siri Shortcut for open recent tabs title [iOS only]">
+        See Chromium Recent Tabs
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_RECENT_TABS_DESCRIPTION" desc="Shortcut description to open recent tabs in chrome [iOS only].">
+        Opens the Chromium Recent Tabs.
+      </message>
     </messages>
   </release>
 </grit>

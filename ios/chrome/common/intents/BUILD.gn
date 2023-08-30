@@ -12,5 +12,6 @@ intent_definition("intents") {
     "SearchInChromeIntent",
     "OpenReadingListIntent",
     "OpenBookmarksIntent",
+    "OpenRecentTabsIntent",
   ]
 }

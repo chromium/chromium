@@ -91,6 +91,9 @@
     case OPEN_BOOKMARKS:
       [description appendString:@", should open bookmarks"];
       break;
+    case OPEN_RECENT_TABS:
+      [description appendString:@", should open recent tabs"];
+      break;
     default:
       break;
   }

@@ -2494,6 +2494,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf openBookmarks];
       };
+    case OPEN_RECENT_TABS:
+      return ^{
+        [weakSelf openRecentTabs];
+      };
     default:
       return nil;
   }
@@ -2586,6 +2590,16 @@ void InjectNTP(Browser* browser) {
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
   [browserCoordinatorCommandsHandler showBookmarksManager];
+}
+
+- (void)openRecentTabs {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  [browserCoordinatorCommandsHandler showRecentTabs];
 }
 
 #pragma mark - TabOpening implementation.
