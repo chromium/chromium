@@ -7,6 +7,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {
   'use strict';
@@ -43,7 +44,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.addResult('');
     for (var resourceType of testResourceTypes) {
       var request = createNetworkRequest(mimeType, content, statusCode, resourceType);
-      var previewView = new Network.RequestPreviewView(request, new Network.RequestResponseView(request));
+      var previewView = new Network.RequestPreviewView.RequestPreviewView(request);
       previewView.wasShown();
       TestRunner.addResult(
           'ResourceType(' + resourceType.name() + '): ' + getViewName(await previewView.contentViewPromise));

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+
 (async function() {
   TestRunner.addResult(
     'Verifies that html resources are previewed with the encoding set in their content-type header');
@@ -17,7 +19,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
     const request = await TestRunner.networkManager.once(SDK.NetworkManager.Events.RequestFinished);
 
-    const previewView = new Network.RequestPreviewView(request);
+    const previewView = new Network.RequestPreviewView.RequestPreviewView(request);
     previewView.wasShown();
     const htmlPreviewView = await previewView.contentViewPromise;
     htmlPreviewView.wasShown();
