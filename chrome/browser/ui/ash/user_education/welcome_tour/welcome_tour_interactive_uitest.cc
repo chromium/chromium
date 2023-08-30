@@ -308,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
                 CheckHelpBubbleBodyText(
                     IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT),
                 CheckHelpBubbleDefaultButtonFocus(true),
-                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_CLOSE_TUTORIAL),
+                CheckHelpBubbleDefaultButtonText(
+                    IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT),
                 PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 7: Explore app window.
@@ -317,6 +318,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
                           CheckBrowserIsForWebApp(web_app::kHelpAppId))));
 }
 
+// An interactive UI test that locks the screen during the Welcome Tour.
 IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest,
                        LockScreenDuringWelcomeTour) {
   RunTestSequence(

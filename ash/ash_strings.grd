@@ -7008,6 +7008,9 @@ To shut down the device, press and hold the power button on the device again.
       </message>
 
       <!-- Welcome Tour -->
+      <message name="IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT" desc="Text shown on the button that completes the System UI Welcome Tour tutorial when triggered and opens the Explore app.">
+       Open Explore
+      </message>
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_ACCEPT_BUTTON_TEXT" desc="Text shown on the dialog's button that starts the System UI Welcome Tour tutorial when triggered.">
         Quick tour
       </message>

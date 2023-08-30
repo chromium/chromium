@@ -154,6 +154,9 @@ WelcomeTourController::GetTutorialDescriptions() {
                    std::forward_as_tuple())
           .first->second;
 
+  tutorial_description.complete_button_text_id =
+      IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT;
+
   // Step 0: Dialog.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::HiddenStep::WaitForShown(
