@@ -65,7 +65,7 @@ base::Value::List GetFontList_SlowBlocking() {
     font_item.Append(localized_name.value());
     font_list.Append(std::move(font_item));
   }
-
+  std::sort(font_list.begin(), font_list.end());
   return font_list;
 }
 
