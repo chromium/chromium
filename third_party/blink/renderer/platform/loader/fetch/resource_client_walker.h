@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_WALKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_WALKER_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -44,7 +45,7 @@ class ResourceClientWalker {
   explicit ResourceClientWalker(
       const HeapHashCountedSet<WeakMember<ResourceClient>>& set)
       : client_set_(set) {
-    CopyToVector(client_set_, client_vector_);
+    CopyToVector(*client_set_, client_vector_);
   }
 
   T* Next() {
@@ -52,7 +53,7 @@ class ResourceClientWalker {
     while (index_ < size) {
       ResourceClient* next = client_vector_[index_++];
       DCHECK(next);
-      if (client_set_.Contains(next)) {
+      if (client_set_->Contains(next)) {
         return static_cast<T*>(next);
       }
     }
@@ -60,7 +61,8 @@ class ResourceClientWalker {
   }
 
  private:
-  const HeapHashCountedSet<WeakMember<ResourceClient>>& client_set_;
+  const raw_ref<const HeapHashCountedSet<WeakMember<ResourceClient>>>
+      client_set_;
   HeapVector<Member<ResourceClient>> client_vector_;
   wtf_size_t index_ = 0;
 };

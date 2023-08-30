@@ -126,9 +126,9 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   agent_group_scheduler_->BindInterfaceBroker(std::move(broker_remote));
 
   channel_ = SyncChannel::Create(
-      /*listener=*/this, /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
+      /*listener=*/this, /*ipc_task_runner=*/render_thread_->GetIOTaskRunner(),
       /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner(),
-      render_thread_.GetShutdownEvent());
+      render_thread_->GetShutdownEvent());
 
   // TODO(crbug.com/1111231): Add necessary filters.
   // Currently, the renderer process has these filters:
@@ -139,7 +139,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   channel_->Init(
       ChannelMojo::CreateClientFactory(
           bootstrap.PassPipe(),
-          /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
+          /*ipc_task_runner=*/render_thread_->GetIOTaskRunner(),
           /*proxy_task_runner=*/agent_group_scheduler_->DefaultTaskRunner()),
       /*create_pipe_now=*/true);
 }
@@ -175,7 +175,7 @@ bool AgentSchedulingGroup::OnMessageReceived(const IPC::Message& message) {
 void AgentSchedulingGroup::OnBadMessageReceived(const IPC::Message& message) {
   // Not strictly required, since we don't currently do anything with bad
   // messages in the renderer, but if we ever do then this will "just work".
-  return ToImpl(render_thread_).OnBadMessageReceived(message);
+  return ToImpl(*render_thread_).OnBadMessageReceived(message);
 }
 
 void AgentSchedulingGroup::OnAssociatedInterfaceRequest(
@@ -195,7 +195,7 @@ bool AgentSchedulingGroup::Send(IPC::Message* message) {
   std::unique_ptr<IPC::Message> msg(message);
 
   if (GetMBIMode() == features::MBIMode::kLegacy)
-    return render_thread_.Send(msg.release());
+    return render_thread_->Send(msg.release());
 
   // This DCHECK is too idealistic for now - messages that are handled by
   // filters are sent control messages since they are intercepted before
@@ -212,7 +212,7 @@ bool AgentSchedulingGroup::Send(IPC::Message* message) {
 void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
   DCHECK(!listener_map_.Lookup(routing_id));
   listener_map_.AddWithID(listener, routing_id);
-  render_thread_.AddRoute(routing_id, listener);
+  render_thread_->AddRoute(routing_id, listener);
 
   // See warning in `GetAssociatedInterface`.
   // Replay any `GetAssociatedInterface` calls for this route.
@@ -230,13 +230,13 @@ void AgentSchedulingGroup::AddFrameRoute(
     IPC::Listener* listener,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   AddRoute(routing_id, listener);
-  render_thread_.AttachTaskRunnerToRoute(routing_id, std::move(task_runner));
+  render_thread_->AttachTaskRunnerToRoute(routing_id, std::move(task_runner));
 }
 
 void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
   DCHECK(listener_map_.Lookup(routing_id));
   listener_map_.Remove(routing_id);
-  render_thread_.RemoveRoute(routing_id);
+  render_thread_->RemoveRoute(routing_id);
 }
 
 void AgentSchedulingGroup::DidUnloadRenderFrame(
@@ -245,7 +245,7 @@ void AgentSchedulingGroup::DidUnloadRenderFrame(
 }
 
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
-  RenderThreadImpl& renderer = ToImpl(render_thread_);
+  RenderThreadImpl& renderer = ToImpl(*render_thread_);
   renderer.SetScrollAnimatorEnabled(
       params->web_preferences.enable_scroll_animator, PassKey());
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
@@ -137,7 +138,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
                                    const ui::AXTreeUpdate& tree_update);
 
     // `image_fetcher_` owns `this`.
-    chrome_pdf::PdfAccessibilityImageFetcher* const image_fetcher_;
+    const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
 
     uint32_t remaining_page_count_;
     // True if there are pending OCR requests. Used to determine if `OcrPage`
@@ -327,11 +328,11 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // ‌PdfAccessibilityTree belongs to the PDF plugin which is created by the
   // renderer. `render_frame_` is reset when renderer sends OnDestruct() to its
   // observers.
-  content::RenderFrame* render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
 
   // Unowned. Must outlive `this`.
-  chrome_pdf::PdfAccessibilityActionHandler* const action_handler_;
-  chrome_pdf::PdfAccessibilityImageFetcher* const image_fetcher_;
+  const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler> action_handler_;
+  const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied

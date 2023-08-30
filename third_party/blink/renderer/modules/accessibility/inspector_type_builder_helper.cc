@@ -217,15 +217,15 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource& name_source) {
   std::unique_ptr<AXValueSource> value_source =
       AXValueSource::create().setType(type).build();
   if (!name_source.related_objects.empty()) {
-    if (name_source.attribute == html_names::kAriaLabelledbyAttr ||
-        name_source.attribute == html_names::kAriaLabeledbyAttr) {
+    if ((*name_source.attribute) == html_names::kAriaLabelledbyAttr ||
+        (*name_source.attribute) == html_names::kAriaLabeledbyAttr) {
       std::unique_ptr<AXValue> attribute_value = CreateRelatedNodeListValue(
           name_source.related_objects, AXValueTypeEnum::IdrefList);
       if (!name_source.attribute_value.IsNull())
         attribute_value->setValue(protocol::StringValue::create(
             name_source.attribute_value.GetString()));
       value_source->setAttributeValue(std::move(attribute_value));
-    } else if (name_source.attribute == QualifiedName::Null()) {
+    } else if ((*name_source.attribute) == QualifiedName::Null()) {
       value_source->setNativeSourceValue(CreateRelatedNodeListValue(
           name_source.related_objects, AXValueTypeEnum::NodeList));
     }
@@ -235,8 +235,9 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource& name_source) {
   if (!name_source.text.IsNull())
     value_source->setValue(
         CreateValue(name_source.text, AXValueTypeEnum::ComputedString));
-  if (name_source.attribute != QualifiedName::Null())
-    value_source->setAttribute(name_source.attribute.LocalName().GetString());
+  if ((*name_source.attribute) != QualifiedName::Null()) {
+    value_source->setAttribute(name_source.attribute->LocalName().GetString());
+  }
   if (name_source.superseded)
     value_source->setSuperseded(true);
   if (name_source.invalid)

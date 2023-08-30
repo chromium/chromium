@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 
 #include "base/location.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -237,7 +238,7 @@ class HistogramCounter {
 
  private:
   std::unique_ptr<base::HistogramSamples> GetSamples() {
-    return tester_.GetHistogramSamplesSinceCreation(
+    return tester_->GetHistogramSamplesSinceCreation(
         "Memory.Renderer.BlinkCachedMetadataGetResult");
   }
 
@@ -246,7 +247,7 @@ class HistogramCounter {
     return GetSamples()->GetCount(static_cast<int>(state));
   }
 
-  const base::HistogramTester& tester_;
+  const raw_ref<const base::HistogramTester> tester_;
 };
 
 TEST_F(V8ScriptRunnerTest, resourcelessShouldPass) {

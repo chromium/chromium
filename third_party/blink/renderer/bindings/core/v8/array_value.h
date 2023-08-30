@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ARRAY_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ARRAY_VALUE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
@@ -53,7 +54,7 @@ class CORE_EXPORT ArrayValue final {
 
  private:
   v8::Local<v8::Array> array_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 };
 
 }  // namespace blink

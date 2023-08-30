@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_EXCEPTION_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_EXCEPTION_STATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
@@ -50,7 +51,7 @@ class PLATFORM_EXPORT NoAllocDirectCallExceptionState : public ExceptionState {
   void ClearException() override;
 
  private:
-  NoAllocDirectCallHost* host_;
+  raw_ptr<NoAllocDirectCallHost> host_;
 
   // Performance hack: The use of a "union" here prevents deferred_exception_
   // from being destroyed automatically by the destructor of

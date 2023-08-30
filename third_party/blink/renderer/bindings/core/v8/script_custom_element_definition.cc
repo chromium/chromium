@@ -38,16 +38,16 @@ ScriptCustomElementDefinition::ScriptCustomElementDefinition(
                               data.is_form_associated_
                                   ? FormAssociationFlag::kYes
                                   : FormAssociationFlag::kNo),
-      script_state_(data.script_state_),
-      constructor_(data.constructor_),
-      connected_callback_(data.connected_callback_),
-      disconnected_callback_(data.disconnected_callback_),
-      adopted_callback_(data.adopted_callback_),
-      attribute_changed_callback_(data.attribute_changed_callback_),
-      form_associated_callback_(data.form_associated_callback_),
-      form_reset_callback_(data.form_reset_callback_),
-      form_disabled_callback_(data.form_disabled_callback_),
-      form_state_restore_callback_(data.form_state_restore_callback_) {
+      script_state_(data.script_state_.get()),
+      constructor_(data.constructor_.get()),
+      connected_callback_(data.connected_callback_.get()),
+      disconnected_callback_(data.disconnected_callback_.get()),
+      adopted_callback_(data.adopted_callback_.get()),
+      attribute_changed_callback_(data.attribute_changed_callback_.get()),
+      form_associated_callback_(data.form_associated_callback_.get()),
+      form_reset_callback_(data.form_reset_callback_.get()),
+      form_disabled_callback_(data.form_disabled_callback_.get()),
+      form_state_restore_callback_(data.form_state_restore_callback_.get()) {
   DCHECK(data.registry_);
 }
 

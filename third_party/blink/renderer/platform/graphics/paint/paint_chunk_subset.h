@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -93,7 +94,7 @@ class PaintChunkSubset {
       return subset_->paint_artifact_->PaintChunks()[IndexInPaintArtifact()];
     }
 
-    const PaintChunkSubset* subset_;
+    raw_ptr<const PaintChunkSubset> subset_;
     wtf_size_t subset_index_;
   };
 

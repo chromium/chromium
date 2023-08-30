@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -45,7 +46,7 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
  private:
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
 
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   GpuCodecSupportWaiter gpu_codec_support_waiter_;
 

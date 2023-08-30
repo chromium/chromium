@@ -24,7 +24,7 @@ uint32_t TestingClockTimeProvider::GetCurrentDay() const {
 }
 
 base::Time TestingClockTimeProvider::Now() const {
-  return clock_.Now();
+  return clock_->Now();
 }
 
 }  // namespace feature_engagement

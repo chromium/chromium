@@ -36,6 +36,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -209,8 +210,8 @@ class CORE_EXPORT SerializedScriptValue
     STACK_ALLOCATED();
 
    public:
-    MessagePortArray* message_ports = nullptr;
-    const WebBlobInfoArray* blob_info = nullptr;
+    raw_ptr<MessagePortArray> message_ports = nullptr;
+    raw_ptr<const WebBlobInfoArray> blob_info = nullptr;
   };
   v8::Local<v8::Value> Deserialize(v8::Isolate* isolate) {
     return Deserialize(isolate, DeserializeOptions());

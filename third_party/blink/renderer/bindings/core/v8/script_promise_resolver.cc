@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -37,7 +38,7 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
   }
 
  private:
-  ScriptPromiseResolver* resolver_;
+  raw_ptr<ScriptPromiseResolver> resolver_;
 };
 
 ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)

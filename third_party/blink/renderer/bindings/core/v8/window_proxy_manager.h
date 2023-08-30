@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/remote_window_proxy.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -66,7 +67,7 @@ class CORE_EXPORT WindowProxyManager
   WindowProxy* CreateWindowProxy(DOMWrapperWorld&);
   WindowProxy* WindowProxyMaybeUninitialized(DOMWrapperWorld&);
 
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
   const Member<Frame> frame_;
   const FrameType frame_type_;
 

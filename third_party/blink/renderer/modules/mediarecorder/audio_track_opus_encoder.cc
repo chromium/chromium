@@ -148,13 +148,15 @@ void AudioTrackOpusEncoder::OnSetFormat(
       (bits_per_second_ > 0)
           ? base::saturated_cast<opus_int32>(bits_per_second_)
           : OPUS_AUTO;
-  if (opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
+  if (opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_BITRATE(bitrate)) !=
+      OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus bitrate: " << bitrate;
     return;
   }
 
   const opus_int32 vbr_enabled = static_cast<opus_int32>(vbr_enabled_);
-  if (opus_encoder_ctl(opus_encoder_, OPUS_SET_VBR(vbr_enabled)) != OPUS_OK) {
+  if (opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_VBR(vbr_enabled)) !=
+      OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus VBR mode: " << vbr_enabled;
     return;
   }

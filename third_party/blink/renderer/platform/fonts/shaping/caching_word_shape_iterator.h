@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPE_ITERATOR_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -64,7 +66,7 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     if (!shape_by_word_) {
       if (start_index_)
         return false;
-      *word_result = ShapeWord(text_run_, font_);
+      *word_result = ShapeWord(*text_run_, font_);
       start_index_ = 1;
       return word_result->get();
     }
@@ -88,27 +90,30 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
   }
 
   unsigned NextWordEndIndex() const {
-    const unsigned length = text_run_.length();
+    const unsigned length = text_run_->length();
     if (start_index_ >= length)
       return 0;
 
-    if (start_index_ + 1u == length || IsWordDelimiter(text_run_[start_index_]))
+    if (start_index_ + 1u == length ||
+        IsWordDelimiter((*text_run_)[start_index_])) {
       return start_index_ + 1;
+    }
 
     // 8Bit words end at isWordDelimiter().
-    if (text_run_.Is8Bit()) {
+    if (text_run_->Is8Bit()) {
       for (unsigned i = start_index_ + 1;; i++) {
-        if (i == length || IsWordDelimiter(text_run_[i]))
+        if (i == length || IsWordDelimiter((*text_run_)[i])) {
           return i;
+        }
       }
     }
 
     // Non-CJK/Emoji words end at isWordDelimiter() or CJK/Emoji characters.
     unsigned end = start_index_;
-    UChar32 ch = text_run_.CodepointAtAndNext(end);
+    UChar32 ch = text_run_->CodepointAtAndNext(end);
     if (!Character::IsCJKIdeographOrSymbol(ch)) {
       for (unsigned next_end = end; end < length; end = next_end) {
-        ch = text_run_.CodepointAtAndNext(next_end);
+        ch = text_run_->CodepointAtAndNext(next_end);
         if (IsWordDelimiter(ch) || Character::IsCJKIdeographOrSymbolBase(ch))
           return end;
       }
@@ -120,7 +125,7 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     // worsen the cache efficiency.
     bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
     for (unsigned next_end = end; end < length; end = next_end) {
-      ch = text_run_.CodepointAtAndNext(next_end);
+      ch = text_run_->CodepointAtAndNext(next_end);
       // Modifier check in order not to split Emoji sequences.
       if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
           ch == kZeroWidthJoinerCharacter || Character::IsEmojiComponent(ch) ||
@@ -146,13 +151,13 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     if (!end_index || end_index <= start_index_)
       return false;
 
-    const unsigned length = text_run_.length();
+    const unsigned length = text_run_->length();
     if (!start_index_ && end_index == length) {
-      *result = ShapeWord(text_run_, font_);
+      *result = ShapeWord(*text_run_, font_);
     } else {
       DCHECK_LE(end_index, length);
       TextRun sub_run =
-          text_run_.SubRun(start_index_, end_index - start_index_);
+          text_run_->SubRun(start_index_, end_index - start_index_);
       *result = ShapeWord(sub_run, font_);
     }
     start_index_ = end_index;
@@ -160,17 +165,18 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
   }
 
   unsigned EndIndexUntil(UChar ch) const {
-    unsigned length = text_run_.length();
+    unsigned length = text_run_->length();
     DCHECK_LT(start_index_, length);
     for (unsigned i = start_index_ + 1;; i++) {
-      if (i == length || text_run_[i] == ch)
+      if (i == length || (*text_run_)[i] == ch) {
         return i;
+      }
     }
   }
 
-  ShapeCache* shape_cache_;
-  const TextRun& text_run_;
-  const Font* font_;
+  raw_ptr<ShapeCache> shape_cache_;
+  const raw_ref<const TextRun> text_run_;
+  raw_ptr<const Font> font_;
   ShapeResultSpacing<TextRun> spacing_;
   unsigned start_index_ : 31;
   unsigned shape_by_word_ : 1;

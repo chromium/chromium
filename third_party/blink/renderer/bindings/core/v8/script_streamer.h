@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -250,7 +251,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   std::unique_ptr<mojo::SimpleWatcher> watcher_;
 
   // Fields active during streaming.
-  SourceStream* stream_ = nullptr;
+  raw_ptr<SourceStream> stream_ = nullptr;
   std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;
 
   // The reason that streaming is disabled

@@ -36,6 +36,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/ostream_operators.h"
@@ -121,7 +122,7 @@ class ScopedDrawBuffer {
   }
 
  private:
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
   GLenum prev_draw_buffer_;
   GLenum new_draw_buffer_;
 };

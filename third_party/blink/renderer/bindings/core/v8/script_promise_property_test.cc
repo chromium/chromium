@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -47,14 +48,14 @@ class StubFunction : public ScriptFunction::Callable {
       : value_(value), call_count_(call_count) {}
 
   ScriptValue Call(ScriptState*, ScriptValue arg) override {
-    value_ = arg;
-    call_count_++;
+    (*value_) = arg;
+    (*call_count_)++;
     return ScriptValue();
   }
 
  private:
-  ScriptValue& value_;
-  size_t& call_count_;
+  const raw_ref<ScriptValue> value_;
+  const raw_ref<size_t> call_count_;
 };
 
 class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {

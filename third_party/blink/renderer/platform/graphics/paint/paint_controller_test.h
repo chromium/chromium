@@ -30,7 +30,7 @@ class PaintControllerCycleScopeForTest : public PaintControllerCycleScope {
 class CommitCycleScope : public PaintControllerCycleScopeForTest {
  public:
   using PaintControllerCycleScopeForTest::PaintControllerCycleScopeForTest;
-  ~CommitCycleScope() { controller_.CommitNewDisplayItems(); }
+  ~CommitCycleScope() { controller_->CommitNewDisplayItems(); }
 };
 
 class PaintControllerTestBase : public testing::Test {

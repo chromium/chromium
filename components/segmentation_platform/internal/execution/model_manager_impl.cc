@@ -44,7 +44,7 @@ ModelManagerImpl::ModelManagerImpl(
       model_updated_callback_(model_updated_callback) {}
 
 void ModelManagerImpl::Initialize() {
-  for (SegmentId segment_id : segment_ids_) {
+  for (SegmentId segment_id : *segment_ids_) {
     // Server models
     std::unique_ptr<ModelProvider> provider =
         model_provider_factory_->CreateProvider(segment_id);

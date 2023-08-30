@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_manager.h"
@@ -89,7 +90,7 @@ class ModelManagerImpl : public ModelManager {
   void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
                                   bool success);
 
-  const base::flat_set<SegmentId>& segment_ids_;
+  const raw_ref<const base::flat_set<SegmentId>> segment_ids_;
 
   // All the relevant handlers for each of the segments.
   std::map<std::pair<SegmentId, proto::ModelSource>,

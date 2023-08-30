@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WINDOW_PROXY_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -269,7 +270,7 @@ class CORE_EXPORT WindowProxy : public GarbageCollected<WindowProxy> {
 #endif
 
  private:
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
   const Member<Frame> frame_;
 #if DCHECK_IS_ON()
   bool is_global_object_attached_ = false;
