@@ -347,14 +347,6 @@ void OutputPresenterGL::ScheduleOverlayPlane(
 #endif
 }
 
-bool OutputPresenterGL::SupportsGpuVSync() const {
-  return presenter_->SupportsGpuVSync();
-}
-
-void OutputPresenterGL::SetGpuVSyncEnabled(bool enabled) {
-  presenter_->SetGpuVSyncEnabled(enabled);
-}
-
 void OutputPresenterGL::SetVSyncDisplayID(int64_t display_id) {
   presenter_->SetVSyncDisplayID(display_id);
 }

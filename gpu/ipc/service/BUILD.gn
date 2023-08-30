@@ -119,11 +119,7 @@ component("service") {
       "built_in_shader_cache_loader.h",
       "built_in_shader_cache_writer.cc",
       "built_in_shader_cache_writer.h",
-      "gpu_vsync_mac.h",
-      "gpu_vsync_mac.mm",
       "image_transport_surface_mac.mm",
-      "timer_based_vsync_mac.h",
-      "timer_based_vsync_mac.mm",
     ]
     deps += [
       "//ui/accelerated_widget_mac",

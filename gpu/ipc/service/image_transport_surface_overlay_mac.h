@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/gfx/ca_layer_result.h"
@@ -17,12 +16,9 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/presenter.h"
 
-// Put gpu_vsync_mac.h (which includes ui/display/mac/display_link_mac.h)
-// after ui/gl/gl_xxx.h. There is a conflict between macOS sdk gltypes.h and
-// third_party/mesa_headers/GL/glext.h
+// Put ui/display/mac/display_link_mac.h after ui/gl/gl_xxx.h. There is a
+// conflict between macOS sdk gltypes.h and third_party/mesa_headers/GL/glext.h.
 #if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/service/gpu_vsync_mac.h"
-
 #include "ui/display/mac/display_link_mac.h"
 #include "ui/display/types/display_constants.h"
 #endif
