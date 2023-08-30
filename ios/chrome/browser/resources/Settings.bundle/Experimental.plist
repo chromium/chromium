@@ -250,6 +250,16 @@
                 </dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>WidgetKit refresh 5 minutes</string>
+			<key>Key</key>
+			<string>WidgetKitRefreshFiveMinutes</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Debug Settings</string>

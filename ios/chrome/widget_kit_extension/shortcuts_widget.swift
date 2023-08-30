@@ -6,15 +6,27 @@ import Foundation
 import SwiftUI
 import WidgetKit
 
+enum Constants {
+  //A constant variable to count the number of seconds in a month
+  static let secondsInFourWeeks: TimeInterval = 4 * 7 * 24 * 60 * 60
+
+  //A constant variable to count the number of seconds in a month
+  static let secondsInFiveMinutes: TimeInterval = 5 * 60
+}
+
 // Specifies the date of the current widget and indicates the widget's content.
 struct ConfigureShortcutsWidgetEntry: TimelineEntry {
-  // Date and time to update the widget’s content.
+  // Date and time to update the widget’s shortcuts.
   let date: Date
   // A dictionary containing the most visited URLs
   // and their NTPTiles from the UserDefaults.
   let mostVisitedSites: [NSURL: NTPTile]
   // A Boolean value that indicates when the widget appears in the widget gallery.
-  var isPreview: Bool = false
+  let isPreview: Bool
+  // A Boolean value that indicates when the user didn't opened Chrome for the more than one month.
+  let isExpired: Bool
+  // Expiration date of the widget if it hasn't expired.
+  let expirationDate: Date?
 }
 
 // Advises WidgetKit when to update a widget’s display.
@@ -25,18 +37,66 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
 
   // Provides a timeline entry representing a placeholder version of the widget.
   func placeholder(in context: TimelineProviderContext) -> Entry {
-    return Entry(date: Date(), mostVisitedSites: [NSURL: NTPTile]())
+    return Entry(
+      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
   }
 
-  // This function is to load the most visited websites
-  // from NTPTiles from the UserDefaults.
-  func loadMostVisitedSites() -> [NSURL: NTPTile] {
-    let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+  // Return an Entry with the most visited sites
+  func loadMostVisitedSitesEntry(isPreview: Bool) -> Entry {
+
+    // A constant of an empty entry
+    let emptyEntry = Entry(
+      date: Date(),
+      mostVisitedSites: [:],
+      isPreview: isPreview,
+      isExpired: false,
+      expirationDate: nil
+    )
+    // A constant of an expired entry
+    let expiredEntry = Entry(
+      date: Date(),
+      mostVisitedSites: [:],
+      isPreview: isPreview,
+      isExpired: true,
+      expirationDate: nil
+    )
+    // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery
+    if isPreview {
+      return emptyEntry
+    }
+
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+      let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
+        as? Date
+    else {
+      return emptyEntry
+    }
+
+    let extensionsFlags =
+      sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
+    let fiveMinutestoRefreshTestFlag =
+      extensionsFlags["WidgetKitRefreshFiveMinutes"] as? [String: Any] ?? [:]
+    // A constant to know the status of WidgetKitRefreshFiveMinutes Test Flag
+    let fiveMinutestoRefreshTestValue =
+      fiveMinutestoRefreshTestFlag["FieldTrialValue"] as? Bool ?? false
+
+    // A constant to get the number of seconds of the last modification date of the installed widget
+    let numberOfSecondsSinceLastModification = Date.now.timeIntervalSince(lastModificationDate)
+    // A constant to get the number of seconds to refresh the widget after it has been closed
+    let numberOfSecondsFromLastModificationToExpiration =
+      fiveMinutestoRefreshTestValue ? Constants.secondsInFiveMinutes : Constants.secondsInFourWeeks
+
+    let expirationDate = lastModificationDate.advanced(
+      by: numberOfSecondsFromLastModificationToExpiration)
+
+    // Return an Expired entry in the case of passing the limit of refreshing seconds
+    if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
+      return expiredEntry
+    }
+
     guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
       let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-    else {
-      return [:]
-    }
+    else { return emptyEntry }
 
     unarchiver.requiresSecureCoding = false
 
@@ -44,19 +104,16 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
       let mostVisitedSites = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
         as? [NSURL: NTPTile]
     else {
-      return [:]
+      return emptyEntry
     }
-    return mostVisitedSites
-  }
 
-  // Return an empty list if the user check from the widget gallery and not the home page.
-  func initializeMostVisitedSites(isPreview: Bool) -> Entry {
-    var entry = Entry(
+    return Entry(
       date: Date(),
-      mostVisitedSites: (isPreview ? [:] : loadMostVisitedSites())
+      mostVisitedSites: mostVisitedSites,
+      isPreview: isPreview,
+      isExpired: false,
+      expirationDate: expirationDate
     )
-    entry.isPreview = isPreview
-    return entry
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -64,7 +121,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Entry) -> Void
   ) {
-    let entry = initializeMostVisitedSites(isPreview: context.isPreview)
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
     completion(entry)
   }
 
@@ -73,9 +130,10 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Timeline<Entry>) -> Void
   ) {
-    let entry = initializeMostVisitedSites(isPreview: context.isPreview)
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
     let entries = [entry]
-    let timeline = Timeline(entries: entries, policy: .never)
+    let timeline = Timeline(
+      entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
     completion(timeline)
   }
 }
@@ -130,6 +188,8 @@ struct ShortcutsWidgetEntryView: View {
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_OPEN_SHORTCUT_LABEL")
     static let noShortcutsAvailableTitle = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL")
+    static let expiredShortcutsTitle = String(
+      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_EXPIRED_OPEN_CHROME")
   }
 
   enum Colors {
@@ -193,11 +253,18 @@ struct ShortcutsWidgetEntryView: View {
     .frame(minWidth: 0, maxWidth: .infinity)
   }
 
-  // Shows the "No shortcuts available" text when the user's delete
-  // all his most visited websites from Chrome App.
+  // Shows the "No shortcuts available" text when the user deletes
+  // all their most visited websites from Chrome App.
   private var zeroVisitedSitesView: some View {
     WebsiteLabel(websiteTitle: Strings.noShortcutsAvailableTitle).padding(.leading, 10)
       .accessibilityLabel(Strings.noShortcutsAvailableTitle)
+  }
+
+  // Shows the "Open Chrome to see your most visited sites" text
+  // if Chrome has not been opened for a long time.
+  private var expiredMostVisitedSitesView: some View {
+    WebsiteLabel(websiteTitle: Strings.expiredShortcutsTitle).padding(.leading, 10)
+      .accessibilityLabel(Strings.expiredShortcutsTitle)
   }
 
   // Shows the shortcut's icon with website's title on the left.
@@ -252,6 +319,8 @@ struct ShortcutsWidgetEntryView: View {
 
           if entry.isPreview {
             websitesPlaceholder
+          } else if entry.isExpired {
+            expiredMostVisitedSitesView
           } else {
             switch ntpTiles.count {
             case 0:

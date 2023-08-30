@@ -158,6 +158,7 @@ void UpdateShortcutsWidget() {
 }
 
 void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
+  NSDate* last_modification_date = NSDate.date;
   NSError* error = nil;
   NSData* data = [NSKeyedArchiver archivedDataWithRootObject:most_visited_data
                                        requiringSecureCoding:NO
@@ -171,6 +172,8 @@ void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
   [sharedDefaults setObject:data forKey:app_group::kSuggestedItems];
+  [sharedDefaults setObject:last_modification_date
+                     forKey:app_group::kSuggestedItemsLastModificationDate];
   UpdateShortcutsWidget();
 }
 

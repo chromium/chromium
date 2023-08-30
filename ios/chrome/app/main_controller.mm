@@ -175,6 +175,9 @@ NSString* const kMailtoHandlingInitialization = @"MailtoHandlingInitialization";
 // Constants for deferring saving field trial values
 NSString* const kSaveFieldTrialValues = @"SaveFieldTrialValues";
 
+// Constants for refreshing the WidgetKit after five minutes
+NSString* const kWidgetKitRefreshFiveMinutes = @"WidgetKitRefreshFiveMinutes";
+
 // Constants for deferred check if it is necessary to send pings to
 // Chrome distribution related services.
 NSString* const kSendInstallPingIfNecessary = @"SendInstallPingIfNecessary";
@@ -1106,6 +1109,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::SysUTF8ToNSString(syncer::kPasswordNotesWithBackup.name) : @{
       kFieldTrialValueKey : credentialProviderExtensionPasswordNotesValue,
       kFieldTrialVersionKey : credentialProviderExtensionPasswordNotesVersion,
+    },
+    kWidgetKitRefreshFiveMinutes : @{
+      kFieldTrialValueKey : @([[NSUserDefaults standardUserDefaults]
+          boolForKey:kWidgetKitRefreshFiveMinutes]),
+      kFieldTrialVersionKey : @1,
     },
   };
   [sharedDefaults setObject:fieldTrialValues

@@ -71,6 +71,9 @@ NSString* const kOpenCommandSourceCredentialsExtension =
 
 NSString* const kSuggestedItems = @"SuggestedItems";
 
+NSString* const kSuggestedItemsLastModificationDate =
+    @"SuggestedItemsLastModificationDate";
+
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];
 }
