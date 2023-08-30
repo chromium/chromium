@@ -99,7 +99,6 @@ void PersistentNotificationHandler::OnClick(
     const absl::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(origin.is_valid());
 
   NotificationMetricsLogger* metrics_logger =
       NotificationMetricsLoggerFactory::GetForBrowserContext(profile);
@@ -129,18 +128,22 @@ void PersistentNotificationHandler::OnClick(
   else
     metrics_logger->LogPersistentNotificationClick();
 
-  // Notification clicks are considered a form of engagement with the |origin|,
-  // thus we log the interaction with the Site Engagement service.
-  site_engagement::SiteEngagementService::Get(profile)
-      ->HandleNotificationInteraction(origin);
+  // TODO(crbug.com/1477232)
+  if (!origin.is_empty()) {
+    // Notification clicks are considered a form of engagement with the
+    // |origin|, thus we log the interaction with the Site Engagement service.
+    site_engagement::SiteEngagementService::Get(profile)
+        ->HandleNotificationInteraction(origin);
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
-    auto* service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile);
-    // This service might be missing for incognito profiles and in tests.
-    if (service)
-      service->RecordNotificationInteraction(origin);
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kNotificationInteractionHistory)) {
+      auto* service =
+          NotificationsEngagementServiceFactory::GetForProfile(profile);
+      // This service might be missing for incognito profiles and in tests.
+      if (service) {
+        service->RecordNotificationInteraction(origin);
+      }
+    }
   }
 
   content::NotificationEventDispatcher::GetInstance()
