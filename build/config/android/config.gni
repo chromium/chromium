@@ -110,6 +110,10 @@ if (is_android || is_chromeos) {
 
   if (!defined(default_android_ndk_root)) {
     default_android_ndk_root = "//third_party/android_toolchain/ndk"
+    if (current_cpu == "riscv64") {
+      # Today (2023-08-30) only the canary Android NDK supports RISC-V64.
+      default_android_ndk_root = "//third_party/android_toolchain_canary/ndk"
+    }
     default_android_ndk_version = "r25c"
     default_android_ndk_major_version = 25
   } else {
@@ -195,6 +199,10 @@ if (is_android || is_chromeos) {
     if (default_min_sdk_version < 21) {
       # Android did not support 64 bit before API 21.
       android64_ndk_api_level = 21
+    }
+    if (current_cpu == "riscv64" && default_min_sdk_version < 35) {
+      # Android did not support RISC-V64 before API 35.
+      android64_ndk_api_level = 35
     }
 
     android_sdk_root = default_android_sdk_root
