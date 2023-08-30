@@ -63,16 +63,15 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         super(RebaselineCL, self).__init__(options=[
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
-            optparse.make_option(
-                '--fill-missing',
-                dest='fill_missing',
-                action='store_true',
-                default=None,
-                help='If some platforms have no try job results, use results '
-                'from try job results of other platforms.'),
+            optparse.make_option('--fill-missing',
+                                 dest='fill_missing',
+                                 action='store_true',
+                                 default=None,
+                                 help=optparse.SUPPRESS_HELP),
             optparse.make_option('--no-fill-missing',
                                  dest='fill_missing',
-                                 action='store_false'),
+                                 action='store_false',
+                                 help=optparse.SUPPRESS_HELP),
             self.test_name_file_option,
             optparse.make_option(
                 '--builders',
@@ -125,6 +124,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._tool = tool
         self._dry_run = options.dry_run
         self.git_cl = self.git_cl or GitCL(tool)
+
+        # TODO(crbug.com/1383284): Cleanup this warning and the options above.
+        if options.fill_missing is not None:
+            _log.warning(
+                '`--{no-,}fill-missing` is deprecated and will be removed '
+                'soon due to limited utility (crbug.com/1383284).')
+
         # '--dry-run' implies '--no-trigger-jobs'.
         options.trigger_jobs = options.trigger_jobs and not self._dry_run
         if args and options.test_name_file:
@@ -169,23 +175,19 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             for builder in sorted(builders_without_results):
                 _log.warning('  %s', builder)
 
+        fill_missing = False
         builders_without_results.update(builders_with_infra_failures)
-        if options.fill_missing is None and builders_without_results:
-            should_continue = self._tool.user.confirm(
-                'Would you like to continue?',
-                default=self._tool.user.DEFAULT_NO)
-            if not should_continue:
-                _log.info('Aborting.')
-                return 1
-            options.fill_missing = self._tool.user.confirm(
-                'Would you like to try to fill in missing results with '
-                'available results?\n'
-                'Note: This is generally not suggested unless the results '
+        if builders_without_results:
+            fill_missing = self._tool.user.confirm(
+                'Would you like to continue?\n'
+                'Note: This will try to fill in missing results '
+                'with available results.\n'
+                'This is generally not suggested unless the results '
                 'are platform agnostic.',
                 default=self._tool.user.DEFAULT_NO)
-            if not options.fill_missing:
-                _log.info('Please rebaseline again for builders '
-                          'with incomplete results later.')
+            if not fill_missing:
+                _log.info('Aborting. Please retry builders with no results.')
+                return 1
 
         if options.test_name_file:
             test_baseline_set = self._make_test_baseline_set_from_file(
@@ -197,7 +199,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             test_baseline_set = self._make_test_baseline_set(
                 jobs_to_results, options.only_changed_tests)
 
-        if options.fill_missing:
+        if fill_missing:
             self.fill_in_missing_results(test_baseline_set)
         with self._io_pool or contextlib.nullcontext():
             return self.rebaseline(options, test_baseline_set)

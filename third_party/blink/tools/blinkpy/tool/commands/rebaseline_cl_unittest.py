@@ -430,28 +430,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Linux\n',
             'WARNING:   MOCK Try Mac\n',
-            'INFO: Would you like to continue?\n',
-            'INFO: Aborting.\n',
-        ])
-
-    def test_execute_with_canceled_job(self):
-        builds = {
-            Build('MOCK Try Win', 5000, 'Build-1'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000, 'Build-2'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Linux', 6000, 'Build-3'):
-            TryJobStatus('COMPLETED', 'CANCELED'),
-        }
-        self.command.git_cl = MockGitCL(self.tool, builds)
-        exit_code = self.command.execute(self.command_options(), [], self.tool)
-        self.assertEqual(exit_code, 1)
-        self.assertLog([
-            'INFO: All builds finished.\n',
-            'WARNING: Some builders have no results:\n',
-            'WARNING:   MOCK Try Linux\n',
-            'INFO: Would you like to continue?\n',
-            'INFO: Aborting.\n',
+            'INFO: Would you like to continue?\n'
+            'Note: This will try to fill in missing results '
+            'with available results.\n'
+            'This is generally not suggested unless the results are '
+            'platform agnostic.\n',
+            'INFO: Aborting. Please retry builders with no results.\n',
         ])
 
     def test_execute_with_passing_jobs(self):
@@ -520,8 +504,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO:   MOCK Try Win         5000    FAILURE   try   \n',
             'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Linux\n',
-            'INFO: Would you like to continue?\n',
-            'INFO: Aborting.\n',
+            'INFO: Would you like to continue?\n'
+            'Note: This will try to fill in missing results '
+            'with available results.\n'
+            'This is generally not suggested unless the results are '
+            'platform agnostic.\n',
+            'INFO: Aborting. Please retry builders with no results.\n',
         ])
         self.assertEqual(self.command.git_cl.calls, [])
 
@@ -653,18 +641,27 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: All builds finished.\n',
             'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Win\n',
-            'INFO: Would you like to continue?\n',
-            'INFO: Aborting.\n',
+            'INFO: Would you like to continue?\n'
+            'Note: This will try to fill in missing results '
+            'with available results.\n'
+            'This is generally not suggested unless the results are '
+            'platform agnostic.\n',
+            'INFO: Aborting. Please retry builders with no results.\n',
         ])
 
     def test_execute_interrupted_results_with_fill_missing(self):
         build = Build('MOCK Try Win', 5000, 'Build-1')
         self.builds[build] = TryJobStatus.from_bb_status('INFRA_FAILURE')
-        self.tool.user.set_canned_responses(['y', 'n'])
-        exit_code = self.command.execute(self.command_options(),
-                                         ['one/flaky-fail.html'], self.tool)
+        self.tool.user.set_canned_responses(['y'])
+        # TODO(crbug.com/1383284): After `--fill-missing` is fully deprecated,
+        # stop checking for the deprecation warning.
+        exit_code = self.command.execute(
+            self.command_options(fill_missing=True), ['one/flaky-fail.html'],
+            self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
+            'WARNING: `--{no-,}fill-missing` is deprecated and will be removed '
+            'soon due to limited utility (crbug.com/1383284).\n',
             'WARNING: Some builds have infrastructure failures:\n',
             'WARNING:   "MOCK Try Win" build 5000\n',
             'WARNING: Examples of infrastructure failures include:\n',
@@ -676,13 +673,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: See https://chromium.googlesource.com/chromium/src/+/'
             'HEAD/docs/testing/web_test_expectations.md#handle-bot-timeouts\n',
             'INFO: All builds finished.\n',
-            'INFO: Would you like to continue?\n',
-            'INFO: Would you like to try to fill in missing results '
-            'with available results?\n'
-            'Note: This is generally not suggested unless the results '
-            'are platform agnostic.\n',
-            'INFO: Please rebaseline again for builders '
-            'with incomplete results later.\n',
+            'INFO: Would you like to continue?\n'
+            'Note: This will try to fill in missing results '
+            'with available results.\n'
+            'This is generally not suggested unless the results are '
+            'platform agnostic.\n',
+            'INFO: For one/flaky-fail.html:\n',
+            'INFO: Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
         ])
 
@@ -834,21 +831,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'maxDifference': 1,
         }
         return b'diff', stats, None
-
-    def test_execute_missing_results_with_fill_missing_continues(self):
-        build = Build('MOCK Try Win', 5000, 'Build-1')
-        self.builds[build] = TryJobStatus.from_bb_status('CANCELED')
-        exit_code = self.command.execute(
-            self.command_options(fill_missing=True), ['one/flaky-fail.html'],
-            self.tool)
-        self.assertEqual(exit_code, 0)
-        self.assertLog([
-            'INFO: All builds finished.\n',
-            'WARNING: Some builders have no results:\n',
-            'WARNING:   MOCK Try Win\n', 'INFO: For one/flaky-fail.html:\n',
-            'INFO: Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
-            'INFO: Rebaselining one/flaky-fail.html\n'
-        ])
 
     def test_fill_in_missing_results(self):
         test_baseline_set = TestBaselineSet(self.tool.builders)

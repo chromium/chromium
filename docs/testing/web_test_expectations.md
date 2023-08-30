@@ -131,9 +131,6 @@ depends on its arguments.
   considered.
 * You can also explicitly pass a list of test names, and then just those tests
   will be rebaselined.
-* If some of the try jobs failed to run, and you wish to continue rebaselining
-  assuming that there are no platform-specific results for those platforms,
-  you can add the flag `--fill-missing`.
 * By default, it finds the try jobs by looking at the latest patchset. If you
   have finished try jobs that are associated with an earlier patchset and you
   want to use them instead of scheduling new try jobs, you can add the flag
