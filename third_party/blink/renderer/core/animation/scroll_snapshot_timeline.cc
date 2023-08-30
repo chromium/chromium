@@ -163,6 +163,11 @@ void ScrollSnapshotTimeline::UpdateSnapshot() {
     // Force recalculation of an auto-aligned start time, and invalidate
     // normalized timing.
     for (Animation* animation : GetAnimations()) {
+      // Avoid setting a deferred start time during the update snapshot phase.
+      // Instead wait for the validation phase post layout.
+      if (!animation->CurrentTimeInternal()) {
+        continue;
+      }
       animation->OnValidateSnapshot(layout_changed);
     }
   }
