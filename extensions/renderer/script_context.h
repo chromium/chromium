@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
@@ -201,8 +200,8 @@ class ScriptContext {
     ~ScopedFrameDocumentLoader();
 
    private:
-    raw_ptr<blink::WebLocalFrame> frame_;
-    raw_ptr<blink::WebDocumentLoader> document_loader_;
+    blink::WebLocalFrame* frame_;
+    blink::WebDocumentLoader* document_loader_;
   };
 
   // TODO(devlin): Move all these Get*URL*() methods out of here? While they are
@@ -291,7 +290,7 @@ class ScriptContext {
 
   // The WebLocalFrame associated with this context. This can be NULL because
   // this object can outlive is destroyed asynchronously.
-  raw_ptr<blink::WebLocalFrame> web_frame_;
+  blink::WebLocalFrame* web_frame_;
 
   // The extension associated with this context, or NULL if there is none. This
   // might be a hosted app in the case that this context is hosting a web URL.
@@ -324,7 +323,7 @@ class ScriptContext {
   // invalidation.
   std::vector<base::OnceClosure> invalidate_observers_;
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   GURL url_;
 

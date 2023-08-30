@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -90,7 +89,7 @@ class APIResponseValidator {
 
  private:
   // The type reference map; guaranteed to outlive this object.
-  raw_ptr<const APITypeReferenceMap> type_refs_;
+  const APITypeReferenceMap* type_refs_;
 };
 
 }  // namespace extensions

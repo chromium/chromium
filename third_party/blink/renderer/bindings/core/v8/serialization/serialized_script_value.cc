@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -594,7 +593,7 @@ SerializedScriptValue::TransferArrayBufferContents(
   // TODO(bikineev): Revisit after young generation is there.
   struct PromptlyFreeSet {
     // The void* is to avoid blink-gc-plugin error.
-    raw_ptr<void> buffer;
+    void* buffer;
     ~PromptlyFreeSet() {
       static_cast<HeapHashSet<Member<DOMArrayBufferBase>>*>(buffer)->clear();
     }

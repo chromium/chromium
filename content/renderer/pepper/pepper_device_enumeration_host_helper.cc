@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_message.h"
@@ -120,7 +119,7 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
   bool requested() const { return requested_; }
 
  private:
-  const raw_ptr<PepperDeviceEnumerationHostHelper> owner_;
+  PepperDeviceEnumerationHostHelper* const owner_;
   PepperDeviceEnumerationHostHelper::Delegate::DevicesCallback callback_;
   bool requested_;
   size_t subscription_id_;

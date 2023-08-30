@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RW_BUFFER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -38,8 +37,8 @@ class PLATFORM_EXPORT RWBuffer {
     bool HasNext() const;
 
    private:
-    raw_ptr<const RWBuffer> rw_buffer_;
-    raw_ptr<RWBuffer::BufferBlock> block_;
+    const RWBuffer* rw_buffer_;
+    RWBuffer::BufferBlock* block_;
     size_t remaining_;
   };
 
@@ -78,8 +77,8 @@ class PLATFORM_EXPORT RWBuffer {
   void Validate() const;
 
  private:
-  raw_ptr<BufferHead> head_ = nullptr;
-  raw_ptr<BufferBlock> tail_ = nullptr;
+  BufferHead* head_ = nullptr;
+  BufferBlock* tail_ = nullptr;
   size_t total_used_ = 0;
 };
 
@@ -122,9 +121,9 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
     bool Next();
 
    private:
-    raw_ptr<const RWBuffer::BufferBlock> block_;
+    const RWBuffer::BufferBlock* block_;
     size_t remaining_;
-    raw_ptr<const ROBuffer> buffer_;
+    const ROBuffer* buffer_;
   };
 
  private:
@@ -134,9 +133,9 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
            const RWBuffer::BufferBlock* tail);
   ~ROBuffer();
 
-  raw_ptr<const RWBuffer::BufferHead> head_;
+  const RWBuffer::BufferHead* head_;
   const size_t available_;
-  raw_ptr<const RWBuffer::BufferBlock> tail_;
+  const RWBuffer::BufferBlock* tail_;
 
   friend class RWBuffer;
 };

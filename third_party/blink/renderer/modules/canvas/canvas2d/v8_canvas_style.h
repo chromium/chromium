@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -34,8 +33,8 @@ struct MODULES_EXPORT V8CanvasStyle {
 
  public:
   V8CanvasStyleType type;
-  raw_ptr<CanvasPattern> pattern = nullptr;
-  raw_ptr<CanvasGradient> gradient = nullptr;
+  CanvasPattern* pattern = nullptr;
+  CanvasGradient* gradient = nullptr;
   Color css_color_value = Color::kTransparent;
   AtomicString string;
 };

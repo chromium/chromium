@@ -31,7 +31,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POLYGON_H_
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
@@ -133,7 +132,7 @@ class PLATFORM_EXPORT FloatPolygonEdge final : public VertexPair {
   unsigned vertex_index1_;
   unsigned vertex_index2_;
   unsigned edge_index_;
-  raw_ptr<const FloatPolygon> polygon_;
+  const FloatPolygon* polygon_;
 };
 
 }  // namespace blink

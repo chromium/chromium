@@ -10,7 +10,6 @@
 
 #include "base/cfi_buildflags.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -181,7 +180,7 @@ class WebRtcAudioRendererTest : public testing::Test {
     EXPECT_CALL(
         *audio_device_factory_platform_,
         MockNewAudioRendererSink(blink::WebAudioDeviceSourceType::kWebRtc,
-                                 web_local_frame_.get(), _))
+                                 web_local_frame_, _))
         .Times(testing::AtLeast(1))
         .WillRepeatedly(DoAll(SaveArg<2>(&params), InvokeWithoutArgs([&]() {
                                 EXPECT_EQ(params.device_id, device_id.Utf8());
@@ -239,9 +238,9 @@ class WebRtcAudioRendererTest : public testing::Test {
   Persistent<MediaStreamDescriptor> stream_descriptor_;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
-  raw_ptr<WebView> web_view_ = nullptr;
+  WebView* web_view_ = nullptr;
   WebLocalFrameClient web_local_frame_client_;
-  raw_ptr<WebLocalFrame> web_local_frame_ = nullptr;
+  WebLocalFrame* web_local_frame_ = nullptr;
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_;
   scoped_refptr<blink::WebMediaStreamAudioRenderer> renderer_proxy_;
 };

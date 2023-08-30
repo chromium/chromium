@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -55,7 +54,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
     std::string CreateExceptionString(const v8::TryCatch& try_catch);
     // A script context associated with this handler. Owned by the module
     // system.
-    raw_ptr<ScriptContext> context_;
+    ScriptContext* context_;
   };
 
   // Enables native bindings for the duration of its lifetime.
@@ -213,14 +212,14 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   v8::Local<v8::Function> GetModuleFunction(const std::string& module_name,
                                             const std::string& method_name);
 
-  raw_ptr<ScriptContext> context_;
+  ScriptContext* context_;
 
   // TODO(1276144): remove once investigation finished.
   bool has_been_invalidated_ = false;
 
   // A map from module names to the JS source for that module. GetSource()
   // performs a lookup on this map.
-  const raw_ptr<const SourceMap> source_map_;
+  const SourceMap* const source_map_;
 
   // A map from native handler names to native handlers.
   NativeHandlerMap native_handler_map_;

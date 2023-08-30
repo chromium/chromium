@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -226,8 +225,8 @@ class FakeMediaMetricsProvider
 
  private:
   mojo::Receiver<media::mojom::blink::MediaMetricsProvider> receiver_{this};
-  raw_ptr<MockLearningTaskControllerService> bad_window_service_;
-  raw_ptr<MockLearningTaskControllerService> nnr_service_;
+  MockLearningTaskControllerService* bad_window_service_;
+  MockLearningTaskControllerService* nnr_service_;
 };
 
 // Simple helper for saving back-end callbacks for pending decodingInfo() calls.

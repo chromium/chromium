@@ -22,7 +22,6 @@
 
 #include "base/environment.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -460,8 +459,8 @@ class Requester : public DiscreteTimeSimulation::Actor {
   TimeTicks time_of_last_success_;
   bool last_attempt_was_failure_;
   base::TimeDelta last_downtime_duration_;
-  const raw_ptr<Server> server_;
-  const raw_ptr<RequesterResults> results_;  // May be nullptr.
+  Server* const server_;
+  RequesterResults* const results_;  // May be nullptr.
 };
 
 void SimulateAttack(Server* server,

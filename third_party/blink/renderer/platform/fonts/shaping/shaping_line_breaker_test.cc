@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 
 #include <unicode/uscript.h>
-#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -23,8 +22,8 @@ namespace blink {
 namespace {
 
 struct HarfBuzzShaperCallbackContext {
-  raw_ptr<const HarfBuzzShaper> shaper;
-  raw_ptr<const Font> font;
+  const HarfBuzzShaper* shaper;
+  const Font* font;
   TextDirection direction;
 };
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -216,7 +215,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   static void OnV8ContextCollectedCallback(
       const v8::WeakCallbackInfo<ScriptState>&);
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   // This persistent handle is weak.
   ScopedPersistent<v8::Context> context_;
 

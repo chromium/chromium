@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -97,8 +96,8 @@ class PLATFORM_EXPORT ScriptWrappable
     }
 
    private:
-    raw_ptr<ScriptWrappable> script_wrappable_ = nullptr;
-    raw_ptr<const WrapperTypeInfo> wrapper_type_info_ = nullptr;
+    ScriptWrappable* script_wrappable_ = nullptr;
+    const WrapperTypeInfo* wrapper_type_info_ = nullptr;
   };
 
   ScriptWrappable(const ScriptWrappable&) = delete;

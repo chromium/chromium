@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -440,7 +439,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // references on the signaling thread during GC.
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
 
-  raw_ptr<blink::WebLocalFrame> frame_ = nullptr;
+  blink::WebLocalFrame* frame_ = nullptr;
 
   // Map and owners of track adapters. Every track that is in use by the peer
   // connection has an associated blink and webrtc layer representation of it.

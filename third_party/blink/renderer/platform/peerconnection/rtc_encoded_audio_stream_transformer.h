@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -68,7 +67,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
     friend class RTCEncodedAudioStreamTransformer;
 
     base::Lock transformer_lock_;
-    raw_ptr<RTCEncodedAudioStreamTransformer> transformer_
+    RTCEncodedAudioStreamTransformer* transformer_
         GUARDED_BY(transformer_lock_);
   };
 

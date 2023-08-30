@@ -7,7 +7,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -680,7 +679,7 @@ class TaskObserver : public base::TaskObserver {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<Vector<scoped_refptr<base::SingleThreadTaskRunner>>> run_order_;
+  Vector<scoped_refptr<base::SingleThreadTaskRunner>>* run_order_;
 };
 
 }  // namespace

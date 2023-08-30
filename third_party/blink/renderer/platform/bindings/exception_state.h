@@ -36,7 +36,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -253,7 +252,7 @@ class PLATFORM_EXPORT ExceptionState {
   // member of another IDL dictionary.  nullptr means no additional context.
   const ContextScope* context_stack_top_ = nullptr;
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   ExceptionCode code_ = 0;
   String message_;
   // The exception is empty when it was thrown through

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
@@ -103,10 +102,10 @@ class PicturePlaybackController : public SkPicture::AbortCallback {
                             size_t count)
       : canvas_(canvas), playback_count_(count) {}
 
-  bool abort() override { return canvas_->CommandCount() > playback_count_; }
+  bool abort() override { return canvas_.CommandCount() > playback_count_; }
 
  private:
-  const raw_ref<const skia::BenchmarkingCanvas> canvas_;
+  const skia::BenchmarkingCanvas& canvas_;
   size_t playback_count_;
 };
 

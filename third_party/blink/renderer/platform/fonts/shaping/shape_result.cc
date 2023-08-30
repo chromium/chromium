@@ -39,7 +39,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
@@ -70,7 +69,7 @@ struct SameSizeAsRunInfo : public RefCounted<SameSizeAsRunInfo> {
     void* pointers[2];
     unsigned integer;
   } glyph_data;
-  raw_ptr<void> pointer;
+  void* pointer;
   Vector<int> vector;
   int integers[6];
 };

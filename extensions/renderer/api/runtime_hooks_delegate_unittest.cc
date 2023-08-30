@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
@@ -99,7 +98,7 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  raw_ptr<ScriptContext> script_context_ = nullptr;
+  ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

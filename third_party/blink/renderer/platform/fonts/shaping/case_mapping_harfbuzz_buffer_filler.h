@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CASE_MAPPING_HARFBUZZ_BUFFER_FILLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CASE_MAPPING_HARFBUZZ_BUFFER_FILLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -35,7 +34,7 @@ class CaseMappingHarfBuzzBufferFiller {
                     unsigned buffer_length,
                     unsigned start_index,
                     unsigned num_characters);
-  raw_ptr<hb_buffer_t> harfbuzz_buffer_;
+  hb_buffer_t* harfbuzz_buffer_;
 };
 
 }  // namespace blink

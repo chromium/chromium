@@ -4,7 +4,6 @@
 
 #include "components/cast_streaming/renderer/control/playback_command_forwarding_renderer.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
@@ -110,7 +109,7 @@ class PlaybackCommandForwardingRendererTest : public testing::Test {
   mojo::Remote<media::mojom::Renderer> remote_;
   mojo::PendingAssociatedRemote<media::mojom::RendererClient> remote_client_;
 
-  raw_ptr<media::MockRenderer> mock_renderer_;
+  media::MockRenderer* mock_renderer_;
   testing::StrictMock<media::MockMediaResource> mock_media_resource_;
   testing::StrictMock<media::MockRendererClient> mock_renderer_client_;
   std::unique_ptr<PlaybackCommandForwardingRenderer> renderer_;

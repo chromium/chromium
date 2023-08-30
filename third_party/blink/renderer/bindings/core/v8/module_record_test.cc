@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 
-#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/boxed_v8_module.h"
@@ -65,7 +64,7 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
     return module_records_.TakeFirst()->NewLocal(isolate_);
   }
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   Vector<String> specifiers_;
   HeapDeque<Member<BoxedV8Module>> module_records_;
 };

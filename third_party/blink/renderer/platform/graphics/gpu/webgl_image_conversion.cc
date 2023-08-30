@@ -9,8 +9,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/cpu/arm/webgl_image_conversion_neon.h"
@@ -3260,7 +3258,7 @@ class FormatConverter {
     const unsigned kMaxNumberOfComponents = 4;
     const unsigned kMaxBytesPerComponent = 4;
     unpacked_intermediate_src_data_ = std::make_unique<uint8_t[]>(
-        src_sub_rectangle_->width() * kMaxNumberOfComponents *
+        src_sub_rectangle_.width() * kMaxNumberOfComponents *
         kMaxBytesPerComponent);
     DCHECK(unpacked_intermediate_src_data_.get());
   }
@@ -3284,11 +3282,11 @@ class FormatConverter {
             WebGLImageConversion::AlphaOp alphaOp>
   void Convert();
 
-  const raw_ref<const gfx::Rect> src_sub_rectangle_;
+  const gfx::Rect& src_sub_rectangle_;
   const int depth_;
   const int unpack_image_height_;
-  const raw_ptr<const void> src_start_;
-  const raw_ptr<void> dst_start_;
+  const void* const src_start_;
+  void* const dst_start_;
   const int src_stride_, src_row_offset_, dst_stride_;
   bool success_;
   std::unique_ptr<uint8_t[]> unpacked_intermediate_src_data_;
@@ -3480,7 +3478,7 @@ void FormatConverter::Convert() {
   const SrcType* src_row_start =
       static_cast<const SrcType*>(static_cast<const void*>(
           static_cast<const uint8_t*>(src_start_) +
-          ((src_stride_ * src_sub_rectangle_->y()) + src_row_offset_)));
+          ((src_stride_ * src_sub_rectangle_.y()) + src_row_offset_)));
 
   // If packing multiple images into a 3D texture, and flipY is true,
   // then the sub-rectangle is pointing at the start of the
@@ -3495,41 +3493,41 @@ void FormatConverter::Convert() {
   DstType* dst_row_start = static_cast<DstType*>(dst_start_);
   if (kTrivialUnpack) {
     for (int d = 0; d < depth_; ++d) {
-      for (int i = 0; i < src_sub_rectangle_->height(); ++i) {
+      for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Pack<DstFormat, alphaOp>(src_row_start, dst_row_start,
-                                 src_sub_rectangle_->width());
+                                 src_sub_rectangle_.width());
         src_row_start += src_stride_in_elements;
         dst_row_start += dst_stride_in_elements;
       }
       src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_->height());
+                       (unpack_image_height_ - src_sub_rectangle_.height());
     }
   } else if (kTrivialPack) {
     for (int d = 0; d < depth_; ++d) {
-      for (int i = 0; i < src_sub_rectangle_->height(); ++i) {
+      for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Unpack<SrcFormat>(src_row_start, dst_row_start,
-                          src_sub_rectangle_->width());
+                          src_sub_rectangle_.width());
         src_row_start += src_stride_in_elements;
         dst_row_start += dst_stride_in_elements;
       }
       src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_->height());
+                       (unpack_image_height_ - src_sub_rectangle_.height());
     }
   } else {
     for (int d = 0; d < depth_; ++d) {
-      for (int i = 0; i < src_sub_rectangle_->height(); ++i) {
+      for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Unpack<SrcFormat>(src_row_start,
                           reinterpret_cast<IntermType*>(
                               unpacked_intermediate_src_data_.get()),
-                          src_sub_rectangle_->width());
+                          src_sub_rectangle_.width());
         Pack<DstFormat, alphaOp>(reinterpret_cast<IntermType*>(
                                      unpacked_intermediate_src_data_.get()),
-                                 dst_row_start, src_sub_rectangle_->width());
+                                 dst_row_start, src_sub_rectangle_.width());
         src_row_start += src_stride_in_elements;
         dst_row_start += dst_stride_in_elements;
       }
       src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_->height());
+                       (unpack_image_height_ - src_sub_rectangle_.height());
     }
   }
   success_ = true;

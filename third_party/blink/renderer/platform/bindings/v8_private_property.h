@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PRIVATE_PROPERTY_H_
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -85,7 +84,7 @@ class PLATFORM_EXPORT V8PrivateProperty {
     }
 
     v8::Local<v8::Private> private_symbol_;
-    raw_ptr<v8::Isolate> isolate_;
+    v8::Isolate* isolate_;
   };
 
   // This class is used for a key to get Symbol.

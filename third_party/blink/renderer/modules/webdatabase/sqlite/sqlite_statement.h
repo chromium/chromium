@@ -27,8 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_STATEMENT_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_database.h"
 
 struct sqlite3_stmt;
@@ -80,9 +78,9 @@ class SQLiteStatement {
   int64_t GetColumnInt64(int col);
 
  private:
-  const raw_ref<SQLiteDatabase> database_;
+  SQLiteDatabase& database_;
   String query_;
-  raw_ptr<sqlite3_stmt> statement_;
+  sqlite3_stmt* statement_;
 #if DCHECK_IS_ON()
   bool is_prepared_ = false;
 #endif

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -80,7 +79,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
     AvifIOData(const SegmentReader* reader, bool all_data_received);
     ~AvifIOData();
 
-    raw_ptr<const SegmentReader> reader = nullptr;
+    const SegmentReader* reader = nullptr;
     std::vector<uint8_t> buffer ALLOW_DISCOURAGED_TYPE("Required by libavif");
     bool all_data_received = false;
   };
@@ -164,7 +163,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Set by a successful DecodeImage() call to either decoder_->image or
   // cropped_image_.get() depending on whether the image has a 'clap' (clean
   // aperture) property.
-  raw_ptr<const avifImage> decoded_image_ = nullptr;
+  const avifImage* decoded_image_ = nullptr;
   std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
       nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};

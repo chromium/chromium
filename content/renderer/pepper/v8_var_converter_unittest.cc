@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -247,7 +246,7 @@ class V8VarConverterTest : public testing::Test {
     return TestEqual(expected.get(), actual.get(), false);
   }
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -402,7 +401,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   size_t initial_data_len_ = 0;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
-  raw_ptr<ResourceScriptStreamer::ScriptDecoder> script_decoder_;
+  ResourceScriptStreamer::ScriptDecoder* script_decoder_;
 };
 
 std::tuple<ResourceScriptStreamer*, ScriptStreamer::NotStreamingReason>
@@ -794,7 +793,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
       CrossThreadBindOnce(RunScriptStreamingTask,
                           std::move(script_streaming_task),
                           WrapCrossThreadPersistent(this),
-                          WTF::CrossThreadUnretained(stream_.get())));
+                          WTF::CrossThreadUnretained(stream_)));
 
   return true;
 }

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_context_snapshot_impl.h"
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
@@ -161,7 +160,7 @@ struct DeserializerData {
 
  public:
   v8::Isolate* isolate;
-  const raw_ref<const DOMWrapperWorld> world;
+  const DOMWrapperWorld& world;
   HTMLDocument* html_document;
 };
 
@@ -241,7 +240,7 @@ void DeserializeInternalFieldCallback(v8::Local<v8::Object> object,
     case InternalFieldSerializedValue::kSwHTMLDocument: {
       CHECK_EQ(index, kV8DOMWrapperObjectIndex);
       CHECK(deserializer_data->html_document);
-      CHECK(deserializer_data->world->IsMainWorld());
+      CHECK(deserializer_data->world.IsMainWorld());
       V8DOMWrapper::SetNativeInfo(deserializer_data->isolate, object,
                                   V8HTMLDocument::GetWrapperTypeInfo(),
                                   deserializer_data->html_document);
@@ -258,7 +257,7 @@ void DeserializeInternalFieldCallback(v8::Local<v8::Object> object,
     case InternalFieldSerializedValue::kWtiHTMLDocument:
       CHECK_EQ(index, kV8DOMWrapperTypeIndex);
       CHECK(deserializer_data->html_document);
-      CHECK(deserializer_data->world->IsMainWorld());
+      CHECK(deserializer_data->world.IsMainWorld());
       // The internal field of WrapperTypeInfo must be filled in
       // kSwHTMLDocument case.
       break;
@@ -346,7 +345,7 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
     html_document = nullptr;
   }
 
-  DeserializerData deserializer_data = {isolate, raw_ref(world), html_document};
+  DeserializerData deserializer_data = {isolate, world, html_document};
   v8::DeserializeInternalFieldsCallback internal_field_desrializer(
       DeserializeInternalFieldCallback, &deserializer_data);
   return v8::Context::FromSnapshot(

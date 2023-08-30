@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
@@ -65,8 +64,8 @@ class DateTimeStringBuilder : private DateTimeFormat::TokenHandler {
   void AppendNumber(int number, size_t width);
 
   StringBuilder builder_;
-  const raw_ref<Locale> localizer_;
-  const raw_ref<const DateComponents> date_;
+  Locale& localizer_;
+  const DateComponents& date_;
 };
 
 DateTimeStringBuilder::DateTimeStringBuilder(Locale& localizer,
@@ -95,7 +94,7 @@ void DateTimeStringBuilder::AppendNumber(int number, size_t width) {
   String zero_padded_number_string =
       ZeroPadString(String::Number(number), width);
   builder_.Append(
-      localizer_->ConvertToLocalizedNumber(zero_padded_number_string));
+      localizer_.ConvertToLocalizedNumber(zero_padded_number_string));
 }
 
 void DateTimeStringBuilder::VisitField(DateTimeFormat::FieldType field_type,
@@ -103,73 +102,72 @@ void DateTimeStringBuilder::VisitField(DateTimeFormat::FieldType field_type,
   switch (field_type) {
     case DateTimeFormat::kFieldTypeYear:
       // Always use padding width of 4 so it matches DateTimeEditElement.
-      AppendNumber(date_->FullYear(), 4);
+      AppendNumber(date_.FullYear(), 4);
       return;
     case DateTimeFormat::kFieldTypeMonth:
       if (number_of_pattern_characters == 3) {
-        builder_.Append(localizer_->ShortMonthLabels()[date_->Month()]);
+        builder_.Append(localizer_.ShortMonthLabels()[date_.Month()]);
       } else if (number_of_pattern_characters == 4) {
-        builder_.Append(localizer_->MonthLabels()[date_->Month()]);
+        builder_.Append(localizer_.MonthLabels()[date_.Month()]);
       } else {
         // Always use padding width of 2 so it matches DateTimeEditElement.
-        AppendNumber(date_->Month() + 1, 2);
+        AppendNumber(date_.Month() + 1, 2);
       }
       return;
     case DateTimeFormat::kFieldTypeMonthStandAlone:
       if (number_of_pattern_characters == 3) {
-        builder_.Append(
-            localizer_->ShortStandAloneMonthLabels()[date_->Month()]);
+        builder_.Append(localizer_.ShortStandAloneMonthLabels()[date_.Month()]);
       } else if (number_of_pattern_characters == 4) {
-        builder_.Append(localizer_->StandAloneMonthLabels()[date_->Month()]);
+        builder_.Append(localizer_.StandAloneMonthLabels()[date_.Month()]);
       } else {
         // Always use padding width of 2 so it matches DateTimeEditElement.
-        AppendNumber(date_->Month() + 1, 2);
+        AppendNumber(date_.Month() + 1, 2);
       }
       return;
     case DateTimeFormat::kFieldTypeDayOfMonth:
       // Always use padding width of 2 so it matches DateTimeEditElement.
-      AppendNumber(date_->MonthDay(), 2);
+      AppendNumber(date_.MonthDay(), 2);
       return;
     case DateTimeFormat::kFieldTypeWeekOfYear:
       // Always use padding width of 2 so it matches DateTimeEditElement.
-      AppendNumber(date_->Week(), 2);
+      AppendNumber(date_.Week(), 2);
       return;
     case DateTimeFormat::kFieldTypePeriod:
       builder_.Append(
-          localizer_->TimeAMPMLabels()[(date_->Hour() >= 12 ? 1 : 0)]);
+          localizer_.TimeAMPMLabels()[(date_.Hour() >= 12 ? 1 : 0)]);
       return;
     case DateTimeFormat::kFieldTypeHour12: {
-      int hour12 = date_->Hour() % 12;
+      int hour12 = date_.Hour() % 12;
       if (!hour12)
         hour12 = 12;
       AppendNumber(hour12, number_of_pattern_characters);
       return;
     }
     case DateTimeFormat::kFieldTypeHour23:
-      AppendNumber(date_->Hour(), number_of_pattern_characters);
+      AppendNumber(date_.Hour(), number_of_pattern_characters);
       return;
     case DateTimeFormat::kFieldTypeHour11:
-      AppendNumber(date_->Hour() % 12, number_of_pattern_characters);
+      AppendNumber(date_.Hour() % 12, number_of_pattern_characters);
       return;
     case DateTimeFormat::kFieldTypeHour24: {
-      int hour24 = date_->Hour();
+      int hour24 = date_.Hour();
       if (!hour24)
         hour24 = 24;
       AppendNumber(hour24, number_of_pattern_characters);
       return;
     }
     case DateTimeFormat::kFieldTypeMinute:
-      AppendNumber(date_->Minute(), number_of_pattern_characters);
+      AppendNumber(date_.Minute(), number_of_pattern_characters);
       return;
     case DateTimeFormat::kFieldTypeSecond:
-      if (!date_->Millisecond()) {
-        AppendNumber(date_->Second(), number_of_pattern_characters);
+      if (!date_.Millisecond()) {
+        AppendNumber(date_.Second(), number_of_pattern_characters);
       } else {
-        double second = date_->Second() + date_->Millisecond() / 1000.0;
+        double second = date_.Second() + date_.Millisecond() / 1000.0;
         String zero_padded_second_string = ZeroPadString(
             String::Format("%.03f", second), number_of_pattern_characters + 4);
         builder_.Append(
-            localizer_->ConvertToLocalizedNumber(zero_padded_second_string));
+            localizer_.ConvertToLocalizedNumber(zero_padded_second_string));
       }
       return;
     default:

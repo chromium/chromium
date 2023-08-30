@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
@@ -188,7 +187,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  private:
   // ReadAnythingAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
-  raw_ptr<ReadAnythingAppModel> model_ = nullptr;
+  ReadAnythingAppModel* model_ = nullptr;
 };
 
 TEST_F(ReadAnythingAppModelTest, Theme) {
