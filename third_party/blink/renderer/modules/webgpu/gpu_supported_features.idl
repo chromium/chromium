@@ -22,6 +22,8 @@ enum GPUFeatureName {
     "timestamp-query-inside-passes",
     "chromium-experimental-dp4a",
     "chromium-experimental-read-write-storage-texture",
+    "chromium-experimental-subgroups",
+    "chromium-experimental-subgroup-uniform-control-flow",
 };
 
 [

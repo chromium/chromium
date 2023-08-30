@@ -688,6 +688,11 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_ChromiumExperimentalDp4a;
     case V8GPUFeatureName::Enum::kChromiumExperimentalReadWriteStorageTexture:
       return WGPUFeatureName_ChromiumExperimentalReadWriteStorageTexture;
+    case V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups:
+      return WGPUFeatureName_ChromiumExperimentalSubgroups;
+    case V8GPUFeatureName::Enum::
+        kChromiumExperimentalSubgroupUniformControlFlow:
+      return WGPUFeatureName_ChromiumExperimentalSubgroupUniformControlFlow;
     case V8GPUFeatureName::Enum::kRg11B10UfloatRenderable:
       return WGPUFeatureName_RG11B10UfloatRenderable;
     case V8GPUFeatureName::Enum::kBgra8UnormStorage:

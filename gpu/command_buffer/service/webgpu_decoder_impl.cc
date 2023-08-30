@@ -1159,6 +1159,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::PipelineStatisticsQuery:
     case wgpu::FeatureName::ChromiumExperimentalDp4a:
     case wgpu::FeatureName::ChromiumExperimentalReadWriteStorageTexture:
+    case wgpu::FeatureName::ChromiumExperimentalSubgroups:
+    case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
     // TODO(dawn:1664): Enable Float32Filterable by default once it is tested.
     case wgpu::FeatureName::Float32Filterable:
     case wgpu::FeatureName::ShaderF16:
