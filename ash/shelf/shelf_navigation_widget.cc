@@ -485,7 +485,8 @@ void ShelfNavigationWidget::CalculateTargetBounds() {
   gfx::Size nav_size = CalculateIdealSize(/*only_visible_area=*/false);
 
   if (shelf_->IsHorizontalAlignment() && base::i18n::IsRTL()) {
-    nav_origin.set_x(shelf_->shelf_widget()->GetTargetBounds().size().width() -
+    nav_origin.set_x(shelf_origin.x() +
+                     shelf_->shelf_widget()->GetTargetBounds().size().width() -
                      nav_size.width());
   }
   target_bounds_ = gfx::Rect(nav_origin, nav_size);
