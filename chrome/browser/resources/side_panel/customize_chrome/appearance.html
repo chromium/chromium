@@ -4,7 +4,7 @@
     width: calc(100% - 32px);
   }
 
-  :host([third-party-theme-id_]) #editThemeButton {
+  .theme-button:not([hidden]) ~ #editThemeButton {
     margin: 24px 16px 16px;
   }
 
@@ -29,6 +29,10 @@
 
   #thirdPartyLinkButton {
     --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
+  }
+
+  #uploadedImageButton {
+    --cr-icon-image: url(icons/upload.svg);
   }
 
   managed-dialog {
@@ -59,11 +63,11 @@
     display: block;
   }
 
-  :host-context([chrome-refresh-2023]) #thirdPartyLinkButton {
+  :host-context([chrome-refresh-2023]) .theme-button {
     margin-top: 16px;
   }
 
-  :host-context([chrome-refresh-2023]):host([third-party-theme-id_]) #editThemeButton {
+  :host-context([chrome-refresh-2023]) .theme-button:not([hidden]) ~ #editThemeButton {
     margin: 20px 16px;
   }
 
@@ -86,11 +90,17 @@
 </style>
 <customize-chrome-theme-snapshot id="themeSnapshot"
     on-edit-theme-click="onEditThemeClicked_"
-    hidden$="[[!showFirstPartyThemeView_]]">
+    hidden$="[[!showThemeSnapshot_]]">
 </customize-chrome-theme-snapshot>
-<customize-chrome-hover-button id="thirdPartyLinkButton"
+<customize-chrome-hover-button id="thirdPartyLinkButton" class="theme-button"
     hidden$="[[!thirdPartyThemeId_]]" on-click="onThirdPartyLinkButtonClick_"
     label="[[thirdPartyThemeName_]]"
+    label-description="$i18n{currentTheme}">
+</customize-chrome-hover-button>
+<customize-chrome-hover-button id="uploadedImageButton" class="theme-button"
+    hidden$="[[!showUploadedImageButton_]]"
+    on-click="onUploadedImageButtonClick_"
+    label="$i18n{yourUploadedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
 <cr-button id="editThemeButton" on-click="onEditThemeClicked_"
@@ -102,7 +112,7 @@
 <customize-color-scheme-mode>
 </customize-color-scheme-mode>
 <cr-theme-color-picker id="chromeColors"
-    hidden$="[[!showFirstPartyThemeView_]]">
+    hidden$="[[!showColorPicker_]]">
 </cr-theme-color-picker>
 <hr class="sp-hr" hidden$="[[!showBottomDivider_]]">
 <div id="followThemeToggle" class="sp-card-content"

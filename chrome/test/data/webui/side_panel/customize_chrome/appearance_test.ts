@@ -264,4 +264,41 @@ suite('AppearanceTest', () => {
       assertEquals(1, handler.getCallCount('openThirdPartyThemePage'));
     });
   });
+
+  suite('GM3', async () => {
+    suiteSetup(() => {
+      document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    });
+
+    test('uploaded image shows button and no snapshot', async () => {
+      const theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('local');
+      theme.backgroundImage.isUploadedImage = true;
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+      assertNotStyle(
+          appearanceElement.$.uploadedImageButton, 'display', 'none');
+      assertNotStyle(
+          appearanceElement.$.setClassicChromeButton, 'display', 'none');
+      assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
+      assertNotStyle(appearanceElement.$.chromeColors, 'display', 'none');
+    });
+
+    test('uploadedImageButton opens upload image dialog', async () => {
+      const theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('local');
+      theme.backgroundImage.isUploadedImage = true;
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertNotStyle(
+          appearanceElement.$.uploadedImageButton, 'display', 'none');
+      appearanceElement.$.uploadedImageButton.click();
+      assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+    });
+  });
 });
