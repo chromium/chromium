@@ -1787,13 +1787,24 @@ function DOM_getAllBoundingClientRects() {
     .map((elem, i) => {
       const id = registerPlainObject(elem.raw) || i;
 
-      // Use the bounding client rect as a fallback.
-      let { left, top, right, bottom } =
-        shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
+      // Use the containing context of the element to find any
+      // applicable transform for its offset.
+      const transformMatrix =
+        elem.containingContext.findAncestor(parent => !!parent.transformMatrix)
+          ?.transformMatrix;
+
+      // Offset the bounding client rect by the transform matrix
+      // and containing iframe offset (if any).
+      let { left, top, right, bottom } = shiftRect(
+        elem.raw.getBoundingClientRect(),
+        elem.offset,
+        transformMatrix
+      );
 
       // Get all client rects.
       const clientRects = [...elem.raw.getClientRects()].map(r => {
-        const { left, top, right, bottom } = shiftRect(r, elem.offset)
+        const { left, top, right, bottom } =
+          shiftRect(r, elem.offset, transformMatrix);
         return [left, top, right, bottom];
       });
 
@@ -2274,20 +2285,6 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
   return { rules, data };
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /** ###########################################################################
  * StackingContext
  * ##########################################################################*/
@@ -2319,8 +2316,18 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
 //   mostly ignored here.
 
 // Information about an element needed to add it to a stacking context.
-function StackingContextElement(node, parent, offset, style, clipBounds) {
+function StackingContextElement(
+  containingContext,
+  node,
+  parent,
+  offset,
+  style,
+  clipBounds
+) {
   assert(node.nodeType == Node.ELEMENT_NODE);
+
+  // The stacking context this element is contained within.
+  this.containingContext = containingContext;
 
   // Underlying element.
   this.raw = node;
@@ -2441,14 +2448,29 @@ let gNextStackingContextId = 1;
 // considered part of the parent stacking context, not this new one".
 // For these elements we also create a StackingContext but pass the
 // parent stacking context to the constructor as the "realStackingContext".
-function StackingContext(window, root, offset, realStackingContext) {
+function StackingContext(window, options) {
+  const {
+    parentContext,
+    root,
+    offset,
+    transformMatrix,
+    realStackingContext
+  } = options || {};
   this.window = window;
+  this.parentContext = parentContext;
   this.id = gNextStackingContextId++;
 
   this.realStackingContext = realStackingContext || this;
 
   // Offset relative to the outer window of the window containing this context.
   this.offset = offset || { left: 0, top: 0 };
+
+  // Transform scale parameter.  This is only relevant for stacking
+  // contexts for IFRAME elements.
+  if (transformMatrix) {
+    assert(root && root.raw.tagName === "IFRAME");
+  }
+  this.transformMatrix = transformMatrix;
 
   // The arrays below are filled in tree order (preorder depth first traversal).
 
@@ -2465,7 +2487,10 @@ function StackingContext(window, root, offset, realStackingContext) {
   this.zIndexElements = new Map();
 
   this.root = root;
-  if (root) {
+  // If the root element of this stacking context is provided, add its
+  // children to this context.  This does not apply to iframes,
+  // which will have their inner document manually added by the caller.
+  if (root && root.raw.tagName !== "IFRAME") {
     this.addChildrenWithParent(root);
   }
 }
@@ -2475,6 +2500,18 @@ StackingContext.prototype = {
     return `StackingContext:${this.id}`;
   },
 
+  // Find the first parent stacking context matching the predicate.
+  findAncestor(predicate) {
+    let cur = this;
+    while (cur) {
+      if (predicate(cur)) {
+        return cur;
+      }
+      cur = cur.parentContext;
+    }
+    return null;
+  },
+
   // Add node and its descendants to this stacking context.
   add(node, parentElem, offset) {
     const style = this.window.getComputedStyle(node);
@@ -2482,13 +2519,6 @@ StackingContext.prototype = {
       // It's not 100% clear why this is sometimes null, but it seems like
       // this can happen if DOM commands are sent when the window is shutting
       // down in some way or another.
-      return;
-    }
-
-    // See #RUN-2401 (https://linear.app/replay/issue/RUN-2401)
-    // Ignore nodes with opacity 0.  This is a bit of a hack to get better
-    // behaviour while fixing the z-index processing of elements.
-    if (style.getPropertyValue("opacity") === "0") {
       return;
     }
 
@@ -2502,7 +2532,7 @@ StackingContext.prototype = {
       clipBounds = parentElem?.clipBounds || {};
     }
     clipBounds = Object.assign({}, clipBounds);
-    const elem = new StackingContextElement(node, parentElem, offset, style, clipBounds);
+    const elem = new StackingContextElement(this, node, parentElem, offset, style, clipBounds);
     if (!["HTML", "BODY"].includes(elem.raw.tagName)) {
       if (style.getPropertyValue("overflow-x") != "visible") {
         const clipBounds2 = elem.getFormattingContextElement().raw.getBoundingClientRect();
@@ -2530,8 +2560,35 @@ StackingContext.prototype = {
 
     // Create a new stacking context for any iframes.
     if (elem.raw.tagName == "IFRAME" && elem.raw.contentWindow?.document) {
-      const { left, top } = elem.raw.getBoundingClientRect();
-      this.addContext(elem, undefined, left, top);
+      let { left, top } = elem.raw.getBoundingClientRect();
+
+      // The left and top are adjusted by the transform matrix for
+      // the containing iframe, if any.  For this, we just search up the
+      // context chain, looking for one with a defined transform matrix.
+      let parentTransformMatrix =
+        this.findAncestor(parent => !!parent.transformMatrix)
+          ?.transformMatrix;
+      if (parentTransformMatrix) {
+        const adjusted = adjustCoordinateByTransformMatrix(
+          [ left, top ],
+          parentTransformMatrix
+        );
+        left = adjusted[0];
+        top = adjusted[1];
+      }
+
+      // Compute the transform matrix for the iframe within its containing
+      // document.
+      // If we have a parent transform matrix, multiply it with this one.
+      let transformMatrix = computeTransformMatrix(elem.raw, this.window);
+      if (parentTransformMatrix) {
+        transformMatrix = multiplyTransformMatrix(
+          parentTransformMatrix,
+          transformMatrix
+        );
+      }
+
+      this.addContext(elem, undefined, { left, top, transformMatrix });
       elem.context.addChildren(elem.raw.contentWindow.document);
     }
 
@@ -2541,15 +2598,6 @@ StackingContext.prototype = {
       return;
     }
 
-    // Elements with `opacity < 0` get their own stacking context.
-    const opacity = elem.style.getPropertyValue("opacity");
-    if (opacity) {
-      const opacityVal = +opacity | 0;
-      if (opacityVal < 1) {
-        this.addContext(elem);
-      }
-    }
-
     const parentDisplay = elem.parent?.style?.getPropertyValue("display");
     if (
       position != "static" ||
@@ -2557,7 +2605,7 @@ StackingContext.prototype = {
     ) {
       const zIndex = elem.style.getPropertyValue("z-index");
       if (zIndex != "auto") {
-        this.addContext(elem);
+        this.addContext(elem, undefined, {});
         // Elements with a zero z-index have their own stacking context but are
         // grouped with other positioned children with an auto z-index.
         const index = +zIndex | 0;
@@ -2570,7 +2618,7 @@ StackingContext.prototype = {
       if (position != "static") {
         this.realStackingContext.addPositionedElement(elem);
         if (!elem.context) {
-          this.addContext(elem, this.realStackingContext);
+          this.addContext(elem, this.realStackingContext, {});
         }
       } else {
         this.addNonPositionedElement(elem);
@@ -2583,7 +2631,7 @@ StackingContext.prototype = {
 
     if (elem.isFloat()) {
       // Group the element and its descendants.
-      this.addContext(elem, this.realStackingContext);
+      this.addContext(elem, this.realStackingContext, {});
       this.addFloatingElement(elem);
       return;
     }
@@ -2591,25 +2639,54 @@ StackingContext.prototype = {
     const display = elem.style.getPropertyValue("display");
     if (display == "inline-block" || display == "inline-table") {
       // Group the element and its descendants.
-      this.addContext(elem, this.realStackingContext);
+      this.addContext(elem, this.realStackingContext, {});
       this.addNonPositionedElement(elem);
       return;
+    }
+
+    // Handle opacity-based stacking context creation _after_
+    // we check for positioned elements.
+    // This is on the assumption that the rules for floating and
+    // positioned elements should apply before the rules for opacity.
+
+    // Elements with `opacity < 1` get their own stacking context.
+    let opacity = 1;
+    const opacityStr = elem.style.getPropertyValue("opacity");
+    if (opacityStr !== undefined && opacityStr !== "") {
+      opacity = +opacityStr;
+    }
+    if (opacity < 1) {
+      this.addContext(elem, undefined, {});
     }
 
     this.addNonPositionedElement(elem);
     this.addChildrenWithParent(elem);
   },
 
-  addContext(elem, realStackingContext, left = 0, top = 0) {
+  addContext(
+    elem,
+    realStackingContext,
+    { left, top, transformMatrix } = {}
+  ) {
     if (elem.context) {
-      assert(!left && !top);
+      assert(!left && !top, "!left && !top");
       return;
     }
+
+    left = left || 0;
+    top = top || 0;
+
     const offset = {
       left: this.offset.left + left,
       top: this.offset.top + top,
     };
-    elem.context = new StackingContext(this.window, elem, offset, realStackingContext);
+    elem.context = new StackingContext(this.window, {
+      parent: this,
+      root: elem,
+      offset,
+      realStackingContext,
+      transformMatrix
+    });
   },
 
   addZIndexElement(elem, index) {
@@ -2686,13 +2763,120 @@ StackingContext.prototype = {
 /** ###########################################################################
  * {@link shiftRect}
  * ##########################################################################*/
-function shiftRect(rect, offset) {
-  return {
-    left: rect.left !== undefined ? offset.left + rect.left : undefined,
-    top: rect.top !== undefined ? offset.top + rect.top : undefined,
-    right: rect.right !== undefined ? offset.left + rect.right : undefined,
-    bottom: rect.bottom !== undefined ? offset.top + rect.bottom : undefined,
-  };
+function shiftRect(rect, offset, transformMatrix) {
+  // Apply the transform to the rect, before offsetting it.
+  // The offset has already been adjusted as needed by any transforms
+  // that apply to it.
+  let { left, top, right, bottom } = rect;
+  if (transformMatrix) {
+    if (left && top) {
+      const [ leftTrans, topTrans ] = adjustCoordinateByTransformMatrix(
+        [ left, top ],
+        transformMatrix
+      );
+      left = leftTrans;
+      top = topTrans;
+    }
+    if (right && bottom) {
+      const [ rightTrans, bottomTrans ] = adjustCoordinateByTransformMatrix(
+        [ right, bottom ],
+        transformMatrix
+      );
+      right = rightTrans;
+      bottom = bottomTrans;
+    }
+  }
+
+  left = rect.left !== undefined ?  offset.left + left : undefined;
+  top = rect.top !== undefined ?  offset.top + top : undefined;
+  right = rect.right !== undefined ?  offset.left + right : undefined;
+  bottom = rect.bottom !== undefined ?  offset.top + bottom : undefined;
+  return { left, top, right, bottom };
+}
+
+/** ###########################################################################
+ * {@link parseCssTransformStringToMatrix}
+ * Parses a CSS transform string into an 6-element array representing a 2D
+ * transformation matrix.
+ * ```
+ * [ scaleX, skewX, skewY, scaleY, translateX, translateY ]
+ * ```
+ * On error, returns undefined.
+ * ##########################################################################*/
+function parseCssTransformStringToMatrix(transform) {
+  if (!transform || transform === "none") {
+    return;
+  }
+  try {
+    // see https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleValue/parse_static
+    const parsedTransform = CSSStyleValue.parse(
+      "transform",
+      transform,
+    );
+    // FIXME: We only handle 2D transforms for now.
+    if (!parsedTransform.is2D) {
+      return;
+    }
+    if (parsedTransform.length > 0) {
+      const { a, b, c, d, e, f } = parsedTransform[0].toMatrix();
+      return [a, b, c, d, e, f];
+    }
+  } catch (err) {
+    // FIXME: log a command diagnostic / warning.
+  }
+}
+
+/** ###########################################################################
+ * {@link computeTransformMatrix}
+ * Compute the full transform for an element within its containing document.
+ * ##########################################################################*/
+function computeTransformMatrix(element, window) {
+  let curMatrix = [1,0,0,1,0,0]; // start with identity matrix
+  let curElem = element;
+  while(curElem && curElem instanceof Element) {
+    const transformStr = window.getComputedStyle(curElem).transform;
+    const transformMatrix = parseCssTransformStringToMatrix(transformStr);
+    if (transformMatrix) {
+      curMatrix = multiplyTransformMatrix(transformMatrix, curMatrix);
+    }
+    curElem = curElem.parentNode;
+  }
+  return curMatrix;
+}
+
+/** ###########################################################################
+ * {@link multiplyTransformMatrix}
+ * Multiply two transform matrices of teh form [a, b, c, d, tx, ty]
+ * ##########################################################################*/
+function multiplyTransformMatrix(m1,m2) {
+  // [a, b, c, d, tx, ty] => [
+  //   a, c, tx,
+  //   b, d, ty,
+  //   0, 0, 1
+  // ]
+  const [a1, b1, c1, d1, tx1, ty1] = m1;
+  const [a2, b2, c2, d2, tx2, ty2] = m2;
+
+  const a3 = a1 * a2 + c1 * b2;
+  const b3 = b1 * a2 + d1 * b2;
+  const c3 = a1 * c2 + c1 * d2;
+  const d3 = b1 * c2 + d1 * d2;
+  const tx3 = a1 * tx2 + c1 * ty2 + tx1;
+  const ty3 = b1 * tx2 + d1 * ty2 + ty1;
+  return [a3, b3, c3, d3, tx3, ty3];
+}
+
+/** ###########################################################################
+ * {@link adjustCoordinateByTransformMatrix}
+ * Adjust a { left, top } coordinate by a transform matrix
+ * ##########################################################################*/
+function adjustCoordinateByTransformMatrix(coord, m) {
+  const [ x, y ] = coord;
+  const [scaleX, skewX, skewY, scaleY, translateX, translateY] = m;
+
+  const x2 = x * scaleX + y * skewX + translateX;
+  const y2 = x * skewY + y * scaleY + translateY;
+  return [x2, y2];
 }
 
 /** ###########################################################################
