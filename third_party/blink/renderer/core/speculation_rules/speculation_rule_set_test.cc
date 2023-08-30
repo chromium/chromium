@@ -162,6 +162,93 @@ class SpeculationRuleSetTest : public ::testing::Test {
   Persistent<ExecutionContext> execution_context_;
 };
 
+// Matches a SpeculationCandidatePtr list with a KURL list (without requiring
+// candidates to be in a specific order).
+template <typename... Matchers>
+auto HasURLs(Matchers&&... urls) {
+  return ::testing::ResultOf(
+      "urls",
+      [](const auto& candidates) {
+        Vector<KURL> urls;
+        base::ranges::transform(
+            candidates.begin(), candidates.end(), std::back_inserter(urls),
+            [](const auto& candidate) { return candidate->url; });
+        return urls;
+      },
+      ::testing::UnorderedElementsAre(urls...));
+}
+
+// Matches a SpeculationCandidatePtr with an Eagerness.
+auto HasEagerness(
+    ::testing::Matcher<blink::mojom::SpeculationEagerness> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "eagerness", &mojom::blink::SpeculationCandidate::eagerness, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a KURL.
+auto HasURL(::testing::Matcher<KURL> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "url", &mojom::blink::SpeculationCandidate::url, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a SpeculationAction.
+auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "action", &mojom::blink::SpeculationCandidate::action, matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a SpeculationTargetHint.
+auto HasTargetHint(
+    ::testing::Matcher<mojom::blink::SpeculationTargetHint> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "target_hint",
+      &mojom::blink::SpeculationCandidate::target_browsing_context_name_hint,
+      matcher));
+}
+
+// Matches a SpeculationCandidatePtr with a ReferrerPolicy.
+auto HasReferrerPolicy(
+    ::testing::Matcher<network::mojom::ReferrerPolicy> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "referrer", &mojom::blink::SpeculationCandidate::referrer,
+      ::testing::Pointee(::testing::Field(
+          "policy", &mojom::blink::Referrer::policy, matcher))));
+}
+
+auto HasNoVarySearchHint() {
+  return ::testing::Pointee(
+      ::testing::Field("no_vary_search_hint",
+                       &mojom::blink::SpeculationCandidate::no_vary_search_hint,
+                       ::testing::IsTrue()));
+}
+
+auto NVSVariesOnKeyOrder() {
+  return ::testing::AllOf(
+      HasNoVarySearchHint(),
+      ::testing::Pointee(::testing::Field(
+          "no_vary_search_hint",
+          &mojom::blink::SpeculationCandidate::no_vary_search_hint,
+          testing::Pointee(::testing::Field(
+              "vary_on_key_order",
+              &network::mojom::blink::NoVarySearch::vary_on_key_order,
+              ::testing::IsTrue())))));
+}
+
+template <typename... Matchers>
+auto NVSHasNoVaryParams(Matchers&&... params) {
+  return ::testing::ResultOf(
+      "no_vary_params",
+      [](const auto& nvs) {
+        if (!nvs->no_vary_search_hint ||
+            !nvs->no_vary_search_hint->search_variance ||
+            !nvs->no_vary_search_hint->search_variance->is_no_vary_params()) {
+          return Vector<String>();
+        }
+        return nvs->no_vary_search_hint->search_variance->get_no_vary_params();
+      },
+      ::testing::UnorderedElementsAre(params...));
+}
+
 TEST_F(SpeculationRuleSetTest, Empty) {
   auto* rule_set =
       CreateRuleSet("{}", KURL("https://example.com/"), execution_context());
@@ -885,6 +972,53 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintUseCounter) {
                                       speculation_script);
   EXPECT_TRUE(page_holder.GetDocument().IsUseCounted(
       WebFeature::kSpeculationRulesNoVarySearchHint));
+}
+
+// Tests that the document's URL is excluded from candidates.
+TEST_F(SpeculationRuleSetTest, ExcludesFragmentLinks) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  page_holder.GetDocument().SetURL(KURL("https://example.com/"));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      String(R"({"prefetch": [
+           {"source": "list", "urls":
+              ["https://example.com/", "#foo", "/b#bar"]}]})"));
+  EXPECT_THAT(
+      speculation_host.candidates(),
+      HasURLs(KURL("https://example.com"), KURL("https://example.com/b#bar")));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&] {
+    page_holder.GetDocument().SetURL(KURL("https://example.com/b"));
+  });
+  EXPECT_THAT(speculation_host.candidates(),
+              HasURLs(KURL("https://example.com")));
+}
+
+// Tests that the document's URL is excluded from candidates, even when its
+// changes do not affect the base URL.
+TEST_F(SpeculationRuleSetTest, ExcludesFragmentLinksWithBase) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  page_holder.GetDocument().SetURL(KURL("https://example.com/"));
+  page_holder.GetDocument().head()->setInnerHTML(
+      "<base href=\"https://not-example.com/\">");
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      String(R"({"prefetch": [
+           {"source": "list", "urls":
+              ["https://example.com/#baz", "#foo", "/b#bar"]}]})"));
+  EXPECT_THAT(speculation_host.candidates(),
+              HasURLs(KURL("https://not-example.com/#foo"),
+                      KURL("https://not-example.com/b#bar")));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&] {
+    page_holder.GetDocument().SetURL(KURL("https://example.com/b"));
+  });
+  EXPECT_THAT(speculation_host.candidates(),
+              HasURLs(KURL("https://example.com/#baz"),
+                      KURL("https://not-example.com/#foo"),
+                      KURL("https://not-example.com/b#bar")));
 }
 
 // Tests that rules removed before the task to update speculation candidates
@@ -1888,93 +2022,6 @@ TEST_F(DocumentRulesTest, EvaluateHrefMatches) {
   auto* pass_fail = CreatePredicate(
       R"("href_matches": ["https://foo.com/bar.html?*", "https://bar.com/*"])");
   EXPECT_TRUE(pass_fail->Matches(*link));
-}
-
-// Matches a SpeculationCandidatePtr list with a KURL list (without requiring
-// candidates to be in a specific order).
-template <typename... Matchers>
-auto HasURLs(Matchers&&... urls) {
-  return ::testing::ResultOf(
-      "urls",
-      [](const auto& candidates) {
-        Vector<KURL> urls;
-        base::ranges::transform(
-            candidates.begin(), candidates.end(), std::back_inserter(urls),
-            [](const auto& candidate) { return candidate->url; });
-        return urls;
-      },
-      ::testing::UnorderedElementsAre(urls...));
-}
-
-// Matches a SpeculationCandidatePtr with an Eagerness.
-auto HasEagerness(
-    ::testing::Matcher<blink::mojom::SpeculationEagerness> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "eagerness", &mojom::blink::SpeculationCandidate::eagerness, matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a KURL.
-auto HasURL(::testing::Matcher<KURL> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "url", &mojom::blink::SpeculationCandidate::url, matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a SpeculationAction.
-auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "action", &mojom::blink::SpeculationCandidate::action, matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a SpeculationTargetHint.
-auto HasTargetHint(
-    ::testing::Matcher<mojom::blink::SpeculationTargetHint> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "target_hint",
-      &mojom::blink::SpeculationCandidate::target_browsing_context_name_hint,
-      matcher));
-}
-
-// Matches a SpeculationCandidatePtr with a ReferrerPolicy.
-auto HasReferrerPolicy(
-    ::testing::Matcher<network::mojom::ReferrerPolicy> matcher) {
-  return ::testing::Pointee(::testing::Field(
-      "referrer", &mojom::blink::SpeculationCandidate::referrer,
-      ::testing::Pointee(::testing::Field(
-          "policy", &mojom::blink::Referrer::policy, matcher))));
-}
-
-auto HasNoVarySearchHint() {
-  return ::testing::Pointee(
-      ::testing::Field("no_vary_search_hint",
-                       &mojom::blink::SpeculationCandidate::no_vary_search_hint,
-                       ::testing::IsTrue()));
-}
-
-auto NVSVariesOnKeyOrder() {
-  return ::testing::AllOf(
-      HasNoVarySearchHint(),
-      ::testing::Pointee(::testing::Field(
-          "no_vary_search_hint",
-          &mojom::blink::SpeculationCandidate::no_vary_search_hint,
-          testing::Pointee(::testing::Field(
-              "vary_on_key_order",
-              &network::mojom::blink::NoVarySearch::vary_on_key_order,
-              ::testing::IsTrue())))));
-}
-
-template <typename... Matchers>
-auto NVSHasNoVaryParams(Matchers&&... params) {
-  return ::testing::ResultOf(
-      "no_vary_params",
-      [](const auto& nvs) {
-        if (!nvs->no_vary_search_hint ||
-            !nvs->no_vary_search_hint->search_variance ||
-            !nvs->no_vary_search_hint->search_variance->is_no_vary_params()) {
-          return Vector<String>();
-        }
-        return nvs->no_vary_search_hint->search_variance->get_no_vary_params();
-      },
-      ::testing::UnorderedElementsAre(params...));
 }
 
 HTMLAnchorElement* AddAnchor(ContainerNode& parent, const String& href) {

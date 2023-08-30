@@ -25,6 +25,7 @@
 <meta name="variant" content="?include=immediateMutation">
 <meta name="variant" content="?include=baseURLChangedBySameDocumentNavigation">
 <meta name="variant" content="?include=baseURLChangedByBaseElement">
+<meta name="variant" content="?include=linkToSelfFragment">
 
 <body>
 <script>
@@ -303,5 +304,15 @@
     base.href = url;
     document.head.appendChild(base);
   });
+
+  subsetTestByKey('linkToSelfFragment', promise_test, async t => {
+    const url = getPrefetchUrl();
+    history.pushState({}, "", url);
+    addLink(new URL('#fragment', url));
+    insertDocumentRule();
+    await new Promise(resolve => t.step_timeout(resolve, 2000));
+    assert_equals(await isUrlPrefetched(url), 0);
+  }, 'test that a fragment link to the current document does not prefetch');
+
 </script>
 </body>
