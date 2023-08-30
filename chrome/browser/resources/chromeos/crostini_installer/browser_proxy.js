@@ -6,8 +6,6 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import './crostini_types.mojom-lite.js';
 import './crostini_installer.mojom-lite.js';
 
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-
 export class BrowserProxy {
   constructor() {
     /** @type {ash.crostiniInstaller.mojom.PageCallbackRouter} */
@@ -20,6 +18,17 @@ export class BrowserProxy {
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
+
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  /** @param {!BrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BrowserProxy);
+/** @type {?BrowserProxy} */
+let instance = null;

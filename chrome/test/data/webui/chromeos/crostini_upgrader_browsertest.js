@@ -10,15 +10,12 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-function CrostiniUpgraderBrowserTest() {}
-
-CrostiniUpgraderBrowserTest.prototype = {
-  __proto__: PolymerTest.prototype,
-
-  browsePreload:
-      'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js&host=test',
+var CrostiniUpgraderBrowserTest = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js&host=test';
+  }
 };
-
 
 TEST_F('CrostiniUpgraderBrowserTest', 'All', function() {
   mocha.run();
