@@ -114,4 +114,24 @@ void GraphicsTabletPrefHandlerImpl::InitializeLoginScreenGraphicsTabletSettings(
   graphics_tablet->settings = std::move(settings);
 }
 
+void GraphicsTabletPrefHandlerImpl::UpdateLoginScreenGraphicsTabletSettings(
+    PrefService* local_state,
+    const AccountId& account_id,
+    const mojom::GraphicsTablet& graphics_tablet) {
+  CHECK(local_state);
+
+  user_manager::KnownUser(local_state)
+      .SetPath(
+          account_id,
+          prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
+          absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+              graphics_tablet.settings->tablet_button_remappings)));
+  user_manager::KnownUser(local_state)
+      .SetPath(
+          account_id,
+          prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
+          absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+              graphics_tablet.settings->pen_button_remappings)));
+}
+
 }  // namespace ash

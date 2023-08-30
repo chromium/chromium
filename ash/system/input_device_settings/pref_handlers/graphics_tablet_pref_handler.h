@@ -38,6 +38,15 @@ class ASH_EXPORT GraphicsTabletPrefHandler {
   virtual void UpdateGraphicsTabletSettings(
       PrefService* pref_service,
       const mojom::GraphicsTablet& graphics_tablet) = 0;
+
+  // Updates login screen device settings stored in prefs to match the values
+  // in `graphics_tablet`. Button remapping lists will be stored in
+  // `settings.graphics_tablet.tablet_button_remappings` and
+  // `settings.graphics_tablet.pen_button_remappings`.
+  virtual void UpdateLoginScreenGraphicsTabletSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::GraphicsTablet& graphics_tablet) = 0;
 };
 
 }  // namespace ash

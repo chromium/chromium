@@ -96,6 +96,16 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
     return std::move(graphics_tablet_ptr->settings);
   }
 
+  void CallUpdateLoginScreenGraphicsTabletSettings(
+      const AccountId& account_id,
+      const std::string& device_key,
+      const mojom::GraphicsTabletSettings& settings) {
+    mojom::GraphicsTabletPtr graphics_tablet = mojom::GraphicsTablet::New();
+    graphics_tablet->settings = settings.Clone();
+    pref_handler_->UpdateLoginScreenGraphicsTabletSettings(
+        local_state(), account_id, *graphics_tablet);
+  }
+
   mojom::GraphicsTabletSettingsPtr CallInitializeGraphicsTabletSettings(
       const std::string& device_key) {
     mojom::GraphicsTabletPtr graphics_tablet = mojom::GraphicsTablet::New();
@@ -149,6 +159,52 @@ TEST_F(GraphicsTabletPrefHandlerTest,
   CallInitializeLoginScreenGraphicsTabletSettings(account_id_1,
                                                   graphics_tablet);
   EXPECT_FALSE(HasLoginScreenGraphicsTabletButtonRemappingList(account_id_1));
+}
+
+TEST_F(GraphicsTabletPrefHandlerTest, UpdateLoginScreenGraphicsTabletSettings) {
+  mojom::GraphicsTablet graphics_tablet;
+  graphics_tablet.device_key = kGraphicsTabletKey1;
+
+  mojom::GraphicsTabletSettingsPtr settings =
+      CallInitializeLoginScreenGraphicsTabletSettings(account_id_1,
+                                                      graphics_tablet);
+  EXPECT_FALSE(HasLoginScreenGraphicsTabletButtonRemappingList(account_id_1));
+
+  // Create new graphics tablet settings.
+  std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings1;
+  std::vector<mojom::ButtonRemappingPtr> pen_button_remappings1;
+  tablet_button_remappings1.push_back(button_remapping1.Clone());
+  const mojom::GraphicsTabletSettings kGraphicsTabletSettings1(
+      /*tablet_button_remappings=*/mojo::Clone(tablet_button_remappings1),
+      /*pen_button_remappings=*/mojo::Clone(pen_button_remappings1));
+
+  CallUpdateLoginScreenGraphicsTabletSettings(account_id_1, kGraphicsTabletKey1,
+                                              kGraphicsTabletSettings1);
+  EXPECT_TRUE(HasLoginScreenGraphicsTabletButtonRemappingList(account_id_1));
+
+  // Verify the updated tablet and pen button remapping lists.
+  const auto* updated_tablet_button_remapping_list =
+      GetLoginScreenButtonRemappingList(
+          local_state(), account_id_1,
+          prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref);
+  const auto* updated_pen_button_remapping_list =
+      GetLoginScreenButtonRemappingList(
+          local_state(), account_id_1,
+          prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref);
+  ASSERT_NE(nullptr, updated_tablet_button_remapping_list);
+  ASSERT_EQ(1u, updated_tablet_button_remapping_list->size());
+  const auto& tablet_button_remapping =
+      (*updated_tablet_button_remapping_list)[0].GetDict();
+  EXPECT_EQ(button_remapping1.name,
+            *tablet_button_remapping.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(
+      static_cast<int>(button_remapping1.button->get_customizable_button()),
+      *tablet_button_remapping.FindInt(
+          prefs::kButtonRemappingCustomizableButton));
+  EXPECT_EQ(static_cast<int>(button_remapping1.remapping_action->get_action()),
+            *tablet_button_remapping.FindInt(prefs::kButtonRemappingAction));
+  ASSERT_NE(nullptr, updated_pen_button_remapping_list);
+  ASSERT_EQ(0u, updated_pen_button_remapping_list->size());
 }
 
 TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {

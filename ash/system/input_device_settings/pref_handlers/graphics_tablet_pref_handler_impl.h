@@ -34,6 +34,11 @@ class ASH_EXPORT GraphicsTabletPrefHandlerImpl
   void UpdateGraphicsTabletSettings(
       PrefService* pref_service,
       const mojom::GraphicsTablet& graphics_tablet) override;
+
+  void UpdateLoginScreenGraphicsTabletSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::GraphicsTablet& graphics_tablet) override;
 };
 
 }  // namespace ash
