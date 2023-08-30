@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Utilities for loading HTTP flags.
@@ -39,7 +38,8 @@ import java.nio.charset.StandardCharsets;
  *     app's {@link ApplicationInfo#deviceProtectedDataDir}.
  * <li>That directory must contain a file named after {@link #FLAGS_FILE_NAME} that must be readable
  *     by the process running {@link #load}.
- * <li>The flag values are obtained from the contents of that file. TODO: document the file format
+ * <li>The flag values are obtained from the contents of that file. The format is a binary proto
+ *     that can be read through {@link Flags#parseDelimitedFrom} - see `flags.proto` for details.
  * </ol>
  *
  * @see HttpFlagsInterceptor
@@ -63,12 +63,9 @@ final class HttpFlagsLoader {
      *
      * @return The contents of the flags file, or null if the flags file could not be loaded for any
      * reason. In the latter case, the callee will take care of logging the failure.
-     * TODO: currently this returns the flags file contents directly as a string as we have not
-     * decided on the file format yet. Once we do, the return type should be changed to a more
-     * structured type.
      */
     @Nullable
-    public static String load(Context context) {
+    public static Flags load(Context context) {
         try {
             ApplicationInfo providerApplicationInfo = getProviderApplicationInfo(context);
             if (providerApplicationInfo == null) return null;
@@ -78,7 +75,11 @@ final class HttpFlagsLoader {
             File flagsFile = getFlagsFileFromProvider(context, providerApplicationInfo);
             Log.d(TAG, "HTTP flags file path: %s", flagsFile.getAbsolutePath());
 
-            return loadFlagsFile(flagsFile);
+            Flags flags = loadFlagsFile(flagsFile);
+            if (flags == null) return null;
+            Log.d(TAG, "Successfully loaded HTTP flags: %s", flags);
+
+            return flags;
         } catch (RuntimeException exception) {
             Log.e(TAG, "Unable to load HTTP flags file", exception);
             return null;
@@ -113,12 +114,9 @@ final class HttpFlagsLoader {
     }
 
     @Nullable
-    private static String loadFlagsFile(File file) {
-        byte[] buffer;
-        int length;
+    private static Flags loadFlagsFile(File file) {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            buffer = new byte[fileInputStream.available()];
-            length = fileInputStream.read(buffer);
+            return Flags.parseDelimitedFrom(fileInputStream);
         } catch (FileNotFoundException exception) {
             Log.w(TAG,
                     "HTTP flags file `%s` is missing. This is expected if HTTP flags functionality "
@@ -128,6 +126,5 @@ final class HttpFlagsLoader {
         } catch (IOException exception) {
             throw new RuntimeException("Unable to read HTTP flags file", exception);
         }
-        return new String(buffer, 0, length, StandardCharsets.UTF_8);
     }
 }

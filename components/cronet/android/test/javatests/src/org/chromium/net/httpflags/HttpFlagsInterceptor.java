@@ -21,8 +21,8 @@ import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.net.ContextInterceptor;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.UUID;
 
 /**
@@ -36,15 +36,13 @@ public final class HttpFlagsInterceptor implements ContextInterceptor, AutoClose
             "org.chromium.net.httpflags.HttpFlagsInterceptor.FAKE_PROVIDER_PACKAGE";
 
     @Nullable
-    private final String mFlagsFileContents;
+    private final Flags mFlagsFileContents;
     private File mDataDir;
 
     /**
      * @param flagsFileContents the contents of the flags file, or null to simulate a missing file.
-     * TODO: adjust the type of this parameter once we decide on the return value of
-     * {@link HttpFlagsLoader#load}.
      */
-    public HttpFlagsInterceptor(@Nullable String flagsFileContents) {
+    public HttpFlagsInterceptor(@Nullable Flags flagsFileContents) {
         mFlagsFileContents = flagsFileContents;
     }
 
@@ -104,8 +102,8 @@ public final class HttpFlagsInterceptor implements ContextInterceptor, AutoClose
         }
         try {
             if (!flagsFile.createNewFile()) throw new RuntimeException("File already exists");
-            try (final PrintWriter printWriter = new PrintWriter(flagsFile)) {
-                printWriter.write(mFlagsFileContents);
+            try (final FileOutputStream fileOutputStream = new FileOutputStream(flagsFile)) {
+                mFlagsFileContents.writeDelimitedTo(fileOutputStream);
             }
         } catch (RuntimeException | IOException exception) {
             throw new RuntimeException(

@@ -114,6 +114,11 @@ process_version("implementation_api_version") {
 
 _cronet_version_header_include_dir = "$target_gen_dir/cronet_version_header"
 
+proto_java_library("flags_java_proto") {
+  proto_path = "."
+  sources = [ "proto/flags.proto" ]
+}
+
 proto_library("request_context_config_proto") {
   sources = [ "proto/request_context_config.proto" ]
 }
@@ -380,6 +385,7 @@ cronet_impl_native_java_srcjar_deps = [
 
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
+  ":flags_java_proto",
   ":request_context_config_java_proto",
   "//base:base_java",
   "//base:jni_java",
@@ -976,6 +982,7 @@ android_library("cronet_common_javatests") {
            ":cronet_api_java",
            ":cronet_impl_all_java",
            ":cronet_test_apk_java",
+           ":flags_java_proto",
            "//base:base_java",
            "//base:base_java_test_support",
            "//base:jni_java",
@@ -1017,6 +1024,7 @@ cronet_javatests_deps_to_package = [
   ":cronet_common_javatests",
   ":cronet_fake_javatests",
   ":cronet_test_apk_java",
+  ":flags_java_proto",
   "//base:base_java",
   "//base:jni_java",
   "//base:base_java_test_support",
@@ -1095,6 +1103,7 @@ android_library("cronet_javatests") {
     ":cronet_impl_all_java",
     ":cronet_urlconnection_impl_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",

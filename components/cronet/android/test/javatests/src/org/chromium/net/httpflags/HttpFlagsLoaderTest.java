@@ -47,9 +47,16 @@ public final class HttpFlagsLoaderTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testLoad_returnsFileFlagContents() {
-        final String flagsFileContents = "test flags file contents";
-        mCronetTestFramework.setHttpFlags(flagsFileContents);
-        assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext()))
-                .isEqualTo(flagsFileContents);
+        Flags flags = Flags.newBuilder()
+                              .putFlags("test_flag_name",
+                                      FlagValue.newBuilder()
+                                              .addConstrainedValues(
+                                                      FlagValue.ConstrainedValue.newBuilder()
+                                                              .setStringValue("test_flag_value")
+                                                              .build())
+                                              .build())
+                              .build();
+        mCronetTestFramework.setHttpFlags(flags);
+        assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isEqualTo(flags);
     }
 }

@@ -25,6 +25,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsInterceptor;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
@@ -393,7 +394,7 @@ public class CronetTestRule implements TestRule {
          * @see org.chromium.net.impl.HttpFlagsLoader
          * @see HttpFlagsInterceptor
          */
-        public void setHttpFlags(@Nullable String flagsFileContents) {
+        public void setHttpFlags(@Nullable Flags flagsFileContents) {
             checkNotClosed();
 
             if (mCronetEngine != null) {
