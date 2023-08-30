@@ -5252,12 +5252,6 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
-const char kAllowTouchpadScrollSettingsName[] =
-    "Allow changes to scroll acceleration/sensitivity for touchpads.";
-const char kAllowTouchpadScrollSettingsDescription[] =
-    "Shows settings to enable/disable scroll acceleration and to adjust the "
-    "sensitivity for scrolling.";
-
 const char kAlmanacGameMigrationName[] =
     "Use Almanac for games in App Discovery Service";
 const char kAlmanacGameMigrationDescription[] =

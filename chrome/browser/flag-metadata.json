@@ -155,11 +155,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "allow-touchpad-scroll-settings",
-    "owners": [ "zhangwenyu", "cros-peripherals@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "almanac-game-migration",
     "owners": [ "elitsa@google.com", "cros-apps-foundation-system@google.com" ],
     "expiry_milestone": 123
