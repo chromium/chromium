@@ -233,6 +233,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
   helper_.CheckNoSubApps(Site::kHasSubApps);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, NewAppTab) {
+  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
+  helper_.CheckAppNavigation(Site::kTabbed);
+  helper_.NewAppTab(Site::kTabbed);
+  helper_.CheckAppTabCreated();
+  helper_.CheckAppTabIsSite(Site::kTabbed, Number::kOne);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

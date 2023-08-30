@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 171) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 174) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -170,6 +170,10 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_has_sub_app | Site, Site |  | 140 | Implemented | Assuming we have some tab or browser window on the (potential) parent site, call subApps.list() and check if the given site is listed. |  |
 | check_not_has_sub_app | Site, Site |  | 141 | Implemented | Assuming we have some tab or browser window on the (potential) parent site, call subApps.list() and check if the given site is not listed. |  |
 | check_no_sub_apps | Site |  | 142 | Implemented | Assuming we have some tab or browser window on the (potential) parent site, call subApps.list() and check if the list is empty. |  |
+| # Tabbed |
+| new_app_tab | Site | | 171 | Implemented | Opens a new tab in the given app. | |
+| check_app_tab_is_site | Site, Number | | 172 | Implemented | Checks the tab at the given index of the web app is the given site. | |
+| check_app_tab_created | | | 173 | Implemented | Checks a tab was added to the web app window. | |
 
 ### App Home
 Actions that the user can take by going to chrome://apps and either left clicking an app or right clicking an app and then taking actions from the context menu that opens.

@@ -318,6 +318,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void NavigateBrowser(Site site);
   void NavigatePwa(Site app, Site to);
   void NavigateNotfoundUrl();
+  void NewAppTab(Site site);
   void ManifestUpdateIcon(Site site, UpdateDialogResponse response);
   void ManifestUpdateTitle(Site site,
                            Title title,
@@ -352,6 +353,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListTabbed(Site site);
   void CheckAppNavigation(Site site);
   void CheckAppNavigationIsStartUrl();
+  void CheckAppTabIsSite(Site site, Number number);
+  void CheckAppTabCreated();
   void CheckBrowserNavigation(Site site);
   void CheckBrowserNavigationIsAppSettings(Site site);
   void CheckBrowserNotAtAppHome();

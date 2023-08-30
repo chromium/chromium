@@ -238,6 +238,15 @@ Site InstallableSiteToSite(InstallableSite site) {
   }
 }
 
+int NumberToInt(Number number) {
+  switch (number) {
+    case Number::kOne:
+      return 1;
+    case Number::kTwo:
+      return 2;
+  }
+}
+
 // Flushes the shortcuts tasks, which seem to sometimes still hang around after
 // our tasks are done.
 // TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
@@ -2090,6 +2099,14 @@ void WebAppIntegrationTestDriver::NavigateNotfoundUrl() {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::NewAppTab(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  chrome::NewTab(GetAppBrowserForSite(site));
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::ManifestUpdateIcon(
     Site site,
     UpdateDialogResponse response) {
@@ -2782,6 +2799,39 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckAppTabIsSite(Site site, Number number) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  ASSERT_TRUE(app_browser());
+  ASSERT_TRUE(
+      app_browser()->tab_strip_model()->ContainsIndex(NumberToInt(number)));
+  GURL url = app_browser()
+                 ->tab_strip_model()
+                 ->GetWebContentsAt(NumberToInt(number))
+                 ->GetURL();
+  EXPECT_EQ(url, GetUrlForSite(site));
+
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppTabCreated() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  DCHECK(before_state_change_action_state_);
+  absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), app_browser());
+  absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
+      before_state_change_action_state_.get(), profile(), app_browser());
+  ASSERT_TRUE(most_recent_browser_state.has_value());
+
+  ASSERT_TRUE(previous_browser_state.has_value());
+  ASSERT_EQ(most_recent_browser_state->tabs.size(),
+            previous_browser_state->tabs.size() + 1);
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckBrowserNavigation(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
@@ -3128,14 +3178,7 @@ void WebAppIntegrationTestDriver::CheckTabCreated(Number number) {
               previous_browser_state->tabs.size());
     int tab_diff = most_recent_browser_state->tabs.size() -
                    previous_browser_state->tabs.size();
-    switch (number) {
-      case Number::kOne:
-        ASSERT_EQ(1, tab_diff);
-        break;
-      case Number::kTwo:
-        ASSERT_EQ(2, tab_diff);
-        break;
-    }
+    ASSERT_EQ(NumberToInt(number), tab_diff);
 #if BUILDFLAG(IS_MAC)
   }
 #endif
@@ -3413,14 +3456,7 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreatedImpl(Profile* profile,
   }
   int app_window_diff =
       after_state_app_window_count - before_state_app_window_count;
-  switch (number) {
-    case Number::kOne:
-      ASSERT_EQ(1, app_window_diff);
-      break;
-    case Number::kTwo:
-      ASSERT_EQ(2, app_window_diff);
-      break;
-  }
+  ASSERT_EQ(NumberToInt(number), app_window_diff);
 }
 
 void WebAppIntegrationTestDriver::CheckPwaWindowCreatedInProfile(
