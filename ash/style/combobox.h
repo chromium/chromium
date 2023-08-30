@@ -27,7 +27,8 @@ namespace ash {
 
 // A stylized non-editable combobox driven by `ui::ComboboxModel`.
 class ASH_EXPORT Combobox : public views::Button,
-                            public ui::ComboboxModelObserver {
+                            public ui::ComboboxModelObserver,
+                            public views::WidgetObserver {
  public:
   METADATA_HEADER(Combobox);
 
@@ -59,6 +60,12 @@ class ASH_EXPORT Combobox : public views::Button,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnBlur() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& bounds) override;
 
   std::u16string GetTextForRow(size_t row) const;
 
@@ -133,6 +140,9 @@ class ASH_EXPORT Combobox : public views::Button,
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observer_{this};
 
   base::WeakPtrFactory<Combobox> weak_ptr_factory_{this};
 };

@@ -55,6 +55,7 @@ void RadioButtonGroup::OnButtonSelected(OptionButtonBase* button) {
     if (b != button)
       b->SetSelected(false);
   }
+  button->ScrollViewToVisible();
 }
 
 void RadioButtonGroup::OnButtonClicked(OptionButtonBase* button) {

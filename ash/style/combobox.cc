@@ -14,6 +14,7 @@
 #include "ash/style/radio_button_group.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -32,6 +33,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -149,9 +151,20 @@ class Combobox::ComboboxMenuView : public views::View {
                            kMenuRoundedCorners) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
+    scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+        views::ScrollView::ScrollWithLayers::kEnabled));
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+    scroll_view_->layer()->SetFillsBoundsOpaquely(false);
+    scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
+    scroll_view_->SetDrawOverflowIndicator(false);
+    scroll_view_->SetBackgroundColor(absl::nullopt);
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+
     // Create a radio buttons group for item list.
     menu_item_group_ =
-        AddChildView(std::make_unique<ComboboxMenuOptionGroup>());
+        scroll_view_->SetContents(std::make_unique<ComboboxMenuOptionGroup>());
     UpdateMenuContent();
 
     // Set border.
@@ -194,6 +207,7 @@ class Combobox::ComboboxMenuView : public views::View {
 
   // Owned by this.
   raw_ptr<ComboboxMenuOptionGroup> menu_item_group_;
+  raw_ptr<views::ScrollView> scroll_view_;
 };
 
 BEGIN_METADATA(Combobox, ComboboxMenuView, views::View)
@@ -391,6 +405,21 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
+void Combobox::AddedToWidget() {
+  widget_observer_.Observe(GetWidget());
+}
+
+void Combobox::RemovedFromWidget() {
+  widget_observer_.Reset();
+}
+
+void Combobox::OnWidgetBoundsChanged(views::Widget* widget,
+                                     const gfx::Rect& bounds) {
+  if (menu_) {
+    menu_->SetBounds(GetExpectedMenuBounds());
+  }
+}
+
 std::u16string Combobox::GetTextForRow(size_t row) const {
   return model_->IsItemSeparatorAt(row) ? std::u16string()
                                         : model_->GetItemAt(row);
@@ -402,8 +431,12 @@ void Combobox::SelectMenuItemForTest(size_t row) {
 
 gfx::Rect Combobox::GetExpectedMenuBounds() const {
   CHECK(menu_view_);
-  return gfx::Rect(GetBoundsInScreen().bottom_left() + kMenuOffset,
-                   menu_view_->GetPreferredSize());
+  gfx::Rect preferred_bounds(GetBoundsInScreen().bottom_left() + kMenuOffset,
+                             menu_view_->GetPreferredSize());
+  WorkAreaInsets* work_area =
+      WorkAreaInsets::ForWindow(GetWidget()->GetNativeWindow());
+  preferred_bounds.Intersect(work_area->user_work_area_bounds());
+  return preferred_bounds;
 }
 
 void Combobox::MenuSelectionAt(size_t index) {
