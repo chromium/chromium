@@ -24,3 +24,6 @@ NSString* const kSyncReadingListIdentifier = @"syncReadingListIdentifier";
 
 NSString* const kEncryptionAccessibilityIdentifier =
     @"EncryptionAccessibilityIdentifier";
+
+NSString* const kBatchUploadAccessibilityIdentifier =
+    @"BatchUploadAccessibilityIdentifier";

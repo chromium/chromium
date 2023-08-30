@@ -1256,6 +1256,24 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [Length: 26em] [iOS only]">
         Sync
       </message>
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM" desc="Title shown on the batch upload button item. [iOS only]">
+        Save in Account…
+      </message>
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM" desc="Detailed text shown above the batch upload button item. To explain the details of the local data to the user. [iOS only]">
+        {count, plural,
+          =1 {{count} password is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}
+          other {{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}
+      </message>
+     <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM" desc="Detailed text shown above the batch upload button item. To explain the details of the local data to the user. [iOS only]">
+        {count, plural,
+          =1 {{count} item is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}
+          other {{count} items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}
+      </message>
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM" desc="Detailed text shown above the batch upload button item. To explain the details of the local data to the user. [iOS only]">
+        {count, plural,
+          =1 {{count} password and other items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}
+          other {{count} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}
+      </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE" desc="Title for the view in the Settings for account features management UI. [iOS only]">
         Account
       </message>

@@ -30,6 +30,9 @@ extern NSString* const kSyncReadingListIdentifier;
 // Accessibility identifier for Encryption item.
 extern NSString* const kEncryptionAccessibilityIdentifier;
 
+// Accessibility identifier for batch upload item.
+extern NSString* const kBatchUploadAccessibilityIdentifier;
+
 // Sections used in Sync Settings page.
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.
@@ -42,6 +45,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   SyncErrorsSectionIdentifier,
   // Section to show the signed-in account.
   AccountSectionIdentifier,
+  // Section to show the batch upload option.
+  BatchUploadSectionIdentifier,
 };
 
 // Item types used per Sync Setting section.
@@ -98,6 +103,11 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // AccountSectionIdentifier section.
   // Item for the signed in identity.
   IdentityAccountItemType,
+  // BatchUploadSectionIdentifier section.
+  // Item for the batch upload button.
+  BatchUploadButtonItemType,
+  // Indicates the items to be uploaded to the account.
+  BatchUploadRecommendationItemType,
 };
 
 // States for Sync Settings page to be in.

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -93,6 +94,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     [managedCell.trailingButton addTarget:self
                                    action:@selector(didTapManagedUIInfoButton:)
                          forControlEvents:UIControlEventTouchUpInside];
+  } else if ([cell isKindOfClass:[SettingsImageDetailTextCell class]]) {
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   return cell;
 }
@@ -141,6 +144,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     // No need to reload since the model has not been loaded yet.
     return;
   }
+  // To avoid animation glitches related to crbug.com/1469539.
   [UIView performWithoutAnimation:^{
     [self.tableView beginUpdates];
     [self.tableView deleteSections:sections
@@ -155,8 +159,13 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     return;
   }
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-  [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
-                        withRowAnimation:UITableViewRowAnimationNone];
+  // To avoid animation glitches related to crbug.com/1469539.
+  [UIView performWithoutAnimation:^{
+    [self.tableView beginUpdates];
+    [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                          withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView endUpdates];
+  }];
 }
 
 - (void)reloadSections:(NSIndexSet*)sections {
