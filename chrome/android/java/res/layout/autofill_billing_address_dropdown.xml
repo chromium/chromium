@@ -20,6 +20,7 @@ found in the LICENSE file.
         android:id="@+id/autofill_credit_card_editor_billing_address_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
         android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
         android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
         android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
