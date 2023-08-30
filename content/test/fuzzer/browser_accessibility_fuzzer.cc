@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,6 +72,7 @@ void AddStates(FuzzedDataProvider& fdp, ui::AXNodeData* node) {
 // functions that walk the tree in various ways to ensure they don't crash.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Env env;
+  auto accessibility_state = BrowserAccessibilityStateImpl::Create();
   FuzzedDataProvider fdp(data, size);
 
   // The tree structure is always the same, only the data changes.
