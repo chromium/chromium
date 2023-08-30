@@ -32,6 +32,17 @@ struct SimpleAccelerator {
   ui.mojom.AcceleratorKeyState key_state;
 };
 
+// Enum of possible options for text accelerators.
+enum UserAction {
+  kOpenEditDialog,
+  kStartAddAccelerator,
+  kStartReplaceAccelerator,
+  kRemoveAccelerator,
+  kSuccessfulModification,
+  kResetAction,
+  kResetAll,
+};
+
 // Observer interface, to be implemented by the Shortcut Customization SWA to
 // receive updated accelerators.
 interface AcceleratorsUpdatedObserver {
@@ -133,4 +144,7 @@ interface AcceleratorConfigurationProvider {
   // Restore all accelerators to their system-provided default state, overriding
   // user customization.
   RestoreAllDefaults() => (AcceleratorResultData result);
+
+  // Records the specific user action histogram.
+  RecordUserAction(UserAction user_action);
 };

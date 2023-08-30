@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
@@ -30,6 +30,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private preventProcessingAcceleratorsCallCount: number = 0;
   private addAcceleratorCallCount: number = 0;
   private removeAcceleratorCallCount: number = 0;
+  private lastRecordedUserAction: UserAction;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -48,6 +49,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('preventProcessingAccelerators');
     this.methods.register('getConflictAccelerator');
     this.methods.register('getDefaultAcceleratorsForId');
+    this.methods.register('recordUserAction');
     this.registerObservables();
   }
 
@@ -140,6 +142,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
         AcceleratorResultData = {result: AcceleratorConfigResult.kSuccess};
     this.methods.setResult('restoreAllDefaults', {result});
     return this.methods.resolveMethod('restoreAllDefaults');
+  }
+
+  recordUserAction(userAction: UserAction): void {
+    this.lastRecordedUserAction = userAction;
+  }
+
+  getLatestRecordedAction(): UserAction {
+    return this.lastRecordedUserAction;
   }
 
   preventProcessingAccelerators(_preventProcessingAccelerators: boolean):

@@ -35,6 +35,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "device/udev_linux/fake_udev_loader.h"
@@ -61,6 +62,7 @@ namespace {
 using shortcut_customization::mojom::AcceleratorResultDataPtr;
 using shortcut_customization::mojom::SimpleAccelerator;
 using shortcut_customization::mojom::SimpleAcceleratorPtr;
+using shortcut_customization::mojom::UserAction;
 
 using mojom::AcceleratorConfigResult;
 
@@ -362,6 +364,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     EXPECT_EQ(0, observer_.num_times_notified());
 
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+    user_action_tester_ = std::make_unique<base::UserActionTester>();
   }
 
   void TearDown() override {
@@ -373,6 +376,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
     histogram_tester_.reset();
+    user_action_tester_.reset();
   }
 
  protected:
@@ -436,6 +440,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   FakeAcceleratorsUpdatedObserver observer_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<base::UserActionTester> user_action_tester_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -2934,6 +2939,46 @@ TEST_F(AcceleratorConfigurationProviderTest, AddRemoveAcceleratorMetrics) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
       GetEncodedShortcut(good_accelerator), 0);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, UserActions) {
+  EXPECT_EQ(0, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_OpenEditAcceleratorDialog"));
+  EXPECT_EQ(0, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_RemoveAccelerator"));
+  EXPECT_EQ(0, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_ResetAction"));
+  EXPECT_EQ(
+      0, user_action_tester_->GetActionCount("ShortcutCustomization_ResetAll"));
+  EXPECT_EQ(0, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_StartAddAccelerator"));
+  EXPECT_EQ(0, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_StartReplaceAccelerator"));
+  EXPECT_EQ(0, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_SuccessfullyModified"));
+
+  provider_->RecordUserAction(UserAction::kOpenEditDialog);
+  provider_->RecordUserAction(UserAction::kStartAddAccelerator);
+  provider_->RecordUserAction(UserAction::kStartReplaceAccelerator);
+  provider_->RecordUserAction(UserAction::kRemoveAccelerator);
+  provider_->RecordUserAction(UserAction::kSuccessfulModification);
+  provider_->RecordUserAction(UserAction::kResetAction);
+  provider_->RecordUserAction(UserAction::kResetAll);
+
+  EXPECT_EQ(1, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_OpenEditAcceleratorDialog"));
+  EXPECT_EQ(1, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_RemoveAccelerator"));
+  EXPECT_EQ(1, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_ResetAction"));
+  EXPECT_EQ(
+      1, user_action_tester_->GetActionCount("ShortcutCustomization_ResetAll"));
+  EXPECT_EQ(1, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_StartAddAccelerator"));
+  EXPECT_EQ(1, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_StartReplaceAccelerator"));
+  EXPECT_EQ(1, user_action_tester_->GetActionCount(
+                   "ShortcutCustomization_SuccessfullyModified"));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,

@@ -31,6 +31,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -54,6 +55,7 @@ using ::ash::shortcut_customization::mojom::AcceleratorResultData;
 using ::ash::shortcut_customization::mojom::AcceleratorResultDataPtr;
 using ::ash::shortcut_customization::mojom::SimpleAccelerator;
 using ::ash::shortcut_customization::mojom::SimpleAcceleratorPtr;
+using ::ash::shortcut_customization::mojom::UserAction;
 using mojom::AcceleratorConfigResult;
 using HiddenAcceleratorMap =
     std::map<AcceleratorActionId, std::vector<ui::Accelerator>>;
@@ -1077,6 +1079,40 @@ void AcceleratorConfigurationProvider::RestoreAllDefaults(
   base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
                                 ShortcutCustomizationAction::kResetAll);
   std::move(callback).Run(std::move(result_data));
+}
+
+void AcceleratorConfigurationProvider::RecordUserAction(
+    UserAction user_action) {
+  switch (user_action) {
+    case UserAction::kOpenEditDialog:
+      base::RecordAction(base::UserMetricsAction(
+          "ShortcutCustomization_OpenEditAcceleratorDialog"));
+      break;
+    case UserAction::kStartAddAccelerator:
+      base::RecordAction(
+          base::UserMetricsAction("ShortcutCustomization_StartAddAccelerator"));
+      break;
+    case UserAction::kStartReplaceAccelerator:
+      base::RecordAction(base::UserMetricsAction(
+          "ShortcutCustomization_StartReplaceAccelerator"));
+      break;
+    case UserAction::kRemoveAccelerator:
+      base::RecordAction(
+          base::UserMetricsAction("ShortcutCustomization_RemoveAccelerator"));
+      break;
+    case UserAction::kSuccessfulModification:
+      base::RecordAction(base::UserMetricsAction(
+          "ShortcutCustomization_SuccessfullyModified"));
+      break;
+    case UserAction::kResetAction:
+      base::RecordAction(
+          base::UserMetricsAction("ShortcutCustomization_ResetAction"));
+      break;
+    case UserAction::kResetAll:
+      base::RecordAction(
+          base::UserMetricsAction("ShortcutCustomization_ResetAll"));
+      break;
+  }
 }
 
 void AcceleratorConfigurationProvider::BindInterface(

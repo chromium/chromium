@@ -31666,6 +31666,56 @@ should be able to be added at any place in this file.
   <description>User shut down from the shelf shutdown button.</description>
 </action>
 
+<action name="ShortcutCustomization_OpenEditAcceleratorDialog">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    User clicks on an editable accelerator to modify it.
+  </description>
+</action>
+
+<action name="ShortcutCustomization_RemoveAccelerator">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>User has removed an accelerator.</description>
+</action>
+
+<action name="ShortcutCustomization_ResetAction">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    User has clicked on the restore default button for an action.
+  </description>
+</action>
+
+<action name="ShortcutCustomization_ResetAll">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    User has clicked on the restore default for all actions button.
+  </description>
+</action>
+
+<action name="ShortcutCustomization_StartAddAccelerator">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>User has begun adding a new accelerator.</description>
+</action>
+
+<action name="ShortcutCustomization_StartReplaceAccelerator">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>User has begun replacing an accelerator.</description>
+</action>
+
+<action name="ShortcutCustomization_SuccessfullyModified">
+  <owner>jimmyxgong@chromium.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    User has successfully added or replaced an accelerator.
+  </description>
+</action>
+
 <action name="ShowAccessibilitySettings">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

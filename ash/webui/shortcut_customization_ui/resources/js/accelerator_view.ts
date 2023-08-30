@@ -13,7 +13,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorResultData} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
@@ -417,6 +417,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       case AcceleratorConfigResult.kSuccess: {
         this.fireUpdateEvent();
+        getShortcutProvider().recordUserAction(
+            UserAction.kSuccessfulModification);
         return;
       }
     }

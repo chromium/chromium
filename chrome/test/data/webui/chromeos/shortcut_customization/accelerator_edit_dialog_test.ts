@@ -17,7 +17,7 @@ import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'ch
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeyState, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -239,6 +239,7 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect call count for `restoreDefault` to be 1.
     assertEquals(1, provider.getRestoreDefaultCallCount());
+    assertEquals(UserAction.kResetAction, provider.getLatestRecordedAction());
   });
 
   test('RestoreDefaultButtonConflict', async () => {

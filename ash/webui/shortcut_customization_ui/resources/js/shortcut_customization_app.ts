@@ -21,7 +21,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
 import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
@@ -260,6 +260,7 @@ export class ShortcutCustomizationAppElement extends
     this.shortcutProvider.restoreAllDefaults().then(({result}) => {
       // TODO(jimmyxgong): Explore error state with restore all.
       if (result.result === AcceleratorConfigResult.kSuccess) {
+        this.shortcutProvider.recordUserAction(UserAction.kResetAll);
         this.closeRestoreAllDialog();
       }
     });

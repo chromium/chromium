@@ -15,6 +15,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+
 import {getTemplate} from './accelerator_edit_dialog.html.js';
 import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
@@ -133,6 +135,8 @@ export class AcceleratorEditDialogElement extends
         this, 'default-conflict-resolved',
         (e: CustomEvent<{stringifiedAccelerator: string}>) =>
             this.onDefaultConflictResolved(e));
+
+    getShortcutProvider().recordUserAction(UserAction.kOpenEditDialog);
   }
 
   override disconnectedCallback(): void {
@@ -212,6 +216,7 @@ export class AcceleratorEditDialogElement extends
     // Flush the dom so that the AcceleratorEditView is ready to be focused.
     flush();
     this.focusAcceleratorItemContainer();
+    getShortcutProvider().recordUserAction(UserAction.kStartAddAccelerator);
   }
 
   protected showNewAccelerator(): boolean {
@@ -250,7 +255,7 @@ export class AcceleratorEditDialogElement extends
     getShortcutProvider()
         .restoreDefault(this.source, this.action)
         .then(({result}) => {
-          // TODO(jimmyxgong): Potentially show partial resets as an error.
+          getShortcutProvider().recordUserAction(UserAction.kResetAction);
           if (result.result === AcceleratorConfigResult.kSuccess) {
             this.requestUpdateAccelerator(this.source, this.action);
           } else if (

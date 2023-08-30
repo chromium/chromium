@@ -119,6 +119,8 @@ class AcceleratorConfigurationProvider
                       uint32_t action_id,
                       RestoreDefaultCallback callback) override;
   void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
+  void RecordUserAction(
+      shortcut_customization::mojom::UserAction user_action) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;

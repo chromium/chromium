@@ -26,7 +26,7 @@ import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customizatio
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -330,6 +330,8 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
     editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);
+    assertEquals(
+        UserAction.kOpenEditDialog, provider.getLatestRecordedAction());
   });
 
   test('DialogOpensOnEvent', async () => {
@@ -388,6 +390,10 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
 
+    assertEquals(
+        UserAction.kStartReplaceAccelerator,
+        provider.getLatestRecordedAction());
+
     const accelViewElement =
         editView.shadowRoot!.querySelector('#acceleratorItem');
 
@@ -439,6 +445,8 @@ suite('shortcutCustomizationAppTest', function() {
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view')[0] as AcceleratorEditViewElement;
     assertFalse(updatedEditView.hasError);
+    assertEquals(
+        UserAction.kSuccessfulModification, provider.getLatestRecordedAction());
   });
 
   test('AddAccelerator', async () => {
@@ -463,6 +471,9 @@ suite('shortcutCustomizationAppTest', function() {
         .click();
 
     await flushTasks();
+
+    assertEquals(
+        UserAction.kStartAddAccelerator, provider.getLatestRecordedAction());
 
     const editElement =
         editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
@@ -530,6 +541,9 @@ suite('shortcutCustomizationAppTest', function() {
         editElement!.shadowRoot!.querySelector('#acceleratorInfoText')!
             .textContent!.trim());
     assertTrue(editElement.hasError);
+    // Since this was a failure, expect that latest recorded action is the same.
+    assertEquals(
+        UserAction.kStartAddAccelerator, provider.getLatestRecordedAction());
 
     // Press the shortcut again, this time with another success state.
     const fakeResult3: AcceleratorResultData = {
@@ -551,6 +565,8 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     assertFalse(editElement.hasError);
+    assertEquals(
+        UserAction.kSuccessfulModification, provider.getLatestRecordedAction());
   });
 
   test('ValidateAcceleratorMaximumAccelerators', async () => {
@@ -644,6 +660,9 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Expect call count for `restoreDefault` to be 1.
     assertEquals(1, provider.getRemoveAcceleratorCallCount());
+
+    assertEquals(
+        UserAction.kRemoveAccelerator, provider.getLatestRecordedAction());
   });
 
   test('RestoreAllButton', async () => {
@@ -673,6 +692,8 @@ suite('shortcutCustomizationAppTest', function() {
     confirmButton.click();
 
     await flushTasks();
+
+    assertEquals(UserAction.kResetAll, provider.getLatestRecordedAction());
 
     // Confirm dialog is now closed.
     restoreDialog = getDialog('#restoreDialog');
