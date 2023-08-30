@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android_user_data.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 
 class PersistedTabDataAndroidHelper;
 class PersistedTabDataStorageAndroid;

@@ -15,21 +15,10 @@
 
 namespace {
 
-Profile* GetProfile(TabAndroid* tab_android) {
-  if (tab_android->GetProfile()) {
-    return tab_android->GetProfile();
-  }
-  TabModel* tab_model = TabModelList::GetTabModelForTabAndroid(tab_android);
-  if (tab_model) {
-    return tab_model->GetProfile();
-  }
-  return nullptr;
-}
-
 std::string GetCachedCallbackKey(TabAndroid* tab_android,
                                  const void* user_data_key) {
   const char* data_id =
-      PersistedTabDataConfigAndroid::Get(user_data_key, GetProfile(tab_android))
+      PersistedTabDataConfigAndroid::Get(user_data_key, tab_android->profile())
           ->data_id();
   return base::StringPrintf("%d-%s", tab_android->GetAndroidId(), data_id);
 }
@@ -40,10 +29,10 @@ PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
                                                  const void* user_data_key)
     : persisted_tab_data_storage_android_(
           PersistedTabDataConfigAndroid::Get(user_data_key,
-                                             GetProfile(tab_android))
+                                             tab_android->profile())
               ->persisted_tab_data_storage_android()),
       data_id_(PersistedTabDataConfigAndroid::Get(user_data_key,
-                                                  GetProfile(tab_android))
+                                                  tab_android->profile())
                    ->data_id()),
       tab_id_(tab_android->GetAndroidId()) {}
 
@@ -74,7 +63,7 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
   } else {
     std::unique_ptr<PersistedTabDataConfigAndroid>
         persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
-            user_data_key, GetProfile(tab_android));
+            user_data_key, tab_android->profile());
     std::string cached_callback_key =
         GetCachedCallbackKey(tab_android, user_data_key);
     if (PersistedTabDataAndroid::GetCachedCallbackMap()->contains(
@@ -162,7 +151,7 @@ void PersistedTabDataAndroid::RemoveAll(int tab_id, Profile* profile) {
 
 void PersistedTabDataAndroid::OnTabClose(TabAndroid* tab_android) {
   // TODO(b/295219049) cleanup orphaned data
-  Profile* profile = GetProfile(tab_android);
+  Profile* profile = tab_android->profile();
   if (!profile || profile->IsOffTheRecord()) {
     return;
   }
@@ -203,7 +192,7 @@ void PersistedTabDataAndroid::ExistsForTesting(
     base::OnceCallback<void(bool)> exists_callback) {
   std::unique_ptr<PersistedTabDataConfigAndroid>
       persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
-          user_data_key, GetProfile(tab_android));
+          user_data_key, tab_android->profile());
   persisted_tab_data_config_android->persisted_tab_data_storage_android()
       ->Restore(tab_android->GetAndroidId(),
                 persisted_tab_data_config_android->data_id(),
