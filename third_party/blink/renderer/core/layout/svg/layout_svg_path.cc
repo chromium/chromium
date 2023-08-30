@@ -68,7 +68,9 @@ void LayoutSVGPath::WillBeDestroyed() {
 void LayoutSVGPath::UpdateShapeFromElement() {
   NOT_DESTROYED();
   LayoutSVGShape::UpdateShapeFromElement();
-  UpdateMarkers();
+  UpdateMarkerPositions();
+  // TODO(fs): Do the following after layout.
+  UpdateMarkerBounds();
 }
 
 const StylePath* LayoutSVGPath::GetStylePath() const {
@@ -78,34 +80,53 @@ const StylePath* LayoutSVGPath::GetStylePath() const {
   return StyleRef().D();
 }
 
-void LayoutSVGPath::UpdateMarkers() {
+void LayoutSVGPath::UpdateMarkerPositions() {
   NOT_DESTROYED();
   marker_positions_.clear();
 
   const ComputedStyle& style = StyleRef();
-  if (!style.HasMarkers())
+  if (!style.HasMarkers()) {
     return;
+  }
   SVGElementResourceClient* client = SVGResources::GetClient(*this);
-  if (!client)
+  if (!client) {
     return;
+  }
   auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
       *client, style.MarkerStartResource());
   auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
       *client, style.MarkerMidResource());
   auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
       *client, style.MarkerEndResource());
-  if (!(marker_start || marker_mid || marker_end))
+  if (!(marker_start || marker_mid || marker_end)) {
     return;
-
+  }
   SVGMarkerDataBuilder builder(marker_positions_);
-  if (const StylePath* style_path = GetStylePath())
+  if (const StylePath* style_path = GetStylePath()) {
     builder.Build(style_path->ByteStream());
-  else
+  } else {
     builder.Build(GetPath());
+  }
+}
 
-  if (marker_positions_.empty())
+void LayoutSVGPath::UpdateMarkerBounds() {
+  NOT_DESTROYED();
+  if (marker_positions_.empty()) {
     return;
+  }
+  SVGElementResourceClient* client = SVGResources::GetClient(*this);
+  CHECK(client);
 
+  const ComputedStyle& style = StyleRef();
+  auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, style.MarkerStartResource());
+  auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, style.MarkerMidResource());
+  auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, style.MarkerEndResource());
+  if (!(marker_start || marker_mid || marker_end)) {
+    return;
+  }
   const float stroke_width = StrokeWidthForMarkerUnits();
   gfx::RectF boundaries;
   for (const auto& position : marker_positions_) {
@@ -115,7 +136,6 @@ void LayoutSVGPath::UpdateMarkers() {
           marker->MarkerTransformation(position, stroke_width)));
     }
   }
-
   decorated_bounding_box_.Union(boundaries);
 }
 
