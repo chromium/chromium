@@ -1135,12 +1135,7 @@ class DemoSetupQuickStartEnabledTest : public DemoSetupArcSupportedTest {
   ~DemoSetupQuickStartEnabledTest() override = default;
 
   DemoSetupQuickStartEnabledTest() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kEnableOobeNetworkScreenSkip,
-            features::kOobeQuickStart,
-        },
-        {});
+    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
   }
 
  private:

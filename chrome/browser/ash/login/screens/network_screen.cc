@@ -258,8 +258,7 @@ void NetworkScreen::OnGetQuickStartFeatureSupportStatus(
 }
 
 bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
-  if (!features::IsOobeNetworkScreenSkipEnabled() ||
-      switches::IsOOBENetworkScreenSkippingDisabledForTesting()) {
+  if (switches::IsOOBENetworkScreenSkippingDisabledForTesting()) {
     return false;
   }
 

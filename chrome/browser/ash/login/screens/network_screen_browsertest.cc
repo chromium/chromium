@@ -57,11 +57,6 @@ constexpr test::UIPath kNextNetworkButtonPath = {
 class NetworkScreenTest : public OobeBaseTest {
  public:
   NetworkScreenTest() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kEnableOobeNetworkScreenSkip,
-        },
-        {});
     needs_network_screen_skip_check_ = true;
   }
 
