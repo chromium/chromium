@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -45,6 +46,10 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             int roundedCornersPosition) {
         if (initialHeight <= 0
                 && (!ChromeFeatureList.sCctResizableSideSheet.isEnabled() || initialWidth <= 0)) {
+            return new CustomTabHeightStrategy();
+        }
+
+        if (BuildInfo.getInstance().isAutomotive) {
             return new CustomTabHeightStrategy();
         }
 
