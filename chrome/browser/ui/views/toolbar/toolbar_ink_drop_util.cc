@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ui_base_features.h"
@@ -123,9 +124,16 @@ void CreateToolbarInkdropCallbacks(views::View* const host,
   views::InkDrop::Get(host)->SetCreateHighlightCallback(base::BindRepeating(
       [](views::View* host, ChromeColorIds hover_color_id) {
         const auto* color_provider = host->GetColorProvider();
-        const SkColor hover_color =
-            color_provider ? color_provider->GetColor(hover_color_id)
-                           : gfx::kPlaceholderColor;
+        SkColor hover_color = color_provider
+                                  ? color_provider->GetColor(hover_color_id)
+                                  : gfx::kPlaceholderColor;
+
+        // override the hover color if this is triggered by `user_education`.
+        if (host->GetProperty(user_education::kHasInProductHelpPromoKey)) {
+          hover_color = color_provider->GetColor(
+              ui::kColorButtonFeatureAttentionHighlight);
+        }
+
         const float hover_alpha = SkColorGetA(hover_color);
 
         auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
