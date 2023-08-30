@@ -46,7 +46,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
