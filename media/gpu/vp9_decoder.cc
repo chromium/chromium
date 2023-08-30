@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
@@ -275,8 +274,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
         GetVP9ChromaSampling(*curr_frame_hdr_);
     if (new_chroma_sampling != chroma_sampling_) {
       chroma_sampling_ = new_chroma_sampling;
-      base::UmaHistogramEnumeration(
-          "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
     }
 
     if (chroma_sampling_ != VideoChromaSampling::k420) {

@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/media_switches.h"
@@ -1183,8 +1182,6 @@ bool H264Decoder::ProcessSPS(int sps_id,
   VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
   if (new_chroma_sampling != chroma_sampling_) {
     chroma_sampling_ = new_chroma_sampling;
-    base::UmaHistogramEnumeration("Media.PlatformVideoDecoding.ChromaSampling",
-                                  chroma_sampling_);
   }
 
   if (chroma_sampling_ != VideoChromaSampling::k420) {

@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
 #include "media/gpu/av1_picture.h"
@@ -274,8 +273,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
             GetAV1ChromaSampling(current_sequence_header_->color_config);
         if (new_chroma_sampling != chroma_sampling_) {
           chroma_sampling_ = new_chroma_sampling;
-          base::UmaHistogramEnumeration(
-              "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
         }
 
         if (chroma_sampling_ != VideoChromaSampling::k420) {
