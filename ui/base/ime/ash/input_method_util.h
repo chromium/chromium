@@ -68,6 +68,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
       InputMethodType type,
       std::vector<std::string>* out_input_method_ids) const;
 
+  std::vector<std::string> GetInputMethodIdsFromHandwritingLanguage(
+      std::string_view handwriting_language);
+
   // Gets the input method IDs suitable for the first user login, based on
   // the given language code (UI language), and the descriptor of the
   // preferred input method.
@@ -169,6 +172,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
       bool short_name) const;
 
   LanguageCodeToIdsMap language_code_to_ids_;
+  LanguageCodeToIdsMap handwriting_language_to_ids_;
   InputMethodIdToDescriptorMap id_to_descriptor_;
 
   using EnglishToIDMap = base::flat_map<std::string, int>;

@@ -556,6 +556,21 @@ bool InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal(
   return result;
 }
 
+std::vector<std::string>
+InputMethodUtil::GetInputMethodIdsFromHandwritingLanguage(
+    std::string_view handwriting_language) {
+  std::vector<std::string> input_method_ids;
+
+  using It = LanguageCodeToIdsMap::const_iterator;
+  std::pair<It, It> range =
+      handwriting_language_to_ids_.equal_range(handwriting_language);
+  for (It iter = range.first; iter != range.second; ++iter) {
+    input_method_ids.push_back(iter->second);
+  }
+
+  return input_method_ids;
+}
+
 void InputMethodUtil::GetFirstLoginInputMethodIds(
     const std::string& language_code,
     const InputMethodDescriptor& preferred_input_method,
@@ -737,6 +752,21 @@ bool InputMethodUtil::IsLoginKeyboard(const std::string& input_method_id)
   return ime ? ime->is_login_keyboard() : false;
 }
 
+// Inserts {key, value} into the multimap if it does not exist.
+void MultimapDeduplicatedInsert(LanguageCodeToIdsMap& multimap,
+                                const std::string& key,
+                                const std::string& value) {
+  using It = LanguageCodeToIdsMap::const_iterator;
+  std::pair<It, It> range = multimap.equal_range(key);
+  It it = range.first;
+  for (; it != range.second; ++it) {
+    if (it->second == value) {
+      return;
+    }
+  }
+  multimap.insert(it, {key, value});
+}
+
 void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
   for (const auto& input_method : imes) {
     DCHECK(!input_method.language_codes().empty());
@@ -744,19 +774,16 @@ void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
         input_method.language_codes();
     id_to_descriptor_[input_method.id()] = input_method;
 
-    using It = LanguageCodeToIdsMap::const_iterator;
     for (const auto& language_code : language_codes) {
-      std::pair<It, It> range =
-          language_code_to_ids_.equal_range(language_code);
-      auto it = range.first;
-      for (; it != range.second; ++it) {
-        if (it->second == input_method.id())
-          break;
-      }
-      if (it == range.second) {
-        language_code_to_ids_.insert(
-            std::make_pair(language_code, input_method.id()));
-      }
+      MultimapDeduplicatedInsert(language_code_to_ids_, language_code,
+                                 input_method.id());
+    }
+
+    const absl::optional<std::string>& handwriting_language =
+        input_method.handwriting_language();
+    if (handwriting_language.has_value()) {
+      MultimapDeduplicatedInsert(handwriting_language_to_ids_,
+                                 *handwriting_language, input_method.id());
     }
   }
 }
@@ -764,6 +791,7 @@ void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {
 void InputMethodUtil::ResetInputMethods(const InputMethodDescriptors& imes) {
   // Clear the existing maps.
   language_code_to_ids_.clear();
+  handwriting_language_to_ids_.clear();
   id_to_descriptor_.clear();
 
   AppendInputMethods(imes);

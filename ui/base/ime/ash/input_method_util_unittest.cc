@@ -11,15 +11,20 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace input_method {
+
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -204,6 +209,45 @@ TEST_F(InputMethodUtilTest, TestGetInputMethodIdsForLanguageCode) {
       language_code_to_ids_map, "invalid_lang", kAllInputMethods, &result));
   EXPECT_FALSE(util_.GetInputMethodIdsFromLanguageCodeInternal(
       language_code_to_ids_map, "invalid_lang", kKeyboardLayoutsOnly, &result));
+}
+
+InputMethodDescriptor DescWithIdAndHandwritingLanguage(
+    const std::string& id,
+    absl::optional<std::string> handwriting_language) {
+  const std::string input_method_id =
+      extension_ime_util::GetInputMethodIDByEngineID(id);
+  return InputMethodDescriptor(
+      input_method_id, /*name=*/"", /*indicator=*/"",
+      /*keyboard_layout=*/"",
+      /*language_codes=*/{""},  // Must be non-empty to avoid a DCHECK.
+      /*is_login_keyboard=*/false,
+      /*options_page_url=*/{}, /*input_view_url=*/{},
+      /*handwriting_language=*/handwriting_language);
+}
+
+TEST_F(InputMethodUtilTest, TestGetInputMethodIdsForHandwritingLanguage) {
+  // Re-setup all descriptors with new 1P descriptors.
+  std::vector<InputMethodDescriptor> descriptors = {
+      DescWithIdAndHandwritingLanguage("xkb:us::eng", "en"),
+      DescWithIdAndHandwritingLanguage("xkb:gb:extd:eng", "en"),
+      DescWithIdAndHandwritingLanguage("xkb:fr::fra", "fr")};
+  util_.InitXkbInputMethodsForTesting(descriptors);
+  util_.AppendInputMethods(non_xkb_input_method_descriptors_);
+
+  EXPECT_THAT(
+      util_.GetInputMethodIdsFromHandwritingLanguage("en"),
+      UnorderedElementsAre(
+          extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"),
+          extension_ime_util::GetInputMethodIDByEngineID("xkb:gb:extd:eng")));
+  EXPECT_THAT(
+      util_.GetInputMethodIdsFromHandwritingLanguage("fr"),
+      UnorderedElementsAre(
+          extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")));
+  EXPECT_THAT(util_.GetInputMethodIdsFromHandwritingLanguage("zh"), IsEmpty());
+  EXPECT_THAT(util_.GetInputMethodIdsFromHandwritingLanguage("zh-CN"),
+              IsEmpty());
+  EXPECT_THAT(util_.GetInputMethodIdsFromHandwritingLanguage("zh-TW"),
+              IsEmpty());
 }
 
 // US keyboard + English US UI = US keyboard only.
