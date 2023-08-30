@@ -91,6 +91,10 @@ source_set("unit_tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
   ]
+
+  if (is_ios) {
+    deps += [ "//components/test:web_package_test_bundle_data" ]
+  }
 }
 
 fuzzer_test("web_bundle_parser_fuzzer") {
