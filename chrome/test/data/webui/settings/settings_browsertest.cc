@@ -64,8 +64,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillPage) {
   RunTest("settings/autofill_page_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/1473847): Flaky on many bots.
-IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_AutofillSection) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
   RunTest("settings/autofill_section_test.js", "mocha.run()");
 }
 

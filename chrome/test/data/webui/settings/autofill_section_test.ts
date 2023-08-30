@@ -192,7 +192,8 @@ suite('AutofillSectionUiTest', function() {
 });
 
 suite('AutofillSectionFocusTest', function() {
-  test('verifyFocusLocationAfterRemoving', async () => {
+  // TODO(crbug.com/1473847): Fix the flakiness.
+  test.skip('verifyFocusLocationAfterRemoving', async () => {
     const section = await createAutofillSection(
         [
           createAddressEntry(),
@@ -547,7 +548,8 @@ suite('AutofillSectionAddressTests', function() {
         getAddressFieldValue(address, ServerFieldType.NAME_HONORIFIC_PREFIX));
   });
 
-  test('verifyPhoneAndEmailAreRemoved', function() {
+  // TODO(crbug.com/1473847): Fix the flakiness.
+  test.skip('verifyPhoneAndEmailAreRemoved', function() {
     const address = createEmptyAddressEntry();
 
     const phoneNumber = '(555) 555-5555';
@@ -695,7 +697,8 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
-  test('verifySyncSourceNoticeForNewAddress', async () => {
+  // TODO(crbug.com/1473847): Fix the flakiness.
+  test.skip('verifySyncSourceNoticeForNewAddress', async () => {
     const section = await createAutofillSection([], {}, {
       email: 'stub-user@example.com',
       isSyncEnabledForAutofillProfiles: true,
