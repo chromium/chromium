@@ -42,8 +42,6 @@ extern const char kSettingDpiVertical[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingDuplexMode[];
 COMPONENT_EXPORT(PRINTING_BASE)
-extern const char kSettingFitToPageScaling[];
-COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingHeaderFooterEnabled[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const float kSettingHeaderFooterInterstice;

@@ -58,9 +58,6 @@ const char kSettingDpiHorizontal[] = "dpiHorizontal";
 // Vertical DPI
 const char kSettingDpiVertical[] = "dpiVertical";
 
-// Scaling value required to fit the document to page.
-const char kSettingFitToPageScaling[] = "fitToPageScaling";
-
 // Print job duplex mode. Value is an int from DuplexMode enum.
 const char kSettingDuplexMode[] = "duplex";
 
