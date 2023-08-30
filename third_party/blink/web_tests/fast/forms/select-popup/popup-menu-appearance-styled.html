@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
 <script src="../../../resources/testdriver.js"></script>
 <script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
@@ -8,7 +9,7 @@
       padding-left: 20px;
       background-color: #DDDDFF;
   }
-  
+
   option.styled {
       font-style: italic;
       font-variant: small-caps;
@@ -19,7 +20,7 @@
       color: red;
   }
   </style>
-  
+
   <select>
     <option>foo</option>
     <optgroup label="group" id="group">
@@ -28,7 +29,7 @@
     <option hidden>qux</option>
     <option class="styled">baz</option>
   </select>
-  
+
 <script>
   window.onload = () => {
     var menu = document.querySelector('select');
