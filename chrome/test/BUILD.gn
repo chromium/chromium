@@ -3080,10 +3080,10 @@ if (!is_android) {
       deps += [ "//chrome/test/data/webui:browser_tests" ]
     }
     if (include_js2gtest_tests) {
-      deps += [
-        "//chrome/test/data/webui:browser_tests_js_mojo_webui",
-        "//chrome/test/data/webui:browser_tests_js_webui",
-      ]
+      deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
+      if (is_chromeos_ash || !is_chromeos_lacros) {
+        deps += [ "//chrome/test/data/webui:browser_tests_js_mojo_webui" ]
+      }
       if (is_chromeos_ash) {
         deps += [
           "//ash/webui/color_internals:browser_tests_js",
