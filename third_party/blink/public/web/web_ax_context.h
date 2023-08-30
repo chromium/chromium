@@ -55,7 +55,7 @@ class BLINK_EXPORT WebAXContext {
   // Retrieves a vector of all WebAXObjects in this document whose
   // bounding boxes may have changed since the last query. Sends that vector
   // via mojo to the browser process.
-  void SerializeLocationChanges() const;
+  void SerializeLocationChanges(uint32_t reset_token) const;
 
   // Searches the accessibility tree for plugin's root object and returns it.
   // Returns an empty WebAXObject if no root object is present.
