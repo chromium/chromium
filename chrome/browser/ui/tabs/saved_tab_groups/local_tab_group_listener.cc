@@ -80,6 +80,19 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
   }
 }
 
+void LocalTabGroupListener::OnReplaceWebContents(
+    content::WebContents* old_web_contents,
+    content::WebContents* new_web_contents) {
+  CHECK(web_contents_to_tab_id_map_.find(old_web_contents) !=
+        web_contents_to_tab_id_map_.end());
+  base::Token local_tab_id =
+      web_contents_to_tab_id_map_.at(old_web_contents).token();
+  web_contents_to_tab_id_map_.erase(old_web_contents);
+
+  web_contents_to_tab_id_map_.try_emplace(new_web_contents, new_web_contents,
+                                          local_tab_id, model_);
+}
+
 void LocalTabGroupListener::AddWebContentsFromLocal(
     content::WebContents* web_contents,
     TabStripModel* tab_strip_model,

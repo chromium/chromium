@@ -109,28 +109,57 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kMoved) {
-    return;
+  switch (change.type()) {
+    case TabStripModelChange::kReplaced: {
+      absl::optional<tab_groups::TabGroupId> local_id =
+          tab_strip_model->GetTabGroupForTab(change.GetReplace()->index);
+
+      // Do nothing if the tab is no longer in a group.
+      if (!local_id.has_value()) {
+        return;
+      }
+
+      // Do nothing if the tab is not part of a saved group.
+      if (!local_tab_group_listeners_.contains(local_id.value())) {
+        return;
+      }
+
+      LocalTabGroupListener& local_tab_group_listener =
+          local_tab_group_listeners_.at(local_id.value());
+
+      local_tab_group_listener.OnReplaceWebContents(
+          change.GetReplace()->old_contents, change.GetReplace()->new_contents);
+      return;
+    }
+    case TabStripModelChange::kMoved: {
+      absl::optional<tab_groups::TabGroupId> local_id =
+          tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
+
+      // Do nothing if the tab is no longer in a group.
+      if (!local_id.has_value()) {
+        return;
+      }
+
+      // Do nothing if the tab is not part of a saved group.
+      if (!local_tab_group_listeners_.contains(local_id.value())) {
+        return;
+      }
+
+      LocalTabGroupListener& local_tab_group_listener =
+          local_tab_group_listeners_.at(local_id.value());
+
+      local_tab_group_listener.MoveWebContentsFromLocal(
+          tab_strip_model, change.GetMove()->contents,
+          change.GetMove()->to_index);
+
+      return;
+    }
+    case TabStripModelChange::kSelectionOnly:
+    case TabStripModelChange::kInserted:
+    case TabStripModelChange::kRemoved: {
+      return;
+    }
   }
-
-  absl::optional<tab_groups::TabGroupId> local_id =
-      tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
-
-  // Do nothing if the tab is no longer in a group.
-  if (!local_id.has_value()) {
-    return;
-  }
-
-  // Do nothing if the tab is not part of a saved group.
-  if (!local_tab_group_listeners_.contains(local_id.value())) {
-    return;
-  }
-
-  LocalTabGroupListener& local_tab_group_listener =
-      local_tab_group_listeners_.at(local_id.value());
-
-  local_tab_group_listener.MoveWebContentsFromLocal(
-      tab_strip_model, change.GetMove()->contents, change.GetMove()->to_index);
 }
 
 void SavedTabGroupModelListener::WillCloseAllTabs(

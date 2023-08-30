@@ -56,6 +56,7 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
     return web_contents_ptr;
   }
 
+  TestingProfile* profile() { return profile_.get(); }
   SavedTabGroupKeyedService* service() { return service_.get(); }
 
  private:
@@ -726,4 +727,43 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ReorderTabFromSyncReordersLocalTab) {
       service()->model()->Get(group_id)->saved_guid();
 
   // TODO Fill out this test once swap tabs from sync is implemented
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       DiscardingATabDoesntCrashWhenReordering) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with two tabs.
+  content::WebContents* web_contents_0 = AddTabToBrowser(browser, 0);
+  content::WebContents* web_contents_1 = AddTabToBrowser(browser, 1);
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
+  service()->SaveGroup(group_id);
+
+  const SavedTabGroup* group = service()->model()->Get(group_id);
+
+  std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>&
+      web_contents_listener_map = service()
+                                      ->listener()
+                                      ->GetLocalTabGroupListenerMapForTesting()
+                                      .at(group_id)
+                                      .GetWebContentsTokenMapForTesting();
+  base::Token web_contents_0_token =
+      web_contents_listener_map.at(web_contents_0).token();
+  base::Token web_contents_1_token =
+      web_contents_listener_map.at(web_contents_1).token();
+
+  std::unique_ptr<content::WebContents> replacement_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  browser->tab_strip_model()->ReplaceWebContentsAt(
+      0, std::move(replacement_web_contents));
+
+  // Expect after moving the first tab to the right of the second, that the
+  // group updated the positions of the tabs accordingly.
+  browser->tab_strip_model()->MoveWebContentsAt(0, 1, false);
+
+  EXPECT_EQ(web_contents_1_token,
+            group->saved_tabs()[0].local_tab_id().value());
+  EXPECT_EQ(web_contents_0_token,
+            group->saved_tabs()[1].local_tab_id().value());
 }

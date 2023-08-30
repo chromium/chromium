@@ -48,6 +48,10 @@ class LocalTabGroupListener {
                                TabStripModel* tab_strip_model,
                                int index);
 
+  // Replaces the webcontents associated with the SavedTabGroupTab.
+  void OnReplaceWebContents(content::WebContents* old_web_contents,
+                            content::WebContents* new_web_contents);
+
   // Moves the SavedTab associated with `web_contents` in the TabStripModel to
   // its new relative position in the SavedTabGroup.
   void MoveWebContentsFromLocal(TabStripModel* tab_strip_model,
