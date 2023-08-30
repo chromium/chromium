@@ -103,8 +103,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   explicit AutofillProvider(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutofillProvider>;
 
-  content::WebContents* web_contents() { return &GetWebContents(); }
-
  private:
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

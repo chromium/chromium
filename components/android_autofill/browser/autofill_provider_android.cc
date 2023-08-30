@@ -74,6 +74,7 @@ AutofillProviderAndroid::AutofillProviderAndroid(
     const JavaRef<jobject>& jcaller,
     content::WebContents* web_contents)
     : AutofillProvider(web_contents),
+      content::WebContentsObserver(web_contents),
       java_ref_(JavaObjectWeakGlobalRef(env, jcaller)),
       check_submission_(false) {}
 
@@ -97,6 +98,26 @@ void AutofillProviderAndroid::AttachToJavaAutofillProvider(
 void AutofillProviderAndroid::DetachFromJavaAutofillProvider(JNIEnv* env) {
   // Reset the reference to Java peer.
   java_ref_.reset();
+}
+
+void AutofillProviderAndroid::RenderFrameDeleted(
+    content::RenderFrameHost* rfh) {
+  // If the popup menu has been triggered from within an iframe and that frame
+  // is deleted, hide the popup. This is necessary because the popup may
+  // actually be shown by the AutofillExternalDelegate of an ancestor frame,
+  // which is not notified about `rfh`'s destruction and therefore won't close
+  // the popup.
+  if (manager_ &&
+      field_id_.frame_token == LocalFrameToken(rfh->GetFrameToken().value())) {
+    OnHidePopup(manager_.get());
+  }
+}
+
+void AutofillProviderAndroid::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN && manager_) {
+    OnHidePopup(manager_.get());
+  }
 }
 
 void AutofillProviderAndroid::OnAskForValuesToFill(

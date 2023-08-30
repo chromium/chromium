@@ -164,18 +164,6 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
         render_frame_host->DocumentUsedWebOTP());
   }
 
-  // If the popup menu has been triggered from within an iframe and that
-  // frame is deleted, hide the popup. This is necessary because the popup
-  // may actually be shown by the AutofillExternalDelegate of an ancestor
-  // frame, which is not notified about |render_frame_host|'s destruction
-  // and therefore won't close the popup.
-  bool is_iframe = !driver->IsInAnyMainFrame();
-  if (is_iframe && router_.last_queried_source() == driver) {
-    DCHECK(!render_frame_host->IsInLifecycleState(
-        content::RenderFrameHost::LifecycleState::kPrerendering));
-    driver->renderer_events().HidePopup();
-  }
-
   for (Observer& observer : observers_) {
     observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
   }
@@ -243,13 +231,6 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
     return;
   }
   driver->Reset();
-}
-
-void ContentAutofillDriverFactory::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
-    client_->HideAutofillPopup(PopupHidingReason::kTabGone);
-  }
 }
 
 std::vector<ContentAutofillDriver*>

@@ -281,13 +281,6 @@ TEST_P(ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne,
     EXPECT_EQ(test_api(*factory_).GetDriver(main_rfh()), main_driver);
 }
 
-// Tests that OnVisibilityChanged() hides the popup.
-TEST_F(ContentAutofillDriverFactoryTest, TabHidden) {
-  NavigateMainFrame("https://a.com/");
-  EXPECT_CALL(*client_, HideAutofillPopup(PopupHidingReason::kTabGone));
-  factory_->OnVisibilityChanged(content::Visibility::HIDDEN);
-}
-
 // Test case with one frame, with BFcache enabled or disabled depending on the
 // parameter.
 class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes

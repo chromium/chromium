@@ -145,19 +145,6 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       SwitchTabAndHideAutofillPopup) {
-  EXPECT_CALL(autofill_client(),
-              HideAutofillPopup(PopupHidingReason::kTabGone));
-
-  scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
-  web_contents_hidden_callback_ = runner->QuitClosure();
-  chrome::AddSelectedTabWithURL(browser(), GURL(url::kAboutBlankURL),
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  runner->Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        SameDocumentNavigationHideAutofillPopup) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),

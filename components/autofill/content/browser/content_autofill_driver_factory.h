@@ -102,7 +102,6 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
 
   AutofillClient* client() { return client_; }
 

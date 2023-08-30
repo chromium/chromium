@@ -38,6 +38,7 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
@@ -2695,6 +2696,11 @@ class AutofillInteractiveFencedFrameTest
       fenced_frame_test_helper_;
 };
 
+INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
+                         AutofillInteractiveFencedFrameTest,
+                         ::testing::Values(FrameType::kFencedFrame,
+                                           FrameType::kIFrame));
+
 // TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
                        SimpleCrossSiteFill) {
@@ -2751,15 +2757,17 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
                             .execution_target = cross_frame_host}));
 }
 
+// Tests that deleting the subframe that has opened the Autofill popup closes
+// the popup.
 // TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       DeletingFrameUnderSuggestion) {
+                       DeletingFrameClosesPopup) {
   CreateTestProfile();
 
   // Main frame is on a.com, fenced frame is on b.com.
-  GURL url =
-      https_server()->GetURL("a.com", "/autofill/cross_origin_iframe.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL("a.com", "/autofill/cross_origin_iframe.html")));
 
   content::RenderFrameHost* cross_frame_host =
       LoadSubFrame("/autofill/autofill_test_form.html");
@@ -2779,8 +2787,8 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   // Let |test_delegate()| also observe autofill events in the iframe.
   test_delegate()->Observe(*cross_driver->autofill_manager());
 
-  // Focus the form in the iframe/fenced frame and simulate choosing a
-  // suggestion via keyboard.
+  // Open the Autofill popup but do not accept the suggestion yet. Deleting the
+  // subframe should close the popup.
   ASSERT_TRUE(
       AutofillFlow(GetElementById("NAME_FIRST"), this,
                    {.do_accept = false, .execution_target = cross_frame_host}));
@@ -2793,14 +2801,27 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
       GetParam() == FrameType::kIFrame ? "crossFrame" : "crossFF");
   ASSERT_TRUE(content::ExecJs(GetWebContents(), script_delete));
 
-  // The popup should have disappeared with the iframe.
   EXPECT_FALSE(IsPopupShown());
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
-                         AutofillInteractiveFencedFrameTest,
-                         ::testing::Values(FrameType::kFencedFrame,
-                                           FrameType::kIFrame));
+// Tests that when changing the tab while the popup is open, closes the popup.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ChangingTabClosesPopup) {
+  CreateTestProfile();
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  // Open the Autofill popup but do not accept the suggestion yet. Selecting
+  // another tab should close the popup.
+  content::WebContents* original_tab = GetWebContents();
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.do_accept = false}));
+  EXPECT_TRUE(IsPopupShown());
+  AddBlankTabAndShow(browser());
+  ASSERT_NE(original_tab, GetWebContents());
+  chrome::CloseWebContents(browser(), GetWebContents(),
+                           /*add_to_history=*/false);
+  ASSERT_EQ(original_tab, GetWebContents());
+  EXPECT_FALSE(IsPopupShown());
+}
 
 // Test fixture for refill behavior.
 //

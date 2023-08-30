@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -21,7 +22,8 @@ class FormDataAndroid;
 // Android implementation of AutofillProvider, it has one instance per
 // WebContents, this class is native peer of AutofillProvider.java.
 // This class is always instantialized by AutofillProvider Java object.
-class AutofillProviderAndroid : public AutofillProvider {
+class AutofillProviderAndroid : public AutofillProvider,
+                                content::WebContentsObserver {
  public:
   static AutofillProviderAndroid* Create(
       JNIEnv* env,
@@ -104,6 +106,10 @@ class AutofillProviderAndroid : public AutofillProvider {
   AutofillProviderAndroid(JNIEnv* env,
                           const base::android::JavaRef<jobject>& jcaller,
                           content::WebContents* web_contents);
+
+  // content::WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   void FireSuccessfulSubmission(mojom::SubmissionSource source);
   void OnFocusChanged(bool focus_on_form,

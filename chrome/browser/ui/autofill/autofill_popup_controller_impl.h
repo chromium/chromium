@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -56,6 +57,7 @@ class ContentAutofillDriver;
 // other, public functions are available to its instantiator.
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
+      public content::WebContentsObserver,
       public PictureInPictureWindowManager::Observer {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
@@ -169,7 +171,7 @@ class AutofillPopupControllerImpl
   // show or hide action.
   void FireControlsChangedEvent(bool is_show);
 
-  // Gets the root AXPlatformNode for our web_contents_, which can be used
+  // Gets the root AXPlatformNode for our WebContents, which can be used
   // to find the AXPlatformNode specifically for the autofill text field.
   virtual ui::AXPlatformNode* GetRootAXPlatformNodeForWebContents();
 
@@ -216,6 +218,10 @@ class AutofillPopupControllerImpl
     base::WeakPtr<AutofillPopupView> ptr_;
   };
 
+  // content::WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
@@ -236,14 +242,12 @@ class AutofillPopupControllerImpl
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view);
 
   PopupControllerCommon controller_common_;
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   AutofillPopupViewPtr view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
   struct {
+    content::GlobalRenderFrameHostId rfh;
     content::RenderWidgetHost::KeyPressEventCallback handler;
-    int rwh_process_id = -1;
-    int rwh_routing_id = -1;
   } key_press_observer_;
 
   // The time the view was shown the last time. It is used to safeguard against
