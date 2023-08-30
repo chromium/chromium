@@ -118,7 +118,7 @@ ShippingAddressEditorViewController::CreateValidationDelegate(
     const EditorField& field) {
   return std::make_unique<
       ShippingAddressEditorViewController::ShippingAddressValidationDelegate>(
-      this, field);
+      weak_ptr_factory_.GetWeakPtr(), field);
 }
 
 std::unique_ptr<ui::ComboboxModel>
@@ -210,7 +210,7 @@ int ShippingAddressEditorViewController::GetPrimaryButtonId() {
 
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ShippingAddressValidationDelegate(
-        ShippingAddressEditorViewController* controller,
+        base::WeakPtr<ShippingAddressEditorViewController> controller,
         const EditorField& field)
     : field_(field), controller_(controller) {}
 
@@ -225,7 +225,8 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 std::u16string
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::Format(
     const std::u16string& text) {
-  if (controller_->chosen_country_index_ < controller_->countries_.size()) {
+  if (controller_ &&
+      controller_->chosen_country_index_ < controller_->countries_.size()) {
     return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
         base::UTF16ToUTF8(text),
         controller_->countries_[controller_->chosen_country_index_].first));
@@ -255,7 +256,9 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
   std::u16string error_message;
   bool is_valid = ValidateValue(textfield->GetText(), &error_message);
-  controller_->DisplayErrorMessageForField(field_.type, error_message);
+  if (controller_) {
+    controller_->DisplayErrorMessageForField(field_.type, error_message);
+  }
   return is_valid;
 }
 
@@ -265,18 +268,22 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
   bool is_valid = ValidateValue(
       combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
       &error_message);
-  controller_->DisplayErrorMessageForField(field_.type, error_message);
+  if (controller_) {
+    controller_->DisplayErrorMessageForField(field_.type, error_message);
+  }
   return is_valid;
 }
 
 void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ComboboxModelChanged(ValidatingCombobox* combobox) {
-  controller_->OnComboboxModelChanged(combobox);
+  if (controller_) {
+    controller_->OnComboboxModelChanged(combobox);
+  }
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ValidateValue(const std::u16string& value, std::u16string* error_message) {
-  if (!controller_->spec())
+  if (!controller_ || !controller_->spec())
     return false;
 
   // Show errors from merchant's retry() call. Note that changing the selected

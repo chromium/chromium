@@ -77,7 +77,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
   class ShippingAddressValidationDelegate : public ValidationDelegate {
    public:
     ShippingAddressValidationDelegate(
-        ShippingAddressEditorViewController* parent,
+        base::WeakPtr<ShippingAddressEditorViewController> controller,
         const EditorField& field);
 
     ShippingAddressValidationDelegate(
@@ -105,8 +105,8 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
     EditorField field_;
 
-    // Raw pointer back to the owner of this class, therefore will not be null.
-    raw_ptr<ShippingAddressEditorViewController> controller_;
+    // Pointer back to the owner of this class, therefore will not be null.
+    base::WeakPtr<ShippingAddressEditorViewController> controller_;
   };
 
   std::u16string GetValueForType(const autofill::AutofillProfile& profile,
