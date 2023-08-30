@@ -36,7 +36,9 @@ bool SelectPredeterminedFileDialog::IsRunning(
   return false;
 }
 
-void SelectPredeterminedFileDialog::ListenerDestroyed() {}
+void SelectPredeterminedFileDialog::ListenerDestroyed() {
+  listener_ = nullptr;
+}
 
 bool SelectPredeterminedFileDialog::HasMultipleFileTypeChoicesImpl() {
   return false;

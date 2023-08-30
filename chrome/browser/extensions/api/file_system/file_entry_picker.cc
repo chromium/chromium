@@ -41,7 +41,9 @@ FileEntryPicker::FileEntryPicker(
       base::FilePath::StringType(), owning_window, /*params=*/nullptr, caller);
 }
 
-FileEntryPicker::~FileEntryPicker() = default;
+FileEntryPicker::~FileEntryPicker() {
+  select_file_dialog_->ListenerDestroyed();
+}
 
 void FileEntryPicker::FileSelected(const base::FilePath& path,
                                    int index,

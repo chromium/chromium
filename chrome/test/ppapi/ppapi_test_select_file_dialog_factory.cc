@@ -70,7 +70,7 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
   bool IsRunning(gfx::NativeWindow owning_window) const override {
     return false;
   }
-  void ListenerDestroyed() override {}
+  void ListenerDestroyed() override { listener_ = nullptr; }
 
  private:
   void RespondToFileSelectionRequest(void* params) {

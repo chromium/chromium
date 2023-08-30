@@ -280,7 +280,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
     return false;
   }
 
-  void ListenerDestroyed() override {}
+  void ListenerDestroyed() override { listener_ = nullptr; }
 
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 

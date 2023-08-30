@@ -93,4 +93,8 @@ void FakeSelectFileDialog::CallMultiFilesSelected(
   listener_->MultiFilesSelected(files, params_);
 }
 
+void FakeSelectFileDialog::ListenerDestroyed() {
+  listener_ = nullptr;
+}
+
 }  // namespace ui

@@ -79,7 +79,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
                       const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
   bool IsRunning(gfx::NativeWindow owning_window) const override;
-  void ListenerDestroyed() override {}
+  void ListenerDestroyed() override;
 
   // Returns the file title provided to the dialog.
   const std::u16string& title() const { return title_; }
