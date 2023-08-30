@@ -1,3 +1,4 @@
+CONSOLE WARNING: The keyword 'inner-spin-button' specified to an 'appearance' property is deprecated. Please consider updating.
 This is a testharness.js-based test.
 FAIL webkit-appearance-warning-usecounter assert_true: expected true got false
 Harness: the test ran to completion.

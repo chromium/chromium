@@ -235,6 +235,10 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID,
                                    const CSSParserContext&,
                                    CSSValueID);
 
+void WarnInvalidKeywordPropertyUsage(CSSPropertyID,
+                                     const CSSParserContext&,
+                                     CSSValueID);
+
 const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
                               CSSPropertyID current_shorthand,
                               const CSSParserContext&,

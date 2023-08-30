@@ -1,1 +1,2 @@
+CONSOLE WARNING: The keyword 'sliderthumb-vertical' specified to an 'appearance' property is deprecated. Please consider updating.
 This test passes if it does not CRASH.

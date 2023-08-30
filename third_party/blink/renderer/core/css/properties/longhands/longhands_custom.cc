@@ -8883,14 +8883,15 @@ const CSSValue* Appearance::ParseSingleValue(
     const CSSParserLocalContext& local_context) const {
   CSSValueID id = range.Peek().Id();
   CSSPropertyID property = CSSPropertyID::kAppearance;
+  if (local_context.UseAliasParsing()) {
+    property = CSSPropertyID::kAliasWebkitAppearance;
+  }
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property, id,
                                                          context.Mode())) {
-    if (local_context.UseAliasParsing()) {
-      property = CSSPropertyID::kAliasWebkitAppearance;
-    }
     css_parsing_utils::CountKeywordOnlyPropertyUsage(property, context, id);
     return css_parsing_utils::ConsumeIdent(range);
   }
+  css_parsing_utils::WarnInvalidKeywordPropertyUsage(property, context, id);
   return nullptr;
 }
 

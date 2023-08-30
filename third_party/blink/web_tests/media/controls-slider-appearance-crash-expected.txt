@@ -1,3 +1,5 @@
+CONSOLE WARNING: The keyword 'media-sliderthumb' specified to an 'appearance' property is deprecated. Please consider updating.
+CONSOLE WARNING: The keyword 'media-volume-sliderthumb' specified to an 'appearance' property is deprecated. Please consider updating.
 This test ensures that applying media control slider thumb appearance to pseudo-elements does not cause a crash.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

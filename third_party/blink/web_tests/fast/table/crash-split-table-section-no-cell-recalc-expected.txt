@@ -1,2 +1,3 @@
+CONSOLE WARNING: The keyword 'sliderthumb-vertical' specified to an 'appearance' property is deprecated. Please consider updating.
 94291: Crash in LayoutTableSection::setCellLogicalWidths
 This test has PASSED as it didn't CRASH or ASSERT.

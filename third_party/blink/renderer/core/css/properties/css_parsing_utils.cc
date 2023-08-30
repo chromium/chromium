@@ -3397,19 +3397,64 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
   }
 }
 
+void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
+                                     const CSSParserContext& context,
+                                     CSSValueID value_id) {
+  if (!context.IsUseCounterRecordingEnabled()) {
+    return;
+  }
+  switch (property) {
+    case CSSPropertyID::kAppearance:
+    case CSSPropertyID::kAliasWebkitAppearance: {
+      // TODO(crbug.com/924486, crbug.com/1426629): Remove warnings after
+      // shipping.
+      if ((!RuntimeEnabledFeatures::NonStandardAppearanceValuesEnabled() &&
+           (value_id == CSSValueID::kInnerSpinButton ||
+            value_id == CSSValueID::kMediaSlider ||
+            value_id == CSSValueID::kMediaSliderthumb ||
+            value_id == CSSValueID::kMediaVolumeSlider ||
+            value_id == CSSValueID::kMediaVolumeSliderthumb ||
+            value_id == CSSValueID::kPushButton ||
+            value_id == CSSValueID::kSquareButton ||
+            value_id == CSSValueID::kSliderHorizontal ||
+            value_id == CSSValueID::kSliderthumbHorizontal ||
+            value_id == CSSValueID::kSliderthumbVertical ||
+            value_id == CSSValueID::kSearchfieldCancelButton)) ||
+          (!RuntimeEnabledFeatures::
+               NonStandardAppearanceValueSliderVerticalEnabled() &&
+           value_id == CSSValueID::kSliderVertical)) {
+        if (const auto* document = context.GetDocument()) {
+          document->AddConsoleMessage(
+              MakeGarbageCollected<ConsoleMessage>(
+                  mojom::blink::ConsoleMessageSource::kOther,
+                  mojom::blink::ConsoleMessageLevel::kWarning,
+                  String("The keyword '") + getValueName(value_id) +
+                      "' specified to an 'appearance' property is "
+                      "deprecated. Please consider updating."),
+              true);
+        }
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
                               CSSPropertyID current_shorthand,
                               const CSSParserContext& context,
                               CSSParserTokenRange& range) {
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
+  CSSValueID value_id = range.Peek().Id();
   DCHECK(!CSSProperty::Get(property_id).IsShorthand());
   if (CSSParserFastPaths::IsHandledByKeywordFastPath(property_id)) {
     if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(
             property_id, range.Peek().Id(), context.Mode())) {
-      CountKeywordOnlyPropertyUsage(property_id, context, range.Peek().Id());
+      CountKeywordOnlyPropertyUsage(property_id, context, value_id);
       return ConsumeIdent(range);
     }
-
+    WarnInvalidKeywordPropertyUsage(property_id, context, value_id);
     return nullptr;
   }
 

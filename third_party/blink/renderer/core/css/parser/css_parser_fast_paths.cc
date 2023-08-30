@@ -1828,6 +1828,8 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                                      value_id);
     return CSSIdentifierValue::Create(value_id);
   }
+  css_parsing_utils::WarnInvalidKeywordPropertyUsage(property_id, *context,
+                                                     value_id);
   return nullptr;
 }
 
