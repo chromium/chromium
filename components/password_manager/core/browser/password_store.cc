@@ -350,6 +350,10 @@ void PasswordStore::ShutdownOnUIThread() {
 
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
+
+  // PrefService is destroyed together with BrowserContext, and cannot be used
+  // anymore.
+  prefs_ = nullptr;
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
