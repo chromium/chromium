@@ -23,6 +23,9 @@ constexpr char kAdAuctionRequestHeaderKey[] = "Sec-Ad-Auction-Fetch";
 
 constexpr char kAdAuctionSignalsResponseHeaderKey[] = "Ad-Auction-Signals";
 
+constexpr char kAdAuctionAdditionalBidResponseHeaderKey[] =
+    "Ad-Auction-Additional-Bid";
+
 }  // namespace
 
 AdAuctionURLLoaderInterceptor::AdAuctionURLLoaderInterceptor(
@@ -116,6 +119,7 @@ void AdAuctionURLLoaderInterceptor::OnReceiveRedirect(
   has_redirect_ = true;
 
   head->headers.get()->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
+  head->headers.get()->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }
 
 void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
@@ -129,6 +133,31 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
   if (found_ad_auction_signals_header) {
     headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
   }
+
+  std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
+  size_t iter = 0;
+  std::string header_line;
+  while (headers->EnumerateHeader(
+      &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
+    // Skip if `header_line` doesn't match the format
+    // <36 characters auction nonce>:<base64-encoded signed additional bid>
+    std::vector<std::string> nonce_and_additional_bid = base::SplitString(
+        header_line, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (nonce_and_additional_bid.size() != 2) {
+      continue;
+    }
+
+    const std::string& nonce = nonce_and_additional_bid[0];
+    const std::string& additional_bid = nonce_and_additional_bid[1];
+
+    if (nonce.size() != 36) {
+      continue;
+    }
+
+    nonce_additional_bids_map[nonce].push_back(additional_bid);
+  }
+
+  headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 
   if (has_redirect_ || !ad_auction_headers_eligible_) {
     return;
@@ -166,6 +195,11 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
   if (found_ad_auction_signals_header && ad_auction_signals.size() <= 1000) {
     ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(request_origin_,
                                                             ad_auction_signals);
+  }
+
+  if (!nonce_additional_bids_map.empty()) {
+    ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
+        request_origin_, nonce_additional_bids_map);
   }
 }
 

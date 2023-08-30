@@ -50,6 +50,15 @@ class CONTENT_EXPORT AdAuctionPageData
   const std::set<std::string>& GetAuctionSignalsForOrigin(
       const url::Origin& origin) const;
 
+  void AddAuctionAdditionalBidsWitnessForOrigin(
+      const url::Origin& origin,
+      const std::map<std::string, std::vector<std::string>>&
+          nonce_additional_bids_map);
+
+  std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
+      const url::Origin& origin,
+      const std::string& nonce);
+
   void RegisterAdAuctionRequestContext(const base::Uuid& id,
                                        AdAuctionRequestContext context);
   AdAuctionRequestContext* GetContextForAdAuctionRequest(const base::Uuid& id);
@@ -62,6 +71,8 @@ class CONTENT_EXPORT AdAuctionPageData
 
   std::map<url::Origin, std::set<std::string>> origin_auction_result_map_;
   std::map<url::Origin, std::set<std::string>> origin_auction_signals_map_;
+  std::map<url::Origin, std::map<std::string, std::vector<std::string>>>
+      origin_nonce_additional_bids_map_;
   std::map<base::Uuid, AdAuctionRequestContext> context_map_;
 };
 

@@ -19,7 +19,8 @@ namespace content {
 //   2. If any redirect is encountered, skip handling the response; otherwise,
 //      for the response (i.e. OnReceiveResponse()), if the previous request was
 //      eligible for ad auction headers, and if the response header contains the
-//      auction result or signals, associate them with the top-level page.
+//      auction result, signals, or additional bids, associate them with the
+//      top-level page.
 class CONTENT_EXPORT AdAuctionURLLoaderInterceptor
     : public SubresourceProxyingURLLoader::Interceptor {
  public:

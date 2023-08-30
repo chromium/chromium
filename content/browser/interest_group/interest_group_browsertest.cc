@@ -1276,6 +1276,18 @@ function provideAdditionalBids(seller, nonce, bidStringList) {
     return ad_auction_page_data->GetAuctionSignalsForOrigin(origin);
   }
 
+  std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
+      const url::Origin& origin,
+      const std::string& nonce) {
+    Page& page = web_contents()->GetPrimaryPage();
+
+    AdAuctionPageData* ad_auction_page_data =
+        PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
+
+    return ad_auction_page_data->TakeAuctionAdditionalBidsForOriginAndNonce(
+        origin, nonce);
+  }
+
   void ClearReceivedRequests() {
     base::AutoLock auto_lock(requests_lock_);
     received_https_test_server_requests_.clear();
@@ -14172,7 +14184,9 @@ IN_PROC_BROWSER_TEST_F(
   redirect_replacement.emplace_back(std::make_pair(
       "{{AD_AUCTION_HEADERS}}",
       base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
+                    "\nAd-Auction-Signals: ", "{}",
+                    "\nAd-Auction-Additional-Bid: ",
+                    "00000000-0000-0000-0000-000000000000:e30="})));
   redirect_replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
   GURL redirect_url = https_server_->GetURL(
@@ -14187,7 +14201,9 @@ IN_PROC_BROWSER_TEST_F(
   replacement.emplace_back(std::make_pair(
       "{{AD_AUCTION_HEADERS}}",
       base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
+                    "\nAd-Auction-Signals: ", "{}",
+                    "\nAd-Auction-Additional-Bid: ",
+                    "00000000-0000-0000-0000-000000000000:e30="})));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}",
                                           "Location: " + redirect_url.spec()));
 
@@ -14217,13 +14233,184 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_FALSE(ad_auction_header_value);
   }
 
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
-      url::Origin::Create(fetch_url),
-      base64Decode(kLegitimateAdAuctionResponse)));
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
 
   const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
+      GetAuctionSignalsForOrigin(request_origin);
   EXPECT_THAT(signals, ::testing::IsEmpty());
+
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    FetchSameOrigin_AdAuctionHeadersEligible_HasAdAuctionAdditionalBidResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_HEADERS}}",
+      base::StrCat({"Ad-Auction-Additional-Bid: ",
+                    "00000000-0000-0000-0000-000000000000:e30="})));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_->GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  // Verify that the JavaScript doesn't see the response header
+  // `Ad-Auction-Additional-Bid`.
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace(R"(
+        fetch($1, {adAuctionHeaders: true}).then((response) => {
+          if (response.headers.get('Ad-Auction-Additional-Bid')) {
+            throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+          }
+        });
+    )",
+                                        fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_TRUE(ad_auction_header_value);
+  EXPECT_EQ(*ad_auction_header_value, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre("e30="));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    FetchCrossOrigin_AdAuctionHeadersEligible_HasAdAuctionAdditionalBidResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_HEADERS}}",
+      base::StrCat({"Ad-Auction-Additional-Bid: ",
+                    "00000000-0000-0000-0000-000000000000:e30="})));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  // Verify that the JavaScript doesn't see the response header
+  // `Ad-Auction-Additional-Bid`.
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace(R"(
+        fetch($1, {adAuctionHeaders: true}).then((response) => {
+          if (response.headers.get('Ad-Auction-Additional-Bid')) {
+            throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+          }
+        });
+    )",
+                                        fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_TRUE(ad_auction_header_value);
+  EXPECT_EQ(*ad_auction_header_value, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre("e30="));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    FetchCrossOrigin_AdAuctionHeadersEligible_HasNoAdAuctionAdditionalBidResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{AD_AUCTION_HEADERS}}", ""));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_TRUE(ad_auction_header_value);
+  EXPECT_EQ(*ad_auction_header_value, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    FetchCrossOrigin_AdAuctionHeadersNotEligible_HasAdAuctionAdditionalBidResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_HEADERS}}",
+      base::StrCat({"Ad-Auction-Additional-Bid: ",
+                    "00000000-0000-0000-0000-000000000000:e30="})));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  // "d.test" is not allowlisted for the API. Thus the request isn't eligible
+  // for ad auction headers.
+  GURL fetch_url = https_server_->GetURL(
+      "d.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_FALSE(ad_auction_header_value);
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
 }
 
 // Runs an ad auction similar to the one in
