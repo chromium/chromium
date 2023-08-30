@@ -484,6 +484,12 @@ void PrintBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
+
+  // `run_loop_` and `quit_callback_` are initialized here to avoid having a
+  // race between the last expected `CheckForQuit()` call and
+  // `WaitUntilCallbackReceived()` being called.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  quit_callback_ = run_loop_->QuitClosure();
 }
 
 void PrintBrowserTest::TearDownOnMainThread() {
@@ -599,9 +605,9 @@ void PrintBrowserTest::ResetNumReceivedMessages() {
 
 void PrintBrowserTest::WaitUntilCallbackReceived() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::RunLoop run_loop;
-  quit_callback_ = run_loop.QuitClosure();
-  run_loop.Run();
+
+  ASSERT_TRUE(run_loop_);
+  run_loop_->Run();
 }
 
 void PrintBrowserTest::CheckForQuit() {
