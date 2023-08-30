@@ -95,8 +95,6 @@ public class ManualFillingTestHelper {
 
     private EmbeddedTestServer mEmbeddedTestServer;
 
-    private RecyclerView mKeyboardAccessoryBarItems;
-
     public FakeKeyboard getKeyboard() {
         return (FakeKeyboard) mActivityTestRule.getKeyboardDelegate();
     }
@@ -135,11 +133,6 @@ public class ManualFillingTestHelper {
         updateWebContentsDependentState();
         cacheCredentials("mpark@gmail.com", "S3cr3t"); // Providing suggestions ensures visibility.
         if (waitForNode) DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
-    }
-
-    public void loadUrl(String url) {
-        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(url));
-        mWebContentsRef.set(mActivityTestRule.getWebContents());
     }
 
     public void updateWebContentsDependentState() {
