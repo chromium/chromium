@@ -620,7 +620,8 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   pps->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
 
   // Set these defaults if they are not present here.
-  pps->loop_filter_across_tiles_enabled_flag = 1;
+  pps->uniform_spacing_flag = true;
+  pps->loop_filter_across_tiles_enabled_flag = true;
 
   // 7.4.3.3.1
   READ_UE_OR_RETURN(&pps->pps_pic_parameter_set_id);
