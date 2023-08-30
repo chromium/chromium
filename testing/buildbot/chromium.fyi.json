@@ -320,6 +320,28 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "merge": {
@@ -741,6 +763,28 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -1171,6 +1215,26 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -1853,6 +1917,17 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "name": "cr23_browser_tests",
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "test": "capture_unittests",
@@ -2008,6 +2083,17 @@
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "name": "cr23_interactive_ui_tests",
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
         "test": "ipc_tests",
         "test_id_prefix": "ninja://ipc:ipc_tests/"
       },
@@ -2158,6 +2244,16 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "name": "cr23_views_unittests",
         "test": "views_unittests",
         "test_id_prefix": "ninja://ui/views:views_unittests/"
       },
@@ -42002,7 +42098,98 @@
       }
     ]
   },
-  "linux-cr23-rel": {},
+  "linux-cr23-rel": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      }
+    ]
+  },
   "linux-fieldtrial-rel": {
     "gtest_tests": [
       {
@@ -45680,6 +45867,30 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--gtest_filter=-*UsingRealWebcam*"
         ],
         "isolate_profile_data": true,
@@ -46192,6 +46403,30 @@
           "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -46748,6 +46983,28 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04",
@@ -47684,7 +47941,98 @@
       }
     ]
   },
-  "mac-cr23-rel": {},
+  "mac-cr23-rel": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      }
+    ]
+  },
   "mac-fieldtrial-tester": {
     "gtest_tests": [
       {
@@ -47966,6 +48314,29 @@
           "expiration": 21600,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 30
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -48444,6 +48815,29 @@
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -48914,6 +49308,27 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -49587,7 +50002,98 @@
       }
     ]
   },
-  "win-cr23-rel": {},
+  "win-cr23-rel": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      }
+    ]
+  },
   "win-fieldtrial-rel": {
     "gtest_tests": [
       {
@@ -50096,6 +50602,31 @@
           "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -50815,6 +51346,31 @@
           "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "interactive_ui_tests",
+        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_interactive_ui_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -51542,6 +52098,29 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 10,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cr23_views_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
