@@ -9,6 +9,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "base/test/gtest_tags.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -44,6 +45,9 @@ class FilesAppInteractiveTest : public InteractiveAshTest {
 
 // Launches the files app from the shelf context menu to test integration.
 IN_PROC_BROWSER_TEST_F(FilesAppInteractiveTest, LaunchFromShelfContextMenu) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-7b10de50-1ede-4b3e-8fd8-5c54c8e7331b");
+
   // Kombucha requires a context widget.
   views::Widget* status_area_widget =
       Shell::GetPrimaryRootWindowController()->shelf()->shelf_widget();
