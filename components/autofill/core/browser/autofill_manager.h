@@ -73,6 +73,9 @@ class AutofillManager
   // - if this AutofillManager has been destroyed or reset in the meantime.
   // - if the request in AutofillDownloadManager was not successful (i.e. no 2XX
   //   response code or a null response body).
+  //
+  // TODO(crbug.com/1476488): Consider moving events that are specific to BAM to
+  // a new BAM::Observer class.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}
@@ -138,6 +141,10 @@ class AutofillManager
     virtual void OnFieldTypesDetermined(AutofillManager& manager,
                                         FormGlobalId form,
                                         FieldTypeSource source) {}
+
+    // Fired when the popup is *actually* shown or hidden.
+    virtual void OnSuggestionsShown(AutofillManager& manager) {}
+    virtual void OnSuggestionsHidden(AutofillManager& manager) {}
 
     // Fired when a form is filled or previewed with a AutofillProfile or
     // CreditCard.
@@ -280,6 +287,9 @@ class AutofillManager
 
   // Invoked when popup window should be hidden.
   void OnHidePopup();
+
+  // Invoked when popup window is actually hidden.
+  void OnPopupHidden();
 
   // Invoked when the options of a select element in the |form| changed.
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);

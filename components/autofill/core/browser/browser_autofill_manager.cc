@@ -57,7 +57,6 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -1060,12 +1059,6 @@ void BrowserAutofillManager::DidSuppressPopup(const FormData& form,
     logger->OnPopupSuppressed(*form_structure, *autofill_field);
 }
 
-void BrowserAutofillManager::DidHidePopup() {
-  if (test_delegate_) {
-    test_delegate_->DidHideSuggestions();
-  }
-}
-
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
@@ -1579,16 +1572,11 @@ void BrowserAutofillManager::OnSelectControlDidChangeImpl(
 }
 
 void BrowserAutofillManager::OnDidPreviewAutofillFormDataImpl() {
-  if (test_delegate_)
-    test_delegate_->DidPreviewFormData();
 }
 
 void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
     const FormData& form,
     const TimeTicks timestamp) {
-  if (test_delegate_)
-    test_delegate_->DidFillFormData();
-
   UpdatePendingForm(form);
 
   // Find the FormStructure that corresponds to |form|. Use default form type if
@@ -1619,8 +1607,7 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
 void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
                                                 const FormData& form,
                                                 const FormFieldData& field) {
-  if (test_delegate_)
-    test_delegate_->DidShowSuggestions();
+  NotifyObservers(&Observer::OnSuggestionsShown);
 
   if (!has_autofill_suggestions) {
     // If suggestions are not from Autofill, then it means they are from
@@ -1789,11 +1776,6 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
 
 bool BrowserAutofillManager::ShouldClearPreviewedForm() {
   return credit_card_access_manager_->ShouldClearPreviewedForm();
-}
-
-void BrowserAutofillManager::SetTestDelegate(
-    BrowserAutofillManagerTestDelegate* delegate) {
-  test_delegate_ = delegate;
 }
 
 void BrowserAutofillManager::SetDataList(

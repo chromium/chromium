@@ -170,7 +170,7 @@ class AutofillCapturedSitesInteractiveTest
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(frame->GetMainFrame())
             ->autofill_manager());
-    autofill_manager->SetTestDelegate(test_delegate());
+    test_delegate()->Observe(*autofill_manager);
 
     int tries = 0;
     while (tries < attempts) {
@@ -221,8 +221,8 @@ class AutofillCapturedSitesInteractiveTest
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 
       // Press the enter key to invoke autofill using the first suggestion.
-      test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsHidden,
-                                        ObservedUiEvents::kFormDataFilled},
+      test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled,
+                                        ObservedUiEvents::kSuggestionsHidden},
                                        kAutofillWaitForFillInterval);
       TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
           web_contents,

@@ -69,9 +69,8 @@ ParsingCallback(Functor&& functor, Args&&... args) {
 
 // See ParsingCallback().
 template <typename Functor, typename... Args>
-base::OnceCallback<void(AutofillManager&)> NotifyObserversCallback(
-    Functor&& functor,
-    Args&&... args) {
+[[nodiscard]] base::OnceCallback<void(AutofillManager&)>
+NotifyObserversCallback(Functor&& functor, Args&&... args) {
   return base::BindOnce(
       [](Functor&& functor, std::remove_reference_t<Args&&>... args,
          AutofillManager& self) {
@@ -557,6 +556,11 @@ void AutofillManager::OnDidEndTextFieldEditing() {
 
 void AutofillManager::OnHidePopup() {
   OnHidePopupImpl();
+}
+
+void AutofillManager::OnPopupHidden() {
+  driver().PopupHidden();
+  NotifyObservers(&Observer::OnSuggestionsHidden);
 }
 
 void AutofillManager::OnSelectOrSelectListFieldOptionsDidChange(

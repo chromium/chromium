@@ -1318,6 +1318,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
                            {.show_method = ShowMethod::ByChar('M'),
+                            .num_profile_suggestions = 2,
                             .after_select = ExpectValues(MergeValue(
                                 kEmptyAddress, {"firstname", "M"}))}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
@@ -1325,11 +1326,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Delete some fields.
   ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
   DeleteElementValue(GetElementById("city"));
-  ASSERT_TRUE(AutofillFlow(
-      GetElementById("address1"), this,
-      {.target_index = 1, .after_focus = base::BindLambdaForTesting([&]() {
-                            DeleteElementValue(GetElementById("address1"));
-                          })}));
+  ASSERT_TRUE(AutofillFlow(GetElementById("address1"), this,
+                           {.num_profile_suggestions = 2,
+                            .target_index = 1,
+                            .after_focus = base::BindLambdaForTesting([&]() {
+                              DeleteElementValue(GetElementById("address1"));
+                            })}));
   // Address line 1 and city from the second profile.
   EXPECT_THAT(
       GetFormValues(),
@@ -2714,8 +2716,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
           ->DriverForFrame(cross_frame_host);
   ASSERT_TRUE(cross_driver);
   // Let |test_delegate()| also observe autofill events in the iframe.
-  static_cast<BrowserAutofillManager*>(cross_driver->autofill_manager())
-      ->SetTestDelegate(test_delegate());
+  test_delegate()->Observe(*cross_driver->autofill_manager());
 
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this,
                            {.execution_target = cross_frame_host}));
@@ -2742,8 +2743,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
           ->DriverForFrame(cross_frame_host);
   ASSERT_TRUE(cross_driver);
   // Let |test_delegate()| also observe autofill events in the iframe.
-  static_cast<BrowserAutofillManager*>(cross_driver->autofill_manager())
-      ->SetTestDelegate(test_delegate());
+  test_delegate()->Observe(*cross_driver->autofill_manager());
 
   auto Wait = [this]() { DoNothingAndWait(base::Seconds(2)); };
   ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NUMBER"), this,
@@ -2777,8 +2777,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
           ->DriverForFrame(cross_frame_host);
   ASSERT_TRUE(cross_driver);
   // Let |test_delegate()| also observe autofill events in the iframe.
-  static_cast<BrowserAutofillManager*>(cross_driver->autofill_manager())
-      ->SetTestDelegate(test_delegate());
+  test_delegate()->Observe(*cross_driver->autofill_manager());
 
   // Focus the form in the iframe/fenced frame and simulate choosing a
   // suggestion via keyboard.

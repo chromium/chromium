@@ -220,7 +220,7 @@ struct ShowAutofillPopupParams {
           continue;
         }
       } else if (AssertionResult b = has_preview
-                                         ? ArrowDown({kSuggest, kPreview})
+                                         ? ArrowDown({kPreview, kSuggest})
                                          : ArrowDown({kSuggest});
                  !b) {
         a << "Cannot trigger and select first suggestion by arrow: " << b;
@@ -327,7 +327,7 @@ struct AutofillSuggestionParams {
   if (AssertionResult a = SelectAutofillSuggestion(e, test, p); !a) {
     return a;
   }
-  if (!(has_fill ? Enter({kSuggestionsHidden, kFill})
+  if (!(has_fill ? Enter({kFill, kSuggestionsHidden})
                  : Enter({kSuggestionsHidden}))) {
     return AssertionFailure()
            << __func__ << "(): Couldn't accept to " << p.target_index

@@ -63,7 +63,6 @@ namespace autofill {
 class AutofillField;
 class AutofillClient;
 class AutofillSuggestionGenerator;
-class BrowserAutofillManagerTestDelegate;
 class AutofillProfile;
 class AutofillType;
 class CreditCard;
@@ -220,9 +219,6 @@ class BrowserAutofillManager : public AutofillManager,
 
   const std::string& app_locale() const { return app_locale_; }
 
-  // Only for testing.
-  void SetTestDelegate(BrowserAutofillManagerTestDelegate* delegate);
-
   // Will send an upload based on the |form_structure| data and the local
   // Autofill profile data. |observed_submission| is specified if the upload
   // follows an observed submission event. Returns false if the upload couldn't
@@ -241,9 +237,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Invoked when the popup view can't be created. Main usage is to collect
   // metrics.
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
-
-  // Invoked when the "suggestions" popup is hidden.
-  void DidHidePopup();
 
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
@@ -794,9 +787,6 @@ class BrowserAutofillManager : public AutofillManager,
   FormFieldData credit_card_field_;
   CreditCard credit_card_;
   std::u16string last_unlocked_credit_card_cvc_;
-
-  // Delegate used in test to get notifications on certain events.
-  raw_ptr<BrowserAutofillManagerTestDelegate> test_delegate_ = nullptr;
 
   // A map from FormGlobalId to FillingContext instances used to make refill
   // attempts for dynamic forms.
