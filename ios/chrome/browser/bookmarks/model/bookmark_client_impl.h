@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/common/storage_type.h"
+#include "components/power_bookmarks/core/bookmark_client_base.h"
 
 class BookmarkUndoService;
 class ChromeBrowserState;
@@ -27,7 +27,7 @@ namespace sync_bookmarks {
 class BookmarkSyncService;
 }  // namespace sync_bookmarks
 
-class BookmarkClientImpl : public bookmarks::BookmarkClient {
+class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
  public:
   BookmarkClientImpl(
       ChromeBrowserState* browser_state,

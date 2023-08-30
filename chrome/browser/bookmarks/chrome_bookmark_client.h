@@ -15,9 +15,9 @@
 #include "base/scoped_observation.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/power_bookmarks/core/bookmark_client_base.h"
 
 class BookmarkUndoService;
 class GURL;
@@ -39,7 +39,11 @@ class OfflinePageBookmarkObserver;
 }  // namespace offline_pages
 #endif
 
-class ChromeBookmarkClient : public bookmarks::BookmarkClient {
+namespace power_bookmarks {
+class SuggestedSaveLocationProvider;
+}
+
+class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
  public:
   ChromeBookmarkClient(
       Profile* profile,
@@ -94,6 +98,9 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
 
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
+
+  std::unique_ptr<power_bookmarks::SuggestedSaveLocationProvider>
+      shopping_save_location_provider_;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Owns the observer used by Offline Page listening to Bookmark Model events.
