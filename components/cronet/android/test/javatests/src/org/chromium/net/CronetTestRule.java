@@ -15,6 +15,7 @@ import android.content.MutableContextWrapper;
 import android.os.Build;
 import android.os.StrictMode;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
@@ -24,6 +25,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.net.httpflags.HttpFlagsInterceptor;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.UserAgent;
@@ -317,15 +319,18 @@ public class CronetTestRule implements TestRule {
 
         private final CronetImplementation mImplementation;
         private final ExperimentalCronetEngine.Builder mBuilder;
+        private final MutableContextWrapper mContextWrapperWithoutFlags;
         private final MutableContextWrapper mContextWrapper;
         private final StrictMode.VmPolicy mOldVmPolicy;
 
+        private HttpFlagsInterceptor mHttpFlagsInterceptor;
         private ExperimentalCronetEngine mCronetEngine;
         private boolean mClosed;
 
         private CronetTestFramework(CronetImplementation implementation) {
-            this.mContextWrapper =
+            this.mContextWrapperWithoutFlags =
                     new MutableContextWrapper(ApplicationProvider.getApplicationContext());
+            this.mContextWrapper = new MutableContextWrapper(mContextWrapperWithoutFlags);
             assert sContextWrapper.getBaseContext() == null;
             sContextWrapper.setBaseContext(mContextWrapper);
             this.mBuilder = implementation.createBuilder(sContextWrapper)
@@ -346,6 +351,8 @@ public class CronetTestRule implements TestRule {
                                                .penaltyDeath()
                                                .build());
             }
+
+            setHttpFlags(null);
         }
 
         /**
@@ -364,14 +371,48 @@ public class CronetTestRule implements TestRule {
                         "Refusing to intercept context after the Cronet engine has been built");
             }
 
+            mContextWrapperWithoutFlags.setBaseContext(contextInterceptor.interceptContext(
+                    mContextWrapperWithoutFlags.getBaseContext()));
+        }
+
+        /**
+         * Sets the HTTP flags, if any, that the code under test should run with. This affects the
+         * behavior of the {@link Context} that the code under test sees.
+         *
+         * If this method is never called, the default behavior is to simulate the absence of a
+         * flags file. This ensures that the code under test does not end up accidentally using a
+         * flags file from the host system, which would lead to non-deterministic results.
+         *
+         * @param flagsFileContents the contents of the flags file, or null to simulate a missing
+         * file (default behavior).
+         *
+         * @throws IllegalStateException if called after the engine has already been built.
+         * Modifying flags while the code under test is running is always a mistake, because the
+         * code under test won't notice the changes.
+         *
+         * @see org.chromium.net.impl.HttpFlagsLoader
+         * @see HttpFlagsInterceptor
+         */
+        public void setHttpFlags(@Nullable String flagsFileContents) {
+            checkNotClosed();
+
+            if (mCronetEngine != null) {
+                throw new IllegalStateException(
+                        "Refusing to replace flags file provider after the Cronet engine has been "
+                        + "built");
+            }
+
+            if (mHttpFlagsInterceptor != null) mHttpFlagsInterceptor.close();
+            mHttpFlagsInterceptor = new HttpFlagsInterceptor(flagsFileContents);
             mContextWrapper.setBaseContext(
-                    contextInterceptor.interceptContext(mContextWrapper.getBaseContext()));
+                    mHttpFlagsInterceptor.interceptContext(mContextWrapperWithoutFlags));
         }
 
         /**
          * @return the context to be used by the Cronet engine
          *
          * @see #interceptContext
+         * @see #setFlagsFileContents
          */
         public Context getContext() {
             checkNotClosed();
@@ -453,6 +494,8 @@ public class CronetTestRule implements TestRule {
             assert sContextWrapper.getBaseContext() == mContextWrapper;
             sContextWrapper.setBaseContext(null);
             mClosed = true;
+
+            if (mHttpFlagsInterceptor != null) mHttpFlagsInterceptor.close();
 
             try {
                 // Run GC and finalizers a few times to pick up leaked closeables
