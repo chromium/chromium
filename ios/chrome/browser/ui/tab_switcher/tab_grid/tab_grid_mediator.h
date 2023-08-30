@@ -15,6 +15,7 @@
 class PrefService;
 
 // Delegate allowing the tab grid coordinator to update the incognito tab grid.
+// TODO(crbug.com/1457146): To remove when incognito is fully isolated.
 @protocol TabGridMediatorDelegate
 // Repopulates the incognito tab grid with incognito tabs if applicable.
 - (void)updateIncognitoTabGridState;
@@ -22,11 +23,6 @@ class PrefService;
 
 // Mediates between model layer and tab grid UI layer.
 @interface TabGridMediator : NSObject <TabGridMutator>
-
-- (instancetype)initWithPrefService:(PrefService*)prefService
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
 
 // Mutator for regular Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> regularPageMutator;
@@ -37,8 +33,13 @@ class PrefService;
 
 // Consumer for state changes in tab grid.
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
-// Delegate allowing the mediator to update the incognito tab grid.
+// Delegate allowing the mediator to update the tab grid coordinator.
 @property(nonatomic, weak) id<TabGridMediatorDelegate> delegate;
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 // Set the current displayed page (incognito, regular or remote).
 - (void)setPage:(TabGridPage)page;
 // Stops mediating and disconnects from backend models.

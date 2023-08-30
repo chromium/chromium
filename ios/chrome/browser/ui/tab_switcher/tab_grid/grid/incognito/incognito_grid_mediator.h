@@ -7,8 +7,23 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 
+@protocol IncognitoGridMediatorDelegate;
+@protocol TabCollectionConsumer;
+class PrefService;
+
 // Mediates between model layer and incognito grid UI layer.
 @interface IncognitoGridMediator : BaseGridMediator
+
+// Incognito mediator delegate.
+@property(nonatomic, weak) id<IncognitoGridMediatorDelegate> incognitoDelegate;
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+                           consumer:(id<TabCollectionConsumer>)consumer
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
+    NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

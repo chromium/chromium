@@ -46,7 +46,9 @@ class BaseGridMediatorTest
   void SetUp() override {
     GridMediatorTestClass::SetUp();
     if (GetParam() == TEST_INCOGNITO_MEDIATOR) {
-      mediator_ = [[IncognitoGridMediator alloc] initWithConsumer:consumer_];
+      mediator_ = [[IncognitoGridMediator alloc]
+          initWithPrefService:scoped_testing_local_state_.Get()
+                     consumer:consumer_];
     } else {
       mediator_ = [[RegularGridMediator alloc] initWithConsumer:consumer_];
     }

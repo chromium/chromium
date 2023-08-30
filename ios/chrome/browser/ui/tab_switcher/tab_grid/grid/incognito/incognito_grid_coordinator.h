@@ -6,13 +6,15 @@
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_INCOGNITO_INCOGNITO_GRID_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
 @class IncognitoGridMediator;
 @class TabGridViewController;
 
-@interface IncognitoGridCoordinator : ChromeCoordinator
+@interface IncognitoGridCoordinator
+    : ChromeCoordinator <IncognitoGridMediatorDelegate>
 // Incognito view controller.
 // TODO(crbug.com/1457146): Replace this once the incognito grid view controller
 // is created.

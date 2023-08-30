@@ -69,8 +69,6 @@
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
@@ -199,8 +197,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) IncognitoGridMediator* incognitoTabsMediator;
 // Mediator for PriceCardView - this is only for regular Tabs.
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
-// Mediator for incognito reauth.
-@property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Mediator for pinned Tabs.
@@ -700,15 +696,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // TODO(crbug.com/1246931): refactor to call setIncognitoBrowser from this
-  // function.
-  IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-      agentFromScene:SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
-                         ->GetSceneState()];
-
-  [self.dispatcher startDispatchingToTarget:reauthAgent
-                                forProtocol:@protocol(IncognitoReauthCommands)];
-
   _mediator = [[TabGridMediator alloc]
       initWithPrefService:self.regularBrowser->GetBrowserState()->GetPrefs()];
 
@@ -718,9 +705,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   TabGridViewController* baseViewController = [[TabGridViewController alloc]
       initWithPageConfiguration:_pageConfiguration];
   baseViewController.handler = applicationCommandsHandler;
-  baseViewController.reauthHandler =
-      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
-  baseViewController.reauthAgent = reauthAgent;
   baseViewController.tabPresentationDelegate = self;
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
@@ -806,11 +790,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       self.incognitoTabsMediator;
   self.baseViewController.incognitoTabsShareableItemsProvider =
       self.incognitoTabsMediator;
-
-  self.incognitoAuthMediator =
-      [[IncognitoReauthMediator alloc] initWithReauthAgent:reauthAgent];
-  self.incognitoAuthMediator.consumer =
-      self.baseViewController.incognitoTabsConsumer;
 
   self.recentTabsContextMenuHelper =
       [[RecentTabsContextMenuHelper alloc] initWithBrowser:self.regularBrowser
@@ -1118,13 +1097,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Reconnect the incognito mediators to the incognito view controller.
   self.incognitoTabsMediator.consumer =
       self.baseViewController.incognitoTabsConsumer;
-  self.incognitoAuthMediator.consumer =
-      self.baseViewController.incognitoTabsConsumer;
 
   // Reset the connection between the incognito view controller and the
   // mediator.
-  self.baseViewController.reauthHandler =
-      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;
   self.baseViewController.incognitoTabsShareableItemsProvider =

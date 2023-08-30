@@ -7,15 +7,52 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/pref_names.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 
-@implementation IncognitoGridMediator
+@interface IncognitoGridMediator () <PrefObserverDelegate>
+@end
+
+@implementation IncognitoGridMediator {
+  // Preference service from the application context.
+  PrefService* _prefService;
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // YES if incognito is disabled.
+  BOOL _incognitoDisabled;
+}
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+                           consumer:(id<TabCollectionConsumer>)consumer {
+  if (self = [super initWithConsumer:consumer]) {
+    // Register to observe any changes on supervised_user status.
+    if (base::FeatureList::IsEnabled(
+            supervised_user::
+                kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+      CHECK(prefService);
+      _prefService = prefService;
+      _prefChangeRegistrar.Init(_prefService);
+      _prefObserverBridge.reset(new PrefObserverBridge(self));
+      _prefObserverBridge->ObserveChangesForPreference(prefs::kSupervisedUserId,
+                                                       &_prefChangeRegistrar);
+      _incognitoDisabled = [self isIncognitoModeDisabled];
+    }
+  }
+  return self;
+}
 
 // TODO(crbug.com/1457146): Refactor the grid commands to have the same function
 // name to close all.
@@ -76,6 +113,26 @@
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kSupervisedUserId) {
+    BOOL isDisabled = [self isIncognitoModeDisabled];
+    if (_incognitoDisabled != isDisabled) {
+      _incognitoDisabled = isDisabled;
+      [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
+    }
+  }
+}
+
+#pragma mark - Private
+
+// Returns YES if incognito is disabled.
+- (BOOL)isIncognitoModeDisabled {
+  return supervised_user::IsSubjectToParentalControls(_prefService) ||
+         IsIncognitoModeDisabled(_prefService);
 }
 
 @end

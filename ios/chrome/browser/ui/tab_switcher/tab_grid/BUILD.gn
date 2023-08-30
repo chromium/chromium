@@ -63,7 +63,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/commerce:price_card",
     "//ios/chrome/browser/ui/history",
     "//ios/chrome/browser/ui/history/public",
-    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
     "//ios/chrome/browser/ui/recent_tabs",
