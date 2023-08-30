@@ -22,6 +22,7 @@ from typing import Dict, Hashable, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
+from blinkpy.common.system import command_line
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.tool.commands.command import Command
 from blinkpy.w3c import wpt_metadata
@@ -273,7 +274,7 @@ class WebPlatformTestRegexp(rules.WebPlatformTestRegexp):
 
 class LintWPT(Command):
     name = 'lint-wpt'
-    show_in_main_help = False  # TODO(crbug.com/1406669): To be switched on.
+    show_in_main_help = True
     help_text = __doc__.strip().splitlines()[0]
     long_help = __doc__
     ignorelist_filename: str = 'lint.ignore'
@@ -294,9 +295,9 @@ class LintWPT(Command):
     def parse_args(self, args: List[str]) -> Tuple[optparse.Values, List[str]]:
         # TODO(crbug.com/1431070): Migrate `blink_tool.py` to stdlib's
         # `argparse`. `optparse` is deprecated.
-        parser = argparse.ArgumentParser(description=self.long_help,
-                                         parents=[wptlint.create_parser()],
-                                         conflict_handler='resolve')
+        parser = command_line.ArgumentParser(description=self.long_help,
+                                             parents=[wptlint.create_parser()],
+                                             conflict_handler='resolve')
         # Hide formatting parameters that won't be used.
         parser.add_argument('--markdown',
                             action='store_true',

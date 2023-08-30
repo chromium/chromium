@@ -57,7 +57,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         '--patchset',
         default=None,
         type='int',
-        help='Patchset number to fetch results from.')
+        help='Patchset number to fetch try results from (defaults to latest).')
 
     def __init__(self, tool, io_pool: Optional[Executor] = None):
         super(RebaselineCL, self).__init__(options=[

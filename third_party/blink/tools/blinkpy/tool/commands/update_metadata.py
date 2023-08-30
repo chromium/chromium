@@ -82,7 +82,7 @@ ManifestMap = Mapping[wptmanifest.Manifest, TestPaths]
 
 class UpdateMetadata(Command):
     name = 'update-metadata'
-    show_in_main_help = False  # TODO(crbug.com/1299650): To be switched on.
+    show_in_main_help = True
     help_text = 'Update WPT metadata from builder results.'
     argument_names = '[<test>,...]'
     long_help = __doc__
@@ -102,15 +102,14 @@ class UpdateMetadata(Command):
                 help=('Comma-separated list of builds or build ranges to '
                       'download results for (e.g., "ci/Linux Tests:100-110"). '
                       'When provided with only the builder name, use the try '
-                      'build from the latest patchset. '
+                      'build from `--patchset`. '
                       'May specify multiple times.')),
-            optparse.make_option(
-                '-b',
-                '--bug',
-                action='callback',
-                callback=_coerce_bug_number,
-                type='string',
-                help='Bug number to include for updated tests.'),
+            optparse.make_option('-b',
+                                 '--bug',
+                                 action='callback',
+                                 callback=_coerce_bug_number,
+                                 type='string',
+                                 help='Bug number to use for updated tests.'),
             optparse.make_option(
                 '--overwrite-conditions',
                 default='fill',
@@ -126,8 +125,8 @@ class UpdateMetadata(Command):
             optparse.make_option(
                 '--disable-intermittent',
                 metavar='REASON',
-                help=('Disable tests and subtests that have inconsistent '
-                      'results instead of updating the status list.')),
+                help=('Disable tests and subtests that have flaky '
+                      'results instead of expecting multiple statuses.')),
             optparse.make_option('--keep-statuses',
                                  action='store_true',
                                  help='Keep all existing statuses.'),
@@ -146,6 +145,7 @@ class UpdateMetadata(Command):
             #   --report out/*/wpt_reports*android*.json
             optparse.make_option(
                 '--report',
+                metavar='REPORT',
                 dest='reports',
                 action='callback',
                 callback=self._append_reports,
