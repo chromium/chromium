@@ -528,7 +528,8 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   if ([self isRunningTest:@selector
             (testAccountStorageSwitchDisabledByPolicy_SyncToSigninDisabled)] ||
       [self isRunningTest:@selector
-            (testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled)]) {
+            (testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled)] ||
+      [self isRunningTest:@selector(testAccountStorageSwitchHiddenIfSyncing)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
