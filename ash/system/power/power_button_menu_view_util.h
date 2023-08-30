@@ -32,9 +32,6 @@ constexpr auto kPowerButtonMenuBorderType =
 // The color id for widget background.
 constexpr auto kPowerButtonMenuBackgroundColorId = kColorAshShieldAndBase80;
 
-// The blur type for widget background.
-constexpr auto kPowerButtonMenuBlurType = ColorProvider::kBackgroundBlurSigma;
-
 void SetLayerAnimation(ui::Layer* layer,
                        ui::ImplicitAnimationObserver* observer,
                        bool show,

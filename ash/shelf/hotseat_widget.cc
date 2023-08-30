@@ -651,8 +651,11 @@ void HotseatWidget::DelegateView::SetBackgroundBlur(bool enable_blur) {
 
   const int blur_radius =
       enable_blur ? ShelfConfig::Get()->shelf_blur_radius() : 0;
-  if (translucent_background_->layer()->background_blur() != blur_radius)
+  if (translucent_background_->layer()->background_blur() != blur_radius) {
     translucent_background_->layer()->SetBackgroundBlur(blur_radius);
+    translucent_background_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 void HotseatWidget::DelegateView::OnHotseatTransitionAnimationWillStart(

@@ -70,7 +70,7 @@ PowerButtonMenuView::PowerButtonMenuView(
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
   if (features::IsBackgroundBlurEnabled()) {
-    layer()->SetBackgroundBlur(kPowerButtonMenuBlurType);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);

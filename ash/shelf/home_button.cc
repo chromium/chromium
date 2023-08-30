@@ -190,6 +190,7 @@ class HomeButton::ButtonImageView : public views::View {
   void UpdateForShelfConfigChange() {
     layer()->SetBackgroundBlur(
         ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     UpdateBackground();
   }
 

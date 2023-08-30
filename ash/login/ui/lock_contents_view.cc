@@ -285,8 +285,9 @@ class UserAddingScreenIndicator : public views::View {
     label_->SetText(message);
 
     SetPaintToLayer();
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
     SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshShieldAndBase80, kBubbleBorderRadius));
