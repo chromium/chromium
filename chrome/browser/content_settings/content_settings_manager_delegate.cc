@@ -32,9 +32,13 @@ void OnFileSystemAccessedInGuestViewContinuation(
     bool allowed) {
   auto* rfh =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  content_settings::PageSpecificContentSettings::StorageAccessed(
-      content_settings::mojom::ContentSettingsManager::StorageType::FILE_SYSTEM,
-      render_process_id, render_frame_id, rfh->GetStorageKey(), !allowed);
+  if (rfh) {
+    content_settings::PageSpecificContentSettings::StorageAccessed(
+        content_settings::mojom::ContentSettingsManager::StorageType::
+            FILE_SYSTEM,
+        render_process_id, render_frame_id, rfh->GetStorageKey(), !allowed);
+  }
+
   std::move(callback).Run(allowed);
 }
 
