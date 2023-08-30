@@ -6,7 +6,7 @@
 
 #include "ash/webui/settings/public/constants/routes.mojom-shared.h"
 #include "base/rand_util.h"
-#include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
+#include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

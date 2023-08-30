@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
+#include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
@@ -29,8 +29,9 @@ std::vector<T> All() {
     // (1) We use a numbering scheme which purposely skips some values for the
     //     Subpage and Setting enums.
     // (2) Some values are deprecated and removed.
-    if (chromeos::settings::mojom::IsKnownEnumValue(current))
+    if (chromeos::settings::mojom::IsKnownEnumValue(current)) {
       all.push_back(current);
+    }
   }
 
   return all;

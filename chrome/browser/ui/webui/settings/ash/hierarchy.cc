@@ -9,7 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
+#include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 #include "chrome/grit/generated_resources.h"
