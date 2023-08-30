@@ -6974,16 +6974,9 @@
             "value": false
           }
         }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "webauthn.create_in_icloud_keychain": {
-            "default_value": true
-          }
-        }
       }
-    ]
+    ],
+    "note": "default value of the pref in case no policy is set evaluates differently on CQ/CI bots and will therefor be skipped here (see crbug.com/1477033)"
   },
   "ImportBookmarks": {
     "os": [
