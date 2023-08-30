@@ -617,6 +617,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
 
+  // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
+  // keychain, and the enclave, don't make sense.
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnRequireUIForComplexDiscoveries) &&
+      disable_ui_) {
+    return;
+  }
+
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
   const bool cable_extension_provided =
       cable_extension_permitted && !pairings_from_extension.empty();

@@ -448,6 +448,36 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
   }
 }
 
+TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
+  const std::string rp_id = "https://example.com";
+  const std::string origin = "https://" + rp_id;
+
+  for (const bool disable_ui : {false, true}) {
+    SCOPED_TRACE(disable_ui);
+
+    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    delegate.SetRelyingPartyId(rp_id);
+    delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
+    if (disable_ui) {
+      delegate.DisableUI();
+    }
+    MockCableDiscoveryFactory discovery_factory;
+    delegate.ConfigureDiscoveries(url::Origin::Create(GURL(origin)), origin,
+                                  content::AuthenticatorRequestClientDelegate::
+                                      RequestSource::kWebAuthentication,
+                                  device::FidoRequestType::kMakeCredential,
+                                  device::ResidentKeyRequirement::kPreferred,
+                                  {}, &discovery_factory);
+
+    EXPECT_EQ(discovery_factory.qr_key.has_value(), !disable_ui);
+    EXPECT_EQ(discovery_factory.aoa_configured, !disable_ui);
+
+    // `discovery_factory.nswindow_` won't be set in any case because it depends
+    // on the `RenderFrameHost` having a `BrowserWindow`, which it doesn't in
+    // this context.
+  }
+}
+
 TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   // The RenderFrame has to be live for the ChromeWebAuthnCredentialsDelegate to
   // be created.

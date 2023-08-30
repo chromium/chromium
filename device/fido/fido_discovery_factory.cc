@@ -228,7 +228,7 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
         *mac_touch_id_config_));
   }
   if (base::FeatureList::IsEnabled(kWebAuthnICloudKeychain) &&
-      fido::icloud_keychain::IsSupported()) {
+      fido::icloud_keychain::IsSupported() && nswindow_ != 0) {
     ret.emplace_back(fido::icloud_keychain::NewDiscovery(nswindow_));
   }
   return ret;
