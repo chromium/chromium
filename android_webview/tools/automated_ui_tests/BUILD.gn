@@ -67,7 +67,10 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
-  data = [ "test/data/" ]
+  data = [
+    "//third_party/chromium-variations",
+    "test/data/",
+  ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN
   # args because it's incompatible with 'use_webview_provider'.

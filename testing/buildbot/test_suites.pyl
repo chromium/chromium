@@ -2226,6 +2226,28 @@
         'ci_only': True,
         'test': 'webview_ui_test_app_test_apk',
       },
+      'webview_ui_test_app_test_apk_single_group_per_study_prefer_existing_behavior': {
+        'args': [
+          '--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json',
+          '--accept-empty-variations-seed-signature',
+          '--webview-verbose-logging',
+          '--disable-field-trial-config',
+          '--fake-variations-channel=stable',
+        ],
+        'ci_only': True,
+        'test': 'webview_ui_test_app_test_apk',
+      },
+      'webview_ui_test_app_test_apk_single_group_per_study_prefer_new_behavior': {
+        'args': [
+          '--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json',
+          '--accept-empty-variations-seed-signature',
+          '--webview-verbose-logging',
+          '--disable-field-trial-config',
+          '--fake-variations-channel=stable',
+        ],
+        'ci_only': True,
+        'test': 'webview_ui_test_app_test_apk',
+      },
     },
     'finch_smoke_tests': {
       # TODO(crbug.com/1227222): Change this to the actual finch smoke test
