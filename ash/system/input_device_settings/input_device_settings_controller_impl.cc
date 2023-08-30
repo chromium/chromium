@@ -395,6 +395,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                           std::move(updated_keyboard_dict));
 
+    pref_service->ClearPref(prefs::kRemapToRightClickNotificationsRemaining);
     pref_service->ClearPref(prefs::kSixPackKeyDeleteNotificationsRemaining);
     pref_service->ClearPref(prefs::kSixPackKeyHomeNotificationsRemaining);
     pref_service->ClearPref(prefs::kSixPackKeyEndNotificationsRemaining);
