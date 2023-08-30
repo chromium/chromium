@@ -1504,18 +1504,18 @@ void RenderWidgetHostImpl::ForwardMouseEvent(const WebMouseEvent& mouse_event) {
 }
 
 void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
-    const blink::WebMouseEvent& mouse_event,
+    const WebMouseEvent& mouse_event,
     const ui::LatencyInfo& latency) {
   TRACE_EVENT2("input", "RenderWidgetHostImpl::ForwardMouseEvent", "x",
                mouse_event.PositionInWidget().x(), "y",
                mouse_event.PositionInWidget().y());
 
-  DCHECK_GE(mouse_event.GetType(), blink::WebInputEvent::Type::kMouseTypeFirst);
-  DCHECK_LE(mouse_event.GetType(), blink::WebInputEvent::Type::kMouseTypeLast);
+  DCHECK_GE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeFirst);
+  DCHECK_LE(mouse_event.GetType(), WebInputEvent::Type::kMouseTypeLast);
 
   // This is used to auto-disable accessibility if we detect user input
   // but no accessibility API usage.
-  if (mouse_event.GetType() == blink::WebInputEvent::Type::kMouseDown) {
+  if (mouse_event.GetType() == WebInputEvent::Type::kMouseDown) {
     BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
   }
 
@@ -1551,7 +1551,7 @@ void RenderWidgetHostImpl::ForwardWheelEvent(
 }
 
 void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
-    const blink::WebMouseWheelEvent& wheel_event,
+    const WebMouseWheelEvent& wheel_event,
     const ui::LatencyInfo& latency) {
   TRACE_EVENT2("input", "RenderWidgetHostImpl::ForwardWheelEvent", "dx",
                wheel_event.delta_x, "dy", wheel_event.delta_y);
@@ -1597,7 +1597,7 @@ void RenderWidgetHostImpl::WaitForInputProcessed(base::OnceClosure callback) {
 }
 
 void RenderWidgetHostImpl::ForwardGestureEvent(
-    const blink::WebGestureEvent& gesture_event) {
+    const WebGestureEvent& gesture_event) {
   ForwardGestureEventWithLatencyInfo(
       gesture_event,
       ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(
@@ -1605,14 +1605,14 @@ void RenderWidgetHostImpl::ForwardGestureEvent(
 }
 
 void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
-    const blink::WebGestureEvent& gesture_event,
+    const WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency) {
   TRACE_EVENT1("input", "RenderWidgetHostImpl::ForwardGestureEvent", "type",
                WebInputEvent::GetName(gesture_event.GetType()));
 
   // This is used to auto-disable accessibility if we detect user input
   // but no accessibility API usage.
-  if (gesture_event.GetType() == blink::WebInputEvent::Type::kGestureTapDown) {
+  if (gesture_event.GetType() == WebInputEvent::Type::kGestureTapDown) {
     BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
   }
 
@@ -1626,7 +1626,7 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
             blink::WebGestureDevice::kUninitialized);
 
   if (gesture_event.GetType() ==
-      blink::WebInputEvent::Type::kGestureScrollBegin) {
+      WebInputEvent::Type::kGestureScrollBegin) {
     DCHECK(
         !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
@@ -1636,7 +1636,7 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
     scroll_peak_gpu_mem_tracker_ =
         PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::SCROLL);
   } else if (gesture_event.GetType() ==
-             blink::WebInputEvent::Type::kGestureScrollEnd) {
+             WebInputEvent::Type::kGestureScrollEnd) {
     DCHECK(
         is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
@@ -1659,7 +1659,7 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
     }
     scroll_peak_gpu_mem_tracker_ = nullptr;
   } else if (gesture_event.GetType() ==
-             blink::WebInputEvent::Type::kGestureFlingStart) {
+             WebInputEvent::Type::kGestureFlingStart) {
     NotifyUISchedulerOfScrollStateUpdate(
         BrowserUIThreadScheduler::ScrollState::kFlingActive);
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
@@ -1704,7 +1704,7 @@ void RenderWidgetHostImpl::ForwardTouchEventWithLatencyInfo(
 
   // This is used to auto-disable accessibility if we detect user input
   // but no accessibility API usage.
-  if (touch_event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
+  if (touch_event.GetType() == WebInputEvent::Type::kTouchStart) {
     BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
   }
 
@@ -1745,8 +1745,8 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
 
   // This is used to auto-disable accessibility if we detect user input
   // but no accessibility API usage.
-  if (key_event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
-      key_event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
+  if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown ||
+      key_event.GetType() == WebInputEvent::Type::kKeyDown) {
     BrowserAccessibilityStateImpl::GetInstance()->OnUserInputEvent();
   }
 
@@ -2851,7 +2851,7 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
 
 void RenderWidgetHostImpl::StartDragging(
     blink::mojom::DragDataPtr drag_data,
-    blink::DragOperationsMask drag_operations_mask,
+    DragOperationsMask drag_operations_mask,
     const SkBitmap& bitmap,
     const gfx::Vector2d& cursor_offset_in_dip,
     const gfx::Rect& drag_obj_rect_in_dip,
@@ -3171,7 +3171,7 @@ bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
 }
 
 blink::mojom::InputEventResultState RenderWidgetHostImpl::FilterInputEvent(
-    const blink::WebInputEvent& event,
+    const WebInputEvent& event,
     const ui::LatencyInfo& latency_info) {
   // Don't ignore touch cancel events, since they may be sent while input
   // events are being ignored in order to keep the renderer from getting
@@ -3352,7 +3352,7 @@ RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParamsForNewWindow() {
 }
 
 void RenderWidgetHostImpl::DispatchInputEventWithLatencyInfo(
-    const blink::WebInputEvent& event,
+    const WebInputEvent& event,
     ui::LatencyInfo* latency,
     ui::EventLatencyMetadata* event_latency_metadata) {
   latency_tracker_.OnInputEvent(event, latency, event_latency_metadata);
