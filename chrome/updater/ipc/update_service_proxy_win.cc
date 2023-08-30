@@ -237,6 +237,7 @@ class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
   // thread directly by the COM RPC runtime, and must be sequenced through
   // the task runner.
   IFACEMETHODIMP Run(LONG status_code) override {
+    CHECK_EQ(base::PlatformThread::CurrentRef(), com_thread_ref_);
     VLOG(2) << __func__;
     status_code_ = status_code;
     return S_OK;

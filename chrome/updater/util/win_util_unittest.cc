@@ -527,24 +527,4 @@ TEST(WinUtil, GetAppAPValue) {
   DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
 }
 
-TEST(WinUtil, IsSTA) {
-  base::test::TaskEnvironment task_environment;
-
-  // The unit test main has initialized this thread already as an MTA.
-  EXPECT_FALSE(IsSTA());
-
-  base::RunLoop run_loop;
-  base::ThreadPool::CreateCOMSTATaskRunner(
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
-      ->PostTaskAndReply(
-          FROM_HERE, base::BindOnce([] {
-            base::win::ScopedCOMInitializer com_sta;
-            EXPECT_TRUE(IsSTA());
-          }),
-          base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
 }  // namespace updater
