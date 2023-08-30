@@ -157,13 +157,19 @@ def __use_remoteexec(ctx):
 def __step_config(ctx, step_config):
     # New rules to convert commands calling rewrapper to use reproxy instead.
     new_rules = [
-        # mojo/mojom_bindings_generator will not always have rewrapper args.
-        # First add this rule for commands with rewrapper args. The native remote rule for non-rewrapper invocations is converted automatically below.
+        # Disabling remote should always come first.
         {
-            "name": "mojo/mojom_bindings_generator_rewrapper",
-            "action": "mojom_(.*_)?__generator",
-            "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --cfg=",
-            "handler": "rewrite_action_remote_py",
+            # TODO(b/281663988): missing headers.
+            "name": "b281663988/missing-headers",
+            "action_outs": [
+                "./obj/ui/qt/qt5_shim/qt_shim.o",
+                "./obj/ui/qt/qt6_shim/qt_shim.o",
+                "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
+                "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
+                "./obj/ui/qt/qt_interface/qt_interface.o",
+            ],
+            "remote": False,
+            "handler": "strip_rewrapper",
         },
         # Handle generic action_remote calls.
         {
@@ -211,6 +217,7 @@ def __step_config(ctx, step_config):
             }
             new_rules.append(new_rule)
             continue
+
         # clang-coverage/ is handled by the rewrite_rewrapper handler of clang/{cxx, cc} action rules above, so ignore these rules.
         if rule["name"].startswith("clang-coverage/"):
             continue

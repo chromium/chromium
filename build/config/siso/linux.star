@@ -31,24 +31,6 @@ __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
 __handlers.update(reproxy.handlers)
 
-def __disable_remote_b281663988(step_config):
-    step_config["rules"].insert(0, {
-        # TODO(b/281663988): missing headers.
-        "name": "b281663988/missing-headers",
-        "action_outs": [
-            "./obj/ui/qt/qt5_shim/qt_shim.o",
-            "./obj/ui/qt/qt6_shim/qt_shim.o",
-            "./obj/ui/qt/qt5_shim/qt5_shim_moc.o",
-            "./obj/ui/qt/qt6_shim/qt6_shim_moc.o",
-            "./obj/ui/qt/qt_interface/qt_interface.o",
-        ],
-        "remote": False,
-        # This rule is used only with use_remoteexec.
-        # TODO(b/292838933): Move this rule into reproxy.star?
-        "handler": "strip_rewrapper",
-    })
-    return step_config
-
 def __disable_remote_b289968566(ctx, step_config):
     rule = {
         # TODO(b/289968566): they often faile with exit=137 (OOM?).
@@ -111,7 +93,6 @@ def __step_config(ctx, step_config):
     step_config = clang.step_config(ctx, step_config)
 
     if reproxy.enabled(ctx):
-        step_config = __disable_remote_b281663988(step_config)
         step_config = reproxy.step_config(ctx, step_config)
 
     return step_config
