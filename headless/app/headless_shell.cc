@@ -171,7 +171,7 @@ void HeadlessShell::OnProcessCommandsDone(
         static_cast<int>(result));
     return;
   }
-  browser_->Shutdown();
+  Shutdown();
 }
 #endif
 
@@ -182,7 +182,7 @@ void HeadlessShell::ShutdownSoon() {
 }
 
 void HeadlessShell::Shutdown() {
-  browser_->Shutdown();
+  browser_.ExtractAsDangling()->Shutdown();
 }
 
 void HeadlessChildMain(content::ContentMainParams params) {
