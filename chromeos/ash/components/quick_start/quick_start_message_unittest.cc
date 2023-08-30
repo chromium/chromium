@@ -46,6 +46,25 @@ TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
   ASSERT_EQ(*result.value()->GetPayload()->FindString("key"), "value");
 }
 
+TEST_F(QuickStartMessageTest, ReadMessageFailsForUnexpectedMessageType) {
+  base::Value::Dict payload;
+  payload.Set("key", "value");
+
+  base::Value::Dict message;
+  message.Set("bootstrapConfigurations", payload.Clone());
+  std::string json_message;
+  ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
+  std::vector<uint8_t> data(json_message.begin(), json_message.end());
+
+  ReadResult result = ash::quick_start::QuickStartMessage::ReadMessage(
+      data, ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload);
+
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(
+      result.error(),
+      ash::quick_start::QuickStartMessage::ReadError::UNEXPECTED_MESSAGE_TYPE);
+}
+
 TEST_F(QuickStartMessageTest, ReadMessageFailsIfBase64WhenNotExpected) {
   base::Value::Dict payload;
   payload.Set("key", "value");
@@ -63,7 +82,8 @@ TEST_F(QuickStartMessageTest, ReadMessageFailsIfBase64WhenNotExpected) {
   ReadResult result = ash::quick_start::QuickStartMessage::ReadMessage(
       data, ash::quick_start::QuickStartMessageType::kBootstrapConfigurations);
 
-  ASSERT_EQ(result.error(), QuickStartMessage::ReadError::INVALID_JSON);
+  ASSERT_EQ(result.error(),
+            QuickStartMessage::ReadError::MISSING_MESSAGE_PAYLOAD);
 }
 
 TEST_F(QuickStartMessageTest, ReadMessageDecodesBase64Message) {

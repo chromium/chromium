@@ -14,19 +14,22 @@
 
 namespace {
 
+constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
+constexpr char kBootstrapConfigurationsPayloadKey[] = "bootstrapConfigurations";
+constexpr char kBootstrapOptionsPayloadKey[] = "bootstrapOptions";
+constexpr char kQuickStartPayloadKey[] = "quickStartPayload";
+
 std::string GetStringKeyForQuickStartMessageType(
     ash::quick_start::QuickStartMessageType message_type) {
   switch (message_type) {
     case ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload:
-      return "secondDeviceAuthPayload";
+      return kSecondDeviceAuthPayloadKey;
     case ash::quick_start::QuickStartMessageType::kBootstrapConfigurations:
-      return "bootstrapConfigurations";
+      return kBootstrapConfigurationsPayloadKey;
     case ash::quick_start::QuickStartMessageType::kBootstrapOptions:
-      return "bootstrapOptions";
-    case ash::quick_start::QuickStartMessageType::kFidoMessage:
-      return "fidoMessage";
+      return kBootstrapOptionsPayloadKey;
     case ash::quick_start::QuickStartMessageType::kQuickStartPayload:
-      return "quickStartPayload";
+      return kQuickStartPayloadKey;
   }
 }
 
@@ -36,7 +39,6 @@ bool IsMessagePayloadBase64Encoded(
     case ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload:
     case ash::quick_start::QuickStartMessageType::kBootstrapOptions:
     case ash::quick_start::QuickStartMessageType::kBootstrapConfigurations:
-    case ash::quick_start::QuickStartMessageType::kFidoMessage:
       return false;
     case ash::quick_start::QuickStartMessageType::kQuickStartPayload:
       return true;
@@ -57,8 +59,7 @@ void QuickStartMessage::DisableSandboxCheckForTesting() {
 
 // static
 base::expected<std::unique_ptr<QuickStartMessage>, QuickStartMessage::ReadError>
-QuickStartMessage::ReadMessage(std::vector<uint8_t> data,
-                               QuickStartMessageType message_type) {
+QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
   /*
     Since this code could handle untrusted data, it is important this
     runs only from a strongly sandboxed process (i.e. not the browser process).
@@ -82,31 +83,18 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data,
     return base::unexpected(QuickStartMessage::ReadError::INVALID_JSON);
   }
 
-  std::string payload_key = GetStringKeyForQuickStartMessageType(message_type);
-
   base::Value::Dict& message = data_value.value().GetDict();
   base::Value::Dict* payload;
+  std::string* encoded_json_payload;
 
-  if (!message.contains(payload_key)) {
-    LOG(ERROR) << "Message does not contain requested payload: " << payload_key;
-    return base::unexpected(
-        QuickStartMessage::ReadError::MISSING_MESSAGE_PAYLOAD);
-  }
-
-  if (IsMessagePayloadBase64Encoded(message_type)) {
-    std::string* base64_encoded_payload = message.FindString(payload_key);
-    if (base64_encoded_payload == nullptr) {
-      LOG(ERROR) << "Message payload is not a string";
-      return base::unexpected(
-          QuickStartMessage::ReadError::BASE64_DESERIALIZATION_FAILURE);
-    }
-
+  if ((encoded_json_payload = message.FindString(kQuickStartPayloadKey))) {
     std::string json_payload;
     bool base64_decoding_succeeded =
-        base::Base64Decode(*base64_encoded_payload, &json_payload,
+        base::Base64Decode(*encoded_json_payload, &json_payload,
                            base::Base64DecodePolicy::kForgiving);
     if (!base64_decoding_succeeded) {
-      LOG(ERROR) << "Message does not contain a valid base64 encoded payload";
+      LOG(ERROR) << "quickStartPayload does not contain a valid base64 encoded "
+                    "payload";
       return base::unexpected(
           QuickStartMessage::ReadError::BASE64_DESERIALIZATION_FAILURE);
     }
@@ -127,17 +115,40 @@ QuickStartMessage::ReadMessage(std::vector<uint8_t> data,
           QuickStartMessage::ReadError::BASE64_DESERIALIZATION_FAILURE);
     }
 
-    return std::make_unique<QuickStartMessage>(message_type, payload->Clone());
-
+    return std::make_unique<QuickStartMessage>(
+        ash::quick_start::QuickStartMessageType::kQuickStartPayload,
+        payload->Clone());
+  } else if ((payload = message.FindDict(kSecondDeviceAuthPayloadKey))) {
+    return std::make_unique<QuickStartMessage>(
+        ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload,
+        payload->Clone());
+  } else if ((payload = message.FindDict(kBootstrapConfigurationsPayloadKey))) {
+    return std::make_unique<QuickStartMessage>(
+        ash::quick_start::QuickStartMessageType::kBootstrapConfigurations,
+        payload->Clone());
+  } else if ((payload = message.FindDict(kBootstrapOptionsPayloadKey))) {
+    return std::make_unique<QuickStartMessage>(
+        ash::quick_start::QuickStartMessageType::kBootstrapOptions,
+        payload->Clone());
   } else {
-    payload = message.FindDict(payload_key);
-    if (payload == nullptr) {
-      LOG(ERROR) << "Message payload is not a dictionary";
-      return base::unexpected(QuickStartMessage::ReadError::INVALID_JSON);
-    }
-
-    return std::make_unique<QuickStartMessage>(message_type, payload->Clone());
+    LOG(ERROR) << "Message does not contain known payload.";
+    return base::unexpected(
+        QuickStartMessage::ReadError::MISSING_MESSAGE_PAYLOAD);
   }
+}
+
+// static
+base::expected<std::unique_ptr<QuickStartMessage>, QuickStartMessage::ReadError>
+QuickStartMessage::ReadMessage(std::vector<uint8_t> data,
+                               QuickStartMessageType message_type) {
+  auto result = ReadMessage(data);
+  if (result.has_value() && result.value()->get_type() != message_type) {
+    LOG(ERROR) << "Unexpected message type: received="
+               << result.value()->get_type() << ", expected=" << message_type;
+    return base::unexpected(
+        QuickStartMessage::ReadError::UNEXPECTED_MESSAGE_TYPE);
+  }
+  return result;
 }
 
 QuickStartMessage::QuickStartMessage(QuickStartMessageType message_type)

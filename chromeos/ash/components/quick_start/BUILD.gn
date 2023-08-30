@@ -12,6 +12,7 @@ static_library("quick_start") {
     "logging.h",
     "quick_start_message.cc",
     "quick_start_message.h",
+    "quick_start_message_type.cc",
     "quick_start_message_type.h",
     "quick_start_metrics.cc",
     "quick_start_metrics.h",

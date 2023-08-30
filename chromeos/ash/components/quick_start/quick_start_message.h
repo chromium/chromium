@@ -20,7 +20,8 @@ class QuickStartMessage {
   enum class ReadError {
     INVALID_JSON,
     MISSING_MESSAGE_PAYLOAD,
-    BASE64_DESERIALIZATION_FAILURE
+    BASE64_DESERIALIZATION_FAILURE,
+    UNEXPECTED_MESSAGE_TYPE,
   };
 
   using ReadResult =
@@ -34,11 +35,15 @@ class QuickStartMessage {
   ~QuickStartMessage();
 
   base::Value::Dict* GetPayload();
+  QuickStartMessageType get_type() { return message_type_; }
   std::unique_ptr<base::Value::Dict> GenerateEncodedMessage();
 
   // Read a message from raw data.
   // NOTE: This function must be called in a process isolated from the
   // browser process - it will fail otherwise.
+  static base::expected<std::unique_ptr<QuickStartMessage>,
+                        QuickStartMessage::ReadError>
+  ReadMessage(std::vector<uint8_t> data);
   static base::expected<std::unique_ptr<QuickStartMessage>,
                         QuickStartMessage::ReadError>
   ReadMessage(std::vector<uint8_t> data, QuickStartMessageType message_type);
