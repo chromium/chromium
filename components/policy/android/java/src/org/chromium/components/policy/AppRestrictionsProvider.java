@@ -9,11 +9,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserManager;
 
+import org.chromium.base.Log;
+
 /**
  * Concrete app restriction provider, that uses the default android mechanism to retrieve the
  * restrictions.
  */
 public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
+    private static final String TAG = "AppResProvider";
+
     /**
      * Get the app restriction information from provided user manager, and record some timing
      * metrics on its runtime.
@@ -25,9 +29,12 @@ public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
     public static Bundle getApplicationRestrictionsFromUserManager(
             UserManager userManager, String packageName) {
         try {
-            return userManager.getApplicationRestrictions(packageName);
+            Bundle bundle = userManager.getApplicationRestrictions(packageName);
+            Log.i(TAG, "#getApplicationRestrictionsFromUserManager() " + bundle);
+            return bundle;
         } catch (SecurityException e) {
             // Android bug may throw SecurityException. See crbug.com/886814.
+            Log.i(TAG, "#getApplicationRestrictionsFromUserManager() " + e.getMessage());
             return new Bundle();
         }
     }
