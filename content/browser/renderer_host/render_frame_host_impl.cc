@@ -7717,10 +7717,8 @@ void RenderFrameHostImpl::ShowContextMenu(
   // Freshly constructed ContextMenuParams have empty `page_url` and `frame_url`
   // - populate them based on trustworthy, browser-side data.
   validated_params.page_url = GetOutermostMainFrame()->GetLastCommittedURL();
-  if (GetParentOrOuterDocument()) {
-    // Only populate |frame_url| for subframes and fencedframes.
-    validated_params.frame_url = GetLastCommittedURL();
-  }
+  validated_params.frame_url = GetLastCommittedURL();
+  validated_params.is_subframe = !!GetParentOrOuterDocument();
 
   // We don't validate |unfiltered_link_url| so that this field can be used
   // when users want to copy the original link URL.

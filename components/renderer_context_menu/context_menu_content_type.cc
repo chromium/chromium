@@ -85,7 +85,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
 
     case ITEM_GROUP_FRAME: {
       bool page_group_supported = SupportsGroupInternal(ITEM_GROUP_PAGE);
-      return page_group_supported && !params_.frame_url.is_empty();
+      return page_group_supported && params_.is_subframe;
     }
 
     case ITEM_GROUP_LINK:
