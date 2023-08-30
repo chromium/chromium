@@ -20,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
-#include "chromeos/ash/services/recording/audio_capturer.h"
 #include "chromeos/ash/services/recording/audio_stream_mixer.h"
 #include "chromeos/ash/services/recording/gif_encoder.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"

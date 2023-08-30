@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/threading/sequence_bound.h"
@@ -17,13 +16,16 @@
 #include "media/mojo/mojom/audio_stream_factory.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+namespace capture_mode {
+class AudioCapturer;
+}  // namespace capture_mode
+
 namespace media {
 class AudioBus;
 }  // namespace media
 
 namespace recording {
 
-class AudioCapturer;
 class AudioStream;
 
 // Defines a type for the callback that the mixer uses to provide the mixed
@@ -128,7 +130,7 @@ class AudioStreamMixer {
 
   // A list of audio capturers and their corresponding audio streams.
   std::vector<std::unique_ptr<AudioStream>> streams_;
-  std::vector<std::unique_ptr<AudioCapturer>> audio_capturers_;
+  std::vector<std::unique_ptr<capture_mode::AudioCapturer>> audio_capturers_;
 
   base::WeakPtrFactory<AudioStreamMixer> weak_ptr_factory_{this};
 };

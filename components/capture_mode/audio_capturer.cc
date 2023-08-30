@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/recording/audio_capturer.h"
+#include "components/capture_mode/audio_capturer.h"
 
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
@@ -10,7 +10,7 @@
 #include "media/base/audio_bus.h"
 #include "services/audio/public/cpp/device_factory.h"
 
-namespace recording {
+namespace capture_mode {
 
 namespace {
 
@@ -108,4 +108,4 @@ void AudioCapturer::OnAudioBusDone(
   audio_bus_pool_.InsertAudioBus(std::move(backing_audio_bus));
 }
 
-}  // namespace recording
+}  // namespace capture_mode

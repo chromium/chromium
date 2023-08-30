@@ -5,6 +5,7 @@ noparent = True
 include_rules = [
   "+ash/constants",
   "+base",
+  "+components/capture_mode",
   "+components/viz/common",
   "+media",
   "+mojo/public",

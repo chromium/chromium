@@ -9,6 +9,7 @@ include_rules = [
   "+gpu/ipc/common/gpu_memory_buffer_support.h",
   "+media",
   "+mojo/public",
+  "+services/audio/public/cpp/device_factory.h",
   "+services/video_capture/public",
   "+ui/compositor/compositor.h",
   "+ui/gfx",

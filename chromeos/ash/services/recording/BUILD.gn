@@ -10,8 +10,6 @@ source_set("recording") {
   sources = [
     "audio_capture_util.cc",
     "audio_capture_util.h",
-    "audio_capturer.cc",
-    "audio_capturer.h",
     "audio_stream.cc",
     "audio_stream.h",
     "audio_stream_mixer.cc",
@@ -42,6 +40,7 @@ source_set("recording") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/services/recording/public/mojom",
+    "//components/capture_mode",
     "//media",
     "//services/audio/public/cpp",
   ]

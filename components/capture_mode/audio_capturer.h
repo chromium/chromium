@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_CAPTURER_H_
-#define CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_CAPTURER_H_
+#ifndef COMPONENTS_CAPTURE_MODE_AUDIO_CAPTURER_H_
+#define COMPONENTS_CAPTURE_MODE_AUDIO_CAPTURER_H_
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "components/capture_mode/capture_mode_export.h"
 #include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
@@ -19,7 +19,7 @@
 #include "media/mojo/mojom/audio_stream_factory.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace recording {
+namespace capture_mode {
 
 // Defines the type of the callback that will be triggered repeatedly by the
 // audio input device to deliver a stream of buffers containing the captured
@@ -37,7 +37,8 @@ using OnAudioCapturedCallback =
 // underlying `AudioInputDevice` can communicate with audio service via IPC. The
 // provided `audio_params` will be used to initialize the underlying audio
 // capturer. `callback` will be invoked according to the rules specified above.
-class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
+class CAPTURE_MODE_EXPORT AudioCapturer
+    : public media::AudioCapturerSource::CaptureCallback {
  public:
   AudioCapturer(base::StringPiece device_id,
                 mojo::PendingRemote<media::mojom::AudioStreamFactory>
@@ -89,6 +90,6 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   base::WeakPtrFactory<AudioCapturer> weak_ptr_factory_{this};
 };
 
-}  // namespace recording
+}  // namespace capture_mode
 
-#endif  // CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_CAPTURER_H_
+#endif  // COMPONENTS_CAPTURE_MODE_AUDIO_CAPTURER_H_

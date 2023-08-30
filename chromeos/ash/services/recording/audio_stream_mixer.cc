@@ -10,9 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
-#include "chromeos/ash/services/recording/audio_capturer.h"
 #include "chromeos/ash/services/recording/audio_stream.h"
-#include "chromeos/ash/services/recording/recording_service_constants.h"
+#include "components/capture_mode/audio_capturer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 
@@ -71,9 +70,7 @@ void AudioStreamMixer::AddAudioCapturer(
 
   streams_.emplace_back(std::make_unique<AudioStream>(device_id));
 
-  // TODO(b/286325436): Refactor this to make sure audio mixing is not done on
-  // the main thread of the recording service.
-  audio_capturers_.emplace_back(std::make_unique<AudioCapturer>(
+  audio_capturers_.emplace_back(std::make_unique<capture_mode::AudioCapturer>(
       device_id, std::move(audio_stream_factory), audio_params,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &AudioStreamMixer::OnAudioCaptured, weak_ptr_factory_.GetWeakPtr(),
