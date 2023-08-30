@@ -1,0 +1,3 @@
+Tests that the shadow root itself has no computed style and there is no DCHECK failure
+Node is not an element and does not have a parent element
+

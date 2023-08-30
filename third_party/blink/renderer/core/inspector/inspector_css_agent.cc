@@ -1519,7 +1519,7 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
         "Node does not have an owner document");
   }
   Element* element = DynamicTo<Element>(node);
-  if (!element) {
+  if (!element && !node->IsDocumentFragment()) {
     element = FlatTreeTraversal::ParentElement(*node);
   }
   if (!element) {
