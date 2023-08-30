@@ -10,6 +10,7 @@ load("@builtin//struct.star", "module")
 load("./blink_all.star", "blink_all")
 load("./linux.star", chromium_linux = "chromium")
 load("./mac.star", chromium_mac = "chromium")
+load("./reproxy.star", "reproxy")
 load("./simple.star", "simple")
 load("./windows.star", chromium_windows = "chromium")
 
@@ -25,13 +26,27 @@ def init(ctx):
         "windows": chromium_windows,
     }[runtime.os]
     step_config = {
-        "platforms": {},
+        "platforms": {
+            # Large workers are usually used for Python actions like generate bindings, mojo generators etc
+            # They can run on Linux workers.
+            "large": {
+                "OSFamily": "Linux",
+                "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
+                # As of Jul 2023, the action_large pool uses n2-highmem-8 with 200GB of pd-ssd.
+                # The pool is intended for the following actions.
+                #  - slow actions that can benefit from multi-cores and/or faster disk I/O. e.g. link, mojo, generate bindings etc.
+                #  - actions that fail for OOM.
+                "label:action_large": "1",
+            },
+        },
         "input_deps": {},
         "rules": [],
     }
     step_config = host.step_config(ctx, step_config)
     step_config = simple.step_config(ctx, step_config)
     step_config = blink_all.step_config(ctx, step_config)
+    if reproxy.enabled(ctx):
+        step_config = reproxy.step_config(ctx, step_config)
 
     #  Python actions may use an absolute path at the first argument.
     #  e.g. C:/src/depot_tools/bootstrap-2@3_8_10_chromium_26_bin/python3/bin/python3.exe
@@ -54,6 +69,7 @@ def init(ctx):
     handlers.update(blink_all.handlers)
     handlers.update(host.handlers)
     handlers.update(simple.handlers)
+    handlers.update(reproxy.handlers)
 
     return module(
         "config",
