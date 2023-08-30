@@ -325,32 +325,6 @@ const std::vector<SearchConcept>& GetPerDeviceTouchpadSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>&
-GetTouchpadScrollAccelerationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_TOUCHPAD_SCROLL_ACCELERATION,
-       mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kTouchpadScrollAcceleration}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>&
-GetPerDeviceTouchpadScrollAccelerationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_TOUCHPAD_SCROLL_ACCELERATION,
-       mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kTouchpadScrollAcceleration}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetTouchpadHapticSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
@@ -790,10 +764,6 @@ const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
 
 bool AreScrollSettingsAllowed() {
   return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
-}
-
-bool AreTouchpadScrollSettingsAllowed() {
-  return base::FeatureList::IsEnabled(features::kAllowTouchpadScrollSettings);
 }
 
 bool IsUnifiedDesktopAvailable() {
@@ -1550,27 +1520,17 @@ void DeviceSection::TouchpadExists(bool exists) {
 
   if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
     updater.RemoveSearchTags(GetTouchpadSearchConcepts());
-    updater.RemoveSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
 
     if (exists) {
       updater.AddSearchTags(GetTouchpadSearchConcepts());
-      if (base::FeatureList::IsEnabled(features::kAllowScrollSettings)) {
-        updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
-      }
     }
     return;
   }
 
   updater.RemoveSearchTags(GetPerDeviceTouchpadSearchConcepts());
-  updater.RemoveSearchTags(
-      GetPerDeviceTouchpadScrollAccelerationSearchConcepts());
 
   if (exists) {
     updater.AddSearchTags(GetPerDeviceTouchpadSearchConcepts());
-    if (base::FeatureList::IsEnabled((features::kAllowScrollSettings))) {
-      updater.AddSearchTags(
-          GetPerDeviceTouchpadScrollAccelerationSearchConcepts());
-    }
   }
 }
 
@@ -1901,8 +1861,6 @@ void DeviceSection::AddDevicePointersStrings(
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
   html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
-  html_source->AddBoolean("allowTouchpadScrollSettings",
-                          AreTouchpadScrollSettingsAllowed());
 }
 
 void DeviceSection::AddDeviceGraphicsTabletStrings(
