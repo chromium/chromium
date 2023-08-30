@@ -35,9 +35,11 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -295,9 +297,14 @@ Combobox::Combobox(ui::ComboboxModel* model)
   OnComboboxModelChanged(model_);
 
   // Set up layout.
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      /*orientation=*/views::BoxLayout::Orientation::kHorizontal,
-      /*inside_border_insets=*/kComboboxBorderInsets));
+  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetInteriorMargin(kComboboxBorderInsets);
+  // Allow `title_` to shrink and elide, so that `drop_down_arrow_` on the
+  // right always remains visible.
+  title_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   // Stylize the title.
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
