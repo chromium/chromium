@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
@@ -22,7 +23,9 @@ constexpr size_t kMaxNumResults = 3;
 }  // namespace
 
 LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
-    : profile_(profile), thumbnail_loader_(profile) {
+    : SearchProvider(ControlCategory::kImages),
+      profile_(profile),
+      thumbnail_loader_(profile) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

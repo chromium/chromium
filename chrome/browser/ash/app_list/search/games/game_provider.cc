@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/games/game_result.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -129,7 +130,8 @@ std::vector<std::pair<const apps::Result*, double>> SearchGames(
 
 GameProvider::GameProvider(Profile* profile,
                            AppListControllerDelegate* list_controller)
-    : profile_(profile),
+    : SearchProvider(ControlCategory::kGames),
+      profile_(profile),
       list_controller_(list_controller),
       app_discovery_service_(
           apps::AppDiscoveryServiceFactory::GetForProfile(profile)) {

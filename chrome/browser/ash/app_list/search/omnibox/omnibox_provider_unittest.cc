@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -20,6 +22,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -145,6 +148,14 @@ class OmniboxProviderTest : public testing::Test {
   void StartSearch(const std::u16string& query) {
     provider_->Start(query);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void DisableWebSearch() {
+    ScopedDictPrefUpdate pref_update(
+        profile_->GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
+
+    pref_update->Set(ash::GetAppListControlCategoryName(ControlCategory::kWeb),
+                     false);
   }
 
  protected:
@@ -288,6 +299,33 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
             search_controller_->last_results()[0]->id());
   EXPECT_EQ("opentab://https://docs.google.com/doc2",
             search_controller_->last_results()[1]->id());
+}
+
+// Test that all non-answer results are filtered if web search is disabled in
+// search control.
+TEST_F(OmniboxProviderTest, WebSearchControl) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kLauncherSearchControl);
+  DisableWebSearch();
+
+  StartSearch(u"query");
+
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
+  to_produce.emplace_back(
+      NewAnswerResult("https://example.com/answer",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  // Only answer result is returned.
+  ASSERT_EQ(1u, search_controller_->last_results().size());
+  EXPECT_EQ("omnibox_answer://https://example.com/answer",
+            search_controller_->last_results()[0]->id());
 }
 
 }  // namespace app_list::test

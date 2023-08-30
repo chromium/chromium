@@ -62711,6 +62711,7 @@ from previous Chrome versions.
   <int value="-913925109" label="FilesExtractArchive:disabled"/>
   <int value="-913571703" label="TabAndLinkDragDropAndroid:enabled"/>
   <int value="-913294939" label="DriveFS:enabled"/>
+  <int value="-912946915" label="LauncherSearchControl:disabled"/>
   <int value="-912585719" label="AppManagementIntentSettings:disabled"/>
   <int value="-912456561" label="MidiManagerWinrt:enabled"/>
   <int value="-910452816" label="ChromeOSParentalControlsSettings:disabled"/>
@@ -66449,6 +66450,7 @@ from previous Chrome versions.
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
   <int value="982805190" label="PageInfoAboutThisSiteMoreLangs:enabled"/>
   <int value="982932009" label="WebContentsCaptureHiDPI:disabled"/>
+  <int value="982983280" label="LauncherSearchControl:enabled"/>
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
   <int value="985127848"

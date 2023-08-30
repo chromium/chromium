@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
@@ -55,7 +56,7 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
 }  // namespace
 
 KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
-    : profile_(profile) {
+    : SearchProvider(ControlCategory::kHelp), profile_(profile) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -5375,8 +5375,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "launcher-search-control",
+    "owners": ["chenjih", "dgrebenyuk"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "launcher-system-info-answer-cards",
-    "owners": ["laurencom", "wrong", "amandadeacon"],
+    "owners": ["laurencom", "amandadeacon"],
     "expiry_milestone": 120
   },
   {

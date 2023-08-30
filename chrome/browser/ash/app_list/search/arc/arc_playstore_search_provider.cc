@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_playstore_search_result.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -79,7 +80,8 @@ ArcPlayStoreSearchProvider::ArcPlayStoreSearchProvider(
     int max_results,
     Profile* profile,
     AppListControllerDelegate* list_controller)
-    : max_results_(max_results),
+    : SearchProvider(ControlCategory::kPlayStore),
+      max_results_(max_results),
       profile_(profile),
       list_controller_(list_controller) {
   DCHECK_EQ(kHistogramBuckets, max_results + 1);

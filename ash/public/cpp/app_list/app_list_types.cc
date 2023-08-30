@@ -3,11 +3,26 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
 
 namespace ash {
+
+namespace {
+
+// Search control dictionary pref keys.
+const char kLauncherAppSearchEnabled[] = "app_search_enabled";
+const char kLauncherAppShortcutSearchEnabled[] = "app_shortcut_search_enabled";
+const char kLauncherWebSearchEnabled[] = "web_search_enabled";
+const char kLauncherFileSearchEnabled[] = "file_search_enabled";
+const char kLauncherHelpSearchEnabled[] = "help_search_enabled";
+const char kLauncherPlayStoreSearchEnabled[] = "play_store_search_enabled";
+const char kLauncherGameSearchEnabled[] = "game_search_enabled";
+const char kLauncherImageSearchEnabled[] = "image_search_enabled";
+
+}  // namespace
 
 const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
 
@@ -83,6 +98,31 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kImageSearch:
     case AppListSearchResultType::kSystemInfo:
       return false;
+  }
+}
+
+std::string GetAppListControlCategoryName(
+    AppListSearchControlCategory control_category) {
+  switch (control_category) {
+    // Non-toggleable category does not have a pref name is always enabled.
+    case AppListSearchControlCategory::kCannotToggle:
+      return std::string();
+    case AppListSearchControlCategory::kApps:
+      return kLauncherAppSearchEnabled;
+    case AppListSearchControlCategory::kAppShortcuts:
+      return kLauncherAppShortcutSearchEnabled;
+    case AppListSearchControlCategory::kWeb:
+      return kLauncherWebSearchEnabled;
+    case AppListSearchControlCategory::kFiles:
+      return kLauncherFileSearchEnabled;
+    case ash::AppListSearchControlCategory::kHelp:
+      return kLauncherHelpSearchEnabled;
+    case ash::AppListSearchControlCategory::kPlayStore:
+      return kLauncherPlayStoreSearchEnabled;
+    case ash::AppListSearchControlCategory::kGames:
+      return kLauncherGameSearchEnabled;
+    case ash::AppListSearchControlCategory::kImages:
+      return kLauncherImageSearchEnabled;
   }
 }
 

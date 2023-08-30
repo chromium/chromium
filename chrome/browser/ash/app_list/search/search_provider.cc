@@ -11,7 +11,8 @@
 
 namespace app_list {
 
-SearchProvider::SearchProvider() {}
+SearchProvider::SearchProvider(ControlCategory control_category)
+    : control_category_(control_category) {}
 SearchProvider::~SearchProvider() {}
 
 void SearchProvider::SwapResults(Results* new_results) {

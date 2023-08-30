@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 
 class ChromeSearchResult;
 
@@ -28,7 +29,12 @@ class SearchProvider {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 
-  SearchProvider();
+  // Each provider should assign its control category during construction to
+  // indicate whether or not they need a control to disable themselves. The
+  // default value `kCannotToggle` means it is non-toggleable and should always
+  // provide results for search.
+  explicit SearchProvider(
+      ControlCategory control_category = ControlCategory::kCannotToggle);
 
   SearchProvider(const SearchProvider&) = delete;
   SearchProvider& operator=(const SearchProvider&) = delete;
@@ -62,14 +68,26 @@ class SearchProvider {
     search_controller_ = controller;
   }
 
+  // Returns the launcher search control category of this provider.
+  ControlCategory control_category() const { return control_category_; }
+
  protected:
   // Swaps the internal results with |new_results|.
   // This is useful when multiple results will be added, and the notification is
   // desired to be done only once when all results are added.
   void SwapResults(Results* new_results);
 
+  // The control category setters should be called in derived class constructor
+  // only.
+  void set_control_category(ControlCategory control_category) {
+    control_category_ = control_category;
+  }
+
  private:
   raw_ptr<SearchController, ExperimentalAsh> search_controller_ = nullptr;
+  // The launcher search control category of the provider. Each provider is
+  // enabled by default.
+  ControlCategory control_category_ = ControlCategory::kCannotToggle;
 };
 
 }  // namespace app_list

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -94,7 +95,8 @@ DriveSearchProvider::FileInfo::FileInfo(
 DriveSearchProvider::FileInfo::~FileInfo() = default;
 
 DriveSearchProvider::DriveSearchProvider(Profile* profile)
-    : profile_(profile),
+    : SearchProvider(ControlCategory::kFiles),
+      profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {
   DCHECK(profile_);

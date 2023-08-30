@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
@@ -23,6 +25,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -209,6 +212,14 @@ class OmniboxLacrosProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void DisableWebSearch() {
+    ScopedDictPrefUpdate pref_update(
+        profile_->GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
+
+    pref_update->Set(ash::GetAppListControlCategoryName(ControlCategory::kWeb),
+                     false);
+  }
+
  protected:
   std::unique_ptr<TestSearchResultProducer> search_producer_;
   std::unique_ptr<TestSearchController> search_controller_;
@@ -334,6 +345,30 @@ TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
             search_controller_->last_results()[0]->id());
   EXPECT_EQ("opentab://https://docs.google.com/doc2",
             search_controller_->last_results()[1]->id());
+}
+
+// Test that all non-answer results are filtered if web search is disabled in
+// search control.
+TEST_F(OmniboxLacrosProviderTest, WebSearchControl) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kLauncherSearchControl);
+  DisableWebSearch();
+
+  StartSearch(u"query");
+  EXPECT_EQ(u"query", search_producer_->last_query());
+
+  std::vector<cam::SearchResultPtr> to_produce;
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
+  to_produce.emplace_back(NewAnswerResult(
+      "https://example.com/answer", cam::SearchResult::AnswerType::kWeather));
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
+  ProduceResults(std::move(to_produce));
+
+  // Results always appear after answer and open tab entries.
+  ASSERT_EQ(1u, search_controller_->last_results().size());
+  EXPECT_EQ("omnibox_answer://https://example.com/answer",
+            search_controller_->last_results()[0]->id());
 }
 
 // A secondary test fixture which does not have any search producer connected to

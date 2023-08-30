@@ -487,6 +487,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeShortInterval);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeSessionReset);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLauncherSearchControl);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLicensePackagedOobeFlow);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLinkCrossDeviceDogfoodFeedback);
@@ -983,6 +984,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksInOobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeSessionResetEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherSearchControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLicensePackagedOobeFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceDogfoodFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreLocalPasswordsEnabledForConsumers();

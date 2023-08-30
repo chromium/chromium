@@ -4032,6 +4032,9 @@ extern const char kLauncherFuzzyMatchAcrossProvidersDescription[];
 extern const char kLauncherFuzzyMatchForOmniboxName[];
 extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 
+extern const char kLauncherSearchControlName[];
+extern const char kLauncherSearchControlDescription[];
+
 extern const char kLauncherSystemInfoAnswerCardsName[];
 extern const char kLauncherSystemInfoAnswerCardsDescription[];
 

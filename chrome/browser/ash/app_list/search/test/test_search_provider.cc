@@ -59,4 +59,9 @@ void TestSearchProvider::SetResults() {
   SwapResults(&results_);
 }
 
+void TestSearchProvider::SetControlCategoryForTest(
+    ControlCategory control_category) {
+  set_control_category(control_category);
+}
+
 }  // namespace app_list

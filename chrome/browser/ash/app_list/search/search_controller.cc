@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -130,6 +131,13 @@ void SearchController::StartSearch(const std::u16string& query) {
 
   // Search all providers.
   for (const auto& provider : providers_) {
+    // Does not start the search of a provider if its control category is
+    // disabled.
+    if (ash::features::IsLauncherSearchControlEnabled() &&
+        !IsControlCategoryEnabled(profile_, provider->control_category())) {
+      continue;
+    }
+
     provider->Start(truncated_query);
   }
 }

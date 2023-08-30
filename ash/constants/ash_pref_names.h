@@ -277,6 +277,11 @@ inline constexpr char kLauncherLastContinueRequestTime[] =
 inline constexpr char kLauncherResultEverLaunched[] =
     "launcher.result_ever_launched";
 
+// A dictionary pref that determines if each user-facing category result should
+// show in launcher.
+inline constexpr char kLauncherSearchCategoryControlStatus[] =
+    "launcher.search_category_control_status";
+
 // Dictionary pref to store data on the distribution of provider relevance
 // scores for the launcher normalizer.
 inline constexpr char kLauncherSearchNormalizerParameters[] =

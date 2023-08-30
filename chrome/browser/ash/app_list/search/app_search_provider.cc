@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
 
@@ -37,7 +38,7 @@ bool IsNonLatinLocale(base::StringPiece locale) {
 }  // namespace
 
 AppSearchProvider::AppSearchProvider(AppSearchDataSource* data_source)
-    : data_source_(data_source) {
+    : SearchProvider(ControlCategory::kApps), data_source_(data_source) {
   app_updates_subscription_ =
       data_source_->SubscribeToAppUpdates(base::BindRepeating(
           &AppSearchProvider::UpdateResults, base::Unretained(this)));

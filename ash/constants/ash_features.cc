@@ -1619,6 +1619,11 @@ BASE_FEATURE(kLauncherNudgeSessionReset,
              "LauncherNudgeSessionReset",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the launcher will only provide results based on the user control.
+BASE_FEATURE(kLauncherSearchControl,
+             "LauncherSearchControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables new flow for license packaged devices with enterprise license.
 BASE_FEATURE(kLicensePackagedOobeFlow,
              "LicensePackagedOobeFlow",
@@ -3496,6 +3501,10 @@ bool IsLauncherNudgeShortIntervalEnabled() {
 
 bool IsLauncherNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kLauncherNudgeSessionReset);
+}
+
+bool IsLauncherSearchControlEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherSearchControl);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {

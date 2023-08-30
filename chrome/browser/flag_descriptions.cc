@@ -7025,6 +7025,11 @@ const char kLauncherFuzzyMatchForOmniboxDescription[] =
     "To evaluate the viability of a Fuzzy match on Omnibox results to "
     "downweight search sugestions";
 
+const char kLauncherSearchControlName[] = "Enable launcher search control";
+const char kLauncherSearchControlDescription[] =
+    "Enable search control in launcher so that users can custmize the result "
+    "results provided.";
+
 const char kLauncherSystemInfoAnswerCardsName[] =
     "System Info Answer Cards in launcher";
 const char kLauncherSystemInfoAnswerCardsDescription[] =

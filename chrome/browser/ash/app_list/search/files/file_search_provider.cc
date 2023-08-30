@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
@@ -133,7 +134,8 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
 }  // namespace
 
 FileSearchProvider::FileSearchProvider(Profile* profile)
-    : profile_(profile),
+    : SearchProvider(ControlCategory::kFiles),
+      profile_(profile),
       thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)) {
   DCHECK(profile_);
