@@ -99,7 +99,7 @@ public class WebappActionsNotificationTest {
                 mActivityTestRule.getActivity().getString(R.string.webapp_tap_to_copy_url),
                 notification.extras.getString(Notification.EXTRA_TEXT));
         Assert.assertEquals("Share", notification.actions[0].title);
-        Assert.assertEquals("Open in Chrome", notification.actions[1].title);
+        Assert.assertEquals("Open in Chrome browser", notification.actions[1].title);
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addDataScheme("http");
