@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Process;
 import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
@@ -36,11 +37,29 @@ public class BuildInfo {
     private static ApplicationInfo sBrowserApplicationInfo;
     private static boolean sInitialized;
 
-    /** The application name (e.g. "Chrome"). For WebView, this is name of the embedding app. */
+    /**
+     * The package name of the host app which has loaded WebView, retrieved from the application
+     * context. In the context of the SDK Runtime, the package name of the app that owns this
+     * particular instance of the SDK Runtime will also be included.
+     * e.g. com.google.android.sdksandbox:com:com.example.myappwithads
+     */
+    public final String hostPackageName;
+    /**
+     * The application name (e.g. "Chrome"). For WebView, this is name of the embedding app.
+     * In the context of the SDK Runtime, this is the name of the app that owns this particular
+     * instance of the SDK Runtime.
+     */
     public final String hostPackageLabel;
-    /** By default: same as versionCode. For WebView: versionCode of the embedding app. */
+    /**
+     * By default: same as versionCode. For WebView: versionCode of the embedding app.
+     * In the context of the SDK Runtime, this is the versionCode of the app that owns this
+     * particular instance of the SDK Runtime.
+     */
     public final long hostVersionCode;
-    /** The packageName of Chrome/WebView. Use application context for host app packageName. */
+    /**
+     * The packageName of Chrome/WebView. Use application context for host app packageName.
+     * Same as the host information within any child process.
+     */
     public final String packageName;
     /** The versionCode of the apk. */
     public final long versionCode;
@@ -79,7 +98,6 @@ public class BuildInfo {
     /** Returns a serialized string array of all properties of this class. */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private String[] getAllProperties() {
-        String hostPackageName = ContextUtils.getApplicationContext().getPackageName();
         // This implementation needs to be kept in sync with the native BuildInfo constructor.
         return new String[] {
                 Build.BRAND,
@@ -160,25 +178,102 @@ public class BuildInfo {
     private BuildInfo() {
         sInitialized = true;
         Context appContext = ContextUtils.getApplicationContext();
-        String hostPackageName = appContext.getPackageName();
+        String appContextPackageName = appContext.getPackageName();
         PackageManager pm = appContext.getPackageManager();
-        PackageInfo pi = PackageUtils.getPackageInfo(hostPackageName, 0);
-        hostVersionCode = packageVersionCode(pi);
-        if (sBrowserPackageInfo != null) {
-            packageName = sBrowserPackageInfo.packageName;
-            versionCode = packageVersionCode(sBrowserPackageInfo);
-            versionName = nullToEmpty(sBrowserPackageInfo.versionName);
-            sBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
-            sBrowserPackageInfo = null;
-        } else {
-            packageName = hostPackageName;
-            versionCode = hostVersionCode;
-            versionName = nullToEmpty(pi.versionName);
-            sBrowserApplicationInfo = appContext.getApplicationInfo();
+
+        String providedHostPackageName = null;
+        String providedHostPackageLabel = null;
+        String providedPackageName = null;
+        String providedPackageVersionName = null;
+        Long providedHostVersionCode = null;
+        Long providedPackageVersionCode = null;
+
+        // The child processes are running in an isolated process so they can't grab a lot of
+        // package information in the same way that we normally would retrieve them. To get around
+        // this, we feed the information as command line switches.
+        if (CommandLine.isInitialized()) {
+            CommandLine commandLine = CommandLine.getInstance();
+            providedHostPackageName = commandLine.getSwitchValue(BaseSwitches.HOST_PACKAGE_NAME);
+            providedHostPackageLabel = commandLine.getSwitchValue(BaseSwitches.HOST_PACKAGE_LABEL);
+            providedPackageName = commandLine.getSwitchValue(BaseSwitches.PACKAGE_NAME);
+            providedPackageVersionName =
+                    commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_NAME);
+
+            if (commandLine.hasSwitch(BaseSwitches.HOST_VERSION_CODE)) {
+                providedHostVersionCode =
+                        Long.parseLong(commandLine.getSwitchValue(BaseSwitches.HOST_VERSION_CODE));
+            }
+
+            if (commandLine.hasSwitch(BaseSwitches.PACKAGE_VERSION_CODE)) {
+                providedPackageVersionCode = Long.parseLong(
+                        commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_CODE));
+            }
         }
 
-        hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
-        installerPackageName = nullToEmpty(pm.getInstallerPackageName(packageName));
+        boolean hostInformationProvided = providedHostPackageName != null
+                && providedHostPackageLabel != null && providedHostVersionCode != null
+                && providedPackageName != null && providedPackageVersionName != null
+                && providedPackageVersionCode != null;
+
+        // We want to retrieve the original package installed to verify to host package name.
+        // In the case of the SDK Runtime, we would like to retrieve the package name loading the
+        // SDK.
+        String appInstalledPackageName = appContextPackageName;
+
+        if (hostInformationProvided) {
+            hostPackageName = providedHostPackageName;
+            hostPackageLabel = providedHostPackageLabel;
+            hostVersionCode = providedHostVersionCode;
+            versionName = providedPackageVersionName;
+            packageName = providedPackageName;
+            versionCode = providedPackageVersionCode;
+
+            sBrowserApplicationInfo = appContext.getApplicationInfo();
+        } else {
+            // The SDK Qualified package name will retrieve the same information as
+            // appInstalledPackageName but prefix it with the SDK Sandbox process so that we can
+            // tell SDK Runtime data apart from regular data in our logs and metrics.
+            String sdkQualifiedName = appInstalledPackageName;
+
+            // TODO(bewise): There isn't currently an official API to grab the host package name
+            // with the SDK Runtime. We can work around this because SDKs loaded in the SDK
+            // Runtime have the host UID + 10000. This should be updated if a public API comes
+            // along that we can use.
+            // You can see more about this in the Android source:
+            // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/os/Process.java;l=292;drc=47fffdd53115a9af1820e3f89d8108745be4b55d
+            if (ContextUtils.isSdkSandboxProcess()) {
+                final int hostId = Process.myUid() - 10000;
+                final String[] packageNames = pm.getPackagesForUid(hostId);
+
+                if (packageNames.length > 0) {
+                    // We could end up with more than one package name if the app used a
+                    // sharedUserId but these are deprecated so this is a safe bet to rely on the
+                    // first package name.
+                    appInstalledPackageName = packageNames[0];
+                    sdkQualifiedName += ":" + appInstalledPackageName;
+                }
+            }
+
+            PackageInfo pi = PackageUtils.getPackageInfo(appInstalledPackageName, 0);
+            hostPackageName = sdkQualifiedName;
+            hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
+            hostVersionCode = packageVersionCode(pi);
+
+            if (sBrowserPackageInfo != null) {
+                packageName = sBrowserPackageInfo.packageName;
+                versionCode = packageVersionCode(sBrowserPackageInfo);
+                versionName = nullToEmpty(sBrowserPackageInfo.versionName);
+                sBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
+                sBrowserPackageInfo = null;
+            } else {
+                packageName = appContextPackageName;
+                versionCode = hostVersionCode;
+                versionName = nullToEmpty(pi.versionName);
+                sBrowserApplicationInfo = appContext.getApplicationInfo();
+            }
+        }
+
+        installerPackageName = nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
 
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
         gmsVersionCode = gmsPackageInfo != null ? String.valueOf(packageVersionCode(gmsPackageInfo))

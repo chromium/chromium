@@ -54,6 +54,12 @@ extern const char kReachedCodeSamplingIntervalUs[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
 extern const char kForceFieldTrialParams[];
+extern const char kHostPackageName[];
+extern const char kHostPackageLabel[];
+extern const char kHostVersionCode[];
+extern const char kPackageName[];
+extern const char kPackageVersionName[];
+extern const char kPackageVersionCode[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
