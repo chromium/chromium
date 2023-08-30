@@ -8,8 +8,10 @@ source_set("tab_resumption") {
     "tab_resumption_item.mm",
     "tab_resumption_view.h",
     "tab_resumption_view.mm",
+    "tab_resumption_view_delegate.h",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/sessions:session_id",
     "//components/url_formatter",
@@ -48,6 +50,14 @@ source_set("helper") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "tab_resumption_constants.h",
+    "tab_resumption_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "tab_resumption_helper_unittest.mm" ]
@@ -79,6 +89,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "tab_resumption_egtest.mm" ]
   deps = [
+    ":constants",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",

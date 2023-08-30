@@ -7,11 +7,13 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -122,6 +124,16 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   // Check that the tile is displayed when there is a distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
+
+  // Tap on the tab resumption item.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabResumptionViewIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the location bar shows the distant tab URL in a short form.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            self.testServer->base_url().host())];
 }
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
@@ -137,6 +149,18 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   // Check that the tile is displayed when there is a local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
+
+  // Tap on the tab resumption item.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabResumptionViewIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the location bar shows the local tab URL in a short form.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            destinationUrl.host())];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 }
 
 @end

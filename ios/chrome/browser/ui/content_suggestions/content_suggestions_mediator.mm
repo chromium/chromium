@@ -561,6 +561,26 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   web_state_list->ActivateWebStateAt(index);
 }
 
+- (void)openTabResumptionItem {
+  switch (_tabResumptionItem.itemType) {
+    case TabResumptionItemType::kLastSyncedTab:
+      // TODO(crbug.com/1464185): Add metrics.
+      break;
+    case TabResumptionItemType::kMostRecentTab: {
+      [self.NTPMetricsDelegate recentTabTileOpened];
+      [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
+      break;
+    }
+  }
+  // TODO(crbug.com/1464185): Hide the tile.
+
+  web::NavigationManager::WebLoadParams webLoadParams =
+      web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
+  UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
+  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+}
+
 #pragma mark - ContentSuggestionsGestureCommands
 
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item

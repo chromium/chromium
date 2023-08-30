@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -90,6 +91,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     ContentSuggestionsSelectionActions,
     MagicStackModuleContainerDelegate,
     SetUpListItemViewTapDelegate,
+    TabResumptionViewDelegate,
     URLDropDelegate,
     UIScrollViewDelegate,
     UIScrollViewAccessibilityDelegate>
@@ -726,6 +728,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
                                           kTabResumption];
   _tabResumptionView = [[TabResumptionView alloc] initWithItem:item];
+  _tabResumptionView.delegate = self;
   [_tabResumptionModuleContainer removeFromSuperview];
   _tabResumptionModuleContainer = [[MagicStackModuleContainer alloc]
       initWithContentView:_tabResumptionView
@@ -744,6 +747,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {
   [self.audience didSelectSetUpListItem:view.type];
+}
+
+#pragma mark - TabResumptionViewDelegate methods
+
+- (void)tabResumptionViewTapped {
+  [self.suggestionCommandHandler openTabResumptionItem];
 }
 
 #pragma mark - ContentSuggestionsSelectionActions

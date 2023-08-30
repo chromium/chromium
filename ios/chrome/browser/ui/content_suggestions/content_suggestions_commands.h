@@ -14,9 +14,14 @@
 
 // Opens the Most Visited associated with this `item` at the `mostVisitedItem`.
 - (void)openMostVisitedItem:(NSObject*)item atIndex:(NSInteger)mostVisitedIndex;
+
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;
+
+// Opens the displayed tab resumption item.
+- (void)openTabResumptionItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_

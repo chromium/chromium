@@ -10,7 +10,9 @@
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -56,6 +58,7 @@ const CGFloat kLabelStackSpacing = 6.0;
 
   if (!_containerStackView) {
     [self createSubviews];
+    [self addTapGestureRecognizer];
   }
 }
 
@@ -63,6 +66,11 @@ const CGFloat kLabelStackSpacing = 6.0;
 
 // Creates all the subviews.
 - (void)createSubviews {
+  self.accessibilityIdentifier = kTabResumptionViewIdentifier;
+  self.isAccessibilityElement = YES;
+  self.accessibilityTraits = UIAccessibilityTraitButton;
+  // TODO(crbug.com/1464185): Add the accessibilityLabel.
+
   _containerStackView = [self configuredContainerStackView];
 
   UIView* faviconContainerView = [self configuredFaviconImageContainer];
@@ -82,6 +90,14 @@ const CGFloat kLabelStackSpacing = 6.0;
 
   [self addSubview:_containerStackView];
   AddSameConstraints(_containerStackView, self);
+}
+
+// Adds a tap gesture recognizer to the view.
+- (void)addTapGestureRecognizer {
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(tabResumptionItemTapped:)];
+  [self addGestureRecognizer:tapRecognizer];
 }
 
 // Configures and returns the UIStackView that contains the faviconContainerView
@@ -224,6 +240,11 @@ const CGFloat kLabelStackSpacing = 6.0;
   return base::SysUTF16ToNSString(
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                              ui::TimeFormat::LENGTH_SHORT, lastUsedDelta));
+}
+
+// Called when the view has been tapped.
+- (void)tabResumptionItemTapped:(UIGestureRecognizer*)sender {
+  [self.delegate tabResumptionViewTapped];
 }
 
 @end

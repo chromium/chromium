@@ -8,12 +8,16 @@
 #import <UIKit/UIKit.h>
 
 @class TabResumptionItem;
+@protocol TabResumptionViewDelegate;
 
 // A view that displays a tab resumption item in the Magic Stack.
 @interface TabResumptionView : UIView
 
 // Initialize a TabResumptionView with the given `item`.
 - (instancetype)initWithItem:(TabResumptionItem*)item;
+
+// The delegate that receives TabResumptionView's events.
+@property(nonatomic, weak) id<TabResumptionViewDelegate> delegate;
 
 @end
 
