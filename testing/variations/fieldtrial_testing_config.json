@@ -7676,10 +7676,11 @@
             ]
         }
     ],
-    "HlsBuiltinPlayerAndroid": [
+    "HlsBuiltinPlayer": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
