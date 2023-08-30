@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/AutofillVcnEnrollBottomSheetBridge_jni.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
+
+using base::android::ConvertUTF16ToJavaString;
 
 AutofillVCNEnrollBottomSheetBridge::AutofillVCNEnrollBottomSheetBridge()
     : java_bridge_(Java_AutofillVcnEnrollBottomSheetBridge_Constructor(
@@ -39,9 +42,24 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
 
   delegate_ = std::move(delegate);
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
-      base::android::AttachCurrentThread(), java_bridge_,
-      reinterpret_cast<jlong>(this), java_web_contents);
+      env, java_bridge_, reinterpret_cast<jlong>(this), java_web_contents,
+      ConvertUTF16ToJavaString(env, delegate_->GetMessageText()),
+      ConvertUTF16ToJavaString(
+          env, delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK)),
+      ConvertUTF16ToJavaString(
+          env,
+          delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL)));
+}
+
+void AutofillVCNEnrollBottomSheetBridge::OnAccept(JNIEnv* env) {
+  delegate_->Accept();
+}
+
+void AutofillVCNEnrollBottomSheetBridge::OnCancel(JNIEnv* env) {
+  delegate_->Cancel();
 }
 
 void AutofillVCNEnrollBottomSheetBridge::OnDismiss(JNIEnv* env) {

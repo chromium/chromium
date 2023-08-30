@@ -47,8 +47,9 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         Activity activity = buildActivity(Activity.class).create().get();
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(
-                mWindow.getContext().get(), /*onDismiss=*/() -> {});
+        mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(mWindow.getContext().get(),
+                "Message text", "Accept Button Text", "Cancel Button Text", /*onAccept=*/() -> {},
+                /*onCancel=*/() -> {}, /*onDismiss=*/() -> {});
     }
 
     @After

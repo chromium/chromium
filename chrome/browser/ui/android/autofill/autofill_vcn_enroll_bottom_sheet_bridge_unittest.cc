@@ -76,6 +76,8 @@ class MockDelegate : public AutofillVirtualCardEnrollmentInfoBarDelegateMobile {
       : AutofillVirtualCardEnrollmentInfoBarDelegateMobile(controller) {}
   ~MockDelegate() override = default;
   MOCK_METHOD(void, InfoBarDismissed, (), (override));
+  MOCK_METHOD(bool, Accept, (), (override));
+  MOCK_METHOD(bool, Cancel, (), (override));
 };
 
 TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, DismissCallback) {
@@ -87,6 +89,28 @@ TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, DismissCallback) {
   EXPECT_CALL(delegate_reference, InfoBarDismissed());
 
   bridge.OnDismiss(/*env=*/nullptr);
+}
+
+TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, AcceptCallback) {
+  auto delegate = std::make_unique<MockDelegate>(BuildController());
+  MockDelegate& delegate_reference = *delegate;
+  AutofillVCNEnrollBottomSheetBridge bridge;
+  bridge.RequestShowContent(web_contents(), std::move(delegate));
+
+  EXPECT_CALL(delegate_reference, Accept());
+
+  bridge.OnAccept(/*env=*/nullptr);
+}
+
+TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, CancelCallback) {
+  auto delegate = std::make_unique<MockDelegate>(BuildController());
+  MockDelegate& delegate_reference = *delegate;
+  AutofillVCNEnrollBottomSheetBridge bridge;
+  bridge.RequestShowContent(web_contents(), std::move(delegate));
+
+  EXPECT_CALL(delegate_reference, Cancel());
+
+  bridge.OnCancel(/*env=*/nullptr);
 }
 
 }  // namespace

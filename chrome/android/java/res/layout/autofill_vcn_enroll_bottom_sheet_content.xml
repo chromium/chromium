@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <!-- Drag handlebar -->
+    <org.chromium.ui.widget.ChromeImageView
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/drag_handlebar" />
+
+    <ScrollView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+
+            <!-- "Make it more secure with a virtual card next time?" dialog title -->
+            <androidx.appcompat.widget.DialogTitle
+                android:id="@+id/dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <!-- "Yes" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/accept_button"
+                android:descendantFocusability="blocksDescendants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:singleLine="true"
+                style="@style/FilledButton.Flat" />
+
+            <!-- "Skip" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/cancel_button"
+                android:descendantFocusability="blocksDescendants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:singleLine="true"
+                style="@style/TextButton" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

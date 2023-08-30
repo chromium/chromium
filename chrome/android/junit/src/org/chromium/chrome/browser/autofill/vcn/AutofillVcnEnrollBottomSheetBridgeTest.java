@@ -71,10 +71,14 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         mWindow.destroy();
     }
 
+    private void requestShowContent(WebContents webContents) {
+        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, webContents,
+                "Message text", "Accept button label", "Cancel button label");
+    }
+
     @Test
     public void testCannotShowWithNullWebContents() {
-        mBridge.requestShowContent(
-                NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, /*webContents=*/null);
+        requestShowContent(/*webContents=*/null);
 
         verifyNoInteractions(mBottomSheetController);
     }
@@ -83,7 +87,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     public void testCannotShowWithDestroyedWebContents() {
         when(mWebContents.isDestroyed()).thenReturn(true);
 
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
 
         verifyNoInteractions(mBottomSheetController);
     }
@@ -93,7 +97,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
 
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
 
         verifyNoInteractions(mBottomSheetController);
     }
@@ -103,11 +107,99 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
 
         verify(mBottomSheetController)
                 .requestShowContent(any(AutofillVcnEnrollBottomSheetMediator.class),
                         /*animate=*/eq(true));
+    }
+
+    @Test
+    public void testCannotAcceptWithoutShowing() {
+        mBridge.onAccept();
+
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testAcceptAfterShowing() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+
+        mBridge.onAccept();
+
+        verify(mBridgeNatives).onAccept(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE));
+    }
+
+    @Test
+    public void testSecondAcceptDoesNothing() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+        mBridge.onAccept();
+        clearInvocations(mBridgeNatives);
+
+        mBridge.onAccept();
+
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testDismissAfterAcceptDoesNothing() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+        mBridge.onAccept();
+        clearInvocations(mBridgeNatives);
+
+        mBridge.onDismiss();
+
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testCannotCancelWithoutShowing() {
+        mBridge.onCancel();
+
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testCancelAfterShowing() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+
+        mBridge.onCancel();
+
+        verify(mBridgeNatives).onCancel(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE));
+    }
+
+    @Test
+    public void testSecondCancelDoesNothing() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+        mBridge.onCancel();
+        clearInvocations(mBridgeNatives);
+
+        mBridge.onCancel();
+
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testDismissAfterCancelDoesNothing() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        requestShowContent(mWebContents);
+        mBridge.onCancel();
+        clearInvocations(mBridgeNatives);
+
+        mBridge.onDismiss();
+
+        verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
@@ -121,7 +213,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     public void testDismissAfterShowing() {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
 
         mBridge.onDismiss();
 
@@ -132,7 +224,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     public void testSecondDismissDoesNothing() {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
         mBridge.onDismiss();
         clearInvocations(mBridgeNatives);
 
@@ -152,7 +244,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     public void testHideAfterShowing() {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
 
         mBridge.hide();
 
@@ -165,7 +257,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     public void testSecondHideDoesNothing() {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, mWebContents);
+        requestShowContent(mWebContents);
         mBridge.hide();
         clearInvocations(mBottomSheetController);
 

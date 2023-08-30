@@ -15,8 +15,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 
 /** The mediator controller for the virtual card enrollment bottom sheet. */
-/*package*/ class AutofillVcnEnrollBottomSheetMediator implements BottomSheetContent {
+/*package*/ class AutofillVcnEnrollBottomSheetMediator
+        implements BottomSheetContent, View.OnClickListener {
     private final View mContentView;
+    private final View mAcceptButton;
+    private final View mCancelButton;
+    private final Runnable mOnAccept;
+    private final Runnable mOnCancel;
     private final Runnable mOnDismiss;
     private BottomSheetController mBottomSheetController;
 
@@ -24,10 +29,24 @@ import org.chromium.ui.base.WindowAndroid;
      * Constructs the mediator controller for the virtual card enrollment bottom sheet.
      *
      * @param contentView The bottom sheet content.
+     * @param acceptButton The button that the user taps when they accept the enrollment prompt.
+     * @param cancelButton The button that the user taps when they cancel the enrollment prompt.
+     * @param onAccept The callback to invoke when the user accepts the enrollment prompt.
+     * @param onCancel The callback to invoke when the user cancels the enrollment prompt.
      * @param onDismiss The callback to invoke when the user dismisses the bottom sheet.
      */
-    /*package*/ AutofillVcnEnrollBottomSheetMediator(View contentView, Runnable onDismiss) {
+    /*package*/ AutofillVcnEnrollBottomSheetMediator(View contentView, View acceptButton,
+            View cancelButton, Runnable onAccept, Runnable onCancel, Runnable onDismiss) {
         mContentView = contentView;
+
+        mAcceptButton = acceptButton;
+        mAcceptButton.setOnClickListener(this);
+
+        mCancelButton = cancelButton;
+        mCancelButton.setOnClickListener(this);
+
+        mOnAccept = onAccept;
+        mOnCancel = onCancel;
         mOnDismiss = onDismiss;
     }
 
@@ -43,6 +62,19 @@ import org.chromium.ui.base.WindowAndroid;
         if (mBottomSheetController == null) return false;
 
         return mBottomSheetController.requestShowContent(this, /*animate=*/true);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mAcceptButton) {
+            mOnAccept.run();
+            hide();
+        } else if (v == mCancelButton) {
+            mOnCancel.run();
+            hide();
+        } else {
+            assert false : "Unknown view clicked";
+        }
     }
 
     /** Hides the bottom sheet, if present. */

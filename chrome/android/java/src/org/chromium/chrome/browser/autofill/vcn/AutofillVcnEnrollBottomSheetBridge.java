@@ -24,8 +24,9 @@ import org.chromium.ui.base.WindowAndroid;
 
     @CalledByNative
     @VisibleForTesting
-    /*package*/ boolean requestShowContent(
-            long nativeAutofillVcnEnrollBottomSheetBridge, WebContents webContents) {
+    /*package*/ boolean requestShowContent(long nativeAutofillVcnEnrollBottomSheetBridge,
+            WebContents webContents, String messageText, String acceptButtonLabel,
+            String cancelButtonLabel) {
         if (webContents == null || webContents.isDestroyed()) return false;
 
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -34,10 +35,27 @@ import org.chromium.ui.base.WindowAndroid;
         if (mNativeAutofillVcnEnrollBottomSheetBridge != 0) return false;
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
-        mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(
-                window.getContext().get(), this::onDismiss);
+        mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(window.getContext().get(),
+                messageText, acceptButtonLabel, cancelButtonLabel, this::onAccept, this::onCancel,
+                this::onDismiss);
 
         return mCoordinator.requestShowContent(window);
+    }
+
+    @VisibleForTesting
+    /*package*/ void onAccept() {
+        if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
+        AutofillVcnEnrollBottomSheetBridgeJni.get().onAccept(
+                mNativeAutofillVcnEnrollBottomSheetBridge);
+        mNativeAutofillVcnEnrollBottomSheetBridge = 0;
+    }
+
+    @VisibleForTesting
+    /*package*/ void onCancel() {
+        if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
+        AutofillVcnEnrollBottomSheetBridgeJni.get().onCancel(
+                mNativeAutofillVcnEnrollBottomSheetBridge);
+        mNativeAutofillVcnEnrollBottomSheetBridge = 0;
     }
 
     @VisibleForTesting
@@ -59,6 +77,8 @@ import org.chromium.ui.base.WindowAndroid;
 
     @NativeMethods
     interface Natives {
+        void onAccept(long nativeAutofillVCNEnrollBottomSheetBridge);
+        void onCancel(long nativeAutofillVCNEnrollBottomSheetBridge);
         void onDismiss(long nativeAutofillVCNEnrollBottomSheetBridge);
     }
 }
