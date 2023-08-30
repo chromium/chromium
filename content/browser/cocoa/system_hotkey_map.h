@@ -44,15 +44,19 @@ class CONTENT_EXPORT SystemHotkeyMap {
   FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest, Parse);
   FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest, ParseCustomEntries);
   FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest, ParseMouse);
+  FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest,
+                           ReverseWindowCyclingHotkeyExists);
+  FRIEND_TEST_ALL_PREFIXES(SystemHotkeyMapTest,
+                           IgnoreUndocumentedShortcutEntries);
 
   // Whether the hotkey has been reserved by the user.
   bool IsHotkeyReserved(unsigned short key_code, NSUInteger modifiers) const;
 
-  // Create at least one record of a hotkey that is reserved by the user.
+  // Creates at least one record of a hotkey that is reserved by the user.
   // Certain system hotkeys automatically reserve multiple key combinations.
   void ReserveHotkey(unsigned short key_code,
                      NSUInteger modifiers,
-                     NSString* system_effect);
+                     NSString* system_hotkey_identifier);
 
   // Create a record of a hotkey that is reserved by the user.
   void ReserveHotkey(unsigned short key_code, NSUInteger modifiers);

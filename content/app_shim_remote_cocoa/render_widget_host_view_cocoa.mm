@@ -1048,9 +1048,19 @@ void ExtractUnderlines(NSAttributedString* string,
     return NO;
   }
 
-  // If the event is reserved by the system, then do not pass it to web content.
-  if (EventIsReservedBySystem(theEvent))
+  // If the event is reserved by the system, do not pass it to web content.
+  // If the user changes the system hotkey mapping after Chrome has been
+  // launched, it is possible that a formerly reserved system hotkey is no
+  // longer reserved. The hotkey would have skipped the renderer, but would
+  // also have not been handled by the system. If this is the case, immediately
+  // return.
+  // TODO(erikchen): SystemHotkeyHelperMac should use the File System Events
+  // api to monitor changes to system hotkeys. This logic will have to be
+  // updated.
+  // http://crbug.com/383558.
+  if (EventIsReservedBySystem(theEvent)) {
     return NO;
+  }
 
   // Command key combinations are sent via performKeyEquivalent rather than
   // keyDown:. We just forward this on and if WebCore doesn't want to handle
