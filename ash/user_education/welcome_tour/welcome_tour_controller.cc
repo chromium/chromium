@@ -32,6 +32,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -85,6 +86,12 @@ views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
     ui::ElementIdentifier element_id) {
   return views::ElementTrackerViews::GetInstance()->GetElementForView(
       GetMatchingViewInPrimaryRootWindow(element_id));
+}
+
+void LaunchExploreAppAsync(UserEducationPrivateApiKey key) {
+  UserEducationController::Get()->LaunchSystemWebAppAsync(
+      key, ash::SystemWebAppType::HELP,
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 
 user_education::TutorialDescription::NameElementsCallback
@@ -389,6 +396,15 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     }
   }
 
+  // We should attempt to launch the Explore app even if the Welcome Tour is
+  // prevented provided that (a) the user is new, and (b) the device is not in
+  // tablet mode. This is in keeping with existing first run behavior.
+  base::ScopedClosureRunner maybe_launch_explore_app_async(
+      TabletMode::IsInTabletMode()
+          ? base::DoNothing()
+          : base::BindOnce(&LaunchExploreAppAsync,
+                           UserEducationPrivateApiKey()));
+
   // Welcome Tour is not supported with ChromeVox enabled.
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     welcome_tour_metrics::RecordTourPrevented(
@@ -409,6 +425,10 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
         welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm);
     return;
   }
+
+  // The Welcome Tour is not being prevented, so hold off on opening the Explore
+  // app until the Welcome Tour is either completed or aborted.
+  std::ignore = maybe_launch_explore_app_async.Release();
 
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
@@ -503,14 +523,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
   toast_pause_.reset();
   window_minimizer_.reset();
 
-  if (completed) {
-    // Attempt to launch the Explore app on successful completion of the tour.
-    UserEducationController::Get()->LaunchSystemWebAppAsync(
-        UserEducationPrivateApiKey(), ash::SystemWebAppType::HELP,
-        display::Screen::GetScreen()->GetPrimaryDisplay().id());
-
-    SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
-  } else {
+  if (!completed) {
     welcome_tour_metrics::RecordTourAborted(aborted_reason_);
 
     // `current_step_` may not be set in testing.
@@ -531,7 +544,16 @@ void WelcomeTourController::OnWelcomeTourEnded(
     }
   }
 
+  // Attempt to launch the Explore app regardless of tour completion so long as
+  // the device is not in tablet mode. This is in keeping with existing first
+  // run behavior.
+  if (!TabletMode::IsInTabletMode()) {
+    LaunchExploreAppAsync(UserEducationPrivateApiKey());
+    SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
+  }
+
   SetCurrentStep(absl::nullopt);
+
   welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
                                            completed);
 
