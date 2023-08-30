@@ -450,11 +450,15 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
 }
 
 void IconLabelBubbleView::AnimationProgressed(const gfx::Animation* animation) {
-  if (animation != &slide_animation_)
+  if (animation != &slide_animation_) {
     return views::LabelButton::AnimationProgressed(animation);
+  }
 
-  if (!is_animation_paused_)
+  if (!is_animation_paused_) {
     PreferredSizeChanged();
+  }
+
+  UpdateBorder();
 }
 
 void IconLabelBubbleView::AnimationCanceled(const gfx::Animation* animation) {
