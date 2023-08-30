@@ -242,12 +242,11 @@ void AgentSchedulingGroupHost::AddFilter(BrowserMessageFilter* filter) {
 }
 
 RenderProcessHost* AgentSchedulingGroupHost::GetProcess() {
-  // TODO(crbug.com/1111231): Make the condition below hold.
-  // Currently the DCHECK doesn't hold, since RenderViewHostImpl outlives
-  // its associated AgentSchedulingGroupHost, and the dtor queries the
-  // associated RenderProcessHost to remove itself from the
-  // PerProcessRenderViewHostSet and RemoveObserver() itself.
-  // DCHECK_NE(state_, LifecycleState::kRenderProcessHostDestroyed);
+  // `process_` can still be accessed here even if `state_` has been set to
+  // `kRenderProcessHostDestroyed`. This is because a `RenderProcessHostImpl` is
+  // scheduled to be destroyed asynchronously after the
+  // `RenderProcessHostDestroyed()` observer notification is dispatched, so
+  // `process_` and `this` may still be around within that gap.
   return &*process_;
 }
 
