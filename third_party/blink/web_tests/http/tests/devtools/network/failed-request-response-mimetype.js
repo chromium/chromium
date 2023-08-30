@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
   await TestRunner.loadLegacyModule('console');
@@ -25,7 +27,7 @@ import {NetworkTestRunner} from 'network_test_runner';
       TestRunner.addResult('networkRequest.url(): ' + networkRequest.url());
       TestRunner.addResult('networkRequest.mimeType: ' + networkRequest.mimeType);
 
-      const responseView = new Network.RequestResponseView(networkRequest);
+      const responseView = new Network.RequestResponseView.RequestResponseView(networkRequest);
       responseView.showPreview().then((emptyWidgetView) => {
         TestRunner.addResult(emptyWidgetView.textElement.textContent);
         TestRunner.completeTest();

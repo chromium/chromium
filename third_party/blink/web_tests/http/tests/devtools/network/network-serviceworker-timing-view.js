@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {
     'use strict';
@@ -67,7 +68,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     setRequestValues(testRequest);
 
     const calculator = UI.panels.network.calculator;
-    const tableElement = Network.RequestTimingView.createTimingTable(testRequest, calculator);
+    const tableElement = Network.RequestTimingView.RequestTimingView.createTimingTable(testRequest, calculator);
 
     for (const element of tableElement.getElementsByTagName('td')) {
       const content = element.textContent;
