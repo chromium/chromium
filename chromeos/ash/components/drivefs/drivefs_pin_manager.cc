@@ -151,18 +151,20 @@ ostream& operator<<(ostream& out, Quoter<std::string> q) {
 
 template <typename T>
 ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
-  if (!q.value.has_value()) {
+  const absl::optional<T>& v = *q.value;
+  if (!v.has_value()) {
     return out << "(nullopt)";
   }
 
-  return out << Quote(*q.value);
+  return out << Quote(*v);
 }
 
 ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
-  out << "{" << PinManager::Id(q.value->target_stable_id);
+  const ShortcutDetails& s = *q.value;
+  out << "{" << PinManager::Id(s.target_stable_id);
 
-  if (q.value->target_lookup_status != LookupStatus::kOk) {
-    out << " " << Quote(q.value->target_lookup_status);
+  if (s.target_lookup_status != LookupStatus::kOk) {
+    out << " " << Quote(s.target_lookup_status);
   }
 
   return out << "}";
@@ -216,13 +218,9 @@ ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
 
 ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
   const mojom::ProgressEvent& e = *q.value;
-  out << "{" << PinManager::Id(e.stable_id) << " ";
-  if (e.file_path.has_value()) {
-    out << Quote(e.file_path.value());
-  } else {
-    out << Quote(e.path);
-  }
-  out << ", progress: " << base::StringPrintf("%hhu", e.progress) << "%}";
+  out << "{" << PinManager::Id(e.stable_id) << " "
+      << Quote(e.file_path ? *e.file_path : Path(e.path))
+      << ", progress: " << base::StringPrintf("%hhu", e.progress) << "%}";
   return out;
 }
 
@@ -1452,15 +1450,10 @@ void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
   }
   VLOG(3) << "Received " << Quote(event);
 
-  base::FilePath file_path;
-  if (event.file_path.has_value()) {
-    file_path = *event.file_path;
-  } else {
-    file_path = base::FilePath(event.path);
-  }
-
   Path relative_path("/");
-  if (!mount_path_.AppendRelativePath(file_path, &relative_path)) {
+  if (!mount_path_.AppendRelativePath(
+          event.file_path ? *event.file_path : Path(event.path),
+          &relative_path)) {
     LOG(ERROR) << "Path not relative to drive mount";
     return;
   }
