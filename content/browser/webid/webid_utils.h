@@ -67,7 +67,8 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
 CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
     blink::mojom::FederatedAuthRequestResult result);
 
-FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host);
+FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
+                                                const url::Origin& idp_origin);
 
 }  // namespace webid
 
