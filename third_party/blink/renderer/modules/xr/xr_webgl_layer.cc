@@ -244,9 +244,12 @@ double XRWebGLLayer::getNativeFramebufferScaleFactor(XRSession* session) {
 void XRWebGLLayer::UpdateViewports() {
   uint32_t framebuffer_width = framebufferWidth();
   uint32_t framebuffer_height = framebufferHeight();
-  // Framebuffer width and height are assumed to be nonzero.
-  DCHECK_NE(framebuffer_width, 0U);
-  DCHECK_NE(framebuffer_height, 0U);
+  if (framebuffer_width == 0U || framebuffer_height == 0U) {
+    LOG_IF(ERROR, !webgl_context_->isContextLost())
+        << __func__ << " Received width=" << framebuffer_width
+        << " height=" << framebuffer_height << " without having lost context";
+    return;
+  }
 
   viewports_dirty_ = false;
 
