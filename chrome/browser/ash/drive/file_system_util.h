@@ -70,8 +70,7 @@ ConnectionStatus GetDriveConnectionStatus(Profile* profile);
 bool IsPinnableGDocMimeType(const std::string& mime_type);
 
 // Computes the total content cache size (minus the chunks.db* metadata files).
-int64_t ComputeDriveFsContentCacheSize(
-    const base::FilePath& content_cache_path);
+int64_t ComputeDriveFsContentCacheSize(const base::FilePath& path);
 
 }  // namespace util
 }  // namespace drive
