@@ -7,17 +7,16 @@
 </head>
 <body>
 <script>
-var lostEventHasFired = false;
 var contextLostTest;
 async_test(t => {
     if (window.internals) {
         const canvas = new OffscreenCanvas(500, 500);
         const ctx = canvas.getContext('2d');
         canvas.oncontextlost = () => {
-            contextLost(lostEventHasFired, ctx);
+            contextLost(ctx);
         };
         canvas.oncontextrestored = () => {
-            contextRestored(lostEventHasFired, ctx);
+            contextRestored(ctx);
         };
 
         ctx.fillRect(0, 0, 1, 1);

@@ -18,13 +18,15 @@ function verifyContextLost(shouldBeLost, ctx) {
     }
 }
 
-function contextLost(lostEventHasFired, ctx) {
+var lostEventHasFired = false;
+
+function contextLost(ctx) {
     assert_false(lostEventHasFired, 'Graphics context lost event dispatched more than once.');
     lostEventHasFired = true;
     verifyContextLost(true, ctx);
 }
 
-function contextRestored(lostEventHasFired, ctx) {
+function contextRestored(ctx) {
     assert_true(lostEventHasFired, 'Context restored event dispatched after context lost.');
     verifyContextLost(false, ctx);
 }

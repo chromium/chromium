@@ -8,18 +8,16 @@
 <body>
 <script>
 
-let lostEventHasFired = false;
-
 async_test(function(t) {
     var contextLostTest;
     if (window.internals) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.oncontextlost = () => {
-            contextLost(lostEventHasFired, ctx);
+            contextLost(ctx);
         };
         canvas.oncontextrestored = () => {
-            contextRestored(lostEventHasFired, ctx);
+            contextRestored(ctx);
         };
         document.body.appendChild(ctx.canvas);
 

@@ -7,7 +7,6 @@
 </head>
 <body>
 <script>
-var lostEventHasFired = false;
 var contextLostTest;
 
 async_test(function(t) {
@@ -15,10 +14,10 @@ async_test(function(t) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.addEventListener('contextlost', () => {
-            contextLost(lostEventHasFired, ctx);
+            contextLost(ctx);
         });
         canvas.addEventListener('contextrestored', () => {
-            contextRestored(lostEventHasFired, ctx);
+            contextRestored(ctx);
         });
         document.body.appendChild(ctx.canvas);
 

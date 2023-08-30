@@ -7,7 +7,6 @@
 </head>
 <body>
 <script>
-var lostEventHasFired = false;
 var contextLostTest;
 async_test(t => {
     if (window.internals) {
@@ -15,10 +14,10 @@ async_test(t => {
             const canvas = new OffscreenCanvas(500, 500);
             const ctx = canvas.getContext('2d');
             canvas.addEventListener('contextlost', () => {
-                contextLost(lostEventHasFired, ctx);
+                contextLost(ctx);
             });
             canvas.addEventListener('contextrestored', () => {
-                contextRestored(lostEventHasFired, ctx);
+                contextRestored(ctx);
             });
 
             ctx.fillRect(0, 0, 1, 1);
