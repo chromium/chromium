@@ -2440,14 +2440,8 @@ IN_PROC_BROWSER_TEST_F(SpokenFeedbackWithCandidateWindowTest,
     candidate_window.mutable_candidates()->at(1).label = u"label 3";
     candidate_window_view_->UpdateCandidates(candidate_window);
   });
-  // TODO(hirokisato): We should check unexpected utterances are not skipped
-  // when consuming "value 2", otherwise there's a race between when we check
-  // "NextSpeechIsNot" and when speech is created, and test may pass
-  // unexpectedly.
-  sm_.ExpectNextSpeechIsNot("value 0");
-  sm_.ExpectNextSpeechIsNot("value 1");
-  sm_.ExpectNextSpeechIsNot("value 3");
-  sm_.ExpectSpeech("value 2");
+  sm_.ExpectSpeech(test::SpeechMonitor::Expectation("value 2").WithoutText(
+      {"value 0", "value 1", "value 3"}));
 
   sm_.Replay();
 }

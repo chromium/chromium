@@ -57,6 +57,12 @@ class SpeechMonitor : public content::TtsPlatform {
       return *this;
     }
 
+    // Sets the unexpected utterances until this consumes the expectation.
+    Expectation& WithoutText(const std::vector<std::string>& text) {
+      disallowed_text_ = text;
+      return *this;
+    }
+
     // Checks the given list of utterances matches this expectation.
     // Returns the iterator that points the matched item in the given list.
     // If not matched, returns the end() of the given list.
@@ -71,6 +77,7 @@ class SpeechMonitor : public content::TtsPlatform {
     std::string text_;
     bool as_pattern_ = false;
     absl::optional<std::string> locale_;
+    std::vector<std::string> disallowed_text_;
   };
 
   // Use these apis if you want to write an async test e.g.

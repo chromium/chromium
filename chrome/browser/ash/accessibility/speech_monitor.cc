@@ -28,6 +28,10 @@ SpeechMonitor::Expectation::Matches(
     const base::circular_deque<SpeechMonitorUtterance>& queue) const {
   std::vector<std::string> all_text;
   for (auto it = queue.begin(); it != queue.end(); it++) {
+    if (base::Contains(disallowed_text_, it->text)) {
+      break;
+    }
+
     all_text.push_back(it->text);
     std::string joined_all_text = base::JoinString(all_text, " ");
     bool text_match = as_pattern_
@@ -65,6 +69,10 @@ std::string SpeechMonitor::Expectation::OptionsToString() const {
   }
   if (locale_) {
     option_str.push_back("locale: " + locale_.value());
+  }
+  if (disallowed_text_.size() > 0) {
+    option_str.push_back("disallowed: [" +
+                         base::JoinString(disallowed_text_, ", ") + "]");
   }
   return base::JoinString(option_str, ", ");
 }
