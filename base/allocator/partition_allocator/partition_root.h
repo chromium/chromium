@@ -159,10 +159,10 @@ struct PartitionOptions {
 
   // Expose the enum arms directly at the level of `PartitionOptions`,
   // since the variant names are already sufficiently descriptive.
-  using AllowToggle::kAllowed;
-  using AllowToggle::kDisallowed;
-  using EnableToggle::kDisabled;
-  using EnableToggle::kEnabled;
+  static constexpr auto kAllowed = AllowToggle::kAllowed;
+  static constexpr auto kDisallowed = AllowToggle::kDisallowed;
+  static constexpr auto kDisabled = EnableToggle::kDisabled;
+  static constexpr auto kEnabled = EnableToggle::kEnabled;
 
   // By default all allocations will be aligned to `kAlignment`,
   // likely to be 8B or 16B depending on platforms and toolchains.
