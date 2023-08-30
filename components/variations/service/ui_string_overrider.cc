@@ -7,35 +7,32 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace variations {
 
-UIStringOverrider::UIStringOverrider()
-    : resource_hashes_(nullptr),
-      resource_indices_(nullptr),
-      num_resources_(0) {}
+UIStringOverrider::UIStringOverrider() = default;
 
-UIStringOverrider::UIStringOverrider(const uint32_t* resource_hashes,
-                                     const int* resource_indices,
-                                     size_t num_resources)
-    : resource_hashes_(resource_hashes),
-      resource_indices_(resource_indices),
-      num_resources_(num_resources) {
-  DCHECK(!num_resources || resource_hashes_);
-  DCHECK(!num_resources || resource_indices_);
+UIStringOverrider::UIStringOverrider(base::span<const uint32_t> resource_hashes,
+                                     base::span<const int> resource_indices)
+    : resource_hashes_(resource_hashes), resource_indices_(resource_indices) {
+  CHECK_EQ(resource_hashes_.size(), resource_indices_.size());
 }
 
-UIStringOverrider::~UIStringOverrider() {}
+UIStringOverrider::~UIStringOverrider() = default;
 
 int UIStringOverrider::GetResourceIndex(uint32_t hash) {
-  if (!num_resources_)
+  if (resource_hashes_.empty()) {
     return -1;
-  const uint32_t* end = resource_hashes_ + num_resources_;
-  const uint32_t* element = std::lower_bound(resource_hashes_.get(), end, hash);
-  if (element == end || *element != hash)
+  }
+  const auto begin = std::begin(resource_hashes_);
+  const auto end = std::end(resource_hashes_);
+  const auto element = std::lower_bound(begin, end, hash);
+  if (element == end || *element != hash) {
     return -1;
-  return resource_indices_[element - resource_hashes_];
+  }
+  return resource_indices_[element - begin];
 }
 
 }  // namespace variations
