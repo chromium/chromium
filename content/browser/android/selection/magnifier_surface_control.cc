@@ -4,11 +4,13 @@
 
 #include "content/browser/android/selection/magnifier_surface_control.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/frame_sink.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -40,6 +42,14 @@
 
 namespace content {
 
+namespace {
+// These values are passed to `gfx::LinearGradient::AddStep`. They are alpha
+// values ranging from 0 to 255. These are the max and min alpha applied to
+// opaque black that represent the darkest and lightest part of the shadow.
+constexpr uint8_t kDarkestAlpha = 64;
+constexpr uint8_t kLightestAlpha = 0;
+}  // namespace
+
 static jlong JNI_MagnifierSurfaceControl_Create(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
@@ -48,7 +58,10 @@ static jlong JNI_MagnifierSurfaceControl_Create(
     jint width,
     jint height,
     jfloat corner_radius,
-    float zoom) {
+    float zoom,
+    int top_shadow_height,
+    int bottom_shadow_height,
+    int bottom_shadow_width_reduction) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(j_web_contents));
 
@@ -61,9 +74,10 @@ static jlong JNI_MagnifierSurfaceControl_Create(
       tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
           std::move(scoped_java_surface_control)));
 
-  return reinterpret_cast<jlong>(
-      new MagnifierSurfaceControl(web_contents, surface_handle, device_scale,
-                                  width, height, corner_radius, zoom));
+  return reinterpret_cast<jlong>(new MagnifierSurfaceControl(
+      web_contents, surface_handle, device_scale, width, height, corner_radius,
+      zoom, top_shadow_height, bottom_shadow_height,
+      bottom_shadow_width_reduction));
 }
 
 static void JNI_MagnifierSurfaceControl_Destroy(
@@ -79,12 +93,15 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
     int width,
     int height,
     float corner_radius,
-    float zoom)
+    float zoom,
+    int top_shadow_height,
+    int bottom_shadow_height,
+    int bottom_shadow_width_reduction)
     : HostDisplayClient(gfx::kNullAcceleratedWidget),
       web_contents_(web_contents),
       surface_handle_(surface_handle),
       frame_sink_id_(AllocateFrameSinkId()),
-      size_(width, height),
+      surface_size_(width, height + top_shadow_height + bottom_shadow_height),
       root_layer_(cc::slim::Layer::Create()),
       zoom_layer_(cc::slim::Layer::Create()),
       surface_layer_(cc::slim::SurfaceLayer::Create()) {
@@ -101,21 +118,73 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
   }
   layer_tree_->set_background_color(SkColors::kTransparent);
   layer_tree_->SetViewportRectAndScale(
-      gfx::Rect(size_), device_scale,
+      gfx::Rect(surface_size_), device_scale,
       local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 
   CreateDisplayAndFrameSink();
   surface_layer_->SetIsDrawable(true);
-  root_layer_->SetBounds(size_);
-  root_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
+  root_layer_->SetBounds(surface_size_);
 
-  zoom_layer_->SetBounds(size_);
+  // Shadows are solid black layers with linear gradient applied. They have the
+  // same rounded corner as magnifier. And they are shifted slightly by
+  // `top_shadow_height` and `bottom_shadow_height` so that they are visible.
+  {
+    auto top_shadow = cc::slim::SolidColorLayer::Create();
+    // Layer height is calculated so that top and bottom shadows never overlap.
+    // Otherwise use the corner radius since shadow not below rounded corner is
+    // not visible.
+    int layer_height = std::min(static_cast<int>(corner_radius + 0.5),
+                                height / 2 + top_shadow_height);
+    top_shadow->SetIsDrawable(true);
+    top_shadow->SetBackgroundColor(SkColors::kBlack);
+    top_shadow->SetBounds(gfx::Size(surface_size_.width(), layer_height));
+    gfx::LinearGradient gradient;
+    gradient.set_angle(90);
+    gradient.AddStep(0.0f, kDarkestAlpha);
+    gradient.AddStep(1.0f, kLightestAlpha);
+    top_shadow->SetGradientMask(gradient);
+    top_shadow->SetRoundedCorner(
+        gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
+    root_layer_->AddChild(std::move(top_shadow));
+  }
+
+  {
+    auto bottom_shadow = cc::slim::SolidColorLayer::Create();
+    // See comment on layer height for top shadow.
+    int layer_height = std::min(static_cast<int>(corner_radius + 0.5),
+                                height / 2 + bottom_shadow_height);
+    bottom_shadow->SetIsDrawable(true);
+    bottom_shadow->SetBackgroundColor(SkColors::kBlack);
+    // Inset layer horizontally by `bottom_shadow_width_reduction`.
+    bottom_shadow->SetBounds(
+        gfx::Size(surface_size_.width() - bottom_shadow_width_reduction * 2,
+                  layer_height));
+    // Place bottom shadow layer at the bottom of surface.
+    bottom_shadow->SetPosition(gfx::PointF(
+        bottom_shadow_width_reduction, surface_size_.height() - layer_height));
+    gfx::LinearGradient gradient;
+    gradient.set_angle(270);
+    gradient.AddStep(0.0f, kDarkestAlpha);
+    gradient.AddStep(1.0f, kLightestAlpha);
+    bottom_shadow->SetGradientMask(gradient);
+    bottom_shadow->SetRoundedCorner(
+        gfx::RoundedCornersF(0, 0, corner_radius, corner_radius));
+    root_layer_->AddChild(std::move(bottom_shadow));
+  }
+
+  auto rounded_corner_layer = cc::slim::Layer::Create();
+  rounded_corner_layer->SetPosition(gfx::PointF(0, top_shadow_height));
+  rounded_corner_layer->SetBounds(gfx::Size(width, height));
+  rounded_corner_layer->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
+  root_layer_->AddChild(rounded_corner_layer);
+
+  zoom_layer_->SetBounds(gfx::Size(width, height));
   zoom_layer_->SetTransformOrigin(
-      gfx::Point3F(size_.width() / 2.0f, size_.height() / 2.0f, 0.0f));
+      gfx::Point3F(width / 2.0f, height / 2.0f, 0.0f));
   zoom_layer_->SetTransform(gfx::Transform::MakeScale(zoom));
 
   layer_tree_->SetRoot(root_layer_);
-  root_layer_->AddChild(zoom_layer_);
+  rounded_corner_layer->AddChild(zoom_layer_);
   zoom_layer_->AddChild(surface_layer_);
 
   GetHostFrameSinkManager()->RegisterFrameSinkId(
@@ -202,7 +271,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   renderer_settings.allow_antialiasing = false;
   renderer_settings.highp_threshold_min = 2048;
   renderer_settings.requires_alpha_channel = true;
-  renderer_settings.initial_screen_size = size_;
+  renderer_settings.initial_screen_size = surface_size_;
   renderer_settings.color_space = display_color_spaces.GetOutputColorSpace(
       gfx::ContentColorUsage::kHDR, renderer_settings.requires_alpha_channel);
 
@@ -216,7 +285,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
       std::move(root_params));
 
   display_private_->SetDisplayVisible(true);
-  display_private_->Resize(size_);
+  display_private_->Resize(surface_size_);
   display_private_->SetDisplayColorSpaces(display_color_spaces);
   display_private_->SetSupportedRefreshRates(
       window_android->GetSupportedRefreshRates());
