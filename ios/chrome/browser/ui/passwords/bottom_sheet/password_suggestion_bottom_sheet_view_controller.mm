@@ -170,20 +170,35 @@
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
   __weak __typeof(self) weakSelf = self;
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        NSMutableArray<UIMenuElement*>* menuElements =
-            [[NSMutableArray alloc] initWithArray:suggestedActions];
+  UIContextMenuActionProvider actionProvider = ^(
+      NSArray<UIMenuElement*>* suggestedActions) {
+    NSMutableArray<UIMenu*>* menuElements =
+        [[NSMutableArray alloc] initWithArray:suggestedActions];
 
-        PasswordSuggestionBottomSheetViewController* strongSelf = weakSelf;
-        if (strongSelf) {
-          [menuElements addObject:[strongSelf openPasswordManagerAction]];
-          [menuElements
-              addObject:[strongSelf openPasswordDetailsForIndexPath:indexPath]];
-        }
+    PasswordSuggestionBottomSheetViewController* strongSelf = weakSelf;
+    if (strongSelf) {
+      [menuElements
+          addObject:[UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:@[
+                                   [strongSelf openPasswordManagerAction]
+                                 ]]];
+      [menuElements
+          addObject:[UIMenu
+                        menuWithTitle:@""
+                                image:nil
+                           identifier:nil
+                              options:UIMenuOptionsDisplayInline
+                             children:@[
+                               [strongSelf
+                                   openPasswordDetailsForIndexPath:indexPath]
+                             ]]];
+    }
 
-        return [UIMenu menuWithTitle:@"" children:menuElements];
-      };
+    return [UIMenu menuWithTitle:@"" children:menuElements];
+  };
 
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil

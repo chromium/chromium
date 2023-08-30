@@ -195,20 +195,33 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
   __weak __typeof(self) weakSelf = self;
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        NSMutableArray<UIMenuElement*>* menuElements =
-            [[NSMutableArray alloc] initWithArray:suggestedActions];
+  UIContextMenuActionProvider actionProvider = ^(
+      NSArray<UIMenuElement*>* suggestedActions) {
+    NSMutableArray<UIMenu*>* menuElements =
+        [[NSMutableArray alloc] initWithArray:suggestedActions];
 
-        PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
-        if (strongSelf) {
-          [menuElements addObject:[strongSelf openPaymentMethodsAction]];
-          [menuElements
-              addObject:[strongSelf openPaymentDetailsForIndexPath:indexPath]];
-        }
-
-        return [UIMenu menuWithTitle:@"" children:menuElements];
-      };
+    PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
+    if (strongSelf) {
+      [menuElements
+          addObject:[UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:@[
+                                   [strongSelf openPaymentMethodsAction]
+                                 ]]];
+      [menuElements
+          addObject:[UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:@[
+                                   [strongSelf
+                                       openPaymentDetailsForIndexPath:indexPath]
+                                 ]]];
+    }
+    return [UIMenu menuWithTitle:@"" children:menuElements];
+  };
 
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
@@ -419,12 +432,12 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     weakSelf.disableBottomSheetOnExit = NO;
     [weakSelf.handler displayPaymentMethods];
   };
-  UIImage* listIcon =
-      CustomSymbolWithPointSize(kReadingListSymbol, kSymbolActionPointSize);
+  UIImage* creditCardIcon =
+      DefaultSymbolWithPointSize(kCreditCardSymbol, kSymbolActionPointSize);
   return [UIAction
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)
-                image:listIcon
+                image:creditCardIcon
            identifier:nil
               handler:paymentMethodsButtonTapHandler];
 }
