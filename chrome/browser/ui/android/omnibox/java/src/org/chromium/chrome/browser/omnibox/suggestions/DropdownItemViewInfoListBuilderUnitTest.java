@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
@@ -19,8 +20,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -101,7 +100,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void headers_buildsHeaderForFirstSuggestion() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails =
@@ -140,7 +138,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void headers_buildsHeadersOnlyWhenGroupChanges() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails = GroupsInfo.newBuilder()
@@ -206,7 +203,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void headers_respectGroupHeadersWithNoTitle() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails = GroupsInfo.newBuilder()
@@ -272,7 +268,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void builder_propagatesFocusChangeEvents() {
         mBuilder.onUrlFocusChange(true);
         verify(mMockHeaderProcessor, times(1)).onUrlFocusChange(eq(true));
@@ -287,7 +282,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void builder_propagatesNativeInitializedEvent() {
         mBuilder.onNativeInitialized();
         verify(mMockHeaderProcessor, times(1)).onNativeInitialized();
@@ -298,7 +292,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void visibleSuggestions_missingDropdownHeightAssumesDefaultGroupSize() {
         final AutocompleteMatchBuilder builder =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST);
@@ -319,7 +312,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void visibleSuggestions_computeNumberOfVisibleSuggestionsFromDropdownHeight() {
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(AutocompleteMatch.class), anyInt()))
                 .thenReturn(true);
@@ -343,7 +335,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void visibleSuggestions_partiallyVisibleSuggestionsAreCountedAsVisible() {
         final AutocompleteMatchBuilder builder =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST);
@@ -368,7 +359,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void visibleSuggestions_queriesCorrespondingProcessorsToDetermineViewAllocation() {
         final SuggestionProcessor mockProcessor1 = mock(SuggestionProcessor.class);
         final SuggestionProcessor mockProcessor2 = mock(SuggestionProcessor.class);
@@ -413,8 +403,70 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
-    public void partialGrouping_matchesWithHeaderAreNotPromotedAboveURLs() {
+    public void performPartialGroupingBySearchVsUrl_noActionWithNoMatches() {
+        AutocompleteResult mockResult = mock(AutocompleteResult.class);
+        when(mockResult.getSuggestionsList()).thenReturn(Arrays.asList());
+        mBuilder.performPartialGroupingBySearchVsUrl(mockResult);
+        verify(mockResult).getSuggestionsList();
+        verifyNoMoreInteractions(mockResult);
+    }
+
+    @Test
+    public void performPartialGroupingBySearchVsUrl_noActionWithTooFewMatches() {
+        // Adaptive Suggestions needs a Default match (always first, cannot be moved) and
+        // at least two more that need to be grouped or rearranged.
+        final AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+        AutocompleteResult mockResult = mock(AutocompleteResult.class);
+        when(mockResult.getSuggestionsList()).thenReturn(Arrays.asList(match, match));
+        mBuilder.performPartialGroupingBySearchVsUrl(mockResult);
+        verify(mockResult).getSuggestionsList();
+        verifyNoMoreInteractions(mockResult);
+    }
+
+    @Test
+    public void performPartialGroupingBySearchVsUrl_groupSuggestionsAboveFold() {
+        // Adaptive Suggestions needs a Default match (always first, cannot be moved) and
+        // at least two more that need to be grouped or rearranged.
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+        when(mMockSuggestionProcessor.getMinimumViewHeight()).thenReturn(10);
+        mBuilder.setDropdownHeightWithKeyboardActive(50);
+
+        final AutocompleteMatch search =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+        AutocompleteResult mockResult = mock(AutocompleteResult.class);
+        when(mockResult.getSuggestionsList()).thenReturn(Arrays.asList(search, search, search));
+        mBuilder.performPartialGroupingBySearchVsUrl(mockResult);
+        verify(mockResult, atLeastOnce()).getSuggestionsList();
+        verify(mockResult).groupSuggestionsBySearchVsURL(1, 3);
+        verifyNoMoreInteractions(mockResult);
+    }
+
+    @Test
+    public void performPartialGroupingBySearchVsUrl_groupSuggestionsAboveAndBelowFold() {
+        // Adaptive Suggestions needs a Default match (always first, cannot be moved) and
+        // at least two more that need to be grouped or rearranged.
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+        when(mMockSuggestionProcessor.getMinimumViewHeight()).thenReturn(10);
+        mBuilder.setDropdownHeightWithKeyboardActive(30);
+
+        final AutocompleteMatch search =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+        AutocompleteResult mockResult = mock(AutocompleteResult.class);
+        when(mockResult.getSuggestionsList())
+                .thenReturn(Arrays.asList(search, search, search, search, search));
+        mBuilder.performPartialGroupingBySearchVsUrl(mockResult);
+        verify(mockResult, atLeastOnce()).getSuggestionsList();
+        verify(mockResult).groupSuggestionsBySearchVsURL(1, 3);
+        verify(mockResult).groupSuggestionsBySearchVsURL(3, 5);
+        verifyNoMoreInteractions(mockResult);
+    }
+
+    @Test
+    public void performPartialGroupingBySearchVsUrl_matchesWithHeaderAreNotPromotedAboveURLs() {
         final SuggestionProcessor mockProcessor = mock(SuggestionProcessor.class);
         mBuilder.registerSuggestionProcessor(mockProcessor);
         final AutocompleteMatch match1 =
@@ -472,7 +524,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void dividerLineOnTop() {
         when(mMockDividerLineProcessor.createModel())
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
@@ -506,7 +557,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void noDividerLineForEmptyList() {
         when(mMockDividerLineProcessor.createModel())
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
@@ -522,7 +572,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void visibleSuggestions_updatedVisibleGroupEligibilityLogic() {
         final SuggestionProcessor mockProcessor = mock(SuggestionProcessor.class);
         mBuilder.registerSuggestionProcessor(mockProcessor);

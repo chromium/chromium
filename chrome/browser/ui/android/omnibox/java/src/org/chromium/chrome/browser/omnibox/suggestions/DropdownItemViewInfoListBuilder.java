@@ -208,26 +208,17 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
-     * Build ListModel for new set of Omnibox suggestions.
+     * Adaptive Suggestions logic: perform partial grouping by Search vs URL on the
+     * AutocompleteResult.
      *
-     * @param autocompleteResult New set of suggestions.
-     * @return List of DropdownItemViewInfo representing the corresponding content of the
-     *          suggestions list.
+     * @param autocompleteResult the result to apply adaptive suggestions to
      */
-    @NonNull
-    List<DropdownItemViewInfo> buildDropdownViewInfoList(AutocompleteResult autocompleteResult) {
-        mHeaderProcessor.onSuggestionsReceived();
-        for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
-            mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
-        }
-
-        final int suggestionsCount = autocompleteResult.getSuggestionsList().size();
-        var groupConfigs = autocompleteResult.getGroupsInfo().getGroupConfigsMap();
-
+    @VisibleForTesting
+    void performPartialGroupingBySearchVsUrl(AutocompleteResult autocompleteResult) {
         // When Adaptive Suggestions are set, perform partial grouping by search vs url.
         // Take action only if we have more suggestions to offer than just a default match and
         // one suggestion (otherwise no need to perform grouping).
-        if (suggestionsCount > 2) {
+        if (autocompleteResult.getSuggestionsList().size() > 2) {
             final int firstSuggestionWithHeader =
                     getIndexOfFirstSuggestionWithHeader(autocompleteResult);
             final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
@@ -243,6 +234,25 @@ class DropdownItemViewInfoListBuilder {
                         numVisibleSuggestions, firstSuggestionWithHeader);
             }
         }
+    }
+
+    /**
+     * Build ListModel for new set of Omnibox suggestions.
+     *
+     * @param autocompleteResult New set of suggestions.
+     * @return List of DropdownItemViewInfo representing the corresponding content of the
+     *          suggestions list.
+     */
+    @NonNull
+    List<DropdownItemViewInfo> buildDropdownViewInfoList(AutocompleteResult autocompleteResult) {
+        mHeaderProcessor.onSuggestionsReceived();
+        for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
+            mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
+        }
+
+        performPartialGroupingBySearchVsUrl(autocompleteResult);
+
+        var groupConfigs = autocompleteResult.getGroupsInfo().getGroupConfigsMap();
 
         final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         final int newSuggestionsCount = newSuggestions.size();
