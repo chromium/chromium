@@ -28,7 +28,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackgroundMediaRendererHasModerateBinding,
     &features::kFedCm,
     &features::kMouseAndTrackpadDropdownMenu,
-    &features::kOnDemandAccessibilityEvents,
     &kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,

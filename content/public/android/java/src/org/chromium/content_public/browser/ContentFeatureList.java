@@ -29,8 +29,6 @@ public class ContentFeatureList {
 
     public static final String MOUSE_AND_TRACKPAD_DROPDOWN_MENU = "MouseAndTrackpadDropdownMenu";
 
-    public static final String ON_DEMAND_ACCESSIBILITY_EVENTS = "OnDemandAccessibilityEvents";
-
     public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";
 
     public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =

@@ -40,9 +40,6 @@ public class AccessibilityEventDispatcher {
     // can maintain a connection through JNI to the native code.
     private Client mClient;
 
-    // Simple boolean to plumb through the ContentFeatureList enabled/disabled flag.
-    private boolean mOnDemandEnabled;
-
     /**
      * Callback interface to link {@link WebContentsAccessibilityImpl} with an instance of the
      * {@link AccessibilityEventDispatcher} so we can separate out queueing/throttling logic into a
@@ -80,13 +77,11 @@ public class AccessibilityEventDispatcher {
      *  Create an AccessibilityEventDispatcher and define the delays for event types.
      */
     public AccessibilityEventDispatcher(Client mClient, Map<Integer, Integer> eventThrottleDelays,
-            Set<Integer> viewIndependentEventsToThrottle, Set<Integer> relevantEventTypes,
-            boolean onDemandEnabled) {
+            Set<Integer> viewIndependentEventsToThrottle, Set<Integer> relevantEventTypes) {
         this.mClient = mClient;
         this.mEventThrottleDelays = eventThrottleDelays;
         this.mViewIndependentEventsToThrottle = viewIndependentEventsToThrottle;
         this.mRelevantEventTypes = relevantEventTypes;
-        this.mOnDemandEnabled = onDemandEnabled;
     }
 
     /**
@@ -98,8 +93,8 @@ public class AccessibilityEventDispatcher {
      * @param eventType         The AccessibilityEvent type.
      */
     public void enqueueEvent(int virtualViewId, int eventType) {
-        // Check whether OnDemand feature is enabled and if this is a relevant event type.
-        if (mOnDemandEnabled && !mRelevantEventTypes.contains(eventType)) {
+        // Check if this is a relevant event type.
+        if (!mRelevantEventTypes.contains(eventType)) {
             return;
         }
 
@@ -167,14 +162,6 @@ public class AccessibilityEventDispatcher {
      */
     public void updateRelevantEventTypes(Set<Integer> relevantEventTypes) {
         this.mRelevantEventTypes = relevantEventTypes;
-    }
-
-    /**
-     * Helper method to set the OnDemand feature enabled boolean.
-     * @param onDemandEnabled           boolean is feature enabled
-     */
-    public void setOnDemandEnabled(boolean onDemandEnabled) {
-        mOnDemandEnabled = onDemandEnabled;
     }
 
     /**

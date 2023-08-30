@@ -394,7 +394,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
                         return true;
                     }
-                }, eventThrottleDelays, viewIndependentEvents, new HashSet<Integer>(), false);
+                }, eventThrottleDelays, viewIndependentEvents, new HashSet<Integer>());
 
         if (mDelegate.getNativeAXTree() != 0) {
             initializeNativeWithAXTreeUpdate(mDelegate.getNativeAXTree());
@@ -451,16 +451,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Register a broadcast receiver for locale change.
         if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
 
-        // Define a set of relevant AccessibilityEvents if the OnDemand feature is enabled.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-            Runnable serviceMaskRunnable = () -> {
-                int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
-                mEventDispatcher.updateRelevantEventTypes(
-                        convertMaskToEventTypes(serviceEventMask));
-                mEventDispatcher.setOnDemandEnabled(true);
-            };
-            mView.post(serviceMaskRunnable);
-        }
+        // Define a set of relevant AccessibilityEvents.
+        Runnable serviceMaskRunnable = () -> {
+            int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
+            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
+        };
+        mView.post(serviceMaskRunnable);
 
         // Send state values set by embedders to native-side objects.
         refreshNativeState();
@@ -719,11 +715,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     mIsImageDescriptionsCandidate && AccessibilityState.isScreenReaderEnabled());
 
             // Update the list of events we dispatch to enabled services.
-            if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-                int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
-                mEventDispatcher.updateRelevantEventTypes(
-                        convertMaskToEventTypes(serviceEventMask));
-            }
+            int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
+            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
 
             // If the auto-disable feature is enabled, then we will disable renderer accessibility
             // and tear down objects when no accessibility services are running. If we have

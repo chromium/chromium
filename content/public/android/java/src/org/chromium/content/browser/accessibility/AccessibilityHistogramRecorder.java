@@ -240,12 +240,8 @@ public class AccessibilityHistogramRecorder {
      * Record UMA histograms for performance-related accessibility metrics.
      */
     public void recordAccessibilityPerformanceHistograms() {
-        // If the OnDemand feature is enabled, log UMA metrics and reset counters.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-            recordEventsHistograms();
-        }
-
-        // Always track the histograms for cache usage statistics.
+        // Always track the histograms for events and cache usage statistics.
+        recordEventsHistograms();
         recordCacheHistograms();
     }
 

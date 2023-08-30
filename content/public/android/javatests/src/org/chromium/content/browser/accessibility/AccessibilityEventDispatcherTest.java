@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class AccessibilityEventDispatcherTest {
                 mEventDispatched = true;
                 return true;
             }
-        }, mEventDelays, mViewIndependentEvents, new HashSet<Integer>(), false);
+        }, mEventDelays, mViewIndependentEvents, new HashSet<Integer>(Arrays.asList(1, 2, 3)));
 
         mRunnablePosted = false;
         mRunnableRemoved = false;
@@ -164,7 +165,6 @@ public class AccessibilityEventDispatcherTest {
         Set<Integer> relevantEvents = new HashSet<Integer>();
         relevantEvents.add(3);
         mDispatcher.updateRelevantEventTypes(relevantEvents);
-        mDispatcher.setOnDemandEnabled(true);
 
         // Send a relevant event type and ensure it is dispatched.
         mDispatcher.enqueueEvent(1, 3);
