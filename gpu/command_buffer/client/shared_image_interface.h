@@ -51,7 +51,7 @@ class GPU_EXPORT SharedImageInterface {
   // used for CPU READ/WRITE and underlying resource(native buffers/shared
   // memory) is CPU mappable. Memory and strides can be requested for each
   // plane.
-  class ScopedMapping {
+  class GPU_EXPORT ScopedMapping {
    public:
     ~ScopedMapping();
 
