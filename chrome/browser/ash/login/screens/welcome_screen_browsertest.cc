@@ -1117,7 +1117,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest, SpeakHint) {
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
   GiveChromeVoxHintForTesting();
-  monitor.ExpectSpeechPatternWithLocale("*", "fr");
+  monitor.ExpectSpeech(
+      test::SpeechMonitor::Expectation("*").AsPattern().WithLocale("fr"));
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }
@@ -1143,7 +1144,8 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   GiveChromeVoxHintForTesting();
   // Expect speech in English, even though the system locale is French.
-  monitor.ExpectSpeechPatternWithLocale("*", "en-US");
+  monitor.ExpectSpeech(
+      test::SpeechMonitor::Expectation("*").AsPattern().WithLocale("en-US"));
   monitor.Replay();
   WaitForSpokenSuccessMetric();
 }

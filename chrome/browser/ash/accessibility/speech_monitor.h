@@ -38,6 +38,41 @@ class SpeechMonitor : public content::TtsPlatform {
 
   virtual ~SpeechMonitor();
 
+  // Holds an expectation for utterances.
+  class Expectation {
+   public:
+    explicit Expectation(const std::string& text);
+    ~Expectation();
+    Expectation(const Expectation&);
+
+    // Sets to perform regular expression matching.
+    Expectation& AsPattern(bool enable = true) {
+      as_pattern_ = true;
+      return *this;
+    }
+
+    // Sets the expected locale for the given text.
+    Expectation& WithLocale(const std::string& locale) {
+      locale_ = locale;
+      return *this;
+    }
+
+    // Checks the given list of utterances matches this expectation.
+    // Returns the iterator that points the matched item in the given list.
+    // If not matched, returns the end() of the given list.
+    base::circular_deque<SpeechMonitorUtterance>::const_iterator Matches(
+        const base::circular_deque<SpeechMonitorUtterance>& queue) const;
+
+    std::string ToString() const;
+
+   private:
+    std::string OptionsToString() const;
+
+    std::string text_;
+    bool as_pattern_ = false;
+    absl::optional<std::string> locale_;
+  };
+
   // Use these apis if you want to write an async test e.g.
   // sm_.ExpectSpeech("foo");
   // sm_.Call([this]() { DoSomething(); })
@@ -47,14 +82,12 @@ class SpeechMonitor : public content::TtsPlatform {
 #pragma clang diagnostic ignored "-Wpredefined-identifier-outside-function"
 
   // Adds an expectation of spoken text.
+  void ExpectSpeech(const Expectation& expectation,
+                    const base::Location& location = FROM_HERE);
   void ExpectSpeech(const std::string& text,
                     const base::Location& location = FROM_HERE);
   void ExpectSpeechPattern(const std::string& pattern,
                            const base::Location& location = FROM_HERE);
-  void ExpectSpeechPatternWithLocale(
-      const std::string& pattern,
-      const std::string& locale,
-      const base::Location& location = FROM_HERE);
   void ExpectNextSpeechIsNot(const std::string& text,
                              const base::Location& location = FROM_HERE);
   void ExpectNextSpeechIsNotPattern(const std::string& pattern,
