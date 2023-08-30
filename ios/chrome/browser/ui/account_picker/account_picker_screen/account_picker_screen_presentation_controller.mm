@@ -52,7 +52,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 - (CGRect)frameOfPresentedViewInContainerView {
   CGRect presentedViewFrame = self.containerView.frame;
   switch (self.navigationController.displayStyle) {
-    case kAccountPickerSheetDisplayStyleCentered: {
+    case AccountPickerSheetDisplayStyle::kCentered: {
       CGFloat availableWidth = CGRectGetWidth(presentedViewFrame);
       CGFloat availableHeight = CGRectGetHeight(presentedViewFrame);
 
@@ -67,7 +67,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
       presentedViewFrame.size.height = height;
       break;
     }
-    case kAccountPickerSheetDisplayStyleBottom: {
+    case AccountPickerSheetDisplayStyle::kBottom: {
       CGSize size = [self.navigationController
           layoutFittingSizeForWidth:self.containerView.frame.size.width];
       presentedViewFrame.origin.y =
@@ -99,14 +99,14 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 
   // Add presented view controller.
   switch (self.navigationController.displayStyle) {
-    case kAccountPickerSheetDisplayStyleCentered: {
+    case AccountPickerSheetDisplayStyle::kCentered: {
       [self.containerView addSubview:self.presentedViewController.view];
       CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
       presentedFrame.origin.y = self.containerView.bounds.size.height;
       self.presentedViewController.view.frame = presentedFrame;
       break;
     }
-    case kAccountPickerSheetDisplayStyleBottom: {
+    case AccountPickerSheetDisplayStyle::kBottom: {
       [self.containerView addSubview:self.presentedViewController.view];
       self.presentedViewController.view.frame =
           [self frameOfPresentedViewInContainerView];

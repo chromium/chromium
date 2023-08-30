@@ -83,11 +83,11 @@ const CGFloat kAnimationDuration = 0.25;
   }
   toView.frame = toViewFrameBeforeAnimation;
   switch (self.navigationController.displayStyle) {
-    case kAccountPickerSheetDisplayStyleBottom:
+    case AccountPickerSheetDisplayStyle::kBottom:
       navigationFrameAfterAnimation.origin.y -= sizeDifference;
       navigationFrameAfterAnimation.size.height += sizeDifference;
       break;
-    case kAccountPickerSheetDisplayStyleCentered:
+    case AccountPickerSheetDisplayStyle::kCentered:
       navigationFrameAfterAnimation.origin.y -= sizeDifference / 2.;
       navigationFrameAfterAnimation.size.height += sizeDifference;
       break;

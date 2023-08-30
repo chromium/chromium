@@ -367,11 +367,11 @@ CGFloat GetPixelLength() {
             verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
   CGFloat safeAreaInsetsHeight = 0;
   switch (_layoutDelegate.displayStyle) {
-    case kAccountPickerSheetDisplayStyleBottom:
+    case AccountPickerSheetDisplayStyle::kBottom:
       safeAreaInsetsHeight =
           self.navigationController.view.window.safeAreaInsets.bottom;
       break;
-    case kAccountPickerSheetDisplayStyleCentered:
+    case AccountPickerSheetDisplayStyle::kCentered:
       break;
   }
   // Safe area insets needs to be based on the window since the `self.view`

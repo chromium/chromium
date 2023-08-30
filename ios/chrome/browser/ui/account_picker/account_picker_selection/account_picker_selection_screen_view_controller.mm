@@ -102,11 +102,11 @@ constexpr CGFloat kContentMargin = 16.;
       screenHeight == 0 ? rowHeight : MIN(screenHeight / 2, rowHeight);
   CGFloat safeAreaInsetsHeight = 0;
   switch (self.layoutDelegate.displayStyle) {
-    case kAccountPickerSheetDisplayStyleBottom:
+    case AccountPickerSheetDisplayStyle::kBottom:
       safeAreaInsetsHeight +=
           self.navigationController.view.window.safeAreaInsets.bottom;
       break;
-    case kAccountPickerSheetDisplayStyleCentered:
+    case AccountPickerSheetDisplayStyle::kCentered:
       break;
   }
 
