@@ -31,10 +31,6 @@
 
 namespace base {
 
-#if BUILDFLAG(IS_APPLE)
-BASE_DECLARE_FEATURE(kMacAllowBackgroundingProcesses);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // OneGroupPerRenderer feature places each foreground renderer process into
 // its own cgroup. This will cause the scheduler to use the aggregate runtime
