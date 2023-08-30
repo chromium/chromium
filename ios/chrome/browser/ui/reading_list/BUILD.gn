@@ -279,7 +279,6 @@ source_set("eg_test_support+eg2") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
