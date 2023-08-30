@@ -23,7 +23,7 @@ struct PasswordForm;
 struct PasswordRecipient {
   // Recipient's user identifier (obfuscated Gaia ID).
   std::string user_id;
-  // Recipient's Public Key.
+  // Recipient's Public Key, encoded in base64.
   PublicKey public_key;
 };
 

@@ -128,11 +128,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   EXPECT_EQ(specifics.recipient_user_id(), kRecipientUserId);
   EXPECT_FALSE(specifics.guid().empty());
   EXPECT_FALSE(specifics.has_client_only_unencrypted_data());
-  // TODO(crbug.com/1468523): uncomment the following lines once encryption is
-  // fixed.
-  // EXPECT_FALSE(specifics.encrypted_password_sharing_invitation_data()
-  // .empty());
-  // EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
+  EXPECT_FALSE(specifics.encrypted_password_sharing_invitation_data().empty());
+  EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
 }
 
 }  // namespace

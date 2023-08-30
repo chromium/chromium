@@ -35,8 +35,7 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 
 // static
 std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
-    const sync_pb::CryptographerData& proto,
-    absl::optional<uint32_t> cross_user_sharing_key_pair_version) {
+    const sync_pb::CryptographerData& proto) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
   // TODO(crbug.com/1109221): An invalid local state should be handled in the
   // caller instead of CHECK-ing here, e.g. by resetting the local state.
@@ -44,8 +43,7 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
         key_bag.HasKey(proto.default_key_name()));
 
   CrossUserSharingKeys cross_user_sharing_keys =
-      CrossUserSharingKeys::CreateFromProto(
-          proto.cross_user_sharing_keys(), cross_user_sharing_key_pair_version);
+      CrossUserSharingKeys::CreateFromProto(proto.cross_user_sharing_keys());
 
   return base::WrapUnique(
       new CryptographerImpl(std::move(key_bag), proto.default_key_name(),
@@ -102,10 +100,9 @@ void CryptographerImpl::SelectDefaultEncryptionKey(
   default_encryption_key_name_ = key_name;
 }
 
-void CryptographerImpl::EmplaceKeysAndSelectDefaultKeyFrom(
+void CryptographerImpl::EmplaceAllNigoriKeysFrom(
     const CryptographerImpl& other) {
   EmplaceKeysFrom(other.key_bag_);
-  SelectDefaultEncryptionKey(other.default_encryption_key_name_);
 }
 
 void CryptographerImpl::ClearDefaultEncryptionKey() {
@@ -182,14 +179,19 @@ absl::optional<std::vector<uint8_t>>
 CryptographerImpl::AuthEncryptForCrossUserSharing(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> recipient_public_key) const {
-  absl::optional encryption_key_version =
-      cross_user_sharing_keys_.GetEncryptionKeyPairVersion();
-  if (!encryption_key_version.has_value()) {
+  if (!default_cross_user_sharing_key_version_.has_value()) {
+    DVLOG(1) << "Default encryption key pair version is not set";
+    return absl::nullopt;
+  }
+  if (!cross_user_sharing_keys_.HasKeyPair(
+          default_cross_user_sharing_key_version_.value())) {
     DVLOG(1) << "Encryption key pair is not available";
     return absl::nullopt;
   }
+
   const CrossUserSharingPublicPrivateKeyPair& encryption_key_pair =
-      cross_user_sharing_keys_.GetKeyPair(encryption_key_version.value());
+      cross_user_sharing_keys_.GetKeyPair(
+          default_cross_user_sharing_key_version_.value());
 
   return encryption_key_pair.HpkeAuthEncrypt(plaintext, recipient_public_key,
                                              {});
@@ -209,6 +211,11 @@ CryptographerImpl::AuthDecryptForCrossUserSharing(
 
   return decryption_key_pair.HpkeAuthDecrypt(encrypted_data, sender_public_key,
                                              {});
+}
+
+void CryptographerImpl::SelectDefaultCrossUserSharingKey(
+    const uint32_t version) {
+  default_cross_user_sharing_key_version_ = version;
 }
 
 }  // namespace syncer

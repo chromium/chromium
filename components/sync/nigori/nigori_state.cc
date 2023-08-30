@@ -135,12 +135,13 @@ NigoriState NigoriState::CreateFromLocalProto(
     const sync_pb::NigoriModel& proto) {
   NigoriState state;
 
-  state.cryptographer = CryptographerImpl::FromProto(
-      proto.cryptographer_data(),
-      proto.has_cross_user_sharing_public_key()
-          ? absl::optional<uint32_t>(
-                proto.cross_user_sharing_public_key().version())
-          : absl::nullopt);
+  state.cryptographer =
+      CryptographerImpl::FromProto(proto.cryptographer_data());
+
+  if (proto.has_cross_user_sharing_public_key()) {
+    state.cryptographer->SelectDefaultCrossUserSharingKey(
+        proto.cross_user_sharing_public_key().version());
+  }
 
   if (proto.has_pending_keys()) {
     state.pending_keys = proto.pending_keys();

@@ -43,9 +43,8 @@ CrossUserSharingKeys CrossUserSharingKeys::CreateEmpty() {
 
 // static
 CrossUserSharingKeys CrossUserSharingKeys::CreateFromProto(
-    const sync_pb::CrossUserSharingKeys& proto,
-    absl::optional<uint32_t> cross_user_sharing_key_pair_version) {
-  CrossUserSharingKeys output(cross_user_sharing_key_pair_version);
+    const sync_pb::CrossUserSharingKeys& proto) {
+  CrossUserSharingKeys output;
   for (const sync_pb::CrossUserSharingPrivateKey& key : proto.private_key()) {
     if (!output.AddKeyPairFromProto(key)) {
       DLOG(WARNING) << "Could not add PrivateKey protocol buffer message.";
@@ -54,6 +53,8 @@ CrossUserSharingKeys CrossUserSharingKeys::CreateFromProto(
 
   return output;
 }
+
+CrossUserSharingKeys::CrossUserSharingKeys() = default;
 
 CrossUserSharingKeys::CrossUserSharingKeys(CrossUserSharingKeys&& other) =
     default;
@@ -70,7 +71,7 @@ sync_pb::CrossUserSharingKeys CrossUserSharingKeys::ToProto() const {
 }
 
 CrossUserSharingKeys CrossUserSharingKeys::Clone() const {
-  CrossUserSharingKeys copy(encryption_key_pair_version_);
+  CrossUserSharingKeys copy;
   copy.AddAllUnknownKeysFrom(*this);
   return copy;
 }
@@ -116,18 +117,5 @@ const CrossUserSharingPublicPrivateKeyPair& CrossUserSharingKeys::GetKeyPair(
   CHECK(HasKeyPair(version));
   return key_pairs_map_.at(version);
 }
-
-absl::optional<uint32_t> CrossUserSharingKeys::GetEncryptionKeyPairVersion()
-    const {
-  if (!encryption_key_pair_version_.has_value() ||
-      !key_pairs_map_.contains(encryption_key_pair_version_.value())) {
-    return absl::nullopt;
-  }
-  return encryption_key_pair_version_;
-}
-
-CrossUserSharingKeys::CrossUserSharingKeys(
-    absl::optional<uint32_t> encryption_key_pair_version)
-    : encryption_key_pair_version_(encryption_key_pair_version) {}
 
 }  // namespace syncer

@@ -21,8 +21,7 @@ class CrossUserSharingKeys {
   static CrossUserSharingKeys CreateEmpty();
   // Deserialization from proto.
   static CrossUserSharingKeys CreateFromProto(
-      const sync_pb::CrossUserSharingKeys& key_bag,
-      absl::optional<uint32_t> cross_user_sharing_key_pair_version);
+      const sync_pb::CrossUserSharingKeys& key_bag);
 
   CrossUserSharingKeys(CrossUserSharingKeys&& other);
   ~CrossUserSharingKeys();
@@ -59,11 +58,8 @@ class CrossUserSharingKeys {
   absl::optional<uint32_t> GetEncryptionKeyPairVersion() const;
 
  private:
-  explicit CrossUserSharingKeys(
-      absl::optional<uint32_t> encryption_key_pair_version = absl::nullopt);
+  CrossUserSharingKeys();
 
-  // The version of the encryption key_pair to be used.
-  absl::optional<uint32_t> encryption_key_pair_version_;
   // Public-private key-pairs we know about, mapped by version.
   std::map<uint32_t, const CrossUserSharingPublicPrivateKeyPair> key_pairs_map_;
 };

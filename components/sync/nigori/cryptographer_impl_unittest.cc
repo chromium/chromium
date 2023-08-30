@@ -105,6 +105,65 @@ TEST(CryptographerImplTest, ShouldSelectDefaultEncryptionKey) {
   EXPECT_THAT(encrypted.key_name(), Eq(key_name));
 }
 
+TEST(CryptographerImplTest, ShouldSelectDefaultCrossUserSharingKey) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
+  cryptographer->SelectDefaultCrossUserSharingKey(4);
+
+  const std::string plaintext = "Sharing is caring";
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      cryptographer->AuthEncryptForCrossUserSharing(
+          base::as_bytes(base::make_span(plaintext)),
+          CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
+              .GetRawPublicKey());
+
+  EXPECT_TRUE(encrypted_message.has_value());
+}
+
+TEST(CryptographerImplTest, ShouldFailOnNonSetEncryptionKeyPair) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
+
+  const std::string plaintext = "Sharing is caring";
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      cryptographer->AuthEncryptForCrossUserSharing(
+          base::as_bytes(base::make_span(plaintext)),
+          CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
+              .GetRawPublicKey());
+
+  EXPECT_FALSE(encrypted_message.has_value());
+}
+
+TEST(CryptographerImplTest, ShouldFailOnNonExistentDefaultEncryptionKeyPair) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
+  cryptographer->SelectDefaultCrossUserSharingKey(3);
+
+  const std::string plaintext = "Sharing is caring";
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      cryptographer->AuthEncryptForCrossUserSharing(
+          base::as_bytes(base::make_span(plaintext)),
+          CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
+              .GetRawPublicKey());
+
+  EXPECT_FALSE(encrypted_message.has_value());
+}
+
 TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
   const std::string kText1 = "foo";
   const std::string kText2 = "bar";
@@ -229,18 +288,18 @@ TEST(CryptographerImplTest, ShouldEmplaceCrossUserSharingKeysFrom) {
 
 TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
   std::unique_ptr<CryptographerImpl> cryptographer_sender =
-      CryptographerImpl::FromProto(
-          sync_pb::CryptographerData::default_instance(), 0);
+      CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer_sender, NotNull());
   cryptographer_sender->EmplaceKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  cryptographer_sender->SelectDefaultCrossUserSharingKey(0);
   std::unique_ptr<CryptographerImpl> cryptographer_recipient =
-      CryptographerImpl::FromProto(
-          sync_pb::CryptographerData::default_instance(), 0);
+      CryptographerImpl::CreateEmpty();
 
   ASSERT_THAT(cryptographer_recipient, NotNull());
   cryptographer_recipient->EmplaceKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  cryptographer_recipient->SelectDefaultCrossUserSharingKey(0);
 
   const std::string plaintext = "Sharing is caring";
 
@@ -261,6 +320,39 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
 
   EXPECT_TRUE(decrypted_message.has_value());
   EXPECT_THAT(decrypted_message.value(), testing::ElementsAreArray(plaintext));
+}
+
+TEST(CryptographerImplTest, ShouldEmplaceAllNigoriKeysFrom) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+
+  ASSERT_THAT(cryptographer, NotNull());
+  ASSERT_FALSE(cryptographer->CanEncrypt());
+
+  const std::string key_name = cryptographer->EmplaceKey(
+      "password_local", KeyDerivationParams::CreateForPbkdf2());
+
+  ASSERT_THAT(key_name, Ne(std::string()));
+  cryptographer->SelectDefaultEncryptionKey(key_name);
+  ASSERT_TRUE(cryptographer->CanEncrypt());
+
+  std::unique_ptr<CryptographerImpl> other_cryptographer =
+      CryptographerImpl::CreateEmpty();
+
+  ASSERT_THAT(other_cryptographer, NotNull());
+  ASSERT_FALSE(other_cryptographer->CanEncrypt());
+
+  const std::string key_name_other = other_cryptographer->EmplaceKey(
+      "password_other", KeyDerivationParams::CreateForPbkdf2());
+
+  ASSERT_THAT(key_name_other, Ne(std::string()));
+  other_cryptographer->SelectDefaultEncryptionKey(key_name_other);
+  ASSERT_TRUE(other_cryptographer->CanEncrypt());
+
+  cryptographer->EmplaceAllNigoriKeysFrom(*other_cryptographer);
+
+  EXPECT_TRUE(cryptographer->HasKey(key_name));
+  EXPECT_TRUE(cryptographer->HasKey(key_name_other));
 }
 
 }  // namespace syncer

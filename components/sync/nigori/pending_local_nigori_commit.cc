@@ -40,6 +40,7 @@ void InitKeyPair(
           cross_user_sharing_key_pair.GetRawPrivateKey());
   CHECK(key_pair.has_value());
   state->cryptographer->EmplaceKeyPair(std::move(key_pair.value()), 0);
+  state->cryptographer->SelectDefaultCrossUserSharingKey(0);
 }
 
 void LogCrossUserSharingPublicPrivateKeyInit(bool is_succesful) {
@@ -143,7 +144,9 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
     std::unique_ptr<CryptographerImpl> cryptographer =
         state->keystore_keys_cryptographer->ToCryptographerImpl();
     DCHECK(!cryptographer->GetDefaultEncryptionKeyName().empty());
-    state->cryptographer->EmplaceKeysAndSelectDefaultKeyFrom(*cryptographer);
+    state->cryptographer->EmplaceAllNigoriKeysFrom(*cryptographer);
+    state->cryptographer->SelectDefaultEncryptionKey(
+        cryptographer->GetDefaultEncryptionKeyName());
     state->passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
     state->keystore_migration_time = base::Time::Now();
 

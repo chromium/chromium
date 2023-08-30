@@ -41,9 +41,7 @@ class CryptographerImpl : public Cryptographer {
           KeyDerivationParams::CreateForPbkdf2());
   // Returns null in case of error (e.g. default key not present in keybag).
   static std::unique_ptr<CryptographerImpl> FromProto(
-      const sync_pb::CryptographerData& proto,
-      absl::optional<uint32_t> cross_user_sharing_key_pair_version =
-          absl::nullopt);
+      const sync_pb::CryptographerData& proto);
 
   CryptographerImpl& operator=(const CryptographerImpl&) = delete;
 
@@ -76,9 +74,8 @@ class CryptographerImpl : public Cryptographer {
   // return true. |key_name| must not be empty and must represent a known key.
   void SelectDefaultEncryptionKey(const std::string& key_name);
 
-  // Adds all keys in |other| that weren't previously known, and selects the
-  // same default key. |other| must have selected a default key.
-  void EmplaceKeysAndSelectDefaultKeyFrom(const CryptographerImpl& other);
+  // Adds all Nigori keys in |other| that weren't previously known.
+  void EmplaceAllNigoriKeysFrom(const CryptographerImpl& other);
 
   // Clears the default encryption key, which causes CanEncrypt() to return
   // false.
@@ -98,6 +95,9 @@ class CryptographerImpl : public Cryptographer {
   // Determines whether |key_pair_version| represents a known Public-private
   // key-pair.
   bool HasKeyPair(const uint32_t key_pair_version) const;
+
+  // Sets or changes the version of the default cross user sharing key.
+  void SelectDefaultCrossUserSharingKey(const uint32_t version);
 
   // Returns a proto representation of the default encryption key. |*this| must
   // have a default encryption key set, as reflected by CanEncrypt().
@@ -146,6 +146,10 @@ class CryptographerImpl : public Cryptographer {
   // must correspond to a key within |key_bag_|. May be empty even if |key_bag_|
   // is not.
   std::string default_encryption_key_name_;
+
+  // The version of the default cross user sharing key to be used for
+  // encryption.
+  absl::optional<uint32_t> default_cross_user_sharing_key_version_;
 
   // Cross user sharing keys we know about.
   CrossUserSharingKeys cross_user_sharing_keys_;
