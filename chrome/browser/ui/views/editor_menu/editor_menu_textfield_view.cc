@@ -17,6 +17,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -115,6 +116,10 @@ void EditorMenuTextfieldView::InitLayout() {
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kProductIcon));
   arrow_button_->SetVisible(false);
+  views::InkDrop::Get(arrow_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(arrow_button_)->SetBaseColorId(ui::kColorIcon);
+  arrow_button_->SetHasInkDropActionOnClick(true);
 }
 
 void EditorMenuTextfieldView::OnTextfieldArrowButtonPressed() {

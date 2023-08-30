@@ -32,6 +32,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -281,6 +282,10 @@ void EditorMenuView::AddTitleContainer() {
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
                                      cros_tokens::kCrosSysOnSurface,
                                      kSettingsIconSizeDip));
+  views::InkDrop::Get(settings_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(settings_button_)->SetBaseColorId(ui::kColorIcon);
+  settings_button_->SetHasInkDropActionOnClick(true);
 
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
 

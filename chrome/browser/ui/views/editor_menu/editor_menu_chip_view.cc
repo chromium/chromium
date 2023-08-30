@@ -8,9 +8,11 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace chromeos::editor_menu {
 
@@ -29,6 +31,13 @@ EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
                                        const gfx::VectorIcon* icon)
     : views::LabelButton(std::move(callback), text), icon_(icon) {
   CHECK(icon_);
+
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetBaseColorId(ui::kColorIcon);
+  SetHasInkDropActionOnClick(true);
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(), kRadiusDip));
 
   SetTooltipText(text);
   SetImageLabelSpacing(kImageLabelSpacingDip);
