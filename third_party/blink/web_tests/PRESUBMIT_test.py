@@ -124,12 +124,13 @@ class PresubmitTest(unittest.TestCase):
         for WPT importer.
         """
         error_file = MockAffectedFile(
-            "some/dir/doctype_error.html",
+            "/chromium/src/third_party/blink/web_tests/"
+            "external/wpt/some/dir/doctype_error.html",
             ["<html>", "<body>", "<p>Test</p>", "</body>", "</html>"])
         mock_input_api = MockInputApi()
+        mock_input_api.os_path = posixpath
+        mock_input_api.presubmit_local_path = "/chromium/src/third_party/blink/web_tests"
         mock_input_api.files = [error_file]
-        mock_input_api.change.author_email = \
-            "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
 
         messages = PRESUBMIT._CheckForDoctypeHTML(mock_input_api,
                                                   MockOutputApi())

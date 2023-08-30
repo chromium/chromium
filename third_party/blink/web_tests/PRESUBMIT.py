@@ -17,8 +17,6 @@ import re
 from html.parser import HTMLParser
 from typing import List
 
-WPT_IMPORTER_EMAIL = "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
-
 
 def _CheckTestharnessResults(input_api, output_api):
     """Checks for all-PASS generic baselines for testharness.js tests.
@@ -431,12 +429,12 @@ def _CheckForDoctypeHTML(input_api, output_api):
     if input_api.no_diffs:
         return results
 
-    # These tests are being imported from WPT, so <!DOCTYPE html> is not required yet.
-    no_errors = (input_api.change.author_email == WPT_IMPORTER_EMAIL)
+    wpt_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                      "external", "wpt")
 
     for f in input_api.AffectedFiles(include_deletes=False):
         path = f.LocalPath()
-        fname = os.path.basename(path)
+        fname = input_api.os_path.basename(path)
 
         if not fname.endswith(".html") or "quirk" in fname:
             continue
@@ -447,6 +445,9 @@ def _CheckForDoctypeHTML(input_api, output_api):
                     "to the name of your test." % path
 
             if f.Action() == "A" or _IsDoctypeHTMLSet(f.OldContents()):
+                # These tests are being imported from WPT, so <!DOCTYPE html> is
+                # not required yet.
+                no_errors = f.AbsoluteLocalPath().startswith(wpt_path)
                 if no_errors:
                     results.append(output_api.PresubmitPromptWarning(error))
                 else:
