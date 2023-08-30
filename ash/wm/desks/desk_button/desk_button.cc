@@ -504,12 +504,6 @@ void DeskButton::MaybeUpdateDeskSwitchButtonVisibility(
 void DeskButton::UpdateShelfAutoHideDisabler(
     absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
     bool should_enable_shelf_auto_hide) {
-  // If shelf is not set to always hide, no need to disable.
-  if (desk_button_widget_->shelf()->auto_hide_behavior() !=
-      ShelfAutoHideBehavior::kAlways) {
-    return;
-  }
-
   if (should_enable_shelf_auto_hide) {
     disabler.reset();
   } else {
