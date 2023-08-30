@@ -3,7 +3,7 @@ require_once '../../resources/portabilityLayer.php';
 
 clearstatcache();
 
-if ($_SERVER["HTTP_IF_MODIFIED_SINCE"]) {
+if (isset($_SERVER["HTTP_IF_MODIFIED_SINCE"])) {
     header("HTTP/1.0 304 Not Modified");
     header("Content-Type: text/plain");
     exit();

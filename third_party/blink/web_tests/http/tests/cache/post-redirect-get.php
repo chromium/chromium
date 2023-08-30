@@ -11,7 +11,8 @@ header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: ' . gmdate(DATE_RFC1123, time()-1));
 
-if ($_POST["submit"] == "redirect") {
+$submit = $_POST["submit"] ?? null;
+if ($submit == "redirect") {
     header('HTTP/1.1 302 Found');
     header('Location: post-redirect-get.php?finish=true');
     exit();
