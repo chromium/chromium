@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -57,7 +58,8 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
             Runnable finishRunnable, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             BookmarkUiPrefs bookmarkUiPrefs,
-            ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator) {
+            ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
+            ShoppingService shoppingService) {
         mContext = context;
         mView = LayoutInflater.from(mContext).inflate(R.layout.bookmark_folder_picker, null);
         mMoveButton = mView.findViewById(R.id.move_button);
@@ -75,7 +77,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mMediator = new BookmarkFolderPickerMediator(context, bookmarkModel, bookmarkImageFetcher,
                 bookmarkIds, finishRunnable,
                 new BookmarkUiPrefs(SharedPreferencesManager.getInstance()), model, mModelList,
-                addNewFolderCoordinator, improvedBookmarkRowCoordinator);
+                addNewFolderCoordinator, improvedBookmarkRowCoordinator, shoppingService);
 
         FadingShadowView shadow = (FadingShadowView) mView.findViewById(R.id.shadow);
         shadow.init(mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);

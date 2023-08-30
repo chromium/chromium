@@ -395,17 +395,6 @@ class BookmarkManagerMediator
         mIsIncognito = isIncognito;
         mBackPressStateSupplier = backPressStateSupplier;
         mProfile = profile;
-
-        mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
-        mBookmarkUndoController = bookmarkUndoController;
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mBookmarkQueryHandler =
-                    new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
-        } else {
-            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(
-                    mBookmarkModel, bookmarkUiPrefs, SyncServiceFactory.getForProfile(mProfile));
-        }
-
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
@@ -413,6 +402,16 @@ class BookmarkManagerMediator
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mShoppingService = shoppingService;
         mSnackbarManager = snackbarManager;
+        mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
+        mBookmarkUndoController = bookmarkUndoController;
+
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            mBookmarkQueryHandler = new ImprovedBookmarkQueryHandler(
+                    mBookmarkModel, bookmarkUiPrefs, mShoppingService);
+        } else {
+            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(
+                    mBookmarkModel, bookmarkUiPrefs, SyncServiceFactory.getForProfile(mProfile));
+        }
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             onScrollListenerConsumer.accept(new OnScrollListener() {

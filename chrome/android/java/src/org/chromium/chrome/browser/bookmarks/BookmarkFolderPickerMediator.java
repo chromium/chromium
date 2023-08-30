@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -68,14 +69,16 @@ class BookmarkFolderPickerMediator {
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
             Runnable finishRunnable, BookmarkUiPrefs bookmarkUiPrefs, PropertyModel model,
             ModelList modelList, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
-            ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator) {
+            ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
+            ShoppingService shoppingService) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mBookmarkIds = bookmarkIds;
         mFinishRunnable = finishRunnable;
-        mQueryHandler = new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
+        mQueryHandler =
+                new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs, shoppingService);
         mModel = model;
         mModelList = modelList;
         mAddNewFolderCoordinator = addNewFolderCoordinator;

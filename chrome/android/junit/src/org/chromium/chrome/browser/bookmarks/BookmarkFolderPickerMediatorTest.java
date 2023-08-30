@@ -214,7 +214,8 @@ public class BookmarkFolderPickerMediatorTest {
                 mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId), mFinishRunnable,
                 mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
-                        mBookmarkUiPrefs, mShoppingService));
+                        mBookmarkUiPrefs, mShoppingService),
+                mShoppingService);
     }
 
     @Test
@@ -223,7 +224,8 @@ public class BookmarkFolderPickerMediatorTest {
                 mBookmarkImageFetcher, Arrays.asList(mUserFolderId), mFinishRunnable,
                 mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
-                        mBookmarkUiPrefs, mShoppingService));
+                        mBookmarkUiPrefs, mShoppingService),
+                mShoppingService);
         mMediator.populateFoldersForParentId(mMobileFolderId);
 
         // Check that the UserFolder isn't a row since it should be filtered out because it's the
@@ -310,7 +312,8 @@ public class BookmarkFolderPickerMediatorTest {
                 mBookmarkImageFetcher, Arrays.asList(mUserBookmarkId, mUserBookmarkId1),
                 mFinishRunnable, mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
-                        mBookmarkUiPrefs, mShoppingService));
+                        mBookmarkUiPrefs, mShoppingService),
+                mShoppingService);
 
         assertEquals("UserFolder", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
@@ -322,7 +325,8 @@ public class BookmarkFolderPickerMediatorTest {
                 mBookmarkImageFetcher, Arrays.asList(mUserFolderId, mUserBookmarkId1),
                 mFinishRunnable, mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
-                        mBookmarkUiPrefs, mShoppingService));
+                        mBookmarkUiPrefs, mShoppingService),
+                mShoppingService);
 
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
@@ -334,7 +338,8 @@ public class BookmarkFolderPickerMediatorTest {
                 mBookmarkImageFetcher, Arrays.asList(mReadingListItemId1, mReadingListItemId2),
                 mFinishRunnable, mBookmarkUiPrefs, mModel, mModelList, mAddNewFolderCoordinator,
                 new ImprovedBookmarkRowCoordinator(mActivity, mBookmarkImageFetcher, mBookmarkModel,
-                        mBookmarkUiPrefs, mShoppingService));
+                        mBookmarkUiPrefs, mShoppingService),
+                mShoppingService);
 
         assertEquals("Reading List", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
