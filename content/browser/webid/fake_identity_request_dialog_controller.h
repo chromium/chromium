@@ -11,6 +11,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using TokenError = content::IdentityCredentialTokenError;
+
 namespace content {
 class WebContents;
 
@@ -48,6 +50,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                        const std::string& idp_for_display,
                        const blink::mojom::RpContext& rp_context,
                        const IdentityProviderMetadata& idp_metadata,
+                       const absl::optional<TokenError>& error,
                        DismissCallback dismiss_callback) override;
 
   std::string GetTitle() const override;

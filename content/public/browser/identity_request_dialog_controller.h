@@ -29,6 +29,11 @@ struct CONTENT_EXPORT ClientMetadata {
   GURL privacy_policy_url;
 };
 
+struct CONTENT_EXPORT IdentityCredentialTokenError {
+  int code;
+  GURL url;
+};
+
 struct CONTENT_EXPORT IdentityProviderMetadata {
   IdentityProviderMetadata();
   IdentityProviderMetadata(const IdentityProviderMetadata& other);
@@ -142,6 +147,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& idp_for_display,
       const blink::mojom::RpContext& rp_context,
       const IdentityProviderMetadata& idp_metadata,
+      const absl::optional<IdentityCredentialTokenError>& error,
       DismissCallback dismiss_callback);
 
   // Only to be called after a dialog is shown.

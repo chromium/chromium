@@ -116,6 +116,20 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     GURL terms_of_service_url;
   };
 
+  struct IdentityCredentialTokenError {
+    int code;
+    GURL url;
+  };
+
+  struct CONTENT_EXPORT TokenResult {
+    TokenResult();
+    ~TokenResult();
+    TokenResult(const TokenResult&);
+
+    std::string token;
+    absl::optional<IdentityCredentialTokenError> error;
+  };
+
   // Error codes sent to the metrics endpoint.
   // Enum is part of public FedCM API. Do not renumber error codes.
   // The error codes are not consecutive to make adding error codes easier in
@@ -154,7 +168,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(FetchStatus,
                               data_decoder::DataDecoder::ValueOrError)>;
   using TokenRequestCallback =
-      base::OnceCallback<void(FetchStatus, const std::string&)>;
+      base::OnceCallback<void(FetchStatus, TokenResult)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(

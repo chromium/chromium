@@ -17,6 +17,8 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
+using TokenError = content::IdentityCredentialTokenError;
+
 namespace views {
 class Checkbox;
 class ImageButton;
@@ -101,11 +103,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override;
 
-  void ShowErrorDialog(
-      const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
-      const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata) override;
+  void ShowErrorDialog(const std::u16string& top_frame_for_display,
+                       const absl::optional<std::u16string>& iframe_for_display,
+                       const std::u16string& idp_for_display,
+                       const content::IdentityProviderMetadata& idp_metadata,
+                       const absl::optional<TokenError>& error) override;
 
   // Populates `idp_images` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);

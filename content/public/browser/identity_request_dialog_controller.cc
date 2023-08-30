@@ -85,6 +85,7 @@ void IdentityRequestDialogController::ShowErrorDialog(
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
+    const absl::optional<IdentityCredentialTokenError>& error,
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);

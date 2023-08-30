@@ -61,6 +61,8 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using TokenError =
+    content::IdpNetworkRequestManager::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -499,8 +501,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         config_.token_response.parse_status == ParseStatus::kSuccess
             ? config_.token
             : std::string();
-    base::OnceCallback bound_callback = base::BindOnce(
-        std::move(callback), config_.token_response, delivered_token);
+    TokenResult result;
+    result.token = delivered_token;
+    base::OnceCallback bound_callback =
+        base::BindOnce(std::move(callback), config_.token_response, result);
     if (config_.delay_token_response) {
       delayed_callbacks_.push_back(std::move(bound_callback));
     } else {
@@ -672,6 +676,7 @@ class TestDialogController
                        const std::string& idp_for_display,
                        const blink::mojom::RpContext& rp_context,
                        const IdentityProviderMetadata& idp_metadata,
+                       const absl::optional<TokenError>& error,
                        IdentityRequestDialogController::DismissCallback
                            dismiss_callback) override {
     if (!state_) {

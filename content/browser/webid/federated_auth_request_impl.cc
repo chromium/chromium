@@ -1764,7 +1764,10 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   ShowModalDialog(continue_on);
 }
 
-void FederatedAuthRequestImpl::ShowErrorDialog(const GURL& idp_config_url) {
+void FederatedAuthRequestImpl::ShowErrorDialog(
+    const GURL& idp_config_url,
+    absl::optional<IdpNetworkRequestManager::IdentityCredentialTokenError>
+        error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
   absl::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
@@ -1777,6 +1780,9 @@ void FederatedAuthRequestImpl::ShowErrorDialog(const GURL& idp_config_url) {
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
       idp_infos_[idp_config_url]->rp_context,
       idp_infos_[idp_config_url]->metadata,
+      error
+          ? absl::make_optional<TokenError>(TokenError{error->code, error->url})
+          : absl::nullopt,
       base::BindOnce(
           &FederatedAuthRequestImpl::OnDismissErrorDialog,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1787,10 +1793,12 @@ void FederatedAuthRequestImpl::ShowErrorDialog(const GURL& idp_config_url) {
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
     IdentityProviderConfigPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
-    const std::string& id_token) {
+    IdpNetworkRequestManager::TokenResult result) {
+  CHECK(result.token.empty() || !result.error);
+
   if (IsFedCmErrorEnabled() &&
       status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
-    ShowErrorDialog(idp->config_url);
+    ShowErrorDialog(idp->config_url, result.error);
     return;
   }
 
@@ -1802,7 +1810,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ ||
       fetch_time >= token_request_delay_) {
-    CompleteTokenRequest(std::move(idp), status, id_token);
+    CompleteTokenRequest(std::move(idp), status, result.token);
     return;
   }
 
@@ -1810,7 +1818,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       FROM_HERE,
       base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(idp), status,
-                     id_token),
+                     result.token),
       token_request_delay_ - fetch_time);
 }
 

@@ -620,7 +620,8 @@ void AccountSelectionBubbleView::ShowErrorDialog(
     const std::u16string& top_frame_for_display,
     const absl::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    const absl::optional<TokenError>& error) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
                                   idp_for_display, rp_context_);
   UpdateHeader(idp_metadata, title, subtitle_,

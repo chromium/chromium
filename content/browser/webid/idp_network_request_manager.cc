@@ -24,6 +24,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -43,6 +44,9 @@ using AccountList = IdpNetworkRequestManager::AccountList;
 using ClientMetadata = IdpNetworkRequestManager::ClientMetadata;
 using Endpoints = IdpNetworkRequestManager::Endpoints;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using TokenResult = content::IdpNetworkRequestManager::TokenResult;
+using TokenError =
+    content::IdpNetworkRequestManager::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using AccountsResponseInvalidReason =
     content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
@@ -96,6 +100,11 @@ constexpr char kTokenKey[] = "token";
 // the serve wants to direct the user to continue on a pop-up
 // window before it provides a token result.
 constexpr char kContinueOnKey[] = "continue_on";
+// The id assertion endpoint may contain an error dict containing a code and url
+// which describes the error.
+constexpr char kErrorKey[] = "error";
+constexpr char kErrorCodeKey[] = "code";
+constexpr char kErrorUrlKey[] = "url";
 
 // Body content types.
 constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
@@ -143,6 +152,19 @@ GURL ResolveConfigUrl(const GURL& config_url, const std::string& endpoint) {
   if (endpoint.empty())
     return GURL();
   return config_url.Resolve(endpoint);
+}
+
+GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
+  const std::string* response_url = response.FindString(key);
+  if (!response_url) {
+    return GURL();
+  }
+  GURL url = GURL(*response_url);
+  // TODO(crbug.com/1476951): Allow localhost URLs
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return GURL();
+  }
+  return url;
 }
 
 absl::optional<content::IdentityRequestAccount> ParseAccount(
@@ -481,22 +503,10 @@ void OnClientMetadataParsed(
     return;
   }
 
-  const base::Value::Dict& response = result->GetDict();
-  auto ExtractUrl = [&](const char* key) {
-    const std::string* endpoint = response.FindString(key);
-    if (!endpoint) {
-      return GURL();
-    }
-    GURL url = GURL(*endpoint);
-    if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-      return GURL();
-    }
-    return url;
-  };
-
   IdpNetworkRequestManager::ClientMetadata data;
-  data.privacy_policy_url = ExtractUrl(kPrivacyPolicyKey);
-  data.terms_of_service_url = ExtractUrl(kTermsOfServiceKey);
+  const base::Value::Dict& response = result->GetDict();
+  data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
+  data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           data);
@@ -561,8 +571,10 @@ void OnTokenRequestParsed(
     const GURL& token_url,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
+  TokenResult token_result;
+
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    std::move(callback).Run(fetch_status, std::string());
+    std::move(callback).Run(fetch_status, token_result);
     return;
   }
 
@@ -571,8 +583,9 @@ void OnTokenRequestParsed(
   const std::string* continue_on = response.FindString(kContinueOnKey);
 
   if (token) {
+    token_result.token = *token;
     std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                            *token);
+                            token_result);
     return;
   }
 
@@ -586,9 +599,18 @@ void OnTokenRequestParsed(
     }
   }
 
+  if (IsFedCmErrorEnabled()) {
+    const base::Value::Dict* response_error = response.FindDict(kErrorKey);
+    if (response_error) {
+      int error_code = response_error->FindInt(kErrorCodeKey).value_or(0);
+      GURL error_url = ExtractUrl(*response_error, kErrorUrlKey);
+      token_result.error = TokenError(error_code, error_url);
+    }
+  }
+
   std::move(callback).Run(
       {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-      std::string());
+      token_result);
 }
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
@@ -603,6 +625,11 @@ void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
 IdpNetworkRequestManager::Endpoints::Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::~Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
+    default;
+
+IdpNetworkRequestManager::TokenResult::TokenResult() = default;
+IdpNetworkRequestManager::TokenResult::~TokenResult() = default;
+IdpNetworkRequestManager::TokenResult::TokenResult(const TokenResult& other) =
     default;
 
 // static

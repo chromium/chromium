@@ -206,7 +206,8 @@ void AccountSelectionViewAndroid::ShowErrorDialog(
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    const absl::optional<TokenError>& error) {
   // TODO(crbug.com/1420642): Implement error dialog on Android.
 }
 

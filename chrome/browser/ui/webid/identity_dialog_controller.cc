@@ -68,6 +68,7 @@ void IdentityDialogController::ShowErrorDialog(
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
+    const absl::optional<TokenError>& error,
     DismissCallback dismiss_callback) {
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_) {
@@ -75,7 +76,8 @@ void IdentityDialogController::ShowErrorDialog(
   }
 
   account_view_->ShowErrorDialog(top_frame_for_display, iframe_for_display,
-                                 idp_for_display, rp_context, idp_metadata);
+                                 idp_for_display, rp_context, idp_metadata,
+                                 error);
 }
 
 void IdentityDialogController::OnSigninToIdP() {

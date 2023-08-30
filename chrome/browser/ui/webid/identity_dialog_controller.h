@@ -19,6 +19,7 @@ using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 using DismissCallback =
     content::IdentityRequestDialogController::DismissCallback;
+using TokenError = content::IdentityCredentialTokenError;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -58,6 +59,7 @@ class IdentityDialogController
                        const std::string& idp_for_display,
                        const blink::mojom::RpContext& rp_context,
                        const content::IdentityProviderMetadata& idp_metadata,
+                       const absl::optional<TokenError>& error,
                        DismissCallback dismiss_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 

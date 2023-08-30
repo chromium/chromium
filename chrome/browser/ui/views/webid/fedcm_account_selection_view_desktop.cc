@@ -217,7 +217,8 @@ void FedCmAccountSelectionView::ShowErrorDialog(
     const absl::optional<std::string>& iframe_etld_plus_one,
     const std::string& idp_etld_plus_one,
     const blink::mojom::RpContext& rp_context,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata,
+    const absl::optional<TokenError>& error) {
   state_ = State::SIGN_IN_ERROR;
   notify_delegate_of_dismiss_ = true;
   absl::optional<std::u16string> iframe_etld_plus_one_u16 =
@@ -248,7 +249,7 @@ void FedCmAccountSelectionView::ShowErrorDialog(
 
   GetBubbleView()->ShowErrorDialog(
       base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
-      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
+      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
 
   if (create_bubble && is_web_contents_visible_) {
     bubble_widget_->Show();

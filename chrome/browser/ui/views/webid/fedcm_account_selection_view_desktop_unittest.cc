@@ -21,6 +21,7 @@
 
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
+using TokenError = content::IdentityCredentialTokenError;
 
 namespace {
 
@@ -83,11 +84,11 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
     account_ids_ = {};
   }
 
-  void ShowErrorDialog(
-      const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
-      const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata) override {
+  void ShowErrorDialog(const std::u16string& top_frame_for_display,
+                       const absl::optional<std::u16string>& iframe_for_display,
+                       const std::u16string& idp_for_display,
+                       const content::IdentityProviderMetadata& idp_metadata,
+                       const absl::optional<TokenError>& error) override {
     sheet_type_ = SheetType::kError;
     account_ids_ = {};
   }
@@ -258,9 +259,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), widget_.get(), bubble_view_.get());
-    controller->ShowErrorDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
-                                kIdpEtldPlusOne, rp_context,
-                                content::IdentityProviderMetadata());
+    controller->ShowErrorDialog(
+        kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne, rp_context,
+        content::IdentityProviderMetadata(), /*error=*/absl::nullopt);
     EXPECT_EQ(TestBubbleView::SheetType::kError, bubble_view_->sheet_type_);
     return controller;
   }

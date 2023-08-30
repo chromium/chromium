@@ -39,6 +39,7 @@ class MDocProvider;
 class RenderFrameHost;
 
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
+using TokenError = IdentityCredentialTokenError;
 
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
 // fulfill WebID-related requests.
@@ -221,7 +222,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void MaybeShowAccountsDialog();
   void ShowModalDialog(const GURL& url);
-  void ShowErrorDialog(const GURL& idp_config_url);
+  void ShowErrorDialog(
+      const GURL& idp_config_url,
+      absl::optional<IdpNetworkRequestManager::IdentityCredentialTokenError>
+          error);
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
@@ -253,7 +257,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                             const std::string& token);
   void OnTokenResponseReceived(blink::mojom::IdentityProviderConfigPtr idp,
                                IdpNetworkRequestManager::FetchStatus status,
-                               const std::string& token);
+                               IdpNetworkRequestManager::TokenResult result);
   void OnContinueOnResponseReceived(
       blink::mojom::IdentityProviderConfigPtr idp,
       IdpNetworkRequestManager::FetchStatus status,
