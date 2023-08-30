@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_state.h"
@@ -157,10 +158,21 @@ bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
                      user->GetAccountId().GetUserEmail());
 }
 
+bool IsDriveFsBulkPinningEnabled() {
+  return IsDriveFsBulkPinningEnabled(ProfileManager::GetActiveUserProfile());
+}
+
 bool IsOobeDrivePinningEnabled(const Profile* const profile) {
-  return base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
-         ash::features::IsOobeChoobeEnabled() &&
-         IsDriveFsBulkPinningEnabled(profile);
+  const bool b =
+      base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
+      ash::features::IsOobeChoobeEnabled() &&
+      IsDriveFsBulkPinningEnabled(profile);
+  VLOG(1) << "IsOobeDrivePinningEnabled() returned " << b;
+  return b;
+}
+
+bool IsOobeDrivePinningEnabled() {
+  return IsOobeDrivePinningEnabled(ProfileManager::GetActiveUserProfile());
 }
 
 std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
