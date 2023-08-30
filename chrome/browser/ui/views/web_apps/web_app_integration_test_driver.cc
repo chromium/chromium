@@ -211,6 +211,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kMinimalUi;
     case InstallableSite::kTabbed:
       return Site::kTabbed;
+    case InstallableSite::kTabbedWithHomeTab:
+      return Site::kTabbedWithHomeTab;
     case InstallableSite::kStandaloneNestedA:
       return Site::kStandaloneNestedA;
     case InstallableSite::kStandaloneNestedB:
@@ -292,6 +294,35 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .relative_manifest_id = "webapps_integration/tabbed/basic.html",
       .app_name = "Tabbed",
       .wco_not_enabled_title = u"Tabbed",
+      .icon_color = SK_ColorRED}},
+    {Site::kTabbedWithHomeTab,
+     {.relative_url =
+          "/webapps_integration/tabbed/basic.html?manifest=home_tab.json",
+      .relative_manifest_id =
+          "webapps_integration/tabbed/basic.html?manifest=home_tab.json",
+      .app_name = "Tabbed with home tab",
+      .wco_not_enabled_title = u"Tabbed with home tab",
+      .icon_color = SK_ColorRED}},
+    {Site::kTabbedNestedA,
+     {.relative_url = "/webapps_integration/tabbed/sub_page_1.html",
+      .relative_manifest_id =
+          "webapps_integration/tabbed/basic.html?manifest=home_tab.json",
+      .app_name = "Tabbed with home tab",
+      .wco_not_enabled_title = u"Tabbed with home tab",
+      .icon_color = SK_ColorRED}},
+    {Site::kTabbedNestedB,
+     {.relative_url = "/webapps_integration/tabbed/sub_page_2.html",
+      .relative_manifest_id =
+          "webapps_integration/tabbed/basic.html?manifest=home_tab.json",
+      .app_name = "Tabbed with home tab",
+      .wco_not_enabled_title = u"Tabbed with home tab",
+      .icon_color = SK_ColorRED}},
+    {Site::kTabbedNestedC,
+     {.relative_url = "/webapps_integration/tabbed/sub_page_3.html",
+      .relative_manifest_id =
+          "webapps_integration/tabbed/basic.html?manifest=home_tab.json",
+      .app_name = "Tabbed with home tab",
+      .wco_not_enabled_title = u"Tabbed with home tab",
       .icon_color = SK_ColorRED}},
     {Site::kNotPromotable,
      {.relative_url = "/webapps_integration/not_promotable/basic.html",

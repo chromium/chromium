@@ -1,0 +1,27 @@
+{
+  "name": "Tabbed with home tab",
+  "icons": [
+    {
+      "src": "192x192-red.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "256x256-red.webp",
+      "sizes": "256x256",
+      "type": "image/webp"
+    }
+  ],
+  "start_url": "/webapps_integration/tabbed/basic.html?manifest=home_tab.json",
+  "scope": "/webapps_integration/tabbed/",
+  "display": "standalone",
+  "display_override": ["tabbed"],
+  "tab_strip": {
+      "home_tab": {
+        "scope_patterns": [{"pathname": "/webapps_integration/tabbed/sub_page_3.html"}]
+      },
+      "new_tab_button": {
+        "url": "/webapps_integration/tabbed/sub_page_1.html"
+      }
+  }
+}
