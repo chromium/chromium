@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
@@ -120,6 +121,9 @@ public class StaticLayoutUnitTest {
     private UserDataHost mUserDataHost = new UserDataHost();
     @Mock
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
+
+    @Mock
+    private View mTabView;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -396,5 +400,22 @@ public class StaticLayoutUnitTest {
 
         assertEquals(0.0f, mModel.get(LayoutTab.RENDER_X), 0);
         assertEquals(0.0f, mModel.get(LayoutTab.RENDER_Y), 0);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testTabGainsFocusOnPhoneOnLayoutDoneShowing() {
+        doReturn(mTabView).when(mTab1).getView();
+        doReturn(true).when(mTabView).requestFocus();
+
+        mStaticLayout.doneShowing();
+        verify(mTabView).requestFocus();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testTabDoesNotGainFocusOnTabletOnLayoutDoneShowing() {
+        mStaticLayout.doneShowing();
+        verify(mTabView, never()).requestFocus();
     }
 }
