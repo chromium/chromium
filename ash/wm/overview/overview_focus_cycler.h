@@ -115,14 +115,15 @@ class ASH_EXPORT OverviewFocusCycler {
 
   // The overview session which owns this object. Guaranteed to be non-null for
   // the lifetime of `this`.
-  const raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
+  const raw_ptr<OverviewSession> overview_session_;
 
   // If an item that is selected is deleted, store its index, so the next
   // traversal can pick up where it left off.
   absl::optional<int> deleted_index_ = absl::nullopt;
 
   // The current view that is being focused, if any.
-  raw_ptr<OverviewFocusableView, ExperimentalAsh> focused_view_ = nullptr;
+  raw_ptr<OverviewFocusableView, LeakedDanglingUntriaged> focused_view_ =
+      nullptr;
 
   // Helps to update the current a11y override window. And accessibility
   // features will focus on the window that is being set. Once `this` goes out

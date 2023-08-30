@@ -54,7 +54,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<FakeFastPairGattServiceClient, ExperimentalAsh>
+  raw_ptr<FakeFastPairGattServiceClient, DanglingUntriaged>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 

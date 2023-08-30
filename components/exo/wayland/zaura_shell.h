@@ -200,7 +200,7 @@ class AuraPopup {
   void SetScaleFactor(float scale_factor);
 
  private:
-  raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+  raw_ptr<ShellSurfaceBase, DanglingUntriaged> shell_surface_;
 };
 
 class AuraOutput : public WaylandDisplayObserver {
