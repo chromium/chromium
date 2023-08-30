@@ -21,7 +21,7 @@ void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
     const absl::optional<KURL>& selected_idp_config_url,
     const WTF::String& token,
-    bool is_auto_reauthn) {
+    bool is_account_auto_selected) {
   for (const auto& provider_resolver_pair : provider_to_resolver_) {
     KURL provider = provider_resolver_pair.key;
     ScriptPromiseResolver* resolver = provider_resolver_pair.value;
@@ -52,7 +52,7 @@ void WebIdentityRequester::OnRequestToken(
           continue;
         }
         IdentityCredential* credential =
-            IdentityCredential::Create(token, is_auto_reauthn);
+            IdentityCredential::Create(token, is_account_auto_selected);
         resolver->Resolve(credential);
         continue;
       }
@@ -199,7 +199,7 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
 
   if (!is_requesting_token_) {
     OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
-                   absl::nullopt, "", /*is_auto_reauthn=*/false);
+                   absl::nullopt, "", /*is_account_auto_selected=*/false);
     return;
   }
 

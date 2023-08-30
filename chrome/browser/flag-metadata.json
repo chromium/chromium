@@ -4259,14 +4259,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-account-auto-selected-flag",
+    "owners": [ "yigu", "web-identity-eng@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "fedcm-authz",
     "owners": [ "goto", "web-identity-eng@google.com"],
     "expiry_milestone": 120
-  },
-  {
-    "name": "fedcm-auto-reauthn-flag",
-    "owners": [ "yigu", "web-identity-eng@google.com"],
-    "expiry_milestone": 122
   },
   {
     "name": "fedcm-error",

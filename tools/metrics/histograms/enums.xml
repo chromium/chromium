@@ -60512,6 +60512,7 @@ from previous Chrome versions.
   <int value="-1999824144" label="NewDragSpecInLauncher:disabled"/>
   <int value="-1999617045" label="PDFAnnotations:disabled"/>
   <int value="-1998927516" label="enable-md-settings"/>
+  <int value="-1996592771" label="FedCmAccountAutoSelectedFlag:enabled"/>
   <int value="-1996233283"
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
   <int value="-1996087238" label="kAutofillEnableOffersInDownstream:enabled"/>
@@ -62038,7 +62039,6 @@ from previous Chrome versions.
   <int value="-1251359563" label="SharingRenameDevices:disabled"/>
   <int value="-1250965985" label="MediaFeeds:enabled"/>
   <int value="-1250611337" label="ChromeVoxArcSupport:disabled"/>
-  <int value="-1250494709" label="FedCmAutoReauthnFlag:enabled"/>
   <int value="-1250240035" label="NearbySharingOnePageOnboarding:enabled"/>
   <int value="-1250222445" label="WebMidi:enabled"/>
   <int value="-1249349654" label="UseAndroidStagingSmds:disabled"/>
@@ -63822,6 +63822,7 @@ from previous Chrome versions.
   <int value="-346600492" label="GainmapHdrImages:enabled"/>
   <int value="-346413328" label="UseNewAcceptLanguageHeader:disabled"/>
   <int value="-345838366" label="enable-hosted-apps-in-windows"/>
+  <int value="-345422674" label="FedCmAccountAutoSelectedFlag:disabled"/>
   <int value="-345366193" label="FeedDynamicColors:disabled"/>
   <int value="-345324571" label="enable-quirks-client"/>
   <int value="-345181892" label="new-tab-button-position"/>
@@ -64909,7 +64910,6 @@ from previous Chrome versions.
   <int value="198762155" label="SharingPeerConnectionSender:enabled"/>
   <int value="199237368" label="RenameJourneys:disabled"/>
   <int value="200347243" label="WebVRExperimentalRendering:disabled"/>
-  <int value="201077617" label="FedCmAutoReauthnFlag:disabled"/>
   <int value="201203491"
       label="ReduceUserAgentAndroidVersionDeviceModel:enabled"/>
   <int value="201343576" label="enable-password-change-support:enabled"/>

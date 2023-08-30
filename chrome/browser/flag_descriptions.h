@@ -912,11 +912,11 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmName[];
 extern const char kFedCmDescription[];
 
+extern const char kFedCmAccountAutoSelectedFlagName[];
+extern const char kFedCmAccountAutoSelectedFlagDescription[];
+
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
-
-extern const char kFedCmAutoReauthnFlagName[];
-extern const char kFedCmAutoReauthnFlagDescription[];
 
 extern const char kFedCmErrorName[];
 extern const char kFedCmErrorDescription[];

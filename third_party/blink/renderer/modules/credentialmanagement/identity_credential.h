@@ -19,21 +19,24 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IdentityCredential* Create(const String& token, bool is_auto_reauthn);
+  static IdentityCredential* Create(const String& token,
+                                    bool is_account_auto_selected);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
                                          ScriptPromiseResolver* resolver,
                                          const KURL& provider_url);
 
   explicit IdentityCredential(const String& token,
-                              bool is_auto_reauthn = false);
+                              bool is_account_auto_selected = false);
 
   // Credential:
   bool IsIdentityCredential() const override;
 
   // IdentityCredential.idl
   const String& token() const { return token_; }
-  const bool& isAutoReauthn() const { return is_auto_reauthn_; }
+  const bool& isAccountAutoSelected() const {
+    return is_account_auto_selected_;
+  }
 
   static ScriptPromise logoutRPs(
       ScriptState*,
@@ -41,7 +44,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
 
  private:
   const String token_;
-  const bool is_auto_reauthn_{false};
+  const bool is_account_auto_selected_{false};
 };
 
 }  // namespace blink

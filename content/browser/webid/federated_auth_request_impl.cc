@@ -107,15 +107,15 @@ std::string ComputeUrlEncodedTokenPostData(
   }
   query += "disclosure_text_shown=" + disclosure_text_shown;
 
-  if (IsFedCmAutoReauthnFlagEnabled()) {
-    // Shares with IdP that whether a user ha gone through the auto
-    // re-authentication flow. This could help developers to better
-    // comprehend the token request and segment metrics accordingly.
-    std::string is_auto_reauthn_string = is_auto_reauthn ? "true" : "false";
+  if (IsFedCmAccountAutoSelectedFlagEnabled()) {
+    // Shares with IdP that whether the account was automatically selected. This
+    // could help developers to better comprehend the token request and segment
+    // metrics accordingly.
+    std::string is_account_auto_selected = is_auto_reauthn ? "true" : "false";
     if (!query.empty()) {
       query += "&";
     }
-    query += "is_auto_reauthn=" + is_auto_reauthn_string;
+    query += "is_account_auto_selected=" + is_account_auto_selected;
   }
 
   if (IsFedCmAuthzEnabled()) {
@@ -540,18 +540,18 @@ void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
   if (!mdoc_provider_) {
     std::move(mdoc_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "",
-             /*is_auto_reauthn=*/false);
+             /*is_account_auto_selected=*/false);
     return;
   }
 
   if (!mdoc.empty()) {
     std::move(mdoc_request_callback_)
         .Run(RequestTokenStatus::kSuccess, absl::nullopt, mdoc,
-             /*is_auto_reauthn=*/false);
+             /*is_account_auto_selected=*/false);
   } else {
     std::move(mdoc_request_callback_)
         .Run(RequestTokenStatus::kError, absl::nullopt, "",
-             /*is_auto_reauthn=*/false);
+             /*is_account_auto_selected=*/false);
   }
 }
 
@@ -587,7 +587,7 @@ void FederatedAuthRequestImpl::RequestToken(
                                   idp_get_params_ptrs[0]->providers.size() > 1u;
   if (is_multi_idp_input && !IsFedCmMultipleIdentityProvidersEnabled()) {
     std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
-                            /*is_auto_reauthn=*/false);
+                            /*is_account_auto_selected=*/false);
     return;
   }
 
@@ -597,7 +597,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(https://crbug.com/1416939): Support calling the MDocs API with the
       // Multi IdP API support.
       std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
-                              /*is_auto_reauthn=*/false);
+                              /*is_account_auto_selected=*/false);
       return;
     }
 
@@ -606,7 +606,8 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(https://crbug.com/1416939): Reconcile with federated identity
       // requests.
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                              absl::nullopt, "", /*is_auto_reauthn=*/false);
+                              absl::nullopt, "",
+                              /*is_account_auto_selected=*/false);
       return;
     }
 
@@ -619,7 +620,7 @@ void FederatedAuthRequestImpl::RequestToken(
     if (!mdoc_provider_) {
       std::move(mdoc_request_callback_)
           .Run(RequestTokenStatus::kError, absl::nullopt, "",
-               /*is_auto_reauthn=*/false);
+               /*is_account_auto_selected=*/false);
       return;
     }
 
@@ -659,7 +660,8 @@ void FederatedAuthRequestImpl::RequestToken(
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
                                              requirement);
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                            absl::nullopt, "", /*is_auto_reauthn=*/false);
+                            absl::nullopt, "",
+                            /*is_account_auto_selected=*/false);
     return;
   }
 
@@ -2012,7 +2014,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
     }
   }
 
-  bool is_auto_reauthn = dialog_type_ == kAutoReauth;
+  bool is_account_auto_selected = dialog_type_ == kAutoReauth;
 
   CleanUp();
 
@@ -2023,7 +2025,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
     RequestTokenStatus status =
         FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_token_callback_)
-        .Run(status, selected_idp_config_url, id_token, is_auto_reauthn);
+        .Run(status, selected_idp_config_url, id_token,
+             is_account_auto_selected);
     auth_request_token_callback_.Reset();
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

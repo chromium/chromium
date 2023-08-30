@@ -31,7 +31,7 @@ class MODULES_EXPORT WebIdentityRequester final
   void OnRequestToken(mojom::blink::RequestTokenStatus status,
                       const absl::optional<KURL>& selected_idp_config_url,
                       const WTF::String& token,
-                      bool is_auto_reauthn);
+                      bool is_account_auto_selected);
 
   // Invoked at most once per token request.
   void RequestToken();

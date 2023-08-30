@@ -5233,7 +5233,7 @@ interface IIRFilterNode : AudioNode
 interface IdentityCredential : Credential
     static method logoutRPs
     attribute @@toStringTag
-    getter isAutoReauthn
+    getter isAccountAutoSelected
     getter token
     method constructor
 interface IdentityProvider

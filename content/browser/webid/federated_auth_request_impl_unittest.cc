@@ -2980,29 +2980,30 @@ TEST_F(FederatedAuthRequestImplTest, TokenEndpointPostDataEscaping) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
-// Test that the is_auto_reauthn value in the token post data for sign-up case.
-TEST_F(FederatedAuthRequestImplTest, AutoReauthnFlagForNewUser) {
+// Test that the is_account_auto_selected value in the token post data for
+// sign-up case.
+TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagForNewUser) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoReauthnFlag);
+  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true" +
-      "&is_auto_reauthn=false");
+      "&is_account_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
 }
 
-// Test that the is_auto_reauthn value in the token post data for returning
-// user with `mediation:required`.
+// Test that the is_account_auto_selected value in the token post data for
+// returning user with `mediation:required`.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoReauthnFlagForReturningUserWithMediationRequired) {
+       AccountAutoSelectedFlagForReturningUserWithMediationRequired) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoReauthnFlag);
+  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3016,7 +3017,7 @@ TEST_F(FederatedAuthRequestImplTest,
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_auto_reauthn=false");
+      "&disclosure_text_shown=false" + "&is_account_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3024,12 +3025,12 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
 }
 
-// Test that the is_auto_reauthn value in the token post data for returning
-// user with `mediation:optional`.
+// Test that the is_account_auto_selected value in the token post data for
+// returning user with `mediation:optional`.
 TEST_F(FederatedAuthRequestImplTest,
-       AutoReauthnFlagForReturningUserWithMediationOptional) {
+       AccountAutoSelectedFlagForReturningUserWithMediationOptional) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoReauthnFlag);
+  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3049,7 +3050,7 @@ TEST_F(FederatedAuthRequestImplTest,
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_auto_reauthn=true");
+      "&disclosure_text_shown=false" + "&is_account_auto_selected=true");
   SetNetworkRequestManager(std::move(checker));
 
   MockConfiguration config = kConfigurationValid;
@@ -3057,11 +3058,11 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
 }
 
-// Test that the is_auto_reauthn value in the token post data for the quiet
-// period use case.
-TEST_F(FederatedAuthRequestImplTest, AutoReauthnFlagIfInQuietPeriod) {
+// Test that the is_account_auto_selected value in the token post data for the
+// quiet period use case.
+TEST_F(FederatedAuthRequestImplTest, AccountAutoSelectedFlagIfInQuietPeriod) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoReauthnFlag);
+  list.InitAndEnableFeature(features::kFedCmAccountAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3086,7 +3087,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnFlagIfInQuietPeriod) {
   checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
       "&account_id=" + std::string(kAccountId) +
-      "&disclosure_text_shown=false" + "&is_auto_reauthn=false");
+      "&disclosure_text_shown=false" + "&is_account_auto_selected=false");
   SetNetworkRequestManager(std::move(checker));
 
   RequestExpectations expectations = kExpectationSuccess;
