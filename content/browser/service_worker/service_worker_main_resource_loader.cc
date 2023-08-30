@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -570,10 +571,21 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       blink::ServiceWorkerStatusToString(status), "result",
       ComposeFetchEventResultString(fetch_result, *response));
 
+  bool is_fallback =
+      fetch_result ==
+      ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback;
+
+  // When AutoPreload is dispatched, set the fetch handler end time and record
+  // loading metrics.
+  if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload) {
+    race_network_request_url_loader_client_
+        ->MaybeRecordResponseReceivedToFetchHandlerEndTiming(
+            base::TimeTicks::Now(), /*is_fallback=*/is_fallback);
+  }
+
   // Transition the state if the fetch result is fallback. This is a special
   // treatment for RaceNetworkRequest and AutoPreload.
-  if (fetch_result ==
-      ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
+  if (is_fallback) {
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
         // If the RaceNetworkRequest or AutoPreload is triggered but the
@@ -692,8 +704,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   // the service workers because we aim to see the fallback ratio and timing.
   RecordFetchEventHandlerMetrics(fetch_result);
 
-  if (fetch_result ==
-      ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
+  if (is_fallback) {
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
     if (fallback_callback_) {

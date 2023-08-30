@@ -612,11 +612,16 @@ void ServiceWorkerSubresourceLoader::OnFallback(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN);
 
-  // Update the commit responsibility to the intermediate state
-  // |kAutoPreloadHandlingFallback| for the fallback. This is a special
-  // treatment for AutoPreload.
   if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload &&
       commit_responsibility() == FetchResponseFrom::kServiceWorker) {
+    // When AutoPreload is dispatched, set the fetch handler end time and record
+    // loading metrics.
+    race_network_request_loader_client_
+        ->MaybeRecordResponseReceivedToFetchHandlerEndTiming(
+            base::TimeTicks::Now(), /*is_fallback=*/true);
+    // Update the commit responsibility to the intermediate state
+    // |kAutoPreloadHandlingFallback| for the fallback. This is a special
+    // treatment for AutoPreload.
     SetCommitResponsibility(FetchResponseFrom::kAutoPreloadHandlingFallback);
   }
 
@@ -725,6 +730,13 @@ void ServiceWorkerSubresourceLoader::UpdateResponseTiming(
 void ServiceWorkerSubresourceLoader::StartResponse(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
+  // When AutoPreload is dispatched, set the fetch handler end time and record
+  // loading metrics.
+  if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload) {
+    race_network_request_loader_client_
+        ->MaybeRecordResponseReceivedToFetchHandlerEndTiming(
+            base::TimeTicks::Now(), /*is_fallback=*/false);
+  }
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:

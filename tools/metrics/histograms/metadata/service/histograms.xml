@@ -104,6 +104,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SHOULD_FALLBACK"/>
 </variants>
 
+<variants name="ServiceWorkerFetchResponseFromName">
+  <variant name="ServiceWorker"/>
+  <variant name="WithoutServiceWorker"/>
+</variants>
+
 <variants name="ServiceWorkerResponseSource">
   <variant name="" summary=""/>
   <variant name=".CacheStorage" summary="The response came from CacheStorage."/>
@@ -625,6 +630,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
+    units="ms" expires_after="2024-06-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken from (a) the response of the AutoPreload is received, to (b)
+    the fetch handler execution is completed.
+
+    Recorded for each navigation request (including redirects) where there is a
+    fetch event handler, the fetch event was successfully dispatched to the
+    service worker, and ServiceWorkerAutoPreload is enabled.
+
+    This is recorded even in the case when (b) is faster than (a). In this case
+    the value will be 0.
+
+    The response is from {ServiceWorkerFetchResponseFromName}
+  </summary>
+  <token key="ServiceWorkerFetchResponseFromName"
+      variants="ServiceWorkerFetchResponseFromName"/>
+</histogram>
+
+<histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerEndToFallbackNetwork{EmbeddedWorkerInitialStatus}"
     units="ms" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -905,6 +932,29 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="EmbeddedWorkerInitialStatus"
       variants="EmbeddedWorkerInitialStatus"/>
+</histogram>
+
+<histogram
+    name="ServiceWorker.LoadTiming.Subresource.
+          AutoPreloadResponseReceivedToFetchHandlerEnd.{ServiceWorkerFetchResponseFromName}"
+    units="ms" expires_after="2024-06-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken from (a) the response of the AutoPreload is received, to (b)
+    the fetch handler execution is completed.
+
+    Recorded for each subresource request where there is a fetch event handler,
+    the fetch event was successfully dispatched to the service worker, and
+    ServiceWorkerAutoPreload is enabled.
+
+    This is recorded even in the case when (b) is faster than (a). In this case
+    the value will be 0.
+
+    The response is from {ServiceWorkerFetchResponseFromName}
+  </summary>
+  <token key="ServiceWorkerFetchResponseFromName"
+      variants="ServiceWorkerFetchResponseFromName"/>
 </histogram>
 
 <histogram

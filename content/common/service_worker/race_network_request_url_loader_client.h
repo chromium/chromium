@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_URL_LOADER_CLIENT_H_
 #define CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_URL_LOADER_CLIENT_H_
 
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -141,6 +142,10 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // Commit and complete the response. Those can be called from |owner_|.
   void CommitAndCompleteResponseIfDataTransferFinished();
 
+  void MaybeRecordResponseReceivedToFetchHandlerEndTiming(
+      base::TimeTicks fetch_handler_end_time,
+      bool is_fallback);
+
  private:
   struct DataPipeInfo {
     mojo::ScopedDataPipeProducerHandle producer;
@@ -191,6 +196,14 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   void Abort();
 
+  void RecordResponseReceivedToFetchHandlerEndTiming();
+  // Record the time between the response received time and the fetch handler
+  // end time iff both events are already reached.
+  void MaybeRecordResponseReceivedToFetchHandlerEndTiming();
+
+  void SetFetchHandlerEndTiming(base::TimeTicks fetch_handler_end_time,
+                                bool is_fallback);
+
   State state_ = State::kWaitForBody;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const network::ResourceRequest request_;
@@ -208,6 +221,9 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   bool redirected_ = false;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
   DataConsumePolicy data_consume_policy_ = DataConsumePolicy::kTeeResponse;
+  absl::optional<base::TimeTicks> response_received_time_;
+  absl::optional<base::TimeTicks> fetch_handler_end_time_;
+  absl::optional<bool> is_fetch_handler_fallback_;
 
   base::WeakPtrFactory<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       weak_factory_{this};

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
@@ -20,6 +21,11 @@
 
 namespace content {
 namespace {
+const char kMainResourceHistogramLoadTiming[] =
+    "ServiceWorker.LoadTiming.MainFrame.MainResource";
+const char kSubresourceHistogramLoadTiming[] =
+    "ServiceWorker.LoadTiming.Subresource";
+
 MojoResult CreateDataPipe(mojo::ScopedDataPipeProducerHandle& producer_handle,
                           mojo::ScopedDataPipeConsumerHandle& consumer_handle,
                           uint32_t capacity_num_bytes) {
@@ -100,6 +106,15 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
   }
 
   TransitionState(State::kResponseReceived);
+
+  // Set the response received time, and record the time delta between the
+  // response received time and the fetch handler end time if the fetch handler
+  // is already completed.
+  if (!response_received_time_) {
+    response_received_time_ = base::TimeTicks::Now();
+  }
+  MaybeRecordResponseReceivedToFetchHandlerEndTiming();
+
   switch (data_consume_policy_) {
     case DataConsumePolicy::kTeeResponse:
       head_ = std::move(head);
@@ -123,6 +138,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   TransitionState(State::kRedirect);
   // If redirect happened, we don't have to create another data pipe.
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
+  response_received_time_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/1420517): Return a redirect response to |owner| as a
   // RaceNetworkRequest result without breaking the cache storage compatibility.
@@ -492,6 +508,45 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Abort() {
   data_pipe_for_fetch_handler_.consumer.reset();
   data_pipe_for_fetch_handler_.watcher.Cancel();
   body_consumer_watcher_.Cancel();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::SetFetchHandlerEndTiming(
+    base::TimeTicks fetch_handler_end_time,
+    bool is_fallback) {
+  fetch_handler_end_time_ = fetch_handler_end_time;
+  is_fetch_handler_fallback_ = is_fallback;
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    MaybeRecordResponseReceivedToFetchHandlerEndTiming() {
+  if (response_received_time_ && fetch_handler_end_time_ &&
+      is_fetch_handler_fallback_.has_value()) {
+    RecordResponseReceivedToFetchHandlerEndTiming();
+  }
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    MaybeRecordResponseReceivedToFetchHandlerEndTiming(
+        base::TimeTicks fetch_handler_end_time,
+        bool is_fallback) {
+  SetFetchHandlerEndTiming(fetch_handler_end_time, is_fallback);
+  MaybeRecordResponseReceivedToFetchHandlerEndTiming();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    RecordResponseReceivedToFetchHandlerEndTiming() {
+  if (!owner_) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat({owner_->IsMainResourceLoader()
+                        ? kMainResourceHistogramLoadTiming
+                        : kSubresourceHistogramLoadTiming,
+                    ".AutoPreloadResponseReceivedToFetchHandlerEnd.",
+                    is_fetch_handler_fallback_ ? "WithoutServiceWorker"
+                                               : "ServiceWorker"}),
+      fetch_handler_end_time_.value() - response_received_time_.value());
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
