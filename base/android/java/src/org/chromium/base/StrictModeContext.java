@@ -27,6 +27,9 @@ public final class StrictModeContext implements Closeable {
     private final StrictMode.VmPolicy mVmPolicy;
 
     private StrictModeContext(StrictMode.ThreadPolicy threadPolicy, StrictMode.VmPolicy vmPolicy) {
+        // TODO(crbug/1475610): Determine after auditing strict mode context usage if we should keep
+        // or remove these trace events.
+        TraceEvent.startAsync("StrictModeContext", hashCode());
         mThreadPolicy = threadPolicy;
         mVmPolicy = vmPolicy;
     }
@@ -45,9 +48,11 @@ public final class StrictModeContext implements Closeable {
      *     https://developer.android.com/reference/android/os/StrictMode.VmPolicy.Builder.html
      */
     public static StrictModeContext allowAllVmPolicies() {
-        StrictMode.VmPolicy oldPolicy = StrictMode.getVmPolicy();
-        StrictMode.setVmPolicy(StrictMode.VmPolicy.LAX);
-        return new StrictModeContext(oldPolicy);
+        try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowAllVmPolicies")) {
+            StrictMode.VmPolicy oldPolicy = StrictMode.getVmPolicy();
+            StrictMode.setVmPolicy(StrictMode.VmPolicy.LAX);
+            return new StrictModeContext(oldPolicy);
+        }
     }
 
     /**
@@ -56,35 +61,43 @@ public final class StrictModeContext implements Closeable {
      *     https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder.html
      */
     public static StrictModeContext allowAllThreadPolicies() {
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
-        return new StrictModeContext(oldPolicy);
+        try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowAllThreadPolicies")) {
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
+            return new StrictModeContext(oldPolicy);
+        }
     }
 
     /**
      * Convenience method for disabling StrictMode for disk-writes with try-with-resources.
      */
     public static StrictModeContext allowDiskWrites() {
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-        return new StrictModeContext(oldPolicy);
+        try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowDiskWrites")) {
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+            return new StrictModeContext(oldPolicy);
+        }
     }
 
     /**
      * Convenience method for disabling StrictMode for disk-reads with try-with-resources.
      */
     public static StrictModeContext allowDiskReads() {
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-        return new StrictModeContext(oldPolicy);
+        try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowDiskReads")) {
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+            return new StrictModeContext(oldPolicy);
+        }
     }
 
     /**
      * Convenience method for disabling StrictMode for slow calls with try-with-resources.
      */
     public static StrictModeContext allowSlowCalls() {
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
-        StrictMode.setThreadPolicy(
-                new StrictMode.ThreadPolicy.Builder(oldPolicy).permitCustomSlowCalls().build());
-        return new StrictModeContext(oldPolicy);
+        try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowSlowCalls")) {
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+            StrictMode.setThreadPolicy(
+                    new StrictMode.ThreadPolicy.Builder(oldPolicy).permitCustomSlowCalls().build());
+            return new StrictModeContext(oldPolicy);
+        }
     }
 
     /**
@@ -94,12 +107,15 @@ public final class StrictModeContext implements Closeable {
      * because StrictMode.ThreadPolicy.Builder#permitUnbufferedIo is added in API level 26.
      */
     public static StrictModeContext allowUnbufferedIo() {
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            StrictMode.setThreadPolicy(
-                    new StrictMode.ThreadPolicy.Builder(oldPolicy).permitUnbufferedIo().build());
+        try (TraceEvent e = TraceEvent.scoped("StrictModeContext.allowUnbufferedIo")) {
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder(oldPolicy)
+                                                   .permitUnbufferedIo()
+                                                   .build());
+            }
+            return new StrictModeContext(oldPolicy);
         }
-        return new StrictModeContext(oldPolicy);
     }
 
     @Override
@@ -110,5 +126,6 @@ public final class StrictModeContext implements Closeable {
         if (mVmPolicy != null) {
             StrictMode.setVmPolicy(mVmPolicy);
         }
+        TraceEvent.finishAsync("StrictModeContext", hashCode());
     }
 }
