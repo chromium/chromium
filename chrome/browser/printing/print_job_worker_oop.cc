@@ -111,6 +111,11 @@ void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
                                 document_name));
 }
 
+void PrintJobWorkerOop::Cancel() {
+  PrintJobWorker::Cancel();
+  PrintJobWorkerOop::OnCancel();
+}
+
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 void PrintJobWorkerOop::CleanupAfterContentAnalysisDenial() {
   PrintJobWorker::CleanupAfterContentAnalysisDenial();
@@ -393,6 +398,11 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
   }
   base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName, uma_result);
 
+  if (!document_oop_) {
+    // If no document has been started for printing then don't send cancel.
+    return;
+  }
+
   // Initiate rest of regular failure handling.
   SendCancel(base::BindOnce(&PrintJobWorkerOop::OnDidCancel,
                             ui_weak_factory_.GetWeakPtr(),
@@ -477,6 +487,13 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
   // Page numbers are 0-based for the printing context.
   const uint32_t page_index = page->page_number() - 1;
   const int32_t document_cookie = document_oop_->cookie();
+  if (print_cancel_requested_) {
+    VLOG(1) << "Dropping page " << page_index << " of document "
+            << document_cookie << " to `" << device_name_
+            << "` because job was canceled";
+    return;
+  }
+
   VLOG(1) << "Sending page " << page_index << " of document " << document_cookie
           << " to `" << device_name_ << "` for printing";
   PrintBackendServiceManager& service_mgr =

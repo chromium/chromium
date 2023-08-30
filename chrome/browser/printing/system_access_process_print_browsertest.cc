@@ -1264,10 +1264,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1474335):  Update test class to
-// `SystemAccessProcessPrintBrowserTest` and fill in expectations when cancel
-// after failed PDF conversion no longer crashes for OOPPD.
-IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        StartPrintingPdfConversionFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -1282,20 +1279,36 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // There are no callbacks for print stages with in-browser printing.  So
-  // the print job is started, but that fails, and there is no capturing of
-  // that result.
-  // The expected events for this are:
-  // 1.  Print job is started, but is destroyed due to failure during PDF
-  //     conversion failure.
-  // No error dialog is shown.
-  SetNumExpectedMessages(/*num=*/1);
-
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    // There are no callbacks for print stages with in-browser printing.  So
+    // the print job is started, but that fails, and there is no capturing of
+    // that result.
+    // The expected events for this are:
+    // 1.  Print job is started, but is destroyed due to failure during PDF
+    //     conversion failure.
+    // No error dialog is shown.
+    SetNumExpectedMessages(/*num=*/1);
+  } else {
+    // The expected events for this are:
+    // 1.  Update print settings.
+    // 2.  A print job is started.
+    // 3.  PDF conversion fails, which results in the print job being
+    //     canceled.
+    // 4.  Wait for the print job to be destroyed, to ensure printing finished
+    //     cleanly before completing the test.
+    // No error dialog is shown.
+    SetNumExpectedMessages(/*num=*/4);
+  }
   PrintAfterPreviewIsReadyAndLoaded();
 
-  // TODO(crbug.com/1474335):  Update expectations when cancel after failed PDF
-  // conversion no longer crashes.
-  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  // No tracking of start printing or cancel callbacks for in-browser tests,
+  // only for OOP.
+  if (GetParam() != PrintBackendFeatureVariation::kInBrowserProcess) {
+    EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+    // TODO(crbug.com/1008222)  Include Windows coverage of
+    // RenderPrintedDocument() once XPS print pipeline is added.
+    EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
+  }
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -1948,10 +1961,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1474335):  Update test class to
-// `SystemAccessProcessPrintBrowserTest` and fill in expectations when cancel
-// after failed PDF conversion no longer crashes for OOPPD.
-IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        StartBasicPrintPdfConversionFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -1966,24 +1976,44 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // There are only partial overrides to track most steps in the printing
-  // pipeline, so the expected events for this are:
-  // 1.  Gets default settings.
-  // 2.  Asks user for settings.
-  // 3.  A print job is started, but is destroyed due to failure during PDF
-  //     conversion.
-  // 4.  The renderer will have initiated printing of document, which could
-  //     invoke the print compositor.  Wait until all processing for
-  //     DidPrintDocument is known to have completed, to ensure printing
-  //     finished cleanly before completing the test.
-  // No error dialog is shown.
-  SetNumExpectedMessages(/*num=*/4);
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    // There are only partial overrides to track most steps in the printing
+    // pipeline, so the expected events for this are:
+    // 1.  Gets default settings.
+    // 2.  Asks user for settings.
+    // 3.  A print job is started, but is destroyed due to failure during PDF
+    //     conversion.
+    // 4.  The renderer will have initiated printing of document, which could
+    //     invoke the print compositor.  Wait until all processing for
+    //     DidPrintDocument is known to have completed, to ensure printing
+    //     finished cleanly before completing the test.
+    // No error dialog is shown.
+    SetNumExpectedMessages(/*num=*/4);
+  } else {
+    // The expected events for this are:
+    // 1.  Gets default settings.
+    // 2.  Asks user for settings.
+    // 3.  A print job is started.
+    // 4.  Notified of DidPrintDocument(), that composition of the print
+    //     document has completed.
+    // 5.  The PDF conversion fails, resulting in canceling the print job.
+    // 6.  The print job is destroyed.
+    // No error dialog is shown.
+    SetNumExpectedMessages(/*num=*/6);
+  }
 
   StartBasicPrint(web_contents);
 
   WaitUntilCallbackReceived();
 
-  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
+    EXPECT_EQ(start_printing_result(), mojom::ResultCode::kFailed);
+  } else {
+    EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+    // TODO(crbug.com/1008222)  Include Windows coverage of
+    // RenderPrintedDocument() once XPS print pipeline is added.
+    EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
+  }
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }

@@ -53,7 +53,7 @@ class PrintJobWorker {
   void OnNewPage();
 
   // Cancels the job.
-  void Cancel();
+  virtual void Cancel();
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   // The job is canceled due to content analysis denying printing.  Called
