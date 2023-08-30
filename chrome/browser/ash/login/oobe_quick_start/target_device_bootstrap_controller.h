@@ -196,6 +196,11 @@ class TargetDeviceBootstrapController
   Base64UrlString challenge_bytes_;
 
   std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
+  // During this instantiation of SessionContext, if resuming Quick Start after
+  // an update, the local state is cleared after fetching the session context
+  // data from the previous connection. Re-instantiating the SessionContext
+  // object overwrites the context with new data that won't match the previous
+  // connection details.
   SessionContext session_context_;
 
   std::unique_ptr<AccessibilityManagerWrapper> accessibility_manager_wrapper_;
