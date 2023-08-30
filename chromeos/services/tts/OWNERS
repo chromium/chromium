@@ -1,1 +1,4 @@
 file://ui/accessibility/OWNERS
+
+per-file tts_sandbox_hook.*=set noparent
+per-file tts_sandbox_hook.*=file://sandbox/linux/OWNERS
