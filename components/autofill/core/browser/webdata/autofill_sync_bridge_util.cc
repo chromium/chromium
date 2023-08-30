@@ -686,6 +686,9 @@ void PopulateWalletTypesFromSyncData(
         cloud_token_data->push_back(
             CloudTokenDataFromSpecifics(autofill_specifics.cloud_token_data()));
         break;
+      case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
+        // TODO(crbug.com/1472125) Support syncing of payment instruments.
+        break;
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:
         // Just ignore new entry types that the client doesn't know about.
         break;

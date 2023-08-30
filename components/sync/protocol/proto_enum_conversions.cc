@@ -66,13 +66,30 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::AutofillWalletSpecifics::WalletInfoType wallet_info_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AutofillWalletSpecifics, WalletInfoType, UNKNOWN,
-                     CREDIT_CARD_CLOUD_TOKEN_DATA);
+                     PAYMENT_INSTRUMENT);
   switch (wallet_info_type) {
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, UNKNOWN);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, MASKED_CREDIT_CARD);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, POSTAL_ADDRESS);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, CUSTOMER_DATA);
     ENUM_CASE(sync_pb::AutofillWalletSpecifics, CREDIT_CARD_CLOUD_TOKEN_DATA);
+    ENUM_CASE(sync_pb::AutofillWalletSpecifics, PAYMENT_INSTRUMENT);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::BankAccountDetails::AccountType account_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::BankAccountDetails, AccountType,
+                     ACCOUNT_TYPE_UNSPECIFIED, TRANSACTING_ACCOUNT);
+  switch (account_type) {
+    ENUM_CASE(sync_pb::BankAccountDetails, ACCOUNT_TYPE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::BankAccountDetails, CHECKING);
+    ENUM_CASE(sync_pb::BankAccountDetails, SAVINGS);
+    ENUM_CASE(sync_pb::BankAccountDetails, CURRENT);
+    ENUM_CASE(sync_pb::BankAccountDetails, SALARY);
+    ENUM_CASE(sync_pb::BankAccountDetails, TRANSACTING_ACCOUNT);
   }
   NOTREACHED();
   return "";
@@ -154,6 +171,18 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type) {
     ENUM_CASE(sync_pb::NigoriSpecifics, FROZEN_IMPLICIT_PASSPHRASE);
     ENUM_CASE(sync_pb::NigoriSpecifics, CUSTOM_PASSPHRASE);
     ENUM_CASE(sync_pb::NigoriSpecifics, TRUSTED_VAULT_PASSPHRASE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::PaymentInstrument::SupportedRail supported_rail) {
+  ASSERT_ENUM_BOUNDS(sync_pb::PaymentInstrument, SupportedRail,
+                     SUPPORTED_RAIL_UNKNOWN, PIX);
+  switch (supported_rail) {
+    ENUM_CASE(sync_pb::PaymentInstrument, SUPPORTED_RAIL_UNKNOWN);
+    ENUM_CASE(sync_pb::PaymentInstrument, PIX);
   }
   NOTREACHED();
   return "";

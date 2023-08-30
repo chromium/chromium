@@ -20,6 +20,7 @@ class AutofillOfferSpecifics;
 class AutofillWalletCredentialSpecifics;
 class AutofillWalletSpecifics;
 class AutofillWalletUsageSpecifics;
+class BankAccountDetails;
 class BookmarkSpecifics;
 class ClientConfigParams;
 class ClientToServerMessage;
@@ -47,6 +48,7 @@ class OsPriorityPreferenceSpecifics;
 class OutgoingPasswordSharingInvitationSpecifics;
 class PasswordSpecifics;
 class PasswordSpecificsData;
+class PaymentInstrument;
 class PaymentsCustomerData;
 class PowerBookmarkSpecifics;
 class PreferenceSpecifics;
@@ -124,6 +126,9 @@ base::Value AutofillWalletUsageSpecificsToValue(
     const sync_pb::AutofillWalletUsageSpecifics&
         autofill_wallet_usage_specifics);
 
+base::Value BankAccountDetailsToValue(
+    const sync_pb::BankAccountDetails& bank_account_details);
+
 base::Value BookmarkSpecificsToValue(
     const sync_pb::BookmarkSpecifics& bookmark_specifics);
 
@@ -193,6 +198,9 @@ base::Value PasswordSpecificsDataToValue(
 
 base::Value PowerBookmarkSpecificsToValue(
     const sync_pb::PowerBookmarkSpecifics& power_bookmark_specifics);
+
+base::Value PaymentInstrumentToValue(
+    const sync_pb::PaymentInstrument& payment_instrument);
 
 base::Value PaymentsCustomerDataToValue(
     const sync_pb::PaymentsCustomerData& payments_customer_data);

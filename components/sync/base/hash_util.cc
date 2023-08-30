@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
@@ -42,6 +43,13 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
       return specifics.customer_data().id();
     case sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA:
       return specifics.cloud_token_data().instrument_token();
+    case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
+      // Append a string to the instrument ID, since the same ID may be used for
+      // a MASKED_CREDIT_CARD entry.
+      return base::StrCat(
+          {"payment_instrument:",
+           base::NumberToString(
+               specifics.payment_instrument().instrument_id())});
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
       NOTREACHED();
       return std::string();

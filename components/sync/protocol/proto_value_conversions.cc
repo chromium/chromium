@@ -265,6 +265,9 @@ class ToValueVisitor {
         sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA) {
       dict.Remove("cloud_token_data");
     }
+    if (proto.type() != sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT) {
+      dict.Remove("payment_instrument");
+    }
     return base::Value(std::move(dict));
   }
 
@@ -337,6 +340,7 @@ IMPLEMENT_PROTO_TO_VALUE(AutofillSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletCredentialSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletUsageSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(BankAccountDetails)
 IMPLEMENT_PROTO_TO_VALUE(BookmarkSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ClientConfigParams)
 IMPLEMENT_PROTO_TO_VALUE(ContactInfoSpecifics)
@@ -366,6 +370,7 @@ IMPLEMENT_PROTO_TO_VALUE(PasswordSpecificsData)
 IMPLEMENT_PROTO_TO_VALUE(PasswordSpecificsData_Notes)
 IMPLEMENT_PROTO_TO_VALUE(PasswordSpecificsData_Notes_Note)
 IMPLEMENT_PROTO_TO_VALUE(PowerBookmarkSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(PaymentInstrument)
 IMPLEMENT_PROTO_TO_VALUE(PaymentsCustomerData)
 IMPLEMENT_PROTO_TO_VALUE(PreferenceSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PrinterPPDReference)

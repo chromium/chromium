@@ -392,6 +392,59 @@ message WalletCreditCardCloudTokenData {
   optional string instrument_token = 6;
 }
 
+// Contains information of payment instruments that can be used by the user.
+message PaymentInstrument {
+  // Opaque identifier for the account stored in Payments Platform.
+  // This will be used to initiate the payment.
+  optional int64 instrument_id = 1;
+
+  // Supported payment infrastructures (rail) that allow users to send money
+  // between the payer and the payee. https://en.wikipedia.org/wiki/Payment_rail
+  enum SupportedRail {
+    SUPPORTED_RAIL_UNKNOWN = 0;
+    // Payment rails for Brazil Open Banking.
+    PIX = 1;
+  }
+  // The supported rails for which a payment can be made for the given account.
+  // For example, Pix is the open-banking rail in Brazil, UPI is the
+  // open-banking rail in India.
+  repeated SupportedRail supported_rails = 2;
+
+  // The URL for the image to be displayed when showing the account to the
+  // user.
+  optional string display_icon_url = 3;
+
+  // Nickname for the instrument.
+  optional string nickname = 4;
+
+  // The backing source for the applicable rails.
+  oneof instrument_details {
+    BankAccountDetails bank_account = 5;
+  }
+}
+
+// Details of a bank account required to show it in the payment instrument
+// selector.
+message BankAccountDetails {
+  // The name of the bank where the user has an account.
+  optional string bank_name = 1;
+
+  // The last four digits of the account number to help the user identify their
+  // account.
+  optional string account_number_suffix = 2;
+
+  enum AccountType {
+    ACCOUNT_TYPE_UNSPECIFIED = 0;
+    CHECKING = 1;
+    SAVINGS = 2;
+    CURRENT = 3;
+    SALARY = 4;
+    TRANSACTING_ACCOUNT = 5;
+  }
+  // The type of bank account.
+  optional AccountType account_type = 3;
+}
+
 message AutofillWalletSpecifics {
   enum WalletInfoType {
     UNKNOWN = 0;
@@ -399,6 +452,7 @@ message AutofillWalletSpecifics {
     POSTAL_ADDRESS = 2;
     CUSTOMER_DATA = 3;
     CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
+    PAYMENT_INSTRUMENT = 5;
   }
 
   optional WalletInfoType type = 1;
@@ -416,6 +470,10 @@ message AutofillWalletSpecifics {
   // This field exists if and only if the "type" field equals to
   // CREDIT_CARD_CLOUD_TOKEN_DATA.
   optional WalletCreditCardCloudTokenData cloud_token_data = 5;
+
+  // This field exists if and only if the "type" field equals to
+  // PAYMENT_INSTRUMENT.
+  optional PaymentInstrument payment_instrument = 6;
 }
 
 // Wallet card and address usage information that can be synced.

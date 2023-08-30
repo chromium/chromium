@@ -46,6 +46,9 @@ const char* ProtoEnumToString(sync_pb::AppSpecifics::LaunchType launch_type);
 const char* ProtoEnumToString(
     sync_pb::AutofillWalletSpecifics::WalletInfoType wallet_info_type);
 
+const char* ProtoEnumToString(
+    sync_pb::BankAccountDetails::AccountType account_type);
+
 const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type);
 
 const char* ProtoEnumToString(
@@ -58,6 +61,9 @@ const char* ProtoEnumToString(
     sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source);
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
+
+const char* ProtoEnumToString(
+    sync_pb::PaymentInstrument::SupportedRail supported_rail);
 
 const char* ProtoEnumToString(
     sync_pb::PowerBookmarkSpecifics::PowerType power_type);

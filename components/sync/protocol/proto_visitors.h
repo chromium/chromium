@@ -302,6 +302,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletSpecifics& proto) {
   VISIT(address);
   VISIT(customer_data);
   VISIT(cloud_token_data);
+  VISIT(payment_instrument);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::BookmarkSpecifics& proto) {
@@ -1460,6 +1461,20 @@ VISIT_PROTO_FIELDS(const sync_pb::CloudTokenData& proto) {
   VISIT(exp_year);
   VISIT(art_fife_url);
   VISIT(instrument_token);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
+  VISIT_REP(supported_rails);
+  VISIT(display_icon_url);
+  VISIT(instrument_id);
+  VISIT(bank_account);
+  VISIT(nickname);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::BankAccountDetails& proto) {
+  VISIT(bank_name);
+  VISIT(account_number_suffix);
+  VISIT_ENUM(account_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::CardIssuer& proto) {

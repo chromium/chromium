@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -146,6 +147,45 @@ std::string WalletCreditCardCloudTokenDataSpecificsAsDebugString(
   return output.str();
 }
 
+std::string WalletBankAccountDetailsAsDebugString(
+    const sync_pb::BankAccountDetails& bank_account_details) {
+  std::ostringstream output;
+  output << "[bank_name: " << bank_account_details.bank_name()
+         << "account_number_suffix: "
+         << bank_account_details.account_number_suffix()
+         << "account_type: " << bank_account_details.account_type() << "]";
+  return output.str();
+}
+
+std::string WalletPaymentInstrumentSupportedRailAsDebugString(
+    const sync_pb::PaymentInstrument payment_instrument) {
+  std::vector<base::StringPiece> supported_rails;
+  for (int supported_rail : payment_instrument.supported_rails()) {
+    supported_rails.push_back(
+        sync_pb::PaymentInstrument::SupportedRail_Name(supported_rail));
+  }
+  return base::JoinString(supported_rails, ",");
+}
+
+std::string WalletPaymentInstrumentAsDebugString(
+    const AutofillWalletSpecifics& specifics) {
+  std::ostringstream output;
+  output << "[instrument_id: " << specifics.payment_instrument().instrument_id()
+         << "supported_rails: "
+         << WalletPaymentInstrumentSupportedRailAsDebugString(
+                specifics.payment_instrument())
+         << "display_icon_url: "
+         << specifics.payment_instrument().display_icon_url()
+         << "nickname: " << specifics.payment_instrument().nickname();
+  if (specifics.payment_instrument().instrument_details_case() ==
+      sync_pb::PaymentInstrument::InstrumentDetailsCase::kBankAccount) {
+    output << WalletBankAccountDetailsAsDebugString(
+        specifics.payment_instrument().bank_account());
+  }
+  output << "]";
+  return output.str();
+}
+
 std::string AutofillWalletSpecificsAsDebugString(
     const AutofillWalletSpecifics& specifics) {
   switch (specifics.type()) {
@@ -161,6 +201,9 @@ std::string AutofillWalletSpecificsAsDebugString(
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_CREDIT_CARD_CLOUD_TOKEN_DATA:
       return WalletCreditCardCloudTokenDataSpecificsAsDebugString(specifics);
+    case sync_pb::AutofillWalletSpecifics_WalletInfoType::
+        AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT:
+      return WalletPaymentInstrumentAsDebugString(specifics);
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_UNKNOWN:
       return "Unknown";
