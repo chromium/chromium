@@ -15,6 +15,7 @@
 #include "services/device/generic_sensor/platform_sensor_util.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;

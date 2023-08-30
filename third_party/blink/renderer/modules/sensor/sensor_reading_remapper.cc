@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/sensor/sensor_reading_remapper.h"
 
+#include "base/notreached.h"
+#include "services/device/public/mojom/sensor.mojom-shared.h"
+
 using device::SensorReading;
 using device::SensorReadingXYZ;
 using device::SensorReadingQuat;

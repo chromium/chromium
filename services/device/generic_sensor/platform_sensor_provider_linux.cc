@@ -16,6 +16,7 @@
 #include "services/device/generic_sensor/linux/sensor_device_manager.h"
 #include "services/device/generic_sensor/platform_sensor_linux.h"
 #include "services/device/generic_sensor/platform_sensor_reader_linux.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 
 namespace device {
 namespace {

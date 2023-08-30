@@ -5,6 +5,7 @@ include_rules = [
     "+services/device/public/mojom/sensor_provider.mojom-blink.h",
     "+services/device/public/cpp/test/fake_sensor_and_provider.h",
     "+services/device/public/cpp/generic_sensor/sensor_reading.h",
+    "+services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h",
     "+services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h",
     "+ui/gfx/geometry/angle_conversions.h",
     "-third_party/blink/renderer/modules",

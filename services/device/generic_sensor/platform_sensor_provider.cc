@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

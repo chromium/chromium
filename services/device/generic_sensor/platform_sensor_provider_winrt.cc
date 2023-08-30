@@ -13,6 +13,7 @@
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 #include "services/device/generic_sensor/platform_sensor_reader_winrt.h"
 #include "services/device/generic_sensor/platform_sensor_win.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 
 namespace device {
 

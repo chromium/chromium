@@ -27,6 +27,7 @@ namespace device {
 
 class PlatformSensorProvider;
 class PlatformSensorConfiguration;
+struct SensorReadingSharedBuffer;
 
 // Base class for the sensors provided by the platform. Concrete instances of
 // this class are created by platform specific PlatformSensorProvider.

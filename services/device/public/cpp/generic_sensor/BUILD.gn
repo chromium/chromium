@@ -4,8 +4,8 @@
 
 source_set("generic_sensor") {
   sources = [
-    "sensor_reading.cc",
-    "sensor_reading.h",
+    "sensor_reading_shared_buffer.cc",
+    "sensor_reading_shared_buffer.h",
     "sensor_reading_shared_buffer_reader.cc",
     "sensor_reading_shared_buffer_reader.h",
     "sensor_traits.cc",
@@ -14,6 +14,7 @@ source_set("generic_sensor") {
 
   public_deps = [
     ":sensor_configuration",
+    ":sensor_reading",
     "//services/device/public/mojom:generic_sensor",
   ]
 
@@ -30,4 +31,11 @@ source_set("sensor_configuration") {
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("sensor_reading") {
+  sources = [
+    "sensor_reading.cc",
+    "sensor_reading.h",
+  ]
 }

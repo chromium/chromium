@@ -16,6 +16,8 @@
 
 namespace device {
 
+struct SensorReadingSharedBuffer;
+
 class FakeSensor : public mojom::Sensor {
  public:
   FakeSensor(mojom::SensorType sensor_type, SensorReadingSharedBuffer* buffer);

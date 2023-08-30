@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_event_pump.h"

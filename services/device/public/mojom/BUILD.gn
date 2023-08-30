@@ -159,8 +159,10 @@ mojom("generic_sensor") {
       traits_sources = [
         "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.cc",
       ]
-      traits_public_deps =
-          [ "//services/device/public/cpp/generic_sensor:sensor_configuration" ]
+      traits_public_deps = [
+        "//services/device/public/cpp/generic_sensor:sensor_configuration",
+        "//services/device/public/cpp/generic_sensor:sensor_reading",
+      ]
     },
   ]
 
