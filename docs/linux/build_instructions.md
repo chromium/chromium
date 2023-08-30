@@ -15,9 +15,10 @@ Are you a Google employee? See
 *   A 64-bit Intel machine with at least 8GB of RAM. More than 16GB is highly
     recommended.
 *   At least 100GB of free disk space.
-*   You must have Git and Python v3.6+ installed already (and `python3` must point
-    to a Python v3.6+ binary).
-
+*   You must have Git and Python v3.8+ installed already (and `python3` must point
+    to a Python v3.8+ binary). Depot_tools bundles an appropriate version
+    of Python in `$depot_tools/python-bin`, if you don't have an appropriate
+    version already on your system.
 
 Most development is done on Ubuntu (Chromium's build infrastructure currently
 runs 22.04, Jammy Jellyfish). There are some instructions for other distros
