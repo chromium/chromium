@@ -1045,6 +1045,10 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
   transfer_resource_ = resource;
   SetTextureSize(texture_size_in_dip);
 
+  // Incoming resource is assumed to have top-left origin which corresponds to
+  // TextureLayer::SetFlipped(false).
+  SetTextureFlipped(false);
+
   for (const auto& mirror : mirrors_) {
     // The release callbacks should be empty as only the source layer
     // should be able to release the texture resource.
