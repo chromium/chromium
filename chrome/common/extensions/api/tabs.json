@@ -172,7 +172,7 @@
       {
         "name": "getCurrent",
         "type": "function",
-        "description": "Gets the tab that this script call is being made from. May be undefined if called from a non-tab context (for example, a background page or popup view).",
+        "description": "Gets the tab that this script call is being made from. Returns <code>undefined</code> if called from a non-tab context (for example, a background page or popup view).",
         "parameters": [],
         "returns_async": {
           "name": "callback",
