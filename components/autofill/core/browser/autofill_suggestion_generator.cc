@@ -560,6 +560,10 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
       main_text = credit_card.CardNameAndLastFourDigits(nickname,
                                                         GetObfuscationLength());
     }
+  } else if (type.GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
+    CHECK(!credit_card.cvc().empty());
+    main_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT);
   } else {
     main_text = credit_card.GetInfo(type, app_locale);
   }

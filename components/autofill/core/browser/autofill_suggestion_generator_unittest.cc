@@ -99,7 +99,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
     CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
     test::SetCreditCardInfo(&server_card, "Elvis Presley", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
-                            "1");
+                            "1", /*cvc=*/u"123");
     server_card.SetNetworkForMaskedCard(kVisaCard);
     server_card.set_server_id(server_id);
     server_card.set_guid(guid);
@@ -112,7 +112,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
     CreditCard local_card(guid, test::kEmptyOrigin);
     test::SetCreditCardInfo(&local_card, "Elvis Presley", "4111111111111111",
                             test::NextMonth().c_str(), test::NextYear().c_str(),
-                            "1");
+                            "1", /*cvc=*/u"123");
     return local_card;
   }
 
@@ -1045,6 +1045,118 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
             base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
                           base::UTF8ToUTF16(test::NextYear().substr(2))}));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Verify that the suggestion's texts are populated correctly for a local and
+// server card suggestion when the CVC field is focused.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetSuggestionsForCreditCards_CvcField) {
+  // Create one server card and one local card with CVC.
+  CreditCard local_card = CreateLocalCard();
+  // We used last 4 to deduplicate local card and server card so we should set
+  // local card with different last 4.
+  local_card.SetNumber(u"5454545454545454");
+  personal_data()->AddCreditCard(std::move(local_card));
+  personal_data()->AddServerCreditCard(CreateServerCard());
+
+  bool should_display_gpay_logo;
+  bool with_offer;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  const std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
+          metadata_logging_context);
+
+  // Both local card and server card suggestion should be shown when CVC field
+  // is focused.
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+  EXPECT_EQ(suggestions[1].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+}
+
+// Verify that the suggestion's texts are populated correctly for a duplicate
+// local and server card suggestion when the CVC field is focused.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetSuggestionsForCreditCards_Duplicate_CvcField) {
+  // Create 2 duplicate local and server card with same last 4.
+  personal_data()->AddCreditCard(CreateLocalCard());
+  personal_data()->AddServerCreditCard(CreateServerCard());
+
+  bool should_display_gpay_logo;
+  bool with_offer;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  const std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
+          metadata_logging_context);
+
+  // Only 1 suggestion should be shown when CVC field is focused.
+  ASSERT_EQ(suggestions.size(), 1U);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+}
+
+// Verify that the FPAN and VCN suggestion's texts are populated correctly for a
+// enrolled card when the CVC field is focused.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetSuggestionsForCreditCards_VirtualCard_CvcField) {
+  // Create a server card with CVC that enrolled to virtual card.
+  CreditCard server_card = CreateServerCard();
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  personal_data()->AddServerCreditCard(std::move(server_card));
+
+  bool should_display_gpay_logo;
+  bool with_offer;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  const std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
+          metadata_logging_context);
+
+  // Both FPAN and VCN suggestion should be shown when CVC field is focused.
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+  EXPECT_EQ(suggestions[1].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+}
+
+// Verify that the FPAN and VCN suggestion's texts are populated correctly for a
+// enrolled card when the CVC field is focused.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetSuggestionsForCreditCards_VirtualCard_Duplicate_CvcField) {
+  // Create duplicate local and server card with CVC that enrolled to virtual
+  // card.
+  CreditCard server_card = CreateServerCard();
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  personal_data()->AddServerCreditCard(std::move(server_card));
+  personal_data()->AddCreditCard(CreateLocalCard());
+
+  bool should_display_gpay_logo;
+  bool with_offer;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  const std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+          /*app_locale=*/"en", should_display_gpay_logo, with_offer,
+          metadata_logging_context);
+
+  // Both FPAN and VCN suggestion should be shown when CVC field is focused.
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+  EXPECT_EQ(suggestions[1].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
 // Tests that credit card suggestions on iOS use the correct number of '•'
