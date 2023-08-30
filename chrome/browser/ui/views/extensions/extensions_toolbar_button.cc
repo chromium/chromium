@@ -123,19 +123,6 @@ void ExtensionsToolbarButton::UpdateState(State state) {
   SetVectorIcon(GetIcon(state_));
 }
 
-void ExtensionsToolbarButton::UpdateIcon() {
-  if (browser_->app_controller()) {
-    // TODO(pbos): Remove this once PWAs have ThemeProvider color support for it
-    // and ToolbarButton can pick up icon sizes outside of a static lookup.
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      GetIcon(state_), extensions_container_->GetIconColor(),
-                      GetIconSize()));
-    return;
-  }
-  ToolbarButton::UpdateIcon();
-}
-
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   pressed_lock_.reset();

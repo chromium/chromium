@@ -54,7 +54,6 @@ class ExtensionsToolbarButton : public ToolbarButton,
   gfx::Size GetMinimumSize() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void UpdateIcon() override;
   bool ShouldShowInkdropAfterIphInteraction() override;
 
   // views::WidgetObserver:
