@@ -85889,6 +85889,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="12" label="Online"/>
 </enum>
 
+<enum name="PortraitModeError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Initialization error"/>
+  <int value="2" label="Configuration error"/>
+  <int value="3" label="Processing capture request error"/>
+  <int value="4" label="Processing capture result error"/>
+</enum>
+
 <enum name="Ports">
   <int value="80" label="Port 80"/>
   <int value="443" label="Port 443"/>

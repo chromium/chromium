@@ -704,6 +704,40 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.PortraitMode.AverageLatency"
+    units="microseconds" expires_after="2023-12-31">
+  <owner>julianachang@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average processing latency to execute the
+    PortraitModeStreamManipulator ProcessCaptureResult method. Emitted when the
+    camera session is closed.
+
+    This metric is reported on ChromeOS devices with Portrait Mode enabled.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.PortraitMode.Error" enum="PortraitModeError"
+    expires_after="2023-12-31">
+  <owner>julianachang@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records whether there's an error that can compromise the Portrait Mode
+    feature. Emitted at most once for each error when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.PortraitMode.NumStillShotsTaken"
+    units="captures" expires_after="2023-12-31">
+  <owner>julianachang@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of still capture shots taken in a camera session with
+    Portrait Mode enabled. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.SessionDuration" units="seconds"
     expires_after="2024-02-20">
   <owner>wtlee@chromium.org</owner>
