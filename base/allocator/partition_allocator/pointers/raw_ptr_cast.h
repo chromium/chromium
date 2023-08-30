@@ -25,13 +25,14 @@ namespace base {
 
 // Wrapper for |static_cast<T>(src)|.
 template <typename Dest, typename Source>
-inline constexpr Dest unsafe_raw_ptr_static_cast(Source source) noexcept {
+inline constexpr Dest unsafe_raw_ptr_static_cast(Source&& source) noexcept {
   return static_cast<Dest>(source);
 }
 
 // Wrapper for |reinterpret_cast<T>(src)|.
 template <typename Dest, typename Source>
-inline constexpr Dest unsafe_raw_ptr_reinterpret_cast(Source source) noexcept {
+inline constexpr Dest unsafe_raw_ptr_reinterpret_cast(
+    Source&& source) noexcept {
   return reinterpret_cast<Dest>(source);
 }
 

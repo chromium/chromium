@@ -8,12 +8,12 @@
 namespace base {
 
 template <typename Dest, typename Source>
-inline constexpr Dest unsafe_raw_ptr_static_cast(Source source) {
+inline constexpr Dest unsafe_raw_ptr_static_cast(Source&& source) {
   return static_cast<Dest>(source);
 }
 
 template <typename Dest, typename Source>
-inline constexpr Dest unsafe_raw_ptr_reinterpret_cast(Source source) {
+inline constexpr Dest unsafe_raw_ptr_reinterpret_cast(Source&& source) {
   return reinterpret_cast<Dest>(source);
 }
 
