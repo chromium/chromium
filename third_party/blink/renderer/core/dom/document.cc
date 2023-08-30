@@ -2711,11 +2711,10 @@ void Document::AttachCompositorTimeline(cc::AnimationTimeline* timeline) const {
 }
 
 void Document::ClearFocusedElementIfNeeded() {
-  if (clear_focused_element_timer_.IsActive() || !focused_element_ ||
-      focused_element_->IsFocusable()) {
-    return;
+  if (!clear_focused_element_timer_.IsActive() && focused_element_ &&
+      !focused_element_->IsFocusable()) {
+    clear_focused_element_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
-  clear_focused_element_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void Document::ClearFocusedElementTimerFired(TimerBase*) {
