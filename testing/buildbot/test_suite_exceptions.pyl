@@ -1080,7 +1080,6 @@
         },
       },
       'Linux Tests': {
-        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
         },
