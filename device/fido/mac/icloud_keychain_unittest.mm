@@ -6,6 +6,9 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_samples.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -20,6 +23,8 @@
 namespace device::fido::icloud_keychain {
 
 namespace {
+
+constexpr char kMetricName[] = "WebAuthentication.MacOS.PasskeyPermission";
 
 static const uint8_t kAttestationObjectBytes[] = {
     0xa3, 0x63, 0x66, 0x6d, 0x74, 0x66, 0x70, 0x61, 0x63, 0x6b, 0x65, 0x64,
@@ -332,6 +337,42 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
                                  FidoTransportProtocol::kInternal));
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthDenied);
+      fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+      make_credential();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(0), 1);
+      EXPECT_EQ(samples->GetCount(1), 0);
+      EXPECT_EQ(samples->GetCount(2), 1);
+    }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
+      fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+      make_credential();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(0), 1);
+      EXPECT_EQ(samples->GetCount(1), 1);
+      EXPECT_EQ(samples->GetCount(2), 0);
+    }
   }
 }
 
@@ -422,6 +463,44 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
                                    kCredentialID);
       auto result = get_assertion();
       EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
+    }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthDenied);
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      get_assertion();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(3), 1);
+      EXPECT_EQ(samples->GetCount(4), 0);
+      EXPECT_EQ(samples->GetCount(5), 1);
+    }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      get_assertion();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(3), 1);
+      EXPECT_EQ(samples->GetCount(4), 1);
+      EXPECT_EQ(samples->GetCount(5), 0);
     }
 
     // `Authenticator` does special processing if a permission is requested

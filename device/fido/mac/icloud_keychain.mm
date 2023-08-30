@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,6 +58,22 @@ AuthenticatorSupportedOptions AuthenticatorOptions() {
   return options;
 }
 
+// This enum is used in a histogram. Never change assigned values and only add
+// new entries at the end.
+enum class PasskeyPermissionMetric {
+  kRequestedDuringCreate = 0,
+  kApprovedDuringCreate = 1,
+  kDeniedDuringCreate = 2,
+
+  kRequestedDuringGet = 3,
+  kApprovedDuringGet = 4,
+  kDeniedDuringGet = 5,
+
+  kMaxValue = 5,
+};
+
+constexpr char kMetricName[] = "WebAuthentication.MacOS.PasskeyPermission";
+
 class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
  public:
   explicit Authenticator(NSWindow* window) : window_(window) {}
@@ -83,9 +100,12 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     switch (sys_interface->GetAuthState()) {
       case SystemInterface::kAuthNotAuthorized:
         FIDO_LOG(DEBUG) << "iCKC: requesting permission";
-        sys_interface->AuthorizeAndContinue(base::BindOnce(
-            &SystemInterface::MakeCredential, sys_interface, window_,
-            std::move(request), std::move(continuation)));
+        base::UmaHistogramEnumeration(
+            kMetricName, PasskeyPermissionMetric::kRequestedDuringCreate);
+        sys_interface->AuthorizeAndContinue(
+            base::BindOnce(&Authenticator::MakeCredentialAfterPermissionRequest,
+                           weak_factory_.GetWeakPtr(), std::move(request),
+                           std::move(continuation)));
         break;
       case SystemInterface::kAuthDenied:
         // The operation continues even if the user denied access. See above.
@@ -96,6 +116,23 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                                       std::move(continuation));
         break;
     }
+  }
+
+  void MakeCredentialAfterPermissionRequest(
+      CtapMakeCredentialRequest request,
+      base::OnceCallback<void(ASAuthorization* authorization, NSError* error)>
+          continuation) {
+    scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
+    if (sys_interface->GetAuthState() != SystemInterface::kAuthAuthorized) {
+      base::UmaHistogramEnumeration(
+          kMetricName, PasskeyPermissionMetric::kDeniedDuringCreate);
+    } else {
+      base::UmaHistogramEnumeration(
+          kMetricName, PasskeyPermissionMetric::kApprovedDuringCreate);
+    }
+
+    sys_interface->MakeCredential(window_, std::move(request),
+                                  std::move(continuation));
   }
 
   void GetAssertion(CtapGetAssertionRequest request,
@@ -109,6 +146,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     switch (sys_interface->GetAuthState()) {
       case SystemInterface::kAuthNotAuthorized:
         FIDO_LOG(DEBUG) << "iCKC: requesting permission";
+        base::UmaHistogramEnumeration(
+            kMetricName, PasskeyPermissionMetric::kRequestedDuringGet);
         sys_interface->AuthorizeAndContinue(
             base::BindOnce(&Authenticator::GetAssertionAfterPermissionRequest,
                            weak_factory_.GetWeakPtr(), std::move(request),
@@ -144,9 +183,14 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
 
     scoped_refptr<SystemInterface> sys_interface = GetSystemInterface();
     if (sys_interface->GetAuthState() != SystemInterface::kAuthAuthorized) {
+      base::UmaHistogramEnumeration("WebAuthentication.MacOS.PasskeyPermission",
+                                    PasskeyPermissionMetric::kDeniedDuringGet);
       GetAssertionCall(std::move(request), std::move(callback));
       return;
     }
+
+    base::UmaHistogramEnumeration("WebAuthentication.MacOS.PasskeyPermission",
+                                  PasskeyPermissionMetric::kApprovedDuringGet);
 
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner =
         base::SequencedTaskRunner::GetCurrentDefault();

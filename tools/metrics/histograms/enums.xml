@@ -112543,6 +112543,15 @@ others/histograms.xml -->
   <int value="5" label="Android Accessory"/>
 </enum>
 
+<enum name="WebAuthenticationMacOSPasskeysPermission">
+  <int value="0" label="Requested permission during a create() call"/>
+  <int value="1" label="Permission approved during a create() call"/>
+  <int value="2" label="Permission denied during a create() call"/>
+  <int value="3" label="Requested permission during a get() call"/>
+  <int value="4" label="Permission approved during a get() call"/>
+  <int value="5" label="Permission denied during a get() call"/>
+</enum>
+
 <enum name="WebAuthenticationMacOSPlatformAuthenticatorAction">
   <int value="0"
       label="Started create() for profile authenticator with iCloud Drive
