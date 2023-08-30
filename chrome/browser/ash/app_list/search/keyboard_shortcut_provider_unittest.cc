@@ -30,6 +30,7 @@ constexpr double kResultRelevanceThreshold = 0.79;
 constexpr double kRelevanceScoreThreshold = 0.52;
 constexpr size_t kMaxResults = 3u;
 
+using ash::mojom::AcceleratorState;
 using ash::shortcut_customization::mojom::SearchResult;
 using ash::shortcut_customization::mojom::SearchResultPtr;
 
@@ -48,6 +49,28 @@ std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedScores(
         /*accelerator_infos=*/
         ash::shortcut_ui::fake_search_data::CreateFakeAcceleratorInfoList(),
         /*relevance_score=*/score));
+  }
+
+  return search_results;
+}
+
+std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedStates(
+    const std::vector<ash::mojom::AcceleratorState>& states) {
+  std::vector<SearchResultPtr> search_results;
+  for (const auto state : states) {
+    search_results.push_back(SearchResult::New(
+        /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
+            /*description=*/base::StrCat(
+                {u"result with score ",
+                 base::NumberToString16(kRelevanceScoreThreshold)}),
+            /*source=*/ash::mojom::AcceleratorSource::kAsh,
+            /*action=*/
+            ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
+            /*style=*/ash::mojom::AcceleratorLayoutStyle::kDefault),
+        /*accelerator_infos=*/
+        ash::shortcut_ui::fake_search_data::CreateFakeAcceleratorInfoList(
+            state),
+        /*relevance_score=*/kRelevanceScoreThreshold));
   }
 
   return search_results;
@@ -333,6 +356,38 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
   for (const auto& result : results()) {
     EXPECT_GT(result->relevance(), kRelevanceScoreThreshold);
   }
+}
+
+// Test that disabled shortcuts will be filtered out.
+TEST_F(CustomizableKeyboardShortcutProviderTest,
+       DisabledShortcutsWillBeRemoved) {
+  auto search_results = CreateFakeSearchResultsWithSpecifiedStates(
+      {AcceleratorState::kDisabledByConflict,
+       AcceleratorState::kDisabledByConflict,
+       AcceleratorState::kDisabledByUnavailableKeys,
+       AcceleratorState::kDisabledByUser});
+  search_handler_->SetSearchResults(std::move(search_results));
+
+  provider_->Start(u"fake query");
+  Wait();
+
+  const size_t results_count = 0;
+  EXPECT_EQ(results_count, results().size());
+}
+
+// Test that enabled shortcuts are kept.
+TEST_F(CustomizableKeyboardShortcutProviderTest,
+       EnabledShortcutsWillBeKeptUpToThree) {
+  auto search_results = CreateFakeSearchResultsWithSpecifiedStates(
+      {AcceleratorState::kEnabled, AcceleratorState::kEnabled,
+       AcceleratorState::kEnabled, AcceleratorState::kEnabled});
+  search_handler_->SetSearchResults(std::move(search_results));
+
+  provider_->Start(u"fake query");
+  Wait();
+
+  const size_t results_count = 3;
+  EXPECT_EQ(results_count, results().size());
 }
 
 }  // namespace app_list::test

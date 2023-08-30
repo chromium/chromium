@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
@@ -28,6 +29,7 @@ namespace app_list {
 namespace {
 
 using ::ash::string_matching::TokenizedString;
+using ::std::remove_if;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
@@ -51,6 +53,18 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
     }
   }
   return candidates;
+}
+
+// Remove disabled shortcuts and leave enabled ones only.
+void RemoveDisabledShortcuts(
+    ash::shortcut_customization::mojom::SearchResultPtr& search_result) {
+  search_result->accelerator_infos.erase(
+      remove_if(search_result->accelerator_infos.begin(),
+                search_result->accelerator_infos.end(),
+                [](const auto& x) {
+                  return x->state != ash::mojom::AcceleratorState::kEnabled;
+                }),
+      search_result->accelerator_infos.end());
 }
 
 }  // namespace
@@ -143,7 +157,12 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
 
   // Convert final candidates into correct type, and publish.
   SearchProvider::Results results;
-  for (const auto& search_result : search_results) {
+  for (auto& search_result : search_results) {
+    // Only enabled shortcuts should be displayed.
+    RemoveDisabledShortcuts(search_result);
+    if (search_result->accelerator_infos.empty()) {
+      break;
+    }
     // The search results are sorted by relevance score in descending order
     // already.
     if (search_result->relevance_score < kRelevanceScoreThreshold) {
