@@ -29,6 +29,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace web_app {
 namespace {
 
@@ -58,6 +63,10 @@ class InstallPlaceholderCommandTest : public WebAppTest {
 
  private:
   raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
+#if BUILDFLAG(IS_WIN)
+  // This prevents creating shortcuts in the startup dir.
+  base::ScopedPathOverride override_start_dir_{base::DIR_USER_STARTUP};
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 TEST_F(InstallPlaceholderCommandTest, InstallPlaceholder) {
