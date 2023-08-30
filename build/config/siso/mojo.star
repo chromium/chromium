@@ -159,6 +159,20 @@ def __step_config(ctx, step_config):
             "output_local": True,
             "platform_ref": platform_ref,
         },
+        {
+            "name": "mojo/validate_typemap_config",
+            "command_prefix": "python3 ../../mojo/public/tools/bindings/validate_typemap_config.py",
+            "remote": True,
+            "output_local": True,
+            "platform_ref": platform_ref,
+        },
+        {
+            "name": "mojo/generate_type_mappings",
+            "command_prefix": "python3 ../../mojo/public/tools/bindings/generate_type_mappings.py",
+            "remote": True,
+            "output_local": True,
+            "platform_ref": platform_ref,
+        },
     ])
     return step_config
 
