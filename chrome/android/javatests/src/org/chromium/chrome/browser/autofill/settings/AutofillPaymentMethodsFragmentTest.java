@@ -671,6 +671,54 @@ public class AutofillPaymentMethodsFragmentTest {
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
 
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSaveCvcToggle_notShownWhenFeatureDisabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference expectedNullCvcStorageToggle = getPreferenceScreen(activity).findPreference(
+                AutofillPaymentMethodsFragment.PREF_SAVE_CVC);
+        Assert.assertNull(expectedNullCvcStorageToggle);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    // Use the policy to simulate AutofillCreditCard is disabled.
+    @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "false") })
+    public void testSaveCvcToggle_disabledAndOffWhenAutofillDisabled() throws Exception {
+        // Initial state, Save Cvc pref is enabled previously.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, true); });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that save cvc toggle is shown but greyed out with OFF (even if it's previously
+        // turned on) when Autofill toggle is disabled.
+        ChromeSwitchPreference saveCvcToggle =
+                findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_SAVE_CVC);
+        Assert.assertFalse(saveCvcToggle.isEnabled());
+        Assert.assertFalse(saveCvcToggle.isChecked());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSaveCvcToggle_shown() throws Exception {
+        // Initial state, Save Cvc pref is enabled previously.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, true); });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that save cvc toggle is shown but greyed out when Autofill toggle is disabled.
+        ChromeSwitchPreference saveCvcToggle =
+                findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_SAVE_CVC);
+        Assert.assertTrue(saveCvcToggle.isEnabled());
+        Assert.assertTrue(saveCvcToggle.isChecked());
+    }
+
     private void setUpBiometricAuthenticationResult(boolean success) {
         // We have to manually invoke the passed-in callback.
         doAnswer(invocation -> {

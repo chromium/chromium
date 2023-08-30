@@ -135,6 +135,7 @@ public abstract class ChromeFeatureList {
             "AutofillEnableNewCardArtAndNetworkImages";
     public static final String AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING =
             "AutofillEnableCardArtServerSideStretching";
+    public static final String AUTOFILL_ENABLE_CVC_STORAGE = "AutofillEnableCvcStorageAndFilling";
     public static final String AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH =
             "AutofillEnablePaymentsMandatoryReauth";
     public static final String AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES =

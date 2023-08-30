@@ -842,6 +842,21 @@ public class PersonalDataManager {
     }
 
     /**
+     * @return Whether the Autofill feature for payment cvc storage is enabled.
+     */
+    public static boolean isPaymentCvcStorageEnabled() {
+        return getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE);
+    }
+
+    /**
+     * Enables or disables the Autofill feature for payment cvc storage.
+     * @param enable True to enable payment cvc storage, false otherwise.
+     */
+    public static void setAutofillPaymentCvcStorage(boolean enable) {
+        getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, enable);
+    }
+
+    /**
      * @return Whether the Autofill feature is managed.
      */
     public static boolean isAutofillManaged() {

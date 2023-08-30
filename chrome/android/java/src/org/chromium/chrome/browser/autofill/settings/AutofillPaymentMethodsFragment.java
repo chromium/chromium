@@ -55,6 +55,7 @@ public class AutofillPaymentMethodsFragment
     // Fido toggle during tests.
     static final String PREF_FIDO = "fido";
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
+    static final String PREF_SAVE_CVC = "save_cvc";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
@@ -187,6 +188,28 @@ public class AutofillPaymentMethodsFragment
             // updated and is in sync with the mandatory reauth user pref.
             mandatoryReauthSwitch.setChecked(
                     PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled());
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE)) {
+            ChromeSwitchPreference saveCvcSwitch =
+                    new ChromeSwitchPreference(getStyledContext(), null);
+            saveCvcSwitch.setTitle(R.string.autofill_settings_page_enable_cvc_storage_label);
+            saveCvcSwitch.setSummary(R.string.autofill_settings_page_enable_cvc_storage_sublabel);
+            saveCvcSwitch.setKey(PREF_SAVE_CVC);
+            // When "Save And Fill Payments Methods" is disabled, we disable this cvc storage
+            // toggle.
+            saveCvcSwitch.setEnabled(PersonalDataManager.isAutofillCreditCardEnabled());
+            saveCvcSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+                PersonalDataManager.setAutofillPaymentCvcStorage((boolean) newValue);
+                return true;
+            });
+            getPreferenceScreen().addPreference(saveCvcSwitch);
+
+            // When "Save And Fill Payments Methods" is disabled, we override this toggle's value to
+            // off (but not change the underlying pref value). When "Save And Fill Payments Methods"
+            // is ON, show the cvc storage pref value.
+            saveCvcSwitch.setChecked(PersonalDataManager.isAutofillCreditCardEnabled()
+                    && PersonalDataManager.isPaymentCvcStorageEnabled());
         }
 
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {
