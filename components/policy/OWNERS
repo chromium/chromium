@@ -6,6 +6,6 @@ enterprise-policy-review@google.com
 
 file://components/policy/ENTERPRISE_POLICY_OWNERS
 
-ftirelo@chromium.org
-nicolaso@chromium.org
-ydago@chromium.org
+ftirelo@chromium.org #{LAST_RESORT_SUGGESTION}
+nicolaso@chromium.org #{LAST_RESORT_SUGGESTION}
+ydago@chromium.org #{LAST_RESORT_SUGGESTION}

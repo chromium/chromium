@@ -4,6 +4,6 @@ enterprise-policy-review@google.com
 
 # When making changes, also update ToolOwners in the GwsQ config:
 # http://google3/chrome/enterprise/gwsq/enterprise-policy-review.gwsq
-hendrich@chromium.org
-janagrill@google.com
-ydago@chromium.org
+hendrich@chromium.org #{LAST_RESORT_SUGGESTION}
+janagrill@google.com #{LAST_RESORT_SUGGESTION}
+ydago@chromium.org #{LAST_RESORT_SUGGESTION}
