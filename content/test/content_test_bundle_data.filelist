@@ -4069,8 +4069,6 @@ data/accessibility/html/overflow-actions-expected-android-external.txt
 data/accessibility/html/overflow-actions-expected-android.txt
 data/accessibility/html/overflow-actions-expected-fuchsia.txt
 data/accessibility/html/overflow-actions.html
-data/accessibility/html/overflow-scroller-expected-blink.txt
-data/accessibility/html/overflow-scroller.html
 data/accessibility/html/p-expected-android-external.txt
 data/accessibility/html/p-expected-android.txt
 data/accessibility/html/p-expected-auralinux.txt

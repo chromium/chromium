@@ -1830,8 +1830,8 @@ public class WebContentsAccessibilityTest {
         // Build a simple web page with a div and overflow:scroll
         setupTestWithHTML(
                 "<div id='div1' title='1234' style='overflow:scroll; width: 200px; height:50px'>\n"
-                + "  <p id='p1' tabindex=0>Example Paragraph 1</p>\n"
-                + "  <p id='p2' tabindex=0>Example Paragraph 2</p>\n"
+                + "  <p id='p1'>Example Paragraph 1</p>\n"
+                + "  <p id='p2'>Example Paragraph 2</p>\n"
                 + "</div>");
 
         // Define our root node and paragraph node IDs by looking for their ids.

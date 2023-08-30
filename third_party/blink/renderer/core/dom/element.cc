@@ -5518,7 +5518,8 @@ bool Element::SupportsFocus() const {
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
-         IsScrollableContainerThatShouldBeKeyboardFocusable() ||
+         // TODO(crbug.com/1444450) This breaks a11y:
+         // IsScrollableContainerThatShouldBeKeyboardFocusable() ||
          SupportsSpatialNavigationFocus() || has_toggle_trigger();
 }
 
