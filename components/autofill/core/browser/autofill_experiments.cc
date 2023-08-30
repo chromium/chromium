@@ -148,6 +148,8 @@ bool IsCreditCardUploadEnabled(
     return false;
   }
 
+  // TODO(crbug.com/1462552): Simplify once IsSyncFeatureActive() is deleted
+  // from the codebase.
   if (sync_service->IsSyncFeatureActive()) {
     if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE)) {
       // In full sync mode, we only allow card upload when addresses are also
