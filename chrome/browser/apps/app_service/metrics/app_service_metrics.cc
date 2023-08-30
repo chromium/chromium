@@ -15,7 +15,9 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -160,6 +162,23 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name) {
+  switch (default_app_name) {
+    case apps::DefaultAppName::kSettings:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kSettingsApp);
+      break;
+    case apps::DefaultAppName::kFiles:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kFilesApp);
+      break;
+    default:
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 namespace apps {
@@ -176,6 +195,11 @@ void RecordAppLaunch(const std::string& app_id,
   if (const absl::optional<apps::DefaultAppName> app_name =
           SystemWebAppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
+
+    if (ash::features::IsWelcomeTourEnabled()) {
+      RecordWelcomeTourInteraction(app_name.value());
+    }
+
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
