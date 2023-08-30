@@ -4,6 +4,8 @@
 
 #include "services/webnn/dml/graph_impl.h"
 
+#include <array>
+
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -17,6 +19,7 @@
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/graph_builder.h"
 #include "services/webnn/dml/tensor_desc.h"
+#include "services/webnn/dml/utils.h"
 #include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
@@ -33,6 +36,9 @@ using mojom::OperatorPtr;
 using IdToOperandMap = base::flat_map<uint64_t, OperandPtr>;
 // A map of all NodeOutputInfos using the mojom operand id as key.
 using IdToNodeOutputMap = std::map<uint64_t, NodeOutputInfo>;
+
+constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
+constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
 
 DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
   switch (type) {
@@ -138,7 +144,139 @@ bool CreateOperatorNodeForClamp(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-void CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
+bool CreateOperatorNodeForPool2d(const IdToOperandMap& id_to_operand_map,
+                                 const OperatorPtr& operation,
+                                 GraphBuilder& graph_builder,
+                                 IdToNodeOutputMap& id_to_node_output_map) {
+  uint64_t input_id = operation->input_operands[0];
+  const auto input_iterator = id_to_node_output_map.find(input_id);
+  CHECK(input_iterator != id_to_node_output_map.end());
+  NodeOutputInfo input_node_output_info = input_iterator->second;
+  TensorDesc input_tensor_desc =
+      graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
+
+  uint64_t output_id = operation->output_operands[0];
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
+                                output_operand->dimensions);
+
+  CHECK(operation->attributes);
+  auto& pool2d_attributes = operation->attributes->get_pool2d();
+  CHECK(pool2d_attributes);
+
+  switch (pool2d_attributes->layout) {
+    case mojom::InputOperandLayout::kChannelsFirst: {
+      break;
+    }
+    // DML pooling operators only support nchw layout according to
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling2_operator_desc.
+    //
+    // To support other layouts, we can transpose the input and output tensors
+    // to nchw without changing the physical arrangement by modifying the
+    // descriptions of dimensions, and strides which determines the number of
+    // elements to traverse to reach the next element in each dimension. E.g.,
+    // for a tensor with nhwc layout, dimensions [1, 2, 3, 4] and strides [24,
+    // 12, 4, 1], the new tensor with nchw layout should be with dimensions [1,
+    // 4, 2, 3] and strides [24, 1, 12, 4]. See details in
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_buffer_tensor_desc.
+    case mojom::InputOperandLayout::kChannelsLast: {
+      input_tensor_desc.Transpose(kNhwcToNchwPermutation);
+
+      // TODO(crbug.com/1476718): Figure out the optimal physical layout for
+      // output tensor.
+      output_tensor_desc.Transpose(kNhwcToNchwPermutation);
+      break;
+    }
+    default:
+      DLOG(ERROR) << "Invalid Pool2d layout";
+      NOTREACHED_NORETURN();
+  }
+
+  std::array<uint32_t, 2> strides = {pool2d_attributes->strides->height,
+                                     pool2d_attributes->strides->width};
+  std::array<uint32_t, 2> dilations = {pool2d_attributes->dilations->height,
+                                       pool2d_attributes->dilations->width};
+  std::array<uint32_t, 2> window_dimensions = {
+      pool2d_attributes->window_dimensions->height,
+      pool2d_attributes->window_dimensions->width};
+  std::array<uint32_t, 2> start_padding = {
+      pool2d_attributes->padding->beginning->height,
+      pool2d_attributes->padding->beginning->width};
+  std::array<uint32_t, 2> end_padding = {
+      pool2d_attributes->padding->ending->height,
+      pool2d_attributes->padding->ending->width};
+  NodeInfo pool2d_node_info;
+  switch (operation->kind) {
+      // TODO(crbug.com/1273291): Add L2Pool2d operator.
+
+    case mojom::Operator::Kind::kAveragePool2d: {
+      // TODO(crbug.com/1273291): Work around dilation support for L2 and
+      // average pooling. According to WebNN spec:
+      // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d, dilations are
+      // supported by pooling operations, while for DirectML AVERAGE_POOLING and
+      // LP_POOLING don't support dilations.
+      // Spec issue tracked on
+      // https://github.com/webmachinelearning/webnn/issues/180.
+      if (dilations[0] != 1 || dilations[1] != 1) {
+        DLOG(ERROR)
+            << "Dilations are unsupported for DML average pooling operator";
+        return false;
+      }
+      DML_AVERAGE_POOLING_OPERATOR_DESC average_pooling_desc = {
+          .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+          .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+          .DimensionCount =
+              base::checked_cast<uint32_t>(window_dimensions.size()),
+          .Strides = strides.data(),
+          .WindowSize = window_dimensions.data(),
+          .StartPadding = start_padding.data(),
+          .EndPadding = end_padding.data(),
+          // The padding elements are not counted as part of the averaging
+          // calculation.
+          .IncludePadding = false};
+      pool2d_node_info = graph_builder.CreateOperatorNode(
+          DML_OPERATOR_AVERAGE_POOLING, &average_pooling_desc,
+          {input_node_output_info});
+      break;
+    }
+    case mojom::Operator::Kind::kMaxPool2d: {
+      DML_MAX_POOLING2_OPERATOR_DESC max_pooling_desc = {
+          .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+          .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+          .OutputIndicesTensor = nullptr,
+          .DimensionCount =
+              base::checked_cast<uint32_t>(window_dimensions.size()),
+          .Strides = strides.data(),
+          .WindowSize = window_dimensions.data(),
+          .StartPadding = start_padding.data(),
+          .EndPadding = end_padding.data(),
+          .Dilations = dilations.data()};
+      pool2d_node_info = graph_builder.CreateOperatorNode(
+          DML_OPERATOR_MAX_POOLING2, &max_pooling_desc,
+          {input_node_output_info});
+      break;
+    }
+    default:
+      DLOG(ERROR) << "Invalid Pool2d operator type";
+      NOTREACHED_NORETURN();
+  }
+
+  if (pool2d_node_info.type == NodeInfo::Type::kInvalid) {
+    return false;
+  }
+  if (pool2d_attributes->layout == mojom::InputOperandLayout::kChannelsLast) {
+    // Transpose the output tensor from nchw to nhwc layout.
+    output_tensor_desc.Transpose(kNchwToNhwcPermutation);
+  }
+
+  NodeOutputInfo pool2d_output_info = graph_builder.CreateNodeOutput(
+      pool2d_node_info, std::move(output_tensor_desc));
+  id_to_node_output_map[output_id] = std::move(pool2d_output_info);
+  return true;
+}
+
+bool CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
                                const OperatorPtr& operation,
                                GraphBuilder& graph_builder,
                                IdToNodeOutputMap& id_to_node_output_map) {
@@ -159,9 +297,13 @@ void CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
   NodeInfo relu_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, {input_node_output});
+  if (relu_node.type == NodeInfo::Type::kInvalid) {
+    return false;
+  }
   NodeOutputInfo relu_output =
       graph_builder.CreateNodeOutput(relu_node, std::move(output_tensor_desc));
   id_to_node_output_map[output_id] = std::move(relu_output);
+  return true;
 }
 
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
@@ -460,9 +602,15 @@ void GraphImpl::CreateAndBuild(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
+      case Operator::Kind::kAveragePool2d:
+      case Operator::Kind::kMaxPool2d: {
+        was_creation_successful = CreateOperatorNodeForPool2d(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+        break;
+      }
       case Operator::Kind::kRelu: {
-        CreateOperatorNodeForRelu(id_to_operand_map, operation, graph_builder,
-                                  id_to_node_output_map);
+        was_creation_successful = CreateOperatorNodeForRelu(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
       case Operator::Kind::kReshape: {
@@ -483,6 +631,8 @@ void GraphImpl::CreateAndBuild(
     }
     if (!was_creation_successful) {
       std::move(callback).Run(mojo::NullRemote());
+      // TODO(crbug.com/1471367): Report an error message to JS code when it
+      // fails to create an operator.
       return;
     }
   }
@@ -492,7 +642,7 @@ void GraphImpl::CreateAndBuild(
   for (auto& output_id : graph_info->output_operands) {
     const auto output_iterator = id_to_node_output_map.find(output_id);
     CHECK(output_iterator != id_to_node_output_map.end());
-    NodeOutputInfo node_output = output_iterator->second;
+    NodeOutputInfo node_output_info = output_iterator->second;
 
     // TODO: A DML graph's output tensor may have adjusted strides rather than
     // default strides which are calculated by its' dimensions. For example,
@@ -505,9 +655,10 @@ void GraphImpl::CreateAndBuild(
     // Appending an identity operator DML_OPERATOR_ELEMENT_WISE_IDENTITY which
     // effectively copies input tensor to the output tensor to avoid directly
     // using graph input as output.
-    NodeOutput output_node = graph_builder.GetNodeOutput(node_output);
-    TensorDesc output_tensor_desc = output_node.tensor_desc;
-    auto output_type = output_node.node_info.type;
+    NodeOutput output_node_output =
+        graph_builder.GetNodeOutput(node_output_info);
+    TensorDesc output_tensor_desc = output_node_output.tensor_desc;
+    auto output_type = output_node_output.node_info.type;
     if (output_type == NodeInfo::Type::kInput) {
       TensorDesc identity_tensor_desc(output_tensor_desc.GetDataType(),
                                       DML_TENSOR_FLAG_NONE,
@@ -517,12 +668,12 @@ void GraphImpl::CreateAndBuild(
           .OutputTensor = &identity_tensor_desc.GetDMLTensorDesc()};
       NodeInfo identity_node = graph_builder.CreateOperatorNode(
           DML_OPERATOR_ELEMENT_WISE_IDENTITY, &identity_operator_desc,
-          {node_output});
-      NodeOutputInfo identity_node_output = graph_builder.CreateNodeOutput(
+          {node_output_info});
+      NodeOutputInfo identity_node_output_info = graph_builder.CreateNodeOutput(
           identity_node, std::move(identity_tensor_desc));
-      graph_outputs.push_back(std::move(identity_node_output));
+      graph_outputs.push_back(std::move(identity_node_output_info));
     } else {
-      graph_outputs.push_back(std::move(node_output));
+      graph_outputs.push_back(std::move(node_output_info));
     }
   }
 

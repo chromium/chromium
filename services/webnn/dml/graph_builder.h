@@ -81,6 +81,11 @@ class GraphBuilder final {
   // edges are created.
   // It's expected to pass an operator desc pointer to parameter 'void*
   // operator_desc' which depends on the DML_OPERATOR_TYPE.
+  //
+  // Attention: No guarantee that the operator node will be created
+  // successfully, so the returned NodeInfo must be checked for validity. It
+  // returns an invalid NodeInfo whose type equals to NodeInfo::Type::kInvalid
+  // when it fails to build an operator node.
   NodeInfo CreateOperatorNode(
       DML_OPERATOR_TYPE type,
       const void* operator_desc,

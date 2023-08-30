@@ -4,35 +4,65 @@
 
 #include "services/webnn/dml/utils.h"
 
+#include <set>
+
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "services/webnn/dml/error.h"
 
 namespace webnn::dml {
 
 namespace {
 
-uint64_t CalculateElementCount(
-    const std::vector<uint32_t>& dimensions,
-    const absl::optional<std::vector<uint32_t>>& strides) {
+// Note that the element count is considered as 1 when the give dimensions is
+// empty.
+uint64_t CalculateElementCount(const std::vector<uint32_t>& dimensions,
+                               const std::vector<uint32_t>& strides = {}) {
   base::CheckedNumeric<uint64_t> checked_element_count = 1;
-  if (!strides) {
-    for (auto& d : dimensions) {
+  if (strides.empty()) {
+    for (const auto& d : dimensions) {
       checked_element_count *= d;
     }
   } else {
-    CHECK_EQ(dimensions.size(), strides.value().size());
-    base::CheckedNumeric<uint32_t> indexOfLastElement = 0;
+    CHECK_EQ(dimensions.size(), strides.size());
+    base::CheckedNumeric<uint32_t> index_of_last_element = 0;
     for (size_t i = 0; i < dimensions.size(); ++i) {
-      indexOfLastElement += (dimensions[i] - 1) * strides.value()[i];
+      index_of_last_element += (dimensions[i] - 1) * strides[i];
     }
-    checked_element_count = indexOfLastElement + 1;
+    checked_element_count = index_of_last_element + 1;
   }
 
   return checked_element_count.ValueOrDie();
+}
+
+// Check 1. no duplicate value in `axes`​, 2. values in `axes` ​​are all
+// within [0, N - 1], where N is the length of `axes`.
+bool ValidateAxes(base::span<const uint32_t> axes) {
+  size_t rank = axes.size();
+
+  if (base::ranges::any_of(axes, [rank](uint32_t axis) {
+        return base::checked_cast<size_t>(axis) >= rank;
+      })) {
+    // All axes should be within range [0, N - 1].
+    return false;
+  }
+
+  // TODO(crbug.com/1273291): Replace `std::set` with `std::bitset` for
+  // duplication check after the maximum number of operand dimensions has been
+  // settled and validated before using this function. Use `std::set` here at
+  // present to avoid dimensions count check. Dimensions number issue tracked in
+  // https://github.com/webmachinelearning/webnn/issues/456.
+  if (rank != std::set<uint32_t>(axes.begin(), axes.end()).size()) {
+    // Axes should not contain duplicate values.
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -40,7 +70,7 @@ uint64_t CalculateElementCount(
 uint64_t CalculateDMLBufferTensorSize(
     DML_TENSOR_DATA_TYPE data_type,
     const std::vector<uint32_t>& dimensions,
-    const absl::optional<std::vector<uint32_t>>& strides) {
+    const std::vector<uint32_t>& strides = {}) {
   size_t element_size;
   switch (data_type) {
     case DML_TENSOR_DATA_TYPE_FLOAT32:
@@ -74,6 +104,31 @@ uint64_t CalculateDMLBufferTensorSize(
           CalculateElementCount(dimensions, strides) * element_size, 4);
 
   return buffer_tensor_size.ValueOrDie();
+}
+
+std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
+  size_t dim_size = dimensions.size();
+  std::vector<uint32_t> strides(dim_size);
+  base::CheckedNumeric<uint32_t> stride = 1;
+  for (size_t i = dim_size; i-- > 0;) {
+    strides[i] = stride.ValueOrDie();
+    stride *= dimensions[i];
+  }
+  return strides;
+}
+
+std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
+                                   base::span<const uint32_t> permutation) {
+  CHECK_EQ(array.size(), permutation.size());
+  CHECK(ValidateAxes(permutation));
+
+  size_t arr_size = array.size();
+  std::vector<uint32_t> permuted_array(arr_size);
+  for (size_t i = 0; i < arr_size; ++i) {
+    permuted_array[i] = array[permutation[i]];
+  }
+
+  return permuted_array;
 }
 
 ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device) {

@@ -9,8 +9,8 @@
 #include <wrl.h>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn::dml {
 
@@ -25,11 +25,8 @@ class TensorDesc final {
   TensorDesc(DML_TENSOR_DATA_TYPE data_type, std::vector<uint32_t> dimensions);
   TensorDesc(DML_TENSOR_DATA_TYPE data_type,
              DML_TENSOR_FLAGS flags,
-             std::vector<uint32_t> dimensions);
-  TensorDesc(DML_TENSOR_DATA_TYPE data_type,
-             DML_TENSOR_FLAGS flags,
              std::vector<uint32_t> dimensions,
-             absl::optional<std::vector<uint32_t>> strides);
+             std::vector<uint32_t> strides = {});
 
   TensorDesc(const TensorDesc& other);
   TensorDesc(TensorDesc&& other);
@@ -41,15 +38,17 @@ class TensorDesc final {
   DML_TENSOR_DATA_TYPE GetDataType() const { return buffer_desc_.DataType; }
   DML_TENSOR_FLAGS GetFlags() const { return buffer_desc_.Flags; }
   const std::vector<uint32_t>& GetDimensions() const { return dimensions_; }
-  const absl::optional<std::vector<uint32_t>>& GetStrides() const {
-    return strides_;
-  }
+  const std::vector<uint32_t>& GetStrides() const { return strides_; }
   uint64_t GetTotalTensorSizeInBytes() const {
     return buffer_desc_.TotalTensorSizeInBytes;
   }
   const DML_TENSOR_DESC& GetDMLTensorDesc() const { return tensor_desc_; }
 
   bool operator==(const TensorDesc& other) const;
+
+  // Transpose the tensor by permuting the dimensions and strides following the
+  // given permutation.
+  void Transpose(base::span<const uint32_t> permutation);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);
@@ -59,7 +58,7 @@ class TensorDesc final {
   // DML_BUFFER_TENSOR_DESC consists of the pointers to a DirectML tensor's
   // dimensions and strides.
   std::vector<uint32_t> dimensions_;
-  absl::optional<std::vector<uint32_t>> strides_;
+  std::vector<uint32_t> strides_;
 
   // The DML_BUFFER_TENSOR_DESC describes a tensor that will be stored in a
   // Direct3D 12 buffer resource.

@@ -12,33 +12,28 @@ namespace webnn::dml {
 
 TensorDesc::TensorDesc(DML_TENSOR_DATA_TYPE data_type,
                        std::vector<uint32_t> dimensions)
-    : TensorDesc(data_type,
-                 DML_TENSOR_FLAG_NONE,
-                 std::move(dimensions),
-                 absl::nullopt) {}
-
-TensorDesc::TensorDesc(DML_TENSOR_DATA_TYPE data_type,
-                       DML_TENSOR_FLAGS flags,
-                       std::vector<uint32_t> dimensions)
-    : TensorDesc(data_type, flags, std::move(dimensions), absl::nullopt) {}
+    : TensorDesc(data_type, DML_TENSOR_FLAG_NONE, std::move(dimensions)) {}
 
 TensorDesc::TensorDesc(DML_TENSOR_DATA_TYPE data_type,
                        DML_TENSOR_FLAGS flags,
                        std::vector<uint32_t> dimensions,
-                       absl::optional<std::vector<uint32_t>> strides) {
-  CHECK_LE(dimensions.size(), DML_TENSOR_DIMENSION_COUNT_MAX);
-  if (strides.has_value()) {
-    CHECK_EQ(dimensions.size(), strides.value().size());
-  }
-  dimensions_ = std::move(dimensions);
-  strides_ = std::move(strides);
-
+                       std::vector<uint32_t> strides) {
   // DML (as of at least 1.11) requires dimension count to be at least 1 because
   // otherwise validation during operator creation will complain with
   // E_INVALIDARG. So scalars must be conveyed with dimensions = [1].
-  if (dimensions_.empty()) {
-    dimensions_ = {1};
+  dimensions_ =
+      dimensions.empty() ? std::vector<uint32_t>{1} : std::move(dimensions);
+
+  if (!strides.empty()) {
+    CHECK_EQ(dimensions_.size(), strides.size());
   }
+
+  // If no strides is given, set strides as default value calculated from
+  // dimensions, e.g., a tensor with dimensions [1, 2, 3, 4] should have default
+  // strides [24, 12, 4, 1], referring to
+  // https://docs.microsoft.com/en-us/windows/win32/direct3d12/dml-helper-functions#calculatestrides.
+  strides_ =
+      strides.empty() ? CalculateStrides(dimensions_) : std::move(strides);
 
   // Round up to the nearest 4 bytes. The buffer allocation already aligned
   // chunks up to DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT.
@@ -47,7 +42,7 @@ TensorDesc::TensorDesc(DML_TENSOR_DATA_TYPE data_type,
 
   buffer_desc_.DimensionCount = dimensions_.size();
   buffer_desc_.Sizes = dimensions_.data();
-  buffer_desc_.Strides = strides_ ? strides_.value().data() : nullptr;
+  buffer_desc_.Strides = strides_.data();
   buffer_desc_.TotalTensorSizeInBytes = minimum_implied_size_in_bytes;
   buffer_desc_.GuaranteedBaseOffsetAlignment = 0;
   buffer_desc_.DataType = data_type;
@@ -62,7 +57,7 @@ TensorDesc::TensorDesc(TensorDesc const& other)
       buffer_desc_(other.buffer_desc_) {
   // Update the internal pointers to dimensions and strides.
   buffer_desc_.Sizes = dimensions_.data();
-  buffer_desc_.Strides = strides_ ? strides_.value().data() : nullptr;
+  buffer_desc_.Strides = strides_.data();
   tensor_desc_ = DML_TENSOR_DESC{DML_TENSOR_TYPE_BUFFER, &buffer_desc_};
 }
 
@@ -72,7 +67,7 @@ TensorDesc::TensorDesc(TensorDesc&& other)
       buffer_desc_(std::move(other.buffer_desc_)) {
   // Update the internal pointers to dimensions and strides.
   buffer_desc_.Sizes = dimensions_.data();
-  buffer_desc_.Strides = strides_ ? strides_.value().data() : nullptr;
+  buffer_desc_.Strides = strides_.data();
   tensor_desc_ = DML_TENSOR_DESC{DML_TENSOR_TYPE_BUFFER, &buffer_desc_};
 }
 
@@ -83,7 +78,7 @@ TensorDesc& TensorDesc::operator=(const TensorDesc& other) {
 
   // Update the internal pointers to dimensions and strides.
   buffer_desc_.Sizes = dimensions_.data();
-  buffer_desc_.Strides = strides_ ? strides_.value().data() : nullptr;
+  buffer_desc_.Strides = strides_.data();
   tensor_desc_ = DML_TENSOR_DESC{DML_TENSOR_TYPE_BUFFER, &buffer_desc_};
 
   return *this;
@@ -96,7 +91,7 @@ TensorDesc& TensorDesc::operator=(TensorDesc&& other) {
 
   // Update the internal pointers to dimensions and strides.
   buffer_desc_.Sizes = dimensions_.data();
-  buffer_desc_.Strides = strides_ ? strides_.value().data() : nullptr;
+  buffer_desc_.Strides = strides_.data();
   tensor_desc_ = DML_TENSOR_DESC{DML_TENSOR_TYPE_BUFFER, &buffer_desc_};
 
   return *this;
@@ -111,6 +106,20 @@ bool TensorDesc::operator==(const TensorDesc& other) const {
              other.buffer_desc_.TotalTensorSizeInBytes &&
          buffer_desc_.GuaranteedBaseOffsetAlignment ==
              other.buffer_desc_.GuaranteedBaseOffsetAlignment;
+}
+
+void TensorDesc::Transpose(base::span<const uint32_t> permutation) {
+  dimensions_ = PermuteArray(dimensions_, permutation);
+  strides_ = PermuteArray(strides_, permutation);
+
+  // Round up to the nearest 4 bytes. The buffer allocation already aligned
+  // chunks up to DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT.
+  uint64_t minimum_implied_size_in_bytes = CalculateDMLBufferTensorSize(
+      buffer_desc_.DataType, dimensions_, strides_);
+  CHECK_EQ(buffer_desc_.TotalTensorSizeInBytes, minimum_implied_size_in_bytes);
+
+  buffer_desc_.Sizes = dimensions_.data();
+  buffer_desc_.Strides = strides_.data();
 }
 
 }  // namespace webnn::dml
