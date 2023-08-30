@@ -6,19 +6,26 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 
 namespace {
 const std::string kGraphicsTabletKey1 = "device_key1";
 const std::string kGraphicsTabletKey2 = "device_key2";
+
+constexpr char kUserEmail[] = "example@email.com";
+const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
 
 const mojom::ButtonRemapping button_remapping1(
     /*name=*/"test1",
@@ -45,6 +52,9 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
+                                           features::kInputDeviceSettingsSplit},
+                                          {});
     AshTestBase::SetUp();
     InitializePrefService();
     pref_handler_ = std::make_unique<GraphicsTabletPrefHandlerImpl>();
@@ -75,6 +85,17 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
                                                 *graphics_tablet);
   }
 
+  mojom::GraphicsTabletSettingsPtr
+  CallInitializeLoginScreenGraphicsTabletSettings(
+      const AccountId& account_id,
+      const mojom::GraphicsTablet& graphics_tablet) {
+    const auto graphics_tablet_ptr = graphics_tablet.Clone();
+
+    pref_handler_->InitializeLoginScreenGraphicsTabletSettings(
+        local_state(), account_id, graphics_tablet_ptr.get());
+    return std::move(graphics_tablet_ptr->settings);
+  }
+
   mojom::GraphicsTabletSettingsPtr CallInitializeGraphicsTabletSettings(
       const std::string& device_key) {
     mojom::GraphicsTabletPtr graphics_tablet = mojom::GraphicsTablet::New();
@@ -85,10 +106,50 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
     return std::move(graphics_tablet->settings);
   }
 
+  user_manager::KnownUser known_user() {
+    return user_manager::KnownUser(local_state());
+  }
+
+  bool HasLoginScreenGraphicsTabletButtonRemappingList(AccountId account_id) {
+    const auto* tablet_button_remapping_list = known_user().FindPath(
+        account_id,
+        prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref);
+    const auto* pen_button_remapping_list = known_user().FindPath(
+        account_id,
+        prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref);
+    return tablet_button_remapping_list &&
+           tablet_button_remapping_list->is_list() &&
+           pen_button_remapping_list && pen_button_remapping_list->is_list();
+  }
+
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<GraphicsTabletPrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
+
+TEST_F(GraphicsTabletPrefHandlerTest,
+       InitializeLoginScreenGraphicsTabletSettings) {
+  mojom::GraphicsTablet graphics_tablet;
+  graphics_tablet.device_key = kGraphicsTabletKey1;
+  mojom::GraphicsTabletSettingsPtr settings =
+      CallInitializeLoginScreenGraphicsTabletSettings(account_id_1,
+                                                      graphics_tablet);
+
+  EXPECT_FALSE(HasLoginScreenGraphicsTabletButtonRemappingList(account_id_1));
+  EXPECT_EQ(mojom::GraphicsTabletSettings::New(), settings);
+}
+
+TEST_F(GraphicsTabletPrefHandlerTest,
+       LoginScreenPrefsNotPersistedWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
+  mojom::GraphicsTablet graphics_tablet;
+  graphics_tablet.device_key = kGraphicsTabletKey1;
+  CallInitializeLoginScreenGraphicsTabletSettings(account_id_1,
+                                                  graphics_tablet);
+  EXPECT_FALSE(HasLoginScreenGraphicsTabletButtonRemappingList(account_id_1));
+}
 
 TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
   std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings1;

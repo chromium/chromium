@@ -4,10 +4,15 @@
 
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
 
+#include <vector>
+
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 
@@ -72,6 +77,41 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
   pref_service->SetDict(
       std::string(prefs::kGraphicsTabletPenButtonRemappingsDictPref),
       std::move(pen_button_remappings_dict));
+}
+
+void GraphicsTabletPrefHandlerImpl::InitializeLoginScreenGraphicsTabletSettings(
+    PrefService* local_state,
+    const AccountId& account_id,
+    mojom::GraphicsTablet* graphics_tablet) {
+  CHECK(local_state);
+  // If the flag is disabled, clear the button remapping lists.
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    user_manager::KnownUser known_user(local_state);
+    known_user.SetPath(
+        account_id,
+        prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
+        absl::nullopt);
+    known_user.SetPath(
+        account_id, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
+        absl::nullopt);
+    return;
+  }
+
+  mojom::GraphicsTabletSettingsPtr settings =
+      mojom::GraphicsTabletSettings::New();
+  const auto* tablet_button_remappings_list = GetLoginScreenButtonRemappingList(
+      local_state, account_id,
+      prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref);
+  const auto* pen_button_remappings_list = GetLoginScreenButtonRemappingList(
+      local_state, account_id,
+      prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref);
+  if (tablet_button_remappings_list && pen_button_remappings_list) {
+    settings->tablet_button_remappings =
+        ConvertListToButtonRemappingArray(*tablet_button_remappings_list);
+    settings->pen_button_remappings =
+        ConvertListToButtonRemappingArray(*pen_button_remappings_list);
+  }
+  graphics_tablet->settings = std::move(settings);
 }
 
 }  // namespace ash

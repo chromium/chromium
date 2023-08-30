@@ -36,6 +36,13 @@ constexpr char kPointingStickLoginScreenExternalSettingsPref[] =
 constexpr char kTouchpadLoginScreenExternalSettingsPref[] =
     "settings.touchpad.external";
 
+// Prefs which contain login screen button remapping list for connected graphics
+// tablet devices.
+constexpr char kGraphicsTabletLoginScreenTabletButtonRemappingListPref[] =
+    "settings.graphics_tablet.tablet_button_remappings";
+constexpr char kGraphicsTabletLoginScreenPenButtonRemappingListPref[] =
+    "settings.graphics_tablet.pen_button_remappings";
+
 // Prefs which contain dictionaries of settings for each connected device.
 constexpr char kKeyboardDeviceSettingsDictPref[] = "settings.keyboard.devices";
 constexpr char kMouseDeviceSettingsDictPref[] = "settings.mouse.devices";

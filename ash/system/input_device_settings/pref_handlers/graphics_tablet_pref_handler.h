@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 
+class AccountId;
 class PrefService;
 
 namespace ash {
@@ -21,6 +22,15 @@ class ASH_EXPORT GraphicsTabletPrefHandler {
   // the `mojom::GraphicsTablet` object.
   virtual void InitializeGraphicsTabletSettings(
       PrefService* pref_service,
+      mojom::GraphicsTablet* graphics_tablet) = 0;
+
+  // Initializes login screen device settings using the passed in
+  // `graphics_tablet`. Button remapping lists will be stored in
+  // `settings.graphics_tablet.tablet_button_remappings` and
+  // `settings.graphics_tablet.pen_button_remappings`.
+  virtual void InitializeLoginScreenGraphicsTabletSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
       mojom::GraphicsTablet* graphics_tablet) = 0;
 
   // Updates device settings stored in prefs to match the values in

@@ -125,6 +125,18 @@ const base::Value::Dict* GetLoginScreenSettingsDict(
   return &dict_value->GetDict();
 }
 
+const base::Value::List* GetLoginScreenButtonRemappingList(
+    PrefService* local_state,
+    AccountId account_id,
+    const std::string& pref_name) {
+  const auto* list_value =
+      user_manager::KnownUser(local_state).FindPath(account_id, pref_name);
+  if (!list_value || !list_value->is_list()) {
+    return nullptr;
+  }
+  return &list_value->GetList();
+}
+
 bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
   static base::NoDestructor<base::flat_set<VendorProductId>> logged_devices;
   static constexpr auto kKeyboardsPretendingToBeMice =

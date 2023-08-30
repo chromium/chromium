@@ -25,6 +25,12 @@ class ASH_EXPORT GraphicsTabletPrefHandlerImpl
   void InitializeGraphicsTabletSettings(
       PrefService* pref_service,
       mojom::GraphicsTablet* graphics_tablet) override;
+
+  void InitializeLoginScreenGraphicsTabletSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      mojom::GraphicsTablet* graphics_tablet) override;
+
   void UpdateGraphicsTabletSettings(
       PrefService* pref_service,
       const mojom::GraphicsTablet& graphics_tablet) override;

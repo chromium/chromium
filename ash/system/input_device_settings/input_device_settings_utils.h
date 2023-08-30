@@ -84,6 +84,12 @@ ASH_EXPORT const base::Value::Dict* GetLoginScreenSettingsDict(
     AccountId account_id,
     const std::string& pref_name);
 
+// Retrieve cached button remapping list (if it exists).
+ASH_EXPORT const base::Value::List* GetLoginScreenButtonRemappingList(
+    PrefService* local_state,
+    AccountId account_id,
+    const std::string& pref_name);
+
 // These two functions are used to convert the button remapping or dict
 // in order to save the mojom object to the prefs as a dict.
 ASH_EXPORT base::Value::Dict ConvertButtonRemappingToDict(

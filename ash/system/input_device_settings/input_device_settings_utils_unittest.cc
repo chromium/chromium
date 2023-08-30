@@ -87,6 +87,22 @@ TEST(GetLoginScreenSettingsDictTest, RetrieveSettingsDict) {
   EXPECT_NE(nullptr, valid_settings);
 }
 
+TEST(GetLoginScreenButtonRemappingListTest, RetrieveButtonRemappingList) {
+  auto local_state = std::make_unique<TestingPrefServiceSimple>();
+  user_manager::KnownUser::RegisterPrefs(local_state->registry());
+  user_manager::KnownUser known_user(local_state.get());
+  const base::Value::List* button_remapping_list =
+      GetLoginScreenButtonRemappingList(local_state.get(), account_id,
+                                        kTestPrefKey);
+  EXPECT_EQ(nullptr, button_remapping_list);
+  known_user.SetPath(account_id, kTestPrefKey,
+                     absl::make_optional<base::Value>(base::Value::List()));
+  const base::Value::List* valid_button_remapping_list =
+      GetLoginScreenButtonRemappingList(local_state.get(), account_id,
+                                        kTestPrefKey);
+  EXPECT_NE(nullptr, valid_button_remapping_list);
+}
+
 TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
   const base::Value::Dict dict1 =
       ConvertButtonRemappingToDict(button_remapping1);
