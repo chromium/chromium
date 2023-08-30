@@ -3221,7 +3221,7 @@
     },
     {
       name: "ScriptingMediaFeature",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollableAreaNoSnapping",
