@@ -40,6 +40,7 @@ class PresentationTimeRecorder;
 
 namespace ash {
 class OverviewSession;
+class SplitViewOverviewSession;
 class SplitViewControllerTest;
 class SplitViewDivider;
 class SplitViewMetricsController;
@@ -209,6 +210,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     return split_view_metrics_controller_.get();
   }
   aura::Window* to_be_activated_window() { return to_be_activated_window_; }
+  SplitViewOverviewSession* split_view_overview_session_for_testing() {
+    return split_view_overview_session_.get();
+  }
 
   // Returns true if split view mode is active. Please see SplitViewType above
   // to see the difference between tablet mode and clamshell mode splitview
@@ -414,8 +418,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroyed(aura::Window* window) override;
-  void OnResizeLoopStarted(aura::Window* window) override;
-  void OnResizeLoopEnded(aura::Window* window) override;
 
   // WindowStateObserver:
   void OnPostWindowStateTypeChange(WindowState* window_state,
@@ -459,6 +461,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
  private:
   friend class SplitViewControllerTest;
   friend class SplitViewOverviewSessionTest;
+  friend class SplitViewOverviewSession;
   class DividerSnapAnimation;
   class AutoSnapController;
   class ToBeSnappedWindowsObserver;
@@ -523,6 +526,14 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // resizing.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
+  // Updates `divider_position_` and notifies observers that the divider
+  // position has changed.
+  void UpdateDividerPositionOnWindowResize(aura::Window* window,
+                                           const gfx::Rect& new_bounds);
+
+  // Ends overview if the divider position is outside the fixed positions.
+  void MaybeEndOverviewOnWindowResize(aura::Window* window);
+
   // Returns the closest fixed location for `divider_position_`.
   int GetClosestFixedDividerPosition();
 
@@ -580,10 +591,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // `chromeos::kTwoThirdSnapRatio` depends on the minimum size of current
   // snapped windows.
   void ModifyPositionRatios(std::vector<float>* out_position_ratios);
-
-  // Gets the expected window component depending on current screen orientation
-  // for resizing purpose.
-  int GetWindowComponentForResize(aura::Window* window);
 
   // Gets the expected end drag position for |window| depending on current
   // screen orientation and split divider position.
@@ -754,11 +761,16 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   base::ObserverList<SplitViewObserver>::Unchecked observers_;
 
-  // Records the presentation time of resize operation in split view mode.
+  // Records the presentation time of resize operation in tablet split view
+  // mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;
+
+  // Observes a single window in intermediate split view and makes calls to
+  // overview.
+  std::unique_ptr<SplitViewOverviewSession> split_view_overview_session_;
 
   // The metrics controller for the same root window.
   std::unique_ptr<SplitViewMetricsController> split_view_metrics_controller_;

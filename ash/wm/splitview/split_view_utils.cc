@@ -23,6 +23,7 @@
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -518,6 +519,15 @@ bool IsSnapGroupEnabledInClamshellMode() {
   const bool in_tablet_mode =
       tablet_mode_controller && tablet_mode_controller->InTabletMode();
   return snap_group_controller && !in_tablet_mode;
+}
+
+int GetWindowComponentForResize(aura::Window* window) {
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(window->GetRootWindow());
+  CHECK(split_view_controller &&
+        split_view_controller->IsWindowInSplitView(window));
+  // TODO(b/288356322): Update the component for vertical splitview.
+  return window == split_view_controller->primary_window() ? HTRIGHT : HTLEFT;
 }
 
 views::Widget::InitParams CreateWidgetInitParams(

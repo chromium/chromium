@@ -34,6 +34,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -112,31 +113,16 @@ constexpr char kDividerAnimationSmoothness[] =
 
 // Histogram names that record presentation time of resize operation with
 // following conditions:
-// a) clamshell split view, empty overview grid;
-// b) clamshell split view, nonempty overview grid;
-// c) clamshell split view, two snapped windows;
-// c) tablet split view, one snapped window, empty overview grid;
-// d) tablet split view, two snapped windows;
-// e) tablet split view, one snapped window, nonempty overview grid;
-constexpr char kClamshellSplitViewResizeSingleHistogram[] =
-    "Ash.SplitViewResize.PresentationTime.ClamshellMode.SingleWindow";
-constexpr char kClamshellSplitViewResizeWithOverviewHistogram[] =
-    "Ash.SplitViewResize.PresentationTime.ClamshellMode.WithOverview";
+// a) tablet split view, one snapped window, empty overview grid;
+// b) tablet split view, two snapped windows;
+// c) tablet split view, one snapped window, nonempty overview grid;
 constexpr char kTabletSplitViewResizeSingleHistogram[] =
     "Ash.SplitViewResize.PresentationTime.TabletMode.SingleWindow";
-constexpr char kClamshellSplitViewResizeMultiHistogram[] =
-    "Ash.SplitViewResize.PresentationTime.ClamshellMode.MultiWindow";
 constexpr char kTabletSplitViewResizeMultiHistogram[] =
     "Ash.SplitViewResize.PresentationTime.TabletMode.MultiWindow";
 constexpr char kTabletSplitViewResizeWithOverviewHistogram[] =
     "Ash.SplitViewResize.PresentationTime.TabletMode.WithOverview";
 
-constexpr char kClamshellSplitViewResizeSingleMaxLatencyHistogram[] =
-    "Ash.SplitViewResize.PresentationTime.MaxLatency.ClamshellMode."
-    "SingleWindow";
-constexpr char kClamshellSplitViewResizeWithOverviewMaxLatencyHistogram[] =
-    "Ash.SplitViewResize.PresentationTime.MaxLatency.ClamshellMode."
-    "WithOverview";
 constexpr char kTabletSplitViewResizeSingleMaxLatencyHistogram[] =
     "Ash.SplitViewResize.PresentationTime.MaxLatency.TabletMode.SingleWindow";
 constexpr char kTabletSplitViewResizeMultiMaxLatencyHistogram[] =
@@ -219,19 +205,6 @@ bool IsInTabletMode() {
 bool IsInTabletTransitionMode() {
   return chromeos::TabletState::Get()->state() !=
          display::TabletState::kInClamshellMode;
-}
-
-bool IsInOverviewSession() {
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  return overview_controller && overview_controller->InOverviewSession();
-}
-
-// Returns the overview session if overview mode is active, otherwise returns
-// nullptr.
-OverviewSession* GetOverviewSession() {
-  return IsInOverviewSession()
-             ? Shell::Get()->overview_controller()->overview_session()
-             : nullptr;
 }
 
 void RemoveSnappingWindowFromOverviewIfApplicable(
@@ -1061,9 +1034,18 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
 
     auto_snap_controller_ = std::make_unique<AutoSnapController>(this);
 
-    // Get the divider position given by `snap_ratio`, or if there is pre-set
-    // `divider_position_`, use it. It can happen during tablet <-> clamshell
-    // transition or multi-user transition.
+    if (!IsInTabletMode() && IsInOverviewSession()) {
+      // Start the clamshell split overview session. It is too late to create
+      // this in `OnOverviewModeStarting()`, since overview will already have
+      // started and we are dragging `window` into split view.
+      // TODO(b/294580642): Move this to SnapGroupController.
+      split_view_overview_session_ =
+          std::make_unique<SplitViewOverviewSession>(window);
+    }
+
+    // Get the divider position given by `snap_ratio`, or if there is
+    // pre-set `divider_position_`, use it. It can happen during tablet <->
+    // clamshell transition or multi-user transition.
     absl::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
     divider_position_ =
         (divider_position_ < 0)
@@ -1572,6 +1554,7 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   }
 
   auto_snap_controller_.reset();
+  split_view_overview_session_.reset();
 
   // This may be an exit point for snap group as the window state changes unless
   // split view ends due to overview starts.
@@ -1790,7 +1773,7 @@ void SplitViewController::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  DCHECK_EQ(root_window_, window->GetRootWindow());
+  CHECK_EQ(root_window_, window->GetRootWindow());
 
   if (InTabletSplitViewMode() && is_resizing_with_divider_) {
     // Bounds may be changed while we are processing a resize event. In this
@@ -1798,133 +1781,26 @@ void SplitViewController::OnWindowBoundsChanged(
     // soon anyway. If we are *not* currently processing a resize, it means the
     // bounds of a window have been updated "async", and we need to update the
     // window's transform.
-    if (!processing_resize_event_)
+    if (!processing_resize_event_) {
       SetWindowsTransformDuringResizing();
-    return;
-  }
-
-  if (!InClamshellSplitViewMode()) {
-    return;
-  }
-
-  if (IsSnapGroupEnabledInClamshellMode() && BothSnapped()) {
-    // When the second window is snapped in a snap group, we *don't* want to
-    // override `divider_position_` with `new_bounds` below, which don't take
-    // into account the divider width.
-    return;
-  }
-
-  WindowState* window_state = WindowState::Get(window);
-  if (window_state->is_dragged()) {
-    DCHECK_NE(WindowResizer::kBoundsChange_None,
-              window_state->drag_details()->bounds_change);
-    if (window_state->drag_details()->bounds_change ==
-        WindowResizer::kBoundsChange_Repositions) {
-      // Ending overview will also end clamshell split view unless
-      // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
-      Shell::Get()->overview_controller()->EndOverview(
-          OverviewEndAction::kSplitView);
-      return;
     }
-    DCHECK(window_state->drag_details()->bounds_change &
-           WindowResizer::kBoundsChange_Resizes);
-    DCHECK(presentation_time_recorder_);
-    presentation_time_recorder_->RequestNext();
+    return;
   }
-
-  const gfx::Rect work_area =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window_);
-
-  if (IsLayoutHorizontal(window)) {
-    divider_position_ = window == primary_window_
-                            ? new_bounds.width()
-                            : work_area.width() - new_bounds.width();
-  } else {
-    divider_position_ = window == primary_window_
-                            ? new_bounds.height()
-                            : work_area.height() - new_bounds.height();
-  }
-  NotifyDividerPositionChanged();
 }
 
 void SplitViewController::OnWindowDestroyed(aura::Window* window) {
   DCHECK(InSplitViewMode());
   DCHECK(IsWindowInSplitView(window));
   auto iter = snapping_window_transformed_bounds_map_.find(window);
-  if (iter != snapping_window_transformed_bounds_map_.end())
+  if (iter != snapping_window_transformed_bounds_map_.end()) {
     snapping_window_transformed_bounds_map_.erase(iter);
+  }
 
   OnSnappedWindowDetached(window, WindowDetachedReason::kWindowDestroyed);
 
   if (to_be_activated_window_ == window) {
     to_be_activated_window_ = nullptr;
   }
-}
-
-void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
-  if (!InClamshellSplitViewMode()) {
-    return;
-  }
-
-  // In clamshell mode, if splitview is active (which means overview is active
-  // at the same time or the feature flag `kSnapGroup` is enabled and
-  // `kAutomaticallyLockGroup` is true, only the resize that happens on the
-  // window edge that's next to the overview grid will resize the window and
-  // overview grid at the same time. For the resize that happens on the other
-  // part of the window, we'll just end splitview and overview mode.
-  if (WindowState::Get(window)->drag_details()->window_component !=
-      GetWindowComponentForResize(window)) {
-    // Ending overview will also end clamshell split view unless
-    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
-    Shell::Get()->overview_controller()->EndOverview(
-        OverviewEndAction::kSplitView);
-    return;
-  }
-
-  if (IsSnapGroupEnabledInClamshellMode() && state_ == State::kBothSnapped) {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        window->layer()->GetCompositor(),
-        kClamshellSplitViewResizeMultiHistogram,
-        kClamshellSplitViewResizeSingleMaxLatencyHistogram);
-    return;
-  }
-
-  DCHECK(GetOverviewSession());
-  if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        window->layer()->GetCompositor(),
-        kClamshellSplitViewResizeSingleHistogram,
-        kClamshellSplitViewResizeSingleMaxLatencyHistogram);
-  } else {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        window->layer()->GetCompositor(),
-        kClamshellSplitViewResizeWithOverviewHistogram,
-        kClamshellSplitViewResizeWithOverviewMaxLatencyHistogram);
-  }
-}
-
-void SplitViewController::OnResizeLoopEnded(aura::Window* window) {
-  if (!InClamshellSplitViewMode()) {
-    return;
-  }
-
-  NotifyWindowResized();
-
-  if (divider_position_ <
-          GetDividerEndPosition() * chromeos::kOneThirdSnapRatio ||
-      divider_position_ >
-          GetDividerEndPosition() * chromeos::kTwoThirdSnapRatio) {
-    // Ending overview will also end clamshell split view unless
-    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
-    Shell::Get()->overview_controller()->EndOverview(
-        OverviewEndAction::kSplitView);
-    WindowState::Get(window)->Maximize();
-  }
-
-  // `presentation_time_recorder_` must be reset after
-  // `WindowState::Maximize()`, which will trigger `OnWindowBoundsChanged()`.
-  presentation_time_recorder_.reset();
 }
 
 void SplitViewController::OnPostWindowStateTypeChange(
@@ -2443,6 +2319,38 @@ void SplitViewController::NotifyWindowSwapped() {
     observer.OnSplitViewWindowSwapped();
 }
 
+void SplitViewController::UpdateDividerPositionOnWindowResize(
+    aura::Window* window,
+    const gfx::Rect& new_bounds) {
+  CHECK_EQ(root_window_, window->GetRootWindow());
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window_);
+
+  if (IsLayoutHorizontal(window)) {
+    divider_position_ = window == primary_window_
+                            ? new_bounds.width()
+                            : work_area.width() - new_bounds.width();
+  } else {
+    divider_position_ = window == primary_window_
+                            ? new_bounds.height()
+                            : work_area.height() - new_bounds.height();
+  }
+  NotifyDividerPositionChanged();
+}
+
+void SplitViewController::MaybeEndOverviewOnWindowResize(aura::Window* window) {
+  const int divider_end_position(GetDividerEndPosition());
+  if (divider_position_ < divider_end_position * chromeos::kOneThirdSnapRatio ||
+      divider_position_ > divider_end_position * chromeos::kTwoThirdSnapRatio) {
+    // Ending overview will also end clamshell split view unless
+    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
+    Shell::Get()->overview_controller()->EndOverview(
+        OverviewEndAction::kSplitView);
+    WindowState::Get(window)->Maximize();
+  }
+}
+
 void SplitViewController::CreateSplitViewDividerInClamshell() {
   CHECK(InClamshellSplitViewMode());
   divider_position_ = GetClosestFixedDividerPosition();
@@ -2804,6 +2712,14 @@ void SplitViewController::OnWindowSnapped(
     in_snap_group_creation_session_ = snap_group_enabled_in_clamshell;
     Shell::Get()->overview_controller()->StartOverview(
         OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);
+    if (snap_group_enabled_in_clamshell && !split_view_overview_session_) {
+      // Normally when `IsSnapGroupEnabledInClamshellMode()` is true, overview
+      // will be initialized here, but a window could already be snapped with
+      // overview open, then swap positions with overview open.
+      // TODO(b/294580642): Move this to SnapGroupController.
+      split_view_overview_session_ =
+          std::make_unique<SplitViewOverviewSession>(window);
+    }
     return;
   }
 
@@ -2930,11 +2846,6 @@ void SplitViewController::ModifyPositionRatios(
       min_size_right_ratio > chromeos::kDefaultSnapRatio) {
     base::Erase(*out_position_ratios, chromeos::kDefaultSnapRatio);
   }
-}
-
-int SplitViewController::GetWindowComponentForResize(aura::Window* window) {
-  DCHECK(IsWindowInSplitView(window));
-  return window == primary_window_ ? HTRIGHT : HTLEFT;
 }
 
 gfx::Point SplitViewController::GetEndDragLocationInScreen(

@@ -2588,6 +2588,8 @@ component("ash") {
     "wm/splitview/split_view_metrics_controller.cc",
     "wm/splitview/split_view_metrics_controller.h",
     "wm/splitview/split_view_observer.h",
+    "wm/splitview/split_view_overview_session.cc",
+    "wm/splitview/split_view_overview_session.h",
     "wm/splitview/split_view_test_api.cc",
     "wm/splitview/split_view_utils.cc",
     "wm/splitview/split_view_utils.h",

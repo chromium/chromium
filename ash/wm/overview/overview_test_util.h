@@ -34,8 +34,6 @@ void ToggleOverview(
 void WaitForOverviewEnterAnimation();
 void WaitForOverviewExitAnimation();
 
-OverviewSession* GetOverviewSession();
-
 OverviewGrid* GetOverviewGridForRoot(aura::Window* root);
 
 const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(

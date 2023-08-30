@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -79,12 +80,6 @@ void WaitForOverviewEnterAnimation() {
 
 void WaitForOverviewExitAnimation() {
   WaitForOverviewAnimationState(OverviewAnimationState::kExitAnimationComplete);
-}
-
-OverviewSession* GetOverviewSession() {
-  auto* session = Shell::Get()->overview_controller()->overview_session();
-  DCHECK(session);
-  return session;
 }
 
 OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {

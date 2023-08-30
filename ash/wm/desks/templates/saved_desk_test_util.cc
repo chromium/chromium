@@ -16,6 +16,7 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
 #include "chromeos/constants/chromeos_features.h"

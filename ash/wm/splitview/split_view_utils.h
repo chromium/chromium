@@ -177,6 +177,10 @@ ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
 // snap-group state.
 bool IsSnapGroupEnabledInClamshellMode();
 
+// Gets the expected window component for a window in split view, depending on
+// current screen orientation for resizing purpose.
+int GetWindowComponentForResize(aura::Window* window);
+
 // Returns the widget init params needed to create the widget.
 views::Widget::InitParams CreateWidgetInitParams(
     aura::Window* parent_window,

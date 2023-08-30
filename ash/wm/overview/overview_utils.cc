@@ -44,6 +44,18 @@
 
 namespace ash {
 
+bool IsInOverviewSession() {
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  return overview_controller && overview_controller->InOverviewSession();
+}
+
+OverviewSession* GetOverviewSession() {
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  return overview_controller && overview_controller->InOverviewSession()
+             ? overview_controller->overview_session()
+             : nullptr;
+}
+
 bool CanCoverAvailableWorkspace(aura::Window* window) {
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   if (split_view_controller->InSplitViewMode())

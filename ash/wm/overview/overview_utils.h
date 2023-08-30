@@ -25,6 +25,13 @@ class Widget;
 
 namespace ash {
 
+// Returns true if an overview session is active.
+bool IsInOverviewSession();
+
+// Returns the overview session if overview mode is active, otherwise returns
+// nullptr.
+ASH_EXPORT OverviewSession* GetOverviewSession();
+
 // Returns true if `window` can cover available workspace.
 bool CanCoverAvailableWorkspace(aura::Window* window);
 
