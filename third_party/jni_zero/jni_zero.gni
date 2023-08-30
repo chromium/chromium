@@ -1,0 +1,359 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/compiler/compiler.gni")
+
+_JAVAP_PATH = "//third_party/jdk/current/bin/javap"
+
+declare_args() {
+  # Enables JNI multiplexing to reduce JNI native methods overhead.
+  allow_jni_multiplexing = false
+
+  # Use hashed symbol names to reduce JNI symbol overhead.
+  use_hashed_jni_names = !is_java_debug
+}
+
+# Use a dedicated include dir so that files can #include headers from other
+# toolchains without affecting non-JNI #includes.
+if (target_os == "android") {
+  jni_headers_dir = "$root_build_dir/gen/jni_headers"
+} else {
+  # Chrome OS builds cannot share gen/ directories because is_android=false
+  # within default_toolchain.
+  jni_headers_dir = "$root_gen_dir/jni_headers"
+}
+
+_jni_zero_dir = "//third_party/jni_zero"
+
+template("jni_sources_list") {
+  generated_file(target_name) {
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "deps",
+                                 "walk_keys",
+                               ])
+    outputs = [ invoker.output ]
+    data_keys = [ "jni_source_files" ]
+    rebase = root_build_dir
+    metadata = {
+      # This target is just collecting source files used - this is not a
+      # legitimate dependency.
+      shared_libraries_barrier = []
+    }
+  }
+}
+
+template("_invoke_jni_zero") {
+  action(target_name) {
+    script = "//third_party/jni_zero/jni_zero.py"
+    inputs = rebase_path([
+                           "../../build/action_helpers.py",
+                           "../../build/android/gyp/util/__init__.py",
+                           "../../build/android/gyp/util/build_utils.py",
+                           "../../build/gn_helpers.py",
+                           "../../build/zip_helpers.py",
+                           "codegen/placeholder_gen_jni_java.py",
+                           "codegen/proxy_impl_java.py",
+                           "common.py",
+                           "java_lang_classes.py",
+                           "java_types.py",
+                           "jni_generator.py",
+                           "jni_registration_generator.py",
+                           "jni_zero.py",
+                           "parse.py",
+                           "proxy.py",
+                         ],
+                         ".",
+                         _jni_zero_dir)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+  }
+}
+
+# Declare a jni registration target.
+#
+# This target generates a srcjar containing a copy of GEN_JNI.java, which has
+# the native methods of all dependent java files. It can also create a .h file
+# for use with manual JNI registration.
+#
+# The script does not scan any generated sources (those within .srcjars, or
+# within root_build_dir). This could be fixed by adding deps & logic to scan
+# .srcjars, but isn't currently needed.
+#
+# See third_party/jni_zero/jni_registration_generator.py for more info
+# about the format of the header file.
+#
+# Variables
+#   java_targets: List of android_* targets that comprise your app.
+#   native_deps: List of shared_library targets that comprise your app.
+#   manual_jni_registration: Manually do JNI registration - required for feature
+#     splits which provide their own native library. (optional)
+#   namespace: Registration functions will be wrapped into this. (optional)
+#   require_native_mocks: Enforce that any native calls using
+#     org.chromium.base.annotations.NativeMethods must have a mock set
+#     (optional).
+#   enable_native_mocks: Allow native calls using
+#     org.chromium.base.annotations.NativeMethods to be mocked in tests
+#     (optional).
+#
+# Example
+#   generate_jni_registration("chrome_jni_registration") {
+#     java_targets = [ ":chrome_public_apk" ]
+#     manual_jni_registration = false
+#   }
+template("generate_jni_registration") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+  if (defined(invoker.native_deps)) {
+    _native_sources_list = "$target_gen_dir/$target_name.nativesources.txt"
+    jni_sources_list("${target_name}__native_sources") {
+      deps = invoker.native_deps
+      output = _native_sources_list
+    }
+  }
+
+  _java_sources_list = "$target_gen_dir/$target_name.javasources.txt"
+  jni_sources_list("${target_name}__java_sources") {
+    deps = invoker.java_targets
+    output = _java_sources_list
+
+    # When apk or bundle module targets are uses, do not pull metadata from
+    # their native library deps.
+    walk_keys = [ "java_walk_keys" ]
+  }
+
+  _invoke_jni_zero(target_name) {
+    # Cannot depend on jni_sources_list targets since they likely depend on
+    # this target via srcjar_deps. Depfiles are used to add the dep instead.
+    deps = []
+    _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+    outputs = [ _srcjar_output ]
+    depfile = "$target_gen_dir/$target_name.d"
+
+    args = [
+      "generate-final",
+      "--srcjar-path",
+      rebase_path(_srcjar_output, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "--java-sources-file",
+      rebase_path(_java_sources_list, root_build_dir),
+    ]
+
+    if (defined(_native_sources_list)) {
+      args += [
+        "--native-sources-file",
+        rebase_path(_native_sources_list, root_build_dir),
+      ]
+    }
+
+    if (defined(invoker.include_testonly)) {
+      _include_testonly = invoker.include_testonly
+    } else {
+      _include_testonly = defined(testonly) && testonly
+    }
+    if (_include_testonly) {
+      args += [ "--include-test-only" ]
+    }
+
+    if (use_hashed_jni_names) {
+      args += [ "--use-proxy-hash" ]
+    }
+
+    if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
+      args += [ "--enable-proxy-mocks" ]
+
+      if (defined(invoker.require_native_mocks) &&
+          invoker.require_native_mocks) {
+        args += [ "--require-mocks" ]
+      }
+    }
+
+    if (defined(invoker.remove_uncalled_jni) && invoker.remove_uncalled_jni) {
+      args += [ "--remove-uncalled-methods" ]
+    }
+    if (defined(invoker.add_stubs_for_missing_jni) &&
+        invoker.add_stubs_for_missing_jni) {
+      args += [ "--add-stubs-for-missing-native" ]
+    }
+
+    _manual_jni_registration = defined(invoker.manual_jni_registration) &&
+                               invoker.manual_jni_registration
+    _enable_jni_multiplexing = defined(invoker.enable_jni_multiplexing) &&
+                               invoker.enable_jni_multiplexing
+    if (_manual_jni_registration) {
+      args += [ "--manual-jni-registration" ]
+    }
+    if (_enable_jni_multiplexing) {
+      args += [ "--enable-jni-multiplexing" ]
+    }
+
+    if (_manual_jni_registration || _enable_jni_multiplexing) {
+      _subdir = rebase_path(target_gen_dir, root_gen_dir)
+      _jni_header_output =
+          "$jni_headers_dir/$_subdir/${target_name}_generated.h"
+      outputs += [ _jni_header_output ]
+      args += [
+        "--header-path",
+        rebase_path(_jni_header_output, root_build_dir),
+      ]
+
+      # This gives targets depending on this registration access to our generated header.
+      public_configs = [ "//build/config/android:jni_include_dir" ]
+    }
+
+    if (defined(invoker.namespace)) {
+      args += [ "--namespace=${invoker.namespace}" ]
+    }
+
+    if (defined(invoker.module_name)) {
+      args += [ "--module-name=${invoker.module_name}" ]
+    }
+  }
+}
+
+# JNI target implementation. See generate_jni or generate_jar_jni for usage.
+template("generate_jni_impl") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+  if (current_toolchain != default_toolchain && target_os == "android") {
+    # Rather than regenerating .h files in secondary toolchains, re-use the
+    # ones from the primary toolchain by depending on it and adding the
+    # root gen directory to the include paths.
+    # https://crbug.com/1369398
+    group(target_name) {
+      not_needed(invoker, "*")
+      public_deps = [ ":$target_name($default_toolchain)" ]
+      public_configs =
+          [ "//build/config/android:jni_include_dir($default_toolchain)" ]
+    }
+  } else {
+    _invoke_jni_zero(target_name) {
+      _subdir = rebase_path(target_gen_dir, root_gen_dir)
+      _jni_output_dir = "$jni_headers_dir/$_subdir/$target_name"
+      if (defined(invoker.jni_generator_include)) {
+        _jni_generator_include = invoker.jni_generator_include
+        _jni_generator_include_deps = []
+      } else {
+        _jni_generator_include =
+            "//base/android/jni_generator/jni_generator_helper.h"
+        _jni_generator_include_deps = [
+          # Using //base/android/jni_generator/jni_generator_helper.h introduces
+          # a dependency on buildflags targets indirectly through
+          # base/android/jni_android.h, which is part of the //base target.
+          # This can't depend directly on //base without causing a dependency
+          # cycle, though.
+          "//base:debugging_buildflags",
+          "//base:logging_buildflags",
+          "//build:chromeos_buildflags",
+        ]
+      }
+
+      # The sources aren't compiled so don't check their dependencies.
+      check_includes = false
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "metadata",
+                               "public_deps",
+                             ])
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += _jni_generator_include_deps
+
+      public_configs = [ "//build/config/android:jni_include_dir" ]
+      if (defined(visibility)) {
+        # Allow dependency on ourselves from secondary toolchain.
+        visibility += [ ":$target_name" ]
+      }
+
+      inputs = []
+      outputs = []
+      args = []
+      if (defined(invoker.classes)) {
+        args += [ "from-jar" ]
+      } else {
+        args += [ "from-source" ]
+      }
+      args += [
+        "--output-dir",
+        rebase_path(_jni_output_dir, root_build_dir),
+        "--extra-include",
+        rebase_path(_jni_generator_include, _jni_output_dir),
+      ]
+
+      if (defined(invoker.classes)) {
+        if (is_robolectric) {
+          not_needed(invoker, [ "jar_file" ])
+        } else {
+          if (defined(invoker.jar_file)) {
+            _jar_file = invoker.jar_file
+          } else {
+            _jar_file = android_sdk_jar
+          }
+          inputs += [
+            _jar_file,
+            _JAVAP_PATH,
+          ]
+          args += [
+            "--jar-file",
+            rebase_path(_jar_file, root_build_dir),
+            "--javap",
+            rebase_path(_JAVAP_PATH, root_build_dir),
+          ]
+        }
+        _input_args = invoker.classes
+        _input_names = invoker.classes
+        if (defined(invoker.unchecked_exceptions) &&
+            invoker.unchecked_exceptions) {
+          args += [ "--unchecked-exceptions" ]
+        }
+      } else {
+        assert(defined(invoker.sources))
+        _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+        args += [
+          "--srcjar-path",
+          rebase_path(_srcjar_output, root_build_dir),
+        ]
+        outputs += [ _srcjar_output ]
+        inputs += invoker.sources
+        _input_args = rebase_path(invoker.sources, root_build_dir)
+        _input_names = invoker.sources
+        if (use_hashed_jni_names) {
+          args += [ "--use-proxy-hash" ]
+        }
+
+        if (defined(invoker.enable_jni_multiplexing) &&
+            invoker.enable_jni_multiplexing) {
+          args += [ "--enable-jni-multiplexing" ]
+        }
+        if (defined(invoker.namespace)) {
+          args += [ "--namespace=${invoker.namespace}" ]
+        }
+      }
+      if (defined(invoker.split_name)) {
+        args += [ "--split-name=${invoker.split_name}" ]
+      }
+
+      foreach(_name, _input_names) {
+        _name = get_path_info(_name, "name") + "_jni.h"
+        outputs += [ "$_jni_output_dir/$_name" ]
+
+        # Avoid passing GN lists because not all webrtc embedders use //build.
+        args += [
+          "--output-name",
+          _name,
+        ]
+      }
+
+      foreach(_input, _input_args) {
+        args += [ "--input-file=$_input" ]
+      }
+
+      if (enable_profiling) {
+        args += [ "--enable_profiling" ]
+      }
+    }
+  }
+}
