@@ -46,6 +46,14 @@ void BatterySaverController::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kPowerBatterySaver, false);
 }
 
+// static
+void BatterySaverController::ResetState(PrefService* local_state) {
+  local_state->ClearPref(prefs::kPowerBatterySaver);
+  power_manager::SetBatterySaverModeStateRequest request;
+  request.set_enabled(false);
+  chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
+}
+
 void BatterySaverController::OnPowerStatusChanged() {
   if (always_on_) {
     SetState(true, UpdateReason::kAlwaysOn);

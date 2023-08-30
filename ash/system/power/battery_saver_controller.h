@@ -40,6 +40,10 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   // Registers local state prefs used in the settings UI.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  // Reset the pref and state in Power Manager. Used to clean up state when
+  // Battery Saver is no longer available.
+  static void ResetState(PrefService* local_state);
+
   void SetState(bool active, UpdateReason reason);
 
  private:
