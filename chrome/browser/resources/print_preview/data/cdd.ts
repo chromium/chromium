@@ -101,6 +101,11 @@ export type SelectOption = {
 export type MediaSizeOption = {
   type?: string,
   vendor_id?: string, height_microns: number, width_microns: number,
+  imageable_area_left_microns?: number,
+  imageable_area_bottom_microns?: number,
+  imageable_area_right_microns?: number,
+  imageable_area_top_microns?: number,
+  has_borderless_variant?: boolean,
 }&SelectOption;
 
 export type MediaSizeCapability = {

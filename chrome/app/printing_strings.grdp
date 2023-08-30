@@ -86,6 +86,9 @@
     <message name="IDS_PRINT_PREVIEW_OPTION_SHORT_EDGE" desc="Option to do two-sided (duplex) printing with the page flipped on the short edge of the paper.">
       Flip on short edge
     </message>
+    <message name="IDS_PRINT_PREVIEW_BORDERLESS_LABEL" desc="Label for checkbox to enable borderless (zero margins) printing.">
+      No border
+    </message>
     <message name="IDS_PRINT_PREVIEW_PAGES_LABEL" desc="Page range option label.">
       Pages
     </message>

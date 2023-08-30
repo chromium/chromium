@@ -331,6 +331,7 @@ suite(model_test.suiteName, function() {
     const newTicket = model.createPrintTicket(testDestination, false, false);
     const expectedNewTicketObject: PrintTicket = {
       mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
+      borderless: false,
       mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!
                      .vendor_id,
       pageCount: 1,

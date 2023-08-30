@@ -160,6 +160,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
      IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_DIALOG_TITLE},
     {"advancedSettingsSearchBoxPlaceholder",
      IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_SEARCH_BOX_PLACEHOLDER},
+    {"borderlessLabel", IDS_PRINT_PREVIEW_BORDERLESS_LABEL},
     {"bottom", IDS_PRINT_PREVIEW_BOTTOM_MARGIN_LABEL},
     {"cancel", IDS_CANCEL},
     {"clearSearch", IDS_CLEAR_SEARCH},

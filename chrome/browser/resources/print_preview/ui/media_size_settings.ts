@@ -6,12 +6,20 @@ import './print_preview_shared.css.js';
 import './settings_section.js';
 import './settings_select.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MediaSizeCapability} from '../data/cdd.js';
 
 import {getTemplate} from './media_size_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
+
+export interface PrintPreviewMediaSizeSettingsElement {
+  $: {
+    borderless: CrCheckboxElement,
+  };
+}
 
 const PrintPreviewMediaSizeSettingsElementBase = SettingsMixin(PolymerElement);
 
@@ -39,6 +47,8 @@ export class PrintPreviewMediaSizeSettingsElement extends
   static get observers() {
     return [
       'onMediaSizeSettingChange_(settings.mediaSize.*, capability.option)',
+      'updateBorderlessAvailabilityForSize_(settings.mediaSize.*)',
+      'onBorderlessSettingChange_(settings.borderless.*)',
     ];
   }
 
@@ -58,6 +68,45 @@ export class PrintPreviewMediaSizeSettingsElement extends
     const defaultOption = this.capability.option.find(o => !!o.is_default) ||
         this.capability.option[0];
     this.setSetting('mediaSize', defaultOption);
+  }
+
+  private updateBorderlessAvailabilityForSize_() {
+    if (!loadTimeData.getBoolean('isBorderlessPrintingEnabled')) {
+      return;
+    }
+    const size = this.getSettingValue('mediaSize');
+    if (size?.has_borderless_variant) {
+      this.$.borderless.disabled = false;
+      this.$.borderless.checked = this.getSettingValue('borderless');
+    } else {
+      // If a size only supports borderless and has no bordered variant,
+      // has_borderless_variant will be false. In this case, the checkbox
+      // will be disabled (it wouldn't have any effect), but will display
+      // as checked to indicate that the print will be borderless. This is
+      // a corner case, but printers are allowed to do it, so it's best to
+      // handle it as well as possible. If a size only supports bordered and
+      // not borderless, disable the checkbox and leave it unchecked.
+      this.$.borderless.disabled = true;
+      this.$.borderless.checked =
+          (size?.imageable_area_left_microns === 0 &&
+           size?.imageable_area_bottom_microns === 0 &&
+           size?.imageable_area_right_microns === size.width_microns &&
+           size?.imageable_area_top_microns === size.height_microns);
+    }
+  }
+
+  private onBorderlessSettingChange_() {
+    if (!loadTimeData.getBoolean('isBorderlessPrintingEnabled')) {
+      return;
+    }
+    this.$.borderless.checked = this.getSettingValue('borderless');
+  }
+
+  private onBorderlessCheckboxChange_() {
+    if (!loadTimeData.getBoolean('isBorderlessPrintingEnabled')) {
+      return;
+    }
+    this.setSetting('borderless', this.$.borderless.checked);
   }
 }
 

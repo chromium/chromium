@@ -263,6 +263,29 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertFalse(model.settings.color.setFromUi);
   });
 
+  test('borderless', function() {
+    // Check that borderless setting is unavailable without the feature flag.
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: false});
+    model.set(
+        'destination.capabilities',
+        getCddTemplate(model.destination.id).capabilities);
+    assertFalse(model.settings.borderless.available);
+
+    // Enable the feature flag and set capabilities again to update borderless
+    // availability.
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
+    model.set(
+        'destination.capabilities',
+        getCddTemplate(model.destination.id).capabilities);
+    assertTrue(model.settings.borderless.available);
+
+    // Remove the only media size with a borderless variant.
+    const capabilities = getCddTemplate(model.destination.id).capabilities!;
+    capabilities.printer!.media_size!.option.splice(1, 1);
+    model.set('destination.capabilities', capabilities);
+    assertFalse(model.settings.borderless.available);
+  });
+
   test('mediaType', function() {
     // Check that media type setting is unavailable without the feature flag.
     loadTimeData.overrideValues({isBorderlessPrintingEnabled: false});

@@ -46,6 +46,7 @@ export interface Settings {
   color: Setting;
   customMargins: Setting;
   mediaSize: Setting;
+  borderless: Setting;
   mediaType: Setting;
   margins: Setting;
   dpi: Setting;
@@ -73,6 +74,7 @@ export interface SerializedSettings {
   recentDestinations?: RecentDestination[];
   dpi?: DpiOption;
   mediaSize?: MediaSizeOption;
+  borderless?: boolean;
   mediaType?: MediaTypeOption;
   marginsType?: MarginsType;
   customMargins?: MarginsSetting;
@@ -140,6 +142,7 @@ export interface MediaSizeValue {
   imageable_area_bottom_microns?: number;
   imageable_area_right_microns?: number;
   imageable_area_top_microns?: number;
+  has_borderless_variant?: boolean;
 }
 
 export interface Ticket {
@@ -162,6 +165,7 @@ export interface Ticket {
   scalingType: ScalingType;
   shouldPrintBackgrounds: boolean;
   shouldPrintSelectionOnly: boolean;
+  borderless?: boolean;
   mediaType?: string;
   advancedSettings?: object;
   capabilities?: string;
@@ -223,6 +227,7 @@ export function whenReady(): Promise<void> {
  */
 const STICKY_SETTING_NAMES: string[] = [
   'recentDestinations',
+  'borderless',
   'collate',
   'color',
   'cssBackground',
@@ -373,6 +378,16 @@ export class PrintPreviewModelElement extends PolymerElement {
               setByPolicy: false,
               setFromUi: false,
               key: 'mediaSize',
+              updatesPreview: true,
+            },
+            borderless: {
+              value: false,
+              unavailableValue: false,
+              valid: true,
+              available: false,
+              setByPolicy: false,
+              setFromUi: false,
+              key: 'borderless',
               updatesPreview: true,
             },
             mediaType: {
@@ -840,6 +855,8 @@ export class PrintPreviewModelElement extends PolymerElement {
         'mediaSize.available',
         !!caps && !!caps.media_size && !knownSizeToSaveAsPdf);
     this.setSettingPath_(
+        'borderless.available', this.isBorderlessAvailable_(caps));
+    this.setSettingPath_(
         'mediaType.available',
         loadTimeData.getBoolean('isBorderlessPrintingEnabled') && !!caps &&
             !!caps.media_type && !!caps.media_type.option &&
@@ -978,6 +995,16 @@ export class PrintPreviewModelElement extends PolymerElement {
     return hasLandscapeOption && hasAutoOrPortraitOption;
   }
 
+  /**
+   * @return Whether the borderless setting should be available.
+   */
+  private isBorderlessAvailable_(caps: CddCapabilities|null): boolean {
+    return loadTimeData.getBoolean('isBorderlessPrintingEnabled') && !!caps &&
+        !!caps.media_size?.option?.find(o => {
+          return o.has_borderless_variant;
+        });
+  }
+
   private updateSettingsValues_(caps: CddCapabilities|null) {
     if (this.settings.mediaSize.available) {
       const defaultOption =
@@ -995,6 +1022,14 @@ export class PrintPreviewModelElement extends PolymerElement {
         });
       }
       this.setSetting('mediaSize', matchingOption || defaultOption, true);
+    }
+
+    if (this.settings.borderless.available) {
+      this.setSetting(
+          'borderless',
+          this.settings.borderless.setFromUi &&
+              this.getSettingValue('borderless'),
+          true);
     }
 
     if (this.settings.mediaType.available) {
@@ -1634,6 +1669,9 @@ export class PrintPreviewModelElement extends PolymerElement {
         'scalingType';
     const ticket: PrintTicket = {
       mediaSize: this.getSettingValue('mediaSize') as MediaSizeValue,
+      borderless: loadTimeData.getBoolean('isBorderlessPrintingEnabled') &&
+          this.getSettingValue('mediaSize')?.has_borderless_variant &&
+          this.getSettingValue('borderless'),
       mediaType: this.getSettingValue('mediaType')?.vendor_id,
       pageCount: this.getSettingValue('pages').length,
       landscape: this.getSettingValue('layout'),
