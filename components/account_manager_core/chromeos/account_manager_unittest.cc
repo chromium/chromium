@@ -13,7 +13,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -623,6 +625,25 @@ TEST_F(AccountManagerTest, HasDummyGaiaTokenReturnsFalseForValidTokens) {
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
   RunAllPendingTasks();
   EXPECT_FALSE(HasDummyGaiaTokenBlocking(kGaiaAccountKey));
+}
+
+TEST_F(AccountManagerTest, GetTokenHashReturnsAnEmptyStringForUnknownAccounts) {
+  base::test::TestFuture<const std::string&> future;
+  account_manager()->GetTokenHash(kGaiaAccountKey, future.GetCallback());
+  EXPECT_EQ(std::string(), future.Get());
+}
+
+TEST_F(AccountManagerTest, GetTokenHashReturnsSha1Hash) {
+  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
+  RunAllPendingTasks();
+
+  base::test::TestFuture<const std::string&> future;
+  account_manager()->GetTokenHash(kGaiaAccountKey, future.GetCallback());
+
+  const base::SHA1Digest token_hash = base::SHA1HashSpan(
+      base::as_bytes(base::make_span(std::string(kGaiaToken))));
+  const std::string token_hash_digest = base::HexEncode(token_hash);
+  EXPECT_EQ(token_hash_digest, future.Get());
 }
 
 TEST_F(AccountManagerTest,

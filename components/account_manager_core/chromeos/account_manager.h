@@ -227,6 +227,16 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
           void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
           callback);
 
+  // Returns the Base16 encoded SHA1 hash for the token stored against
+  // `account_key`. This hash is meant only for debugging purposes and is not
+  // meant be used as a cryptographically secure hash. Do not persist this
+  // outside the user's cryptohome.
+  // Returns an empty string if `account_key` is not available in
+  // `AccountManager`.
+  // TODO(http://b/297484217): Remove this API.
+  void GetTokenHash(const ::account_manager::AccountKey& account_key,
+                    base::OnceCallback<void(const std::string&)> callback);
+
  private:
   enum InitializationState {
     kNotStarted,   // Initialize has not been called

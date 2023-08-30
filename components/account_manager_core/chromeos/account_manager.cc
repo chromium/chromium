@@ -13,6 +13,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
@@ -111,6 +113,13 @@ internal::AccountType ToProtoAccountType(
     case ::account_manager::AccountType::kActiveDirectory:
       return internal::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY;
   }
+}
+
+// Returns a Base16 encoded SHA1 digest of `data`.
+std::string Sha1Digest(const std::string& data) {
+  const base::SHA1Digest hash =
+      base::SHA1HashSpan(base::as_bytes(base::make_span(data)));
+  return base::HexEncode(hash);
 }
 
 }  // namespace
@@ -771,6 +780,30 @@ void AccountManager::CheckDummyGaiaTokenForAllAccounts(
   }
 
   std::move(callback).Run(accounts_list);
+}
+
+void AccountManager::GetTokenHash(
+    const ::account_manager::AccountKey& account_key,
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(init_state_, InitializationState::kNotStarted);
+
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure = base::BindOnce(
+        &AccountManager::GetTokenHash, weak_factory_.GetWeakPtr(), account_key,
+        std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
+
+  DCHECK_EQ(init_state_, InitializationState::kInitialized);
+  auto it = accounts_.find(account_key);
+  if (it == accounts_.end()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::move(callback).Run(Sha1Digest(it->second.token));
 }
 
 void AccountManager::MaybeRevokeTokenOnServer(
