@@ -15,6 +15,9 @@
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash::language_packs {
 
@@ -33,6 +36,19 @@ base::flat_set<std::string> EngineIdsToHandwritingLocales(
   }
 
   return handwriting_locales;
+}
+
+absl::optional<std::string> EngineIdToHandwritingLocale(
+    input_method::InputMethodUtil* const util,
+    const std::string& engine_id) {
+  const std::string input_method_id =
+      extension_ime_util::GetInputMethodIDByEngineID(engine_id);
+  const input_method::InputMethodDescriptor* descriptor =
+      util->GetInputMethodDescriptorFromId(input_method_id);
+  if (descriptor == nullptr) {
+    return absl::nullopt;
+  }
+  return descriptor->handwriting_language();
 }
 
 absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {

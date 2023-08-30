@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash::language_packs {
 
@@ -21,21 +22,23 @@ namespace ash::language_packs {
 // Example `engine_id_to_handwriting_locale`:
 // ```
 // base::BindRepeating(
-//     [](input_method::InputMethodUtil* const util,
-//        const std::string& engine_id) -> absl::optional<std::string> {
-//       const input_method::InputMethodDescriptor* descriptor =
-//           util->GetInputMethodDescriptorFromId(engine_id);
-//       if (descriptor == nullptr) {
-//         return absl::nullopt;
-//       }
-//       return descriptor->handwriting_language();
-//     },
+//     EngineIdToHandwritingLocale,
 //     input_method::InputMethodManager::Get()->GetInputMethodUtil());
 // ```
 base::flat_set<std::string> EngineIdsToHandwritingLocales(
     base::span<const std::string> engine_ids,
     base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
         engine_id_to_handwriting_locale);
+
+// Gets the handwriting language for a given engine ID if it exists.
+// Requires a non-null pointer to `InputMethodUtil`, which can be obtained by
+// calling the `GetInputMethodUtil()` method on an `InputMethodManager`.
+//
+// Intended to be used with `base::BindRepeating` to be passed into
+// `EngineIdsToHandwritingLocales`.
+absl::optional<std::string> EngineIdToHandwritingLocale(
+    input_method::InputMethodUtil* const util,
+    const std::string& engine_id);
 
 // Given a handwriting locale, get the DLC associated with it if it exists.
 // This function takes in handwriting locales as given in the Google ChromeOS 1P

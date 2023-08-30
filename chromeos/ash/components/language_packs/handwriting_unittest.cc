@@ -14,12 +14,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/fake_input_method_delegate.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash::language_packs {
 
 namespace {
 
+using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 class HandwritingTest : public testing::Test {};
@@ -75,6 +82,100 @@ TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesSomeNullopt) {
                   {{"qwerty_en", "nohandwriting", "qwertz_de"}},
                   base::BindRepeating(GetSecondUnderscorePart)),
               UnorderedElementsAre("en", "de"));
+}
+
+struct PartialDescriptor {
+  std::string engine_id;
+  absl::optional<std::string> handwriting_language;
+};
+
+// Ensures the lifetime of the fake `InputMethodDelegate` outlives the
+// `InputMethodUtil` it is used in.
+// As both `InputMethodDelegate` and `InputMethodUtil` have deleted copy
+// constructors, this cannot be copied or moved.
+class DelegateUtil {
+ public:
+  explicit DelegateUtil(base::span<const PartialDescriptor> partial_descriptors)
+      : util_(&delegate_) {
+    Init(partial_descriptors);
+  }
+
+  input_method::InputMethodUtil* util() { return &util_; }
+
+ private:
+  input_method::FakeInputMethodDelegate delegate_;
+  input_method::InputMethodUtil util_;
+
+  void Init(base::span<const PartialDescriptor> partial_descriptors) {
+    std::vector<input_method::InputMethodDescriptor> descriptors;
+    descriptors.reserve(partial_descriptors.size());
+
+    for (const PartialDescriptor& partial_descriptor : partial_descriptors) {
+      const std::string id = extension_ime_util::GetInputMethodIDByEngineID(
+          partial_descriptor.engine_id);
+      descriptors.push_back(input_method::InputMethodDescriptor(
+          id, /*name=*/"", /*indicator=*/"", /*keyboard_layout=*/"",
+          /*language_codes=*/{""},  // Must be non-empty to avoid a DCHECK.
+          /*is_login_keyboard=*/false,
+          /*options_page_url=*/{}, /*input_view_url=*/{},
+          partial_descriptor.handwriting_language));
+    }
+
+    util_.InitXkbInputMethodsForTesting(descriptors);
+  }
+};
+
+TEST_F(HandwritingTest, EngineIdToHandwritingLocaleNoInputMethods) {
+  DelegateUtil delegate_util({});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"), absl::nullopt);
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"), absl::nullopt);
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+}
+
+TEST_F(HandwritingTest,
+       EngineIdToHandwritingLocaleInputMethodsWithoutHandwriting) {
+  DelegateUtil delegate_util(
+      {{{"xkb:us::eng", absl::nullopt}, {"xkb:fr::fra", absl::nullopt}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"), absl::nullopt);
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"), absl::nullopt);
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+}
+
+TEST_F(HandwritingTest,
+       EngineIdToHandwritingLocaleSomeInputMethodsWithHandwriting) {
+  DelegateUtil delegate_util(
+      {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", absl::nullopt}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"),
+              Optional(Eq("en")));
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"), absl::nullopt);
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+}
+
+TEST_F(HandwritingTest,
+       EngineIdToHandwritingLocaleInputMethodsWithHandwriting) {
+  DelegateUtil delegate_util({{{"xkb:us::eng", "en"}, {"xkb:fr::fra", "fr"}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"),
+              Optional(Eq("en")));
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"),
+              Optional(Eq("fr")));
+  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+}
+
+TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesIntegration) {
+  DelegateUtil delegate_util({{{"xkb:us::eng", "en"},
+                               {"xkb:gb:extd:eng", "en"},
+                               {"xkb:fr::fra", "fr"}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+
+  EXPECT_THAT(
+      EngineIdsToHandwritingLocales(
+          {{"xkb:de::ger", "xkb:us::eng", "xkb:gb:extd:eng", "xkb:fr::fra"}},
+          base::BindRepeating(EngineIdToHandwritingLocale, util)),
+      UnorderedElementsAre("en", "fr"));
 }
 
 struct HandwritingLocaleToDlcTestCase {
