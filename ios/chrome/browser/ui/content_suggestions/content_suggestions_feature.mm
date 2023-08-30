@@ -55,8 +55,7 @@ bool IsMagicStackEnabled() {
 }
 
 bool IsTabResumptionEnabled() {
-  CHECK(IsMagicStackEnabled());
-  return base::FeatureList::IsEnabled(kTabResumption);
+  return IsMagicStackEnabled() && base::FeatureList::IsEnabled(kTabResumption);
 }
 
 bool IsTabResumptionEnabledForMostRecentTabOnly() {

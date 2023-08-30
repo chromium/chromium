@@ -311,7 +311,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                        authenticationService:authenticationService];
     }
 
-    if (IsMagicStackEnabled() && IsTabResumptionEnabled()) {
+    if (IsTabResumptionEnabled()) {
       if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
         sync_sessions::SessionSyncService* sessionSyncService =
             SessionSyncServiceFactory::GetForBrowserState(
@@ -403,6 +403,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel {
+  //  The most recent tab tile is part of the tab resume feature.
+  if (IsTabResumptionEnabled()) {
+    return;
+  }
+
   self.returnToRecentTabSectionInfo = ReturnToRecentTabSectionInformation();
   if (!self.returnToRecentTabItem) {
     self.returnToRecentTabItem =
@@ -601,7 +606,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
-  [self hideRecentTabTile];
+  if (IsTabResumptionEnabled()) {
+    // TODO(crbug.com/1464185): Implement this.
+  } else {
+    [self hideRecentTabTile];
+  }
 }
 
 - (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
