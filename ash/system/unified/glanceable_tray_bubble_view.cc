@@ -280,6 +280,9 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
   if (default_focused_child != calendar_view_) {
     calendar_view_->InsertBeforeInFocusList(default_focused_child);
   }
+  if (tasks_bubble_view_) {
+    tasks_bubble_view_->InsertAfterInFocusList(calendar_view_);
+  }
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
@@ -299,6 +302,7 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   if (default_focused_child != calendar_view_) {
     calendar_view_->InsertBeforeInFocusList(default_focused_child);
   }
+  tasks_bubble_view_->InsertAfterInFocusList(calendar_view_);
 }
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {
