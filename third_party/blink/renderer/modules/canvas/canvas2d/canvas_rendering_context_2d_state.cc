@@ -301,7 +301,6 @@ bool CanvasRenderingContext2DState::IsFontDirtyForFilter() const {
 }
 
 const Font& CanvasRenderingContext2DState::GetFont() const {
-  DCHECK(realized_font_);
   return font_;
 }
 

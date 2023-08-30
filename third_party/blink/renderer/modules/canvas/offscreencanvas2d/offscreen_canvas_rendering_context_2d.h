@@ -19,8 +19,6 @@
 namespace blink {
 
 class CanvasResourceProvider;
-class Font;
-class TextMetrics;
 
 class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     : public CanvasRenderingContext,
@@ -87,21 +85,12 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
            !dirty_rect_for_commit_.isEmpty();
   }
 
-  String direction() const;
-  void setDirection(const String&);
-
   void setLetterSpacing(const String&);
   void setWordSpacing(const String&);
   void setTextRendering(const String&);
   void setFontKerning(const String&);
   void setFontStretch(const String&);
   void setFontVariantCaps(const String&);
-
-  void fillText(const String& text, double x, double y);
-  void fillText(const String& text, double x, double y, double max_width);
-  void strokeText(const String& text, double x, double y);
-  void strokeText(const String& text, double x, double y, double max_width);
-  TextMetrics* measureText(const String& text);
 
   // BaseRenderingContext2D implementation
   bool OriginClean() const final;
@@ -127,7 +116,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                 CanvasPerformanceMonitor::DrawType) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
-  void SnapshotStateForFilter() final;
 
   bool HasAlpha() const final { return CreationAttributes().alpha; }
   bool IsDesynchronized() const final {
@@ -166,6 +154,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void FlushCanvas(CanvasResourceProvider::FlushReason) override;
 
  protected:
+  OffscreenCanvas* HostAsOffscreenCanvas() const final;
+
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();
   }
@@ -186,13 +176,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   bool IsPaintable() const final;
   bool IsCanvas2DBufferValid() const override;
-
-  void DrawTextInternal(const String&,
-                        double,
-                        double,
-                        CanvasRenderingContext2DState::PaintType,
-                        double* max_width = nullptr);
-  const Font& AccessFont();
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       CanvasResourceProvider::FlushReason);

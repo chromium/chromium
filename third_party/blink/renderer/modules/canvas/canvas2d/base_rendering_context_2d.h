@@ -37,7 +37,9 @@ class CanvasColorCache;
 class CanvasImageSource;
 class Color;
 class Image;
+class OffscreenCanvas;
 class Path2D;
+class TextMetrics;
 struct V8CanvasStyle;
 enum class V8CanvasStyleType;
 class V8UnionCanvasFilterOrString;
@@ -279,7 +281,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         CanvasPerformanceMonitor::DrawType) = 0;
 
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
-  virtual void SnapshotStateForFilter() = 0;
+  void SnapshotStateForFilter();
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override {
     return nullptr;
@@ -306,6 +308,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
+  String direction() const;
+  void setDirection(const String&);
+
   String textAlign() const;
   void setTextAlign(const String&);
 
@@ -322,6 +327,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   String font() const;
   void setFont(const String& new_font);
+
+  void fillText(const String& text, double x, double y);
+  void fillText(const String& text, double x, double y, double max_width);
+  void strokeText(const String& text, double x, double y);
+  void strokeText(const String& text, double x, double y, double max_width);
+  TextMetrics* measureText(const String& text);
 
   void Trace(Visitor*) const override;
 
@@ -418,7 +429,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
-  virtual void WillUseCurrentFont() const;
+  virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
+  virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
+  const Font& AccessFont(HTMLCanvasElement* canvas);
+
+  void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;
   virtual bool ResolveFont(const String& new_font);
   virtual bool CurrentFontResolvedAndUpToDate() const;
@@ -541,6 +556,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasRenderingContext::kNotLostContext};
 
  private:
+  void DrawTextInternal(const String& text,
+                        double x,
+                        double y,
+                        CanvasRenderingContext2DState::PaintType paint_type,
+                        double* max_width = nullptr);
+
   // Returns the color from `v8_style`. This may return a cached value as well
   // as updating the cache (if possible).
   bool ExtractColorFromV8ValueAndUpdateCache(const V8CanvasStyle& v8_style,

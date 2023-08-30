@@ -323,10 +323,6 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }
 
-void OffscreenCanvasRenderingContext2D::SnapshotStateForFilter() {
-  GetState().SetFontForFilter(AccessFont());
-}
-
 void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
@@ -388,26 +384,6 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   return true;
 }
 
-static inline TextDirection ToTextDirection(
-    CanvasRenderingContext2DState::Direction direction) {
-  switch (direction) {
-    case CanvasRenderingContext2DState::kDirectionInherit:
-      return TextDirection::kLtr;
-    case CanvasRenderingContext2DState::kDirectionRTL:
-      return TextDirection::kRtl;
-    case CanvasRenderingContext2DState::kDirectionLTR:
-      return TextDirection::kLtr;
-  }
-  NOTREACHED();
-  return TextDirection::kLtr;
-}
-
-String OffscreenCanvasRenderingContext2D::direction() const {
-  return ToTextDirection(GetState().GetDirection()) == TextDirection::kRtl
-             ? kRtlDirectionString
-             : kLtrDirectionString;
-}
-
 void OffscreenCanvasRenderingContext2D::setLetterSpacing(
     const String& letter_spacing) {
   UseCounter::Count(Host()->GetTopExecutionContext(),
@@ -453,22 +429,6 @@ void OffscreenCanvasRenderingContext2D::setTextRendering(
     return;
   }
   GetState().SetTextRendering(text_value.value(), Host()->GetFontSelector());
-}
-
-void OffscreenCanvasRenderingContext2D::setDirection(
-    const String& direction_string) {
-  CanvasRenderingContext2DState::Direction direction;
-  if (direction_string == kInheritDirectionString)
-    direction = CanvasRenderingContext2DState::kDirectionInherit;
-  else if (direction_string == kRtlDirectionString)
-    direction = CanvasRenderingContext2DState::kDirectionRTL;
-  else if (direction_string == kLtrDirectionString)
-    direction = CanvasRenderingContext2DState::kDirectionLTR;
-  else
-    return;
-
-  if (GetState().GetDirection() != direction)
-    GetState().SetDirection(direction);
 }
 
 void OffscreenCanvasRenderingContext2D::setFontKerning(
@@ -550,155 +510,6 @@ void OffscreenCanvasRenderingContext2D::setFontVariantCaps(
   GetState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
 }
 
-void OffscreenCanvasRenderingContext2D::fillText(const String& text,
-                                                 double x,
-                                                 double y) {
-  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kFillPaintType);
-}
-
-void OffscreenCanvasRenderingContext2D::fillText(const String& text,
-                                                 double x,
-                                                 double y,
-                                                 double max_width) {
-  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kFillPaintType,
-                   &max_width);
-}
-
-void OffscreenCanvasRenderingContext2D::strokeText(const String& text,
-                                                   double x,
-                                                   double y) {
-  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kStrokePaintType);
-}
-
-void OffscreenCanvasRenderingContext2D::strokeText(const String& text,
-                                                   double x,
-                                                   double y,
-                                                   double max_width) {
-  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kStrokePaintType,
-                   &max_width);
-}
-
-void OffscreenCanvasRenderingContext2D::DrawTextInternal(
-    const String& text,
-    double x,
-    double y,
-    CanvasRenderingContext2DState::PaintType paint_type,
-    double* max_width) {
-  cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
-  if (!paint_canvas)
-    return;
-
-  if (!std::isfinite(x) || !std::isfinite(y))
-    return;
-  if (max_width && (!std::isfinite(*max_width) || *max_width <= 0))
-    return;
-
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
-    identifiability_study_helper_.UpdateBuilder(
-        paint_type == CanvasRenderingContext2DState::kFillPaintType
-            ? CanvasOps::kFillText
-            : CanvasOps::kStrokeText,
-        IdentifiabilitySensitiveStringToken(text), x, y,
-        max_width ? *max_width : -1);
-    identifiability_study_helper_.set_encountered_sensitive_ops();
-  }
-
-  const Font& font = AccessFont();
-  const SimpleFontData* font_data = font.PrimaryFont();
-  DCHECK(font_data);
-  if (!font_data)
-    return;
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
-
-  // FIXME: Need to turn off font smoothing.
-
-  TextDirection direction = ToTextDirection(GetState().GetDirection());
-  bool is_rtl = direction == TextDirection::kRtl;
-  TextRun text_run(text, direction, false);
-  text_run.SetNormalizeSpace(true);
-  // Draw the item text at the correct point.
-  gfx::PointF location(x, y + GetFontBaseline(*font_data));
-  double font_width = font.Width(text_run);
-
-  bool use_max_width = (max_width && *max_width < font_width);
-  double width = use_max_width ? *max_width : font_width;
-
-  TextAlign align = GetState().GetTextAlign();
-  if (align == kStartTextAlign)
-    align = is_rtl ? kRightTextAlign : kLeftTextAlign;
-  else if (align == kEndTextAlign)
-    align = is_rtl ? kLeftTextAlign : kRightTextAlign;
-
-  switch (align) {
-    case kCenterTextAlign:
-      location.set_x(location.x() - width / 2);
-      break;
-    case kRightTextAlign:
-      location.set_x(location.x() - width);
-      break;
-    default:
-      break;
-  }
-
-  gfx::RectF bounds(
-      location.x() - font_metrics.Height() / 2,
-      location.y() - font_metrics.Ascent() - font_metrics.LineGap(),
-      width + font_metrics.Height(), font_metrics.LineSpacing());
-  if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
-    InflateStrokeRect(bounds);
-
-  int save_count = paint_canvas->getSaveCount();
-  if (use_max_width) {
-    paint_canvas->save();
-    paint_canvas->translate(location.x(), location.y());
-    // We draw when fontWidth is 0 so compositing operations (eg, a "copy" op)
-    // still work.
-    paint_canvas->scale((font_width > 0 ? (width / font_width) : 0), 1);
-    location = gfx::PointF();
-  }
-
-  Draw<OverdrawOp::kNone>(
-      [this, text = std::move(text), direction, location](
-          cc::PaintCanvas* paint_canvas,
-          const cc::PaintFlags* flags) /* draw lambda */ {
-        TextRun text_run(text, direction, false);
-        text_run.SetNormalizeSpace(true);
-        TextRunPaintInfo text_run_paint_info(text_run);
-        this->AccessFont().DrawBidiText(
-            paint_canvas, text_run_paint_info, location,
-            Font::kUseFallbackIfFontNotReady, *flags);
-      },
-      [](const SkIRect& rect)  // overdraw test lambda
-      { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
-      CanvasPerformanceMonitor::DrawType::kText);
-
-  // |paint_canvas| maybe rese during Draw. If that happens,
-  // GetOrCreatePaintCanvas will create a new |paint_canvas| and return a new
-  // address. In this case, there is no need to call |restoreToCount|.
-  if (paint_canvas == GetOrCreatePaintCanvas()) {
-    paint_canvas->restoreToCount(save_count);
-    ValidateStateStack();
-  }
-}
-
-TextMetrics* OffscreenCanvasRenderingContext2D::measureText(
-    const String& text) {
-  const Font& font = AccessFont();
-
-  TextDirection direction = ToTextDirection(GetState().GetDirection());
-
-  return MakeGarbageCollected<TextMetrics>(font, direction,
-                                           GetState().GetTextBaseline(),
-                                           GetState().GetTextAlign(), text);
-}
-
-const Font& OffscreenCanvasRenderingContext2D::AccessFont() {
-  if (!GetState().HasRealizedFont())
-    setFont(GetState().UnparsedFont());
-  return GetState().GetFont();
-}
-
 bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable())
     return GetCanvasResourceProvider()->IsValid();
@@ -754,6 +565,11 @@ void OffscreenCanvasRenderingContext2D::FlushCanvas(
   if (GetCanvasResourceProvider()) {
     GetCanvasResourceProvider()->FlushCanvas(reason);
   }
+}
+
+OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
+    const {
+  return static_cast<OffscreenCanvas*>(Host());
 }
 
 }  // namespace blink

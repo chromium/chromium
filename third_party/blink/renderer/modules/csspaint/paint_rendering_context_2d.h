@@ -71,7 +71,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   void setShadowBlur(double) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
-  void SnapshotStateForFilter() final {}
 
   bool HasAlpha() const final { return context_settings_->alpha(); }
 

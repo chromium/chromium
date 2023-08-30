@@ -146,7 +146,7 @@ class TestRenderingContext2D final
   sk_sp<PaintFilter> StateGetFilter() override {
     return GetState().GetFilterForOffscreenCanvas({}, this);
   }
-  void SnapshotStateForFilter() override {}
+
   ExecutionContext* GetTopExecutionContext() const override {
     return execution_context_;
   }
