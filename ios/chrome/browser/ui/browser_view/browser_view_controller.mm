@@ -620,10 +620,6 @@ enum HeaderBehaviour {
   [self.omniboxCommandsHandler cancelOmniboxEdit];
 }
 
-- (void)userEnteredTabSwitcher {
-  [_bubblePresenter userEnteredTabSwitcher];
-}
-
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener {
@@ -953,8 +949,6 @@ enum HeaderBehaviour {
   self.viewVisible = YES;
   [self updateBroadcastState];
   [self updateToolbarState];
-  [self.helpHandler showHelpBubbleIfEligible];
-  [self.helpHandler showLongPressHelpBubbleIfEligible];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

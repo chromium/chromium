@@ -586,9 +586,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_URL_FIELD_VALIDATION_FAILED" desc="Error message shown below URL input field when the URL is incorrect. [Length: 20em]">
         Invalid URL
       </message>
-      <message name="IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the Bottom Toolbar Tip in-product help promotion, explaining that the bottom toolbar can be used to focus the Search Bar, instead of having to reach to the top toolbar. [iOS only]">
-        Search bar is now easier to reach
-      </message>
       <message name="IDS_IOS_BRING_ANDROID_TABS_CANCEL_BUTTON" desc="Button to dismiss the 'Bring Android Tabs' prompt. [iOS only]">
         Cancel
       </message>
@@ -1633,9 +1630,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_VOICE_SEARCH" desc="Title for the Voice Search keyboard shortcut in the discoverability." meaning="Used as a command title in the iPad command menu.">
         Voice Search
       </message>
-      <message name="IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the LongPress Toolbar Tip in-product help promotion, explaining that the user can long press on the toolbar's button to display more options. [iOS only]">
-        Touch &amp; hold for more tab options
-      </message>
       <message name="IDS_IOS_MAGIC_STACK_SEE_MORE" desc="The See More button in Magic Stack modules to show a detailed view. [Length: 10em]">
         See More
       </message>
@@ -1803,9 +1797,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_NEW_INCOGNITO_TAB" desc="Label for text saying the tab is a new Incognito tab.">
         New Incognito Tab
-      </message>
-      <message name="IDS_IOS_NEW_INCOGNITO_TAB_IPH_PROMOTION_TEXT" desc="Text for the New Incognito Tab Tip in-product help promotion, explaining that Incognito tabs can be used to browse privately. [iOS only]" meaning="The user has never created an Incognito tab before. A bubble is displayed pointing to the tools menu button and informing users about how to use Incognito mode.">
-        To browse privately, open an Incognito tab
       </message>
       <message name="IDS_IOS_NEW_INCOGNITO_TAB_PAGE" desc="Label for text saying the user is on the new Incognito tab page">
         New Incognito Tab Page

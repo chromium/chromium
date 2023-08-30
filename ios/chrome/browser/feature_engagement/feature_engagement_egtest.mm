@@ -61,18 +61,6 @@ id<GREYMatcher> TranslateManualTriggerBadge() {
       grey_ancestor(TranslateManualTriggerButton()), nil);
 }
 
-// Matcher for the Bottom Toolbar Tip Bubble.
-id<GREYMatcher> BottomToolbarTipBubble() {
-  return grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
-      IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_TEXT));
-}
-
-// Matcher for the Long Press Tip Bubble.
-id<GREYMatcher> LongPressTipBubble() {
-  return grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
-      IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT));
-}
-
 // Matcher for the DefaultSiteView tip.
 id<GREYMatcher> DefaultSiteViewTip() {
   return grey_accessibilityLabel(
@@ -152,87 +140,6 @@ void RequestDesktopVersion() {
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
       onElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notNil()];
-}
-
-// Verifies that the bottom toolbar tip is displayed when the phone is in split
-// toolbar mode.
-- (void)testBottomToolbarAppear {
-  if (![ChromeEarlGrey isSplitToolbarMode])
-    return;
-
-  // The IPH appears immediately on startup, so don't open a new tab when the
-  // app starts up.
-  [[self class] testForStartup];
-
-  // Scope for the synchronization disabled.
-  {
-    ScopedSynchronizationDisabler syncDisabler;
-
-    [self enableDemoModeForFeature:"IPH_BottomToolbarTip"];
-
-    // Verify that the Bottom toolbar Tip appeared.
-    ConditionBlock condition = ^{
-      NSError* error = nil;
-      [[EarlGrey selectElementWithMatcher:BottomToolbarTipBubble()]
-          assertWithMatcher:grey_sufficientlyVisible()
-                      error:&error];
-      return error == nil;
-    };
-    // The app relaunch (to enable a feature flag) may take a while, therefore
-    // the timeout is extended to 15 seconds.
-    GREYAssert(WaitUntilConditionOrTimeout(base::Seconds(15), condition),
-               @"Waiting for the Bottom Toolbar tip to appear");
-  }  // End of the sync disabler scope.
-}
-
-// Verifies that the bottom toolbar tip is not displayed when the phone is not
-// in split toolbar mode.
-- (void)testBottomToolbarDontAppearOnNonSplitToolbar {
-  if ([ChromeEarlGrey isSplitToolbarMode])
-    return;
-
-  // The IPH appears immediately on startup, so don't open a new tab when the
-  // app starts up.
-  [[self class] testForStartup];
-
-  [self enableDemoModeForFeature:"IPH_BottomToolbarTip"];
-
-  // Verify that the Bottom toolbar Tip didn't appear.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:BottomToolbarTipBubble()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(!WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-             @"The Bottom Toolbar tip shouldn't appear");
-}
-
-// Verifies that the LongPress tip is displayed only after the Bottom Toolbar
-// tip is presented.
-// TODO(crbug.com/934248) The test is flaky.
-- (void)DISABLED_testLongPressTipAppearAfterBottomToolbar {
-  if (![ChromeEarlGrey isSplitToolbarMode])
-    return;
-
-  // The IPH appears immediately on startup, so don't open a new tab when the
-  // app starts up.
-  [[self class] testForStartup];
-
-  [self enableDemoModeForFeature:"IPH_LongPressToolbarTip"];
-
-  // Verify that the Long Press Tip appears now that the Bottom Toolbar tip has
-  // been shown.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:LongPressTipBubble()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-             @"Waiting for the Long Press tip.");
 }
 
 // Verifies that the IPH for Request desktop shows when triggered

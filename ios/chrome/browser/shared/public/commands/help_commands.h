@@ -8,12 +8,6 @@
 // Commands to control the display of in-product help UI ("bubbles").
 @protocol HelpCommands <NSObject>
 
-// Shows a relevant help bubble, if any.
-- (void)showHelpBubbleIfEligible;
-
-// Shows a relevant help bubble for long-press state, if any.
-- (void)showLongPressHelpBubbleIfEligible;
-
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
 

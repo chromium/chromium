@@ -23730,6 +23730,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewIncognitoTabTipTargetSelected">
+  <obsolete>Deprecated 8/2023. Unused since a while ago.</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     The user opened the tools menu while the 'New Incognito Tab' in-product help

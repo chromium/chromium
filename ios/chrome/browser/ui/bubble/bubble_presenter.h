@@ -63,12 +63,6 @@ class DeviceSwitcherResultDispatcher;
 // Stops this presenter.
 - (void)stop;
 
-// Notifies the presenter that the user entered the tab switcher.
-- (void)userEnteredTabSwitcher;
-
-// Notifies the presenter that the tools menu has been displayed.
-- (void)toolsMenuDisplayed;
-
 // Presents a bubble associated with the Discover feed header's menu button.
 - (void)presentDiscoverFeedHeaderTipBubble;
 

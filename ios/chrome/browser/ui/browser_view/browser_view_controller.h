@@ -140,9 +140,6 @@ typedef struct {
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
 
-// Called when the user explicitly opens the tab switcher.
-- (void)userEnteredTabSwitcher;
-
 // Opens a new tab as if originating from `originPoint` and `focusOmnibox`.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox

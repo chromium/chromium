@@ -1558,7 +1558,6 @@ void InjectNTP(Browser* browser) {
 - (void)displayTabSwitcherForcingRegularTabs:(BOOL)forcing {
   DCHECK(!self.mainCoordinator.isTabGridActive);
   if (!self.isProcessingVoiceSearchCommand) {
-    [self.currentInterface.bvc userEnteredTabSwitcher];
 
     if (forcing && self.currentInterface.incognito) {
       [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];

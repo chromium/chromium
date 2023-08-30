@@ -220,8 +220,6 @@ enum class IOSOverflowMenuActionType {
   // Allow the non-modal promo scheduler to close the promo.
   [nonModalPromoScheduler logPopupMenuEntered];
 
-  [self.bubblePresenter toolsMenuDisplayed];
-
   self.requestStartTime = [NSDate timeIntervalSinceReferenceDate];
 
   PopupMenuTableViewController* tableViewController =

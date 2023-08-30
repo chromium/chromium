@@ -201,9 +201,6 @@ locale.  The strings in this file are specific to iOS.
         Chromium has features that help you manage your internet data and how quickly you're able to load webpages.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_VOICE_OVER" desc="Text to be read by VoiceOver when the Bottom Toolbar Tip is presented to the user, explaining that the bottom toolbar can be used to reach some controls. Read by Text-to-Speech. [iOS only]">
-        Chromium tip. Some buttons are now at the bottom of your screen, like Back, Forward, and Search.
-      </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SIGN_OUT_EVERY_WEBSITE" desc="Footer message in the settings to clear browsing data that allows user to sign out of Chrome to sign out their Google account from all websites. [iOS only]">
         To sign out of your Google Account on all websites, <ph name="BEGIN_LINK">BEGIN_LINK</ph>sign out of Chromium<ph name="END_LINK">END_LINK</ph>.
       </message>
@@ -399,9 +396,6 @@ Things to consider:
       </message>
       <message name="IDS_IOS_LOGIN_ERROR_AUTHENTICATING_HOSTED" desc="Couldn't sign in because hosted account is used.">
         Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.
-      </message>
-      <message name="IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_VOICE_OVER" desc="Text to be read by VoiceOver when the LongPress Toolbar Tip is presented to the user. Read by Text-to-Speech.">
-        Chromium tip. For more tab options, touch &amp; hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_TITLE" desc="Title for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
         Data from Chromium sync

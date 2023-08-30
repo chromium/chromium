@@ -46,10 +46,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-const CGFloat kBubblePresentationDelay = 1;
-}  // namespace
-
 @interface BubblePresenter () <SceneStateObserver, URLLoadingObserver>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
@@ -57,12 +53,6 @@ const CGFloat kBubblePresentationDelay = 1;
 // dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* bottomToolbarTipBubblePresenter;
-// Used to display the long press on toolbar buttons tip in-product help
-// promotion bubble. `nil` if the tip bubble has not yet been presented. Once
-// the bubble is dismissed, it remains allocated so that `userEngaged` remains
-// accessible.
-@property(nonatomic, strong)
-    BubbleViewControllerPresenter* longPressToolbarTipBubblePresenter;
 // Used to display the new tab tip in-product help promotion bubble. `nil` if
 // the new tab tip bubble has not yet been presented. Once the bubble is
 // dismissed, it remains allocated so that `userEngaged` remains accessible.
@@ -70,8 +60,6 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* openNewTabIPHBubblePresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* tabGridIPHBubblePresenter;
-@property(nonatomic, strong, readwrite)
-    BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* discoverFeedHeaderMenuTipBubblePresenter;
 @property(nonatomic, strong)
@@ -148,77 +136,16 @@ const CGFloat kBubblePresentationDelay = 1;
   _loadingObserverBridge.reset();
 }
 
-- (void)showHelpBubbleIfEligible {
-  if (!self.engagementTracker) {
-    return;
-  }
-  // Waits to present the bubbles until the feature engagement tracker database
-  // is fully initialized.
-  __weak BubblePresenter* weakSelf = self;
-  void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-    if (!successfullyLoaded)
-      return;
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      (int64_t)(kBubblePresentationDelay * NSEC_PER_SEC)),
-        dispatch_get_main_queue(), ^{
-          [weakSelf presentBubbles];
-        });
-  };
-
-  // Because the new tab tip occurs on startup, the feature engagement
-  // tracker's database is not guaranteed to be loaded by this time. For the
-  // bubble to appear properly, a callback is used to guarantee the event data
-  // is loaded before the check to see if the promotion should be displayed.
-  self.engagementTracker->AddOnInitializedCallback(
-      base::BindRepeating(onInitializedBlock));
-}
-
-- (void)showLongPressHelpBubbleIfEligible {
-  if (!self.engagementTracker) {
-    return;
-  }
-  // Waits to present the bubble until the feature engagement tracker database
-  // is fully initialized.
-  __weak BubblePresenter* weakSelf = self;
-  void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-    if (!successfullyLoaded)
-      return;
-    [weakSelf presentLongPressBubble];
-  };
-
-  // Because the new tab tip occurs on startup, the feature engagement
-  // tracker's database is not guaranteed to be loaded by this time. For the
-  // bubble to appear properly, a callback is used to guarantee the event data
-  // is loaded before the check to see if the promotion should be displayed.
-  self.engagementTracker->AddOnInitializedCallback(
-      base::BindRepeating(onInitializedBlock));
-}
-
 - (void)hideAllHelpBubbles {
   [self.openNewTabIPHBubblePresenter dismissAnimated:NO];
   [self.tabGridIPHBubblePresenter dismissAnimated:NO];
-  [self.incognitoTabTipBubblePresenter dismissAnimated:NO];
   [self.bottomToolbarTipBubblePresenter dismissAnimated:NO];
-  [self.longPressToolbarTipBubblePresenter dismissAnimated:NO];
   [self.discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [self.readingListTipBubblePresenter dismissAnimated:NO];
   [self.followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.whatsNewBubblePresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
-}
-
-// TODO(crbug.com/1448656): remove code.
-- (void)userEnteredTabSwitcher {
-}
-
-// TODO(crbug.com/1448656): remove code.
-- (void)toolsMenuDisplayed {
-  if (self.incognitoTabTipBubblePresenter.userEngaged) {
-    base::RecordAction(
-        base::UserMetricsAction("NewIncognitoTabTipTargetSelected"));
-  }
 }
 
 - (void)presentDiscoverFeedHeaderTipBubble {
@@ -372,50 +299,6 @@ const CGFloat kBubblePresentationDelay = 1;
 
 #pragma mark - Private
 
-- (void)presentBubbles {
-  // TODO(crbug.com/1448656): remove code.
-  if (!self.incognitoTabTipBubblePresenter.userEngaged)
-    [self presentNewIncognitoTabTipBubble];
-
-  // TODO(crbug.com/1448656): remove code.
-  // The bottom toolbar and Discover feed header menu don't use the
-  // isUserEngaged, so don't check if the user is engaged here.
-  [self presentBottomToolbarTipBubble];
-}
-
-// TODO(crbug.com/1448656): remove code.
-- (void)presentLongPressBubble {
-  if (self.longPressToolbarTipBubblePresenter.userEngaged)
-    return;
-
-  if (![self canPresentBubble])
-    return;
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT);
-  CGPoint tabGridButtonAnchor = [self anchorPointToGuide:kTabSwitcherGuide
-                                               direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `longPressToolbarTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHLongPressToolbarTipFeature
-                    direction:arrowDirection
-                         text:text
-        voiceOverAnnouncement:
-            l10n_util::GetNSString(
-                IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_VOICE_OVER)
-                  anchorPoint:tabGridButtonAnchor];
-  if (!presenter)
-    return;
-
-  self.longPressToolbarTipBubblePresenter = presenter;
-}
-
 // Convenience method that calls -presentBubbleForFeature with default param
 // values for `alignment`, `presentAction`, and `dismissAction`.
 - (BubbleViewControllerPresenter*)
@@ -467,44 +350,6 @@ const CGFloat kBubblePresentationDelay = 1;
     }
   }
   return presenter;
-}
-
-// TODO(crbug.com/1448656): remove code.
-// Presents a bubble associated with the bottom toolbar tip in-product help
-// promotion.
-- (void)presentBottomToolbarTipBubble {
-  if (!IsSplitToolbarMode(self.rootViewController))
-    return;
-
-  if (![self canPresentBubble])
-    return;
-
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  NSString* text = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_TEXT);
-  CGPoint newTabButtonAnchor = [self anchorPointToGuide:kNewTabButtonGuide
-                                              direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `bottomToolbarTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHBottomToolbarTipFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentCenter
-                         text:text
-        voiceOverAnnouncement:
-            l10n_util::GetNSString(
-                IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_VOICE_OVER)
-                  anchorPoint:newTabButtonAnchor
-                presentAction:nil
-                dismissAction:nil];
-  if (!presenter)
-    return;
-
-  self.bottomToolbarTipBubblePresenter = presenter;
-  self.engagementTracker->NotifyEvent(
-      feature_engagement::events::kBottomToolbarOpened);
 }
 
 // Optionally presents a bubble associated with the new tab iph. If the feature
@@ -641,37 +486,6 @@ const CGFloat kBubblePresentationDelay = 1;
   }
 
   self.tabGridIPHBubblePresenter = presenter;
-}
-
-// TODO(crbug.com/1448656): remove code.
-// Presents a bubble associated with the new incognito tab tip in-product help
-// promotion.
-- (void)presentNewIncognitoTabTipBubble {
-  if (![self canPresentBubble])
-    return;
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_NEW_INCOGNITO_TAB_IPH_PROMOTION_TEXT);
-
-  CGPoint toolsButtonAnchor = [self anchorPointToGuide:kToolsMenuGuide
-                                             direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the incognito tab tip, then end early to prevent the potential reassignment
-  // of the existing `incognitoTabTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHNewIncognitoTabTipFeature
-                    direction:arrowDirection
-                         text:text
-        voiceOverAnnouncement:nil
-                  anchorPoint:toolsButtonAnchor];
-  if (!presenter)
-    return;
-
-  self.incognitoTabTipBubblePresenter = presenter;
 }
 
 #pragma mark - Private Utils
