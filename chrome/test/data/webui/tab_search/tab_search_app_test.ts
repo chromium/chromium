@@ -139,13 +139,12 @@ suite('TabSearchAppTest', () => {
           recentlyClosedSectionExpanded: true,
         }),
         {useFuzzySearch: false});
-    const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('bing');
+    tabSearchApp.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
     assertEquals(0, tabSearchApp.getSelectedIndex());
 
-    searchField.setValue('paypal');
+    tabSearchApp.setValue('paypal');
     await flushTasks();
     verifyTabIds(queryRows(), [100]);
     assertEquals(0, tabSearchApp.getSelectedIndex());
@@ -178,8 +177,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('sample');
+    tabSearchApp.setValue('sample');
     await flushTasks();
 
     // Assert that the recently closed items associated to a recently closed
@@ -190,8 +188,7 @@ suite('TabSearchAppTest', () => {
 
   test('No tab selected when there are no search matches', async () => {
     await setupTest(createProfileData());
-    const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('Twitter');
+    tabSearchApp.setValue('Twitter');
     await flushTasks();
     assertEquals(0, queryRows().length);
     assertEquals(-1, tabSearchApp.getSelectedIndex());
@@ -521,9 +518,11 @@ suite('TabSearchAppTest', () => {
     assertEquals(1, testProxy.getCallCount('getProfileData'));
 
     const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('Apple');
+
+    tabSearchApp.setValue('Apple');
     await flushTasks();
     verifyTabIds(queryRows(), [6, 4]);
+    assertEquals(0, tabSearchApp.getSelectedIndex());
     keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals('Apple', tabSearchApp.getSearchTextForTesting());
     assertEquals(1, tabSearchApp.getSelectedIndex());
@@ -575,8 +574,7 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('bing');
+    tabSearchApp.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
 
@@ -606,8 +604,7 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    const searchField = tabSearchApp.$.searchField;
-    searchField.setValue('bing');
+    tabSearchApp.setValue('bing');
     await flushTasks();
     await waitAfterNextRender(tabSearchApp);
     verifyTabIds(queryRows(), [2]);

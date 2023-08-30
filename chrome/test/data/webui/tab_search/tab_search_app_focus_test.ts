@@ -47,7 +47,7 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(createProfileData());
 
     // Initially, the search input should have focus.
-    const searchInput = tabSearchApp.$.searchField.$.searchInput;
+    const searchInput = tabSearchApp.$.searchInput;
     assertEquals(searchInput, getDeepActiveElement());
 
     const tabSearchItems = queryRows();
@@ -137,7 +137,7 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(createProfileData());
 
     // Set the current focus to the search input element.
-    const searchInput = tabSearchApp.$.searchField.$.searchInput;
+    const searchInput = tabSearchApp.$.searchInput;
     searchInput.focus();
     assertEquals(searchInput, getDeepActiveElement());
 

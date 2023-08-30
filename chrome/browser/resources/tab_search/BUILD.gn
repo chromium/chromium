@@ -26,7 +26,6 @@ build_webui("build") {
     "infinite_list.ts",
     "tab_search_group_item.ts",
     "tab_search_item.ts",
-    "tab_search_search_field.ts",
   ]
 
   non_web_component_files = [

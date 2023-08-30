@@ -12,11 +12,11 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './infinite_list.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
-import './tab_search_search_field.js';
 import './title_item.js';
 import './strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
@@ -31,13 +31,14 @@ import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_lis
 import {ariaLabel, ItemData, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-import {TabSearchSearchField} from './tab_search_search_field.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';
 import {TitleItem} from './title_item.js';
 
 // The minimum number of list items we allow viewing regardless of browser
 // height. Includes a half row that hints to the user the capability to scroll.
 const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
+
+const TabSearchSearchFieldBase = CrSearchFieldMixin(PolymerElement);
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -50,18 +51,33 @@ export enum TabSwitchAction {
 
 export interface TabSearchAppElement {
   $: {
-    searchField: TabSearchSearchField,
+    searchField: HTMLElement,
+    searchInput: HTMLInputElement,
+    searchWrapper: HTMLElement,
     tabsList: InfiniteList,
   };
 }
 
-export class TabSearchAppElement extends PolymerElement {
+export class TabSearchAppElement extends TabSearchSearchFieldBase {
   static get is() {
     return 'tab-search-app';
   }
 
   static get properties() {
     return {
+      /**
+       * Text that describes the resulting tabs currently present in the list.
+       */
+      searchResultText_: {
+        type: String,
+        value: '',
+      },
+
+      shortcut_: {
+        type: String,
+        value: () => loadTimeData.getString('shortcutText'),
+      },
+
       searchText_: {
         type: String,
         value: '',
@@ -113,8 +129,6 @@ export class TabSearchAppElement extends PolymerElement {
         value: () =>
             loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount'),
       },
-
-      searchResultText_: {type: String, value: ''},
     };
   }
 
@@ -125,6 +139,9 @@ export class TabSearchAppElement extends PolymerElement {
   private moveActiveTabToBottom_: boolean;
   private recentlyClosedDefaultItemDisplayCount_: number;
   private searchResultText_: string;
+  private activeSelectionId_: string;
+  private shortcut_: string;
+  override autofocus: boolean;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private metricsReporter_: MetricsReporter|null;
@@ -230,6 +247,25 @@ export class TabSearchAppElement extends PolymerElement {
         'visibilitychange', this.visibilityChangedListener_);
   }
 
+  override getSearchInput(): HTMLInputElement {
+    return this.$.searchInput;
+  }
+
+  /**
+   * Do not schedule the timer from CrSearchFieldMixin to make search more
+   * responsive.
+   */
+  override onSearchTermInput() {
+    this.hasSearchText = this.getSearchInput().value !== '';
+    this.searchText_ = this.getSearchInput().value;
+    // Reset the selected item whenever a search query is provided.
+    // updateFilteredTabs_ will set the correct tab index for initial selection.
+    const tabsList = this.$.tabsList;
+    tabsList.selected = NO_SELECTION;
+
+    this.updateFilteredTabs_();
+  }
+
   /**
    * @param name A property whose value is specified in pixels.
    */
@@ -255,8 +291,8 @@ export class TabSearchAppElement extends PolymerElement {
   private onDocumentHidden_() {
     this.filteredItems_ = [];
 
-    this.$.searchField.setValue('');
-    this.$.searchField.getSearchInput().focus();
+    this.setValue('');
+    this.$.searchInput.focus();
   }
 
   private updateTabs_() {
@@ -366,17 +402,6 @@ export class TabSearchAppElement extends PolymerElement {
    */
   getSelectedIndex(): number {
     return this.$.tabsList.selected;
-  }
-
-  private onSearchChanged_(e: CustomEvent<string>) {
-    this.searchText_ = e.detail;
-    // Reset the selected item whenever a search query is provided.
-    // updateFilteredTabs_ will set the correct tab index for initial selection.
-    const tabsList = this.$.tabsList;
-    tabsList.selected = NO_SELECTION;
-
-    this.updateFilteredTabs_();
-    this.$.searchField.announce(this.getA11ySearchResultText_());
   }
 
   private getA11ySearchResultText_(): string {
@@ -586,10 +611,6 @@ export class TabSearchAppElement extends PolymerElement {
       e.stopPropagation();
       e.preventDefault();
 
-      // TODO(tluk): Fix this to use aria-activedescendant when it's updated to
-      // work with Shadow DOM elements.
-      this.$.searchField.announce(
-          ariaLabel(this.$.tabsList.selectedItem as ItemData));
     } else if (e.key === 'Enter') {
       const itemData = this.$.tabsList.selectedItem as ItemData;
       this.tabItemAction_(itemData, this.getSelectedIndex());
@@ -775,6 +796,12 @@ export class TabSearchAppElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  private onSelectedItemChanged_() {
+    const item = this.$.tabsList.selectedItem;
+
+    this.activeSelectionId_ = item ? (item as any)?.tab?.tabId : null;
   }
 }
 
