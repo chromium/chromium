@@ -406,6 +406,11 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     // Content.
     if (!this.isDemo_) {
       webview.executeScript({code: 'document.body.innerHTML;'}, (results) => {
+        if (chrome.runtime.lastError) {
+          console.warn(
+              'Failed to get consent contents: ' +
+              chrome.runtime.lastError.message);
+        }
         if (!results || results.length != 1 || typeof results[0] !== 'string') {
           return;
         }
@@ -415,8 +420,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     this.arcTosLoading_ = false;
     this.maybeSetLoadedStep_();
-    this.$.consolidatedConsentArcTosWebview.insertCSS(
-        {code: 'header{display:none !important}'});
   }
 
   onPrivacyPolicyContentLoad_() {

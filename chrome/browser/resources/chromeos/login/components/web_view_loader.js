@@ -115,11 +115,6 @@ export class WebViewLoader {
     if (clear_anchors) {
       // Add the CLEAR_ANCHORS_CONTENT_SCRIPT that will clear <a><\a>
       // (anchors) in order to prevent any navigation in the webview itself.
-      webview.addContentScripts([{
-        name: 'clearAnchors',
-        matches: ['<all_urls>'],
-        js: CLEAR_ANCHORS_CONTENT_SCRIPT,
-      }]);
       webview.addEventListener('contentload', () => {
         webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT, () => {
           if (chrome.runtime.lastError) {
@@ -132,7 +127,12 @@ export class WebViewLoader {
     }
     if (inject_css) {
       webview.addEventListener('contentload', () => {
-        webview.insertCSS(WEB_VIEW_FONTS_CSS);
+        webview.insertCSS(WEB_VIEW_FONTS_CSS, () => {
+          if (chrome.runtime.lastError) {
+            console.warn(
+                'Failed to insertCSS: ' + chrome.runtime.lastError.message);
+          }
+        });
       });
     }
 
