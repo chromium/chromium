@@ -6,6 +6,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -28,7 +31,41 @@ namespace extensions {
 
 using ExtensionWebRequestPermissionsTest = ExtensionsTest;
 
-TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
+constexpr char kTestRelayUrl[] = "https://ohttp.endpoint.test/";
+
+class ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest
+    : public ExtensionsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+    if (GetParam()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{safe_browsing::kHashPrefixRealTimeLookups,
+            {{"SafeBrowsingHashPrefixRealTimeLookupsRelayUrl",
+              kTestRelayUrl}}}},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups});
+    }
+  }
+
+ private:
+  safe_browsing::hash_realtime_utils::GoogleChromeBrandingPretenderForTesting
+      apply_branding_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
+    testing::Bool());
+
+TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
+       TestHideRequestForURL) {
   enum HideRequestMask {
     HIDE_NONE = 0,
     HIDE_RENDERER_REQUEST = 1,
@@ -45,7 +82,8 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
   struct TestCase {
     const char* url;
     int expected_hide_request_mask;
-  } cases[] = {
+  };
+  std::vector<TestCase> cases = {
       {"https://www.google.com", HIDE_BROWSER_SUB_RESOURCE_REQUEST},
       {"http://www.example.com", HIDE_BROWSER_SUB_RESOURCE_REQUEST},
       {"https://www.example.com", HIDE_BROWSER_SUB_RESOURCE_REQUEST},
@@ -111,6 +149,19 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
        "kcnhkahnjcbndmmehfkdnkjomaanaooo",
        HIDE_ALL},
   };
+  std::vector<TestCase> additional_cases;
+  if (GetParam()) {
+    additional_cases = {
+        {"https://ohttp.endpoint.test", HIDE_ALL},
+        {"https://ohttp.endpoint.test/", HIDE_ALL},
+        {"https://ohttp.endpoint.test/path", HIDE_BROWSER_SUB_RESOURCE_REQUEST},
+        {"https://endpoint.test/", HIDE_BROWSER_SUB_RESOURCE_REQUEST}};
+  } else {
+    additional_cases = {
+        {"https://ohttp.endpoint.test/", HIDE_BROWSER_SUB_RESOURCE_REQUEST}};
+  }
+  cases.insert(cases.end(), additional_cases.begin(), additional_cases.end());
+
   const int kRendererProcessId = 1;
   const int kBrowserProcessId = -1;
 
