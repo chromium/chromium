@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -522,7 +523,7 @@ const InputMethodDescriptor* InputMethodUtil::GetInputMethodDescriptorFromId(
 }
 
 bool InputMethodUtil::GetInputMethodIdsFromLanguageCode(
-    const std::string& normalized_language_code,
+    std::string_view normalized_language_code,
     InputMethodType type,
     std::vector<std::string>* out_input_method_ids) const {
   return GetInputMethodIdsFromLanguageCodeInternal(
@@ -531,8 +532,8 @@ bool InputMethodUtil::GetInputMethodIdsFromLanguageCode(
 }
 
 bool InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal(
-    const std::multimap<std::string, std::string>& language_code_to_ids,
-    const std::string& normalized_language_code,
+    const LanguageCodeToIdsMap& language_code_to_ids,
+    std::string_view normalized_language_code,
     InputMethodType type,
     std::vector<std::string>* out_input_method_ids) const {
   DCHECK(out_input_method_ids);

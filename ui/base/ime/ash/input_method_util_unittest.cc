@@ -176,7 +176,7 @@ TEST_F(InputMethodUtilTest, TestGetInputMethodDescriptorFromId) {
 }
 
 TEST_F(InputMethodUtilTest, TestGetInputMethodIdsForLanguageCode) {
-  std::multimap<std::string, std::string> language_code_to_ids_map;
+  LanguageCodeToIdsMap language_code_to_ids_map;
   language_code_to_ids_map.emplace("ja", pinyin_ime_id);
   language_code_to_ids_map.emplace("ja", pinyin_ime_id);
   language_code_to_ids_map.emplace("ja", "xkb:jp:jpn");
