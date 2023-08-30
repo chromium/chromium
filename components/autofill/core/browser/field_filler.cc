@@ -595,6 +595,26 @@ std::u16string GetVirtualCardNumberForPreviewInput(
   return value;
 }
 
+// Returns the credit card CVC for Preview or Fill.
+std::u16string GetCreditCardVerificationCodeForInput(
+    const CreditCard& credit_card,
+    mojom::AutofillActionPersistence action_persistence,
+    const std::u16string& cvc) {
+  const std::u16string cvc_candidate =
+      credit_card.cvc().empty() ? cvc : credit_card.cvc();
+  // If CVC is empty we will not return anything.
+  if (cvc_candidate.empty()) {
+    return u"";
+  }
+  switch (action_persistence) {
+    case mojom::AutofillActionPersistence::kFill:
+      return cvc_candidate;
+    // For preview, we will mask CVC with dots.
+    case mojom::AutofillActionPersistence::kPreview:
+      return CreditCard::GetMidlineEllipsisDots(cvc_candidate.length());
+  }
+}
+
 // Fills in the select or selectlist control |field| with |value|. If an exact
 // match is not found, falls back to alternate filling strategies based on the
 // |type|.
@@ -890,7 +910,8 @@ std::u16string GetValueForCreditCard(
   } else {
     switch (storable_type) {
       case CREDIT_CARD_VERIFICATION_CODE:
-        return cvc;
+        return GetCreditCardVerificationCodeForInput(credit_card,
+                                                     action_persistence, cvc);
       case CREDIT_CARD_NUMBER:
         return GetCreditCardNumberForInput(credit_card, field, app_locale,
                                            action_persistence);

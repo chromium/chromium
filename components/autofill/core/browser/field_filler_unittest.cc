@@ -516,6 +516,54 @@ TEST_F(AutofillFieldFillerTest, FillFormField_Preview_CreditCardField) {
   EXPECT_EQ(4u, num_digits);
 }
 
+class CreditCardVerificationCodeTest
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<mojom::AutofillActionPersistence> {};
+
+// Test that verify CVC should be expected value for Preview and Fill.
+TEST_P(CreditCardVerificationCodeTest,
+       FillFormField_CreditCardVerificationCode) {
+  const mojom::AutofillActionPersistence persistence = GetParam();
+  AutofillField field;
+  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
+
+  // Credit card related field.
+  const std::u16string kCvc = u"1111";
+  credit_card()->set_cvc(kCvc);
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(), persistence);
+
+  if (persistence == mojom::AutofillActionPersistence::kPreview) {
+    EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
+  } else {
+    EXPECT_EQ(kCvc, field.value);
+  }
+}
+
+// Test that verify CVC should be empty for Preview and Fill if CVC is empty.
+TEST_P(CreditCardVerificationCodeTest,
+       FillFormField_CreditCardVerificationCode_Empty) {
+  const mojom::AutofillActionPersistence persistence = GetParam();
+  AutofillField field;
+  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
+
+  // Credit card related field.
+  const std::u16string kEmptyCvc = u"";
+  credit_card()->set_cvc(kEmptyCvc);
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(), persistence);
+
+  EXPECT_EQ(kEmptyCvc, field.value);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillFieldFillerTest,
+    CreditCardVerificationCodeTest,
+    testing::Values(mojom::AutofillActionPersistence::kPreview,
+                    mojom::AutofillActionPersistence::kFill));
+
 struct AutofillFieldFillerTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;

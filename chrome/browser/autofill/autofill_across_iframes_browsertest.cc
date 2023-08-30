@@ -122,7 +122,8 @@ void FillCard(content::RenderFrameHost* rfh,
               const FormData& form,
               const FormFieldData& triggered_field) {
   CreditCard card;
-  test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "");
+  test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
+                          base::ASCIIToUTF16(base::StringPiece(kCvc)));
   auto* manager = TestAutofillManager::GetForRenderFrameHost(rfh);
   manager->FillCreditCardFormImpl(
       form, triggered_field, card, base::ASCIIToUTF16(base::StringPiece(kCvc)),
