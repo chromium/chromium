@@ -183,8 +183,10 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   display.SetRotationAsDegree(static_cast<int>(CGDisplayRotation(display_id)));
 
   // TODO(crbug.com/1078903): Support multiple internal displays.
-  if (CGDisplayIsBuiltin(display_id))
+  // CGDisplayIsBuiltin may return -1 on [dis]connect; see crbug.com/1457025.
+  if (CGDisplayIsBuiltin(display_id) == YES) {
     SetInternalDisplayIds({display_id});
+  }
 
   display.set_label(base::SysNSStringToUTF8(screen.localizedName));
 

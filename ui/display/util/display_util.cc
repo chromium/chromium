@@ -235,12 +235,6 @@ bool HasInternalDisplay() {
 }
 
 void SetInternalDisplayIds(base::flat_set<int64_t> display_ids) {
-  // TODO(crbug.com/1457025): Fix isInternal inaccuracies and remove logging.
-  DISPLAY_LOG(DEBUG) << "Internal display ids updated, count: "
-                     << display_ids.size();
-  for (const auto& display_id : display_ids) {
-    DISPLAY_LOG(DEBUG) << "Internal display id: " << display_id;
-  }
   *internal_display_ids() = std::move(display_ids);
 }
 
