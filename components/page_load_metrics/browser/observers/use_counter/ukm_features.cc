@@ -310,6 +310,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWindowManagementPermissionPolicyParsed,
           WebFeature::kWindowPlacementPermissionDescriptorUsed,
           WebFeature::kWindowPlacementPermissionPolicyParsed,
+          WebFeature::kV8Window_GetScreenDetails_Method,
       }));
   return *opt_in_features;
 }
