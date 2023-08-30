@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -19,6 +20,7 @@
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/config/gpu_switches.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
@@ -43,10 +45,9 @@ void LogError(WGPUErrorType type, char const* message, void* userdata) {
 void LogDeviceLost(WGPUDeviceLostReason reason,
                    char const* message,
                    void* userdata) {
-  if (reason == WGPUDeviceLostReason::WGPUDeviceLostReason_Destroyed) {
-    return;
+  if (reason != WGPUDeviceLostReason_Destroyed) {
+    LOG(FATAL) << message;
   }
-  LOG(FATAL) << message;
 }
 
 class Platform : public webgpu::DawnPlatform {
@@ -102,8 +103,8 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
     CacheBlobCallback callback) {
   return DawnContextProvider::CreateWithBackend(
-      GetDefaultBackendType(), /*force_fallback_adapter=*/false,
-      gpu_preferences, caching_interface_factory, std::move(callback));
+      GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
+      caching_interface_factory, std::move(callback));
 }
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
@@ -127,6 +128,19 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
 }
 // static
 wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
+  const auto switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kSkiaGraphiteBackend);
+  if (switch_value == switches::kSkiaGraphiteBackendDawnD3D11) {
+    return wgpu::BackendType::D3D11;
+  } else if (switch_value == switches::kSkiaGraphiteBackendDawnD3D12) {
+    return wgpu::BackendType::D3D12;
+  } else if (switch_value == switches::kSkiaGraphiteBackendDawnMetal) {
+    return wgpu::BackendType::Metal;
+  } else if (switch_value == switches::kSkiaGraphiteBackendDawnSwiftshader ||
+             switch_value == switches::kSkiaGraphiteBackendDawnVulkan) {
+    return wgpu::BackendType::Vulkan;
+  }
 #if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(features::kSkiaGraphiteDawnUseD3D12)
              ? wgpu::BackendType::D3D12
@@ -139,6 +153,13 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
   NOTREACHED();
   return wgpu::BackendType::Null;
 #endif
+}
+
+// static
+bool DawnContextProvider::DefaultForceFallbackAdapter() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             switches::kSkiaGraphiteBackend) ==
+         switches::kSkiaGraphiteBackendDawnSwiftshader;
 }
 
 DawnContextProvider::DawnContextProvider(

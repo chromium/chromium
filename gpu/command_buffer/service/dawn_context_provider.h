@@ -47,6 +47,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       CacheBlobCallback callback = {});
 
   static wgpu::BackendType GetDefaultBackendType();
+  static bool DefaultForceFallbackAdapter();
 
   DawnContextProvider(const DawnContextProvider&) = delete;
   DawnContextProvider& operator=(const DawnContextProvider&) = delete;

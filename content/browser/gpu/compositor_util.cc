@@ -223,7 +223,8 @@ const GpuFeatureData GetGpuFeatureData(
     {"skia_graphite",
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE),
-     !base::FeatureList::IsEnabled(features::kSkiaGraphite),
+     !base::FeatureList::IsEnabled(features::kSkiaGraphite) &&
+         !command_line.HasSwitch(switches::kSkiaGraphiteBackend),
      DisableInfo::NotProblem(), false},
   };
   DCHECK(index < std::size(kGpuFeatureData));

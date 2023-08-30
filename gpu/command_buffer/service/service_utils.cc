@@ -221,7 +221,8 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
     [[maybe_unused]] auto value =
         command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    if (value.empty() || value == switches::kSkiaGraphiteBackendDawn) {
+    if (value.empty() ||
+        base::StartsWith(value, switches::kSkiaGraphiteBackendDawn)) {
       return GrContextType::kGraphiteDawn;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)

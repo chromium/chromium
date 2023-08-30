@@ -151,8 +151,8 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 
   if (context_type == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    dawn_context_provider_ =
-        DawnContextProvider::CreateWithBackend(GetDawnBackendType());
+    dawn_context_provider_ = DawnContextProvider::CreateWithBackend(
+        GetDawnBackendType(), DawnForceFallbackAdapter());
     ASSERT_TRUE(dawn_context_provider_);
 #else
     FAIL() << "Graphite-Dawn not available";
@@ -329,6 +329,10 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
 #if BUILDFLAG(SKIA_USE_DAWN)
 wgpu::BackendType SharedImageTestBase::GetDawnBackendType() const {
   return DawnContextProvider::GetDefaultBackendType();
+}
+
+bool SharedImageTestBase::DawnForceFallbackAdapter() const {
+  return DawnContextProvider::DefaultForceFallbackAdapter();
 }
 #endif
 

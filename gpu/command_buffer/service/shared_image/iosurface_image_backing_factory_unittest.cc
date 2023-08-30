@@ -659,6 +659,10 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
   wgpu::BackendType GetDawnBackendType() const override {
     return std::get<1>(GetParam()).dawn_backend_type;
   }
+
+  bool DawnForceFallbackAdapter() const override {
+    return GetDawnBackendType() == wgpu::BackendType::Vulkan;
+  }
 #endif
 
  protected:

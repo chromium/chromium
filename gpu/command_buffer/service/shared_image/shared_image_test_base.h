@@ -84,6 +84,7 @@ class SharedImageTestBase : public testing::Test {
   // Subclass can customize this method to configure a specific Dawn backend
   // when InitializeContext()
   virtual wgpu::BackendType GetDawnBackendType() const;
+  virtual bool DawnForceFallbackAdapter() const;
   std::unique_ptr<DawnContextProvider> dawn_context_provider_;
 #endif
 

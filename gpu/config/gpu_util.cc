@@ -296,11 +296,7 @@ GpuFeatureStatus GetGLFeatureStatus(const std::set<int>& blocklisted_features,
 
 GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
     const std::set<int>& blocklisted_features,
-    const GpuPreferences& gpu_preferences,
-    bool use_swift_shader) {
-  if (use_swift_shader) {
-    return kGpuFeatureStatusDisabled;
-  }
+    const GpuPreferences& gpu_preferences) {
   if (blocklisted_features.count(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
     return kGpuFeatureStatusDisabled;
   }
@@ -629,8 +625,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
       GetVulkanFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
-      GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences,
-                                   use_swift_shader);
+      GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences);
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);

@@ -234,6 +234,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("gpu.debug"))                              \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.device"))                             \
+  X(TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.service"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("histogram_samples"))                      \
