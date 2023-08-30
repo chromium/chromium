@@ -22,6 +22,11 @@ struct WebFileHandlers : public Extension::ManifestData {
   WebFileHandlers();
   ~WebFileHandlers() override;
 
+  enum class LaunchType {
+    kSingleClient,
+    kMultipleClients,
+  };
+
   // The list of entries for the web-accessible resources of the extension.
   WebFileHandlersInfo file_handlers;
 
@@ -33,6 +38,13 @@ struct WebFileHandlers : public Extension::ManifestData {
   // `File Handling Explainer`.
   // TODO(crbug/1179530): Remove after MV2 deprecation.
   static bool SupportsWebFileHandlers(const int manifest_version);
+
+  // Return an enum type instead of the idl string type. This value is currently
+  // set to `single-client` if it or nothing is provided, set to
+  // `multiple-clients` if that's provided, or errors in any other case.
+  // TODO(crbug/1448893): Store enum instead of the string on manifest parse.
+  static LaunchType GetLaunchType(
+      const absl::optional<std::string>& launch_type);
 };
 
 // Parses the `file_handlers` manifest key.

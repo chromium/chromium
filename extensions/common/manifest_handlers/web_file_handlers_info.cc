@@ -256,4 +256,12 @@ bool WebFileHandlers::SupportsWebFileHandlers(const int manifest_version) {
              extensions_features::kExtensionWebFileHandlers);
 }
 
+// static.
+WebFileHandlers::LaunchType WebFileHandlers::GetLaunchType(
+    const absl::optional<std::string>& launch_type) {
+  return launch_type.has_value() && launch_type.value() == "multiple-clients"
+             ? WebFileHandlers::LaunchType::kMultipleClients
+             : WebFileHandlers::LaunchType::kSingleClient;
+}
+
 }  // namespace extensions

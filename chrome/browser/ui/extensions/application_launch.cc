@@ -375,7 +375,8 @@ WebContents* MaybeOpenApplicationForLaunchTypeMultipleClients(
   }
 
   // Determine if this is single-client (default) or multiple-clients.
-  if (handler.launch_type != "multiple-clients") {
+  if (extensions::WebFileHandlers::GetLaunchType(handler.launch_type) !=
+      extensions::WebFileHandlers::LaunchType::kMultipleClients) {
     return nullptr;
   }
 

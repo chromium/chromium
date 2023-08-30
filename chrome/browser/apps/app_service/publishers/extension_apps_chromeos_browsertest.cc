@@ -4,7 +4,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -37,8 +36,6 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/views/widget/any_widget_observer.h"
-#include "ui/views/widget/widget.h"
 
 namespace apps {
 

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
@@ -68,20 +69,7 @@ class WebFileHandlersFileLaunchBrowserTest
         extensions_features::kExtensionWebFileHandlers);
   }
 
- protected:
-  static constexpr char const kManifest[] = R"({
-    "name": "Test",
-    "version": "0.0.1",
-    "manifest_version": 3,
-    "file_handlers": [
-      {
-        "name": "Comma separated values",
-        "action": "/open-csv.html",
-        "accept": {"text/csv": [".csv"]}
-      }
-    ]
-  })";
-
+  // Load an extension with a file handler instance that can be awaited later.
   const extensions::Extension* WriteDirForFileHandlingExtension() {
     // Load extension.
     extension_dir_.WriteManifest(kManifest);
@@ -103,6 +91,43 @@ class WebFileHandlersFileLaunchBrowserTest
     return extension;
   }
 
+  // Load an extension with a few extra files for testing multiple-clients.
+  const extensions::Extension* WriteCustomDirForFileHandlingExtension(
+      const std::string& manifest,
+      const base::flat_map<std::string, std::string>& files) {
+    extension_dir_.WriteManifest(manifest);
+    for (const auto& [name, content] : files) {
+      extension_dir_.WriteFile(name, content);
+    }
+    const extensions::Extension* extension =
+        LoadExtension(extension_dir_.UnpackedPath());
+
+    return extension;
+  }
+
+  void LaunchAppWithIntent(apps::IntentPtr intent,
+                           const extensions::ExtensionId& extension_id,
+                           apps::LaunchCallback callback) {
+    const int32_t event_flags =
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            /*prefer_container=*/true);
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->LaunchAppWithIntent(extension_id, event_flags, std::move(intent),
+                              apps::LaunchSource::kFromFileManager, nullptr,
+                              std::move(callback));
+  }
+
+  // Launch the extension from an intent and wait for a result from chrome.test.
+  void LaunchExtensionAndCatchResult(const extensions::Extension& extension) {
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
+    ASSERT_TRUE(intent);
+
+    // Verify launch.
+    extensions::ResultCatcher catcher;
+    LaunchAppWithIntent(std::move(intent), extension.id(), base::DoNothing());
+    ASSERT_TRUE(catcher.GetNextResult());
+  }
+
   // Verify that the launch result matches expectations.
   void VerifyLaunchResult(base::RepeatingClosure quit_closure,
                           apps::LaunchResult::State expected,
@@ -113,22 +138,16 @@ class WebFileHandlersFileLaunchBrowserTest
 
   // Launch the extension and accept the dialog.
   void LaunchExtensionAndAcceptDialog(const extensions::Extension& extension) {
-    std::unique_ptr<apps::Intent> intent = SetupLaunchAndGetIntent(extension);
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
     ASSERT_TRUE(intent);
 
+    // Create waiter to verify if the permission dialog is displayed.
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
-    // Prepare to launch with intent.
-    Profile* const profile = browser()->profile();
-    const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true);
-
-    // launch.
+    // Launch.
     base::RunLoop run_loop;
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        extension.id(), event_flags, std::move(intent),
-        apps::LaunchSource::kFromFileManager, nullptr,
+    LaunchAppWithIntent(
+        std::move(intent), extension.id(),
         base::BindOnce(
             &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
             base::Unretained(this), run_loop.QuitClosure(),
@@ -143,23 +162,15 @@ class WebFileHandlersFileLaunchBrowserTest
 
   // Launch the extension and cancel the dialog.
   void LaunchExtensionAndCancelDialog(const extensions::Extension& extension) {
-    std::unique_ptr<apps::Intent> intent = SetupLaunchAndGetIntent(extension);
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
     ASSERT_TRUE(intent);
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
-
-    // Launch app with intent.
-    Profile* const profile = browser()->profile();
-    const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true);
-
     // Launch and verify result.
     base::RunLoop run_loop;
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        extension.id(), event_flags, std::move(intent),
-        apps::LaunchSource::kFromFileManager, nullptr,
+    LaunchAppWithIntent(
+        std::move(intent), extension.id(),
         base::BindOnce(
             &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
             base::Unretained(this), run_loop.QuitClosure(),
@@ -172,23 +183,15 @@ class WebFileHandlersFileLaunchBrowserTest
 
   // Launch the extension and cancel the dialog.
   void LaunchExtensionAndCloseDialog(const extensions::Extension& extension) {
-    std::unique_ptr<apps::Intent> intent = SetupLaunchAndGetIntent(extension);
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
     ASSERT_TRUE(intent);
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
-
-    // Launch app with intent.
-    Profile* const profile = browser()->profile();
-    const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true);
-
     // Launch and verify result.
     base::RunLoop run_loop;
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        extension.id(), event_flags, std::move(intent),
-        apps::LaunchSource::kFromFileManager, nullptr,
+    LaunchAppWithIntent(
+        std::move(intent), extension.id(),
         base::BindOnce(
             &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
             base::Unretained(this), run_loop.QuitClosure(),
@@ -203,18 +206,11 @@ class WebFileHandlersFileLaunchBrowserTest
   // Launch the extension and cancel the dialog.
   void LaunchExtensionAndRememberAcceptDialog(
       const extensions::Extension& extension) {
-    std::unique_ptr<apps::Intent> intent = SetupLaunchAndGetIntent(extension);
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
     ASSERT_TRUE(intent);
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
-
-    // Launch app with intent.
-    Profile* const profile = browser()->profile();
-    const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true);
-
     // Set the checkbox to checked.
     extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
 
@@ -222,9 +218,8 @@ class WebFileHandlersFileLaunchBrowserTest
     {
       // Launch and verify result.
       base::RunLoop run_loop;
-      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-          extension.id(), event_flags, std::move(intent),
-          apps::LaunchSource::kFromFileManager, nullptr,
+      LaunchAppWithIntent(
+          std::move(intent), extension.id(),
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
@@ -241,16 +236,14 @@ class WebFileHandlersFileLaunchBrowserTest
     // Reopen the window, bypassing the dialog.
     {
       // Second intent.
-      std::unique_ptr<apps::Intent> second_intent =
-          SetupLaunchAndGetIntent(extension);
+      apps::IntentPtr second_intent = SetupLaunchAndGetIntent(extension);
 
       extensions::ResultCatcher second_catcher;
 
       // Launch and verify result.
       base::RunLoop run_loop;
-      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-          extension.id(), event_flags, std::move(second_intent),
-          apps::LaunchSource::kFromFileManager, nullptr,
+      LaunchAppWithIntent(
+          std::move(second_intent), extension.id(),
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
@@ -264,18 +257,11 @@ class WebFileHandlersFileLaunchBrowserTest
   // Launch the extension and cancel the dialog.
   void LaunchExtensionAndRememberCancelDialog(
       const extensions::Extension& extension) {
-    std::unique_ptr<apps::Intent> intent = SetupLaunchAndGetIntent(extension);
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
     ASSERT_TRUE(intent);
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
-
-    // Launch app with intent.
-    Profile* const profile = browser()->profile();
-    const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true);
-
     // Set the checkbox to checked.
     extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
 
@@ -283,9 +269,8 @@ class WebFileHandlersFileLaunchBrowserTest
     {
       // Launch and verify result.
       base::RunLoop run_loop;
-      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-          extension.id(), event_flags, std::move(intent),
-          apps::LaunchSource::kFromFileManager, nullptr,
+      LaunchAppWithIntent(
+          std::move(intent), extension.id(),
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
@@ -301,17 +286,15 @@ class WebFileHandlersFileLaunchBrowserTest
     // Run a second time.
     {
       // Second intent.
-      std::unique_ptr<apps::Intent> second_intent =
-          SetupLaunchAndGetIntent(extension);
+      apps::IntentPtr second_intent = SetupLaunchAndGetIntent(extension);
 
       // Reopen the window, bypassing the dialog.
       extensions::ResultCatcher second_catcher;
 
       // Launch and verify result.
       base::RunLoop run_loop;
-      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-          extension.id(), event_flags, std::move(second_intent),
-          apps::LaunchSource::kFromFileManager, nullptr,
+      LaunchAppWithIntent(
+          std::move(second_intent), extension.id(),
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
@@ -323,18 +306,11 @@ class WebFileHandlersFileLaunchBrowserTest
   // Launch the extension and cancel the dialog.
   void LaunchExtensionAndRememberCloseDialog(
       const extensions::Extension& extension) {
-    std::unique_ptr<apps::Intent> intent = SetupLaunchAndGetIntent(extension);
+    apps::IntentPtr intent = SetupLaunchAndGetIntent(extension);
     ASSERT_TRUE(intent);
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
-
-    // Launch app with intent.
-    Profile* const profile = browser()->profile();
-    const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true);
-
     // Set the checkbox to checked.
     extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
 
@@ -342,9 +318,8 @@ class WebFileHandlersFileLaunchBrowserTest
     {
       // Launch and verify result.
       base::RunLoop run_loop;
-      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-          extension.id(), event_flags, std::move(intent),
-          apps::LaunchSource::kFromFileManager, nullptr,
+      LaunchAppWithIntent(
+          std::move(intent), extension.id(),
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
@@ -359,8 +334,7 @@ class WebFileHandlersFileLaunchBrowserTest
     // Launch for the second time.
     {
       // Second intent.
-      std::unique_ptr<apps::Intent> second_intent =
-          SetupLaunchAndGetIntent(extension);
+      apps::IntentPtr second_intent = SetupLaunchAndGetIntent(extension);
 
       // Reopen the window, bypassing the dialog.
       extensions::ResultCatcher second_catcher;
@@ -371,9 +345,8 @@ class WebFileHandlersFileLaunchBrowserTest
 
       // Launch and verify result.
       base::RunLoop run_loop;
-      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-          extension.id(), event_flags, std::move(second_intent),
-          apps::LaunchSource::kFromFileManager, nullptr,
+      LaunchAppWithIntent(
+          std::move(second_intent), extension.id(),
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
@@ -387,20 +360,61 @@ class WebFileHandlersFileLaunchBrowserTest
     }
   }
 
- private:
+  apps::IntentPtr CreateFilesToOpen(
+      const extensions::Extension& extension,
+      const std::string& activity_name,
+      const std::string& mime_type,
+      const base::flat_map<std::string, std::string>& files) {
+    // Create a file.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempDir scoped_temp_dir;
+    EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+    auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+    intent->mime_type = mime_type;
+    intent->activity_name = activity_name;
+
+    for (const auto& [name, content] : files) {
+      const base::FilePath file_path =
+          WriteFile(scoped_temp_dir.GetPath(), name, content);
+
+      // Add file(s) to intent.
+      int64_t file_size = 0;
+      base::GetFileSize(file_path, &file_size);
+
+      // Create a virtual file in the file system, as required by AppService.
+      scoped_refptr<storage::FileSystemContext> file_system_context =
+          storage::CreateFileSystemContextForTesting(
+              /*quota_manager_proxy=*/nullptr, base::FilePath());
+      auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
+          blink::StorageKey::CreateFromStringForTesting(
+              "chrome://file-manager"),
+          storage::kFileSystemTypeTest, file_path);
+
+      // Update the intent with the file.
+      auto file = std::make_unique<apps::IntentFile>(file_system_url.ToGURL());
+      file->file_name = base::SafeBaseName::Create("a.csv");
+      file->file_size = file_size;
+      file->mime_type = "text/csv";
+      intent->files.push_back(std::move(file));
+    }
+
+    return intent;
+  }
+
   apps::IntentPtr SetupLaunchAndGetIntent(
       const extensions::Extension& extension) {
+    // Verify the number of file handlers in the extension manifest.
     auto* file_handlers =
         extensions::WebFileHandlers::GetFileHandlers(extension);
     EXPECT_EQ(1u, file_handlers->size());
 
-    // Create file(s).
+    // Create a file.
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::ScopedTempDir scoped_temp_dir;
     EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
     auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
     intent->mime_type = "text/csv";
-    intent->activity_name = "open-csv.html";
+    intent->activity_name = "/open-csv.html";
     const base::FilePath file_path =
         WriteFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
 
@@ -408,7 +422,7 @@ class WebFileHandlersFileLaunchBrowserTest
     int64_t file_size = 0;
     base::GetFileSize(file_path, &file_size);
 
-    // Create a virtual file in the file system, as required for AppService.
+    // Create a virtual file in the file system, as required by AppService.
     scoped_refptr<storage::FileSystemContext> file_system_context =
         storage::CreateFileSystemContextForTesting(
             /*quota_manager_proxy=*/nullptr, base::FilePath());
@@ -425,12 +439,27 @@ class WebFileHandlersFileLaunchBrowserTest
     return intent;
   }
 
+ private:
   extensions::TestExtensionDir extension_dir_;
 
   base::test::ScopedFeatureList feature_list_;
   // TODO(crbug.com/1448893): Remove channel overrides when available in stable.
   extensions::ScopedCurrentChannel current_channel_{
       version_info::Channel::BETA};
+
+  // Basic manifest for web file handlers.
+  static constexpr char const kManifest[] = R"({
+    "name": "Test",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [
+      {
+        "name": "Comma separated values",
+        "action": "/open-csv.html",
+        "accept": {"text/csv": [".csv"]}
+      }
+    ]
+  })";
 };
 
 // Web File Handlers may require acknowledgement before opening any of the
@@ -478,4 +507,138 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
 
   // e.g. pressing escape to close the dialog shouldn't remember that choice.
   LaunchExtensionAndRememberCloseDialog(*extension);
+}
+
+// Verify that the file opened.
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest, CallSetConsumer) {
+  // Install and get extension.
+  auto* extension = WriteDirForFileHandlingExtension();
+  ASSERT_TRUE(extension);
+
+  // Open a file and remember that selection for automatic reopening.
+  LaunchExtensionAndRememberAcceptDialog(*extension);
+
+  // Reopen the file and ensure that it's available in `launchParams`.
+  LaunchExtensionAndCatchResult(*extension);
+}
+
+// Verify `{"launch_type": "multiple-clients"}`.
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
+                       LaunchTypeMultipleClients) {
+  // Create a manifest that includes `{"launch_type": "multiple-clients"}`.
+  std::string manifest = R"({
+    "name": "Test",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [
+      {
+        "name": "single-client",
+        "action": "/open-csv.html",
+        "accept": {"text/csv": [".csv"]}
+      },
+      {
+        "name": "multiple-clients",
+        "action": "/open-txt.html",
+        "accept": {"text/plain": [".txt"]},
+        "launch_type": "multiple-clients"
+      }
+    ]
+  })";
+
+  // Create files.
+  base::flat_map<std::string, std::string> files = {
+      {"open-csv.js",
+       R"(
+        chrome.test.assertTrue('launchQueue' in window);
+        launchQueue.setConsumer((launchParams) => {
+          chrome.test.assertEq(2, launchParams.files.length);
+          chrome.test.assertTrue(
+              launchParams.files.every(file => file.kind === "file"));
+          chrome.test.succeed();
+        });
+      )"},
+      {"open-csv.html",
+       R"(<script src="/open-csv.js"></script><body>Test</body>)"},
+      {"open-txt.js",
+       R"(
+        chrome.test.assertTrue('launchQueue' in window);
+        launchQueue.setConsumer((launchParams) => {
+          chrome.test.assertTrue(launchParams.files.length === 1);
+          chrome.test.assertTrue(
+              launchParams.files.every(file => file.kind === "file"));
+          chrome.test.succeed();
+        });
+      )"},
+      {"open-txt.html",
+       R"(<script src="/open-txt.js"></script><body>Test</body>)"},
+  };
+
+  // Load extension.
+  auto* extension = WriteCustomDirForFileHandlingExtension(manifest, files);
+  ASSERT_TRUE(extension);
+
+  auto VerifyLaunch =
+      [&](const std::string& activity_name, const std::string& mime_type,
+          const base::flat_map<std::string, std::string>& files_to_open) {
+        auto intent = CreateFilesToOpen(*extension, activity_name, mime_type,
+                                        files_to_open);
+        base::RunLoop run_loop;
+        // Create waiter to verify if the permission dialog is displayed.
+        views::NamedWidgetShownWaiter waiter(
+            views::test::AnyWidgetTestPasskey{},
+            "WebFileHandlersFileLaunchDialogView");
+
+        // Open multiple files in single client mode and remember the selection.
+        LaunchAppWithIntent(
+            std::move(intent), extension->id(),
+            base::BindOnce(
+                &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
+                base::Unretained(this), run_loop.QuitClosure(),
+                apps::LaunchResult::State::SUCCESS));
+
+        auto* widget = waiter.WaitIfNeededAndGet();
+        extensions::ResultCatcher catcher;
+        widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+        ASSERT_TRUE(catcher.GetNextResult());
+        run_loop.Run();
+      };
+
+  struct {
+    std::string test_name;
+    std::string activity_name;
+    std::string mime_type;
+    base::flat_map<std::string, std::string> files_to_open;
+  } test_cases[] = {
+      // clang-format off
+
+    // single-client [by default] opens all files in the same tab.
+    {
+      "Verify single-client",
+      "/open-csv.html",
+      "text/csv",
+      {
+        {"a.csv", "a csv"},
+        {"b.csv", "b csv"}
+      }
+    },
+
+    // multiple-clients opens a new tab for each file.
+    {
+      "Verify multiple-clients",
+      "/open-txt.html",
+      "text/plain",
+      {
+        {"a.txt", "a txt"},
+        {"b.txt", "b txt"}
+      }
+    }
+
+      // clang-format on
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.test_name);
+    VerifyLaunch(test_case.activity_name, test_case.mime_type,
+                 test_case.files_to_open);
+  }
 }
