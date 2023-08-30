@@ -13,6 +13,7 @@ source_set("broadcaster") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/web/common:features",
   ]
 }
 
@@ -25,6 +26,8 @@ source_set("unit_tests") {
   deps = [
     ":broadcaster",
     "//base",
+    "//base/test:test_support",
+    "//ios/web/common:features",
     "//testing/gtest",
     "//testing/perf",
   ]
