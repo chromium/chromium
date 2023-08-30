@@ -51,10 +51,6 @@ class OmniboxPopupPresenter : public views::WebView,
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
-  // Returns the target popup bounds in screen coordinates based on the bounds
-  // of `location_bar_view_` and given preferred size `start_height`.
-  gfx::Rect GetTargetBounds(int start_height) const;
-
  private:
   friend class OmniboxPopupViewWebUITest;
 
