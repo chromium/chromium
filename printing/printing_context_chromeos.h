@@ -64,8 +64,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
   std::string username_;
 };
 
-// This has the side effect of recording UMA for advanced attributes usage,
-// so only call once per job.
 COMPONENT_EXPORT(PRINTING)
 ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
                                   const gfx::Rect& printable_area_um);
