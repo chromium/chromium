@@ -229,6 +229,11 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'jetstream2-minormc',
     'octane-minormc',
     'speedometer2-minormc',
+    'speedometer3-minormc',
+    # TODO(crbug.com/1473955) Make speedometer3 and speedometer3-future part
+    # of OFFICIAL_BENCHMARK_CONFIGS after confirming that they are stable.
+    'speedometer3',
+    'speedometer3-future',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
@@ -415,15 +420,23 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
-    ]).Add(['jetstream2-minormc', 'speedometer2-minormc'])
+    ]).Add([
+        'jetstream2-minormc',
+        'speedometer2-minormc',
+        'speedometer3',
+        'speedometer3-future',
+        'speedometer3-minormc',
+    ])
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([

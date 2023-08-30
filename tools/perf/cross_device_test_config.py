@@ -145,6 +145,12 @@ TARGET_DEVICES = {
         'speedometer2-minormc': {
             'Speedometer2': 20,
         },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+        'speedometer3-minormc': {
+            'Speedometer3': 20,
+        },
     },
     'mac-m1_mini_2020-perf-pgo': {
         'jetstream2': {
@@ -152,6 +158,9 @@ TARGET_DEVICES = {
         },
         'speedometer2': {
             'Speedometer2': 4,
+        },
+        'speedometer3': {
+            'Speedometer3': 4,
         },
     },
 }

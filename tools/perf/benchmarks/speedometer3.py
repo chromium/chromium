@@ -152,7 +152,7 @@ class Speedometer3(Speedometer30):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer3'
+    return 'speedometer3'
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
@@ -165,7 +165,7 @@ class V8Speedometer3Future(Speedometer3):
   """
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer3-future'
+    return 'speedometer3-future'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
@@ -181,7 +181,7 @@ class Speedometer3MinorMC(Speedometer3):
   """
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer3-minormc'
+    return 'speedometer3-minormc'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--js-flags=--minor-mc')

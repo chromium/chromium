@@ -19,6 +19,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         },
         "executables": {
@@ -55,6 +61,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -88,6 +100,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -117,6 +135,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
@@ -162,6 +186,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -191,6 +221,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         },
         "executables": {
@@ -218,6 +254,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -238,6 +280,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         },
@@ -274,6 +322,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -288,6 +342,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
@@ -304,6 +364,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -318,6 +384,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
@@ -334,6 +406,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -348,6 +426,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
@@ -364,6 +448,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -378,6 +468,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
@@ -406,6 +502,15 @@
             "speedometer2-minormc": {
                 "abridged": false
             },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-future": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
+            },
             "system_health.common_desktop": {
                 "end": 8,
                 "abridged": false
@@ -423,6 +528,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
@@ -442,6 +553,12 @@
             },
             "speedometer2-minormc": {
                 "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
+                "abridged": false
             }
         }
     },
@@ -456,6 +573,12 @@
                 "abridged": false
             },
             "speedometer2-minormc": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-minormc": {
                 "abridged": false
             }
         }
