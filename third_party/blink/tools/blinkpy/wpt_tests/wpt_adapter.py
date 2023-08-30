@@ -49,6 +49,11 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         self.show_logs = True
         self._start = datetime.now()
 
+    def generate_test_name_output(self, subsuite, test_name):
+        if not test_name.startswith('/wpt_internal/'):
+            test_name = '/external/wpt' + test_name
+        return f'virtual/{subsuite}{test_name}' if subsuite else test_name[1:]
+
     def log(self, data):
         offset = datetime.now() - self._start
         minutes, seconds = divmod(max(0, offset.total_seconds()), 60)
@@ -135,7 +140,9 @@ class WPTAdapter:
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
         cls._ensure_value(options, 'wpt_only', True)
-        cls._ensure_value(options, 'no_virtual_tests', True)
+        # only run virtual tests for content shell
+        cls._ensure_value(options, 'no_virtual_tests',
+                          options.product != 'content_shell')
         port = host.port_factory.get(port_name, options)
         if options.product == 'chrome':
             port.set_option_default('driver_name', port.CHROME_NAME)
@@ -538,8 +545,7 @@ class WPTAdapter:
             'flag_specific': self.port.flag_specific_config_name() or '',
             'used_upstream': self.options.use_upstream_wpt,
             'sanitizer_enabled': self.options.enable_sanitizer,
-            # TODO(crbug.com/1152503): Fully support virtual suites.
-            'virtual_suite': '',
+            'virtual_suite': '',  # Needed for non virtual tests
         }
         if self.options.use_upstream_wpt:
             # `run_wpt_tests` does not run in the upstream checkout's git
