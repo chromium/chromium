@@ -438,6 +438,8 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
     } else {
       mixer[kColorNewTabPageModuleBackground] = {gfx::kGoogleGrey100};
     }
+    mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
+        kColorNewTabPageControlBackgroundHovered};
   } else {
     mixer[kColorNewTabPageModuleBackground] = {
         kColorNewTabPageBackgroundOverride};
