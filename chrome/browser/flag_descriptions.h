@@ -3868,6 +3868,9 @@ extern const char kArcInputOverlayDescriptionAlphaV2[];
 extern const char kScalableIphName[];
 extern const char kScalableIphDescription[];
 
+extern const char kScalableIphDebugName[];
+extern const char kScalableIphDebugDescription[];
+
 extern const char kScanningAppJellyName[];
 extern const char kScanningAppJellyDescription[];
 

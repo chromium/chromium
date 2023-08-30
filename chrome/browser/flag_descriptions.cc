@@ -6738,6 +6738,10 @@ const char kScalableIphDescription[] =
     "Enable scalable IPH. In addition to this flag, each respective IPH "
     "trigger condition needs to be met before an IPH notifier is shown.";
 
+const char kScalableIphDebugName[] = "Scalable Iph Debug";
+const char kScalableIphDebugDescription[] =
+    "Enables debug feature of Scalable Iph";
+
 const char kScanningAppJellyName[] =
     "Enable jelly colors for the Scanning App.";
 const char kScanningAppJellyDescription[] =

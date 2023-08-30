@@ -62495,6 +62495,7 @@ from previous Chrome versions.
   <int value="-1030683709" label="OnlyShowNewShortcutsApp:disabled"/>
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
+  <int value="-1030243491" label="ScalableIphDebug:disabled"/>
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
   <int value="-1028733699" label="MacViewsWebUIDialogs:disabled"/>
   <int value="-1028251580" label="GamepadPollingInterval:disabled"/>
@@ -67576,6 +67577,7 @@ from previous Chrome versions.
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
   <int value="1532006216" label="CommerceHintAndroid:disabled"/>
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>
+  <int value="1532933727" label="ScalableIphDebug:enabled"/>
   <int value="1533004890" label="CrostiniEnableDlc:enabled"/>
   <int value="1533392685"
       label="ContextMenuGoogleLensSearchOptimizations:disabled"/>

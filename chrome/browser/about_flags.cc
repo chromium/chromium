@@ -7915,6 +7915,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScalableIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kScalableIph)},
 
+    {"scalable-iph-debug", flag_descriptions::kScalableIphDebugName,
+     flag_descriptions::kScalableIphDebugDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kScalableIphDebug)},
+
     {"help-app-welcome-tips", flag_descriptions::kHelpAppWelcomeTipsName,
      flag_descriptions::kHelpAppWelcomeTipsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHelpAppWelcomeTips)},

@@ -7213,6 +7213,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "scalable-iph-debug",
+    "owners": [
+      "//chromeos/ash/components/scalable_iph/OWNERS",
+      "scalable-iph-eng@google.com"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "scanning-app-jelly",
     "owners": [
       "//ash/webui/scanning/OWNERS",
