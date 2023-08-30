@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
@@ -66,6 +67,15 @@ class RecentModel : public KeyedService {
   // KeyedService overrides:
   void Shutdown() override;
 
+  // Sets the timeout for recent model to return recent files. By default,
+  // there is no timeout. However, if one is set, any recent source that does
+  // not deliver results before the timeout elapses is ignored.
+  void SetScanTimeout(const base::TimeDelta& delta);
+
+  // Clears the timeout by which recent sources must deliver results to have
+  // them retunred to the caller of GetRecentFiles.
+  void ClearScanTimeout();
+
  private:
   friend class RecentModelFactory;
   friend class RecentModelTest;
@@ -79,12 +89,16 @@ class RecentModel : public KeyedService {
   explicit RecentModel(Profile* profile);
   explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources);
 
-  void OnGetRecentFiles(size_t max_files,
+  void OnGetRecentFiles(uint32_t run_on_sequence_id,
+                        size_t max_files,
                         const base::Time& cutoff_time,
                         FileType file_type,
                         std::vector<RecentFile> files);
   void OnGetRecentFilesCompleted(FileType file_type);
   void ClearCache();
+
+  // The callback invoked by the deadline timer.
+  void OnScanTimeout(FileType file_type);
 
   void SetMaxFilesForTest(size_t max_files);
   void SetForcedCutoffTimeForTest(const base::Time& forced_cutoff_time);
@@ -121,6 +135,21 @@ class RecentModel : public KeyedService {
   // Intermediate container of recent files while building a list.
   std::priority_queue<RecentFile, std::vector<RecentFile>, RecentFileComparator>
       intermediate_files_;
+
+  // The deadline timer started when recent files are requested, if
+  // scan_timeout_duration_ is set. This timer enforces the maximum time limit
+  // the fetching of recent files can take. Once the timer goes off no more
+  // results are accepted from any source. Whatever recent files were collected
+  // so far are returned to the caller of the GetRecentFiles method.
+  base::DeadlineTimer deadline_timer_;
+
+  // If set, limits the length of time the GetRecentFiles method can take before
+  // returning results, if any, in the callback.
+  absl::optional<base::TimeDelta> scan_timeout_duration_;
+
+  // The monotically increasing sequence number. Used to distinguish between
+  // current and timed out calls.
+  uint32_t current_sequence_id_ = 0;
 
   base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
 };

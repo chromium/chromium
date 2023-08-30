@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
 
 namespace ash {
@@ -28,15 +30,30 @@ class FakeRecentSource : public RecentSource {
   // Add a file to the canned set.
   void AddFile(const RecentFile& file);
 
+  // Adds artificial lag to the source.
+  void SetLag(const base::TimeDelta& lag);
+
   // RecentSource overrides:
   void GetRecentFiles(Params params) override;
 
  private:
+  // Invoked by OneShotTimer after the lag has passed.
+  void OnFilesReady(Params params);
+
+  // Returns a vector of matching files.
+  std::vector<RecentFile> GetMatchingFiles(const Params& params);
+
   // Returns true if the file matches the given file type.
   bool MatchesFileType(const RecentFile& file,
                        RecentSource::FileType file_type) const;
 
   std::vector<RecentFile> canned_files_;
+
+  // The delay with which the response to GetRecentFiles is posted.
+  base::TimeDelta lag_;
+
+  // The timer used to trigger the response.
+  base::OneShotTimer timer_;
 };
 
 }  // namespace ash

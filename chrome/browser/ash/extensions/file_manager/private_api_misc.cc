@@ -1005,6 +1005,13 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
     return RespondNow(Error("Cannot convert category to file type"));
   }
 
+  if (base::FeatureList::IsEnabled(ash::features::kFSPsInRecents)) {
+    // If File System Provider is enabled, we set the maximum latency to be 3s.
+    // This is based on "User Preference and Search Engine Latency" paper, which
+    // stated that "[...] once latency exceeds 3 seconds for the slower engine,
+    // users are 1.5 times as likely to choose the faster engine."
+    model->SetScanTimeout(base::Milliseconds(3000));
+  }
   model->GetRecentFiles(
       file_system_context.get(), source_url(), file_type,
       params->invalidate_cache,

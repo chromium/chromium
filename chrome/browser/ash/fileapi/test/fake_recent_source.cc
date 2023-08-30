@@ -12,7 +12,7 @@
 
 namespace ash {
 
-FakeRecentSource::FakeRecentSource() = default;
+FakeRecentSource::FakeRecentSource() : lag_(base::Seconds(0)) {}
 
 FakeRecentSource::~FakeRecentSource() = default;
 
@@ -21,22 +21,29 @@ void FakeRecentSource::AddFile(const RecentFile& file) {
 }
 
 void FakeRecentSource::GetRecentFiles(Params params) {
-  std::vector<RecentFile> result;
-  for (const auto& file : canned_files_) {
-    if (MatchesFileType(file, params.file_type()))
-      result.push_back(file);
-  }
-  std::move(params.callback()).Run(std::move(result));
+  timer_.Start(FROM_HERE, lag_,
+               base::BindOnce(&FakeRecentSource::OnFilesReady,
+                              base::Unretained(this), std::move(params)));
+}
+
+void FakeRecentSource::OnFilesReady(Params params) {
+  std::move(params.callback()).Run(GetMatchingFiles(params));
+}
+
+void FakeRecentSource::SetLag(const base::TimeDelta& lag) {
+  lag_ = lag;
 }
 
 bool FakeRecentSource::MatchesFileType(const RecentFile& file,
                                        RecentSource::FileType file_type) const {
-  if (file_type == FileType::kAll)
+  if (file_type == FileType::kAll) {
     return true;
+  }
 
   std::string mime_type;
-  if (!net::GetMimeTypeFromFile(file.url().path(), &mime_type))
+  if (!net::GetMimeTypeFromFile(file.url().path(), &mime_type)) {
     return false;
+  }
 
   switch (file_type) {
     case FileType::kAudio:
@@ -48,6 +55,17 @@ bool FakeRecentSource::MatchesFileType(const RecentFile& file,
     default:
       return false;
   }
+}
+
+std::vector<RecentFile> FakeRecentSource::GetMatchingFiles(
+    const Params& params) {
+  std::vector<RecentFile> result;
+  for (const auto& file : canned_files_) {
+    if (MatchesFileType(file, params.file_type())) {
+      result.push_back(file);
+    }
+  }
+  return result;
 }
 
 }  // namespace ash

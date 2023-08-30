@@ -100,7 +100,7 @@ RecentModel::RecentModel(Profile* profile)
     : RecentModel(CreateDefaultSources(profile)) {}
 
 RecentModel::RecentModel(std::vector<std::unique_ptr<RecentSource>> sources)
-    : sources_(std::move(sources)) {
+    : sources_(std::move(sources)), current_sequence_id_(0) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -156,12 +156,35 @@ void RecentModel::GetRecentFiles(
                                ? forced_cutoff_time_.value()
                                : base::Time::Now() - kCutoffTimeDelta;
 
+  uint32_t run_on_sequence_id = current_sequence_id_;
+
   for (const auto& source : sources_) {
     source->GetRecentFiles(RecentSource::Params(
         file_system_context, origin, max_files_, cutoff_time, file_type,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
-                       weak_ptr_factory_.GetWeakPtr(), max_files_, cutoff_time,
-                       file_type)));
+                       weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
+                       max_files_, cutoff_time, file_type)));
+  }
+  if (scan_timeout_duration_) {
+    deadline_timer_.Start(
+        FROM_HERE, base::TimeTicks::Now() + *scan_timeout_duration_,
+        base::BindOnce(&RecentModel::OnScanTimeout,
+                       weak_ptr_factory_.GetWeakPtr(), file_type));
+  }
+}
+
+void RecentModel::SetScanTimeout(const base::TimeDelta& delta) {
+  scan_timeout_duration_ = delta;
+}
+
+void RecentModel::ClearScanTimeout() {
+  scan_timeout_duration_.reset();
+}
+
+void RecentModel::OnScanTimeout(FileType file_type) {
+  if (num_inflight_sources_ > 0) {
+    num_inflight_sources_ = 0;
+    OnGetRecentFilesCompleted(file_type);
   }
 }
 
@@ -173,13 +196,19 @@ void RecentModel::Shutdown() {
   sources_.clear();
 }
 
-void RecentModel::OnGetRecentFiles(size_t max_files,
+void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
+                                   size_t max_files,
                                    const base::Time& cutoff_time,
                                    FileType file_type,
                                    std::vector<RecentFile> files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DCHECK_LT(0, num_inflight_sources_);
+  if (run_on_sequence_id != current_sequence_id_) {
+    // This source replied too late. We are no longer accepting any recent
+    // files for this call. The supplied files are ignored.
+    DCHECK(!deadline_timer_.IsRunning());
+    return;
+  }
 
   for (const auto& file : files) {
     if (file.last_modified() >= cutoff_time)
@@ -200,6 +229,9 @@ void RecentModel::OnGetRecentFilesCompleted(FileType file_type) {
   DCHECK_EQ(0, num_inflight_sources_);
   DCHECK(!cached_files_.has_value());
   DCHECK(!build_start_time_.is_null());
+
+  ++current_sequence_id_;
+  deadline_timer_.Stop();
 
   std::vector<RecentFile> files;
   while (!intermediate_files_.empty()) {

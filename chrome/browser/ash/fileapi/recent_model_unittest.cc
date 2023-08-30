@@ -32,12 +32,16 @@ RecentFile MakeRecentFile(const std::string& name,
   return RecentFile(url, last_modified);
 }
 
-std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
+std::vector<std::unique_ptr<RecentSource>> BuildDefaultSourcesWithLag(
+    uint32_t lag1_ms,
+    uint32_t lag2_ms) {
   auto source1 = std::make_unique<FakeRecentSource>();
+  source1->SetLag(base::Milliseconds(lag1_ms));
   source1->AddFile(MakeRecentFile("aaa.jpg", base::Time::FromJavaTime(1000)));
   source1->AddFile(MakeRecentFile("ccc.mp4", base::Time::FromJavaTime(3000)));
 
   auto source2 = std::make_unique<FakeRecentSource>();
+  source2->SetLag(base::Milliseconds(lag2_ms));
   source2->AddFile(MakeRecentFile("bbb.png", base::Time::FromJavaTime(2000)));
   source2->AddFile(MakeRecentFile("ddd.ogg", base::Time::FromJavaTime(4000)));
 
@@ -45,6 +49,10 @@ std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
   sources.emplace_back(std::move(source1));
   sources.emplace_back(std::move(source2));
   return sources;
+}
+
+std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
+  return BuildDefaultSourcesWithLag(0, 0);
 }
 
 std::vector<RecentFile> GetRecentFiles(RecentModel* model,
@@ -74,7 +82,8 @@ std::vector<RecentFile> GetRecentFiles(RecentModel* model,
 
 class RecentModelTest : public testing::Test {
  public:
-  RecentModelTest() = default;
+  RecentModelTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
   using RecentSourceList = std::vector<std::unique_ptr<RecentSource>>;
@@ -99,6 +108,7 @@ class RecentModelTest : public testing::Test {
 
     model->SetMaxFilesForTest(max_files);
     model->SetForcedCutoffTimeForTest(cutoff_time);
+    model->SetScanTimeout(base::Milliseconds(500));
 
     return GetRecentFiles(model, file_type, invalidate_cache);
   }
@@ -189,6 +199,34 @@ TEST_F(RecentModelTest, GetRecentFiles_Video) {
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("ccc.mp4", files[0].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(3000), files[0].last_modified());
+}
+
+TEST_F(RecentModelTest, GetRecentFiles_OneSourceIsLate) {
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSourcesWithLag, 100, 501), 10,
+      base::Time(), RecentModel::FileType::kAll, false);
+
+  ASSERT_EQ(2u, files.size());
+  EXPECT_EQ("ccc.mp4", files[0].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(3000), files[0].last_modified());
+  EXPECT_EQ("aaa.jpg", files[1].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(1000), files[1].last_modified());
+}
+
+TEST_F(RecentModelTest, GetRecentFiles_NoSourceIsLate) {
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSourcesWithLag, 499, 111), 10,
+      base::Time(), RecentModel::FileType::kAll, false);
+
+  ASSERT_EQ(4u, files.size());
+  EXPECT_EQ("ddd.ogg", files[0].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
+  EXPECT_EQ("ccc.mp4", files[1].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
+  EXPECT_EQ("bbb.png", files[2].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(2000), files[2].last_modified());
+  EXPECT_EQ("aaa.jpg", files[3].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(1000), files[3].last_modified());
 }
 
 // Do not use RecentModelTest fixture, because we need to get a reference of
