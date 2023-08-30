@@ -64,6 +64,8 @@ final class HttpFlagsLoader {
      *
      * @return The contents of the flags file, or null if the flags file could not be loaded for any
      * reason. In the latter case, the callee will take care of logging the failure.
+     *
+     * @see ResolvedFlags
      */
     @Nullable
     public static Flags load(Context context) {
