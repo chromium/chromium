@@ -221,9 +221,9 @@ TEST_F(BluetoothChooserContextTest, CheckGrantAndRevokePermission) {
   expected_services.Set(kGlucoseUUIDString, /*value=*/true);
   expected_services.Set(kBloodPressureUUIDString, /*value=*/true);
   expected_object.Set(kServicesKey, std::move(expected_services));
-  base::Value::List expected_manufacturer_data;
-  expected_manufacturer_data.Append(0x01);
-  expected_manufacturer_data.Append(0x02);
+  base::Value::Dict expected_manufacturer_data;
+  expected_manufacturer_data.Set("1", /*value=*/true);
+  expected_manufacturer_data.Set("2", /*value=*/true);
   expected_object.Set(kManufacturerDataKey,
                       std::move(expected_manufacturer_data));
 
