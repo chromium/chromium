@@ -47,7 +47,8 @@ VideoToolboxDecompressionSessionImpl::~VideoToolboxDecompressionSessionImpl() {
 
 bool VideoToolboxDecompressionSessionImpl::Create(
     CMFormatDescriptionRef format,
-    CFMutableDictionaryRef decoder_config) {
+    CFDictionaryRef decoder_config,
+    CFDictionaryRef image_config) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!IsValid());
@@ -59,7 +60,7 @@ bool VideoToolboxDecompressionSessionImpl::Create(
       kCFAllocatorDefault,
       format,          // video_format_description
       decoder_config,  // video_decoder_specification
-      nullptr,         // destination_image_buffer_attributes
+      image_config,    // destination_image_buffer_attributes
       &callback,       // output_callback
       session_.InitializeInto());
   if (status != noErr) {

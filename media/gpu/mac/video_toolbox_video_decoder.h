@@ -85,6 +85,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   // |accelerator_| callbacks.
   void OnAcceleratorDecode(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
+      VideoToolboxSessionMetadata session_metadata,
       scoped_refptr<CodecPicture> picture);
   void OnAcceleratorOutput(scoped_refptr<CodecPicture> picture);
 

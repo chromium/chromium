@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h265_decoder.h"
+#include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -28,6 +29,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+      VideoToolboxSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
@@ -89,6 +91,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   std::vector<uint8_t> active_pps_data_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
+  VideoToolboxSessionMetadata session_metadata_;
 
   // Accumulated slice data for the current frame.
   std::vector<base::span<const uint8_t>> slice_nalu_data_;

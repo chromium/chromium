@@ -25,6 +25,7 @@ namespace media {
 
 class MediaLog;
 struct VideoToolboxDecodeMetadata;
+struct VideoToolboxSessionMetadata;
 class VideoToolboxDecompressionSession;
 
 // Wraps VideoToolboxDecompressionSession to handle reconfiguration. Callbacks
@@ -76,7 +77,9 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
   [[nodiscard]] bool Process();
 
   // Create a new VideoToolbox decompression session for |format|.
-  [[nodiscard]] bool CreateSession(CMFormatDescriptionRef format);
+  [[nodiscard]] bool CreateSession(
+      CMFormatDescriptionRef format,
+      const VideoToolboxSessionMetadata& session_metadata);
 
   // Shut down the active session, synchronously.
   void DestroySession();

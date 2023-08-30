@@ -126,6 +126,11 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
     active_vps_data_ = vps_data;
     active_sps_data_ = sps_data;
     active_pps_data_ = pps_data;
+
+    session_metadata_ = VideoToolboxSessionMetadata{
+        /*allow_software_decoding=*/true,
+        /*is_hbd=*/sps->bit_depth_y > 8,
+    };
   }
 
   return Status::kOk;
@@ -233,7 +238,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
-  decode_cb_.Run(std::move(sample), std::move(pic));
+  decode_cb_.Run(std::move(sample), session_metadata_, std::move(pic));
   return Status::kOk;
 }
 

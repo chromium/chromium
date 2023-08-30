@@ -64,14 +64,15 @@ base::apple::ScopedCFTypeRef<CVImageBufferRef> CreateImage() {
 
 class FakeDecompressionSession : public VideoToolboxDecompressionSession {
  public:
-  FakeDecompressionSession(
+  explicit FakeDecompressionSession(
       VideoToolboxDecompressionSessionImpl::OutputCB output_cb)
       : output_cb_(std::move(output_cb)) {}
 
   ~FakeDecompressionSession() override = default;
 
   bool Create(CMFormatDescriptionRef format,
-              CFMutableDictionaryRef decoder_config) override {
+              CFDictionaryRef decoder_config,
+              CFDictionaryRef image_config) override {
     CHECK(!IsValid());
     ++creations;
     if (can_create) {

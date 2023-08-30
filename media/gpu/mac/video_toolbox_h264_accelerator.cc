@@ -199,7 +199,9 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
-  decode_cb_.Run(std::move(sample), std::move(pic));
+  VideoToolboxSessionMetadata session_metadata = {
+      /*allow_software_decoding=*/false, /*is_hbd=*/false};
+  decode_cb_.Run(std::move(sample), session_metadata, std::move(pic));
   return Status::kOk;
 }
 

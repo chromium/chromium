@@ -99,7 +99,7 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
 
   if (format_changed && frame_data_) {
     // TODO(crbug.com/1331597): Consider dropping existing frame data. Doing so
-    // probably requires handing output callbacks ourselves, so that we don't
+    // probably requires handling output callbacks ourselves, so that we don't
     // have to figure out which ones are duplicates.
     // TODO(crbug.com/1331597): Add Reset() to VP9Accelerator for resetting
     // superframe state after Flush().
@@ -197,6 +197,11 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     active_hdr_metadata_ = hdr_metadata;
     active_coded_size_ = coded_size;
 
+    session_metadata_ = VideoToolboxSessionMetadata{
+        /*allow_software_decoding=*/false,
+        /*is_hbd=*/pic->frame_hdr->bit_depth > 8,
+    };
+
     *format_changed = true;
   } else {
     *format_changed = false;
@@ -278,7 +283,7 @@ bool VideoToolboxVP9Accelerator::SubmitFrames(
   }
 
   // Submit for decoding.
-  decode_cb_.Run(std::move(sample), std::move(output_pic));
+  decode_cb_.Run(std::move(sample), session_metadata_, std::move(output_pic));
   return true;
 }
 

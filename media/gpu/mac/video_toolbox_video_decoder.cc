@@ -325,6 +325,7 @@ void VideoToolboxVideoDecoder::ReleaseDecodeCallbacks() {
 
 void VideoToolboxVideoDecoder::OnAcceleratorDecode(
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
+    VideoToolboxSessionMetadata session_metadata,
     scoped_refptr<CodecPicture> picture) {
   DVLOG(4) << __func__;
   DCHECK(active_decode_);
@@ -340,8 +341,14 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   }
   metadata->hdr_metadata = accelerator_->GetHDRMetadata();
   if (!metadata->hdr_metadata) {
+    // TODO(crbug.com/1331597): This HDR metadata arrives too late to affect the
+    // VideoToolbox format extensions. Either the HDR metadata should be passed
+    // to the accelerator constructors, or the accelerated video decoders need
+    // to pass it through (like they already do for color space).
     metadata->hdr_metadata = config_.hdr_metadata();
   }
+
+  metadata->session = session_metadata;
 
   video_toolbox_.Decode(std::move(sample), std::move(metadata));
 }

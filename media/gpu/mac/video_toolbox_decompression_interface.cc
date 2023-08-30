@@ -131,7 +131,7 @@ bool VideoToolboxDecompressionInterface::Process() {
 
     // Create a new session if necessary.
     if (!decompression_session_->IsValid()) {
-      if (!CreateSession(format)) {
+      if (!CreateSession(format, metadata->session)) {
         return false;
       }
     }
@@ -151,11 +151,13 @@ bool VideoToolboxDecompressionInterface::Process() {
 }
 
 bool VideoToolboxDecompressionInterface::CreateSession(
-    CMFormatDescriptionRef format) {
+    CMFormatDescriptionRef format,
+    const VideoToolboxSessionMetadata& session_metadata) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!decompression_session_->IsValid());
 
+  // Build video decoder specification.
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
       CFDictionaryCreateMutable(kCFAllocatorDefault,
                                 1,  // capacity
@@ -171,23 +173,61 @@ bool VideoToolboxDecompressionInterface::CreateSession(
       decoder_config,
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
-
-  // We don't have software HEVC decoders to fall back to.
-  // TODO(crbug.com/1331597): Plumb hardware requirement from the accelerator.
-  FourCharCode codec_type = CMFormatDescriptionGetMediaSubType(format);
-  bool require_hardware = (codec_type != kCMVideoCodecType_HEVC) &&
-                          (codec_type != kCMVideoCodecType_HEVCWithAlpha);
-
   CFDictionarySetValue(
       decoder_config,
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
-      require_hardware ? kCFBooleanTrue : kCFBooleanFalse);
+      session_metadata.allow_software_decoding ? kCFBooleanFalse
+                                               : kCFBooleanTrue);
 #endif
 
-  if (!decompression_session_->Create(format, decoder_config)) {
+  // Build destination image buffer attributes.
+  //
+  // It is possible to create a decompression session with no destination image
+  // buffer attributes, but then we must be able to handle any kind of pixel
+  // format that VideoToolbox can produce, and there is no definitive list.
+  //
+  // Some formats that have been seen include:
+  //   - 12-bit YUV: 'tv20', 'tv22', 'tv44'
+  //   - 10-bit YUV: 'p420', 'p422', 'p444'
+  //   - 8-bit YUV: '420v', '422v', '444v'
+  //
+  // Other plausible formats include RGB, monochrome, and versions of the above
+  // with alpha (eg. 'v0a8') and/or full-range (eg. '420f').
+  //
+  // Rather than explicitly handling every possible format in
+  // VideoToolboxFrameConverter, it may be possible to introspect the IOSurfaces
+  // at run time and map them to viz formats.
+  //
+  // For now we just ask VideoToolbox to convert everything to NV12/P010.
+  //
+  // TODO(crbug.com/1331597): Do not create an image config for known-supported
+  // formats, and add full-range versions as supported formats.
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
+      CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                1,  // capacity
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  if (!image_config) {
+    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
     return false;
   }
 
+  FourCharCode pixel_format =
+      session_metadata.is_hbd ? kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+                              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+
+  base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
+      CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pixel_format));
+
+  CFDictionarySetValue(image_config, kCVPixelBufferPixelFormatTypeKey,
+                       cf_pixel_format);
+
+  // Create the session.
+  if (!decompression_session_->Create(format, decoder_config, image_config)) {
+    return false;
+  }
+
+  // Update state.
   active_format_.reset(format, base::scoped_policy::RETAIN);
   return true;
 }

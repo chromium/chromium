@@ -31,7 +31,8 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSession {
   virtual ~VideoToolboxDecompressionSession() = default;
 
   virtual bool Create(CMFormatDescriptionRef format,
-                      CFMutableDictionaryRef decoder_config) = 0;
+                      CFDictionaryRef decoder_config,
+                      CFDictionaryRef image_config) = 0;
   virtual void Invalidate() = 0;
   virtual bool IsValid() = 0;
   virtual bool CanAcceptFormat(CMFormatDescriptionRef format) = 0;
@@ -58,7 +59,8 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
 
   // VideoToolboxDecompressionSession implementation.
   bool Create(CMFormatDescriptionRef format,
-              CFMutableDictionaryRef decoder_config) override;
+              CFDictionaryRef decoder_config,
+              CFDictionaryRef image_config) override;
   void Invalidate() override;
   bool IsValid() override;
   bool CanAcceptFormat(CMFormatDescriptionRef format) override;

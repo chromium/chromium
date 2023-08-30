@@ -41,8 +41,21 @@ absl::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
   switch (pixel_format) {
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
       return viz::MultiPlaneFormat::kNV12;
+    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kP010;
     default:
       return absl::nullopt;
+  }
+}
+
+VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
+  switch (pixel_format) {
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+      return PIXEL_FORMAT_NV12;
+    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+      return PIXEL_FORMAT_P016LE;
+    default:
+      return PIXEL_FORMAT_UNKNOWN;
   }
 }
 
@@ -164,6 +177,9 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
+  VideoPixelFormat video_pixel_format =
+      PixelFormatToVideoPixelFormat(pixel_format);
+
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   bool result = sis_->CreateSharedImage(
       mailbox, std::move(handle), *format, coded_size, metadata->color_space,
@@ -191,7 +207,7 @@ void VideoToolboxFrameConverter::Convert(
   // which would allow the renderer to map the IOSurface, but this is more
   // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-      PIXEL_FORMAT_NV12, mailbox_holders, std::move(release_cb), coded_size,
+      video_pixel_format, mailbox_holders, std::move(release_cb), coded_size,
       visible_rect, natural_size, metadata->timestamp);
 
   if (!frame) {
