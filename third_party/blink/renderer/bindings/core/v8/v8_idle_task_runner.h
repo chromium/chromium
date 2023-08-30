@@ -30,6 +30,7 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "gin/public/v8_idle_task_runner.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -63,7 +64,7 @@ class V8IdleTaskRunner : public gin::V8IdleTaskRunner {
   }
 
  private:
-  ThreadScheduler* scheduler_;
+  raw_ptr<ThreadScheduler> scheduler_;
 };
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_V8_SCRIPT_VALUE_SERIALIZER_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
@@ -135,13 +136,13 @@ class CORE_EXPORT V8ScriptValueSerializer
   bool AdoptSharedValueConveyor(v8::Isolate* isolate,
                                 v8::SharedValueConveyor&& conveyor) override;
 
-  ScriptState* script_state_;
+  raw_ptr<ScriptState> script_state_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
   v8::ValueSerializer serializer_;
   TrailerWriter trailer_writer_;
   const Transferables* transferables_ = nullptr;
   const ExceptionState* exception_state_ = nullptr;
-  WebBlobInfoArray* blob_info_array_ = nullptr;
+  raw_ptr<WebBlobInfoArray> blob_info_array_ = nullptr;
   SharedArrayBufferArray shared_array_buffers_;
   Options::WasmSerializationPolicy wasm_policy_;
   bool for_storage_ = false;

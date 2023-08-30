@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -81,8 +82,8 @@ class PLATFORM_EXPORT DrawingRecorder {
   void UniteVisualRect(const gfx::Rect& rect) { visual_rect_.Union(rect); }
 
  private:
-  GraphicsContext& context_;
-  const DisplayItemClient& client_;
+  const raw_ref<GraphicsContext> context_;
+  const raw_ref<const DisplayItemClient> client_;
   const DisplayItem::Type type_;
   gfx::Rect visual_rect_;
   absl::optional<DOMNodeId> dom_node_id_to_restore_;

@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_image.h"
@@ -136,9 +137,9 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     ~ClientAutoLock();
 
    private:
-    ImageFrameGenerator* generator_;
+    raw_ptr<ImageFrameGenerator> generator_;
     cc::PaintImage::GeneratorClientId client_id_;
-    base::Lock* lock_;
+    raw_ptr<base::Lock> lock_;
   };
 
   ImageFrameGenerator(const SkISize& full_size,

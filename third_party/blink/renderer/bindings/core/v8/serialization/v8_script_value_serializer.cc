@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -352,7 +353,7 @@ void V8ScriptValueSerializer::FinalizeTransfer(
   // TODO(bikineev): Revisit after young generation is there.
   struct PromptlyFreeArrayBuffers {
     // The void* is to avoid blink-gc-plugin error.
-    void* buffer;
+    raw_ptr<void> buffer;
     ~PromptlyFreeArrayBuffers() {
       static_cast<ArrayBufferArray*>(buffer)->clear();
     }

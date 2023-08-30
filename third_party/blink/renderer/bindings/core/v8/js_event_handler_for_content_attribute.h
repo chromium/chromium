@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_JS_EVENT_HANDLER_FOR_CONTENT_ATTRIBUTE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_JS_EVENT_HANDLER_FOR_CONTENT_ATTRIBUTE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -71,7 +72,7 @@ class JSEventHandlerForContentAttribute final : public JSEventHandler {
   String script_body_;
   String source_url_;
   TextPosition position_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 };
 
 }  // namespace blink

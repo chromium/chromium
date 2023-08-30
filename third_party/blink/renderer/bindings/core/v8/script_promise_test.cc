@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -66,7 +67,7 @@ class FunctionForScriptPromiseTest : public ScriptFunction::Callable {
   }
 
  private:
-  ScriptValue* output_;
+  raw_ptr<ScriptValue> output_;
 };
 
 class ThrowingCallable : public ScriptFunction::Callable {

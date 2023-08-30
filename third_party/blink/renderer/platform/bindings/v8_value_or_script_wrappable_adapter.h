@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_VALUE_OR_SCRIPT_WRAPPABLE_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_VALUE_OR_SCRIPT_WRAPPABLE_ADAPTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -52,7 +53,7 @@ class PLATFORM_EXPORT V8ValueOrScriptWrappableAdapter {
 
  private:
   v8::Local<v8::Value> v8_value_;
-  ScriptWrappable* script_wrappable_ = nullptr;
+  raw_ptr<ScriptWrappable> script_wrappable_ = nullptr;
 };
 
 }  // namespace bindings

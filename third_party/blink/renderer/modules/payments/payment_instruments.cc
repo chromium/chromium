@@ -110,7 +110,7 @@ ScriptPromise PaymentInstruments::deleteInstrument(
   if (!AllowedToUsePaymentFeatures(script_state))
     return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
 
-  if (!manager_.is_bound()) {
+  if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
     return ScriptPromise();
@@ -120,7 +120,7 @@ ScriptPromise PaymentInstruments::deleteInstrument(
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  manager_->DeletePaymentInstrument(
+  (*manager_)->DeletePaymentInstrument(
       instrument_key,
       WTF::BindOnce(&PaymentInstruments::onDeletePaymentInstrument,
                     WrapPersistent(this), WrapPersistent(resolver)));
@@ -133,7 +133,7 @@ ScriptPromise PaymentInstruments::get(ScriptState* script_state,
   if (!AllowedToUsePaymentFeatures(script_state))
     return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
 
-  if (!manager_.is_bound()) {
+  if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
     return ScriptPromise();
@@ -143,7 +143,7 @@ ScriptPromise PaymentInstruments::get(ScriptState* script_state,
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  manager_->GetPaymentInstrument(
+  (*manager_)->GetPaymentInstrument(
       instrument_key,
       WTF::BindOnce(&PaymentInstruments::onGetPaymentInstrument,
                     WrapPersistent(this), WrapPersistent(resolver)));
@@ -155,7 +155,7 @@ ScriptPromise PaymentInstruments::keys(ScriptState* script_state,
   if (!AllowedToUsePaymentFeatures(script_state))
     return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
 
-  if (!manager_.is_bound()) {
+  if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
     return ScriptPromise();
@@ -165,7 +165,7 @@ ScriptPromise PaymentInstruments::keys(ScriptState* script_state,
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  manager_->KeysOfPaymentInstruments(
+  (*manager_)->KeysOfPaymentInstruments(
       WTF::BindOnce(&PaymentInstruments::onKeysOfPaymentInstruments,
                     WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
@@ -177,7 +177,7 @@ ScriptPromise PaymentInstruments::has(ScriptState* script_state,
   if (!AllowedToUsePaymentFeatures(script_state))
     return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
 
-  if (!manager_.is_bound()) {
+  if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
     return ScriptPromise();
@@ -187,7 +187,7 @@ ScriptPromise PaymentInstruments::has(ScriptState* script_state,
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  manager_->HasPaymentInstrument(
+  (*manager_)->HasPaymentInstrument(
       instrument_key,
       WTF::BindOnce(&PaymentInstruments::onHasPaymentInstrument,
                     WrapPersistent(this), WrapPersistent(resolver)));
@@ -201,7 +201,7 @@ ScriptPromise PaymentInstruments::set(ScriptState* script_state,
   if (!AllowedToUsePaymentFeatures(script_state))
     return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
 
-  if (!manager_.is_bound()) {
+  if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
     return ScriptPromise();
@@ -236,7 +236,7 @@ ScriptPromise PaymentInstruments::clear(ScriptState* script_state,
   if (!AllowedToUsePaymentFeatures(script_state))
     return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
 
-  if (!manager_.is_bound()) {
+  if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
     return ScriptPromise();
@@ -246,7 +246,7 @@ ScriptPromise PaymentInstruments::clear(ScriptState* script_state,
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  manager_->ClearPaymentInstruments(
+  (*manager_)->ClearPaymentInstruments(
       WTF::BindOnce(&PaymentInstruments::onClearPaymentInstruments,
                     WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
@@ -328,7 +328,7 @@ void PaymentInstruments::OnRequestPermission(
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kPaymentHandler);
 
-  manager_->SetPaymentInstrument(
+  (*manager_)->SetPaymentInstrument(
       instrument_key, std::move(instrument),
       WTF::BindOnce(&PaymentInstruments::onSetPaymentInstrument,
                     WrapPersistent(this), WrapPersistent(resolver)));

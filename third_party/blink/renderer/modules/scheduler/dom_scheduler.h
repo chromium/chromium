@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -156,8 +157,8 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
     STACK_ALLOCATED();
 
    public:
-    AbortSignal* abort_source = nullptr;
-    DOMTaskSignal* priority_source = nullptr;
+    raw_ptr<AbortSignal> abort_source = nullptr;
+    raw_ptr<DOMTaskSignal> priority_source = nullptr;
   };
 
   // Gets the abort and priority sources (signals) from `signal_option` and

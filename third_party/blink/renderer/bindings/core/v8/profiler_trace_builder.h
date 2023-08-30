@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PROFILER_TRACE_BUILDER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -135,7 +136,7 @@ class CORE_EXPORT ProfilerTraceBuilder final
 
   Member<ScriptState> script_state_;
 
-  const SecurityOrigin* allowed_origin_;
+  raw_ptr<const SecurityOrigin> allowed_origin_;
   const base::TimeTicks time_origin_;
 
   Vector<String> resources_;

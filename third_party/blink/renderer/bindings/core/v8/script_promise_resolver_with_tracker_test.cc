@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -28,7 +29,7 @@ class TestHelperFunction : public ScriptFunction::Callable {
   }
 
  private:
-  String* value_;
+  raw_ptr<String> value_;
 };
 
 enum class TestEnum {
