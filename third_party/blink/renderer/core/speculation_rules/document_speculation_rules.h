@@ -67,6 +67,7 @@ class CORE_EXPORT DocumentSpeculationRules
   void DisplayLockedElementDisconnected(Element* root);
 
   void DocumentRestoredFromBFCache();
+  void InitiatePreview(const KURL& url);
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 

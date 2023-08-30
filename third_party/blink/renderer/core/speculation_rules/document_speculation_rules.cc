@@ -452,6 +452,15 @@ void DocumentSpeculationRules::DocumentRestoredFromBFCache() {
   QueueUpdateSpeculationCandidates();
 }
 
+void DocumentSpeculationRules::InitiatePreview(const KURL& url) {
+  CHECK(base::FeatureList::IsEnabled(features::kLinkPreview));
+
+  auto* host = GetHost();
+  if (host) {
+    host->InitiatePreview(url);
+  }
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);

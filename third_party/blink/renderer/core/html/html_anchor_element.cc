@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -80,6 +81,11 @@ namespace {
 // characters, but this is enough to prevent the browser process from becoming
 // unresponsive or crashing.
 const int kMaxDownloadAttrLength = 1000000;
+
+// If feature flag kLinkPreview enabled and mouse keeps hovering anchor element,
+// preview will be started.
+// TODO(https://b.corp.google.com/issues/296992745): Make it configurable.
+const base::TimeDelta kLinkPreviewHoverDwellThreshold = base::Milliseconds(300);
 
 // Note: Here it covers download originated from clicking on <a download> link
 // that results in direct download. Features in this method can also be logged
@@ -123,7 +129,10 @@ HTMLAnchorElement::HTMLAnchorElement(const QualifiedName& tag_name,
     : HTMLElement(tag_name, document),
       link_relations_(0),
       cached_visited_link_hash_(0),
-      rel_list_(MakeGarbageCollected<RelList>(this)) {}
+      rel_list_(MakeGarbageCollected<RelList>(this)),
+      hover_timer_(document.GetTaskRunner(TaskType::kIdleTask),
+                   this,
+                   &HTMLAnchorElement::InitiatePreview) {}
 
 HTMLAnchorElement::~HTMLAnchorElement() = default;
 
@@ -519,6 +528,30 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   }
 }
 
+void HTMLAnchorElement::InitiatePreview(TimerBase*) {
+  DocumentSpeculationRules::From(GetDocument()).InitiatePreview(Url());
+}
+
+void HTMLAnchorElement::SetHovered(bool hovered) {
+  HTMLElement::SetHovered(hovered);
+
+  if (!base::FeatureList::IsEnabled(features::kLinkPreview)) {
+    return;
+  }
+
+  if (!hovered) {
+    hover_timer_.Stop();
+  } else {
+    // Note that this trigger is a tentative version to develop Link
+    // Preview.
+    // TODO(https://b.corp.google.com/issues/296992745): Discuss about
+    // it and fix it.
+    if (Url().IsValid()) {
+      hover_timer_.StartOneShot(kLinkPreviewHoverDwellThreshold, FROM_HERE);
+    }
+  }
+}
+
 void HTMLAnchorElement::HandleClick(Event& event) {
   event.SetDefaultHandled();
 
@@ -713,6 +746,7 @@ void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
 
 void HTMLAnchorElement::Trace(Visitor* visitor) const {
   visitor->Trace(rel_list_);
+  visitor->Trace(hover_timer_);
   HTMLElement::Trace(visitor);
 }
 
