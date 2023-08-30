@@ -1,5 +1,6 @@
 include_rules = [
   "+components/keyed_service/core",
   "+components/signin/public",
+  "+google_apis",
   "+net/base",
 ]
