@@ -40,12 +40,19 @@
 
   cr-slider {
     --cr-slider-active-color: transparent;
+    --cr-slider-ripple-opacity: 0;
+    --cr-slider-ripple-size: 40px;
+    --cr-slider-ripple-z-index: 0;
     display: block;
     height: 40px;
     margin-block-start: 21px;
     margin-block-end: 12px;
     padding: 0;
     width: 100%;
+  }
+
+  cr-slider:focus-visible {
+    --cr-slider-ripple-opacity: 1;
   }
 
   cr-slider::part(container) {
@@ -56,13 +63,26 @@
   }
 
   cr-slider::part(knob) {
+    background: transparent;
+    box-shadow: none;
+    margin-block-start: 4px;
+  }
+
+  cr-slider::part(knob)::after {
+    display: block;
+    position: absolute;
+    content: '';
+    box-sizing: border-box;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
     background: hsl(var(--knob-hue_), 100%, 50%);
     border: solid 4px var(--color-theme-color-picker-hue-slider-handle, white);
+    border-radius: 50%;
     box-shadow: var(--cr-elevation-1);
-    box-sizing: border-box;
-    height: 32px;
-    margin-block-start: 4px;
-    width: 32px;
+    transform: translate(-50%, -50%);
+    z-index: 1;
   }
 </style>
 
@@ -80,7 +100,6 @@
       on-pointerup="updateSelectedHueValue_"
       on-keyup="updateSelectedHueValue_"
       style$="--hue-gradient_: [[hueGradient_]]; --knob-hue_: [[knobHue_]]"
-      aria-labelledby="title"
-      noink>
+      aria-labelledby="title">
   </cr-slider>
 </dialog>

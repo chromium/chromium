@@ -26,7 +26,8 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
   });
 
   test('UpdatesCrSliderUi', () => {
-    const knobStyle = window.getComputedStyle(element.$.slider.$.knob);
+    const knobStyle =
+        window.getComputedStyle(element.$.slider.$.knob, '::after');
     element.$.slider.value = 200;
     element.$.slider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
 

@@ -16,6 +16,7 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         cursor: default;
         height: 32px;
+        isolation: isolate;
         outline: none;
         padding: 0 16px;
         user-select: none;
@@ -131,6 +132,7 @@
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4);
         height: 10px;
         outline: none;
+        position: relative;
         transform: translate(-50%, -50%);
         width: 10px;
       }
@@ -167,19 +169,16 @@
       }
 
       paper-ripple {
-        --paper-ripple-opacity: 1;  /* Opacity in each color's alpha. */
+        --paper-ripple-opacity: var(--cr-slider-ripple-opacity, 1);
         color: var(--cr-slider-ripple-color);
-        height: 32px;
-        left: -11px;
+        height: var(--cr-slider-ripple-size, 32px);
         pointer-events: none;
-        top: -11px;
         transition: color linear 80ms;
-        width: 32px;
-      }
-
-      :host([is-rtl_]) paper-ripple {
-        left: auto;
-        right: -11px;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        width: var(--cr-slider-ripple-size, 32px);
+        z-index: var(--cr-slider-ripple-z-index, auto);
       }
 
       :host([disabled_]) {
