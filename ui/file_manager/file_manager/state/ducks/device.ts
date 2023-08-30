@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {State, Volume} from '../../externs/ts/state.js';
 import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
+import {updateFileData} from '../ducks/all_entries.js';
+import {getEntry} from '../store.js';
+
+import {updateVolume} from './volumes.js';
 
 /** Map of actions to reducers for the device slice. */
 export const deviceReducersMap: ReducersMap<State, Action> = new Map();
@@ -40,15 +45,26 @@ function updateDeviceConnectionStateReducer(
         volume.isDisabled === disableODFS) {
       continue;
     }
-    if (!volumes) {
-      volumes = {
-        ...currentState.volumes,
-      };
+    const updatedVolume =
+        updateVolume(currentState, volume.volumeId, {isDisabled: disableODFS});
+    if (updatedVolume) {
+      if (!volumes) {
+        volumes = {
+          ...currentState.volumes,
+          [volume.volumeId]: updatedVolume,
+        };
+      } else {
+        volumes[volume.volumeId] = updatedVolume;
+      }
     }
-    volumes[volume.volumeId] = {
-      ...volumes[volume.volumeId],
-      isDisabled: disableODFS,
-    };
+    // Make the ODFS FileData/VolumeEntry consistent with its volume in the
+    // store.
+    updateFileData(currentState, volume.rootKey!, {disabled: disableODFS});
+    const odfsVolumeEntry =
+        getEntry(currentState, volume.rootKey!) as VolumeEntry;
+    if (odfsVolumeEntry) {
+      odfsVolumeEntry.disabled = disableODFS;
+    }
   }
 
   if (!device && !volumes) {

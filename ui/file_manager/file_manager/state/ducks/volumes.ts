@@ -89,6 +89,22 @@ export function convertVolumeInfoAndMetadataToVolume(
   };
 }
 
+/**
+ * Updates a volume from the store.
+ */
+export function updateVolume(
+    state: State, volumeId: VolumeId, changes: Partial<Volume>): Volume|
+    undefined {
+  if (!state.volumes[volumeId]) {
+    console.warn(`Volume not found in the store: ${volumeId}`);
+    return;
+  }
+  return {
+    ...state.volumes[volumeId],
+    ...changes,
+  };
+}
+
 /** Action to add single volume into the store. */
 export interface AddVolumeAction extends BaseAction {
   type: ActionType.ADD_VOLUME;

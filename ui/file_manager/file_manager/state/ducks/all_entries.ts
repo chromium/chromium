@@ -322,6 +322,24 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
   state.allEntries = allEntries;
 }
 
+/**
+ * Updates `FileData` from a `FileKey`.
+ */
+export function updateFileData(
+    state: State, key: FileKey, changes: Partial<FileData>): FileData|
+    undefined {
+  if (!state.allEntries[key]) {
+    console.warn(`Entry FileData not found in the store: ${key}`);
+    return;
+  }
+  const newFileData = {
+    ...state.allEntries[key],
+    ...changes,
+  };
+  state.allEntries[key] = newFileData;
+  return newFileData;
+}
+
 /** Caches the Action's entry in the `allEntries` attribute. */
 export function cacheEntries(
     currentState: State, entries: Array<Entry|FilesAppEntry>) {
