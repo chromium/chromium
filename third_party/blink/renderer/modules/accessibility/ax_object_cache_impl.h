@@ -244,8 +244,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void NodeIsConnected(Node*) override;
   // Called when a node is attached to the layout tree.
   void NodeIsAttached(Node*) override;
-  // A DOM node was inserted , but does not necessarily have a layout tree.
-  void DidInsertChildrenOfNode(Node*) override;
 
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               Element*) override;

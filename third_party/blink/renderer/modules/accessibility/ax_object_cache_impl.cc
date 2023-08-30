@@ -2441,19 +2441,6 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   }
 }
 
-void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
-  // If a node is inserted, notify its parent that its text/children may have
-  // changed.
-  DCHECK(node);
-  while (node) {
-    if (SafeGet(node, true)) {
-      TextChanged(node);
-      return;
-    }
-    node = NodeTraversal::Parent(*node);
-  }
-}
-
 // Note: do not call this when a child is becoming newly included, because
 // it will return early if |obj| was last known to be unincluded.
 void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {

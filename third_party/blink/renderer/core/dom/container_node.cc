@@ -363,10 +363,6 @@ void ContainerNode::DidInsertNodeVector(
       DispatchChildInsertionEvents(*target_node);
   }
   DispatchSubtreeModifiedEvent();
-
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->DidInsertChildrenOfNode(this);
-  }
 }
 
 class ContainerNode::AdoptAndInsertBefore {

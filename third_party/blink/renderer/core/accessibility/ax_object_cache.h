@@ -124,8 +124,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void NodeIsConnected(Node*) = 0;
   // Called when a node is attached to the layout tree.
   virtual void NodeIsAttached(Node*) = 0;
-  // A DOM node was inserted , but does not necessarily have a layout tree.
-  virtual void DidInsertChildrenOfNode(Node*) = 0;
 
   // Called to process queued subtree removals when flat tree traversal is safe.
   virtual void ProcessSubtreeRemovals() = 0;
