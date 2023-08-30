@@ -314,6 +314,7 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
 }  // namespace
 
 AppUpdateExpectation::AppUpdateExpectation(
+    const std::string& args,
     const std::string& app_id,
     const base::Version& from_version,
     const base::Version& to_version,
@@ -322,7 +323,8 @@ AppUpdateExpectation::AppUpdateExpectation(
     bool allow_rollback,
     const std::string& target_version_prefix,
     const base::FilePath& crx_relative_path)
-    : app_id(app_id),
+    : args(args),
+      app_id(app_id),
       from_version(from_version),
       to_version(to_version),
       is_install(is_install),
@@ -511,16 +513,9 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
     const base::FilePath run_action =
         base_name.Extension().empty() ? base_name.AddExtension(kExeExtension)
                                       : base_name;
-    const std::string args =
-        base_name.Extension().empty()
-            ? base::StringPrintf(
-                  "%s --appid=%s --company=%s --product_version=%s",
-                  IsSystemInstall(scope) ? "--system" : "", app.app_id.c_str(),
-                  COMPANY_SHORTNAME_STRING, app.to_version.GetString().c_str())
-            : "";
     app_responses.push_back(GetUpdateResponseForApp(
         app.app_id, "", test_server->update_url().spec(), app.to_version,
-        crx_path, run_action.MaybeAsASCII().c_str(), args));
+        crx_path, run_action.MaybeAsASCII().c_str(), app.args));
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetContentMatcher(app_requests),

@@ -42,7 +42,8 @@ enum class AppBundleWebCreateMode {
 };
 
 struct AppUpdateExpectation {
-  AppUpdateExpectation(const std::string& app_id,
+  AppUpdateExpectation(const std::string& args,
+                       const std::string& app_id,
                        const base::Version& from_version,
                        const base::Version& to_version,
                        bool is_install,
@@ -53,6 +54,7 @@ struct AppUpdateExpectation {
   AppUpdateExpectation(const AppUpdateExpectation&);
   ~AppUpdateExpectation();
 
+  const std::string args;
   const std::string app_id;
   const base::Version from_version;
   const base::Version to_version;
