@@ -452,6 +452,17 @@ AST_MATCHER_P(clang::CXXRecordDecl,
   return checker.IsStackAllocated(&Node);
 }
 
+AST_MATCHER_P(clang::Decl,
+              isDeclaredInStackAllocated,
+              chrome_checker::StackAllocatedPredicate,
+              checker) {
+  const auto* ctx = llvm::dyn_cast<clang::CXXRecordDecl>(Node.getDeclContext());
+  if (ctx == nullptr) {
+    return false;
+  }
+  return checker.IsStackAllocated(ctx);
+}
+
 AST_MATCHER_P(clang::Type, isCastingUnsafe, CastingUnsafePredicate, checker) {
   return checker.Matches(&Node);
 }

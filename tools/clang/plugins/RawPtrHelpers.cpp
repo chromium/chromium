@@ -110,6 +110,17 @@ clang::ast_matchers::internal::Matcher<clang::QualType> StackAllocatedQualType(
 // RAW_PTR_EXCLUSION
 // - located under third_party/ except under third_party/blink as Blink
 // is part of chromium git repo.
+//
+// Additionally, if |options.should_exclude_stack_allocated_records|,
+// - Pointer pointing to a STACK_ALLOCATED() object.
+// - Pointer that are a member of STACK_ALLOCATED() object.
+//    struct Foo {
+//      STACK_ALLOCATED();
+//      int*         ptr2; // isDeclaredInStackAllocated(...)
+//    }
+//    struct Bar {
+//      Foo*         ptr2; // hasDescendant(StackAllocatedQualType(...))
+//    }
 clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
     const RawPtrAndRefExclusionsOptions& options) {
   if (!options.fix_crbug_1449812) {
@@ -134,7 +145,8 @@ clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
           isFieldDeclListedInFilterFile(options.fields_to_exclude),
           ImplicitFieldDeclaration(), isObjCSynthesize(),
           hasDescendant(
-              StackAllocatedQualType(options.stack_allocated_predicate)));
+              StackAllocatedQualType(options.stack_allocated_predicate)),
+          isDeclaredInStackAllocated(*options.stack_allocated_predicate));
     }
   } else {
     // After fix for crbug.com/1449812
@@ -149,14 +161,16 @@ clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
                    isFieldDeclListedInFilterFile(options.fields_to_exclude),
                    ImplicitFieldDeclaration(), isObjCSynthesize());
     } else {
-      return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
-                   isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                   isInGeneratedLocation(), isNotSpelledInSource(),
-                   isInLocationListedInFilterFile(options.paths_to_exclude),
-                   isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                   ImplicitFieldDeclaration(), isObjCSynthesize(),
-                   hasDescendant(StackAllocatedQualType(
-                       options.stack_allocated_predicate)));
+      return anyOf(
+          isSpellingInSystemHeader(), isInExternCContext(),
+          isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+          isInGeneratedLocation(), isNotSpelledInSource(),
+          isInLocationListedInFilterFile(options.paths_to_exclude),
+          isFieldDeclListedInFilterFile(options.fields_to_exclude),
+          ImplicitFieldDeclaration(), isObjCSynthesize(),
+          hasDescendant(
+              StackAllocatedQualType(options.stack_allocated_predicate)),
+          isDeclaredInStackAllocated(*options.stack_allocated_predicate));
     }
   }
 }
