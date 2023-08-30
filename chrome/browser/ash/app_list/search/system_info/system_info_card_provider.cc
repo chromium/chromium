@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
+#include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"

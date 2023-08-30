@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
 
 #include <utility>
 
-#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
+#include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -190,4 +190,4 @@ class OtherUsersSizeTestAPI {
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_CALCULATOR_SIZE_CALCULATOR_TEST_API_H_

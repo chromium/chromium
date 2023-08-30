@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator_test_api.h"
+#include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/common/chrome_features.h"
