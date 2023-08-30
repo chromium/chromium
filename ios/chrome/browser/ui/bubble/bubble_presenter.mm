@@ -519,8 +519,16 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
   }
 
-  if (![self canPresentBubble])
+  UIView* newTabToolbarView =
+      [_layoutGuideCenter referencedViewUnderName:kNewTabButtonGuide];
+  // Do not present if the new tab button is not visible.
+  if (!newTabToolbarView || newTabToolbarView.hidden) {
     return;
+  }
+
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
 
   // Do not present the new tab IPH on NTP.
   web::WebState* currentWebState = self.webStateList->GetActiveWebState();
@@ -582,7 +590,14 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
   }
 
-  if (![self canPresentBubble]) {
+  UIView* tabGridToolbarView =
+      [_layoutGuideCenter referencedViewUnderName:kNewTabButtonGuide];
+  // Do not present if the tab grid button is not visible.
+  if (!tabGridToolbarView || tabGridToolbarView.hidden) {
+    return;
+  }
+
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
     return;
   }
 
@@ -679,7 +694,16 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 // Returns whether the tab can present a bubble tip.
+// TODO(crbug.com/1448656): make most callsites pass NO for
+// `CheckTabScrolledToTop` as it's error-prone.
 - (BOOL)canPresentBubble {
+  return [self canPresentBubbleWithCheckTabScrolledToTop:YES];
+}
+
+// Returns whether the tab can present a bubble tip. Whether tab being scrolled
+// to top is required for presenting the bubble tip is determined by
+// `checkTabScrolledToTop`.
+- (BOOL)canPresentBubbleWithCheckTabScrolledToTop:(BOOL)checkTabScrolledToTop {
   // If BubblePresenter has been stopped, do not present the bubble.
   if (!self.started) {
     return NO;
@@ -693,7 +717,7 @@ const CGFloat kBubblePresentationDelay = 1;
     return NO;
   }
   // Do not present the bubble if the tab is not scrolled to the top.
-  if (![self isTabScrolledToTop]) {
+  if (checkTabScrolledToTop && ![self isTabScrolledToTop]) {
     return NO;
   }
   return YES;

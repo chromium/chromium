@@ -54,21 +54,10 @@
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  // TODO(crbug.com/1470901): remove after fixing the bug on iphone.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    config.features_disabled.push_back(kBottomOmniboxDefaultSetting);
-    config.features_disabled.push_back(kBottomOmniboxSteadyState);
-  }
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  // Open an URL from NTP is likely not triggering showing the IPH due to
-  // failing the check `BubblePresenter::isTabScrolledToTop`, hence need to open
-  // an URL from non-NTP page below.
   [self openURLFromOmniboxWithIsAfterNewAppLaunch:YES];
-
-  // Open an URL from non-NTP page.
-  [self openURLFromOmniboxWithIsAfterNewAppLaunch:NO];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(
