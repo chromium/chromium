@@ -110,7 +110,7 @@
     testColumnRowCSSParsing("gridItemWithAutoElement", "auto / auto", "auto / auto");
     testColumnRowCSSParsing("gridItemWithCustomIdent", "auto / first", "auto / last");
     testColumnRowCSSParsing("gridItemWithNumberCustomIdent", "auto / 2 first", "auto / 3 last");
-    testColumnRowCSSParsing("gridItemWithSpanCustomIdentElement", "auto / span 1 first", "auto / span 1 last");
+    testColumnRowCSSParsing("gridItemWithSpanCustomIdentElement", "auto / span first", "auto / span last");
     testColumnRowCSSParsing("gridItemWithSpanNumberCustomIdentElement", "auto / span 2 first", "auto / span 3 last");
     testColumnRowCSSParsing("gridItemWithArea", "auto / firstArea", "auto / thirdArea");
     testColumnRowCSSParsing("gridItemWithCSSWideKeyword", "auto / auto", "auto / auto");
@@ -134,7 +134,7 @@
     testColumnEndRowEndJSParsing("-55", "-40");
     testColumnEndRowEndJSParsing("first", "last", "first", "last");
     testColumnEndRowEndJSParsing("span 7", "span 2");
-    testColumnEndRowEndJSParsing("span first", "span last", "span 1 first", "span 1 last");
+    testColumnEndRowEndJSParsing("span first", "span last", "span first", "span last");
     testColumnEndRowEndJSParsing("auto", "auto");
     testColumnEndRowEndJSParsing("thirdArea", "secondArea");
     testColumnEndRowEndJSParsing("nonExistentArea", "secondArea");

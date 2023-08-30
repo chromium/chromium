@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 140 tests; 114 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 140 tests; 121 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS display: grid
 PASS display: inline-grid
 PASS grid-template-columns
@@ -74,7 +74,7 @@ PASS grid-row-start.<custom-ident>
 PASS grid-row-start.<integer>
 PASS grid-row-start.<integer> <ident>
 PASS grid-row-start.span <integer>
-FAIL grid-row-start.span <custom-ident> assert_equals: span <custom-ident> expected "span a" but got "span 1 a"
+PASS grid-row-start.span <custom-ident>
 PASS grid-row-start.span <integer> <custom-ident>
 PASS grid-row-start.reset
 PASS grid-column-start
@@ -84,7 +84,7 @@ PASS grid-column-start.<custom-ident>
 PASS grid-column-start.<integer>
 PASS grid-column-start.<integer> <ident>
 PASS grid-column-start.span <integer>
-FAIL grid-column-start.span <custom-ident> assert_equals: span <custom-ident> expected "span a" but got "span 1 a"
+PASS grid-column-start.span <custom-ident>
 PASS grid-column-start.span <integer> <custom-ident>
 PASS grid-column-start.reset
 PASS grid-row-end
@@ -94,7 +94,7 @@ PASS grid-row-end.<custom-ident>
 PASS grid-row-end.<integer>
 PASS grid-row-end.<integer> <ident>
 PASS grid-row-end.span <integer>
-FAIL grid-row-end.span <custom-ident> assert_equals: span <custom-ident> expected "span a" but got "span 1 a"
+PASS grid-row-end.span <custom-ident>
 PASS grid-row-end.span <integer> <custom-ident>
 PASS grid-row-end.reset
 PASS grid-column-end
@@ -104,7 +104,7 @@ PASS grid-column-end.<custom-ident>
 PASS grid-column-end.<integer>
 PASS grid-column-end.<integer> <ident>
 PASS grid-column-end.span <integer>
-FAIL grid-column-end.span <custom-ident> assert_equals: span <custom-ident> expected "span a" but got "span 1 a"
+PASS grid-column-end.span <custom-ident>
 PASS grid-column-end.span <integer> <custom-ident>
 PASS grid-column-end.reset
 PASS grid-column
@@ -115,7 +115,7 @@ FAIL grid-column.<integer> start assert_equals: <integer> start expected "1" but
 PASS grid-column.<integer>
 PASS grid-column.<integer> <ident>
 PASS grid-column.span <integer>
-FAIL grid-column.span <custom-ident> assert_equals: span <custom-ident> expected "span a / span b" but got "span 1 a / span 1 b"
+PASS grid-column.span <custom-ident>
 PASS grid-column.span <integer> <custom-ident>
 FAIL grid-column.reset assert_equals: reset expected "auto" but got "auto / auto"
 PASS grid-row
@@ -126,7 +126,7 @@ FAIL grid-row.<integer> start assert_equals: <integer> start expected "1" but go
 PASS grid-row.<integer>
 PASS grid-row.<integer> <ident>
 PASS grid-row.span <integer>
-FAIL grid-row.span <custom-ident> assert_equals: span <custom-ident> expected "span a / span b" but got "span 1 a / span 1 b"
+PASS grid-row.span <custom-ident>
 PASS grid-row.span <integer> <custom-ident>
 FAIL grid-row.reset assert_equals: reset expected "auto" but got "auto / auto"
 PASS grid-area
@@ -137,7 +137,7 @@ FAIL grid-area.<integer> start assert_equals: <integer> start expected "1 / 2" b
 PASS grid-area.<integer>
 PASS grid-area.<integer> <ident>
 PASS grid-area.span <integer>
-FAIL grid-area.span <custom-ident> assert_equals: span <custom-ident> expected "span a / span b / span c / span d" but got "span 1 a / span 1 b / span 1 c / span 1 d"
+PASS grid-area.span <custom-ident>
 PASS grid-area.span <integer> <custom-ident>
 FAIL grid-area.reset assert_equals: reset expected "auto" but got "auto / auto / auto / auto"
 Harness: the test ran to completion.
