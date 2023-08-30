@@ -216,10 +216,14 @@ ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
 
 ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
   const mojom::ProgressEvent& e = *q.value;
-  return out << "{" << PinManager::Id(e.stable_id) << " "
-             << Quote(e.file_path.value())
-             << ", progress: " << base::StringPrintf("%hhu", e.progress)
-             << "%}";
+  out << "{" << PinManager::Id(e.stable_id) << " ";
+  if (e.file_path.has_value()) {
+    out << Quote(e.file_path.value());
+  } else {
+    out << Quote(e.path);
+  }
+  out << ", progress: " << base::StringPrintf("%hhu", e.progress) << "%}";
+  return out;
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
