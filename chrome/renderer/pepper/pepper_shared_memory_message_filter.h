@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/host/instance_message_filter.h"
 
@@ -47,7 +46,7 @@ class PepperSharedMemoryMessageFilter
       int* host_shm_handle_id,
       ppapi::proxy::SerializedHandle* plugin_shm_handle);
 
-  raw_ptr<content::RendererPpapiHost> host_;
+  content::RendererPpapiHost* host_;
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_SHARED_MEMORY_MESSAGE_FILTER_H_

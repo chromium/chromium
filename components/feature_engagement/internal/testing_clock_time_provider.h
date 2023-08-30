@@ -6,7 +6,6 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_TESTING_CLOCK_TIME_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/internal/time_provider.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -35,7 +34,7 @@ class TestingClockTimeProvider : public TimeProvider {
   base::Time Now() const override;
 
  private:
-  const raw_ref<const base::Clock> clock_;
+  const base::Clock& clock_;
   base::Time initial_now_;
 };
 

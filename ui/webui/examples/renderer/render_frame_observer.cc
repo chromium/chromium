@@ -5,7 +5,6 @@
 #include "ui/webui/examples/renderer/render_frame_observer.h"
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -133,7 +132,7 @@ class V8BinderContext {
     callback->Run(args);
   }
 
-  const raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* const isolate_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;

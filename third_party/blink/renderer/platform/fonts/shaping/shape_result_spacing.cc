@@ -63,7 +63,7 @@ void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
   if (!has_spacing_)
     return;
 
-  normalize_space_ = text_->NormalizeSpace();
+  normalize_space_ = text_.NormalizeSpace();
   allow_tabs_ = false;
 }
 
@@ -76,12 +76,12 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
 
   is_after_expansion_ = !allows_leading_expansion;
   bool is_after_expansion = is_after_expansion_;
-  if (text_->Is8Bit()) {
+  if (text_.Is8Bit()) {
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
-        text_->Span8(), direction, is_after_expansion);
+        text_.Span8(), direction, is_after_expansion);
   } else {
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
-        text_->Span16(), direction, is_after_expansion);
+        text_.Span16(), direction, is_after_expansion);
   }
   if (is_after_expansion && !allows_trailing_expansion) {
     DCHECK_GT(expansion_opportunity_count_, 0u);
@@ -117,7 +117,7 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
     float& offset) {
   DCHECK(has_spacing_);
   unsigned index = parameters.index;
-  UChar32 character = (*text_)[index];
+  UChar32 character = text_[index];
   bool treat_as_space =
       (Character::TreatAsSpace(character) ||
        (normalize_space_ &&
@@ -142,17 +142,15 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   if (treat_as_space)
     return spacing + NextExpansion();
 
-  if (text_->Is8Bit()) {
+  if (text_.Is8Bit())
     return spacing;
-  }
 
   // isCJKIdeographOrSymbol() has expansion opportunities both before and
   // after each character.
   // http://www.w3.org/TR/jlreq/#line_adjustment
-  if (U16_IS_LEAD(character) && index + 1 < text_->length() &&
-      U16_IS_TRAIL((*text_)[index + 1])) {
-    character = U16_GET_SUPPLEMENTARY(character, (*text_)[index + 1]);
-  }
+  if (U16_IS_LEAD(character) && index + 1 < text_.length() &&
+      U16_IS_TRAIL(text_[index + 1]))
+    character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
   if (!Character::IsCJKIdeographOrSymbol(character)) {
     is_after_expansion_ = false;
     return spacing;

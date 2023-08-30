@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PROFILING_CANVAS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PROFILING_CANVAS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/intercepting_canvas.h"
 
 #include "base/time/time.h"
@@ -60,7 +59,7 @@ class ProfilingCanvas : public InterceptingCanvas<ProfilingCanvas> {
  private:
   friend class CanvasInterceptor<ProfilingCanvas>;
 
-  raw_ptr<Vector<base::TimeDelta>> timings_;
+  Vector<base::TimeDelta>* timings_;
 };
 
 }  // namespace blink

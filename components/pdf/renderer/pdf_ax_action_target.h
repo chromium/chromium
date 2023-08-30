@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_AX_ACTION_TARGET_H_
 #define COMPONENTS_PDF_RENDERER_PDF_AX_ACTION_TARGET_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "ui/accessibility/ax_action_target.h"
 
 namespace ui {
@@ -27,7 +25,7 @@ class PdfAXActionTarget : public ui::AXActionTarget {
   PdfAXActionTarget(const ui::AXNode& plugin_node, PdfAccessibilityTree* tree);
   ~PdfAXActionTarget() override;
 
-  const ui::AXNode& AXNode() const { return *target_plugin_node_; }
+  const ui::AXNode& AXNode() const { return target_plugin_node_; }
 
  protected:
   // AXActionTarget overrides.
@@ -54,8 +52,8 @@ class PdfAXActionTarget : public ui::AXActionTarget {
   bool ShowContextMenu() const;
   bool ScrollToGlobalPoint(const gfx::Point& point) const;
 
-  const raw_ref<const ui::AXNode> target_plugin_node_;
-  raw_ptr<PdfAccessibilityTree> pdf_accessibility_tree_source_;
+  const ui::AXNode& target_plugin_node_;
+  PdfAccessibilityTree* pdf_accessibility_tree_source_;
 };
 
 }  // namespace pdf

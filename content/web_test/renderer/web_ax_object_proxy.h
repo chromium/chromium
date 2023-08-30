@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/web/web_ax_context.h"
@@ -245,7 +244,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   std::string Placeholder();
 
   blink::WebAXObject accessibility_object_;
-  raw_ptr<Factory> factory_;
+  Factory* factory_;
 
   v8::Global<v8::Function> notification_callback_;
 };
@@ -269,7 +268,7 @@ class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
 
  private:
   std::vector<v8::Global<v8::Object>> elements_;
-  const raw_ptr<blink::WebAXContext> ax_context_;
+  blink::WebAXContext* const ax_context_;
 };
 
 }  // namespace content

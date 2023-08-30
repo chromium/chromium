@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_METRICS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "v8/include/v8-metrics.h"
@@ -73,7 +72,7 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
   absl::optional<UkmRecorderAndSourceId> GetUkmRecorderAndSourceId(
       ContextId context_id);
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 };
 
 }  // namespace blink

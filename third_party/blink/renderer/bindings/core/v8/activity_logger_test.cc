@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -78,8 +77,8 @@ class ActivityLoggerTest : public testing::Test {
  protected:
   ActivityLoggerTest() {
     activity_logger_ = new TestActivityLogger();
-    V8DOMActivityLogger::SetActivityLogger(
-        kIsolatedWorldId, String(), base::WrapUnique(activity_logger_.get()));
+    V8DOMActivityLogger::SetActivityLogger(kIsolatedWorldId, String(),
+                                           base::WrapUnique(activity_logger_));
     web_view_helper_.Initialize();
     local_frame_ = web_view_helper_.GetWebView()->MainFrameImpl()->GetFrame();
     frame_test_helpers::LoadFrame(
@@ -118,7 +117,7 @@ class ActivityLoggerTest : public testing::Test {
   Persistent<LocalFrame> local_frame_;
   // TestActivityLogger is owned by a static table within V8DOMActivityLogger
   // and should be alive as long as not overwritten.
-  raw_ptr<TestActivityLogger> activity_logger_;
+  TestActivityLogger* activity_logger_;
 };
 
 TEST_F(ActivityLoggerTest, EventHandler) {

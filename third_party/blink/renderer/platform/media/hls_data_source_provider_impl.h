@@ -7,7 +7,6 @@
 
 #include <deque>
 #include <memory>
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -59,7 +58,7 @@ class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
                              bool success);
 
   std::unique_ptr<media::MediaLog> media_log_;
-  raw_ptr<UrlIndex> url_index_;
+  UrlIndex* url_index_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;

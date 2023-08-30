@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -41,7 +40,7 @@ class WebRtcLoggingClientRecorder : public mojom::WebRtcLoggingClient {
   void OnStopped() override { log_->on_stopped_count++; }
 
  private:
-  const raw_ptr<Log> log_;
+  Log* const log_;
 };
 
 }  // namespace

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -125,7 +124,7 @@ class MockWebRtcVideoTrack
   bool enabled_;
   TrackState state_;
   ObserverSet observers_;
-  raw_ptr<rtc::VideoSinkInterface<webrtc::VideoFrame>> sink_;
+  rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_;
 };
 
 class MockMediaStream : public webrtc::MediaStreamInterface {

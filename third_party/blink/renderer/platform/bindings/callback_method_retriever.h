@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_METHOD_RETRIEVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_METHOD_RETRIEVER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -79,8 +78,8 @@ class PLATFORM_EXPORT CallbackMethodRetriever {
                                              const StringView& property,
                                              ExceptionState&);
 
-  raw_ptr<CallbackFunctionBase> constructor_;
-  raw_ptr<v8::Isolate> isolate_;
+  CallbackFunctionBase* constructor_;
+  v8::Isolate* isolate_;
   v8::Local<v8::Context> current_context_;
   v8::Local<v8::Object> prototype_object_;
 };

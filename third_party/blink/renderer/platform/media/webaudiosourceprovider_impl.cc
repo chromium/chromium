@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
@@ -101,7 +100,7 @@ class WebAudioSourceProviderImpl::TeeFilter
   bool is_tainted() const { return origin_tainted_.IsSet(); }
 
  private:
-  raw_ptr<AudioRendererSink::RenderCallback> renderer_ = nullptr;
+  AudioRendererSink::RenderCallback* renderer_ = nullptr;
   int channels_ = 0;
   int sample_rate_ = 0;
 

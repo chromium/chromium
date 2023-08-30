@@ -9,7 +9,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_GENERATED_CODE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_GENERATED_CODE_HELPER_H_
 
-#include "base/memory/raw_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -50,7 +49,7 @@ class CORE_EXPORT ExceptionToRejectPromiseScope final {
  private:
   void ConvertExceptionToRejectPromise();
 
-  const raw_ref<const v8::FunctionCallbackInfo<v8::Value>> info_;
+  const v8::FunctionCallbackInfo<v8::Value>& info_;
   ExceptionState& exception_state_;
 };
 

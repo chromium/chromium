@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -134,7 +133,7 @@ class PepperVideoEncoderHost : public ppapi::host::ResourceHost,
   uint8_t* ShmHandleToAddress(int32_t buffer_id);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
+  RendererPpapiHost* renderer_ppapi_host_;
 
   std::vector<std::unique_ptr<ShmBuffer>> shm_buffers_;
 

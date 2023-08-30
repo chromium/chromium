@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -174,7 +173,7 @@ scoped_refptr<SegmentReader> CreateGainmapSegmentReader(
 
 // Stream object for use with libavifinfo.
 struct AvifInfoSegmentReaderStream {
-  raw_ptr<const SegmentReader> reader = nullptr;
+  const SegmentReader* reader = nullptr;
   size_t num_read_bytes = 0;
   uint8_t buffer[AVIFINFO_MAX_NUM_READ_BYTES];
 };
@@ -446,7 +445,7 @@ void AVIFImageDecoder::DecodeToYUV() {
     }
     return;
   }
-  const auto* image = decoded_image_.get();
+  const auto* image = decoded_image_;
 
   DCHECK(!image->alphaPlane);
   static_assert(cc::YUVIndex::kY == static_cast<cc::YUVIndex>(AVIF_CHAN_Y), "");
@@ -693,7 +692,7 @@ void AVIFImageDecoder::Decode(wtf_size_t index) {
     SetFailed();
     return;
   }
-  const auto* image = decoded_image_.get();
+  const auto* image = decoded_image_;
 
   // ImageDecoder::SizeCalculationMayOverflow(), called by UpdateDemuxer()
   // before being here, made sure the image height fits in an int.

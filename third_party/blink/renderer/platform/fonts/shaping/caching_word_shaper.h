@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPER_H_
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -68,7 +67,7 @@ class PLATFORM_EXPORT CachingWordShaper final {
  private:
   ShapeCache* GetShapeCache() const;
 
-  const raw_ref<const Font> font_;
+  const Font& font_;
 };
 
 }  // namespace blink

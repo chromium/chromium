@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_V8_SCRIPT_VALUE_DESERIALIZER_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
@@ -119,18 +118,18 @@ class CORE_EXPORT V8ScriptValueDeserializer
       uint32_t) override;
   const v8::SharedValueConveyor* GetSharedValueConveyor(v8::Isolate*) override;
 
-  raw_ptr<ScriptState> script_state_;
-  raw_ptr<UnpackedSerializedScriptValue> unpacked_value_;
+  ScriptState* script_state_;
+  UnpackedSerializedScriptValue* unpacked_value_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
   v8::ValueDeserializer deserializer_;
 
   // Message ports which were transferred in.
-  raw_ptr<const MessagePortArray> transferred_message_ports_ = nullptr;
+  const MessagePortArray* transferred_message_ports_ = nullptr;
 
   Vector<SerializedScriptValue::Stream> streams_;
 
   // Blob info for blobs stored by index.
-  raw_ptr<const WebBlobInfoArray> blob_info_array_ = nullptr;
+  const WebBlobInfoArray* blob_info_array_ = nullptr;
 
   // Set during deserialize after the header is read.
   uint32_t version_ = 0;

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -37,7 +36,7 @@ class TestHelperFunction : public ScriptFunction::Callable {
   }
 
  private:
-  raw_ptr<String> value_;
+  String* value_;
 };
 
 class ScriptPromiseResolverTest : public testing::Test {

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -60,7 +59,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   }
 
  private:
-  raw_ptr<MemoryManagedPaintCanvas::Client> client_;
+  MemoryManagedPaintCanvas::Client* client_;
   bool is_recording_ = false;
   gfx::Size size_;
   std::unique_ptr<MemoryManagedPaintCanvas> canvas_;

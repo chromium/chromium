@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -42,7 +41,7 @@ class PageFormAnalyserLogger {
   virtual void Flush();
 
  private:
-  raw_ptr<blink::WebLocalFrame> frame_;
+  blink::WebLocalFrame* frame_;
 
   // Though PageFormAnalyserLogger provides buffering, it is intended to be
   // simply over the course of a single analysis, for ordering purposes.

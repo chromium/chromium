@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -51,7 +50,7 @@ class TestingPlatformSupportForGpuMemoryBuffer
   std::unique_ptr<viz::TestSharedImageInterface> sii_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   base::Thread media_thread_;
-  raw_ptr<gpu::Capabilities> capabilities_ = nullptr;
+  gpu::Capabilities* capabilities_ = nullptr;
 };
 
 }  // namespace blink

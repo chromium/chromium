@@ -39,7 +39,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
@@ -390,7 +389,7 @@ class HarfBuzzSkiaFontFuncs final {
     return funcs;
   }
 
-  const raw_ptr<hb_font_funcs_t> hb_font_funcs_skia_advances_;
+  hb_font_funcs_t* const hb_font_funcs_skia_advances_;
 #if BUILDFLAG(IS_APPLE)
   hb_font_funcs_t* const hb_font_funcs_harfbuzz_advances_;
 #endif

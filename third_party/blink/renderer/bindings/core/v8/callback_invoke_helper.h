@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_CALLBACK_INVOKE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_CALLBACK_INVOKE_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -92,7 +91,7 @@ class CallbackInvokeHelper final {
     return false;
   }
 
-  raw_ptr<CallbackBase> callback_;
+  CallbackBase* callback_;
   const char* class_like_name_;
   const char* property_name_;
   v8::Local<v8::Function> function_;

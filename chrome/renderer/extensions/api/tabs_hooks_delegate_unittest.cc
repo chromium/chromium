@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/renderer/api/messaging/message_target.h"
@@ -93,7 +92,7 @@ class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  raw_ptr<ScriptContext> script_context_ = nullptr;
+  ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -85,15 +84,15 @@ class CONTENT_EXPORT MediaPlayerRendererClient
 
   // The underlying type should always be a MediaUrlDemuxer, but we only use
   // methods from the MediaResource interface.
-  raw_ptr<media::MediaResource> media_resource_;
+  media::MediaResource* media_resource_;
 
   // Owns the StreamTexture whose surface is used by MediaPlayerRenderer.
   // Provides the VideoFrames to |sink_|.
   media::ScopedStreamTextureWrapper stream_texture_wrapper_;
 
-  raw_ptr<media::RendererClient> client_;
+  media::RendererClient* client_;
 
-  raw_ptr<media::VideoRendererSink> sink_;
+  media::VideoRendererSink* sink_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   // Used by |stream_texture_wrapper_| to signal OnFrameAvailable() and to send

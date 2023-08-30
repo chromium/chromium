@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
@@ -107,7 +106,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   // Pointer back to the IDBFactoryClient that holds a persistent reference
   // to this object.
-  raw_ptr<IDBFactoryClient> factory_client_ = nullptr;
+  IDBFactoryClient* factory_client_ = nullptr;
 };
 
 }  // namespace blink

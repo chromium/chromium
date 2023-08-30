@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ipc/ipc_message.h"
 #include "media/audio/audio_input_ipc.h"
@@ -96,7 +95,7 @@ class PepperPlatformAudioInput
 
   // The client to notify when the stream is created. THIS MUST ONLY BE
   // ACCESSED ON THE MAIN THREAD.
-  raw_ptr<PepperAudioInputHost> client_ = nullptr;
+  PepperAudioInputHost* client_ = nullptr;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O THREAD.

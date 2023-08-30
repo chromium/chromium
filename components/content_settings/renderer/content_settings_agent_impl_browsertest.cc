@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -83,7 +82,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
   }
 
  private:
-  raw_ptr<Log> log_;
+  Log* log_;
 };
 
 class MockContentSettingsAgentDelegate

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "v8/include/v8-forward.h"
@@ -78,7 +77,7 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
 
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.
-  const raw_ptr<NativeRendererMessagingService> messaging_service_;
+  NativeRendererMessagingService* const messaging_service_;
 };
 
 }  // namespace extensions

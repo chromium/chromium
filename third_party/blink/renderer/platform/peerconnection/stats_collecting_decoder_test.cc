@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,8 +92,8 @@ class MockDecoder : public webrtc::VideoDecoder {
   }
 
  private:
-  const raw_ptr<bool> is_hw_accelerated_;
-  raw_ptr<webrtc::DecodedImageCallback> callback_;
+  bool* const is_hw_accelerated_;
+  webrtc::DecodedImageCallback* callback_;
 };
 
 class MockDecodedImageCallback : public webrtc::DecodedImageCallback {

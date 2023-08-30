@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_TRANSACTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_TRANSACTION_H_
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -53,7 +52,7 @@ class SQLiteTransaction {
   bool WasRolledBackBySqlite() const;
 
  private:
-  const raw_ref<SQLiteDatabase> db_;
+  SQLiteDatabase& db_;
   bool in_progress_;
   bool read_only_;
 };

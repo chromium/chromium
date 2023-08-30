@@ -35,7 +35,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
@@ -180,7 +179,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     void ConsumeAudio(AudioBus* bus, int number_of_frames);
 
     // m_consumer is not owned by this class.
-    raw_ptr<WebAudioDestinationConsumer> consumer_;
+    WebAudioDestinationConsumer* consumer_;
     // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
     // member variable is to not have to reallocate it for each call.
     Vector<const float*> bus_vector_;

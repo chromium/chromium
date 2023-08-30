@@ -11,7 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -127,7 +126,7 @@ DECLARE_LAZY_MATCHER(telephone_matcher, R"((mobile)?(telephone)?(number|no))");
 // something of the purpose of an element (for example: that it is a username
 // field).
 struct InputHint {
-  raw_ptr<const re2::RE2> regex;
+  const re2::RE2* regex;
   size_t match;
 
   explicit InputHint(const re2::RE2* regex)

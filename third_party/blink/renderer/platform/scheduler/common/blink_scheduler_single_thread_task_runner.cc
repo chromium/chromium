@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -74,7 +73,7 @@ class DeleteHelper {
  private:
   base::Location from_here_;
   void (*deleter_)(const void*) = nullptr;
-  raw_ptr<const void> object_ = nullptr;
+  const void* object_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> preferred_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> fallback_task_runner_;
 };

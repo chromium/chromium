@@ -29,7 +29,6 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -136,7 +135,7 @@ class SQLiteDatabase {
 
   int PageSize();
 
-  raw_ptr<sqlite3> db_ = nullptr;
+  sqlite3* db_ = nullptr;
   int page_size_ = -1;
 
   bool transaction_in_progress_ = false;
@@ -146,8 +145,7 @@ class SQLiteDatabase {
   // The raw pointer usage is safe because the DatabaseAuthorizer is guaranteed
   // to outlive this instance. The DatabaseAuthorizer is owned by the same
   // Database that owns this instance.
-  raw_ptr<DatabaseAuthorizer> authorizer_ GUARDED_BY(authorizer_lock_) =
-      nullptr;
+  DatabaseAuthorizer* authorizer_ GUARDED_BY(authorizer_lock_) = nullptr;
 
   base::PlatformThreadId opening_thread_ = 0;
 

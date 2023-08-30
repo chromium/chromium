@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -100,7 +99,7 @@ class GetAPINatives : public ObjectBackedNativeHandler {
   }
 
  private:
-  raw_ptr<NativeExtensionBindingsSystem> bindings_system_ = nullptr;
+  NativeExtensionBindingsSystem* bindings_system_ = nullptr;
 };
 
 }  // namespace

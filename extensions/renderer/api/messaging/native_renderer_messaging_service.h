@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/renderer/api/messaging/gin_port.h"
 #include "extensions/renderer/api/messaging/one_time_message_handler.h"
@@ -211,7 +210,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                const PortId& port_id);
 
   // The associated bindings system; guaranteed to outlive this object.
-  const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
+  NativeExtensionBindingsSystem* const bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
 };

@@ -10,7 +10,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/memory/raw_ptr.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
@@ -65,7 +64,7 @@ class PepperWebSocketHost : public ppapi::host::ResourceHost,
                         const std::string& message);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
+  RendererPpapiHost* renderer_ppapi_host_;
 
   // IPC reply parameters.
   ppapi::host::ReplyMessageContext connect_reply_;

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_OBJECT_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_OBJECT_BUILDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -48,7 +47,7 @@ class CORE_EXPORT V8ObjectBuilder final {
  private:
   void AddInternal(const StringView& name, v8::Local<v8::Value>);
 
-  raw_ptr<ScriptState> script_state_;
+  ScriptState* script_state_;
   v8::Local<v8::Object> object_;
 };
 

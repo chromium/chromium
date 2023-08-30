@@ -31,8 +31,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_basic_types.h"
@@ -66,7 +64,7 @@ class DatabaseTask {
   virtual void TaskCancelled() {}
 
   CrossThreadPersistent<Database> database_;
-  raw_ptr<base::WaitableEvent> complete_event_;
+  base::WaitableEvent* complete_event_;
 
 #if DCHECK_IS_ON()
   virtual const char* DebugTaskName() const = 0;
@@ -90,9 +88,9 @@ class Database::DatabaseOpenTask final : public DatabaseTask {
 #endif
 
   bool set_version_in_new_database_;
-  const raw_ref<DatabaseError> error_;
-  const raw_ref<String> error_message_;
-  const raw_ref<bool> success_;
+  DatabaseError& error_;
+  String& error_message_;
+  bool& success_;
 };
 
 class Database::DatabaseCloseTask final : public DatabaseTask {
@@ -136,7 +134,7 @@ class Database::DatabaseTableNamesTask final : public DatabaseTask {
   const char* DebugTaskName() const override;
 #endif
 
-  const raw_ref<Vector<String>> table_names_;
+  Vector<String>& table_names_;
 };
 
 }  // namespace blink

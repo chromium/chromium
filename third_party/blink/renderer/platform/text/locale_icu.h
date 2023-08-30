@@ -34,7 +34,6 @@
 #include <unicode/udat.h>
 #include <unicode/unum.h>
 #include <memory>
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -90,8 +89,8 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
   void InitializeDateTimeFormat();
 
   std::string locale_;
-  raw_ptr<UNumberFormat> number_format_;
-  raw_ptr<UDateFormat> short_date_format_;
+  UNumberFormat* number_format_;
+  UDateFormat* short_date_format_;
   bool did_create_decimal_format_;
   bool did_create_short_date_format_;
 
@@ -105,8 +104,8 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
   String time_format_without_seconds_;
   String date_time_format_with_seconds_;
   String date_time_format_without_seconds_;
-  raw_ptr<UDateFormat> medium_time_format_;
-  raw_ptr<UDateFormat> short_time_format_;
+  UDateFormat* medium_time_format_;
+  UDateFormat* short_time_format_;
   Vector<String> short_month_labels_;
   Vector<String> stand_alone_month_labels_;
   Vector<String> short_stand_alone_month_labels_;

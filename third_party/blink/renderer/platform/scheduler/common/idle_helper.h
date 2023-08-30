@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_IDLE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_IDLE_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_observer.h"
 #include "base/time/time.h"
@@ -185,8 +184,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                                          base::TimeTicks new_deadline,
                                          base::TimeTicks optional_now);
 
-    raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
-    raw_ptr<Delegate> delegate_;       // NOT OWNED
+    SchedulerHelper* helper_;  // NOT OWNED
+    Delegate* delegate_;       // NOT OWNED
 
     IdlePeriodState idle_period_state_;
     base::TimeTicks idle_period_deadline_;
@@ -224,9 +223,9 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // Returns true if |state| represents being within a long idle period state.
   static bool IsInLongIdlePeriod(IdlePeriodState state);
 
-  raw_ptr<SchedulerHelper> helper_;                        // NOT OWNED
-  raw_ptr<Delegate> delegate_;                             // NOT OWNED
-  raw_ptr<base::sequence_manager::TaskQueue> idle_queue_;  // NOT OWNED
+  SchedulerHelper* helper_;                        // NOT OWNED
+  Delegate* delegate_;                             // NOT OWNED
+  base::sequence_manager::TaskQueue* idle_queue_;  // NOT OWNED
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 
   CancelableClosureHolder enable_next_long_idle_period_closure_;
