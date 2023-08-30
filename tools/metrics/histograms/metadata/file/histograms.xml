@@ -1006,7 +1006,13 @@ chromium-metrics-reviews@google.com.
     <variant name="0100MB-to-1GB"/>
     <variant name="1000MB-and-above"/>
   </token>
-  <token key="CloudProvider" variants="CloudProvider"/>
+<!-- Defining this token inline instead of using the `CloudProvider` variant
+  because this it's spelled differently at call sites in existing builds. -->
+
+  <token key="CloudProvider">
+    <variant name="GoogleDrive"/>
+    <variant name="OneDrive"/>
+  </token>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
