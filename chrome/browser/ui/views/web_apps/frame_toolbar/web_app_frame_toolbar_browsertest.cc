@@ -493,7 +493,7 @@ class BorderlessIsolatedWebAppBrowserTest
     auto* web_contents = browser_view()->GetActiveWebContents();
     std::string permission_auto_approve_script = R"(
       const draggable = document.getElementById('draggable');
-      draggable.setAttribute('allow', 'window-placement');
+      draggable.setAttribute('allow', 'window-management');
     )";
     EXPECT_TRUE(ExecJs(web_contents, permission_auto_approve_script,
                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -506,7 +506,7 @@ class BorderlessIsolatedWebAppBrowserTest
 
     std::string permission_query_script = R"(
       navigator.permissions.query({
-        name: 'window-placement'
+        name: 'window-management'
       }).then(res => res.state)
     )";
     EXPECT_EQ("granted", EvalJs(web_contents, permission_query_script));
