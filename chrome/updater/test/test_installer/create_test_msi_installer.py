@@ -52,14 +52,9 @@ class TestInstaller:
 
     def BuildInstaller(self):
         test_installer_namespace = '{A2091DEA-AF86-4C00-8AE0-ECC38FDE6533}'
-        msi_product_id = str(
-            uuid.uuid5(
-                uuid.UUID(test_installer_namespace),
-                'Product %s %s %s' % (self._product_name, self._msi_base_name,
-                                      self._product_version))).upper()
-        msi_upgradecode_guid = str(
-            uuid.uuid5(uuid.UUID(test_installer_namespace),
-                       'Upgrade ' + self._product_name)).upper()
+        namespace_uuid = uuid.UUID(test_installer_namespace)
+        names_plus_version = '%s %s %s' % (
+            self._product_name, self._msi_base_name, self._product_version)
 
         output_directory_name = os.path.join(
             self._output_dir, self._appid + '.' + self._product_version)
@@ -82,8 +77,41 @@ class TestInstaller:
             *optional_flag('CompanyName', self._company_name),
             *optional_flag('CompanyFullName', self._company_full_name),
             *optional_flag('PerUserInstall', self._per_user_install),
-            *optional_flag('MsiProductId', msi_product_id),
-            *optional_flag('MsiUpgradeCode', msi_upgradecode_guid),
+            *optional_flag(
+                'MsiProductId',
+                str(
+                    uuid.uuid5(namespace_uuid,
+                               'Product %s' % names_plus_version)).upper()),
+            *optional_flag(
+                'MsiUpgradeCode',
+                str(uuid.uuid5(namespace_uuid,
+                               'Upgrade ' + self._product_name)).upper()),
+            *optional_flag(
+                'ComponentGuidInstallerResultSet',
+                str(
+                    uuid.uuid5(
+                        namespace_uuid, 'Component InstallerResult Set %s' %
+                        names_plus_version)).upper()),
+            *optional_flag(
+                'ComponentGuidInstallerErrorSet',
+                str(
+                    uuid.uuid5(
+                        namespace_uuid, 'Component InstallerError Set %s' %
+                        names_plus_version)).upper()),
+            *optional_flag(
+                'ComponentGuidInstallerResultUIStringSet',
+                str(
+                    uuid.uuid5(
+                        namespace_uuid,
+                        'Component InstallerResultUIString Set %s' %
+                        names_plus_version)).upper()),
+            *optional_flag(
+                'ComponentGuidRegisterLaunchCommandSet',
+                str(
+                    uuid.uuid5(
+                        namespace_uuid,
+                        'Component RegisterLaunchCommand Set %s' %
+                        names_plus_version)).upper()),
         ]
 
         # Disable warning LGHT1076 and internal check ICE61 on light.exe.
