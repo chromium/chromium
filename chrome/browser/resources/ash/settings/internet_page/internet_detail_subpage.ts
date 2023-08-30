@@ -1859,7 +1859,7 @@ class SettingsInternetDetailPageElement extends
             managedProperties, globalPolicy, managedNetworkAvailable);
   }
 
-  private showHiddenNetwork_(): boolean {
+  private showHiddenNetworkToggle_(): boolean {
     if (!this.showHiddenToggle_) {
       return false;
     }

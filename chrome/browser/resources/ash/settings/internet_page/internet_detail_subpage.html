@@ -474,14 +474,20 @@
         </div>
 
         <!-- Hidden. -->
-        <settings-toggle-button id="hiddenToggle"
-            pref="{{hiddenPref_}}"
-            label="$i18n{networkHidden}"
-            sub-label="$i18n{networkHiddenSublabel}"
-            sub-label-icon="cr20:warning"
-            learn-more-url="$i18n{wifiHiddenNetworkLearnMoreUrl}"
-            deep-link-focus-id$="[[Setting.kWifiHidden]]">
-        </settings-toggle-button>
+        <template is="dom-if"
+            if="[[showHiddenNetworkToggle_(
+                    globalPolicy,
+                    managedNetworkAvailable,
+                    managedProperties_)]]">
+          <settings-toggle-button id="hiddenToggle"
+              pref="{{hiddenPref_}}"
+              label="$i18n{networkHidden}"
+              sub-label="$i18n{networkHiddenSublabel}"
+              sub-label-icon="cr20:warning"
+              learn-more-url="$i18n{wifiHiddenNetworkLearnMoreUrl}"
+              deep-link-focus-id$="[[Setting.kWifiHidden]]">
+          </settings-toggle-button>
+        </template>
       </iron-collapse>
     </template>
 
