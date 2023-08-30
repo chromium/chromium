@@ -123,8 +123,8 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   void TearDown() override {
     scoped_user_manager_enabler_.reset();
     user_manager_ = nullptr;
-    testing_pref_service_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    testing_pref_service_.reset();
   }
 
  protected:

@@ -237,7 +237,7 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
   // The following objects are not owned by TestingBrowserProcess:
-  raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<TestingBrowserProcessPlatformPart> platform_part_;
