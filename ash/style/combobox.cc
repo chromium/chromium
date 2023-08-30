@@ -30,6 +30,8 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -321,6 +323,8 @@ Combobox::Combobox(ui::ComboboxModel* model)
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
       this, kComboboxRoundedCorners);
   StyleUtil::SetUpInkDropForButton(this);
+  layout->SetChildViewIgnoredByLayout(views::FocusRing::Get(this),
+                                      /*ignored=*/true);
 
   event_handler_ = std::make_unique<ComboboxEventHandler>(this);
 
@@ -418,6 +422,11 @@ void Combobox::AddedToWidget() {
 
 void Combobox::RemovedFromWidget() {
   widget_observer_.Reset();
+}
+
+void Combobox::Layout() {
+  views::Button::Layout();
+  views::FocusRing::Get(this)->Layout();
 }
 
 void Combobox::OnWidgetBoundsChanged(views::Widget* widget,
