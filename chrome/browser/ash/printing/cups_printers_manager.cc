@@ -654,7 +654,7 @@ class CupsPrintersManagerImpl
     }
   }
 
-  void AddDetectedList(
+  void AddDetectedUsbPrinters(
       const std::vector<PrinterDetector::DetectedPrinter>& detected_list) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     for (const PrinterDetector::DetectedPrinter& detected : detected_list) {
@@ -665,17 +665,8 @@ class CupsPrintersManagerImpl
         continue;
       }
 
-      // Sometimes the detector can flag a printer as IPP-everywhere compatible;
-      // those printers can go directly into the automatic class without further
-      // processing.
       auto printer = detected.printer;
-      if (printer.IsIppEverywhere()) {
-        printers_.Insert(PrinterClass::kAutomatic, printer);
-        continue;
-      }
-
-      if (printer.GetProtocol() == Printer::PrinterProtocol::kUsb &&
-          printer.RequiresDriverlessUsb()) {
+      if (printer.RequiresDriverlessUsb()) {
         if (ppd_resolution_tracker_.IsMarkedAsNotAutoconfigurable(
                 detected_printer_id)) {
           LOG(ERROR) << "Printer " << detected_printer_id
@@ -729,35 +720,86 @@ class CupsPrintersManagerImpl
         printers_.Insert(PrinterClass::kAutomatic, printer);
         continue;
       }
-      if (!printer.supports_ippusb()) {
-        // Detected printer does not supports ipp-over-usb, so we cannot set it
-        // up automatically. We have to move it to the discovered class.
-        if (printer.IsUsbProtocol()) {
-          printer.set_usb_printer_manufacturer(
-              ppd_resolution_tracker_.GetManufacturer(detected_printer_id));
+
+      if (printer.supports_ippusb()) {
+        // Detected printer supports ipp-over-usb and we could not find a ppd
+        // for it. We can try to set it up automatically (by IPP Everywhere).
+        if (ppd_resolution_tracker_.IsMarkedAsNotAutoconfigurable(
+                detected_printer_id)) {
+          // We have tried to autoconfigure the printer in the past and the
+          // process failed because of the lack of IPP Everywhere support.
+          // The printer must be treated as discovered printer.
+          printer.mutable_ppd_reference()->autoconf = false;
+          printers_.Insert(PrinterClass::kDiscovered, printer);
+          continue;
         }
-        printers_.Insert(PrinterClass::kDiscovered, printer);
+        // We will try to autoconfigure the printer. We have to switch to
+        // the ippusb scheme.
+        printer.SetUri(chromeos::Uri(
+            base::StringPrintf("ippusb://%04x_%04x/ipp/print",
+                               detected.ppd_search_data.usb_vendor_id,
+                               detected.ppd_search_data.usb_product_id)));
+        printer.mutable_ppd_reference()->autoconf = true;
+        printers_.Insert(PrinterClass::kAutomatic, printer);
         continue;
       }
-      // Detected printer supports ipp-over-usb and we could not find a ppd for
-      // it. We can try to set it up automatically (by IPP Everywhere).
-      if (ppd_resolution_tracker_.IsMarkedAsNotAutoconfigurable(
+
+      // Detected printer does not supports ipp-over-usb, so we cannot set it
+      // up automatically. We have to move it to the discovered class.
+      printer.set_usb_printer_manufacturer(
+          ppd_resolution_tracker_.GetManufacturer(detected_printer_id));
+      printers_.Insert(PrinterClass::kDiscovered, printer);
+    }
+  }
+
+  void AddDetectedNetworkPrinters(
+      const std::vector<PrinterDetector::DetectedPrinter>& detected_list) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    for (const PrinterDetector::DetectedPrinter& detected : detected_list) {
+      const std::string& detected_printer_id = detected.printer.id();
+      if (printers_.IsPrinterInClass(PrinterClass::kSaved,
+                                     detected_printer_id)) {
+        // It's already in the saved class, don't need to do anything else here.
+        continue;
+      }
+
+      // Sometimes the detector can flag a printer as IPP-everywhere compatible;
+      // those printers can go directly into the automatic class without further
+      // processing.
+      auto printer = detected.printer;
+      if (printer.IsIppEverywhere()) {
+        printers_.Insert(PrinterClass::kAutomatic, printer);
+        continue;
+      }
+
+      if (!ppd_resolution_tracker_.IsResolutionComplete(detected_printer_id)) {
+        // Didn't find an entry for this printer in the PpdReferences cache.  We
+        // need to ask PpdProvider whether or not it can determine a
+        // PpdReference.  If there's not already an outstanding request for one,
+        // start one.  When the request comes back, we'll rerun classification
+        // and then should be able to figure out where this printer belongs.
+        if (!ppd_resolution_tracker_.IsResolutionPending(detected_printer_id)) {
+          ppd_resolution_tracker_.MarkResolutionPending(detected_printer_id);
+          ppd_provider_->ResolvePpdReference(
+              detected.ppd_search_data,
+              base::BindOnce(&CupsPrintersManagerImpl::ResolvePpdReferenceDone,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             detected_printer_id));
+        }
+        continue;
+      }
+      if (ppd_resolution_tracker_.WasResolutionSuccessful(
               detected_printer_id)) {
-        // We have tried to autoconfigure the printer in the past and the
-        // process failed because of the lack of IPP Everywhere support.
-        // The printer must be treated as discovered printer.
-        printer.mutable_ppd_reference()->autoconf = false;
-        printers_.Insert(PrinterClass::kDiscovered, printer);
+        // We have a ppd reference, so we think we can set this up
+        // automatically.
+        *printer.mutable_ppd_reference() =
+            ppd_resolution_tracker_.GetPpdReference(detected_printer_id);
+        printers_.Insert(PrinterClass::kAutomatic, printer);
         continue;
       }
-      // We will try to autoconfigure the printer. We have to switch to
-      // the ippusb scheme.
-      printer.SetUri(chromeos::Uri(
-          base::StringPrintf("ippusb://%04x_%04x/ipp/print",
-                             detected.ppd_search_data.usb_vendor_id,
-                             detected.ppd_search_data.usb_product_id)));
-      printer.mutable_ppd_reference()->autoconf = true;
-      printers_.Insert(PrinterClass::kAutomatic, printer);
+
+      // We are not able to set the printer up automatically.
+      printers_.Insert(PrinterClass::kDiscovered, printer);
     }
   }
 
@@ -812,9 +854,9 @@ class CupsPrintersManagerImpl
   void RebuildDetectedLists() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     ResetNearbyPrintersLists();
-    AddDetectedList(usb_detections_);
-    AddDetectedList(zeroconf_detections_);
-    AddDetectedList(servers_detections_);
+    AddDetectedUsbPrinters(usb_detections_);
+    AddDetectedNetworkPrinters(zeroconf_detections_);
+    AddDetectedNetworkPrinters(servers_detections_);
     NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered});
   }
 
