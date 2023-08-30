@@ -223,6 +223,7 @@ android_resources("java_resources") {
     "java/res/drawable/list_item_icon_modern_bg.xml",
     "java/res/drawable/list_item_icon_modern_bg_rect.xml",
     "java/res/drawable/modern_toolbar_tablet_text_box_background.xml",
+    "java/res/drawable/modern_toolbar_text_box_background_highlight.xml",
     "java/res/drawable/oval_surface_0.xml",
     "java/res/drawable/oval_surface_1.xml",
     "java/res/drawable/oval_surface_2.xml",

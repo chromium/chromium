@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -35,6 +37,7 @@ class LocationBarTablet extends LocationBarLayout {
     private float mLayoutLeft;
     private float mLayoutRight;
     private int mToolbarStartPaddingDifference;
+    private UrlBar mUrlBar;
 
     /**
      * Constructor used to inflate from XML.
@@ -57,6 +60,24 @@ class LocationBarTablet extends LocationBarLayout {
         mLocationBarIcon = findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
+        mUrlBar = findViewById(R.id.url_bar);
+
+        mUrlBar.setOnHoverListener(new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_HOVER_ENTER:
+                        setForeground(AppCompatResources.getDrawable(getContext(),
+                                R.drawable.modern_toolbar_text_box_background_highlight));
+                        return true;
+                    case MotionEvent.ACTION_HOVER_EXIT:
+                        setForeground(null);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
 
         boolean isRtl = mUrlActionContainer.getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         int urlActionContainerPadding =
