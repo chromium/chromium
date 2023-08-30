@@ -44,9 +44,11 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/backend_migrator.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -2399,13 +2401,32 @@ void SyncServiceImpl::GetLocalDataDescriptions(
     ModelTypeSet types,
     base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
         callback) {
-  // TODO(crbug.com/1451508): Implement this.
-  NOTIMPLEMENTED();
+  // Return early if sync is disabled, or paused because of a persistent auth
+  // error.
+  if (GetTransportState() == TransportState::DISABLED ||
+      GetTransportState() == TransportState::PAUSED) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Only retain the types that are enabled.
+  types.RetainAll(GetPreferredDataTypes());
+
+  sync_client_->GetLocalDataDescriptions(types, std::move(callback));
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
-  // TODO(crbug.com/1451508): Implement this.
-  NOTIMPLEMENTED();
+  // Return early if sync is disabled, or paused because of a persistent auth
+  // error.
+  if (GetTransportState() == TransportState::DISABLED ||
+      GetTransportState() == TransportState::PAUSED) {
+    return;
+  }
+
+  // Only retain the types that are enabled.
+  types.RetainAll(GetPreferredDataTypes());
+
+  sync_client_->TriggerLocalDataMigration(types);
 }
 
 }  // namespace syncer

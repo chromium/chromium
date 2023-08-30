@@ -446,6 +446,8 @@ class SyncService : public KeyedService {
   // types. This is an asynchronous method which moves the local data for all
   // `types` to the account store locally. Upload to the server will happen as
   // part of the regular commit process, and is NOT part of this method.
+  // Note: Only data types that are enabled and support this functionality are
+  // triggered for upload.
   virtual void TriggerLocalDataMigration(ModelTypeSet types) = 0;
 
   //////////////////////////////////////////////////////////////////////////////

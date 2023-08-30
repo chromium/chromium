@@ -1909,5 +1909,93 @@ TEST_F(SyncServiceImplTest,
             service()->GetTypesWithPendingDownloadForInitialSync());
 }
 
+TEST_F(SyncServiceImplTest,
+       ShouldOnlyForwardEnabledTypesToSyncClientUponGetLocalDataDescriptions) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  // Only PASSWORDS datatype is enabled.
+  InitializeService({{PASSWORDS, true}});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(service()->GetActiveDataTypes(), ModelTypeSet({NIGORI, PASSWORDS}));
+
+  // PASSWORDS and BOOKMARKS is queried from the sync service.
+  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
+  // Only PASSWORDS datatype is queried from the sync client.
+  EXPECT_CALL(*sync_client(),
+              GetLocalDataDescriptions(ModelTypeSet{PASSWORDS}, ::testing::_));
+
+  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+}
+
+TEST_F(SyncServiceImplTest,
+       ShouldNotForwardToSyncClientUponGetLocalDataDescriptionsIfSyncDisabled) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithSyncConsent();
+  InitializeService({{PASSWORDS, true}, {BOOKMARKS, true}});
+  base::RunLoop().RunUntilIdle();
+
+  // Sync was disabled due to the policy.
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
+            service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::TransportState::DISABLED,
+            service()->GetTransportState());
+
+  // PASSWORDS and BOOKMARKS is queried from the sync service.
+  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
+  // No query to the sync client.
+  EXPECT_CALL(*sync_client(),
+              GetLocalDataDescriptions(ModelTypeSet{}, ::testing::_))
+      .Times(0);
+
+  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+}
+
+TEST_F(SyncServiceImplTest,
+       ShouldOnlyForwardEnabledTypesToSyncClientUponTriggerLocalDataMigration) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  // Only PASSWORDS datatype is enabled.
+  InitializeService({{PASSWORDS, true}});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(service()->GetActiveDataTypes(), ModelTypeSet({NIGORI, PASSWORDS}));
+
+  // PASSWORDS and BOOKMARKS is queried from the sync service.
+  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
+  // Only PASSWORDS datatype is queried from the sync client.
+  EXPECT_CALL(*sync_client(),
+              TriggerLocalDataMigration(ModelTypeSet{PASSWORDS}));
+
+  service()->TriggerLocalDataMigration(ModelTypeSet{PASSWORDS, BOOKMARKS});
+}
+
+TEST_F(
+    SyncServiceImplTest,
+    ShouldNotForwardToSyncClientUponTriggerLocalDataMigrationIfSyncDisabled) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithSyncConsent();
+  InitializeService({{PASSWORDS, true}, {BOOKMARKS, true}});
+  base::RunLoop().RunUntilIdle();
+
+  // Sync was disabled due to the policy.
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
+            service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::TransportState::DISABLED,
+            service()->GetTransportState());
+
+  // PASSWORDS and BOOKMARKS is queried from the sync service.
+  ModelTypeSet requested_types{PASSWORDS, BOOKMARKS};
+  // No query to the sync client.
+  EXPECT_CALL(*sync_client(), TriggerLocalDataMigration(ModelTypeSet{}))
+      .Times(0);
+
+  service()->TriggerLocalDataMigration(requested_types);
+}
+
 }  // namespace
 }  // namespace syncer

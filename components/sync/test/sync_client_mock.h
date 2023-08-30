@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_SYNC_TEST_SYNC_CLIENT_MOCK_H_
 #define COMPONENTS_SYNC_TEST_SYNC_CLIENT_MOCK_H_
 
+#include <map>
+
 #include "base/files/file_path.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -48,6 +51,17 @@ class SyncClientMock : public SyncClient {
               (),
               (override));
   MOCK_METHOD(void, OnLocalSyncTransportDataCleared, (), (override));
+  MOCK_METHOD(
+      void,
+      GetLocalDataDescriptions,
+      (ModelTypeSet types,
+       base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+           callback),
+      (override));
+  MOCK_METHOD(void,
+              TriggerLocalDataMigration,
+              (ModelTypeSet types),
+              (override));
 };
 
 }  // namespace syncer
