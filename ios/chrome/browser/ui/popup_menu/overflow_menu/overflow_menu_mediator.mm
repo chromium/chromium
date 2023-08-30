@@ -996,8 +996,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   __weak __typeof(self) weakSelf = self;
   ActionRanking reorderableActions = [self basePageActions];
   // If this action is not reorderable, then don't add any longpress items.
-  if (std::find(reorderableActions.begin(), reorderableActions.end(),
-                actionType) != reorderableActions.end()) {
+  bool actionIsReorderable =
+      std::find(reorderableActions.begin(), reorderableActions.end(),
+                actionType) != reorderableActions.end();
+  if (IsOverflowMenuCustomizationEnabled() && actionIsReorderable) {
     action.longPressItems = @[
       [[OverflowMenuLongPressItem alloc]
           initWithTitle:l10n_util::GetNSString(
