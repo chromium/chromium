@@ -498,6 +498,28 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   }
 }
 
+gfx::Size PageInfoMainView::CalculatePreferredSize() const {
+  if (site_settings_view_ == nullptr && permissions_view_ == nullptr &&
+      security_container_view_ == nullptr) {
+    return views::View::CalculatePreferredSize();
+  }
+
+  int width = 0;
+  if (site_settings_view_) {
+    width = std::max(width, site_settings_view_->GetPreferredSize().width());
+  }
+
+  if (permissions_view_) {
+    width = std::max(width, permissions_view_->GetPreferredSize().width());
+  }
+
+  if (security_container_view_) {
+    width =
+        std::max(width, security_container_view_->GetPreferredSize().width());
+  }
+  return gfx::Size(width, views::View::GetHeightForWidth(width));
+}
+
 void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
