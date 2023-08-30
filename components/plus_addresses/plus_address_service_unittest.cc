@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/plus_addresses/features.h"
@@ -67,11 +68,6 @@ TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
 }
 
 TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {
-  // booleans captured by the lambda to ensure the callbacks are run.
-  // See: docs/callback.md;l=352;drc=cc277f0f9a6227eb6f9ef5ee2e5061079fac08c6.
-  bool first_called = false;
-  bool second_called = false;
-
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
@@ -87,21 +83,16 @@ TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {
   const url::Origin subdomain_origin =
       url::Origin::Create(GURL("https://subdomain.test.example"));
 
-  service.OfferPlusAddressCreation(
-      no_subdomain_origin,
-      base::BindLambdaForTesting([&](const std::string& plus_address) {
-        first_called = true;
-        EXPECT_EQ(plus_address, expected_dummy_plus_address);
-      }));
-  service.OfferPlusAddressCreation(
-      subdomain_origin,
-      base::BindLambdaForTesting([&](const std::string& plus_address) {
-        second_called = true;
-        EXPECT_EQ(plus_address, expected_dummy_plus_address);
-      }));
-  // Ensure that both calls invoked the lambda immediately.
-  EXPECT_TRUE(first_called);
-  EXPECT_TRUE(second_called);
+  base::MockOnceCallback<void(const std::string&)> first_callback;
+  EXPECT_CALL(first_callback, Run(expected_dummy_plus_address)).Times(1);
+
+  service.OfferPlusAddressCreation(no_subdomain_origin, first_callback.Get());
+
+  // Repeated calls should invoke the lambda immediately, with the same
+  // argument.
+  base::MockOnceCallback<void(const std::string&)> second_callback;
+  EXPECT_CALL(second_callback, Run(expected_dummy_plus_address)).Times(1);
+  service.OfferPlusAddressCreation(subdomain_origin, second_callback.Get());
 }
 
 // Tests for the label overrides. These tests are not in the enabled/disabled
@@ -129,23 +120,19 @@ TEST_F(PlusAddressServiceTest, LabelOverrideWithSpaces) {
 }
 
 TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
-  bool call_observed = false;
-
   signin::IdentityTestEnvironment identity_test_env;
   PlusAddressService service(identity_test_env.identity_manager());
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  service.OfferPlusAddressCreation(
-      no_subdomain_origin,
-      base::BindLambdaForTesting(
-          [&](const std::string& plus_address) { call_observed = true; }));
+  base::MockOnceCallback<void(const std::string&)> callback;
   // Ensure that the lambda wasn't called since there is no signed-in account.
-  EXPECT_FALSE(call_observed);
+  EXPECT_CALL(callback, Run(testing::_)).Times(0);
+
+  service.OfferPlusAddressCreation(no_subdomain_origin, callback.Get());
 }
 
 TEST_F(PlusAddressServiceTest, PlusAddressCreationWithExistingPlus) {
-  bool call_observed = false;
   const std::string expected_dummy_plus_address = "plus+1242@plus.plus";
 
   signin::IdentityTestEnvironment identity_test_env;
@@ -156,19 +143,14 @@ TEST_F(PlusAddressServiceTest, PlusAddressCreationWithExistingPlus) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  service.OfferPlusAddressCreation(
-      no_subdomain_origin,
-      base::BindLambdaForTesting([&](const std::string& plus_address) {
-        call_observed = true;
-        EXPECT_EQ(plus_address, expected_dummy_plus_address);
-      }));
-  // Ensure that the lambda wasn't called since there is no signed-in account.
-  EXPECT_TRUE(call_observed);
+  base::MockOnceCallback<void(const std::string&)> callback;
+  // The existing plus should be handled.
+  EXPECT_CALL(callback, Run(expected_dummy_plus_address)).Times(1);
+
+  service.OfferPlusAddressCreation(no_subdomain_origin, callback.Get());
 }
 
 TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
-  bool call_observed = false;
-
   const std::string invalid_email = "plus";
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable(invalid_email,
@@ -178,12 +160,11 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  service.OfferPlusAddressCreation(
-      no_subdomain_origin,
-      base::BindLambdaForTesting(
-          [&](const std::string& plus_address) { call_observed = true; }));
+  base::MockOnceCallback<void(const std::string&)> callback;
   // Ensure that the lambda wasn't called since the email address is invalid.
-  EXPECT_FALSE(call_observed);
+  EXPECT_CALL(callback, Run(testing::_)).Times(0);
+
+  service.OfferPlusAddressCreation(no_subdomain_origin, callback.Get());
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
