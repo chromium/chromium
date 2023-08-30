@@ -3887,8 +3887,8 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
-  if (!internal::base::mac::IsOS11()) {
-    GTEST_SKIP() << "Skpping because the test is for Mac11.";
+  if (internal::base::mac::MacOSMajorVersion() != 11) {
+    GTEST_SKIP() << "Skipping because the test is for Mac11.";
   }
 
   allocator.root()->EnableMac11MallocSizeHackForTesting(

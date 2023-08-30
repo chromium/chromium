@@ -38,7 +38,8 @@ namespace partition_alloc::internal {
 // this gating.
 PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
 #if BUILDFLAG(IS_MAC)
-  if (internal::base::mac::IsOS13() || internal::base::mac::IsOS14()) {
+  if (internal::base::mac::MacOSMajorVersion() == 13 ||
+      internal::base::mac::MacOSMajorVersion() == 14) {
     return internal::base::bits::AlignUp(ref_count_size, 8);
   }
 #endif  // BUILDFLAG(IS_MAC)

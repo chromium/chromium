@@ -13,14 +13,18 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 
+// This is a simplified version of base::mac. Because
+// "base/strings/string_split.h" is unavailable, only provide access to the
+// macOS major version number via direct string work on the Darwin version.
+
 namespace partition_alloc::internal::base::mac {
 
 namespace {
 
 // Returns the running system's Darwin major version. Don't call this, it's an
 // implementation detail and its result is meant to be cached by
-// MacOSVersionInternal().
-int DarwinMajorVersionInternal() {
+// MacOSMajorVersion().
+int DarwinMajorVersion() {
   // base::OperatingSystemVersionNumbers() at one time called Gestalt(), which
   // was observed to be able to spawn threads (see https://crbug.com/53200).
   // Nowadays that function calls -[NSProcessInfo operatingSystemVersion], whose
@@ -70,35 +74,25 @@ int DarwinMajorVersionInternal() {
   return darwin_major_version;
 }
 
-// The implementation of MacOSVersion() as defined in the header. Don't call
-// this, it's an implementation detail and the result is meant to be cached by
-// MacOSVersion().
-int MacOSVersionInternal() {
-  int darwin_major_version = DarwinMajorVersionInternal();
-
-  // Darwin major versions 6 through 19 corresponded to macOS versions 10.2
-  // through 10.15.
-  PA_BASE_CHECK(darwin_major_version >= 6);
-  if (darwin_major_version <= 19)
-    return 1000 + darwin_major_version - 4;
-
-  // Darwin major version 20 corresponds to macOS version 11.0. Assume a
-  // correspondence between Darwin's major version numbers and macOS major
-  // version numbers.
-  int macos_major_version = darwin_major_version - 9;
-
-  return macos_major_version * 100;
-}
-
 }  // namespace
 
-namespace internal {
+int MacOSMajorVersion() {
+  static int macos_major_version = [] {
+    int darwin_major_version = DarwinMajorVersion();
 
-int MacOSVersion() {
-  static int macos_version = MacOSVersionInternal();
-  return macos_version;
+    // Darwin major versions 6 through 19 corresponded to macOS versions 10.2
+    // through 10.15.
+    PA_BASE_CHECK(darwin_major_version >= 6);
+    if (darwin_major_version <= 19) {
+      return 10;
+    }
+
+    // Darwin major version 20 corresponds to macOS version 11.0. Assume a
+    // correspondence between Darwin's major version numbers and macOS major
+    // version numbers.
+    return darwin_major_version - 9;
+  }();
+  return macos_major_version;
 }
-
-}  // namespace internal
 
 }  // namespace partition_alloc::internal::base::mac

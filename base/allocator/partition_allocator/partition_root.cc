@@ -890,7 +890,7 @@ void PartitionRoot::EnableMac11MallocSizeHackForTesting(size_t ref_count_size) {
 
 void PartitionRoot::EnableMac11MallocSizeHackIfNeeded(size_t ref_count_size) {
   settings.mac11_malloc_size_hack_enabled_ =
-      settings.brp_enabled_ && internal::base::mac::IsOS11();
+      settings.brp_enabled_ && internal::base::mac::MacOSMajorVersion() == 11;
   if (settings.mac11_malloc_size_hack_enabled_) {
     InitMac11MallocSizeHackUsableSize(ref_count_size);
   }

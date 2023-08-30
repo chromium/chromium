@@ -15,10 +15,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SysInfo {
  public:
   // Retrieves detailed numeric values for the OS version.
   // DON'T USE THIS ON THE MAC OR WINDOWS to determine the current OS release
-  // for OS version-specific feature checks and workarounds. If you must use
-  // an OS version check instead of a feature check, use the base::mac::IsOS*
-  // family from base/mac/mac_util.h, or base::win::GetVersion from
-  // base/win/windows_version.h.
+  // for OS version-specific feature checks and workarounds. If you must use an
+  // OS version check instead of a feature check, use
+  // base::mac::MacOSMajorVersion() from base/mac/mac_util.h, or
+  // base::win::GetVersion() from base/win/windows_version.h.
   static void OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version);
