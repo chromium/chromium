@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -326,10 +325,7 @@ VideoOverlayWindowViews::VideoOverlayWindowViews(
           VideoOverlayWindowViews::kControlHideDelayAfterMove,
           base::BindRepeating(
               &VideoOverlayWindowViews::ReEnableControlsAfterMove,
-              base::Unretained(this))),
-      get_overlay_view_cb_(base::BindRepeating(
-          &PictureInPictureWindowManager::GetOverlayView,
-          base::Unretained(PictureInPictureWindowManager::GetInstance()))) {
+              base::Unretained(this))) {
   display::Screen::GetScreen()->AddObserver(this);
 }
 
@@ -601,9 +597,8 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
     return;
   }
 
-  // If the overlay view is shown, then the other controls are always hidden.
   GetControlsContainerView()->SetVisible(
-      !IsOverlayViewShown() && force_controls_visible_.value_or(is_visible));
+      force_controls_visible_.value_or(is_visible));
 }
 
 void VideoOverlayWindowViews::UpdateControlsBounds() {
@@ -689,13 +684,6 @@ void VideoOverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
 
 bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
     const gfx::Point& point) {
-  if (IsOverlayViewShown()) {
-    // Let the overlay view consume this event if it wants to.  If not, then
-    // ignore any of our controls as well.  This will still permit dragging the
-    // window by any parts that aren't consumed by the overlay view.
-    return overlay_view_->GetEventHandlerForPoint(point);
-  }
-
   if (!AreControlsVisible())
     return false;
   if (GetBackToTabControlsBounds().Contains(point) ||
@@ -1017,10 +1005,6 @@ void VideoOverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   if (video_view_->layer()->has_external_content())
     video_view_->layer()->SetSurfaceSize(video_bounds.size());
 
-  if (IsOverlayViewShown()) {
-    overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
-  }
-
   // Notify the controller that the bounds have changed.
   controller_->UpdateLayerBounds();
 }
@@ -1225,20 +1209,6 @@ void VideoOverlayWindowViews::ShowInactive() {
   ash::SetCornerRadius(GetNativeWindow(), GetRootView()->layer(),
                        chromeos::kPipRoundedCornerRadius);
 #endif
-
-  // If there is an existing overlay view, remove it now.
-  if (overlay_view_) {
-    GetContentsView()->RemoveChildView(overlay_view_);
-    overlay_view_ = nullptr;
-  }
-
-  // Re-add it if needed.
-  if (auto overlay_view = get_overlay_view_cb_.Run()) {
-    overlay_view_ = GetContentsView()->AddChildView(std::move(overlay_view));
-    // Also update the bounds, since that's already happened for everything
-    // else, potentially, during widget resize.
-    overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
-  }
 
   // If this is not the first time the window is shown, this will be a no-op.
   has_been_shown_ = true;
@@ -1585,8 +1555,4 @@ void VideoOverlayWindowViews::MaybeUnregisterFrameSinkHierarchy() {
     GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
     has_registered_frame_sink_hierarchy_ = false;
   }
-}
-
-bool VideoOverlayWindowViews::IsOverlayViewShown() const {
-  return overlay_view_ && overlay_view_->GetVisible();
 }
