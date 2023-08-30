@@ -4127,21 +4127,15 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (elem->SupportsFocus())
     return true;
 
-  // TODO(accessibility) Focusable: scrollable with the keyboard.
-  // Keyboard-focusable scroll containers feature:
-  // https://www.chromestatus.com/feature/5231964663578624
-  // When adding here, remove similar check from ::SupportsNameFromContents().
-  // if (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-  //     IsUserScrollable()) {
-  //   return true;
-  // }
-
   // NOT focusable: everything else.
   return false;
 }
 
 // We can't use `Element::IsKeyboardFocusable()` since the downstream
 // `Element::IsFocusableStyle()` call will reset the document lifecycle.
+// TODO(crbug.com/1444450) This should be replaced with just a call to
+// element->IsKeyboardFocusable(). This function can be guarded by a
+// DocumentLifecycle::DisallowTransitionScope().
 bool AXObject::IsKeyboardFocusable() const {
   if (!CanSetFocusAttribute())
     return false;
@@ -4149,9 +4143,9 @@ bool AXObject::IsKeyboardFocusable() const {
   Element* element = GetElement();
   DCHECK(element) << "Cannot be focusable without an element: "
                   << ToString(true, true);
-  // TODO(jarhar) Scrollable containers should return true here if
-  // `RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled()`
-  // is true.
+  if (element->IsScrollableContainerThatShouldBeKeyboardFocusable()) {
+    return true;
+  }
   return element->tabIndex() >= 0 || IsRootEditableElement(*element);
 }
 
@@ -7304,14 +7298,14 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         //   would cause them to be double-announced.
         // 2.Containers with aria-activedescendant, where the focus is being
         //   forwarded somewhere else.
-        // TODO(accessibility) Scrollables are currently allowed here in order
-        // to keep the current behavior. In the future, this can be removed
-        // because this code will be handled in IsFocusable(), once
-        // KeyboardFocusableScrollersEnabled is permanently enabled.
-        // Note: this uses the same scrollable check that element.cc uses.
         result = false;
         if (!IsEditable() && !GetAOMPropertyOrARIAAttribute(
                                  AOMRelationProperty::kActiveDescendant)) {
+          // TODO(accessibility) Scrollables are currently allowed here in order
+          // to keep the current behavior. In the future, this can be removed
+          // because this code will be handled in IsFocusable(), once
+          // KeyboardFocusableScrollersEnabled is permanently enabled.
+          // Note: this uses the same scrollable check that element.cc uses.
           if (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
               IsUserScrollable()) {
             return true;

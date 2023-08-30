@@ -7,20 +7,14 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.TextView name='x=hidden'
-++++android.view.View scrollable name='x=hidden'
-++++++android.widget.TextView name='x=hidden'
-++++android.view.View scrollable name='x=auto'
-++++++android.widget.TextView name='x=auto'
-++++android.view.View scrollable name='x=scroll'
-++++++android.widget.TextView name='x=scroll'
+++++android.view.View focusable scrollable name='x=hidden'
+++++android.view.View focusable scrollable name='x=auto'
+++++android.view.View focusable scrollable name='x=scroll'
 ++++android.widget.TextView name='x=visible'
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.TextView name='y=hidden'
-++++android.view.View scrollable name='y=hidden'
-++++++android.widget.TextView name='y=hidden'
-++++android.view.View scrollable name='y=auto'
-++++++android.widget.TextView name='y=auto'
-++++android.view.View scrollable name='y=scroll'
-++++++android.widget.TextView name='y=scroll'
+++++android.view.View focusable scrollable name='y=hidden'
+++++android.view.View focusable scrollable name='y=auto'
+++++android.view.View focusable scrollable name='y=scroll'
 ++++android.widget.TextView name='y=visible'
