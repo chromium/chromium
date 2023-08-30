@@ -94,6 +94,10 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
     SearchEngineChoiceBrowserProxy.getInstance()
         .handler.handleSearchEngineChoiceSelected(this.selectedChoice_);
   }
+
+  private onInfoDialogButtonClicked_() {
+    this.$.infoDialog.close();
+  }
 }
 
 declare global {

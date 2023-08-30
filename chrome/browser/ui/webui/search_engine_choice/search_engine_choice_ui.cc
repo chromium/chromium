@@ -64,8 +64,19 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK);
   source->AddLocalizedString("buttonText",
                              IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
-  source->AddLocalizedString("infoTitle",
+  source->AddLocalizedString("infoDialogTitle",
                              IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE);
+  source->AddLocalizedString(
+      "infoDialogFirstParagraph",
+      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH);
+  source->AddLocalizedString(
+      "infoDialogSecondParagraph",
+      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_SECOND_PARAGRAPH);
+  source->AddLocalizedString(
+      "infoDialogThirdParagraph",
+      IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH);
+  source->AddLocalizedString("infoDialogButtonText",
+                             IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BUTTON_TITLE);
   source->AddLocalizedString("productLogoAltText",
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
 
