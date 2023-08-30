@@ -53,6 +53,8 @@ const char kFastPairDiscoveryGuestNotificationId[] =
     "cros_fast_pair_discovery_guest_notification_id";
 const char kFastPairDiscoveryUserNotificationId[] =
     "cros_fast_pair_discovery_user_notification_id";
+const char kFastPairApplicationInstalledNotificationId[] =
+    "cros_fast_pair_application_installed_notification_id";
 const char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
 const char kFastPairAssociateAccountNotificationId[] =
@@ -204,6 +206,11 @@ class FastPairPresenterImplTest : public AshTestBase {
     pairing_failed_action_ = action;
   }
 
+  void OnCompanionAppAction(scoped_refptr<Device> device,
+                            CompanionAppAction action) {
+    companion_app_action_ = action;
+  }
+
   void OnAssociateAccountAction(scoped_refptr<Device> device,
                                 AssociateAccountAction action) {
     associate_account_action_ = action;
@@ -224,6 +231,7 @@ class FastPairPresenterImplTest : public AshTestBase {
   DiscoveryAction discovery_action_;
   DiscoveryAction secondary_discovery_action_;
   PairingFailedAction pairing_failed_action_;
+  CompanionAppAction companion_app_action_;
   AssociateAccountAction associate_account_action_;
   TestMessageCenter test_message_center_;
   scoped_refptr<Device> initially_paired_device_;
@@ -1092,6 +1100,144 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_DismissedByOS) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(pairing_failed_action_, PairingFailedAction::kDismissed);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowCompanionAppDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairPwaCompanion});
+
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+
+  SetIdentityManager(identity_manager_);
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        fast_pair_presenter_->ShowCompanionApp(
+            initially_paired_device_,
+            base::BindRepeating(
+                &FastPairPresenterImplTest::OnCompanionAppAction,
+                weak_pointer_factory_.GetWeakPtr(), initially_paired_device_));
+      },
+      "");
+}
+
+TEST_F(FastPairPresenterImplTest, ShowCompanionAppEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+
+  SetIdentityManager(identity_manager_);
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowCompanionApp(
+      initially_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+}
+
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_SetupClicked) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
+  SetIdentityManager(identity_manager_);
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowCompanionApp(
+      initially_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairApplicationInstalledNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(companion_app_action_, CompanionAppAction::kLaunchApp);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_NoDeviceMetadata) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+
+  SetIdentityManager(identity_manager_);
+  repository_->ClearFakeMetadata(kValidModelId);
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowCompanionApp(
+      initially_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+}
+
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByUser) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
+  SetIdentityManager(identity_manager_);
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowCompanionApp(
+      initially_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+  test_message_center_.Close(
+      /*id=*/kFastPairApplicationInstalledNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(companion_app_action_, CompanionAppAction::kDismissedByUser);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByOS) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
+  SetIdentityManager(identity_manager_);
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowCompanionApp(
+      initially_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairApplicationInstalledNotificationId));
+  test_message_center_.Close(
+      /*id=*/kFastPairApplicationInstalledNotificationId, /*by_user=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(companion_app_action_, CompanionAppAction::kDismissed);
 }
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount) {

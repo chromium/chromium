@@ -101,6 +101,11 @@ class FastPairPresenterImpl : public FastPairPresenter {
       AssociateAccountCallback callback,
       FastPairNotificationDismissReason dismiss_reason);
 
+  void OnCompanionAppSetupClicked(CompanionAppCallback callback);
+  void OnCompanionAppDismissed(
+      CompanionAppCallback callback,
+      FastPairNotificationDismissReason dismiss_reason);
+
   void OnDiscoveryMetadataRetrieved(scoped_refptr<Device> device,
                                     DiscoveryCallback callback,
                                     DeviceMetadata* device_metadata,
@@ -116,6 +121,10 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                            AssociateAccountCallback callback,
                                            DeviceMetadata* device_metadata,
                                            bool has_retryable_error);
+  void OnCompanionAppMetadataRetrieved(scoped_refptr<Device> device,
+                                       CompanionAppCallback callback,
+                                       DeviceMetadata* device_metadata,
+                                       bool has_retryable_error);
 
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenterImpl> weak_pointer_factory_{this};

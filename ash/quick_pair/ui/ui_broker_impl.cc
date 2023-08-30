@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/ui/actions.h"
@@ -89,6 +90,8 @@ void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
 }
 
 void UIBrokerImpl::ShowCompanionApp(scoped_refptr<Device> device) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
   switch (device->protocol()) {
     case Protocol::kFastPairInitial:
     case Protocol::kFastPairRetroactive:

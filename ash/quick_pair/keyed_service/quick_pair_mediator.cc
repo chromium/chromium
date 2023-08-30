@@ -11,6 +11,7 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
@@ -60,6 +61,7 @@ std::unique_ptr<Mediator> Mediator::FactoryImpl::BuildInstance() {
           pairer_broker.get(), message_stream_lookup.get()),
       std::move(message_stream_lookup), std::move(pairer_broker),
       std::make_unique<UIBrokerImpl>(),
+      std::make_unique<CompanionAppBrokerImpl>(),
       std::make_unique<FastPairRepositoryImpl>(), std::move(process_manager));
 }
 
@@ -70,6 +72,7 @@ Mediator::Mediator(
     std::unique_ptr<MessageStreamLookup> message_stream_lookup,
     std::unique_ptr<PairerBroker> pairer_broker,
     std::unique_ptr<UIBroker> ui_broker,
+    std::unique_ptr<CompanionAppBroker> companion_app_broker,
     std::unique_ptr<FastPairRepository> fast_pair_repository,
     std::unique_ptr<QuickPairProcessManager> process_manager)
     : feature_status_tracker_(std::move(feature_status_tracker)),
@@ -78,6 +81,7 @@ Mediator::Mediator(
       pairer_broker_(std::move(pairer_broker)),
       retroactive_pairing_detector_(std::move(retroactive_pairing_detector)),
       ui_broker_(std::move(ui_broker)),
+      companion_app_broker_(std::move(companion_app_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)),
       process_manager_(std::move(process_manager)),
       fast_pair_bluetooth_config_delegate_(
@@ -90,6 +94,7 @@ Mediator::Mediator(
       std::make_unique<BatteryUpdateMessageHandler>(
           message_stream_lookup_.get());
   feature_status_tracker_observation_.Observe(feature_status_tracker_.get());
+  companion_app_broker_observation_.Observe(companion_app_broker_.get());
   scanner_broker_observation_.Observe(scanner_broker_.get());
   retroactive_pairing_detector_observation_.Observe(
       retroactive_pairing_detector_.get());
@@ -322,8 +327,15 @@ void Mediator::CancelPairing() {
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(VERBOSE) << __func__ << ": Device=" << device;
   ui_broker_->RemoveNotifications();
-  device_currently_showing_notification_ = nullptr;
   scanner_broker_->OnDevicePaired(device);
+
+  if (features::IsFastPairPwaCompanionEnabled()) {
+    if (!companion_app_broker_->MaybeShowCompanionAppActions(device)) {
+      device_currently_showing_notification_ = nullptr;
+    }
+  } else {
+    device_currently_showing_notification_ = nullptr;
+  }
 
   // Try saving mac address to model ID mapping one more time.
   // TODO(b/235117226): we aren't really fetching device images here,
@@ -483,7 +495,24 @@ void Mediator::OnPairingFailureAction(scoped_refptr<Device> device,
 
 void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
                                     CompanionAppAction action) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
   QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
+
+  switch (action) {
+    case CompanionAppAction::kDownloadAndLaunchApp:
+      NOTREACHED();
+      break;
+    case CompanionAppAction::kLaunchApp:
+      ui_broker_->RemoveNotifications();
+      companion_app_broker_->LaunchCompanionApp(device);
+      [[fallthrough]];
+    case CompanionAppAction::kDismissedByUser:
+      [[fallthrough]];
+    case CompanionAppAction::kDismissed:
+      device_currently_showing_notification_ = nullptr;
+      break;
+  }
 }
 
 void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
@@ -511,6 +540,18 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
       break;
   }
 }
+
+// TODO(b/274973687): Implement this function
+void Mediator::ShowInstallCompanionApp(scoped_refptr<Device> device) {}
+
+void Mediator::ShowLaunchCompanionApp(scoped_refptr<Device> device) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  ui_broker_->ShowCompanionApp(device);
+}
+
+// TODO(b/274973687): Implement this function
+void Mediator::OnCompanionAppInstalled(scoped_refptr<Device> device) {}
 
 void Mediator::OnAdapterStateControllerChanged(
     bluetooth_config::AdapterStateController* adapter_state_controller) {

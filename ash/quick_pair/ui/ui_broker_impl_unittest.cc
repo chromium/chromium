@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/ui/ui_broker_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter.h"
@@ -12,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 
@@ -236,7 +238,21 @@ TEST_F(UIBrokerImplTest, ShowAssociateAccount_Retroactive) {
   EXPECT_EQ(associate_account_action_, AssociateAccountAction::kLearnMore);
 }
 
-TEST_F(UIBrokerImplTest, ShowCompanionApp_Initial) {
+TEST_F(UIBrokerImplTest, ShowCompanionApp_Initial_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairPwaCompanion});
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairInitial);
+  EXPECT_DEATH_IF_SUPPORTED({ ui_broker_->ShowCompanionApp(device); }, "");
+}
+
+TEST_F(UIBrokerImplTest, ShowCompanionApp_Initial_Enabled) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   ui_broker_->ShowCompanionApp(device);
@@ -245,7 +261,21 @@ TEST_F(UIBrokerImplTest, ShowCompanionApp_Initial) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kDownloadAndLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowCompanionApp_Subsequent) {
+TEST_F(UIBrokerImplTest, ShowCompanionApp_Subsequent_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairPwaCompanion});
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairSubsequent);
+  EXPECT_DEATH_IF_SUPPORTED({ ui_broker_->ShowCompanionApp(device); }, "");
+}
+
+TEST_F(UIBrokerImplTest, ShowCompanionApp_Subsequent_Enabled) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
   ui_broker_->ShowCompanionApp(device);
@@ -254,7 +284,21 @@ TEST_F(UIBrokerImplTest, ShowCompanionApp_Subsequent) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kDownloadAndLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowCompanionApp_Retroactive) {
+TEST_F(UIBrokerImplTest, ShowCompanionApp_Retroactive_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairPwaCompanion});
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairRetroactive);
+  EXPECT_DEATH_IF_SUPPORTED({ ui_broker_->ShowCompanionApp(device); }, "");
+}
+
+TEST_F(UIBrokerImplTest, ShowCompanionApp_Retroactive_Enabled) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairRetroactive);
   ui_broker_->ShowCompanionApp(device);

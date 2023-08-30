@@ -24,6 +24,7 @@ source_set("ui") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/public/cpp:cpp",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",

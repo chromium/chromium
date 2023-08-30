@@ -443,7 +443,72 @@ void FastPairPresenterImpl::OnAssociateAccountDismissed(
 }
 
 void FastPairPresenterImpl::ShowCompanionApp(scoped_refptr<Device> device,
-                                             CompanionAppCallback callback) {}
+                                             CompanionAppCallback callback) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  const auto metadata_id = device->metadata_id();
+  FastPairRepository::Get()->GetDeviceMetadata(
+      metadata_id,
+      base::BindOnce(&FastPairPresenterImpl::OnCompanionAppMetadataRetrieved,
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
+}
+
+void FastPairPresenterImpl::OnCompanionAppMetadataRetrieved(
+    scoped_refptr<Device> device,
+    CompanionAppCallback callback,
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  if (!device_metadata) {
+    return;
+  }
+
+  std::u16string device_name;
+  // If the name of the device has been set by the user, use that name,
+  // otherwise use the OEM default name.
+  if (device->display_name().has_value()) {
+    device_name = base::UTF8ToUTF16(device->display_name().value());
+  } else {
+    device_name = base::ASCIIToUTF16(device_metadata->GetDetails().name());
+  }
+
+  // Temporarily skipping ShowApplicationAvailableNotification to shortcut to
+  // companion website.
+  notification_controller_->ShowApplicationInstalledNotification(
+      // temporarily hardcoded text in place of companion app name
+      device_name, device_metadata->image(), u"the web companion",
+      base::BindRepeating(&FastPairPresenterImpl::OnCompanionAppSetupClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindOnce(&FastPairPresenterImpl::OnCompanionAppDismissed,
+                     weak_pointer_factory_.GetWeakPtr(), callback));
+}
+
+void FastPairPresenterImpl::OnCompanionAppSetupClicked(
+    CompanionAppCallback callback) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  callback.Run(CompanionAppAction::kLaunchApp);
+}
+
+void FastPairPresenterImpl::OnCompanionAppDismissed(
+    CompanionAppCallback callback,
+    FastPairNotificationDismissReason dismiss_reason) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  switch (dismiss_reason) {
+    case FastPairNotificationDismissReason::kDismissedByUser:
+      callback.Run(CompanionAppAction::kDismissedByUser);
+      break;
+    case FastPairNotificationDismissReason::kDismissedByOs:
+      [[fallthrough]];
+    case FastPairNotificationDismissReason::kDismissedByTimeout:
+      callback.Run(CompanionAppAction::kDismissed);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
 
 void FastPairPresenterImpl::RemoveNotifications() {
   notification_controller_->RemoveNotifications();
