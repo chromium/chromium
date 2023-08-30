@@ -56,8 +56,6 @@ class ReadAnythingContainerView : public views::View,
   void OnCoordinatorDestroyed() override;
 
  private:
-  void LogTextStyle();
-
   raw_ptr<ReadAnythingCoordinator> coordinator_;
   raw_ptr<views::Separator> separator_;
 };

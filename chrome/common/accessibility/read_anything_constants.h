@@ -68,6 +68,20 @@ enum class ReadAnythingSettingsChange {
   kMaxValue = kLetterSpacingChange,
 };
 
+// Enum for logging the user-chosen font.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadAnythingFont {
+  kPoppins = 0,
+  kSansSerif = 1,
+  kSerif = 2,
+  kComicNeue = 3,
+  kLexendDeca = 4,
+  kEbGaramond = 5,
+  kStixTwoText = 6,
+  kMaxValue = kStixTwoText,
+};
+
 // Enum for logging how a scroll occurs.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

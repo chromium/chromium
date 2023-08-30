@@ -116,9 +116,21 @@ class ReadAnythingUntrustedPageHandler
   // Notifies the model that the AXTreeID has changed.
   void OnActiveAXTreeIDChanged();
 
+  // Logs the current visual settings values.
+  void LogTextStyle();
+
   raw_ptr<ReadAnythingCoordinator> coordinator_;
   const raw_ptr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
+  const std::map<std::string, ReadAnythingFont> font_map_ = {
+      {"Poppins", ReadAnythingFont::kPoppins},
+      {"Sans-serif", ReadAnythingFont::kSansSerif},
+      {"Serif", ReadAnythingFont::kSerif},
+      {"Comic Neue", ReadAnythingFont::kComicNeue},
+      {"Lexend Deca", ReadAnythingFont::kLexendDeca},
+      {"EB Garamond", ReadAnythingFont::kEbGaramond},
+      {"STIX Two Text", ReadAnythingFont::kStixTwoText},
+  };
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
