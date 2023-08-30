@@ -16,14 +16,6 @@ class ContentAutofillRouterTestApi {
   explicit ContentAutofillRouterTestApi(ContentAutofillRouter* router)
       : router_(*router) {}
 
-  void set_last_queried_source(ContentAutofillDriver* driver) {
-    router_->last_queried_source_ = driver;
-  }
-
-  void set_last_queried_target(ContentAutofillDriver* driver) {
-    router_->last_queried_target_ = driver;
-  }
-
  private:
   const raw_ref<ContentAutofillRouter> router_;
 };

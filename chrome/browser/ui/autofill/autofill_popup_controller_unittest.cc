@@ -254,8 +254,6 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
   virtual std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
   CreateExternalDelegate() {
-    // Fake that |driver| has queried a form.
-    test_api(autofill_router()).set_last_queried_source(autofill_driver());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
         autofill_manager());
   }

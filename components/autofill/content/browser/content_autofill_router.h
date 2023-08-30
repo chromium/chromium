@@ -150,15 +150,6 @@ class ContentAutofillRouter {
   // the parent frame).
   void UnregisterDriver(ContentAutofillDriver* driver, bool driver_is_dying);
 
-  // Returns the ContentAutofillDriver* for which AskForValuesToFill() was
-  // called last.
-  // TODO(crbug.com/1224846) QueryFormFieldAutofill() was renamed to
-  // AskForValuesToFill(), so we should rename last_queried_source() and
-  // last_queried_source_ as well.
-  ContentAutofillDriver* last_queried_source() const {
-    return last_queried_source_;
-  }
-
   // Routing of events called by the renderer:
   void SetFormToBeProbablySubmitted(
       ContentAutofillDriver* source,
@@ -354,19 +345,8 @@ class ContentAutofillRouter {
   // |form_forest_| except for |exception|.
   void TriggerFormExtractionExcept(ContentAutofillDriver* exception);
 
-  // Update the last queried and source and do cleanup work.
-  void SetLastQueriedSource(ContentAutofillDriver* source);
-  void SetLastQueriedTarget(ContentAutofillDriver* target);
-
   // The forest of forms. See its documentation for the usage protocol.
   internal::FormForest form_forest_;
-
-  // The driver that triggered the last AskForValuesToFill() call.
-  // Update with SetLastQueriedSource().
-  raw_ptr<ContentAutofillDriver> last_queried_source_ = nullptr;
-  // The driver to which the last AskForValuesToFill() call was routed.
-  // Update with SetLastQueriedTarget().
-  raw_ptr<ContentAutofillDriver> last_queried_target_ = nullptr;
 
   // When the focus moves to a different frame, the order of the events
   // FocusNoLongerOnForm() and FocusOnFormField() may be reversed due to race

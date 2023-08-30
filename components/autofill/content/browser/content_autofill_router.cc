@@ -59,21 +59,6 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver,
       break;
     }
   }
-
-  if (last_queried_source_ == driver)
-    SetLastQueriedSource(nullptr);
-  if (last_queried_target_ == driver)
-    SetLastQueriedTarget(nullptr);
-}
-
-void ContentAutofillRouter::SetLastQueriedSource(
-    ContentAutofillDriver* source) {
-  last_queried_source_ = source;
-}
-
-void ContentAutofillRouter::SetLastQueriedTarget(
-    ContentAutofillDriver* target) {
-  last_queried_target_ = target;
 }
 
 // Routing of events called by the renderer:
@@ -287,8 +272,6 @@ void ContentAutofillRouter::AskForValuesToFill(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  SetLastQueriedSource(source);
-  SetLastQueriedTarget(target);
   callback(target, browser_form, field, bounding_box, trigger_source);
 }
 
@@ -364,9 +347,6 @@ void ContentAutofillRouter::DidFillAutofillFormData(
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
-  // Usually, `target == last_queried_target_`, but this is not guaranteed
-  // because ContentAutofillRouter may have learned about `form`'s parent form
-  // in between AskForValuesToFill() and DidFillAutofillFormData().
   CHECK(target);
   callback(target, browser_form, timestamp);
 }
