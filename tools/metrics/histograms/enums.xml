@@ -3207,6 +3207,20 @@ Unknown properties are collapsed to zero. -->
   <int value="76" label="WEB_SETTINGS_GET_USER_AGENT_METADATA">
     WebSettingsCompat#getUserAgentMetadataMap()
   </int>
+  <int value="77" label="SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST">
+    ServiceWorkerClientCompat#shouldInterceptRequest()
+  </int>
+  <int value="78" label="WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED">
+    WebSettingsCompat#setAlgorithmicDarkeningAllowed()
+  </int>
+  <int value="79" label="WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED">
+    WebSettingsCompat#isAlgorithmicDarkeningAllowed()
+  </int>
+  <int value="80" label="CREATE_WEB_MESSAGE_CHANNEL">
+    WebViewCompat#createWebMessageChannel()
+  </int>
+  <int value="81" label="CREATE_WEBVIEW">WebViewCompat#createWebView()</int>
+  <int value="82" label="GET_STATICS">WebViewCompat#getStatics()</int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">
@@ -114561,6 +114575,63 @@ Called by update_scheduler_enums.py.-->
   <int value="189" label="setRendererPriorityPolicy"/>
   <int value="190" label="loadUrl"/>
   <int value="191" label="loadUrlAdditionalHeaders"/>
+  <int value="192" label="destroy"/>
+  <int value="193" label="saveWebArchive"/>
+  <int value="194" label="findAllAsync"/>
+  <int value="195" label="getWebViewRenderProcess"/>
+  <int value="196" label="setWebViewRenderProcessClient"/>
+  <int value="197" label="getWebViewRenderProcessClient"/>
+  <int value="198" label="flingScroll"/>
+  <int value="199" label="zoomIn"/>
+  <int value="200" label="zoomOut"/>
+  <int value="201" label="zoomBy"/>
+  <int value="202" label="onProvideContentCaptureStructure"/>
+  <int value="203" label="getAccessibilityNodeProvider"/>
+  <int value="204" label="onProvideVirtualStructure"/>
+  <int value="205" label="setOverScrollMode"/>
+  <int value="206" label="setScrollBarStyle"/>
+  <int value="207" label="setLayoutParams"/>
+  <int value="208" label="performLongClick"/>
+  <int value="209" label="requestFocus"/>
+  <int value="210" label="requestChildRectangleOnScreen"/>
+  <int value="211" label="setBackgroundColor"/>
+  <int value="212" label="setLayerType"/>
+  <int value="213" label="getHandler"/>
+  <int value="214" label="findFocus"/>
+  <int value="215" label="computeScroll"/>
+  <int value="216" label="setWebViewClient"/>
+  <int value="217" label="WebSettings.setUserAgent"/>
+  <int value="218" label="WebSettings.setForceDark"/>
+  <int value="219" label="WebSettings.setAlgorithmicDarkeningAllowed"/>
+  <int value="220" label="WebSettings.isAlgorithmicDarkeningAllowed"/>
+  <int value="221" label="CookieManager.allowFileSchemeCookies"/>
+</enum>
+
+<enum name="WebViewApiCallStatic">
+  <int value="0" label="findAddress"/>
+  <int value="1" label="getDefaultUserAgent"/>
+  <int value="2" label="setWebContentsDebuggingEnabled"/>
+  <int value="3" label="clearClientCertPreferences"/>
+  <int value="4" label="enableSlowWholeDocumentDraw"/>
+  <int value="5" label="getSafeBrowsingPrivacyPolicyUrl"/>
+</enum>
+
+<enum name="WebViewApiCallSystem">
+  <int value="0" label="onTouchEvent"/>
+  <int value="1" label="onDragEvent"/>
+  <int value="2" label="onCreateInputConnection"/>
+  <int value="3" label="onKeyMultiple"/>
+  <int value="4" label="onKeyDown"/>
+  <int value="5" label="onKeyUp"/>
+  <int value="6" label="onFocusChanged"/>
+  <int value="7" label="dispatchKeyEvent"/>
+  <int value="8" label="onHoverEvent"/>
+  <int value="9" label="onGenericMotionEvent"/>
+  <int value="10" label="onTrackballEvent"/>
+  <int value="11" label="onStartTemporaryDetach"/>
+  <int value="12" label="onFinishTemporaryDetach"/>
+  <int value="13" label="onCheckIsTextEditor"/>
+  <int value="14" label="onWindowFocusChanged"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">
@@ -114602,6 +114673,36 @@ Called by update_scheduler_enums.py.-->
   <int value="7" label="onPageCommitVisible"/>
   <int value="8" label="shouldOverrideUrlLoading"/>
   <int value="9" label="shouldInterceptRequest"/>
+  <int value="10" label="onReceivedError"/>
+  <int value="11" label="onSafeBrowsingHit"/>
+  <int value="12" label="onReceivedHttpError"/>
+  <int value="13" label="getVisitedHistory"/>
+  <int value="14" label="doUpdateVisitedHistory"/>
+  <int value="15" label="onProgressChanged"/>
+  <int value="16" label="onUnhandledKeyEvent"/>
+  <int value="17" label="onConsoleMessage"/>
+  <int value="18" label="onCreateWindow"/>
+  <int value="19" label="onCloseWindow"/>
+  <int value="20" label="onRequestFocus"/>
+  <int value="21" label="onReceivedTouchIconUrl"/>
+  <int value="22" label="onReceivedIcon"/>
+  <int value="23" label="onReceivedTitle"/>
+  <int value="24" label="shouldOverrideKeyEvent"/>
+  <int value="25" label="onGeolocationPermissionsShowPrompt"/>
+  <int value="26" label="onGeolocationPermissionsHidePrompt"/>
+  <int value="27" label="onPermissionRequest"/>
+  <int value="28" label="onPermissionRequestCanceled"/>
+  <int value="29" label="onJsAlert"/>
+  <int value="30" label="onJsBeforeUnload"/>
+  <int value="31" label="onJsConfirm"/>
+  <int value="32" label="onJsPrompt"/>
+  <int value="33" label="onReceivedSslError"/>
+  <int value="34" label="onFormResubmission"/>
+  <int value="35" label="onShowCustomView"/>
+  <int value="36" label="onHideCustomView"/>
+  <int value="37" label="getDefaultVideoPoster"/>
+  <int value="38" label="onRenderProcessGone"/>
+  <int value="39" label="onScaleChanged"/>
 </enum>
 
 <enum name="WebViewClientErrorCode">

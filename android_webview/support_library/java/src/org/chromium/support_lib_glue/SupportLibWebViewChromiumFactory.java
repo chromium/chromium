@@ -174,6 +174,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.JS_REPLY_POST_MESSAGE_WITH_PAYLOAD,
             ApiCall.WEB_SETTINGS_SET_USER_AGENT_METADATA,
             ApiCall.WEB_SETTINGS_GET_USER_AGENT_METADATA,
+            ApiCall.SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST,
+            ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED,
+            ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED,
+            ApiCall.CREATE_WEB_MESSAGE_CHANNEL,
+            ApiCall.CREATE_WEBVIEW,
+            ApiCall.GET_STATICS,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -261,8 +267,14 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int JS_REPLY_POST_MESSAGE_WITH_PAYLOAD = 74;
         int WEB_SETTINGS_SET_USER_AGENT_METADATA = 75;
         int WEB_SETTINGS_GET_USER_AGENT_METADATA = 76;
+        int SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST = 77;
+        int WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED = 78;
+        int WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED = 79;
+        int CREATE_WEB_MESSAGE_CHANNEL = 80;
+        int CREATE_WEBVIEW = 81;
+        int GET_STATICS = 82;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 77;
+        int COUNT = 83;
     }
     // clang-format on
 
@@ -286,8 +298,11 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
     @Override
     public /* WebViewProvider */ InvocationHandler createWebView(WebView webView) {
-        return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibWebViewChromium(webView));
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.CREATE_WEBVIEW")) {
+            recordApiCall(ApiCall.CREATE_WEBVIEW);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebViewChromium(webView));
+        }
     }
 
     @Override
@@ -362,14 +377,17 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
     @Override
     public InvocationHandler getStatics() {
-        synchronized (mAwInit.getLock()) {
-            if (mStatics == null) {
-                mStatics = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new StaticsAdapter(
-                                WebkitToSharedGlueConverter.getGlobalAwInit().getStatics()));
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_STATICS")) {
+            recordApiCall(ApiCall.GET_STATICS);
+            synchronized (mAwInit.getLock()) {
+                if (mStatics == null) {
+                    mStatics = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                            new StaticsAdapter(
+                                    WebkitToSharedGlueConverter.getGlobalAwInit().getStatics()));
+                }
             }
+            return mStatics;
         }
-        return mStatics;
     }
 
     @Override

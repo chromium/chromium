@@ -137,6 +137,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     @Override
     public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
         try (TraceEvent event = TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedError")) {
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_ERROR);
             if (error.description == null || error.description.isEmpty()) {
                 // ErrorStrings is @hidden, so we can't do this in AwContents.  Normally the net/
                 // layer will set a valid description, but for synthesized callbacks (like in the
@@ -159,6 +161,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             final Callback<AwSafeBrowsingResponse> callback) {
         try (TraceEvent event =
                         TraceEvent.scoped("WebViewContentsClientAdapter.onSafeBrowsingHit")) {
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_SAFE_BROWSING_HIT);
             if (mSupportLibClient.isFeatureAvailable(Features.SAFE_BROWSING_HIT)) {
                 mSupportLibClient.onSafeBrowsingHit(
                         mWebView, new WebResourceRequestAdapter(request), threatType, callback);
@@ -178,6 +182,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             AwWebResourceRequest request, WebResourceResponseInfo response) {
         try (TraceEvent event =
                         TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedHttpError")) {
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_HTTP_ERROR);
             if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.url);
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_HTTP_ERROR)) {
                 // Note: we use the @SystemApi constructor here because it relaxes several

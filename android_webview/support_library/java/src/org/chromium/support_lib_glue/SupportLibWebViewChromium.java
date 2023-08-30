@@ -63,8 +63,12 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
 
     @Override
     public /* WebMessagePort */ InvocationHandler[] createWebMessageChannel() {
-        return SupportLibWebMessagePortAdapter.fromMessagePorts(
-                mSharedWebViewChromium.createWebMessageChannel());
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.CREATE_WEB_MESSAGE_CHANNEL")) {
+            recordApiCall(ApiCall.CREATE_WEB_MESSAGE_CHANNEL);
+            return SupportLibWebMessagePortAdapter.fromMessagePorts(
+                    mSharedWebViewChromium.createWebMessageChannel());
+        }
     }
 
     @Override

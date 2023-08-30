@@ -281,7 +281,11 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setUserAgent(int ua) {
-        mAwSettings.setUserAgent(ua);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.WEB_SETTINGS_SET_USER_AGENT")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_USER_AGENT);
+            mAwSettings.setUserAgent(ua);
+        }
     }
 
     @Override
@@ -954,42 +958,50 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     @SuppressLint("Override")
     public void setForceDark(int forceDarkMode) {
-        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
-            return;
-        }
-        switch (forceDarkMode) {
-            case WebSettings.FORCE_DARK_OFF:
-                getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
-                break;
-            case WebSettings.FORCE_DARK_AUTO:
-                getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_AUTO);
-                break;
-            case WebSettings.FORCE_DARK_ON:
-                getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_ON);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        "Force dark mode is not one of FORCE_DARK_(ON|OFF|AUTO)");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.WEB_SETTINGS_SET_FORCE_DARK")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK);
+            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
+                return;
+            }
+            switch (forceDarkMode) {
+                case WebSettings.FORCE_DARK_OFF:
+                    getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+                    break;
+                case WebSettings.FORCE_DARK_AUTO:
+                    getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_AUTO);
+                    break;
+                case WebSettings.FORCE_DARK_ON:
+                    getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_ON);
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "Force dark mode is not one of FORCE_DARK_(ON|OFF|AUTO)");
+            }
         }
     }
 
     @Override
     @SuppressLint("Override")
     public int getForceDark() {
-        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.WEB_SETTINGS_GET_FORCE_DARK")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK);
+            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
+                return WebSettings.FORCE_DARK_AUTO;
+            }
+            switch (getAwSettings().getForceDarkMode()) {
+                case AwSettings.FORCE_DARK_OFF:
+                    return WebSettings.FORCE_DARK_OFF;
+                case AwSettings.FORCE_DARK_AUTO:
+                    return WebSettings.FORCE_DARK_AUTO;
+                case AwSettings.FORCE_DARK_ON:
+                    return WebSettings.FORCE_DARK_ON;
+            }
             return WebSettings.FORCE_DARK_AUTO;
         }
-        switch (getAwSettings().getForceDarkMode()) {
-            case AwSettings.FORCE_DARK_OFF:
-                return WebSettings.FORCE_DARK_OFF;
-            case AwSettings.FORCE_DARK_AUTO:
-                return WebSettings.FORCE_DARK_AUTO;
-            case AwSettings.FORCE_DARK_ON:
-                return WebSettings.FORCE_DARK_ON;
-        }
-        return WebSettings.FORCE_DARK_AUTO;
     }
 
     // Lint thinks we are targeting 32 so complains that this only overrides in 33, suppress until
@@ -997,13 +1009,18 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @SuppressWarnings("Override")
     @Override
     public void setAlgorithmicDarkeningAllowed(boolean allow) {
-        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG,
-                    "setAlgorithmicDarkeningAllowed() is a no-op in an app with "
-                            + "targetSdkVersion<T");
-            return;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED);
+            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG,
+                        "setAlgorithmicDarkeningAllowed() is a no-op in an app with "
+                                + "targetSdkVersion<T");
+                return;
+            }
+            getAwSettings().setAlgorithmicDarkeningAllowed(allow);
         }
-        getAwSettings().setAlgorithmicDarkeningAllowed(allow);
     }
 
     // Lint thinks we are targeting 32 so complains that this only overrides in 33, suppress until
@@ -1011,11 +1028,17 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @SuppressWarnings("Override")
     @Override
     public boolean isAlgorithmicDarkeningAllowed() {
-        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG,
-                    "isAlgorithmicDarkeningAllowed() is a no-op in an app with targetSdkVersion<T");
-            return false;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED);
+            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG,
+                        "isAlgorithmicDarkeningAllowed() is a no-op in an app with "
+                                + "targetSdkVersion<T");
+                return false;
+            }
+            return getAwSettings().isAlgorithmicDarkeningAllowed();
         }
-        return getAwSettings().isAlgorithmicDarkeningAllowed();
     }
 }

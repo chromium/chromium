@@ -173,23 +173,32 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setAlgorithmicDarkeningAllowed(boolean allow) {
-        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG,
-                    "setAlgorithmicDarkeningAllowed() is a no-op in an app with"
-                            + "targetSdkVersion<T");
-            return;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED);
+            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG,
+                        "setAlgorithmicDarkeningAllowed() is a no-op in an app with"
+                                + "targetSdkVersion<T");
+                return;
+            }
+            mAwSettings.setAlgorithmicDarkeningAllowed(allow);
         }
-        mAwSettings.setAlgorithmicDarkeningAllowed(allow);
     }
 
     @Override
     public boolean isAlgorithmicDarkeningAllowed() {
-        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG,
-                    "isAlgorithmicDarkeningAllowed() is a no-op in an app with targetSdkVersion<T");
-            return false;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED);
+            if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG,
+                        "isAlgorithmicDarkeningAllowed() is a no-op in an app with "
+                                + "targetSdkVersion<T");
+                return false;
+            }
+            return mAwSettings.isAlgorithmicDarkeningAllowed();
         }
-        return mAwSettings.isAlgorithmicDarkeningAllowed();
     }
 
     @Override

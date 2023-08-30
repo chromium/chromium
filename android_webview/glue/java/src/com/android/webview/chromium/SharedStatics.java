@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Looper;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDevToolsServer;
@@ -19,7 +21,9 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -37,20 +41,58 @@ import java.util.List;
 public class SharedStatics {
     private AwDevToolsServer mDevToolsServer;
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+            ApiCall.FIND_ADDRESS, ApiCall.GET_DEFAULT_USER_AGENT,
+            ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED, ApiCall.CLEAR_CLIENT_CERT_PREFERENCES,
+            ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW, ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
+            // Add new constants above. The final constant should have a trailing comma for
+            // cleaner diffs.
+            ApiCall.COUNT, // Added to suppress WrongConstant in #recordStaticApiCall
+    })
+
+    public @interface ApiCall {
+        int FIND_ADDRESS = 0;
+        int GET_DEFAULT_USER_AGENT = 1;
+        int SET_WEB_CONTENTS_DEBUGGING_ENABLED = 2;
+        int CLEAR_CLIENT_CERT_PREFERENCES = 3;
+        int ENABLE_SLOW_WHOLE_DOCUMENT_DRAW = 4;
+        int GET_SAFE_BROWSING_PRIVACY_POLICY_URL = 5;
+        // Remember to update StaticWebViewApiCall in enums.xml when adding new values here
+        int COUNT = 6;
+    }
+
+    public static void recordStaticApiCall(@ApiCall int sample) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.ApiCall.Static", sample, ApiCall.COUNT);
+    }
+
     public SharedStatics() {}
 
     public String findAddress(String addr) {
-        return AwContentsStatics.findAddress(addr);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.FIND_ADDRESS")) {
+            recordStaticApiCall(ApiCall.FIND_ADDRESS);
+            return AwContentsStatics.findAddress(addr);
+        }
     }
 
     public String getDefaultUserAgent(Context context) {
-        return AwSettings.getDefaultUserAgent();
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.GET_DEFAULT_USER_AGENT")) {
+            recordStaticApiCall(ApiCall.GET_DEFAULT_USER_AGENT);
+            return AwSettings.getDefaultUserAgent();
+        }
     }
 
     public void setWebContentsDebuggingEnabled(boolean enable) {
-        // On debug builds, Web Contents debugging is enabled elsewhere, and cannot be disabled.
-        if (BuildInfo.isDebugAndroidOrApp()) return;
-        setWebContentsDebuggingEnabledUnconditionally(enable);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.SET_WEB_CONTENTS_DEBUGGING_ENABLED")) {
+            recordStaticApiCall(ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED);
+            // On debug builds, Web Contents debugging is enabled elsewhere, and cannot be disabled.
+            if (BuildInfo.isDebugAndroidOrApp()) return;
+            setWebContentsDebuggingEnabledUnconditionally(enable);
+        }
     }
 
     public void setWebContentsDebuggingEnabledUnconditionally(boolean enable) {
@@ -66,10 +108,14 @@ public class SharedStatics {
     }
 
     public void clearClientCertPreferences(Runnable onCleared) {
-        // clang-format off
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.CLEAR_CLIENT_CERT_PREFERENCES")) {
+            recordStaticApiCall(ApiCall.CLEAR_CLIENT_CERT_PREFERENCES);
+            // clang-format off
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () ->
                 AwContentsStatics.clearClientCertPreferences(onCleared));
-        // clang-format on
+            // clang-format on
+        }
     }
 
     public void freeMemoryForTests() {
@@ -83,7 +129,11 @@ public class SharedStatics {
     }
 
     public void enableSlowWholeDocumentDraw() {
-        WebViewChromium.enableSlowWholeDocumentDraw();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW")) {
+            recordStaticApiCall(ApiCall.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW);
+            WebViewChromium.enableSlowWholeDocumentDraw();
+        }
     }
 
     public Uri[] parseFileChooserResult(int resultCode, Intent intent) {
@@ -117,8 +167,12 @@ public class SharedStatics {
      * to users.
      */
     public Uri getSafeBrowsingPrivacyPolicyUrl() {
-        return PostTask.runSynchronously(
-                TaskTraits.UI_DEFAULT, () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.GET_SAFE_BROWSING_PRIVACY_POLICY_URL")) {
+            recordStaticApiCall(ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL);
+            return PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
+                    () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
+        }
     }
 
     public boolean isMultiProcessEnabled() {
