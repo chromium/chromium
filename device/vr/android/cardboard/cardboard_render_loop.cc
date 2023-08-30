@@ -394,6 +394,10 @@ void CardboardRenderLoop::GetFrameData(
 }
 
 bool CardboardRenderLoop::IsSubmitFrameExpected(int16_t frame_index) {
+  DVLOG(3) << __func__ << ": Frame Index=" << frame_index
+           << " submit_client_=" << !!submit_client_.get()
+           << " HaveAnimatingFrame()=" << webxr_->HaveAnimatingFrame()
+           << " pending_shutdown_=" << pending_shutdown_;
   // submit_client_ could be null when we exit presentation, if there were
   // pending SubmitFrame messages queued.  XRSessionClient::OnExitPresent
   // will clean up state in blink, so it doesn't wait for
@@ -427,7 +431,7 @@ bool CardboardRenderLoop::IsSubmitFrameExpected(int16_t frame_index) {
 void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
                                              const gpu::SyncToken& sync_token) {
   TRACE_EVENT1("gpu", __func__, "frame", frame_index);
-  DVLOG(2) << __func__;
+  DVLOG(2) << __func__ << ": frame=" << frame_index;
 
   if (!IsSubmitFrameExpected(frame_index)) {
     return;
@@ -436,6 +440,10 @@ void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
   webxr_->RecycleUnusedAnimatingFrame();
   cardboard_image_transport_->WaitSyncToken(sync_token);
   FinishFrame(frame_index);
+
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
+  }
 }
 
 void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
