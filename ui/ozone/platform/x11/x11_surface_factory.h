@@ -56,6 +56,9 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
       gfx::BufferFormat format,
       gfx::NativePixmapHandle handle) override;
 
+  std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
+      const override;
+
  private:
   std::unique_ptr<GLOzone> egl_implementation_;
 

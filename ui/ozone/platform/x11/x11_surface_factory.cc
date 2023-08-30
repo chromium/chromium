@@ -264,4 +264,17 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
   return pixmap;
 }
 
+std::vector<gfx::BufferFormat>
+X11SurfaceFactory::GetSupportedFormatsForTexturing() const {
+  std::vector<gfx::BufferFormat> supported_buffer_formats;
+  for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
+    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
+    if (ui::GpuMemoryBufferSupportX11::GetInstance()
+            ->CanCreateNativePixmapForFormat(buffer_format)) {
+      supported_buffer_formats.push_back(buffer_format);
+    }
+  }
+  return supported_buffer_formats;
+}
+
 }  // namespace ui
