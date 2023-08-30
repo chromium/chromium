@@ -39,6 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -386,6 +387,8 @@ class HeadlessScreenshotCommandBrowserTest
     screenshot_filename_ =
         temp_dir().Append(FILE_PATH_LITERAL("screenshot.png"));
     command_line->AppendSwitchPath(switches::kScreenshot, screenshot_filename_);
+
+    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1");
   }
 
   GURL GetTargetUrl() override {
