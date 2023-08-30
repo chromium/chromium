@@ -149,7 +149,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   config.features_enabled.push_back(
       syncer::kReadingListEnableSyncTransportModeUponSignIn);
   if ([self isRunningTest:@selector
-            (testSignInWithSecondaryAccountInPromo_WithSnackbar)]) {
+            (testSignInWithSecondaryAccountInPromo_WithSnackbar)] ||
+      [self isRunningTest:@selector(testAddAccountItemThenUpgradeToFullSync)] ||
+      [self isRunningTest:@selector(testAddItemWithFullSync)] ||
+      [self isRunningTest:@selector(testUndoAddItemWithFullSync)] ||
+      [self isRunningTest:@selector(testPromoNotShownWhenSyncDataNotRemoved)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -372,9 +376,16 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity2.userEmail)]
       performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SignedInSnackbar(
-                                              fakeIdentity2.userEmail)];
+
+  // The sign-in snackbar is only displayed if the feature
+  // syncer::kReplaceSyncPromosWithSignInPromos is disabled, as per logic
+  // introduced in https://crrev.com/c/4733378.
+  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:SignedInSnackbar(
+                                                fakeIdentity2.userEmail)];
+  }
+
   // Verify that the second account is signed-in.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
                                         consent:signin::ConsentLevel::kSignin];
