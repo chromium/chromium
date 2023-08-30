@@ -170,6 +170,8 @@ std::unique_ptr<views::Button> CreateButton(
     const gfx::VectorIcon& icon,
     int message_id) {
   auto button = views::CreateVectorImageButton(std::move(callback));
+
+  // TODO(b/297056011): Remove Jelly flag checks post-M120.
   views::SetImageFromVectorIconWithColorId(
       button.get(), icon,
       chromeos::features::IsJellyrollEnabled()
@@ -391,11 +393,6 @@ void EcheTray::OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
 
 bool EcheTray::CacheBubbleViewForHide() const {
   return true;
-}
-
-void EcheTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  RefreshHeaderView();
 }
 
 std::u16string EcheTray::GetAccessibleNameForBubble() {
@@ -916,22 +913,6 @@ EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
   if (!phone_hub_tray)
     return nullptr;
   return phone_hub_tray->eche_loading_indicator();
-}
-
-void EcheTray::RefreshHeaderView() {
-  if (!header_view_ || !bubble_) {
-    return;
-  }
-
-  auto* bubble_view = bubble_->GetBubbleView();
-  bubble_view->RemoveChildView(header_view_);
-  header_view_ = bubble_view->AddChildViewAt(
-      CreateBubbleHeaderView(phone_name_), /* index= */ 0);
-
-  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
-      ->SetFlexForView(header_view_, 0, true);
-  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
-      ->set_inside_border_insets(kBubblePadding);
 }
 
 void EcheTray::UpdateEcheSizeAndBubbleBounds() {

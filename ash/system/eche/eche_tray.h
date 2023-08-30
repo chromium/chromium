@@ -140,7 +140,6 @@ class ASH_EXPORT EcheTray
   void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
                                     bool visible) override;
   bool CacheBubbleViewForHide() const override;
-  void OnThemeChanged() override;
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
@@ -293,9 +292,6 @@ class ASH_EXPORT EcheTray
 
   PhoneHubTray* GetPhoneHubTray();
   EcheIconLoadingIndicatorView* GetLoadingIndicator();
-
-  // Refreshes the header buttons, particularly when the theme changes.
-  void RefreshHeaderView();
 
   // Resize Eche size and update the bubble's position.
   void UpdateEcheSizeAndBubbleBounds();
