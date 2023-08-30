@@ -1291,7 +1291,7 @@ public class ImeAdapterImpl
         if (!(text instanceof SpannableString)) return;
 
         SpannableString spannableString = ((SpannableString) text);
-        CharacterStyle spans[] = spannableString.getSpans(0, text.length(), CharacterStyle.class);
+        CharacterStyle[] spans = spannableString.getSpans(0, text.length(), CharacterStyle.class);
         for (CharacterStyle span : spans) {
             final int spanFlags = spannableString.getSpanFlags(span);
             if (span instanceof BackgroundColorSpan) {
