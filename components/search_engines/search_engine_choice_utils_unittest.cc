@@ -33,6 +33,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
 
  private:
   void InitMockPolicyService() {
@@ -137,4 +138,13 @@ TEST_F(SearchEngineChoiceUtilsTest,
       policy_service(),
       /*profile_properties=*/{.is_regular_profile = true,
                               .pref_service = pref_service()}));
+}
+
+// Ensure that the choice screen doesn't get displayed if the flag is disabled.
+TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
+  feature_list()->Reset();
+  feature_list()->InitAndDisableFeature(switches::kSearchEngineChoice);
+  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+      policy_service(), /*profile_properties=*/{
+          .is_regular_profile = true, .pref_service = pref_service()}));
 }

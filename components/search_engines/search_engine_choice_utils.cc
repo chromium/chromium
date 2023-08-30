@@ -4,11 +4,13 @@
 
 #include "components/search_engines/search_engine_choice_utils.h"
 
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace search_engines {
 namespace {
@@ -43,6 +45,10 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
 
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties) {
+  if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    return false;
+  }
+
   // The timestamp indicates that the user has already made a search engine
   // choice in the choice screen.
   PrefService* prefs = profile_properties.pref_service;
