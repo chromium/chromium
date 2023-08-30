@@ -11,6 +11,7 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/system/power/adaptive_charging_controller.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -774,6 +775,19 @@ const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_POWER_BATTERY_SAVER,
+       mojom::kPowerSubpagePath,
+       mojom::SearchResultIcon::kPower,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kBatterySaver},
+       {}},
+  });
+  return *tags;
+}
+
 bool AreScrollSettingsAllowed() {
   return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
 }
@@ -1180,6 +1194,14 @@ DeviceSection::DeviceSection(Profile* profile,
             ->adaptive_charging_controller()
             ->IsAdaptiveChargingSupported()) {
       updater.AddSearchTags(GetPowerWithAdaptiveChargingSearchConcepts());
+    }
+
+    const auto* battery_saver_controller =
+        Shell::Get()->battery_saver_controller();
+    if (battery_saver_controller != nullptr &&
+        battery_saver_controller->IsBatterySaverSupported() &&
+        ash::features::IsBatterySaverAvailable()) {
+      updater.AddSearchTags(GetPowerWithBatterySaverModeSearchConcepts());
     }
   }
 

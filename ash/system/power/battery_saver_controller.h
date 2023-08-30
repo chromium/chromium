@@ -46,6 +46,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   void SetState(bool active, UpdateReason reason);
 
+  bool IsBatterySaverSupported() const;
+
  private:
   // Types used for metrics tracking.
   struct EnableRecord {

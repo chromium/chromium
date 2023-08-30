@@ -316,4 +316,14 @@ absl::optional<int> BatterySaverController::GetRemainingMinutes(
   return base::ClampRound(*remaining_time / base::Minutes(1));
 }
 
+bool BatterySaverController::IsBatterySaverSupported() const {
+  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+      chromeos::PowerManagerClient::Get()->GetLastStatus();
+  if (!proto) {
+    return false;
+  }
+  return proto->battery_state() !=
+         power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
+}
+
 }  // namespace ash
