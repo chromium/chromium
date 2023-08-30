@@ -7,6 +7,8 @@ package org.chromium.net.httpflags;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.os.Bundle;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -19,6 +21,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.impl.CronetManifest;
+import org.chromium.net.impl.CronetManifestInterceptor;
 
 /**
  * Tests {@link HttpFlagsLoader}
@@ -35,10 +39,17 @@ public final class HttpFlagsLoaderTest {
         mCronetTestFramework = mTestRule.getTestFramework();
     }
 
+    private void setShouldReadHttpFlagsInManifest(boolean value) {
+        Bundle metaData = new Bundle();
+        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, value);
+        mCronetTestFramework.interceptContext(new CronetManifestInterceptor(metaData));
+    }
+
     @Test
     @SmallTest
     @OnlyRunNativeCronet
     public void testLoad_returnsNullIfNoFlags() {
+        setShouldReadHttpFlagsInManifest(true);
         mCronetTestFramework.setHttpFlags(null);
         assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isNull();
     }
@@ -47,6 +58,7 @@ public final class HttpFlagsLoaderTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testLoad_returnsFileFlagContents() {
+        setShouldReadHttpFlagsInManifest(true);
         Flags flags = Flags.newBuilder()
                               .putFlags("test_flag_name",
                                       FlagValue.newBuilder()
@@ -58,5 +70,14 @@ public final class HttpFlagsLoaderTest {
                               .build();
         mCronetTestFramework.setHttpFlags(flags);
         assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isEqualTo(flags);
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
+    public void testLoad_returnsNullIfDisabledInManifest() {
+        setShouldReadHttpFlagsInManifest(false);
+        mCronetTestFramework.setHttpFlags(Flags.newBuilder().build());
+        assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isNull();
     }
 }

@@ -44,6 +44,12 @@ public final class CronetManifest {
     static final String META_DATA_HOLDER_SERVICE_NAME = "android.net.http.MetaDataHolder";
     @VisibleForTesting
     static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
+    // DO NOT ENABLE this manifest flag in production apps. The code gated behind this flag is not
+    // ready yet.
+    // TODO: remove the "Experimental" prefix once the code for reading HTTP flags is ready.
+    @VisibleForTesting
+    public static final String READ_HTTP_FLAGS_META_DATA_KEY =
+            "android.net.http.EXPERIMENTAL_ReadHttpFlags";
 
     /**
      * @return True if telemetry should be enabled, based on the {@link
@@ -54,6 +60,17 @@ public final class CronetManifest {
                 || source == CronetSource.CRONET_SOURCE_PLAY_SERVICES;
         return getMetaData(context).getBoolean(
                 ENABLE_TELEMETRY_META_DATA_KEY, /*default*/ telemetryIsDefaultEnabled);
+    }
+
+    /**
+     * @return True if HTTP flags (typically used for experiments) should be enabled, based on the
+     * {@link #READ_HTTP_FLAGS_META_DATA_KEY} meta-data entry in the Android manifest.
+     * @see HttpFlagsLoader
+     */
+    public static boolean shouldReadHttpFlags(Context context) {
+        // TODO: switch the default to true once we confirm the HTTP flags system is working as
+        // intended.
+        return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /*default=*/false);
     }
 
     /**
