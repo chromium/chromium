@@ -4,10 +4,12 @@
 
 #include "ash/system/keyboard_brightness/keyboard_backlight_toggle_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_slider_view.h"
@@ -27,7 +29,10 @@ class UnifiedKeyboardBacklightToggleView
  public:
   UnifiedKeyboardBacklightToggleView(
       KeyboardBacklightToggleController* controller,
-      UnifiedSystemTrayModel* model)
+      UnifiedSystemTrayModel* model,
+      bool toggled_on)
+      // TODO(b/298085976): Instead of inheriting from `UnifiedSliderView`, this
+      // should be a toast created through the ToastManager.
       : UnifiedSliderView(views::Button::PressedCallback(),
                           controller,
                           kUnifiedMenuKeyboardBrightnessIcon,
@@ -37,7 +42,20 @@ class UnifiedKeyboardBacklightToggleView
         model_(model) {
     model_->AddObserver(this);
 
-    toast_label_ = AddChildView(std::make_unique<views::Label>());
+    if (features::IsQsRevampEnabled()) {
+      icon_button_ = AddChildView(std::make_unique<IconButton>(
+          views::Button::PressedCallback(), IconButton::Type::kMedium,
+          /*icon=*/&kUnifiedMenuKeyboardBrightnessIcon,
+          /*accessible_name_id=*/IDS_ASH_STATUS_TRAY_BRIGHTNESS,
+          /*is_togglable=*/false,
+          /*has_border=*/true));
+      icon_button_->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
+    }
+
+    toast_label_ =
+        AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+            toggled_on ? IDS_ASH_STATUS_AREA_TOAST_KBL_ON
+                       : IDS_ASH_STATUS_AREA_TOAST_KBL_OFF)));
     if (chromeos::features::IsJellyEnabled()) {
       toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
@@ -47,6 +65,7 @@ class UnifiedKeyboardBacklightToggleView
       TrayPopupUtils::SetLabelFontList(
           toast_label_, TrayPopupUtils::FontStyle::kPodMenuHeader);
     }
+
     slider()->SetVisible(false);
   }
 
@@ -71,14 +90,18 @@ class UnifiedKeyboardBacklightToggleView
 
  private:
   const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
+
+  // Owned by the views hierarchy.
   raw_ptr<views::Label, ExperimentalAsh> toast_label_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> icon_button_ = nullptr;
 };
 
 }  // namespace
 
 KeyboardBacklightToggleController::KeyboardBacklightToggleController(
-    UnifiedSystemTrayModel* model)
-    : model_(model) {}
+    UnifiedSystemTrayModel* model,
+    bool toggled_on)
+    : model_(model), toggled_on_(toggled_on) {}
 
 KeyboardBacklightToggleController::~KeyboardBacklightToggleController() =
     default;
@@ -86,8 +109,8 @@ KeyboardBacklightToggleController::~KeyboardBacklightToggleController() =
 std::unique_ptr<UnifiedSliderView>
 KeyboardBacklightToggleController::CreateView() {
   DCHECK(!slider_);
-  auto slider =
-      std::make_unique<UnifiedKeyboardBacklightToggleView>(this, model_);
+  auto slider = std::make_unique<UnifiedKeyboardBacklightToggleView>(
+      this, model_, toggled_on_);
   slider_ = slider.get();
   return slider;
 }
