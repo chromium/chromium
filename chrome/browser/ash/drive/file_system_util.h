@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_ASH_DRIVE_FILE_SYSTEM_UTIL_H_
 
 #include "base/files/file_path.h"
-#include "components/drive/file_errors.h"
-#include "url/gurl.h"
 
 class Profile;
 
