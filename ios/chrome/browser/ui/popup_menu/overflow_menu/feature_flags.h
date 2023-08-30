@@ -23,9 +23,6 @@ BASE_DECLARE_FEATURE(kOverflowMenuCustomization);
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 
-// Whether or not the NewOverflowMenuReorderSettings feature is enabled.
-bool IsNewOverflowMenuReorderSettingsEnabled();
-
 // Whether or not the NewOverflowMenuShareChromeAction is enabled.
 bool IsNewOverflowMenuShareChromeActionEnabled();
 
