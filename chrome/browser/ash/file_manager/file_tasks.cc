@@ -439,8 +439,8 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
                                gfx::NativeWindow modal_parent) {
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  const bool offline = drive::util::GetDriveConnectionStatus(profile) !=
-                       drive::util::ConnectionStatus::kConnected;
+  bool offline = drive::util::GetDriveConnectionStatus(profile) !=
+                 drive::util::DRIVE_CONNECTED;
   if (!integration_service || !integration_service->IsMounted() ||
       !integration_service->GetDriveFsInterface()) {
     return GetUserFallbackChoice(
@@ -870,7 +870,7 @@ bool ExecuteFileTask(Profile* profile,
   UMA_HISTOGRAM_ENUMERATION("FileBrowser.ViewingTaskType", task.task_type,
                             NUM_TASK_TYPE);
   if (drive::util::GetDriveConnectionStatus(profile) ==
-      drive::util::ConnectionStatus::kNoNetwork) {
+      drive::util::DRIVE_DISCONNECTED_NONETWORK) {
     UMA_HISTOGRAM_ENUMERATION("FileBrowser.ViewingTaskType.Offline",
                               task.task_type, NUM_TASK_TYPE);
   } else {

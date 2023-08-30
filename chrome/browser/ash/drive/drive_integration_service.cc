@@ -1788,15 +1788,15 @@ void DriveIntegrationService::GetDocsOfflineStats(
 }
 
 void DriveIntegrationService::UpdateNetworkState() {
-  const util::ConnectionStatus status =
+  const util::ConnectionStatusType status =
       util::GetDriveConnectionStatus(profile_);
   VLOG(1) << "UpdateNetworkState: " << status;
 
-  using enum util::ConnectionStatus;
-  is_online_ = status == kMetered || status == kConnected;
+  using enum util::ConnectionStatusType;
+  is_online_ = status == DRIVE_CONNECTED_METERED || status == DRIVE_CONNECTED;
 
   if (DriveFs* const drivefs = GetDriveFsInterface()) {
-    const bool pause_syncing = status == kMetered;
+    const bool pause_syncing = status == DRIVE_CONNECTED_METERED;
     drivefs->UpdateNetworkState(pause_syncing, !is_online_);
   }
 

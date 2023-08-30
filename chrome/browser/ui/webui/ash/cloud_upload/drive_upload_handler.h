@@ -107,7 +107,7 @@ class DriveUploadHandler
   void OnError(const drivefs::mojom::DriveError& error) override;
 
   void OnDriveConnectionStatusChanged(
-      drive::util::ConnectionStatus status) override;
+      drive::util::ConnectionStatusType status) override;
 
   // Checks the alternate URL from the request file's metadata.
   void OnGetDriveMetadata(bool timed_out,

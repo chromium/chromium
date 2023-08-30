@@ -101,7 +101,8 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
   virtual void OnBulkPinInitialized() {}
 
   // Triggered when the network connection to Drive could have changed.
-  virtual void OnDriveConnectionStatusChanged(util::ConnectionStatus status) {}
+  virtual void OnDriveConnectionStatusChanged(
+      util::ConnectionStatusType status) {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class

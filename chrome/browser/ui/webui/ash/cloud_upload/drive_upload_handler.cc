@@ -152,7 +152,7 @@ void DriveUploadHandler::Run(UploadCallback callback) {
   }
 
   if (drive::util::GetDriveConnectionStatus(profile_) !=
-      drive::util::ConnectionStatus::kConnected) {
+      drive::util::DRIVE_CONNECTED) {
     LOG(ERROR) << "No connection to Drive";
     OnEndCopy(base::unexpected(GetGenericErrorMessage()),
               OfficeFilesUploadResult::kNoConnection);
@@ -519,8 +519,8 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
 }
 
 void DriveUploadHandler::OnDriveConnectionStatusChanged(
-    drive::util::ConnectionStatus status) {
-  if (status != drive::util::ConnectionStatus::kConnected) {
+    drive::util::ConnectionStatusType status) {
+  if (status != drive::util::DRIVE_CONNECTED) {
     LOG(ERROR) << "Lost connection to Drive during upload";
     OnEndCopy(base::unexpected(GetGenericErrorMessage()),
               OfficeFilesUploadResult::kNoConnection);

@@ -110,12 +110,11 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
 
   if (file_system_urls_.size() == 1 &&
       file_system_urls_[0].type() == storage::kFileSystemTypeDriveFs) {
-    using drive::util::ConnectionStatus;
-    const ConnectionStatus status = drive::util::GetDriveConnectionStatus(
+    auto connection_status = drive::util::GetDriveConnectionStatus(
         Profile::FromBrowserContext(browser_context()));
 
-    using enum ConnectionStatus;
-    if (status == kMetered || status == kConnected) {
+    if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
+        connection_status == drive::util::DRIVE_CONNECTED) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
           file_system_urls_[0], profile_,
           base::BindOnce(
@@ -246,12 +245,11 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
 
   if (file_system_urls_.size() == 1 &&
       file_system_urls_[0].type() == storage::kFileSystemTypeDriveFs) {
-    using drive::util::ConnectionStatus;
-    const ConnectionStatus status = drive::util::GetDriveConnectionStatus(
+    auto connection_status = drive::util::GetDriveConnectionStatus(
         Profile::FromBrowserContext(browser_context()));
 
-    using enum ConnectionStatus;
-    if (status == kMetered || status == kConnected) {
+    if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
+        connection_status == drive::util::DRIVE_CONNECTED) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
           file_system_urls_[0], profile_,
           base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
