@@ -55,18 +55,18 @@ TEST_F(SwapConfigurationPressureThreshold, ArcDefault) {
   feature_list_.InitAndEnableFeature(kCrOSMemoryPressureSignalStudyArc);
   ConfigureSwap(/*arc_enabled=*/true);
 
-  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 520u);
+  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 800u);
   EXPECT_EQ(resourced_client_->get_moderate_margin_bps(), 4000u);
 }
 
 TEST_F(SwapConfigurationPressureThreshold, ArcCustom) {
   feature_list_.InitAndEnableFeatureWithParameters(
       kCrOSMemoryPressureSignalStudyArc,
-      {{kCrOSMemoryPressureSignalStudyArcCriticalBps.name, "800"},
+      {{kCrOSMemoryPressureSignalStudyArcCriticalBps.name, "1000"},
        {kCrOSMemoryPressureSignalStudyArcModerateBps.name, "6000"}});
   ConfigureSwap(/*arc_enabled=*/true);
 
-  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 800u);
+  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 1000u);
   EXPECT_EQ(resourced_client_->get_moderate_margin_bps(), 6000u);
 }
 

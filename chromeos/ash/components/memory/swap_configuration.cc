@@ -28,10 +28,10 @@ const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcModerateBps{
 
 BASE_FEATURE(kCrOSMemoryPressureSignalStudyArc,
              "ChromeOSMemoryPressureSignalStudyArc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcCriticalBps{
-    &kCrOSMemoryPressureSignalStudyArc, "critical_threshold_percentage", 520};
+    &kCrOSMemoryPressureSignalStudyArc, "critical_threshold_percentage", 800};
 
 const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcModerateBps{
     &kCrOSMemoryPressureSignalStudyArc, "moderate_threshold_percentage", 4000};
