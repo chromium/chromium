@@ -181,7 +181,7 @@ class FirstRunAppRestrictionInfo {
         if (startTime > 0) {
             mCompletionElapsedRealtimeMs = SystemClock.elapsedRealtime();
             long runTime = mCompletionElapsedRealtimeMs - startTime;
-            Log.d(TAG,
+            Log.i(TAG,
                     String.format(Locale.US, "Policy received. Runtime: [%d], result: [%s]",
                             runTime, isAppRestricted));
         }

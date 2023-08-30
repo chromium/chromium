@@ -481,6 +481,8 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
     // If and when crbug.com/1221454 gets fixed, we should drop the WeakPtr
     // construction and checks here.
     const auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    VLOG_POLICY(2, POLICY_PROCESSING)
+        << "PolicyService is initialized for domain: " << policy_domain;
     for (auto& observer : iter->second) {
       observer.OnPolicyServiceInitialized(policy_domain);
       if (!weak_this) {

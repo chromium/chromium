@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.enterprise.util;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -14,6 +15,8 @@ import org.chromium.base.annotations.NativeMethods;
 
 /** Provide the enterprise information for the current device and profile. */
 public abstract class EnterpriseInfo {
+    private static final String TAG = "EnterpriseInfo";
+
     private static EnterpriseInfo sInstance;
 
     /** A simple tuple to hold onto named fields about the state of ownership. */
@@ -83,6 +86,7 @@ public abstract class EnterpriseInfo {
     @CalledByNative
     public static void getManagedStateForNative() {
         Callback<OwnedState> callback = (result) -> {
+            Log.i(TAG, "#getManagedStateForNative() " + result);
             if (result == null) {
                 // Unable to determine the owned state, assume it's not owned.
                 EnterpriseInfoJni.get().updateNativeOwnedState(false, false);

@@ -175,6 +175,7 @@ jboolean SigninManagerAndroid::IsForceSigninEnabled(JNIEnv* env) {
 }
 
 void SigninManagerAndroid::OnSigninAllowedPrefChanged() const {
+  VLOG(1) << "::OnSigninAllowedPrefChanged() " << IsSigninAllowed();
   Java_SigninManagerImpl_onSigninAllowedByPolicyChanged(
       base::android::AttachCurrentThread(), java_signin_manager_,
       IsSigninAllowed());

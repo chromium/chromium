@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.components.policy.PolicyService;
@@ -29,6 +30,8 @@ import org.chromium.components.policy.PolicyService.Observer;
  *  - Supplies [False] if no app restriction is found, thus no polices will be found on device.
  */
 public class PolicyLoadListener implements OneshotSupplier<Boolean> {
+    private static final String TAG = "PolicyLoadListener";
+
     private final CallbackController mCallbackController;
     private final OneshotSupplierImpl<Boolean> mMightHavePoliciesSupplier;
     private final OneshotSupplier<PolicyService> mPolicyServiceSupplier;
@@ -97,6 +100,9 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
         boolean confirmedNoAppRestriction = mHasRestriction != null && !mHasRestriction;
         boolean policyServiceInitialized = (mPolicyServiceSupplier.get() != null
                 && mPolicyServiceSupplier.get().isInitializationComplete());
+        Log.i(TAG,
+                "#setSupplierIfDecidable() confirmedNoAppRestriction:" + confirmedNoAppRestriction
+                        + " policyServiceInitialized:" + policyServiceInitialized);
         if (confirmedNoAppRestriction) {
             // No app restriction is found.
             mMightHavePoliciesSupplier.set(false);
@@ -112,6 +118,8 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     }
 
     private void onPolicyServiceAvailable(PolicyService policyService) {
+        Log.i(TAG, "#onPolicyServiceAvailable() " + policyService.isInitializationComplete());
+
         // Ignore the signal if loading is no longer necessary.
         if (mMightHavePoliciesSupplier.get() != null) return;
 
@@ -123,6 +131,9 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
             mPolicyServiceObserver = new Observer() {
                 @Override
                 public void onPolicyServiceInitialized() {
+                    Log.i(TAG,
+                            "#onPolicyServiceInitialized() "
+                                    + policyService.isInitializationComplete());
                     policyService.removeObserver(mPolicyServiceObserver);
                     mPolicyServiceObserver = null;
                     setSupplierIfDecidable();

@@ -6,12 +6,15 @@ package org.chromium.components.policy;
 
 import android.os.Bundle;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
 /**
  * Base class for Policy providers.
  */
 public abstract class PolicyProvider {
+    private static final String TAG = "PolicyProvider";
+
     private CombinedPolicyProvider mCombinedPolicyProvider;
     private int mSource = -1;
 
@@ -19,6 +22,7 @@ public abstract class PolicyProvider {
 
     public void notifySettingsAvailable(Bundle settings) {
         ThreadUtils.assertOnUiThread();
+        Log.i(TAG, "#notifySettingsAvailable() " + mSource);
         mCombinedPolicyProvider.onSettingsAvailable(mSource, settings);
     }
 
@@ -51,6 +55,7 @@ public abstract class PolicyProvider {
         assert mCombinedPolicyProvider == null;
         mCombinedPolicyProvider = combinedPolicyProvider;
         startListeningForPolicyChanges();
+        Log.i(TAG, "#setManagerAndSource() " + mSource);
     }
 
     /** Called when the provider is unregistered */

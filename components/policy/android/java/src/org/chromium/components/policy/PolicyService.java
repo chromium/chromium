@@ -4,6 +4,7 @@
 
 package org.chromium.components.policy;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -24,6 +25,8 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("policy::android")
 public class PolicyService {
+    private static final String TAG = "PolicyService";
+
     private long mNativePolicyService;
     private final ObserverList<Observer> mObservers = new ObserverList<Observer>();
 
@@ -95,6 +98,7 @@ public class PolicyService {
      */
     @CalledByNative
     private void onPolicyServiceInitialized() {
+        Log.i(TAG, "#onPolicyServiceInitialized()");
         for (Observer observer : mObservers) {
             observer.onPolicyServiceInitialized();
         }

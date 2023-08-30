@@ -131,6 +131,9 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
         ThreadUtils.assertOnUiThread();
         assert result != null;
         mOwnedState = result;
+        Log.i(TAG,
+                "#setCacheResult() deviceOwned:" + result.mDeviceOwned
+                        + " profileOwned:" + result.mProfileOwned);
     }
 
     @VisibleForTesting

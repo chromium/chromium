@@ -6,12 +6,16 @@ package org.chromium.components.policy;
 
 import android.os.Bundle;
 
+import org.chromium.base.Log;
+
 import java.util.Map;
 
 /**
  * {@link PolicyProvider} based on values from {@link PolicyCache}.
  */
 public class PolicyCacheProvider extends PolicyProvider {
+    private static final String TAG = "PolicyCacheProvider";
+
     private Bundle mSettings;
 
     @Override
@@ -44,6 +48,7 @@ public class PolicyCacheProvider extends PolicyProvider {
             assert false : "Invalid policy type from cache";
         }
         mSettings = settings;
+        Log.i(TAG, "#refresh() " + mSettings.isEmpty());
         if (!mSettings.isEmpty()) {
             // There's a trade off between Java code correctness and native code correctness here.
             // The native code assumes that policies are ready immediately and does not wait. So
