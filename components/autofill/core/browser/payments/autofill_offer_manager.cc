@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -130,14 +131,15 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
 void AutofillOfferManager::GetShoppingServiceOfferForUrl(
     const GURL& url,
     AsyncOfferCallback callback) {
-  if (!shopping_service_delegate_ ||
-      !shopping_service_delegate_->IsDiscountEligibleToShowOnNavigation()) {
-    return;
+  if ((shopping_service_delegate_ &&
+       shopping_service_delegate_->IsDiscountEligibleToShowOnNavigation()) ||
+      (base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleDiscounts))) {
+    shopping_service_delegate_->GetDiscountInfoForUrls(
+        {url}, base::BindOnce(
+                   &AutofillOfferManager::HandleShoppingServiceResponse,
+                   weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
   }
-  shopping_service_delegate_->GetDiscountInfoForUrls(
-      {url},
-      base::BindOnce(&AutofillOfferManager::HandleShoppingServiceResponse,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {

@@ -25,9 +25,11 @@ class PromoCodeLabelView : public views::FlexLayoutView {
   void OnThemeChanged() override;
 
   raw_ptr<views::LabelButton> GetCopyButtonForTesting();
+  const std::u16string& GetPromoCodeLabelTextForTesting() const;
 
  private:
   raw_ptr<views::MdTextButton> copy_button_ = nullptr;
+  raw_ptr<views::Label> promo_code_label_ = nullptr;
 };
 }  // namespace autofill
 

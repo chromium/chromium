@@ -9,6 +9,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/search/ntp_features.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -37,6 +39,15 @@ bool IsOfferValid(AutofillOfferData* offer) {
   return true;
 }
 
+bool UrlContainsDiscountUtmTag(const GURL& url) {
+  std::string utm_name;
+  // TODO(b:289242951): Update the utm tag and value once they are finalized.
+  if (!net::GetValueForKeyInQuery(url, "utm_source", &utm_name)) {
+    return false;
+  }
+  return utm_name == "chrome-history-cluster-with-discount";
+}
+
 }  // namespace
 
 OfferNotificationHandler::OfferNotificationHandler(
@@ -49,7 +60,13 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     AutofillClient* client) {
   const GURL url = client->GetLastCommittedPrimaryMainFrameURL();
 
-  if (ValidOfferExistsForUrl(url)) {
+  bool show_offer_notification_sync =
+      !(base::FeatureList::IsEnabled(
+            ntp_features::kNtpHistoryClustersModuleDiscounts) &&
+        UrlContainsDiscountUtmTag(url)) &&
+      ValidOfferExistsForUrl(url);
+
+  if (show_offer_notification_sync) {
     // Try to show offer notification when the last committed URL has the domain
     // that an offer is applicable for.
     // TODO(crbug.com/1203811): GetOfferForUrl needs to know whether to give
@@ -67,12 +84,17 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     shown_notification_ids_.insert(offer->GetOfferId());
   } else {
     client->DismissOfferNotification();
-
-    offer_manager_->GetShoppingServiceOfferForUrl(
-        url, base::BindOnce(&OfferNotificationHandler::
-                                UpdateOfferNotificationForShoppingServiceOffer,
-                            weak_ptr_factory_.GetWeakPtr(), client));
   }
+
+  auto shopping_service_callback =
+      show_offer_notification_sync
+          ? base::DoNothing()
+          : base::BindOnce(&OfferNotificationHandler::
+                               UpdateOfferNotificationForShoppingServiceOffer,
+                           weak_ptr_factory_.GetWeakPtr(), client);
+
+  offer_manager_->GetShoppingServiceOfferForUrl(
+      url, std::move(shopping_service_callback));
 }
 
 void OfferNotificationHandler::ClearShownNotificationIdForTesting() {

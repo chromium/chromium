@@ -45,8 +45,17 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
       ReshowOfferNotificationBubble_OfferDeletedBetweenShows);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            ShowGPayPromoCodeBubble);
+  FRIEND_TEST_ALL_PREFIXES(
+      OfferNotificationBubbleViewsInteractiveUiTest,
+      ShowGPayPromoCodeOffer_WhenGPayPromoCodeOfferAndShoppingServiceOfferAreBothAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      OfferNotificationBubbleViewsInteractiveUiTest,
+      ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(
+      OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
+      ShowShoppingServiceFreeListingOffer_WhenNavigatedFromChromeHistoryCluster);
 
   // AutofillBubbleBase:
   void Hide() override;

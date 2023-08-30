@@ -35,10 +35,10 @@ PromoCodeLabelView::PromoCodeLabelView(
       AddChildView(std::make_unique<views::View>());
   promo_code_label_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
-  auto* promo_code_label = promo_code_label_container->AddChildView(
+  promo_code_label_ = promo_code_label_container->AddChildView(
       std::make_unique<views::Label>(promo_code_text));
-  promo_code_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  promo_code_label->SetMaximumWidthSingleLine(kPromoCodeMaxWidthPx);
+  promo_code_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  promo_code_label_->SetMaximumWidthSingleLine(kPromoCodeMaxWidthPx);
   promo_code_label_container->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -78,6 +78,11 @@ void PromoCodeLabelView::OnThemeChanged() {
 
 raw_ptr<views::LabelButton> PromoCodeLabelView::GetCopyButtonForTesting() {
   return copy_button_;
+}
+
+const std::u16string& PromoCodeLabelView::GetPromoCodeLabelTextForTesting()
+    const {
+  return promo_code_label_->GetText();
 }
 
 }  // namespace autofill

@@ -740,13 +740,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
           IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       ShowShoppingServiceFreeListingOffer) {
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable) {
   const std::string domain_url = "www.merchantsite1.com";
   const GURL with_offer_url = GetUrl(domain_url, "/product1");
   const GURL without_offer_url = GetUrl(domain_url, "/product2");
   const std::string detail = "Discount description detail";
-  const std::string discount_code = "discount-code";
+  const std::string discount_code = "freelisting-discount-code";
   const int64_t discount_id = 123;
   const double expiry_time_sec =
       (AutofillClock::Now() + base::Days(2)).ToDoubleT();
@@ -776,12 +777,153 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   NavigateToAndWaitForForm(with_offer_url);
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
+  if (::features::IsChromeRefresh2023()) {
+    auto* promo_code_label_view =
+        GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
+    EXPECT_TRUE(promo_code_label_view);
+    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+              promo_code_label_view->GetPromoCodeLabelTextForTesting());
+  } else {
+    auto* promo_code_label_button =
+        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
+    EXPECT_TRUE(promo_code_label_button);
+    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+              promo_code_label_button->GetText());
+  }
 
   // Navigates to URL without offers will dismiss the icon.
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls({});
   NavigateToAndWaitForForm(without_offer_url);
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    ShowGPayPromoCodeOffer_WhenGPayPromoCodeOfferAndShoppingServiceOfferAreBothAvailable) {
+  const std::string domain_url = "www.merchantsite1.com";
+  const GURL with_offer_url = GetUrl(domain_url, "/first");
+  const std::string detail = "Discount description detail";
+  const std::string discount_code = "freelisting-discount-code";
+  const int64_t discount_id = 123;
+  const double expiry_time_sec =
+      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(
+          browser()->profile()));
+  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
+  // Simulate FreeListingOffer for a product page on the `domain_url`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*is_merchant_wide=*/false, expiry_time_sec)}}});
+
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation);
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls);
+
+  SetUpGPayPromoCodeOfferDataWithDomains(
+      {GetUrl("www.merchantsite1.com", "/"),
+       GetUrl("www.merchantsite2.com", "/")});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  NavigateToAndWaitForForm(with_offer_url);
+  ASSERT_TRUE(WaitForObservedEvent());
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+
+  if (::features::IsChromeRefresh2023()) {
+    auto* promo_code_label_view =
+        GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
+    EXPECT_FALSE(promo_code_label_view);
+  } else {
+    auto* promo_code_label_button =
+        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
+    EXPECT_FALSE(promo_code_label_button);
+  }
+
+  auto promo_code_styled_label =
+      GetOfferNotificationBubbleViews()->promo_code_label_;
+  EXPECT_TRUE(promo_code_styled_label);
+  EXPECT_EQ(promo_code_styled_label->GetText(),
+            base::ASCIIToUTF16(GetDefaultTestValuePropText()) + u" " +
+                base::ASCIIToUTF16(GetDefaultTestSeeDetailsText()));
+}
+
+using OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest =
+    OfferNotificationBubbleViewsInteractiveUiTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    FreeListingCoupon,
+    OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
+    testing::Values(
+        OfferNotificationBubbleViewsInteractiveUiTestData{
+            "FreeListingCoupon_on_history_cluster",
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}}})},
+        OfferNotificationBubbleViewsInteractiveUiTestData{
+            "FreeListingCoupon_on_history_cluster_chrome_refresh_style",
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}},
+                 {::features::kChromeRefresh2023, {}}})}),
+    GetTestName);
+
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
+    ShowShoppingServiceFreeListingOffer_WhenNavigatedFromChromeHistoryCluster) {
+  const std::string domain_url = "www.merchantsite1.com";
+  const GURL with_offer_url = GetUrl(
+      domain_url, "/first?utm_source=chrome-history-cluster-with-discount");
+  const std::string detail = "Discount description detail";
+  const std::string discount_code = "freelisting-discount-code";
+  const int64_t discount_id = 123;
+  const double expiry_time_sec =
+      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(
+          browser()->profile()));
+  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
+  // Simulate FreeListingOffer for a product page on the `domain_url`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{with_offer_url,
+        {commerce::CreateValidDiscountInfo(
+            detail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", discount_code, discount_id,
+            /*is_merchant_wide=*/false, expiry_time_sec)}}});
+
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation);
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls);
+
+  SetUpGPayPromoCodeOfferDataWithDomains(
+      {GetUrl("www.merchantsite1.com", "/"),
+       GetUrl("www.merchantsite2.com", "/")});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  NavigateToAndWaitForForm(with_offer_url);
+  ASSERT_TRUE(WaitForObservedEvent());
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+
+  if (::features::IsChromeRefresh2023()) {
+    auto* promo_code_label_view =
+        GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
+    EXPECT_TRUE(promo_code_label_view);
+    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+              promo_code_label_view->GetPromoCodeLabelTextForTesting());
+  } else {
+    auto* promo_code_label_button =
+        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
+    EXPECT_TRUE(promo_code_label_button);
+    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+              promo_code_label_button->GetText());
+  }
+
+  auto promo_code_styled_label =
+      GetOfferNotificationBubbleViews()->promo_code_label_;
+  EXPECT_FALSE(promo_code_styled_label);
 }
 
 }  // namespace autofill
