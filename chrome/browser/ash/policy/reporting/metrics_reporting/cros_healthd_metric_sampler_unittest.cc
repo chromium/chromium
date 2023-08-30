@@ -7,6 +7,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_audio_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_boot_performance_sampler_handler.h"
@@ -30,6 +31,22 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 using ::testing::Eq;
 using ::testing::StrEq;
 
+namespace {
+// Child of `CrosHealthdPsrSamplerHandler` that sets wait time between retries
+// to zero to prevent time out in unit tests. This is less intrusive
+// to production code than adding a method `SetWaitTimeForTest` to
+// `CrosHealthdPsrSamplerHandler`.
+class CrosHealthdPsrSamplerHandlerForTest
+    : public CrosHealthdPsrSamplerHandler {
+ public:
+  CrosHealthdPsrSamplerHandlerForTest() { wait_time_ = base::TimeDelta(); }
+  CrosHealthdPsrSamplerHandlerForTest(
+      const CrosHealthdPsrSamplerHandlerForTest&) = delete;
+  CrosHealthdPsrSamplerHandlerForTest& operator=(
+      const CrosHealthdPsrSamplerHandlerForTest&) = delete;
+  ~CrosHealthdPsrSamplerHandlerForTest() override = default;
+};
+
 struct TbtTestCase {
   std::string test_name;
   std::vector<cros_healthd::ThunderboltSecurityLevel> healthd_security_levels;
@@ -37,8 +54,8 @@ struct TbtTestCase {
 };
 
 // Memory constants.
-static constexpr int64_t kTmeMaxKeys = 2;
-static constexpr int64_t kTmeKeysLength = 4;
+constexpr int64_t kTmeMaxKeys = 2;
+constexpr int64_t kTmeKeysLength = 4;
 
 // Boot Performance constants.
 constexpr int64_t kBootUpSeconds = 5054;
@@ -47,6 +64,7 @@ constexpr int64_t kShutdownSeconds = 44003;
 constexpr int64_t kShutdownTimestampSeconds = 49;
 constexpr char kShutdownReason[] = "user-request";
 constexpr char kShutdownReasonNotApplicable[] = "N/A";
+}  // namespace
 
 cros_healthd::AudioInfoPtr CreateAudioInfo(
     bool output_mute,
@@ -277,7 +295,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
 
 TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryNoPsrInfo) {
   const absl::optional<MetricData> optional_result =
-      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandlerForTest>(),
                   CreateSystemResult(CreateSystemInfoWithPsr(nullptr)),
                   cros_healthd::ProbeCategoryEnum::kSystem,
                   CrosHealthdSamplerHandler::MetricType::kTelemetry);
@@ -288,7 +306,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryNoPsrInfo) {
 TEST_F(CrosHealthdMetricSamplerTest,
        TestRuntimeCountersTelemetryErrorGettingPsrInfo) {
   const absl::optional<MetricData> optional_result = CollectData(
-      std::make_unique<CrosHealthdPsrSamplerHandler>(),
+      std::make_unique<CrosHealthdPsrSamplerHandlerForTest>(),
       CreateSystemResultWithError(), cros_healthd::ProbeCategoryEnum::kSystem,
       CrosHealthdSamplerHandler::MetricType::kTelemetry);
 
@@ -298,7 +316,7 @@ TEST_F(CrosHealthdMetricSamplerTest,
 TEST_F(CrosHealthdMetricSamplerTest,
        TestRuntimeCountersTelemetryPsrUnsupported) {
   const absl::optional<MetricData> optional_result =
-      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandlerForTest>(),
                   CreateSystemResult(CreateSystemInfoWithPsrUnsupported()),
                   cros_healthd::ProbeCategoryEnum::kSystem,
                   CrosHealthdSamplerHandler::MetricType::kTelemetry);
@@ -309,7 +327,7 @@ TEST_F(CrosHealthdMetricSamplerTest,
 TEST_F(CrosHealthdMetricSamplerTest,
        TestRuntimeCountersTelemetryPsrNotStarted) {
   const absl::optional<MetricData> optional_result =
-      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandlerForTest>(),
                   CreateSystemResult(CreateSystemInfoWithPsrLogState(
                       cros_healthd::PsrInfo::LogState::kNotStarted)),
                   cros_healthd::ProbeCategoryEnum::kSystem,
@@ -320,7 +338,7 @@ TEST_F(CrosHealthdMetricSamplerTest,
 
 TEST_F(CrosHealthdMetricSamplerTest, TestRuntimeCountersTelemetryPsrStopped) {
   const absl::optional<MetricData> optional_result =
-      CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
+      CollectData(std::make_unique<CrosHealthdPsrSamplerHandlerForTest>(),
                   CreateSystemResult(CreateSystemInfoWithPsrLogState(
                       cros_healthd::PsrInfo::LogState::kStopped)),
                   cros_healthd::ProbeCategoryEnum::kSystem,
@@ -336,6 +354,9 @@ TEST_F(CrosHealthdMetricSamplerTest,
   constexpr uint32_t kS4Counter = 3u;
   constexpr uint32_t kS3Counter = 4u;
 
+  // Use `CrosHealthdPsrSamplerHandler` instead of
+  // `CrosHealthdPsrSamplerHandler` here because the waiting should not be
+  // triggered here.
   const absl::optional<MetricData> optional_result =
       CollectData(std::make_unique<CrosHealthdPsrSamplerHandler>(),
                   CreateSystemResult(CreateSystemInfoWithPsrSupportedRunning(
@@ -360,7 +381,7 @@ TEST_F(CrosHealthdMetricSamplerTest,
             static_cast<int64_t>(kS5Counter));
 }
 
-TEST_P(CrosHealthdMetricSamplerMemoryInfoTest, TestMemoryInfoeporting) {
+TEST_P(CrosHealthdMetricSamplerMemoryInfoTest, TestMemoryInfoReporting) {
   const auto& test_case = GetParam();
   const absl::optional<MetricData> optional_result = CollectData(
       std::make_unique<CrosHealthdMemorySamplerHandler>(),
