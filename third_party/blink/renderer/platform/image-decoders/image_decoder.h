@@ -29,8 +29,11 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
@@ -39,6 +42,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -239,6 +243,12 @@ class PLATFORM_EXPORT ImageDecoder {
   static CompressionFormat GetCompressionFormat(
       scoped_refptr<SharedBuffer> image_data,
       String mime_type);
+
+  // Chooses one of the Blink.DecodedImage.<type>Density.Count.* histograms
+  // based on the image area, and adds 1 to the bucket for the bits per pixel
+  // in the histogram.
+  template <const char type[]>
+  static void UpdateBppHistogram(gfx::Size size, size_t image_size_bytes);
 
   void SetData(scoped_refptr<SegmentReader> data, bool all_data_received) {
     if (failed_) {
@@ -602,6 +612,88 @@ class PLATFORM_EXPORT ImageDecoder {
   // `embedded_color_profile_`.
   std::unique_ptr<ColorProfileTransform> embedded_to_sk_image_transform_;
 };
+
+// static
+template <const char type[]>
+void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
+#define DEFINE_BPP_HISTOGRAM(var, suffix)                                    \
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
+      CustomCountHistogram, var,                                             \
+      (base::StrCat({"Blink.DecodedImage.", type, "Density.Count.", suffix}) \
+           .c_str(),                                                         \
+       1, 1000, 100))
+
+  // From 1 pixel to 1 MP, we have one histogram per 0.1 MP.
+  // From 2 MP to 13 MP, we have one histogram per 1 MP.
+  // Finally, we have one histogram for > 13 MP.
+  DEFINE_BPP_HISTOGRAM(density_point_1_mp_histogram, "0.1MP");
+  DEFINE_BPP_HISTOGRAM(density_point_2_mp_histogram, "0.2MP");
+  DEFINE_BPP_HISTOGRAM(density_point_3_mp_histogram, "0.3MP");
+  DEFINE_BPP_HISTOGRAM(density_point_4_mp_histogram, "0.4MP");
+  DEFINE_BPP_HISTOGRAM(density_point_5_mp_histogram, "0.5MP");
+  DEFINE_BPP_HISTOGRAM(density_point_6_mp_histogram, "0.6MP");
+  DEFINE_BPP_HISTOGRAM(density_point_7_mp_histogram, "0.7MP");
+  DEFINE_BPP_HISTOGRAM(density_point_8_mp_histogram, "0.8MP");
+  DEFINE_BPP_HISTOGRAM(density_point_9_mp_histogram, "0.9MP");
+  static CustomCountHistogram* const density_histogram_small[9] = {
+      &density_point_1_mp_histogram, &density_point_2_mp_histogram,
+      &density_point_3_mp_histogram, &density_point_4_mp_histogram,
+      &density_point_5_mp_histogram, &density_point_6_mp_histogram,
+      &density_point_7_mp_histogram, &density_point_8_mp_histogram,
+      &density_point_9_mp_histogram};
+
+  DEFINE_BPP_HISTOGRAM(density_1_mp_histogram, "01MP");
+  DEFINE_BPP_HISTOGRAM(density_2_mp_histogram, "02MP");
+  DEFINE_BPP_HISTOGRAM(density_3_mp_histogram, "03MP");
+  DEFINE_BPP_HISTOGRAM(density_4_mp_histogram, "04MP");
+  DEFINE_BPP_HISTOGRAM(density_5_mp_histogram, "05MP");
+  DEFINE_BPP_HISTOGRAM(density_6_mp_histogram, "06MP");
+  DEFINE_BPP_HISTOGRAM(density_7_mp_histogram, "07MP");
+  DEFINE_BPP_HISTOGRAM(density_8_mp_histogram, "08MP");
+  DEFINE_BPP_HISTOGRAM(density_9_mp_histogram, "09MP");
+  DEFINE_BPP_HISTOGRAM(density_10_mp_histogram, "10MP");
+  DEFINE_BPP_HISTOGRAM(density_11_mp_histogram, "11MP");
+  DEFINE_BPP_HISTOGRAM(density_12_mp_histogram, "12MP");
+  DEFINE_BPP_HISTOGRAM(density_13_mp_histogram, "13MP");
+  static CustomCountHistogram* const density_histogram_big[13] = {
+      &density_1_mp_histogram,  &density_2_mp_histogram,
+      &density_3_mp_histogram,  &density_4_mp_histogram,
+      &density_5_mp_histogram,  &density_6_mp_histogram,
+      &density_7_mp_histogram,  &density_8_mp_histogram,
+      &density_9_mp_histogram,  &density_10_mp_histogram,
+      &density_11_mp_histogram, &density_12_mp_histogram,
+      &density_13_mp_histogram};
+
+  DEFINE_BPP_HISTOGRAM(density_14plus_mp_histogram, "14+MP");
+
+#undef DEFINE_BPP_HISTOGRAM
+
+  uint64_t image_area = size.Area64();
+  CHECK_NE(image_area, 0u);
+  // The calculation of density_centi_bpp cannot overflow. SetSize() ensures
+  // that image_area won't overflow int32_t. And image_size_bytes must be much
+  // smaller than UINT64_MAX / (100 * 8), which is roughly 2^54, or 16 peta
+  // bytes.
+  base::CheckedNumeric<uint64_t> checked_image_size_bytes = image_size_bytes;
+  base::CheckedNumeric<uint64_t> density_centi_bpp =
+      (checked_image_size_bytes * 100 * 8 + image_area / 2) / image_area;
+
+  CustomCountHistogram* density_histogram;
+  if (image_area <= 900000) {
+    // One histogram per 0.1 MP.
+    int n = (static_cast<int>(image_area) + (100000 - 1)) / 100000;
+    density_histogram = density_histogram_small[n - 1];
+  } else if (image_area <= 13000000) {
+    // One histogram per 1 MP.
+    int n = (static_cast<int>(image_area) + (1000000 - 1)) / 1000000;
+    density_histogram = density_histogram_big[n - 1];
+  } else {
+    density_histogram = &density_14plus_mp_histogram;
+  }
+
+  density_histogram->Count(base::saturated_cast<base::Histogram::Sample>(
+      density_centi_bpp.ValueOrDie()));
+}
 
 }  // namespace blink
 
