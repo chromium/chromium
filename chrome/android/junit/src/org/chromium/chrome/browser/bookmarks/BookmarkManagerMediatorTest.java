@@ -1204,12 +1204,16 @@ public class BookmarkManagerMediatorTest {
         assertTrue(mModelList.get(0).model.get(
                 BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
 
+        reset(mHideKeyboardRunnable);
         searchTextChangeCallback.onResult("");
         assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
         verify(mBookmarkModel, never()).searchBookmarks(eq(""), anyInt());
         verify(mBookmarkModel, never()).searchBookmarks(eq(null), anyInt());
         assertFalse(mModelList.get(0).model.get(
                 BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        assertFalse(propertyModel.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        verifyNoInteractions(mHideKeyboardRunnable);
     }
 
     @Test
@@ -1339,6 +1343,7 @@ public class BookmarkManagerMediatorTest {
     public void testClearFocusOnScroll() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
+        reset(mHideKeyboardRunnable);
 
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
         verify(mOnScrollListenerConsumer).accept(mOnScrollListenerCaptor.capture());
@@ -1363,6 +1368,7 @@ public class BookmarkManagerMediatorTest {
     public void testHideKeyboardOnLostSearchFocus() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
+        reset(mHideKeyboardRunnable);
 
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
         PropertyModel searchBoxRowPropertyModel = mModelList.get(0).model;
@@ -1408,9 +1414,13 @@ public class BookmarkManagerMediatorTest {
         String searchText = "foo";
         searchTextCallback.onResult(searchText);
         assertEquals(searchText, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        assertTrue(propertyModel.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
 
         clearSearchTextRunnable.run();
         assertEquals("", propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        assertFalse(propertyModel.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
     }
 
     @Test

@@ -225,6 +225,12 @@ class BookmarkManagerMediator
 
             setBookmarks(mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
             updateEmptyViewText();
+
+            // Unclear if the search box still has focus or not, and what caused us to switch here.
+            // But if this is a result of a folder navigation, we need to clear out the search UI.
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                setSearchTextAndUpdateButtonVisibility("");
+            }
         }
 
         private void updateEmptyViewText() {
@@ -628,6 +634,9 @@ class BookmarkManagerMediator
         RecordUserAction.record("MobileBookmarkManagerOpenFolder");
         setState(BookmarkUiState.createFolderState(folder, mBookmarkModel));
         mRecyclerView.scrollToPosition(0);
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            setSearchBoxFocusAndHideKeyboardIfNeeded(false);
+        }
     }
 
     @Override
@@ -1377,19 +1386,28 @@ class BookmarkManagerMediator
     private void onSearchTextChangeCallback(String searchText) {
         searchText = searchText == null ? "" : searchText;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
-            getSearchBoxPropertyModel().set(
-                    BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY,
-                    !TextUtils.isEmpty(searchText));
+            setSearchTextAndUpdateButtonVisibility(searchText);
         }
         onSearchChange(searchText, getCurrentSearchPowerFilter());
     }
 
     private void onClearSearchTextRunnable() {
-        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "");
+        setSearchTextAndUpdateButtonVisibility("");
+    }
+
+    private void setSearchTextAndUpdateButtonVisibility(String searchText) {
+        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        boolean isVisible = !TextUtils.isEmpty(searchText);
+        getSearchBoxPropertyModel().set(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, isVisible);
     }
 
     private void onSearchBoxFocusChange(Boolean hasFocus) {
+        assert hasFocus != null;
+        setSearchBoxFocusAndHideKeyboardIfNeeded(hasFocus);
+    }
+
+    private void setSearchBoxFocusAndHideKeyboardIfNeeded(boolean hasFocus) {
         getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
         if (!hasFocus) {
             mHideKeyboardRunnable.run();
