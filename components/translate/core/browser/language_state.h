@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "components/language/core/common/language_util.h"
 
 namespace translate {
 
@@ -99,6 +100,7 @@ class LanguageState {
   void SetPredefinedTargetLanguage(const std::string& language,
                                    bool should_auto_translate) {
     predefined_target_language_ = language;
+    language::ToTranslateLanguageSynonym(&predefined_target_language_);
     should_auto_translate_to_predefined_target_language_ =
         should_auto_translate;
   }
