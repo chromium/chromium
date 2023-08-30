@@ -202,19 +202,24 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(7u, observer_.hotspot_capabilities_changed_count());
 }
 
-TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
+TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_Ready) {
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
           FakeShillSimulatedResult::kSuccess, shill::kTetheringReadinessReady);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CheckTetheringReadiness(),
             HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kReady);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kAllowed,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
   histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
+}
 
+TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_NotAllowed) {
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
           FakeShillSimulatedResult::kSuccess,
@@ -223,12 +228,40 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
   EXPECT_EQ(
       CheckTetheringReadiness(),
       HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kNotAllowed);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
   histogram_tester_.ExpectTotalCount(
-      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kNotAllowed, 1);
+}
 
+TEST_F(HotspotCapabilitiesProviderTest,
+       CheckTetheringReadiness_UpstreamNotAvailable) {
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess,
+          /*readiness_status=*/shill::
+              kTetheringReadinessUpstreamNetworkNotAvailable);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+                kUpstreamNetworkNotAvailable);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::
+          kUpstreamNetworkNotAvailable,
+      1);
+}
+
+TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_EmptyResult) {
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
           FakeShillSimulatedResult::kSuccess,
@@ -237,13 +270,18 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
   EXPECT_EQ(CheckTetheringReadiness(),
             HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
                 kUnknownResult);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
   histogram_tester_.ExpectTotalCount(
-      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 3);
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kUnknownResult,
       1);
+}
 
+TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_Failure) {
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
           FakeShillSimulatedResult::kFailure,
@@ -252,8 +290,11 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
   EXPECT_EQ(CheckTetheringReadiness(),
             HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
                 kShillOperationFailed);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
   histogram_tester_.ExpectTotalCount(
-      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 4);
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::

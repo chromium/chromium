@@ -115,11 +115,7 @@ void HotspotCapabilitiesProvider::NetworkConnectionStateChanged(
   }
 
   if (network->IsConnectedState()) {
-    ShillManagerClient::Get()->CheckTetheringReadiness(
-        base::BindOnce(&HotspotCapabilitiesProvider::OnCheckReadinessSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()),
-        base::BindOnce(&HotspotCapabilitiesProvider::OnCheckReadinessFailure,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+    CheckTetheringReadiness(base::DoNothing());
   }
 }
 
@@ -233,7 +229,7 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
     CheckTetheringReadinessCallback callback,
     const std::string& result) {
   using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
-
+  NET_LOG(EVENT) << "Check tethering readiness result: " << result;
   if (result == shill::kTetheringReadinessReady) {
     SetHotspotAllowStatus(policy_allow_hotspot_
                               ? HotspotAllowStatus::kAllowed
@@ -244,7 +240,7 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
     return;
   }
   if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
-    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
+    SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
     HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
         CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
     std::move(callback).Run(
@@ -259,6 +255,7 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
     return;
   }
   NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
+  SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
   HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
       CheckTetheringReadinessResult::kUnknownResult);
   std::move(callback).Run(CheckTetheringReadinessResult::kUnknownResult);
