@@ -2,7 +2,7 @@
 
 import os
 from urllib.parse import urljoin, urlsplit
-from collections import namedtuple, defaultdict, deque
+from collections import Counter, namedtuple, defaultdict, deque
 from math import ceil
 from typing import Any, Callable, ClassVar, Dict, List, Optional
 
@@ -617,8 +617,6 @@ class PropertyUpdate:
         conditions = []
         errors = []
 
-        value_count = defaultdict(int)
-
         def to_count_value(v):
             if v is None:
                 return v
@@ -659,10 +657,6 @@ class PropertyUpdate:
                         if prev_default:
                             conditions.append((None, prev_default))
                 if error is None:
-                    count_value = to_count_value(value)
-                    value_count[count_value] += len(node.run_info)
-
-                if error is None:
                     conditions.append((expr, value))
                 else:
                     errors.append(error)
@@ -678,6 +672,7 @@ class PropertyUpdate:
                 queue.append((child, parents_and_self))
 
         conditions = conditions[::-1]
+        value_count = Counter(to_count_value(value) for _, value in conditions)
 
         # If we haven't set a default condition, add one and remove all the conditions
         # with the same value
@@ -686,9 +681,9 @@ class PropertyUpdate:
             # or the previous default
             cls_default = to_count_value(self.default_value)
             prev_default = to_count_value(prev_default)
-            commonest_value = max(value_count, key=lambda x:(value_count.get(x),
-                                                             x == cls_default,
-                                                             x == prev_default))
+            commonest_value = max(value_count, key=lambda x: (value_count[x],
+                                                              x == cls_default,
+                                                              x == prev_default))
             if isinstance(commonest_value, tuple):
                 commonest_value = list(commonest_value)
             commonest_value = self.from_ini_value(commonest_value)
