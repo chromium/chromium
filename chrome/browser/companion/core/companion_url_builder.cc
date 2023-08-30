@@ -116,6 +116,7 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
   url_params.set_is_vqs_enabled_on_chrome(base::FeatureList::IsEnabled(
       visual_search::features::kVisualSearchSuggestions));
   url_params.set_is_upload_dialog_supported(true);
+  url_params.set_is_hard_refresh_supported(true);
 #endif
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();

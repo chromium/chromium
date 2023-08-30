@@ -283,6 +283,8 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kCompanionLoadingState) {
     companionProxy.handler.onLoadingState(
         data[ParamType.COMPANION_LOADING_STATE]);
+  } else if (methodType === MethodType.kRefreshCompanionPage) {
+    companionProxy.handler.refreshCompanionPage();
   }
 }
 

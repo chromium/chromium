@@ -460,6 +460,10 @@ void CompanionPageHandler::OpenUrlInBrowser(
   signin_delegate_->OpenUrlInBrowser(url_to_open.value(), use_new_tab);
 }
 
+void CompanionPageHandler::RefreshCompanionPage() {
+  NotifyURLChanged(/*is_full_reload*/ true);
+}
+
 void CompanionPageHandler::OnNavigationError() {
   page_->OnNavigationError();
 }
