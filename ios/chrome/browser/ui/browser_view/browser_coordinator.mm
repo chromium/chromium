@@ -2689,7 +2689,6 @@ enum class ToolbarKind {
 
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
   // Dismiss any presenting modal. Ex. Follow management page.
-
   __weak __typeof(self) weakSelf = self;
   [self.viewController
       clearPresentedStateWithCompletion:^{
@@ -2715,8 +2714,8 @@ enum class ToolbarKind {
   if (NTPHelper) {
     NewTabPageState* ntpState = NTPHelper->GetNTPState();
     ntpState.selectedFeed = feedType;
+    ntpState.shouldScrollToTopOfFeed = YES;
     NTPHelper->SetNTPState(ntpState);
-    // TODO(crbug.com/1329173): Scroll into feed.
   }
 
   // Navigate to NTP in same tab.

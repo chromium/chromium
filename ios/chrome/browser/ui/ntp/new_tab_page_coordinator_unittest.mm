@@ -592,7 +592,7 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
 
   // Change the selected feed and set some scroll position.
   [coordinator_ selectFeedType:FeedTypeFollowing];
-  [coordinator_.NTPViewController setContentOffsetToTopOfFeed:500];
+  [coordinator_.NTPViewController setContentOffsetToTopOfFeedOrLess:500];
 
   FeedType selectedFeed = coordinator_.selectedFeed;
   CGFloat scrollPosition = coordinator_.NTPViewController.scrollPosition;

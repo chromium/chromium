@@ -928,7 +928,7 @@
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
-  [self.NTPViewController setContentOffsetToTopOfFeed:scrollPosition];
+  [self.NTPViewController setContentOffsetToTopOfFeedOrLess:scrollPosition];
 }
 
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {
@@ -952,7 +952,7 @@
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
-  [self.NTPViewController setContentOffsetToTopOfFeed:scrollPosition];
+  [self.NTPViewController setContentOffsetToTopOfFeedOrLess:scrollPosition];
 }
 
 - (BOOL)shouldFeedBeVisible {
