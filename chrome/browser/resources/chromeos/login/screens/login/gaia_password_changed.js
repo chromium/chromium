@@ -177,6 +177,18 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   }
 
   /**
+   * Returns the label for the forgot password dialog.
+   * @param {string} locale The i18n locale.
+   * @returns {string} The translated label text.
+   */
+  getForgotPasswordLabel_(locale) {
+    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
+      return this.i18nDynamic(locale, 'dataLossWarningTitle');
+    }
+    return '';
+  }
+
+  /**
    * Returns the subtitle message for the data loss warning screen.
    * @param {string} locale The i18n locale.
    * @param {string} email The email address that the user is trying to recover.
