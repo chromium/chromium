@@ -58,7 +58,6 @@ namespace viz {
 
 ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     scoped_refptr<gpu::GpuChannelHost> channel,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     int32_t stream_id,
     gpu::SchedulingPriority stream_priority,
     gpu::SurfaceHandle surface_handle,
@@ -81,7 +80,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       attributes_(attributes),
       context_type_(type),
       channel_(std::move(channel)),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       impl_(nullptr),
       buffer_mapper_(buffer_mapper) {
   DCHECK(main_thread_checker_.CalledOnValidThread());

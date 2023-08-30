@@ -677,7 +677,7 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   scoped_refptr<viz::ContextProviderCommandBuffer> provider(
       new viz::ContextProviderCommandBuffer(
           std::move(gpu_channel_host),
-          RenderThreadImpl::current()->GetGpuMemoryBufferManager(),
+
           kGpuStreamIdDefault, kGpuStreamPriorityDefault,
           gpu::kNullSurfaceHandle, GURL(document_url), automatic_flushes,
           support_locking, use_grcontext, gpu::SharedMemoryLimits(), attributes,
@@ -750,7 +750,7 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
   scoped_refptr<viz::ContextProviderCommandBuffer> provider(
       new viz::ContextProviderCommandBuffer(
           std::move(gpu_channel_host),
-          RenderThreadImpl::current()->GetGpuMemoryBufferManager(),
+
           kGpuStreamIdDefault, kGpuStreamPriorityDefault,
           gpu::kNullSurfaceHandle, GURL(document_url), automatic_flushes,
           support_locking, support_grcontext,

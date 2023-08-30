@@ -70,7 +70,6 @@ class ContextProviderCommandBuffer
  public:
   ContextProviderCommandBuffer(
       scoped_refptr<gpu::GpuChannelHost> channel,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int32_t stream_id,
       gpu::SchedulingPriority stream_priority,
       gpu::SurfaceHandle surface_handle,
@@ -150,8 +149,6 @@ class ContextProviderCommandBuffer
   const command_buffer_metrics::ContextType context_type_;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  raw_ptr<gpu::GpuMemoryBufferManager, DanglingUntriaged>
-      gpu_memory_buffer_manager_;
   scoped_refptr<base::SequencedTaskRunner> default_task_runner_;
 
   // |shared_image_interface_| must be torn down after |command_buffer_| to

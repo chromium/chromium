@@ -319,7 +319,6 @@ void UpdateForegroundCrashKey(bool foreground) {
 
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     const gpu::SharedMemoryLimits& limits,
     bool support_locking,
     bool support_gles2_interface,
@@ -349,8 +348,8 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
                                         support_raster_interface &&
                                         !support_gles2_interface;
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-      std::move(gpu_channel_host), gpu_memory_buffer_manager, stream_id,
-      stream_priority, gpu::kNullSurfaceHandle,
+      std::move(gpu_channel_host), stream_id, stream_priority,
+      gpu::kNullSurfaceHandle,
       GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/" +
            viz::command_buffer_metrics::ContextTypeToString(type)),
       automatic_flushes, support_locking, support_grcontext, limits, attributes,
@@ -1047,12 +1046,12 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
   bool support_grcontext = false;
   bool automatic_flushes = false;
   scoped_refptr<viz::ContextProviderCommandBuffer> media_context_provider =
-      CreateOffscreenContext(
-          gpu_channel_host, GetGpuMemoryBufferManager(), limits,
-          support_locking, support_gles2_interface, support_raster_interface,
-          support_oop_rasterization, support_grcontext, automatic_flushes,
-          viz::command_buffer_metrics::ContextType::MEDIA, kGpuStreamIdMedia,
-          kGpuStreamPriorityMedia);
+      CreateOffscreenContext(gpu_channel_host, limits, support_locking,
+                             support_gles2_interface, support_raster_interface,
+                             support_oop_rasterization, support_grcontext,
+                             automatic_flushes,
+                             viz::command_buffer_metrics::ContextType::MEDIA,
+                             kGpuStreamIdMedia, kGpuStreamPriorityMedia);
 
   const bool enable_video_decode_accelerator =
 #if BUILDFLAG(IS_LINUX)
@@ -1140,9 +1139,9 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
   bool support_grcontext = false;
   bool automatic_flushes = false;
   video_frame_compositor_context_provider_ = CreateOffscreenContext(
-      gpu_channel_host, GetGpuMemoryBufferManager(), limits, support_locking,
-      support_gles2_interface, support_raster_interface,
-      support_oop_rasterization, support_grcontext, automatic_flushes,
+      gpu_channel_host, limits, support_locking, support_gles2_interface,
+      support_raster_interface, support_oop_rasterization, support_grcontext,
+      automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
       kGpuStreamIdMedia, kGpuStreamPriorityMedia);
   return video_frame_compositor_context_provider_;
@@ -1184,10 +1183,9 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
   // synchronization between the pepper context and the shared main thread
   // context.
   shared_main_thread_contexts_ = CreateOffscreenContext(
-      std::move(gpu_channel_host), GetGpuMemoryBufferManager(),
-      gpu::SharedMemoryLimits(), support_locking, support_gles2_interface,
-      support_raster_interface, support_oop_rasterization, support_grcontext,
-      automatic_flushes,
+      std::move(gpu_channel_host), gpu::SharedMemoryLimits(), support_locking,
+      support_gles2_interface, support_raster_interface,
+      support_oop_rasterization, support_grcontext, automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
       kGpuStreamIdDefault, kGpuStreamPriorityDefault);
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
@@ -1225,9 +1223,8 @@ RenderThreadImpl::PepperVideoDecodeContextProvider() {
   // synchronization between the pepper context and the shared main thread
   // context.
   pepper_video_decode_contexts_ = CreateOffscreenContext(
-      std::move(gpu_channel_host), GetGpuMemoryBufferManager(),
-      gpu::SharedMemoryLimits::ForMailboxContext(), support_locking,
-      support_gles2_interface, support_raster_interface,
+      std::move(gpu_channel_host), gpu::SharedMemoryLimits::ForMailboxContext(),
+      support_locking, support_gles2_interface, support_raster_interface,
       support_oop_rasterization, support_grcontext, automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
       kGpuStreamIdDefault, kGpuStreamPriorityDefault);
@@ -1701,10 +1698,9 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
                                 : gpu::SharedMemoryLimits();
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_worker_context_provider = CreateOffscreenContext(
-          std::move(gpu_channel_host), GetGpuMemoryBufferManager(),
-          shared_memory_limits, support_locking, support_gles2_interface,
-          support_raster_interface, support_gpu_rasterization,
-          support_grcontext, automatic_flushes,
+          std::move(gpu_channel_host), shared_memory_limits, support_locking,
+          support_gles2_interface, support_raster_interface,
+          support_gpu_rasterization, support_grcontext, automatic_flushes,
           viz::command_buffer_metrics::ContextType::RENDER_WORKER,
           kGpuStreamIdWorker, kGpuStreamPriorityWorker);
 

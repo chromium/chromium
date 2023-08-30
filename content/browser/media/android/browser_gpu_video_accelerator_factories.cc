@@ -31,9 +31,6 @@ void OnGpuChannelEstablished(
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = true;
 
-  gpu::GpuChannelEstablishFactory* factory =
-      BrowserMainLoop::GetInstance()->gpu_channel_establish_factory();
-
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;
 
@@ -43,8 +40,8 @@ void OnGpuChannelEstablished(
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), factory->GetGpuMemoryBufferManager(),
-          stream_id, stream_priority, gpu::kNullSurfaceHandle,
+          std::move(gpu_channel_host), stream_id, stream_priority,
+          gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/"
                            "BrowserGpuVideoAcceleratorFactories::"
                            "CreateGpuVideoAcceleratorFactories")),
