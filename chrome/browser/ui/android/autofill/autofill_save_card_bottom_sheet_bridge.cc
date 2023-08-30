@@ -53,8 +53,13 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
           window_android->GetJavaObject());
 }
 
-AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() =
-    default;
+AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() {
+  if (java_autofill_save_card_bottom_sheet_bridge_) {
+    Java_AutofillSaveCardBottomSheetBridge_destroy(
+        base::android::AttachCurrentThread(),
+        java_autofill_save_card_bottom_sheet_bridge_);
+  }
+}
 
 void AutofillSaveCardBottomSheetBridge::RequestShowContent(
     const AutofillSaveCardUiInfo& ui_info,

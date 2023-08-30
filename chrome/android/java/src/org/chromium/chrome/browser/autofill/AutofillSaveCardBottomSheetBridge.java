@@ -4,29 +4,33 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import android.content.Context;
-import android.view.View;
+import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Consumer;
 
 /**
  * Bridge class providing an entry point for autofill client to trigger the save card bottom sheet.
  */
 @JNINamespace("autofill")
-public class AutofillSaveCardBottomSheetBridge {
+public class AutofillSaveCardBottomSheetBridge
+        extends EmptyBottomSheetObserver implements AutofillSaveCardBottomSheetContent.Delegate {
     private long mNativeAutofillSaveCardBottomSheetBridge;
     private WindowAndroid mWindow;
     private BottomSheetController mBottomSheetController;
+    private AutofillSaveCardBottomSheetContent mBottomSheetContent;
 
     @CalledByNative
     @VisibleForTesting
@@ -35,6 +39,7 @@ public class AutofillSaveCardBottomSheetBridge {
         mNativeAutofillSaveCardBottomSheetBridge = nativeAutofillSaveCardBottomSheetBridge;
         mWindow = window;
         mBottomSheetController = BottomSheetControllerProvider.from(window);
+        mBottomSheetController.addObserver(this);
     }
 
     /**
@@ -43,71 +48,87 @@ public class AutofillSaveCardBottomSheetBridge {
      * The bottom sheet may not be shown in some cases.
      * {@see BottomSheetController#requestShowContent}
      *
-     * @return True if shown.
+     * @param uiInfo An object providing text and images to the bottom sheet
+     * view.
      */
     @CalledByNative
-    public boolean requestShowContent(AutofillSaveCardUiInfo uiInfo) {
-        return mBottomSheetController.requestShowContent(
-                new BottomSheetContentImpl(mWindow.getApplicationContext()), /* animate= */ true);
+    public void requestShowContent(AutofillSaveCardUiInfo uiInfo) {
+        if (mNativeAutofillSaveCardBottomSheetBridge != 0) {
+            mBottomSheetContent = new AutofillSaveCardBottomSheetContent(
+                    mWindow.getContext().get(), /*delegate=*/this);
+            mBottomSheetContent.setUiInfo(uiInfo);
+            if (mBottomSheetController.requestShowContent(mBottomSheetContent, /*animate=*/true)) {
+                AutofillSaveCardBottomSheetBridgeJni.get().onUiShown(
+                        mNativeAutofillSaveCardBottomSheetBridge);
+            } else {
+                mBottomSheetContent = null;
+            }
+        }
     }
 
-    // TODO(crbug.com/1454271): Implement save card bottom sheet.
+    // AutofillSaveCardBottomSheetContent.Delegate implementation follows:
+    @Override
+    public void didClickLegalMessageUrl(String url) {
+        new CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(
+                mBottomSheetContent.getContentView().getContext(), Uri.parse(url));
+    }
+
+    @Override
+    public void onSheetClosed(@StateChangeReason int reason) {
+        switch (reason) {
+            case StateChangeReason.BACK_PRESS: // Intentionally fall through.
+            case StateChangeReason.SWIPE: // Intentionally fall through.
+            case StateChangeReason.TAP_SCRIM:
+                callBridgeAndReset(
+                        (nativePointer)
+                                -> AutofillSaveCardBottomSheetBridgeJni.get().onUiCanceled(
+                                        nativePointer));
+                break;
+            case StateChangeReason.INTERACTION_COMPLETE:
+                // Expecting didClickConfirm() and didClickCancel() call the delegate in this case.
+                break;
+            default:
+                callBridgeAndReset(
+                        (nativePointer)
+                                -> AutofillSaveCardBottomSheetBridgeJni.get().onUiIgnored(
+                                        nativePointer));
+                break;
+        }
+    }
+
+    @Override
+    public void didClickConfirm() {
+        mBottomSheetController.hideContent(
+                mBottomSheetContent, /*animate=*/true, StateChangeReason.INTERACTION_COMPLETE);
+        callBridgeAndReset(
+                (nativePointer)
+                        -> AutofillSaveCardBottomSheetBridgeJni.get().onUiAccepted(nativePointer));
+    }
+
+    @Override
+    public void didClickCancel() {
+        mBottomSheetController.hideContent(
+                mBottomSheetContent, /*animate=*/true, StateChangeReason.INTERACTION_COMPLETE);
+        callBridgeAndReset(
+                (nativePointer)
+                        -> AutofillSaveCardBottomSheetBridgeJni.get().onUiCanceled(nativePointer));
+    }
+
+    private void callBridgeAndReset(Consumer<Long> nativeMethod) {
+        if (mBottomSheetContent != null && mNativeAutofillSaveCardBottomSheetBridge != 0) {
+            nativeMethod.accept(mNativeAutofillSaveCardBottomSheetBridge);
+        }
+        mBottomSheetContent = null;
+    }
+
+    @CalledByNative
     @VisibleForTesting
-    static final class BottomSheetContentImpl implements BottomSheetContent {
-        private View mView;
-
-        private BottomSheetContentImpl(Context context) {
-            mView = new View(context);
-        }
-
-        @Override
-        public View getContentView() {
-            return mView;
-        }
-
-        @Nullable
-        @Override
-        public View getToolbarView() {
-            return null;
-        }
-
-        @Override
-        public int getVerticalScrollOffset() {
-            return 0;
-        }
-
-        @Override
-        public void destroy() {}
-
-        @Override
-        public int getPriority() {
-            return ContentPriority.HIGH;
-        }
-
-        @Override
-        public boolean swipeToDismissEnabled() {
-            return false;
-        }
-
-        @Override
-        public int getSheetContentDescriptionStringId() {
-            return android.R.string.ok;
-        }
-
-        @Override
-        public int getSheetHalfHeightAccessibilityStringId() {
-            return android.R.string.ok;
-        }
-
-        @Override
-        public int getSheetFullHeightAccessibilityStringId() {
-            return android.R.string.ok;
-        }
-
-        @Override
-        public int getSheetClosedAccessibilityStringId() {
-            return android.R.string.ok;
-        }
+    /*package*/ void destroy() {
+        mBottomSheetController.removeObserver(this);
+        callBridgeAndReset(
+                (nativePointer)
+                        -> AutofillSaveCardBottomSheetBridgeJni.get().onUiIgnored(nativePointer));
+        mNativeAutofillSaveCardBottomSheetBridge = 0;
     }
 
     @NativeMethods
