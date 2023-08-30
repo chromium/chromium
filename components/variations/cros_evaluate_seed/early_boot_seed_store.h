@@ -42,6 +42,10 @@ class EarlyBootSeedStore : public VariationsSeedStore {
   bool LoadSafeSeed(VariationsSeed* seed,
                     ClientFilterableState* client_state) override;
 
+  // Returns the time at which the safe seed was persisted to the platform-side
+  // store.
+  base::Time GetSafeSeedFetchTime() const override;
+
  private:
   const absl::optional<featured::SeedDetails> safe_seed_details_;
 };

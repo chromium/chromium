@@ -123,7 +123,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   base::Time GetLastFetchTime() const;
 
   // Returns the time at which the safe seed was persisted to the local state.
-  base::Time GetSafeSeedFetchTime() const;
+  //
+  // Virtual for early-boot CrOS experiments to use a different safe seed.
+  virtual base::Time GetSafeSeedFetchTime() const;
 
   // Records |fetch_time| as the last time at which a seed was fetched
   // successfully. Also updates the safe seed's fetch time if the latest and

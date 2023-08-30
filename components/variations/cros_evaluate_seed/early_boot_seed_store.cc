@@ -31,8 +31,8 @@ bool EarlyBootSeedStore::LoadSafeSeed(VariationsSeed* seed,
     return false;
   }
 
-  client_state->reference_date =
-      base::Time::FromJavaTime(safe_seed_details_->date());
+  client_state->reference_date = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Milliseconds(safe_seed_details_->date()));
   client_state->locale = safe_seed_details_->locale();
   client_state->permanent_consistency_country =
       safe_seed_details_->permanent_consistency_country();
@@ -40,6 +40,14 @@ bool EarlyBootSeedStore::LoadSafeSeed(VariationsSeed* seed,
       safe_seed_details_->session_consistency_country();
 
   return true;
+}
+
+base::Time EarlyBootSeedStore::GetSafeSeedFetchTime() const {
+  // We require that evaluate_seed's command line specified a safe seed in order
+  // to use the safe seed.
+  CHECK(safe_seed_details_.has_value());
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Milliseconds(safe_seed_details_->fetch_time()));
 }
 
 }  // namespace variations::cros_early_boot::evaluate_seed

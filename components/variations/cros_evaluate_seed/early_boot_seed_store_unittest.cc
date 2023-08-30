@@ -49,6 +49,7 @@ TEST(EarlyBootSeedStoreTest, LoadSafeSeed) {
 
   featured::SeedDetails safe_seed_details;
   safe_seed_details.set_date(123456789);
+  safe_seed_details.set_fetch_time(987654321);
   safe_seed_details.set_locale("xx-YY");
   safe_seed_details.set_permanent_consistency_country("us");
   safe_seed_details.set_session_consistency_country("ca");
@@ -75,13 +76,18 @@ TEST(EarlyBootSeedStoreTest, LoadSafeSeed) {
   EXPECT_TRUE(store.LoadSafeSeed(&actual_seed, &actual_client_state));
 
   EXPECT_THAT(actual_seed, EqualsProto(safe_seed));
-  EXPECT_EQ(base::Time::FromJavaTime(safe_seed_details.date()),
+  EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(
+                base::Milliseconds(safe_seed_details.date())),
             actual_client_state.reference_date);
   EXPECT_EQ(safe_seed_details.locale(), actual_client_state.locale);
   EXPECT_EQ(safe_seed_details.permanent_consistency_country(),
             actual_client_state.permanent_consistency_country);
   EXPECT_EQ(safe_seed_details.session_consistency_country(),
             actual_client_state.session_consistency_country);
+
+  EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(
+                base::Milliseconds(safe_seed_details.fetch_time())),
+            store.GetSafeSeedFetchTime());
 }
 
 TEST(EarlyBootSeedStoreDeathTest, LoadSafeSeed_Unspecified) {
