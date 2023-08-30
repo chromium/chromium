@@ -19,6 +19,11 @@
 namespace ash::welcome_tour_metrics {
 namespace {
 
+// Constants -------------------------------------------------------------------
+
+static constexpr auto kAllStepsSet =
+    base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All();
+
 // Helpers ---------------------------------------------------------------------
 
 // Clears the pref with the given `pref_name`. Must be called when there is an
@@ -227,35 +232,44 @@ TEST_F(WelcomeTourMetricsEnumTest, AllPreventedReasons) {
 // WelcomeTourMetricsTest ------------------------------------------------------
 
 // Base class for tests that verify Welcome Tour metrics are properly submitted.
-class WelcomeTourMetricsTest : public testing::Test {
- public:
-  WelcomeTourMetricsTest() : scoped_feature_list_(features::kWelcomeTour) {}
+class WelcomeTourMetricsTest : public UserEducationAshTestBase {
+ protected:
+  // Verifies that `record_function` will successfully record all enum values in
+  // `valid_enum_set` to a histogram with name `metric_name`.
+  template <typename E>
+  static void TestEnumHistogram(
+      const std::string& metric_name,
+      base::EnumSet<E, E::kMinValue, E::kMaxValue> valid_enum_set,
+      base::FunctionRef<void(E)> record_function) {
+    static_assert(std::is_enum<E>::value);
+
+    for (auto value : valid_enum_set) {
+      base::HistogramTester histogram_tester;
+
+      record_function(value);
+      histogram_tester.ExpectBucketCount(metric_name, value, 1);
+      histogram_tester.ExpectTotalCount(metric_name, 1);
+    }
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kWelcomeTour};
 };
 
 // Tests -----------------------------------------------------------------------
 
+// Verifies that all valid values of the `Step` enum can be successfully
+// recorded by the `RecordStepAborted()` utility function.
 TEST_F(WelcomeTourMetricsTest, RecordStepAborted) {
-  static constexpr char kStepAbortedMetricName[] =
-      "Ash.WelcomeTour.Step.Aborted";
-
-  for (auto step :
-       base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All()) {
-    base::HistogramTester histogram_tester;
-
-    histogram_tester.ExpectTotalCount(kStepAbortedMetricName, 0);
-    RecordStepAborted(step);
-    histogram_tester.ExpectBucketCount(kStepAbortedMetricName, step, 1);
-    histogram_tester.ExpectTotalCount(kStepAbortedMetricName, 1);
-  }
+  TestEnumHistogram<Step>("Ash.WelcomeTour.Step.Aborted", kAllStepsSet,
+                          &RecordStepAborted);
 }
 
+// Verifies that all valid values of the `Step` enum record their associated
+// duration metrics through the `RecordStepDuration()` utility function.
 TEST_F(WelcomeTourMetricsTest, RecordStepDuration) {
   base::HistogramTester histogram_tester;
-  for (auto step :
-       base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All()) {
+  for (auto step : kAllStepsSet) {
     const auto step_duration_metric_name =
         base::StrCat({"Ash.WelcomeTour.Step.Duration.", ToString(step)});
 
@@ -270,18 +284,64 @@ TEST_F(WelcomeTourMetricsTest, RecordStepDuration) {
   }
 }
 
+// Verifies that all valid values of the `Step` enum can be successfully
+// recorded by the `RecordStepShown()` utility function.
 TEST_F(WelcomeTourMetricsTest, RecordStepShown) {
-  static constexpr char kStepShownMetricName[] = "Ash.WelcomeTour.Step.Shown";
+  TestEnumHistogram<Step>("Ash.WelcomeTour.Step.Shown", kAllStepsSet,
+                          &RecordStepShown);
+}
 
-  for (auto step :
-       base::EnumSet<Step, Step::kMinValue, Step::kMaxValue>::All()) {
+// Verifies that all valid values of the `AbortedReason` enum can be
+// successfully recorded by the `RecordTourAborted()` utility function.
+TEST_F(WelcomeTourMetricsTest, RecordTourAborted) {
+  using AbortedReasonSetType =
+      base::EnumSet<AbortedReason, AbortedReason::kMinValue,
+                    AbortedReason::kMaxValue>;
+
+  TestEnumHistogram<AbortedReason>("Ash.WelcomeTour.Aborted.Reason",
+                                   AbortedReasonSetType::All(),
+                                   &RecordTourAborted);
+}
+
+TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
+  static constexpr char kAbortedTourDurationMetricName[] =
+      "Ash.WelcomeTour.Aborted.Duration";
+  static constexpr char kCompletedTourDurationMetricName[] =
+      "Ash.WelcomeTour.Completed.Duration";
+  static constexpr auto kTestTourLength = base::Seconds(30);
+
+  SimulateNewUserFirstLogin("user@test");
+
+  // Case: Tour is aborted.
+  {
     base::HistogramTester histogram_tester;
 
-    histogram_tester.ExpectTotalCount(kStepShownMetricName, 0);
-    RecordStepShown(step);
-    histogram_tester.ExpectBucketCount(kStepShownMetricName, step, 1);
-    histogram_tester.ExpectTotalCount(kStepShownMetricName, 1);
+    RecordTourDuration(kTestTourLength, /*completed=*/false);
+    histogram_tester.ExpectTotalCount(kAbortedTourDurationMetricName, 1);
+    histogram_tester.ExpectTotalCount(kCompletedTourDurationMetricName, 0);
+    histogram_tester.ExpectTimeBucketCount(kAbortedTourDurationMetricName,
+                                           kTestTourLength, 1);
   }
+
+  // Case: Tour is completed.
+  {
+    base::HistogramTester histogram_tester;
+
+    RecordTourDuration(kTestTourLength, /*completed=*/true);
+    histogram_tester.ExpectTotalCount(kAbortedTourDurationMetricName, 0);
+    histogram_tester.ExpectTotalCount(kCompletedTourDurationMetricName, 1);
+    histogram_tester.ExpectTimeBucketCount(kCompletedTourDurationMetricName,
+                                           kTestTourLength, 1);
+  }
+}
+
+// Verifies that all valid values of the `PreventedReason` enum can be
+// successfully recorded by the `RecordTourPrevented()` utility function.
+TEST_F(WelcomeTourMetricsTest, RecordTourPrevented) {
+  SimulateNewUserFirstLogin("user@test");
+  TestEnumHistogram<PreventedReason>("Ash.WelcomeTour.Prevented.Reason",
+                                     kAllPreventedReasonsSet,
+                                     &RecordTourPrevented);
 }
 
 }  // namespace ash::welcome_tour_metrics

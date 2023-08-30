@@ -22,7 +22,8 @@ namespace ash::welcome_tour_metrics {
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
 enum class AbortedReason {
-  kUnknown = 0,
+  kMinValue = 0,
+  kUnknown = kMinValue,
   kAccelerator = 1,
   kChromeVoxEnabled = 2,
   kTabletModeEnabled = 3,
