@@ -27,9 +27,11 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
           /*model_metadata=*/absl::nullopt) {
-  // Store the model in memory since we query predictions very regularly.
-  // TODO(crbug.com/1465926): Maybe change to true if we see memory
-  // regressions during the rollout.
+  // Store the model in memory as soon as it is available and keep it loaded for
+  // the whole browser session since we query predictions very regularly.
+  // TODO(crbug.com/1465926): Maybe change both back to default behavior if we
+  // see memory regressions during the rollout.
+  SetShouldPreloadModel(true);
   SetShouldUnloadModelOnComplete(false);
 }
 AutofillMlPredictionModelHandler::~AutofillMlPredictionModelHandler() = default;

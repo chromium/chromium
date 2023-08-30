@@ -33,6 +33,19 @@ class NoUnloadingTestTFLiteModelHandler : public TestTFLiteModelHandler {
   }
 };
 
+class AlwaysInMemTestTFLiteModelHandler : public TestTFLiteModelHandler {
+ public:
+  AlwaysInMemTestTFLiteModelHandler(
+      OptimizationGuideModelProvider* model_provider,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+      : TestTFLiteModelHandler(model_provider,
+                               background_task_runner,
+                               std::make_unique<TestTFLiteModelExecutor>()) {
+    SetShouldPreloadModel(true);
+    SetShouldUnloadModelOnComplete(false);
+  }
+};
+
 class EnsureCancelledTestTFLiteModelExecutor : public TestTFLiteModelExecutor {
  protected:
   absl::optional<std::vector<float>> Execute(
@@ -411,7 +424,7 @@ TEST_F(TFLiteModelExecutorTest, BatchExecuteWithLoadedModel) {
 TEST_F(TFLiteModelExecutorTest, BatchExecutionSyncWithLoadedModel) {
   base::HistogramTester histogram_tester;
   // Set up model handler with the current thread.
-  model_handler_ = std::make_unique<NoUnloadingTestTFLiteModelHandler>(
+  model_handler_ = std::make_unique<AlwaysInMemTestTFLiteModelHandler>(
       test_model_provider(), base::SequencedTaskRunner::GetCurrentDefault());
 
   // Load model.
@@ -833,7 +846,7 @@ TEST_F(TFLiteModelExecutorTest, UpdateModelFileWithPreloading) {
   base::HistogramTester histogram_tester;
   CreateModelHandler();
 
-  model_handler_->SetShouldUnloadModelOnComplete(false);
+  model_handler_->SetShouldPreloadModel(true);
   // Invoke UpdateModelFile() to preload model.
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,

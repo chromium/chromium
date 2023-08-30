@@ -156,7 +156,7 @@ AnnotatorImpl::AnnotatorImpl(
           optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
           model_metadata),
       background_task_runner_(background_task_runner) {
-  // Handled manually at the end of every batch.
+  // Unloading the model is done via custom logic in this class.
   SetShouldUnloadModelOnComplete(false);
 }
 AnnotatorImpl::~AnnotatorImpl() = default;

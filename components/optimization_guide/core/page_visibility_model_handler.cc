@@ -34,6 +34,7 @@ PageVisibilityModelHandler::PageVisibilityModelHandler(
           /*model_inference_timeout=*/absl::nullopt,
           proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
           model_metadata) {
+  // Unloading the model is done via custom logic in the PCAService.
   SetShouldUnloadModelOnComplete(false);
 }
 PageVisibilityModelHandler::~PageVisibilityModelHandler() = default;

@@ -68,7 +68,10 @@ AutocompleteScoringModelHandler::AutocompleteScoringModelHandler(
           /*model_inference_timeout=*/absl::nullopt,
           optimization_target,
           model_metadata) {
-  // Keep the model in memory.
+  // Store the model in memory as soon as it is available and keep it loaded for
+  // the whole browser session since model inference is latency sensitive and it
+  // cannot wait for the model to be loaded from disk.
+  SetShouldPreloadModel(true);
   SetShouldUnloadModelOnComplete(false);
 }
 

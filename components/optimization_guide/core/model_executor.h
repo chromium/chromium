@@ -60,6 +60,10 @@ class ModelExecutor {
   // needed.
   virtual void SetShouldUnloadModelOnComplete(bool should_auto_unload) = 0;
 
+  // Sets whether the model should be loaded as soon as its file path is
+  // available.
+  virtual void SetShouldPreloadModel(bool should_preload_model) = 0;
+
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
   virtual void SendForExecution(ExecutionCallback callback_on_complete,

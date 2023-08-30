@@ -28,6 +28,8 @@ class TestModelExecutor
 
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) override {}
 
+  void SetShouldPreloadModel(bool should_preload_model) override {}
+
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<std::vector<float>>&)>;
   void SendForExecution(ExecutionCallback callback_on_complete,

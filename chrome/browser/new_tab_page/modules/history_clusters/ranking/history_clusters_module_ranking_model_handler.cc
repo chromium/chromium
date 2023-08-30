@@ -76,6 +76,7 @@ HistoryClustersModuleRankingModelHandler::
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING,
           /*model_metadata=*/absl::nullopt) {
+  // Unloading the model is done via custom logic in this class.
   SetShouldUnloadModelOnComplete(false);
 }
 

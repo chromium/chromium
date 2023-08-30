@@ -66,7 +66,9 @@ class TestAutocompleteScoringModelExecutor
 
   void UnloadModel() override {}
 
+  // These interfere with the test code which is injecting its own model.
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) override {}
+  void SetShouldPreloadModel(bool should_preload_model) override {}
 };
 
 class AutocompleteScoringModelHandlerTest : public testing::Test {

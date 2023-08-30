@@ -173,6 +173,10 @@ class ModelHandler : public OptimizationTargetModelObserver {
     return batch_model_outputs;
   }
 
+  // Note that keeping the model in memory for a long duration may be detected
+  // as a memory leak in Chrome, and will always increase the private or shared
+  // memory used by the browser by the size of the model file and the
+  // constructed TFLite graph.
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     model_executor_task_runner_->PostTask(
@@ -182,6 +186,20 @@ class ModelHandler : public OptimizationTargetModelObserver {
                            InputType>::SetShouldUnloadModelOnComplete,
             model_executor_->GetWeakPtrForExecutionThread(),
             should_auto_unload));
+  }
+
+  // Note that keeping the model in memory for a long duration may be detected
+  // as a memory leak in Chrome, and will always increase the private or shared
+  // memory used by the browser by the size of the model file and the
+  // constructed TFLite graph.
+  void SetShouldPreloadModel(bool should_preload_model) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    model_executor_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ModelExecutor<OutputType, InputType>::SetShouldPreloadModel,
+            model_executor_->GetWeakPtrForExecutionThread(),
+            should_preload_model));
   }
 
   // Requests that the model executor unload the model from memory, if it is
