@@ -99,12 +99,6 @@ int GetIndexForJankV3Metric(SmoothEffectDrivingThread thread_type,
   return static_cast<int>(type) + kBuiltinSequenceNum;
 }
 
-std::string GetCheckerboardingHistogramName(FrameSequenceTrackerType type) {
-  return base::StrCat(
-      {"Graphics.Smoothness.Checkerboarding.",
-       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
-}
-
 std::string GetCheckerboardingV3HistogramName(FrameSequenceTrackerType type) {
   return base::StrCat(
       {"Graphics.Smoothness.Checkerboarding3.",
@@ -205,7 +199,6 @@ void FrameSequenceMetrics::Merge(
   DCHECK_EQ(GetEffectiveThread(), metrics->GetEffectiveThread());
   impl_throughput_.Merge(metrics->impl_throughput_);
   main_throughput_.Merge(metrics->main_throughput_);
-  frames_checkerboarded_ += metrics->frames_checkerboarded_;
 
   v3_.frames_expected += metrics->v3_.frames_expected;
   v3_.frames_dropped += metrics->v3_.frames_dropped;
@@ -228,7 +221,6 @@ void FrameSequenceMetrics::Merge(
   // up reporting the metrics.
   metrics->impl_throughput_ = {};
   metrics->main_throughput_ = {};
-  metrics->frames_checkerboarded_ = 0;
 }
 
 bool FrameSequenceMetrics::HasEnoughDataForReporting() const {
@@ -293,7 +285,6 @@ void FrameSequenceMetrics::ReportMetrics() {
     main_throughput_ = {};
     impl_throughput_ = {};
     jank_reporter_->Reset();
-    frames_checkerboarded_ = 0;
     return;
   }
 
@@ -378,22 +369,6 @@ void FrameSequenceMetrics::ReportMetrics() {
     v3_.jank_count = 0u;
   }
 
-  // Report the checkerboarding metrics.
-  if (impl_throughput_.frames_expected >= kMinFramesForThroughputMetric) {
-    const int checkerboarding_percent = static_cast<int>(
-        100 * frames_checkerboarded_ / impl_throughput_.frames_expected);
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        GetCheckerboardingHistogramName(type_), static_cast<int>(type_),
-        static_cast<int>(FrameSequenceTrackerType::kMaxType),
-        Add(checkerboarding_percent),
-        base::LinearHistogram::FactoryGet(
-            GetCheckerboardingHistogramName(type_), 1, 100, 101,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
-    ThroughputData::ReportCheckerboardingHistogram(
-        this, SmoothEffectDrivingThread::kCompositor, checkerboarding_percent);
-    frames_checkerboarded_ = 0;
-  }
-
   // Report the jank metrics
   if (jank_reporter_) {
     if (jank_reporter_->thread_type() ==
@@ -451,34 +426,6 @@ void FrameSequenceMetrics::NotifyNoUpdateForJankReporter(
     jank_reporter_->AddFrameWithNoUpdate(sequence_number, frame_interval);
 }
 
-void FrameSequenceMetrics::ThroughputData::ReportCheckerboardingHistogram(
-    FrameSequenceMetrics* metrics,
-    SmoothEffectDrivingThread thread_type,
-    int percent) {
-  const auto sequence_type = metrics->type();
-  DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
-
-  const bool is_animation =
-      ShouldReportForAnimation(sequence_type, thread_type);
-  const bool is_interaction = ShouldReportForInteraction(
-      metrics->type(), thread_type, metrics->GetEffectiveThread());
-
-  if (is_animation) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.Checkerboarding.AllAnimations", percent);
-  }
-
-  if (is_interaction) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.Checkerboarding.AllInteractions", percent);
-  }
-
-  if (is_animation || is_interaction) {
-    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Checkerboarding.AllSequences",
-                             percent);
-  }
-}
-
 std::unique_ptr<base::trace_event::TracedValue>
 FrameSequenceMetrics::ThroughputData::ToTracedValue(
     const ThroughputData& impl,
@@ -505,12 +452,11 @@ FrameSequenceMetrics::TraceData::~TraceData() = default;
 void FrameSequenceMetrics::TraceData::Terminate() {
   if (!enabled || !trace_id)
     return;
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
       "cc,benchmark", "FrameSequenceTracker", TRACE_ID_LOCAL(trace_id), "args",
       ThroughputData::ToTracedValue(metrics->impl_throughput(),
                                     metrics->main_throughput(),
-                                    metrics->GetEffectiveThread()),
-      "checkerboard", metrics->frames_checkerboarded());
+                                    metrics->GetEffectiveThread()));
   trace_id = nullptr;
 }
 

@@ -141,20 +141,6 @@ class CC_EXPORT FrameSequenceTracker {
     uint32_t previous_sequence_delta = 0;
   };
 
-  struct CheckerboardingData {
-    CheckerboardingData();
-    ~CheckerboardingData();
-
-    // Tracks whether the last presented frame had checkerboarding. This is used
-    // to track how many vsyncs showed frames with checkerboarding.
-    bool last_frame_had_checkerboarding = false;
-
-    base::TimeTicks last_frame_timestamp;
-
-    // A list of frame-tokens that had checkerboarding.
-    base::circular_deque<uint32_t> frames;
-  };
-
   void UpdateTrackedFrameData(TrackedFrameData* frame_data,
                               uint64_t source_id,
                               uint64_t sequence_number,
@@ -172,8 +158,6 @@ class CC_EXPORT FrameSequenceTracker {
   TrackedFrameData begin_main_frame_data_;
 
   std::unique_ptr<FrameSequenceMetrics> metrics_;
-
-  CheckerboardingData checkerboarding_;
 
   // Tracks the list of frame-tokens for compositor-frames that included new
   // updates from the main-thread, whose presentation-feedback have not been

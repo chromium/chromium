@@ -5158,7 +5158,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Video" label="Video playback"/>
   <suffix name="WheelScroll" label="Mousewheel driven interaction"/>
   <affected-histogram name="CompositorLatency.Type"/>
-  <affected-histogram name="Graphics.Smoothness.Checkerboarding"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Compositor"/>
   <affected-histogram name="Graphics.Smoothness.Jank.Main"/>
   <affected-histogram name="Graphics.Smoothness.MaxStale"/>

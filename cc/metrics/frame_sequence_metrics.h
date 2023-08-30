@@ -86,11 +86,6 @@ class CC_EXPORT FrameSequenceMetrics {
         const ThroughputData& main,
         FrameInfo::SmoothEffectDrivingThread effective_thred);
 
-    static void ReportCheckerboardingHistogram(
-        FrameSequenceMetrics* metrics,
-        FrameInfo::SmoothEffectDrivingThread thread_type,
-        int percent);
-
     void Merge(const ThroughputData& data) {
       frames_expected += data.frames_expected;
       frames_produced += data.frames_produced;
@@ -131,10 +126,6 @@ class CC_EXPORT FrameSequenceMetrics {
 
   ThroughputData& impl_throughput() { return impl_throughput_; }
   ThroughputData& main_throughput() { return main_throughput_; }
-  void add_checkerboarded_frames(int64_t frames) {
-    frames_checkerboarded_ += frames;
-  }
-  uint32_t frames_checkerboarded() const { return frames_checkerboarded_; }
 
   FrameSequenceTrackerType type() const { return type_; }
 
@@ -221,10 +212,6 @@ class CC_EXPORT FrameSequenceMetrics {
 
   FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
       FrameInfo::SmoothEffectDrivingThread::kUnknown;
-
-  // Tracks the number of produced frames that had some amount of
-  // checkerboarding, and how many frames showed such checkerboarded frames.
-  uint32_t frames_checkerboarded_ = 0;
 
   // Callback invoked to report metrics for kCustom typed sequence.
   CustomReporter custom_reporter_;

@@ -314,10 +314,6 @@ void FrameSequenceTracker::ReportSubmitFrame(
           << TRACKER_DCHECK_MSG;
     }
   }
-
-  if (has_missing_content) {
-    checkerboarding_.frames.push_back(frame_token);
-  }
 }
 
 void FrameSequenceTracker::ReportFrameEnd(
@@ -474,38 +470,6 @@ void FrameSequenceTracker::ReportFramePresented(
       metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kMain,
                              frame_token, feedback.timestamp, vsync_interval);
     }
-
-    if (checkerboarding_.last_frame_had_checkerboarding) {
-      DCHECK(!checkerboarding_.last_frame_timestamp.is_null())
-          << TRACKER_DCHECK_MSG;
-      DCHECK(!feedback.timestamp.is_null()) << TRACKER_DCHECK_MSG;
-
-      // |feedback.timestamp| is the timestamp when the latest frame was
-      // presented. |checkerboarding_.last_frame_timestamp| is the timestamp
-      // when the previous frame (which had checkerboarding) was presented. Use
-      // |feedback.interval| to compute the number of vsyncs that have passed
-      // between the two frames (since that is how many times the user saw that
-      // checkerboarded frame).
-      base::TimeDelta difference =
-          feedback.timestamp - checkerboarding_.last_frame_timestamp;
-      const auto& interval = feedback.interval.is_zero()
-                                 ? viz::BeginFrameArgs::DefaultInterval()
-                                 : feedback.interval;
-      DCHECK(!interval.is_zero()) << TRACKER_DCHECK_MSG;
-      constexpr base::TimeDelta kEpsilon = base::Milliseconds(1);
-      int64_t frames = (difference + kEpsilon).IntDiv(interval);
-      metrics_->add_checkerboarded_frames(frames);
-    }
-
-    const bool frame_had_checkerboarding =
-        base::Contains(checkerboarding_.frames, frame_token);
-    checkerboarding_.last_frame_had_checkerboarding = frame_had_checkerboarding;
-    checkerboarding_.last_frame_timestamp = feedback.timestamp;
-  }
-
-  while (!checkerboarding_.frames.empty() &&
-         !viz::FrameTokenGT(checkerboarding_.frames.front(), frame_token)) {
-    checkerboarding_.frames.pop_front();
   }
 }
 
@@ -671,8 +635,5 @@ void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
   if (metrics_)
     metrics_->AddSortedFrame(args, frame_info);
 }
-
-FrameSequenceTracker::CheckerboardingData::CheckerboardingData() = default;
-FrameSequenceTracker::CheckerboardingData::~CheckerboardingData() = default;
 
 }  // namespace cc

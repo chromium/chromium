@@ -1104,22 +1104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Checkerboarding" units="%"
-    expires_after="2024-02-25">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of frames that were shown with checkerboards during a
-    particular sequence of frames (e.g. during scroll, animation, etc.). Note
-    that this is only recorded for sequences of length &gt; 4.
-
-    Checkerboarding is measured by tracking the number of times checkerboard
-    frames are displayed (as opposed to the number of checkerboard frames
-    produced), since the same checkerboard frame can be displayed more than
-    once.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.Checkerboarding3.AllSequences" units="%"
     expires_after="2024-05-08">
   <owner>jonross@chromium.org</owner>
@@ -1140,9 +1124,6 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
-
-    This is a new implementation of the older
-    Graphics.Smoothness.Checkerboarding metric.
   </summary>
 </histogram>
 
@@ -1164,9 +1145,6 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
-
-    This is a new implementation of the older
-    Graphics.Smoothness.Checkerboarding metric.
   </summary>
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
