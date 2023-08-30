@@ -42,6 +42,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,8 +66,8 @@ constexpr SkColor kBadgeBackgroundColorStart = SkColorSetRGB(0xB5, 0xC4, 0xFF);
 constexpr SkColor kBadgeBackgroundColorEnd = SkColorSetRGB(0xB3, 0xEF, 0xD4);
 
 constexpr char16_t kSettingsTooltipString[] = u"Settings";
-constexpr int kSettingsButtonSizeDip = 32;
 constexpr int kSettingsIconSizeDip = 20;
+constexpr int kSettingsButtonBorderDip = 4;
 
 constexpr int kChipsContainerVerticalSpacingDip = 16;
 constexpr gfx::Insets kChipsMargin =
@@ -245,15 +246,19 @@ void EditorMenuView::AddTitleContainer() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto* title = title_container_->AddChildView(
-      std::make_unique<views::Label>(kContainerTitle));
+  auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
+      kContainerTitle, views::style::CONTEXT_DIALOG_TITLE,
+      views::style::STYLE_HEADLINE_5));
+  title->SetEnabledColorId(ui::kColorSysOnSurface);
 
   auto* badge =
       title_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
   badge->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   badge->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   badge->SetProperty(views::kMarginsKey, kBadgeInsets);
-  auto* text = badge->AddChildView(std::make_unique<views::Label>(kBadgeText));
+  auto* text = badge->AddChildView(std::make_unique<views::Label>(
+      kBadgeText, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_2));
+  text->SetEnabledColorId(ui::kColorSysOnSurface);
   badge->SetPreferredSize(gfx::Size(
       text->GetPreferredSize().width() + 2 * kBadgeHorizontalPaddingDip,
       text->GetPreferredSize().height() + 2 * kBadgeVerticalPaddingDip));
@@ -269,8 +274,6 @@ void EditorMenuView::AddTitleContainer() {
       title_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
   button_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   button_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  button_container->SetPreferredSize(
-      gfx::Size(kSettingsButtonSizeDip, kSettingsButtonSizeDip));
 
   settings_button_ =
       button_container->AddChildView(std::make_unique<views::ImageButton>(
@@ -282,6 +285,8 @@ void EditorMenuView::AddTitleContainer() {
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
                                      cros_tokens::kCrosSysOnSurface,
                                      kSettingsIconSizeDip));
+  settings_button_->SetBorder(
+      views::CreateEmptyBorder(kSettingsButtonBorderDip));
   views::InkDrop::Get(settings_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(settings_button_)->SetBaseColorId(ui::kColorIcon);
@@ -290,8 +295,8 @@ void EditorMenuView::AddTitleContainer() {
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
 
   int width = kContainerMinWidthDip - kTitleContainerInsets.width();
-  int height =
-      std::max(title->GetPreferredSize().height(), kSettingsButtonSizeDip);
+  int height = std::max(title->GetPreferredSize().height(),
+                        settings_button_->GetPreferredSize().height());
   title_container_->SetPreferredSize(gfx::Size(width, height));
 }
 
