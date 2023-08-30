@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
   <owner>mthiesse@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
-    Time startup time for a Custom Tab from the earliest point in startup to the
+    Startup time for a Custom Tab from the earliest point in startup to the
     first navigation commit. Split by varying degrees of warmness, from cold to
     fully pre-loaded through mayLaunchUrl.
 
@@ -654,6 +654,31 @@ chromium-metrics-reviews@google.com.
                  CustomTabsConnection#warmUp is not used"/>
     <variant name="WarmedUp"
         summary="Measures from intent received to first commit when
+                 CustomTabsConnection#warmUp is used"/>
+  </token>
+</histogram>
+
+<histogram name="CustomTabs.Startup.TimeToLargestContentfulPaint.{suffix}"
+    units="ms" expires_after="2024-08-25">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Startup time for a Custom Tab from the earliest point in startup to the
+    Largest Contentful Paint on the first navigation. Split by varying degrees
+    of warmness, from cold to fully pre-loaded through mayLaunchUrl.
+
+    {suffix}.
+  </summary>
+  <token key="suffix">
+    <variant name="Cold" summary="Measures from process creation to LCP"/>
+    <variant name="Speculated"
+        summary="Measures from intent received to LCP when the mayLaunchUrl
+                 speculation is used"/>
+    <variant name="Warm"
+        summary="Measures from intent received to LCP when
+                 CustomTabsConnection#warmUp is not used"/>
+    <variant name="WarmedUp"
+        summary="Measures from intent received to LCP when
                  CustomTabsConnection#warmUp is used"/>
   </token>
 </histogram>
