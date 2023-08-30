@@ -1190,10 +1190,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
           new_aggregatable_report = absl::nullopt;
         }
 
-        if (event_level_status ==
-                AttributionTrigger::EventLevelResult::kInternalError ||
-            aggregatable_status ==
-                AttributionTrigger::AggregatableResult::kInternalError) {
+        if (event_level_status == EventLevelResult::kInternalError ||
+            aggregatable_status == AggregatableResult::kInternalError) {
           min_null_aggregatable_report_time.reset();
         }
 

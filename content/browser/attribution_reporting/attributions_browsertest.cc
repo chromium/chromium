@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       ContentBrowserTestContentBrowserClient>
       browser_client;
   EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
-      .WillRepeatedly(testing::Return(false));
+      .WillRepeatedly(Return(false));
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(

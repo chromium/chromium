@@ -704,7 +704,7 @@ AttributionDataHostManagerImpl::GetReceiverRegistrationContextForTrigger() {
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
-    attribution_reporting::SuitableOrigin reporting_origin,
+    SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
@@ -728,7 +728,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
-    attribution_reporting::SuitableOrigin reporting_origin,
+    SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
     std::vector<network::TriggerVerification> verifications) {
   // This is validated by the Mojo typemapping.

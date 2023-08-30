@@ -337,7 +337,7 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
 
 double AttributionStorageDelegateImpl::ComputeChannelCapacity(
     const CommonSourceInfo& source,
-    const attribution_reporting::EventReportWindows& event_report_windows,
+    const EventReportWindows& event_report_windows,
     base::Time source_time,
     int max_event_level_reports,
     double randomized_response_rate) {
@@ -356,11 +356,11 @@ double AttributionStorageDelegateImpl::ComputeChannelCapacity(
 base::Time AttributionStorageDelegateImpl::GetExpiryTime(
     absl::optional<base::TimeDelta> declared_expiry,
     base::Time source_time,
-    attribution_reporting::mojom::SourceType source_type) {
+    SourceType source_type) {
   base::TimeDelta expiry =
       declared_expiry.value_or(kDefaultAttributionSourceExpiry);
 
-  if (source_type == attribution_reporting::mojom::SourceType::kEvent) {
+  if (source_type == SourceType::kEvent) {
     expiry = expiry.RoundToMultiple(base::Days(1));
   }
 

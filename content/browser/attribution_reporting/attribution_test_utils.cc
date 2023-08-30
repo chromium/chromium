@@ -425,10 +425,9 @@ AttributionTrigger TriggerBuilder::Build(
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
-        attribution_reporting::FilterPair(
-            /*positive=*/attribution_reporting::FiltersForSourceType(
-                SourceType::kEvent),
-            /*negative=*/{}));
+        FilterPair(/*positive=*/attribution_reporting::FiltersForSourceType(
+                       SourceType::kEvent),
+                   /*negative=*/{}));
   }
 
   return AttributionTrigger(
@@ -443,8 +442,7 @@ AttributionTrigger TriggerBuilder::Build(
       destination_origin_, verifications_, is_within_fenced_frame_);
 }
 
-AttributionInfoBuilder::AttributionInfoBuilder(
-    attribution_reporting::SuitableOrigin context_origin)
+AttributionInfoBuilder::AttributionInfoBuilder(SuitableOrigin context_origin)
     : context_origin_(std::move(context_origin)) {}
 
 AttributionInfoBuilder::~AttributionInfoBuilder() = default;

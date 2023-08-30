@@ -997,12 +997,10 @@ TEST_P(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
 
 TEST_P(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
   OpenDatabase();
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetReportingOrigin(
-              *attribution_reporting::SuitableOrigin::Deserialize(
-                  "https://report1.test"))
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                                 "https://report1.test"))
+                             .Build());
 
   delegate()->set_null_aggregatable_reports(
       {AttributionStorageDelegate::NullAggregatableReport{
@@ -1011,8 +1009,7 @@ TEST_P(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
   AttributionTrigger trigger =
       DefaultAggregatableTriggerBuilder()
           .SetReportingOrigin(
-              *attribution_reporting::SuitableOrigin::Deserialize(
-                  "https://report2.test"))
+              *SuitableOrigin::Deserialize("https://report2.test"))
           .Build();
   storage()->MaybeCreateAndStoreReport(trigger);
 

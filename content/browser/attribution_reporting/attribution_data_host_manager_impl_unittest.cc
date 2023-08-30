@@ -141,8 +141,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
       HandleSource(AllOf(SourceRegistrationIs(SourceRegistrationMatches(
                              SourceRegistrationMatcherConfig(
                                  /*source_event_id=*/10,
-                                 *attribution_reporting::DestinationSet::Create(
-                                     {destination_site}),
+                                 *DestinationSet::Create({destination_site}),
                                  /*priority=*/20,
                                  /*debug_key=*/Optional(789), aggregation_keys,
                                  /*debug_reporting=*/true))),
@@ -485,20 +484,18 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     EXPECT_CALL(
         mock_manager_,
-        HandleSource(
-            AllOf(SourceRegistrationIs(
-                      SourceRegistrationMatches(SourceRegistrationMatcherConfig(
-                          /*source_event_id=*/10,
-                          *attribution_reporting::DestinationSet::Create(
-                              {destination_site}),
-                          /*priority=*/20, /*debug_key=*/Optional(789),
-                          aggregation_keys,
-                          /*debug_reporting=*/true))),
-                  SourceTypeIs(SourceType::kNavigation),
-                  ImpressionOriginIs(page_origin),
-                  ReportingOriginIs(reporting_origin),
-                  SourceIsWithinFencedFrameIs(false)),
-            kFrameId));
+        HandleSource(AllOf(SourceRegistrationIs(SourceRegistrationMatches(
+                               SourceRegistrationMatcherConfig(
+                                   /*source_event_id=*/10,
+                                   *DestinationSet::Create({destination_site}),
+                                   /*priority=*/20, /*debug_key=*/Optional(789),
+                                   aggregation_keys,
+                                   /*debug_reporting=*/true))),
+                           SourceTypeIs(SourceType::kNavigation),
+                           ImpressionOriginIs(page_origin),
+                           ReportingOriginIs(reporting_origin),
+                           SourceIsWithinFencedFrameIs(false)),
+                     kFrameId));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource);
   }
@@ -1795,8 +1792,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       HandleSource(AllOf(SourceRegistrationIs(SourceRegistrationMatches(
                              SourceRegistrationMatcherConfig(
                                  /*source_event_id=*/10,
-                                 *attribution_reporting::DestinationSet::Create(
-                                     {destination_site})))),
+                                 *DestinationSet::Create({destination_site})))),
                          SourceTypeIs(SourceType::kEvent),
                          ImpressionOriginIs(page_origin),
                          ReportingOriginIs(reporting_origin),
