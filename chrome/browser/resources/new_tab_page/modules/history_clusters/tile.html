@@ -245,7 +245,7 @@
   <div id="text-container">
     <div id="title" class="truncate">[[visit.pageTitle]]</div>
     <template is="dom-if" if="[[hasDiscount]]" restamp>
-      <div id="discountChip"></div>
+      <div id="discountChip">[[discount]]</div>
     </template>
     <div id="info-container">
       <page-favicon id="icon" url="[[visit.normalizedUrl]]"

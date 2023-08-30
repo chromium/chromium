@@ -142,11 +142,12 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
     assertTrue(!$$(tileElement, '#discountChip'));
 
     // Act.
-    tileElement.hasDiscount = true;
+    tileElement.discount = '15% off';
 
     // Assert.
     await waitAfterNextRender(tileElement);
     assertTrue(!!tileElement);
     assertTrue(!!$$(tileElement, '#discountChip'));
+    assertEquals('15% off', $$(tileElement, '#discountChip')!.textContent);
   });
 });
