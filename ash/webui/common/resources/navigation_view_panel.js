@@ -119,6 +119,8 @@ export class NavigationViewPanelElement extends PolymerElement {
   constructor() {
     super();
     window.addEventListener('menu-tap', () => this.onMenuButtonTap_());
+    window.addEventListener(
+        'navigation-selected', () => this.onNavigationSelected_());
 
     /**
      * Event callback for 'scroll'.
@@ -329,6 +331,14 @@ export class NavigationViewPanelElement extends PolymerElement {
    */
   pageExists(selectorId) {
     return !!this.selectorItems_.find(({id}) => id === selectorId);
+  }
+
+  /** @private */
+  onNavigationSelected_() {
+    // Don't toggle, but rather only close the drawer if it's opened.
+    if (this.$.drawer.open) {
+      this.$.drawer.close();
+    }
   }
 }
 

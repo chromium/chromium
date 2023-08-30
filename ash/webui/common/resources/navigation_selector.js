@@ -67,6 +67,8 @@ export class NavigationSelectorElement extends PolymerElement {
    * @private
    */
   onSelected_(e) {
+    this.dispatchEvent(new CustomEvent(
+        'navigation-selected', {bubbles: true, composed: true}));
     this.selectedItem = e.model.item;
   }
 
