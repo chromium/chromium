@@ -19,8 +19,10 @@ source_set("safe_browsing") {
   ]
   deps = [
     ":safe_browsing_constants",
+    "//build:branding_buildflags",
     "//components/password_manager/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager/objc",

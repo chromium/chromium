@@ -6,8 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
+#import "build/branding_buildflags.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -198,10 +200,18 @@ const CGFloat kSymbolSize = 20;
   if (!_metricIconHeader) {
     UIImage* metricIcon =
         DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
+    NSInteger detailText = IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (safe_browsing::hash_realtime_utils::
+            IsHashRealTimeLookupEligibleInSession()) {
+      detailText = IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO_PROXY;
+    }
+#endif
+
     SafeBrowsingHeaderItem* metricIconItem = [self
              detailItemWithType:ItemTypeMetricIcon
-                     detailText:
-                         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO
+                     detailText:detailText
                           image:metricIcon
         accessibilityIdentifier:kSafeBrowsingStandardProtectionMetricCellId];
     _metricIconHeader = metricIconItem;

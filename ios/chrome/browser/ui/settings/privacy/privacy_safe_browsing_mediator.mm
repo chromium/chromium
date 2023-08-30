@@ -9,7 +9,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "build/branding_buildflags.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -144,6 +146,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
             safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
       standardProtectionSummary =
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (safe_browsing::hash_realtime_utils::
+              IsHashRealTimeLookupEligibleInSession()) {
+        standardProtectionSummary =
+            IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY_PROXY;
+      }
+#endif
     } else {
       standardProtectionSummary =
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY;
