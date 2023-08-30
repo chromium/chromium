@@ -151,14 +151,7 @@ class SearchPrefetchRequest {
   void RecordClickTime();
 
   // Takes ownership of underlying data/objects needed to serve the response.
-  std::unique_ptr<StreamingSearchPrefetchURLLoader>
-  TakeSearchPrefetchURLLoader();
-
-  // If the loader is still serving to a navigation, we should not destroy the
-  // loader because it results in serving an incomplete response.
-  // TODO(https://crbug.com/1400881): We may need to consider using
-  // scoped_refptr. Figure out the safer one.
-  void TransferLoaderOwnershipIfStillServing();
+  scoped_refptr<StreamingSearchPrefetchURLLoader> TakeSearchPrefetchURLLoader();
 
   // Instead of completely letting a navigation stack own the prefetch loader,
   // creates a copy of the prefetched response so that it can be shared among
@@ -226,7 +219,7 @@ class SearchPrefetchRequest {
   bool navigation_prefetch_;
 
   // The ongoing prefetch request. Null before and after the fetch.
-  std::unique_ptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;
+  scoped_refptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;
 
   // Once set, this is used to log the metrics corresponding to the prefetch
   // attempt. Please note this is different from `prerender_preloading_attempt_`

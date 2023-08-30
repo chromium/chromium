@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
@@ -497,10 +498,10 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
   recorder.reason_ = SearchPrefetchServingReason::kServed;
 
   iter->second->MarkPrefetchAsPrerendered();
-  std::unique_ptr<SearchPrefetchURLLoader> response =
+  scoped_refptr<StreamingSearchPrefetchURLLoader> loader =
       iter->second->TakeSearchPrefetchURLLoader();
-  return SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
-      std::move(response));
+  return StreamingSearchPrefetchURLLoader::GetServingResponseHandler(
+      std::move(loader));
   // Do not remove the corresponding entry from `prefetches_` for now, to avoid
   // prefetching the same response over again. The entry will be removed on
   // prerendering activation or other cases.
@@ -571,17 +572,17 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     return {};
   }
 
-  std::unique_ptr<StreamingSearchPrefetchURLLoader> response =
+  scoped_refptr<StreamingSearchPrefetchURLLoader> loader =
       iter->second->TakeSearchPrefetchURLLoader();
 
   iter->second->MarkPrefetchAsServed();
 
-  if (navigation_url != iter->second->prefetch_url())
+  if (navigation_url != iter->second->prefetch_url()) {
     AddCacheEntry(navigation_url, iter->second->prefetch_url());
-
+  }
   DeletePrefetch(iter->first);
-  return SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
-      std::move(response));
+  return StreamingSearchPrefetchURLLoader::GetServingResponseHandler(
+      std::move(loader));
 }
 
 SearchPrefetchURLLoader::RequestHandler
@@ -596,7 +597,7 @@ SearchPrefetchService::TakePrefetchResponseFromDiskCache(
   auto loader = std::make_unique<CacheAliasSearchPrefetchURLLoader>(
       profile_, SearchPrefetchRequest::NetworkAnnotationForPrefetch(),
       prefetch_cache_[navigation_url_without_ref].first);
-  return SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
+  return CacheAliasSearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
       std::move(loader));
 }
 
@@ -619,16 +620,6 @@ void SearchPrefetchService::DeletePrefetch(GURL canonical_search_url) {
 
   prefetches_.erase(canonical_search_url);
   prefetch_expiry_timers_.erase(canonical_search_url);
-
-  if (!prerender_utils::IsSearchSuggestionPrerenderEnabled() ||
-      !prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
-    return;
-  }
-  // If it is still serving, transfer the ownership to itself and let it manage
-  // the deletion. A loader may still serving to a prerendering navigation when
-  // this gets canceled due to expiration, in which case it should ensure it has
-  // finished serving.
-  request->TransferLoaderOwnershipIfStillServing();
 }
 
 void SearchPrefetchService::ReportFetchResult(bool error) {

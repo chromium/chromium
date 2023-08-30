@@ -38,11 +38,11 @@ class CacheAliasSearchPrefetchURLLoader
 
   ~CacheAliasSearchPrefetchURLLoader() override;
 
- private:
-  // SearchPrefetchURLLoader:
-  SearchPrefetchURLLoader::RequestHandler ServingResponseHandlerImpl(
-      std::unique_ptr<SearchPrefetchURLLoader> loader) override;
+  static SearchPrefetchURLLoader::RequestHandler
+  GetServingResponseHandlerFromLoader(
+      std::unique_ptr<CacheAliasSearchPrefetchURLLoader> loader);
 
+ private:
   // network::mojom::URLLoader:
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
