@@ -93,12 +93,6 @@ namespace {
 // Used by wake lock APIs.
 constexpr char kWakeLockReason[] = "AmbientMode";
 
-// Time taken from releasing wake lock to turning off display.
-// NOTE: This value was found experimentally and is temporarily here until the
-// source of the delay is resolved.
-// TODO(b/278939395): Find the code that causes this delay.
-constexpr base::TimeDelta kReleaseWakeLockDelay = base::Seconds(38);
-
 // kAmbientModeRunningDurationMinutes with value 0 means "forever".
 constexpr int kDurationForever = 0;
 
@@ -753,8 +747,7 @@ void AmbientController::StartTimerToReleaseWakeLock() {
   DCHECK(session_duration_in_minutes >= 0);
 
   if (session_duration_in_minutes != kDurationForever) {
-    const base::TimeDelta delay =
-        base::Minutes(session_duration_in_minutes) - kReleaseWakeLockDelay;
+    const base::TimeDelta delay = base::Minutes(session_duration_in_minutes);
     screensaver_running_timer_.Start(FROM_HERE, delay, this,
                                      &AmbientController::ReleaseWakeLock);
   }
