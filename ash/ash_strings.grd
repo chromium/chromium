@@ -3182,6 +3182,14 @@ Turning on battery saver to increase your battery life.
         Noise cancellation
       </message>
 
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_HFP_MIC_SR" desc="label used for input hfp mic sr toggle">
+        Bluetooth Super Resolution
+      </message>
+
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE_HFP_MIC_SR_SUPPORTED" desc="label used to warn that NBS is in use and hfp mic sr supported">
+        Your Chromebook or Bluetooth device is using an older version of Bluetooth. Turn on the Bluetooth Super Resolution or use internal microphone for better audio quality.
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE" desc="label used to warn that NBS is in use">
         Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use the internal microphone for better audio quality.
       </message>
