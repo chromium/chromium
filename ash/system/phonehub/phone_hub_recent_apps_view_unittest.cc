@@ -381,7 +381,9 @@ TEST_F(RecentAppButtonsViewTest, LogRecentAppsTransitionToFailedLatency) {
       1);
 }
 
-TEST_F(RecentAppButtonsViewTest, LogRecentAppsTransitionToSuccessLatency) {
+// TODO(crbug.com/1476926): Disabled due to flakiness.
+TEST_F(RecentAppButtonsViewTest,
+       DISABLED_LogRecentAppsTransitionToSuccessLatency) {
   base::HistogramTester histogram_tester;
 
   NotifyRecentAppAddedOrUpdated();
