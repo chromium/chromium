@@ -80008,6 +80008,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="ModelInKillSwitchList">
     Model was in killswitch list of versions to be removed.
   </int>
+  <int value="9" label="NewModelUpdate">
+    Old model was removed due to new model update.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideProcessHintsResult">

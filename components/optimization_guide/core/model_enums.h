@@ -74,9 +74,11 @@ enum class PredictionModelStoreModelRemovalReason {
   kNoModelInGetModelsResponse = 7,
   // Model was in killswitch list of versions to be removed.
   kModelInKillSwitchList = 8,
+  // Old model was removed due to new model update.
+  kNewModelUpdate = 9,
 
   // Add new values above this line.
-  kMaxValue = kModelInKillSwitchList,
+  kMaxValue = kNewModelUpdate,
 };
 
 }  // namespace optimization_guide

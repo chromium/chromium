@@ -81,7 +81,8 @@ class PredictionModelStore {
 
   // Update the model for |model_info| in the store represented by
   // |optimization_target| and |model_cache_key|. The model files are stored in
-  // |base_model_dir|. |callback| is invoked on completion.
+  // |base_model_dir|. |callback| is invoked on completion. This will schedule
+  // the old model files to be removed.
   void UpdateModel(proto::OptimizationTarget optimization_target,
                    const proto::ModelCacheKey& model_cache_key,
                    const proto::ModelInfo& model_info,
@@ -110,12 +111,15 @@ class PredictionModelStore {
                    const proto::ModelCacheKey& model_cache_key,
                    PredictionModelStoreModelRemovalReason model_removal_reason);
 
+  base::FilePath GetBaseStoreDirForTesting() const;
+
   // Allows tests to reset the store for subsequent tests since the store is a
   // singleton.
   void ResetForTesting();
 
  private:
   friend base::NoDestructor<PredictionModelStore>;
+  friend class PredictionModelStoreBrowserTestBase;
 
   PredictionModelStore();
 
@@ -137,6 +141,9 @@ class PredictionModelStore {
                              const proto::ModelCacheKey& model_cache_key,
                              base::OnceClosure callback,
                              bool model_paths_exist);
+
+  // Schedules the removal of `base_model_dir` in the next Chrome session.
+  void ScheduleModelDirRemoval(const base::FilePath& base_model_dir);
 
   // Removes all models that are considered inactive, such as expired models,
   // models unused for a long time. When models' |keep_beyond_valid_duration| is
