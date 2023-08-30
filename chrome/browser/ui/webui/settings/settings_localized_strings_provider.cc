@@ -1110,8 +1110,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"migratableCardsInfoMultiple",
      IDS_SETTINGS_MULTIPLE_MIGRATABLE_CARDS_INFO},
     {"remoteCreditCardLinkLabel", IDS_SETTINGS_REMOTE_CREDIT_CARD_LINK_LABEL},
-    {"upiIdLabel", IDS_SETTINGS_UPI_ID_LABEL},
-    {"upiIdExpirationNever", IDS_SETTINGS_UPI_ID_EXPIRATION_NEVER},
     {"canMakePaymentToggleLabel", IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL},
     {"autofillDetail", IDS_SETTINGS_AUTOFILL_DETAIL},
     {"passwords", IDS_SETTINGS_PASSWORD_MANAGER},
@@ -1449,10 +1447,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "undoDescription",
       l10n_util::GetStringFUTF16(IDS_UNDO_DESCRIPTION,
                                  undo_accelerator.GetShortcutText()));
-
-  html_source->AddBoolean("showUpiIdSettings",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillSaveAndFillVPA));
 
   html_source->AddBoolean(
       "showHonorific",

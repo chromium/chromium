@@ -606,20 +606,6 @@ ExtensionFunction::ResponseAction AutofillPrivateIsValidIbanFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateGetUpiIdListFunction
-
-ExtensionFunction::ResponseAction AutofillPrivateGetUpiIdListFunction::Run() {
-  autofill::PersonalDataManager* personal_data =
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context()));
-  DCHECK(personal_data && personal_data->IsDataLoaded());
-
-  return RespondNow(
-      ArgumentList(api::autofill_private::GetUpiIdList::Results::Create(
-          personal_data->GetUpiIds())));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAddVirtualCardFunction
 
 ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {

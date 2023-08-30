@@ -448,7 +448,6 @@ void PersonalDataManager::Init(
 PersonalDataManager::~PersonalDataManager() {
   CancelPendingLocalQuery(&pending_synced_local_profiles_query_);
   CancelPendingLocalQuery(&pending_creditcards_query_);
-  CancelPendingLocalQuery(&pending_upi_ids_query_);
   CancelPendingServerQueries();
 
   if (alternative_state_name_map_updater_)
@@ -510,8 +509,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_ibans_query_ || pending_customer_data_query_ ||
-         pending_upi_ids_query_ || pending_offer_data_query_ ||
-         pending_virtual_card_usage_data_query_);
+         pending_offer_data_query_ || pending_virtual_card_usage_data_query_);
 
   if (!result) {
     // Error from the web database.
@@ -531,8 +529,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_ibans_query_ = 0;
     else if (h == pending_customer_data_query_)
       pending_customer_data_query_ = 0;
-    else if (h == pending_upi_ids_query_)
-      pending_upi_ids_query_ = 0;
     else if (h == pending_offer_data_query_)
       pending_offer_data_query_ = 0;
     else if (h == pending_virtual_card_usage_data_query_) {
@@ -591,15 +587,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
         payments_customer_data_ =
             static_cast<WDResult<std::unique_ptr<PaymentsCustomerData>>*>(
                 result.get())
-                ->GetValue();
-        break;
-      case AUTOFILL_UPI_RESULT:
-        DCHECK_EQ(h, pending_upi_ids_query_)
-            << "received UPI IDs from invalid request.";
-        pending_upi_ids_query_ = 0;
-
-        upi_ids_ =
-            static_cast<WDResult<std::vector<std::string>>*>(result.get())
                 ->GetValue();
         break;
       case AUTOFILL_OFFER_DATA:
@@ -855,18 +842,7 @@ void PersonalDataManager::AddUpiId(const std::string& upi_id) {
     return;
   }
 
-  // Don't add a duplicate.
-  if (base::Contains(upi_ids_, upi_id))
-    return;
-
   database_helper_->GetLocalDatabase()->AddUpiId(upi_id);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-}
-
-std::vector<std::string> PersonalDataManager::GetUpiIds() {
-  return upi_ids_;
 }
 
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
@@ -1562,7 +1538,6 @@ void PersonalDataManager::Refresh() {
   LoadCreditCardCloudTokenData();
   LoadIbans();
   LoadPaymentsCustomerData();
-  LoadUpiIds();
   LoadAutofillOffers();
   LoadVirtualCardUsageData();
 }
@@ -2259,18 +2234,6 @@ void PersonalDataManager::LoadIbans() {
   pending_ibans_query_ = database_helper_->GetLocalDatabase()->GetIbans(this);
 }
 
-void PersonalDataManager::LoadUpiIds() {
-  if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED();
-    return;
-  }
-
-  CancelPendingLocalQuery(&pending_upi_ids_query_);
-
-  pending_upi_ids_query_ =
-      database_helper_->GetLocalDatabase()->GetAllUpiIds(this);
-}
-
 void PersonalDataManager::LoadAutofillOffers() {
   if (!database_helper_->GetServerDatabase())
     return;
@@ -2784,8 +2747,7 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_creditcard_billing_addresses_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
-         pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||
-         pending_offer_data_query_ != 0 ||
+         pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||
          pending_virtual_card_usage_data_query_ != 0;
 }
 

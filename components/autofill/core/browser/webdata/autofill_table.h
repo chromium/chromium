@@ -808,9 +808,6 @@ class AutofillTable : public WebDatabaseTable,
   // Adds |upi_id| to the saved UPI IDs.
   bool InsertUpiId(const std::string& upi_id);
 
-  // Returns all the UPI IDs stored in the database.
-  std::vector<std::string> GetAllUpiIds();
-
   // Deletes all data from the server card and profile tables. Returns true if
   // any data was deleted, false if not (so false means "commit not needed"
   // rather than "error").

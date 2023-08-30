@@ -241,17 +241,6 @@ void TestPersonalDataManager::LoadIbans() {
   }
 }
 
-void TestPersonalDataManager::LoadUpiIds() {
-  pending_upi_ids_query_ = 129;
-  {
-    std::vector<std::string> upi_ids = {"vpa@indianbank"};
-    std::unique_ptr<WDTypedResult> result =
-        std::make_unique<WDResult<std::vector<std::string>>>(
-            AUTOFILL_UPI_RESULT, std::move(upi_ids));
-    OnWebDataServiceRequestDone(pending_upi_ids_query_, std::move(result));
-  }
-}
-
 bool TestPersonalDataManager::IsAutofillProfileEnabled() const {
   // Return the value of autofill_profile_enabled_ if it has been set,
   // otherwise fall back to the normal behavior of checking the pref_service.

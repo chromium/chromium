@@ -307,15 +307,6 @@ void AutofillWebDataService::AddUpiId(const std::string& upi_id) {
                                        autofill_backend_, upi_id));
 }
 
-WebDataServiceBase::Handle AutofillWebDataService::GetAllUpiIds(
-    WebDataServiceConsumer* consumer) {
-  return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::GetAllUpiIds,
-                     autofill_backend_),
-      consumer);
-}
-
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentsCustomerData(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(

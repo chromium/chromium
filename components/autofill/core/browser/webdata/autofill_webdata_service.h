@@ -171,9 +171,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Store a UPI ID.
   void AddUpiId(const std::string& upi_id);
 
-  // Gets all the UPI IDs stored in the database.
-  WebDataServiceBase::Handle GetAllUpiIds(WebDataServiceConsumer* consumer);
-
   // Initiates the request for Payments customer data.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the customer data included in the argument |result|. The

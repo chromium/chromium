@@ -269,23 +269,6 @@ class AutofillPrivateIsValidIbanFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetUpiIdListFunction : public ExtensionFunction {
- public:
-  AutofillPrivateGetUpiIdListFunction() = default;
-  AutofillPrivateGetUpiIdListFunction(
-      const AutofillPrivateGetUpiIdListFunction&) = delete;
-  AutofillPrivateGetUpiIdListFunction& operator=(
-      const AutofillPrivateGetUpiIdListFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getUpiIdList",
-                             AUTOFILLPRIVATE_GETUPIIDLIST)
-
- protected:
-  ~AutofillPrivateGetUpiIdListFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateAddVirtualCardFunction : public ExtensionFunction {
  public:
   AutofillPrivateAddVirtualCardFunction() = default;

@@ -44,7 +44,6 @@ typedef enum {
                                  //     AutofillOfferData>>>
   AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<std::unique_ptr<
                                      //     VirtualCardUsageData>>>
-  AUTOFILL_UPI_RESULT,           // WDResult<std::string>
 #if BUILDFLAG(USE_BLINK)         //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>

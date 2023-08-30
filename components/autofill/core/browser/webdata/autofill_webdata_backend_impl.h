@@ -220,8 +220,6 @@ class AutofillWebDataBackendImpl
 
   WebDatabase::State AddUpiId(const std::string& upi_id, WebDatabase* db);
 
-  std::unique_ptr<WDTypedResult> GetAllUpiIds(WebDatabase* db);
-
   // Returns the PaymentsCustomerData from the database.
   std::unique_ptr<WDTypedResult> GetPaymentsCustomerData(WebDatabase* db);
 

@@ -83,7 +83,6 @@ build_webui("build") {
     "autofill_page/iban_list_entry.ts",
     "autofill_page/payments_list.ts",
     "autofill_page/payments_section.ts",
-    "autofill_page/upi_id_list_entry.ts",
     "autofill_page/virtual_card_unenroll_dialog.ts",
     "basic_page/basic_page.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",

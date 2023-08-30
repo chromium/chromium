@@ -4656,16 +4656,6 @@ TEST_F(PersonalDataManagerTest, RemoveObserverInOnPersonalDataChanged) {
   EXPECT_FALSE(observer.IsConnected()) << "Observer not called";
 }
 
-TEST_F(PersonalDataManagerTest, AddAndGetUpiId) {
-  constexpr char upi_id[] = "vpa@indianbank";
-  PersonalDataProfileTaskWaiter waiter(*personal_data_);
-  EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-  personal_data_->AddUpiId(upi_id);
-  waiter.Wait();
-  std::vector<std::string> all_upi_ids = personal_data_->GetUpiIds();
-  EXPECT_THAT(all_upi_ids, testing::ElementsAre(upi_id));
-}
-
 TEST_F(PersonalDataManagerTest, IsEligibleForAddressAccountStorage) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(

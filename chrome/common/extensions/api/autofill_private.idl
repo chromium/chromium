@@ -281,7 +281,6 @@ namespace autofillPrivate {
   callback GetAddressListCallback = void(AddressEntry[] entries);
   callback GetCreditCardListCallback = void(CreditCardEntry[] entries);
   callback GetIbanListCallback = void(IbanEntry[] entries);
-  callback GetUpiIdListCallback = void(DOMString[] entries);
   callback IsValidIbanCallback = void(boolean isValid);
   callback CheckForUserAuthCallback = void(boolean isUserAuthSuccessful);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
@@ -361,10 +360,6 @@ namespace autofillPrivate {
 
     // Enables or disables FIDO Authentication for credit card unmasking.
     static void setCreditCardFIDOAuthEnabledState(boolean enabled);
-
-    // Gets the list of UPI IDs (a.k.a. Virtual Payment Addresses).
-    // |callback|: Callback which will be called with the list of UPI IDs.
-    [supportsPromises] static void getUpiIdList(GetUpiIdListCallback callback);
 
     // Enrolls a credit card into virtual cards.
     // |cardId|: The server side id of the credit card to be enrolled. Note it

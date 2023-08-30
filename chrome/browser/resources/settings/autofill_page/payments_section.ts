@@ -102,14 +102,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * An array of all saved UPI IDs.
-       */
-      upiIds: {
-        type: Array,
-        value: () => [],
-      },
-
-      /**
        * Set to true if user can be verified through FIDO authentication.
        */
       userIsFidoVerifiable_: {
@@ -209,7 +201,6 @@ export class SettingsPaymentsSectionElement extends
   prefs: {[key: string]: any};
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
-  upiIds: string[];
   private showIbanSettingsEnabled_: boolean;
   private userIsFidoVerifiable_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
@@ -262,17 +253,12 @@ export class SettingsPaymentsSectionElement extends
       this.ibans = ibanList;
     };
 
-    const setUpiIdsListener = (upiIdList: string[]) => {
-      this.upiIds = upiIdList;
-    };
-
     // Remember the bound reference in order to detach.
     this.setPersonalDataListener_ = setPersonalDataListener;
 
     // Request initial data.
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
-    this.paymentsManager_.getUpiIdList().then(setUpiIdsListener);
 
     // Listen for changes.
     this.paymentsManager_.setPersonalDataManagerListener(

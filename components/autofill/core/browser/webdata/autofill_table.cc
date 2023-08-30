@@ -2866,17 +2866,6 @@ bool AutofillTable::InsertUpiId(const std::string& upi_id) {
   return db_->GetLastChangeCount() > 0;
 }
 
-std::vector<std::string> AutofillTable::GetAllUpiIds() {
-  sql::Statement select_upi_id_statement;
-  SelectBuilder(db_, select_upi_id_statement, kPaymentsUpiVpaTable, {kVpa});
-
-  std::vector<std::string> upi_ids;
-  while (select_upi_id_statement.Step()) {
-    upi_ids.push_back(select_upi_id_statement.ColumnString(0));
-  }
-  return upi_ids;
-}
-
 bool AutofillTable::ClearAllServerData() {
   sql::Transaction transaction(db_);
   if (!transaction.Begin())

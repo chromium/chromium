@@ -5,7 +5,10 @@
         flex: 1;
       }
 
-      /* The UPI ID list should be the continuation of the previous list. */
+      /**
+       * Additional payment method lists should be the continuation of the
+       * previous list.
+       */
       .list-separator {
         border-top: var(--cr-separator-line);
         width: 100%;
@@ -28,16 +31,6 @@
           </settings-iban-list-entry>
         </template>
       </div>
-      <div class="list-separator" hidden$="[[!showSeparatorBeforeUpiSection_]]">
-      </div>
-      <template is="dom-if" if="[[showUpiIds_(upiIds, enableUpiIds_)]]">
-        <div class="vertical-list list-with-header" role="rowgroup">
-          <template is="dom-repeat" items="[[upiIds]]">
-            <settings-upi-id-list-entry upi-id="[[item]]">
-            </settings-upi-id-list-entry>
-          </template>
-        </div>
-      </template>
     </div>
     <div id="noPaymentMethodsLabel" class="list-item"
         hidden$="[[showAnyPaymentMethods_]]">

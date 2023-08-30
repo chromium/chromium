@@ -788,16 +788,6 @@ WebDatabase::State AutofillWebDataBackendImpl::AddUpiId(
   return WebDatabase::COMMIT_NEEDED;
 }
 
-std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAllUpiIds(
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-
-  std::vector<std::string> upi_ids =
-      AutofillTable::FromWebDatabase(db)->GetAllUpiIds();
-  return std::make_unique<WDResult<std::vector<std::string>>>(
-      AUTOFILL_UPI_RESULT, std::move(upi_ids));
-}
-
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetPaymentsCustomerData(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());

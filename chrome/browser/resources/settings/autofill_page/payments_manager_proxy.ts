@@ -69,11 +69,6 @@ export interface PaymentsManagerProxy {
   setCreditCardFidoAuthEnabledState(enabled: boolean): void;
 
   /**
-   * Requests the list of UPI IDs from personal data.
-   */
-  getUpiIdList(): Promise<string[]>;
-
-  /**
    * Enrolls the card into virtual cards.
    */
   addVirtualCard(cardId: string): void;
@@ -163,10 +158,6 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   setCreditCardFidoAuthEnabledState(enabled: boolean) {
     chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState(enabled);
-  }
-
-  getUpiIdList() {
-    return chrome.autofillPrivate.getUpiIdList();
   }
 
   addVirtualCard(cardId: string) {

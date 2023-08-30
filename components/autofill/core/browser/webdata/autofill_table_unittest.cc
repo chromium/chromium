@@ -3101,16 +3101,6 @@ TEST_F(AutofillTableTest, InsertUpiId) {
   EXPECT_FALSE(s_inspect.Step());
 }
 
-TEST_F(AutofillTableTest, GetAllUpiIds) {
-  constexpr char upi_id1[] = "name@indianbank";
-  constexpr char upi_id2[] = "vpa@icici";
-  EXPECT_TRUE(table_->InsertUpiId(upi_id1));
-  EXPECT_TRUE(table_->InsertUpiId(upi_id2));
-
-  std::vector<std::string> upi_ids = table_->GetAllUpiIds();
-  ASSERT_THAT(upi_ids, UnorderedElementsAre(upi_id1, upi_id2));
-}
-
 TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
   // Set Offer ID.
   int64_t offer_id_1 = 1;

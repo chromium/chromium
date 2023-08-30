@@ -66,7 +66,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
-  void LoadUpiIds() override;
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;

@@ -214,9 +214,6 @@ class PersonalDataManager : public KeyedService,
   // the database.
   virtual void AddUpiId(const std::string& upi_id);
 
-  // Returns all the stored UPI IDs.
-  virtual std::vector<std::string> GetUpiIds();
-
   // Adds |profile| to the web database.
   virtual void AddProfile(const AutofillProfile& profile);
 
@@ -766,9 +763,6 @@ class PersonalDataManager : public KeyedService,
   // Loads the payments customer data from the web database.
   virtual void LoadPaymentsCustomerData();
 
-  // Loads the saved UPI IDs from the web database.
-  virtual void LoadUpiIds();
-
   // Loads the autofill offer data from the web database.
   virtual void LoadAutofillOffers();
 
@@ -840,9 +834,6 @@ class PersonalDataManager : public KeyedService,
   // Cached versions of the local IBANs.
   std::vector<std::unique_ptr<Iban>> local_ibans_;
 
-  // Cached UPI IDs.
-  std::vector<std::string> upi_ids_;
-
   // Cached version of the CreditCardCloudTokenData obtained from the database.
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
       server_credit_card_cloud_token_data_;
@@ -872,7 +863,6 @@ class PersonalDataManager : public KeyedService,
       0;
   WebDataServiceBase::Handle pending_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
-  WebDataServiceBase::Handle pending_upi_ids_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
 

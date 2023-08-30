@@ -12,7 +12,6 @@ import '../settings_shared.css.js';
 import './credit_card_list_entry.js';
 import './iban_list_entry.js';
 import './passwords_shared.css.js';
-import './upi_id_list_entry.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -45,27 +44,12 @@ export class SettingsPaymentsListElement extends PolymerElement {
       ibans: Array,
 
       /**
-       * An array of all saved UPI Virtual Payment Addresses.
-       */
-      upiIds: Array,
-
-      /**
        * True if displaying IBANs in settings is enabled.
        */
       enableIbans_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showIbansSettings');
-        },
-      },
-
-      /**
-       * True if displaying UPI IDs in settings is enabled.
-       */
-      enableUpiIds_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showUpiIdSettings');
         },
       },
 
@@ -80,35 +64,21 @@ export class SettingsPaymentsListElement extends PolymerElement {
       },
 
       /**
-       * True if at least credit cards or IBANs will be shown before UPI IDs
-       * section.
-       */
-      showSeparatorBeforeUpiSection_: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShowSeparatorBeforeUpiSection_(' +
-            'creditCards, ibans, enableIbans_, upiIds, enableUpiIds_)',
-      },
-
-      /**
        * True iff any payment methods will be shown.
        */
       showAnyPaymentMethods_: {
         type: Boolean,
         value: false,
         computed: 'computeShowAnyPaymentMethods_(' +
-            'creditCards, ibans, upiIds, enableIbans_, enableUpiIds_)',
+            'creditCards, ibans, enableIbans_)',
       },
     };
   }
 
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
-  upiIds: string[];
   private enableIbans_: boolean;
-  private enableUpiIds_: boolean;
   private showCreditCardIbanSeparator_: boolean;
-  private showSeparatorBeforeUpiSection_: boolean;
   private showAnyPaymentMethods_: boolean;
 
   /**
@@ -205,25 +175,10 @@ export class SettingsPaymentsListElement extends PolymerElement {
   }
 
   /**
-   * @return true iff both credit cards and UPI IDs will be shown, or both IBANs
-   *     and UPI IDs will be shown.
-   */
-  private computeShowSeparatorBeforeUpiSection_(): boolean {
-    return (this.showCreditCards_() || this.showIbans_()) && this.showUpiIds_();
-  }
-
-  /**
-   * @return true iff there UPI IDs and they should be shown.
-   */
-  private showUpiIds_(): boolean {
-    return this.enableUpiIds_ && this.hasSome_(this.upiIds);
-  }
-
-  /**
    * @return true iff any payment methods will be shown.
    */
   private computeShowAnyPaymentMethods_(): boolean {
-    return this.showCreditCards_() || this.showIbans_() || this.showUpiIds_();
+    return this.showCreditCards_() || this.showIbans_();
   }
 }
 

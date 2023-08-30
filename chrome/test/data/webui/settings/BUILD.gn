@@ -46,7 +46,6 @@ build_webui_tests("build") {
     "payments_section_iban_test.ts",
     "payments_section_interactive_test.ts",
     "payments_section_test.ts",
-    "payments_section_upi_test.ts",
     "payments_section_utils.ts",
     "people_page_sync_controls_test.ts",
     "people_page_sync_page_interactive_test.ts",
