@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
-
 /** @interface */
 export class CfmNetworkSettingsBrowserProxy {
   /** @param {string} guid */
@@ -38,6 +36,17 @@ export class CfmNetworkSettingsBrowserProxyImpl {
   showManageCerts() {
     chrome.send('showManageCerts');
   }
+
+  /** @return {!CfmNetworkSettingsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new CfmNetworkSettingsBrowserProxyImpl());
+  }
+
+  /** @param {!CfmNetworkSettingsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(CfmNetworkSettingsBrowserProxyImpl);
+/** @type {?CfmNetworkSettingsBrowserProxy} */
+let instance = null;

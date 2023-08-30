@@ -66,7 +66,7 @@ suite('cfm-network-settings', () => {
     PolymerTest.clearBody();
 
     browserProxy = new TestCfmNetworkSettingsBrowserProxy();
-    CfmNetworkSettingsBrowserProxyImpl.instance_ = browserProxy;
+    CfmNetworkSettingsBrowserProxyImpl.setInstance(browserProxy);
 
     mojoApi.resetForTest();
 
