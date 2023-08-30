@@ -99751,7 +99751,7 @@
       ]
      ],
      "lch-005.html": [
-      "ed32cb92cb402c6875c9ab95d7d6b523cd63f833",
+      "3986ddc11be587f02064db4ee16404896ce2e718",
       [
        null,
        [
@@ -279726,16 +279726,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "3ab4e095e3effb24db8ba0b915f14f1771b621a7",
-     []
-    ],
-    "mtime.json": [
-     "6c17b74d5d43b1f4d7edd141bc56e3d77a61b444",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -306761,7 +306751,7 @@
       []
      ],
      "lch-005-ref.html": [
-      "3636541afde40b85dee9132f537518aa09bfe24c",
+      "d2164159fe4ad4994c932ef3192318e9f9513fa9",
       []
      ],
      "lch-006-ref.html": [
@@ -425858,7 +425848,7 @@
          []
         ],
         "activate.py.ini": [
-         "c51056ee0aeb756d91c52d335eccf332c19e7730",
+         "15086d45d5a470bf70eda8b710d3dfac4ace3d42",
          []
         ]
        },
@@ -425868,11 +425858,11 @@
          []
         ],
         "clip.py.ini": [
-         "9df3a32d53f33918e9fe645689c5761728b55066",
+         "0859c702346e57fdfadacfd9c8d09ce5a3084295",
          []
         ],
         "invalid.py.ini": [
-         "26253d197a05732f2fdffaa125f7099eda6a8c63",
+         "3b89afd9369bb5d6c71d0217af0ae54e74b960d9",
          []
         ]
        },
@@ -425928,11 +425918,11 @@
          []
         ],
         "handle_user_prompt.py.ini": [
-         "e32b0bd3ceae16cd820859fc617eaec4b6150752",
+         "9e1fb2bd76005f622c882176050d69798cadcd4c",
          []
         ],
         "invalid.py.ini": [
-         "c4031da6490515b19ad33d1ef64f53d80e0528da",
+         "7123f39d20c31868f52b074abf59b04a03214ddc",
          []
         ]
        },
@@ -425948,7 +425938,7 @@
          []
         ],
         "hash.py.ini": [
-         "e9909c60d98d8d2646f9a91276a2ddfb393f40b3",
+         "c373567cc6c01166929b07449065a063f7b1d3f7",
          []
         ]
        },
@@ -425958,19 +425948,19 @@
          []
         ],
         "context.py.ini": [
-         "9071f710f7ec1984b4d09781d13ba7129748b96e",
+         "af6ba673d6d94544dd763ab1f9039780aae78d05",
          []
         ],
         "invalid.py.ini": [
-         "47ce8aa253676d543357334f134d2d1a0143dbed",
+         "01a73733d527b475280d1f4e28de9a8249743b47",
          []
         ],
         "margin.py.ini": [
-         "f3b725846f21a48ea610421a14f711f9ed12014a",
+         "a5d625679d2d4673bf7c91892fe6561113cd8b19",
          []
         ],
         "shrink_to_fit.py.ini": [
-         "4dcf07e6cfa8c2431215dd0e8262073a7bde4a22",
+         "270f602432893dd1b0e36b89492abf82aaa92b9a",
          []
         ]
        },
@@ -425980,11 +425970,11 @@
          []
         ],
         "frame.py.ini": [
-         "780c9e4be8b4247b9cf54b08e2cb5291d28eb988",
+         "f1f9e9c32402d25db24a715cfd2964021d18f26d",
          []
         ],
         "reload.py.ini": [
-         "b537f93dcc1d9b6f095c0e822b3b3c157242954a",
+         "478aba7221f3ffaf2aa637534e810df37117cd8a",
          []
         ]
        },
@@ -426030,7 +426020,7 @@
          []
         ],
         "user_prompt_opened.py.ini": [
-         "2cbd589d3da2af486fee034f620dd93e2ffa4bf1",
+         "f2af0613bda5514e4be8c68bde822c6ce27c67d9",
          []
         ]
        }
@@ -426056,19 +426046,19 @@
          []
         ],
         "key.py.ini": [
-         "3388dcb2a5955acb23d51d2d2764a9cbe439a338",
+         "4b62ac058dca5fe58c63c748075e92ce4ec36378",
          []
         ],
         "key_events.py.ini": [
-         "d8509e53b4c24ec3a5482b8e9ea6526363cba763",
+         "62c79f51bcff6c0358925fa5484842ac1c03953c",
          []
         ],
         "pointer_pen.py.ini": [
-         "0ced87ceda67756c56343dfc45a8b0d740225fa6",
+         "f9640e9cbd83ec5888e4818ea9754c0a531b058a",
          []
         ],
         "pointer_touch.py.ini": [
-         "2c00ce9fb2856240ff1710ac01982a07006b1ef9",
+         "9517d6af4ba8c61caf5bd73a53dfaf7ecea9cdb6",
          []
         ],
         "wheel.py.ini": [
@@ -426082,7 +426072,7 @@
          []
         ],
         "sequence.py.ini": [
-         "bacbcccadc5818ae9406413e570d4758474de998",
+         "eccf1ba9e3fd4b502dbde7df14ae3b6277ed1e72",
          []
         ]
        }
@@ -426110,7 +426100,7 @@
          []
         ],
         "invalid.py.ini": [
-         "47ce8aa253676d543357334f134d2d1a0143dbed",
+         "01a73733d527b475280d1f4e28de9a8249743b47",
          []
         ]
        },
@@ -426120,7 +426110,7 @@
          []
         ],
         "before_request_sent.py.ini": [
-         "27fcd2eb6291cf6ef9691166b78462e614abe3f8",
+         "8e7b0e1a2b09d56e59d428f7bdd6d4fc315e124b",
          []
         ]
        },
@@ -426130,7 +426120,7 @@
          []
         ],
         "network_events.py.ini": [
-         "41976915b8046800d496a8f300eb579d0835e521",
+         "7e913edff23f374095b09be8e0df6eff1b25a15c",
          []
         ]
        },
@@ -426144,7 +426134,7 @@
          []
         ],
         "invalid.py.ini": [
-         "ab4186b7b5a0c314c54de421c78c32f2ee50008b",
+         "bf4002b771aa1b0c5b1e9b11fa0bdd7a9bf2a60c",
          []
         ]
        },
@@ -426154,11 +426144,11 @@
          []
         ],
         "response_completed.py.ini": [
-         "cc280c21954139c8d3475d6a08c9b61d9211089a",
+         "47b78c7162a1518f0360f118b7d92e7430d134f9",
          []
         ],
         "response_completed_cached.py.ini": [
-         "0689c441229e5f636928abe1f69e08cc93ce31a2",
+         "215e7006eba37be0ba990506a09d84eceb1c9667",
          []
         ]
        },
@@ -426168,11 +426158,11 @@
          []
         ],
         "response_started.py.ini": [
-         "88563c33d936c741114056fc98fe4f3719274a4f",
+         "233f4db5812cafb376f6418748639d602dc7144d",
          []
         ],
         "response_started_cached.py.ini": [
-         "9e1c8e0f494e78772f56a418914dfe0bcdb44064",
+         "a4af46e8f974601c2f8fd63738ae7949207641d4",
          []
         ]
        },
@@ -426224,27 +426214,27 @@
          []
         ],
         "exception_details.py.ini": [
-         "e27b0f9353fd9591739bd6eb3c769b7e903c1da5",
+         "bdfcecc672412302baaedf4ec4a0b0a90a3680a1",
          []
         ],
         "exception_details_await_promise.py.ini": [
-         "491e85e0c2ca1181af6c18fab7e165938109fcf5",
+         "7a64011bf0db759f415aa0a705d9aa2c515b6faf",
          []
         ],
         "invalid.py.ini": [
-         "47ce8aa253676d543357334f134d2d1a0143dbed",
+         "01a73733d527b475280d1f4e28de9a8249743b47",
          []
         ],
         "invalid_tentative.py.ini": [
-         "37a7df4693984086f73e226a6d0363300835fd00",
+         "8ab6ba217f7b58541bb7003fb69f0282b7680601",
          []
         ],
         "remote_values.py.ini": [
-         "f392aaa948f1c5ee0822b1deee5b1d1d25871097",
+         "61bb80db7caf65a6aad5b362e3c2c160f01a3a2b",
          []
         ],
         "result_node.py.ini": [
-         "af4a648db478d8f3e74bc68eea6f8e7ffcb3d956",
+         "2ba15a8ca4146baf0860b1a8c84b1ecac9696000",
          []
         ]
        },
@@ -426254,7 +426244,7 @@
          []
         ],
         "node_shared_id.py.ini": [
-         "3b6306f494da1c085107f1b88ce0b29227c40c17",
+         "45004b38e90704a9b367ea6fac061dbb004c6d2a",
          []
         ]
        },
@@ -426268,7 +426258,7 @@
          []
         ],
         "invalid_tentative.py.ini": [
-         "37a7df4693984086f73e226a6d0363300835fd00",
+         "8ab6ba217f7b58541bb7003fb69f0282b7680601",
          []
         ]
        },
@@ -426278,23 +426268,23 @@
          []
         ],
         "exception_details.py.ini": [
-         "e27b0f9353fd9591739bd6eb3c769b7e903c1da5",
+         "bdfcecc672412302baaedf4ec4a0b0a90a3680a1",
          []
         ],
         "exception_details_await_promise.py.ini": [
-         "1c01bf6ee13e7356e6bf5923b67d29695508cde5",
+         "a4790330341b63336feff4e3f89a28e44c07c82c",
          []
         ],
         "invalid_tentative.py.ini": [
-         "37a7df4693984086f73e226a6d0363300835fd00",
+         "8ab6ba217f7b58541bb7003fb69f0282b7680601",
          []
         ],
         "remote_values.py.ini": [
-         "87a4fe6c0894bf0412880180e8970d83aa73c5a7",
+         "98da30c4638af72d04ff62ec0238ebb65153d59f",
          []
         ],
         "result_node.py.ini": [
-         "af4a648db478d8f3e74bc68eea6f8e7ffcb3d956",
+         "2ba15a8ca4146baf0860b1a8c84b1ecac9696000",
          []
         ]
        },
@@ -426533,7 +426523,7 @@
         []
        ],
        "find.py.ini": [
-        "1d6769a4034e7da684dc6965072abb629494b6f8",
+        "95cea206a81b6a8418575ed01afa7e3e2803b689",
         []
        ]
       },
@@ -426563,7 +426553,7 @@
         []
        ],
        "find.py.ini": [
-        "1d6769a4034e7da684dc6965072abb629494b6f8",
+        "95cea206a81b6a8418575ed01afa7e3e2803b689",
         []
        ]
       },
@@ -470228,7 +470218,7 @@
      ]
     ],
     "fedcm-basic.https.html": [
-     "d5804f796e90d5a3ef5163863cf6212df7cb0894",
+     "d07c0de9577956bfd39cbd0701a1adc7daa57010",
      [
       null,
       {
@@ -470463,7 +470453,7 @@
      ]
     ],
     "fedcm-returning-account-auto-reauthn.https.html": [
-     "bec836f25f02c4f324c95d92ffa34376b88b3a44",
+     "38c07f0a60a55cc264237727b4ebfa36a737eb57",
      [
       null,
       {
@@ -492283,7 +492273,7 @@
       ],
       "parsing": {
        "contain-intrinsic-size-computed.html": [
-        "305fe621cd595c6b3cf91432520ea3d44a1f017a",
+        "489b9e1be2e048b41fe2afd8f4775fd54c6e791f",
         [
          null,
          {}
@@ -649327,7 +649317,7 @@
       ]
      ],
      "document-rules.https.html": [
-      "3948c149e2d2c870c4e888393b01998db571b3c5",
+      "070037704ff9e63c0825714775092d3be02cae21",
       [
        "speculation-rules/prefetch/document-rules.https.html?include=and",
        {}
@@ -649362,6 +649352,10 @@
       ],
       [
        "speculation-rules/prefetch/document-rules.https.html?include=linkInShadowTree",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/document-rules.https.html?include=linkToSelfFragment",
        {}
       ],
       [
@@ -649403,6 +649397,13 @@
      ],
      "duplicate-urls.https.html": [
       "c6d6fb7878d61f677285515e723cd5b82de83590",
+      [
+       null,
+       {}
+      ]
+     ],
+     "fragment.https.html": [
+      "7b35500303e16b6e9e68661d83daeb0c76bffd45",
       [
        null,
        {}
