@@ -138,6 +138,11 @@ struct InterestGroup {
   map<string, AdSize>? ad_sizes;
   map<string, array<string>>? size_groups;
   AuctionServerRequestFlags auction_server_request_flags;
+
+  // The Ed25519 public key (a 256-bit EdDSA public key) used to guarantee that
+  // this InterestGroup, if used by an additional bid for a negative targeting,
+  // can only be used by its owner.
+  array<uint8, 32>? additional_bid_key;
 };
 
 // Packages the details necessary for the browser process to retrieve a

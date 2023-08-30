@@ -93,6 +93,15 @@ class InterestGroupStorageTest : public testing::Test {
     InterestGroup partial = NewInterestGroup(partial_origin, "partial");
     const url::Origin full_origin =
         url::Origin::Create(GURL("https://full.example.com"));
+    constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey1 = {
+        0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+        0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+        0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+    constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey2 = {
+        0x10, 0x0f, 0xdf, 0x47, 0xfb, 0x94, 0xf1, 0x53, 0x6a, 0x4f, 0x7c,
+        0x3f, 0xda, 0x27, 0x38, 0x3f, 0xa0, 0x33, 0x75, 0xa8, 0xf5, 0x27,
+        0xc5, 0x37, 0xe6, 0xf1, 0x70, 0x3c, 0x47, 0xf9, 0x4f, 0x86};
+
     InterestGroup full(
         /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
         /*name=*/"full", /*priority=*/1.0,
@@ -146,7 +155,8 @@ class InterestGroupStorageTest : public testing::Test {
           {"group_3", std::vector<std::string>{"size_3"}}}},
         /*auction_server_request_flags=*/
         {blink::AuctionServerRequestFlagsEnum::kOmitAds,
-         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds});
+         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds},
+        /*additional_bid_key=*/kAdditionalBidKey1);
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
     storage->JoinInterestGroup(partial, partial_origin.GetURL());
@@ -187,6 +197,7 @@ class InterestGroupStorageTest : public testing::Test {
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
         GURL("https://full.example.com/adcomponent3"), "metadata3c", "group_3");
+    update.additional_bid_key = kAdditionalBidKey2;
     storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
                                  update);
 
@@ -197,6 +208,7 @@ class InterestGroupStorageTest : public testing::Test {
     updated.trusted_bidding_signals_keys = update.trusted_bidding_signals_keys;
     updated.ads = update.ads;
     updated.ad_components = update.ad_components;
+    updated.additional_bid_key = kAdditionalBidKey2;
 
     storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
     ASSERT_EQ(1u, storage_interest_groups.size());

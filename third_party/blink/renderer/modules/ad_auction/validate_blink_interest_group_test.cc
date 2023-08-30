@@ -71,7 +71,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
       const mojom::blink::InterestGroupPtr& blink_interest_group,
       const std::string& expected_error_field_name,
       const std::string& expected_error_field_value,
-      const std::string& expected_error) {
+      const std::string& expected_error,
+      bool check_deserialization = true) {
     String error_field_name;
     String error_field_value;
     String error;
@@ -81,11 +82,13 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     EXPECT_EQ(String::FromUTF8(expected_error_field_value), error_field_value);
     EXPECT_EQ(String::FromUTF8(expected_error), error);
 
-    blink::InterestGroup interest_group;
-    // mojo deserialization will call InterestGroup::IsValid.
-    EXPECT_FALSE(
-        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
-            blink_interest_group, interest_group));
+    if (check_deserialization) {
+      blink::InterestGroup interest_group;
+      // mojo deserialization will call InterestGroup::IsValid.
+      EXPECT_FALSE(
+          mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+              blink_interest_group, interest_group));
+    }
   }
 
   // Creates and returns a minimally populated mojom::blink::InterestGroup.
@@ -162,6 +165,12 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     blink_interest_group->auction_server_request_flags =
         mojom::blink::AuctionServerRequestFlags::New();
     blink_interest_group->auction_server_request_flags->omit_ads = true;
+
+    blink_interest_group->additional_bid_key = {
+        0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+        0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+        0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+
     return blink_interest_group;
   }
 
@@ -1087,6 +1096,22 @@ TEST_F(ValidateBlinkInterestGroupTest, AdNonHttpsAllowedReportingOrigins) {
       /*expected_error_field_name=*/"ads[0].allowedReportingOrigins",
       /*expected_error_field_value=*/"http://origin2.test",
       /*expected_error=*/"allowedReportingOrigins must all be HTTPS.");
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AdditionalBidKeyWrongSize) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->additional_bid_key = {0x7d, 0x4d, 0x0e, 0x7f, 0x61};
+
+  // We specifically don't check deserialization because that would cause a
+  // LOG(FATAL), because the fixed-size additional_bid_key array would not be
+  // of the expected size.
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/"additionalBidKey",
+      /*expected_error_field_value=*/"5",
+      /*expected_error=*/"additionalBidKey must be exactly 32 bytes.",
+      /*check_deserialization=*/false);
 }
 
 }  // namespace blink

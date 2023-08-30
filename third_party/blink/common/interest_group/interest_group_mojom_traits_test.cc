@@ -413,4 +413,14 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdditionalBidKey) {
+  constexpr blink::InterestGroup::AdditionalBidKey kAdditionalBidKey = {
+      0x7d, 0x4d, 0x0e, 0x7f, 0x61, 0x53, 0xa6, 0x9b, 0x62, 0x42, 0xb5,
+      0x22, 0xab, 0xbe, 0xe6, 0x85, 0xfd, 0xa4, 0x42, 0x0f, 0x88, 0x34,
+      0xb1, 0x08, 0xc3, 0xbd, 0xae, 0x36, 0x9e, 0xf5, 0x49, 0xfa};
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.additional_bid_key = kAdditionalBidKey;
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 }  // namespace blink

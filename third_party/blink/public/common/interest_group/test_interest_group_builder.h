@@ -69,6 +69,8 @@ class TestInterestGroupBuilder {
           size_groups);
   TestInterestGroupBuilder& SetAuctionServerRequestFlags(
       AuctionServerRequestFlags flags);
+  TestInterestGroupBuilder& SetAdditionalBidKey(
+      absl::optional<blink::InterestGroup::AdditionalBidKey> key);
 
  private:
   InterestGroup interest_group_;

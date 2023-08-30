@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -137,6 +138,10 @@ size_t EstimateBlinkInterestGroupSize(
   }
   constexpr size_t kAuctionServerRequestFlagsSize = 4;
   size += kAuctionServerRequestFlagsSize;
+
+  if (group.additional_bid_key) {
+    size += X25519_PUBLIC_VALUE_LEN;
+  }
 
   return size;
 }
@@ -397,6 +402,16 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           return false;
         }
       }
+    }
+  }
+
+  if (group.additional_bid_key) {
+    if (group.additional_bid_key->size() != X25519_PUBLIC_VALUE_LEN) {
+      error_field_name = "additionalBidKey";
+      error_field_value = String::Number(group.additional_bid_key->size());
+      error = String::Format("additionalBidKey must be exactly %u bytes.",
+                             X25519_PUBLIC_VALUE_LEN);
+      return false;
     }
   }
 

@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -142,7 +143,8 @@ InterestGroup::InterestGroup(
     absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes,
     absl::optional<base::flat_map<std::string, std::vector<std::string>>>
         size_groups,
-    AuctionServerRequestFlags auction_server_request_flags)
+    AuctionServerRequestFlags auction_server_request_flags,
+    absl::optional<AdditionalBidKey> additional_bid_key)
     : expiry(expiry),
       owner(std::move(owner)),
       name(std::move(name)),
@@ -164,7 +166,8 @@ InterestGroup::InterestGroup(
       ad_components(std::move(ad_components)),
       ad_sizes(std::move(ad_sizes)),
       size_groups(std::move(size_groups)),
-      auction_server_request_flags(std::move(auction_server_request_flags)) {}
+      auction_server_request_flags(std::move(auction_server_request_flags)),
+      additional_bid_key(std::move(additional_bid_key)) {}
 
 InterestGroup::~InterestGroup() = default;
 
@@ -298,6 +301,12 @@ bool InterestGroup::IsValid() const {
     }
   }
 
+  if (additional_bid_key) {
+    if (additional_bid_key->size() != ED25519_PUBLIC_KEY_LEN) {
+      return false;
+    }
+  }
+
   return EstimateSize() < blink::mojom::kMaxInterestGroupSize;
 }
 
@@ -362,6 +371,9 @@ size_t InterestGroup::EstimateSize() const {
     }
   }
   size += sizeof(decltype(auction_server_request_flags)::EnumType);
+  if (additional_bid_key) {
+    size += ED25519_PUBLIC_KEY_LEN;
+  }
   return size;
 }
 
@@ -373,7 +385,8 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   bidding_wasm_helper_url, update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   user_bidding_signals, ads, ad_components, ad_sizes,
-                  size_groups, auction_server_request_flags) ==
+                  size_groups, auction_server_request_flags,
+                  additional_bid_key) ==
          std::tie(
              other.expiry, other.owner, other.name, other.priority,
              other.enable_bidding_signals_prioritization, other.priority_vector,
@@ -383,7 +396,7 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
              other.trusted_bidding_signals_url,
              other.trusted_bidding_signals_keys, other.user_bidding_signals,
              other.ads, other.ad_components, other.ad_sizes, other.size_groups,
-             other.auction_server_request_flags);
+             other.auction_server_request_flags, other.additional_bid_key);
 }
 
 std::string KAnonKeyForAdBid(const InterestGroup& group, const GURL& ad_url) {

@@ -44,7 +44,8 @@ TestInterestGroupBuilder::TestInterestGroupBuilder(url::Origin owner,
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/{},
           /*size_groups=*/{},
-          /*auction_server_request_flags=*/{}) {}
+          /*auction_server_request_flags=*/{},
+          /*additional_bid_key=*/absl::nullopt) {}
 
 TestInterestGroupBuilder::~TestInterestGroupBuilder() = default;
 
@@ -174,6 +175,12 @@ TestInterestGroupBuilder&
 TestInterestGroupBuilder::SetAuctionServerRequestFlags(
     AuctionServerRequestFlags flags) {
   interest_group_.auction_server_request_flags = std::move(flags);
+  return *this;
+}
+
+TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdditionalBidKey(
+    absl::optional<blink::InterestGroup::AdditionalBidKey> key) {
+  interest_group_.additional_bid_key = std::move(key);
   return *this;
 }
 

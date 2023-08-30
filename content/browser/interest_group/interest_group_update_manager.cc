@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -446,6 +448,30 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+[[nodiscard]] bool TryToCopyAdditionalBidKey(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  const std::string* maybe_additional_bid_key =
+      dict.FindString("additionalBidKey");
+  if (!maybe_additional_bid_key) {
+    return true;
+  }
+  absl::optional<std::vector<uint8_t>> decoded_additional_bid_key =
+      base::Base64Decode(*maybe_additional_bid_key);
+  if (!decoded_additional_bid_key.has_value()) {
+    // Failed to base64 decode the additional bid key.
+    return false;
+  }
+  if (decoded_additional_bid_key->size() != ED25519_PUBLIC_KEY_LEN) {
+    return false;
+  }
+  interest_group_update.additional_bid_key.emplace();
+  std::copy(decoded_additional_bid_key->begin(),
+            decoded_additional_bid_key->end(),
+            interest_group_update.additional_bid_key->begin());
+  return true;
+}
+
 absl::optional<InterestGroupUpdate> ParseUpdateJson(
     const blink::InterestGroupKey& group_key,
     const data_decoder::DataDecoder::ValueOrError& result) {
@@ -464,8 +490,9 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
   const base::Value* maybe_priority_value = dict->Find("priority");
   if (maybe_priority_value) {
     // If the field is specified, it must be an integer or a double.
-    if (!maybe_priority_value->is_int() && !maybe_priority_value->is_double())
+    if (!maybe_priority_value->is_int() && !maybe_priority_value->is_double()) {
       return absl::nullopt;
+    }
     interest_group_update.priority = maybe_priority_value->GetDouble();
   }
   const base::Value* maybe_enable_bidding_signals_prioritization =
@@ -559,6 +586,9 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
     return absl::nullopt;
   }
   if (!TryToCopyAuctionServerRequestFlags(*dict, interest_group_update)) {
+    return absl::nullopt;
+  }
+  if (!TryToCopyAdditionalBidKey(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   return interest_group_update;

@@ -73,9 +73,11 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/url_constants.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-value.h"
@@ -882,6 +884,34 @@ bool CopyAuctionServerRequestFlagsFromIdlToMojo(
       output.auction_server_request_flags->include_full_ads = true;
     }
   }
+  return true;
+}
+
+bool CopyAdditionalBidKeyFromIdlToMojo(
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  if (!input.hasAdditionalBidKey()) {
+    return true;
+  }
+  WTF::Vector<char> decoded_key;
+  if (!WTF::Base64Decode(input.additionalBidKey(), decoded_key)) {
+    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+        input, "additionalBidKey", input.additionalBidKey(),
+        "cannot be base64 decoded."));
+    return false;
+  }
+  if (decoded_key.size() != ED25519_PUBLIC_KEY_LEN) {
+    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+        input, "additionalBidKey", input.additionalBidKey(),
+        String::Format("must be exactly %d' bytes, was %u.",
+                       ED25519_PUBLIC_KEY_LEN, decoded_key.size())));
+    return false;
+  }
+  output.additional_bid_key.emplace(ED25519_PUBLIC_KEY_LEN);
+  std::copy(decoded_key.begin(), decoded_key.end(),
+            output.additional_bid_key->begin());
   return true;
 }
 
@@ -2910,6 +2940,10 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   }
   if (!CopyAuctionServerRequestFlagsFromIdlToMojo(*context, exception_state,
                                                   *group, *mojo_group)) {
+    return ScriptPromise();
+  }
+  if (!CopyAdditionalBidKeyFromIdlToMojo(*context, exception_state, *group,
+                                         *mojo_group)) {
     return ScriptPromise();
   }
 
