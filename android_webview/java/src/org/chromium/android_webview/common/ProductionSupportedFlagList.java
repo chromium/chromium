@@ -516,6 +516,8 @@ public final class ProductionSupportedFlagList {
                             + "were hidden during a navigation."),
             Flag.baseFeature(BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
                     "Enables support for CSS vertical writing mode on text-based form controls."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_CHECK_PAK_FILE_DESCRIPTORS,
+                    "Crash on failing to load pak file fds."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
