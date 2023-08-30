@@ -10,7 +10,7 @@ export async function readSymbols(file, pdbFile) {
     if (!pdbFile) {
       throw new Error("Need PDB file to read symbols on windows");
     }
-    const textStart = getTextSectionAddress(pdbFile);
+    const textStart = await getTextSectionAddress(pdbFile);
 
     const pdbPath = path.join(getBackendDir(), "lib", "llvm-pdbutil.exe");
     const process = spawn(pdbPath, ["dump", "-symbols", pdbFile]);
