@@ -5667,6 +5667,13 @@ URL должен иметь стандартный вид (например, htt
 
 Подробнее о допустимых шаблонах <ph name="URL_LABEL" />: https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Определяет, будет ли использоваться встроенный инструмент верификации для проверки сертификатов сервера</translation>
+<translation id="6197455846673223644">Если правило включено, анонимный сбор данных о URL выполняется всегда (URL страниц, которые посещает пользователь, отправляются в Google для улучшения поиска и повышения удобства работы в браузере).
+
+Если правило отключено, эта информация не собирается.
+
+Если правило не настроено, пользователь может разрешить или запретить анонимный сбор данных о URL.
+
+Для устройств <ph name="PRODUCT_OS_NAME" /> в режиме киоска нет варианта "Предоставить выбор пользователю". Если правило не настроено для <ph name="PRODUCT_OS_NAME" /> в режиме киоска, анонимный сбор данных о URL выполняется всегда.</translation>
 <translation id="6198947200418556248">Это правило больше не поддерживается. Если вам требуется ранее применявшееся поведение для файлов cookie, используйте правило <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Позволяет восстановить ранее применявшееся поведение для всех файлов cookie с атрибутом <ph name="ATTRIBUTE_SAMESITE_NAME" />. В этом случае файлы cookie, в которых не указан атрибут <ph name="ATTRIBUTE_SAMESITE_NAME" />, будут обрабатываться как файлы с атрибутом <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />. Кроме того, требование о наличии атрибута <ph name="ATTRIBUTE_SECURE_NAME" /> в файлах cookie с атрибутом <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> будет снято, а сравнение протоколов при оценке двух одинаковых сайтов будет пропущено. Полное описание правила приведено здесь: https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Если правило не настроено, поведение атрибута <ph name="ATTRIBUTE_SAMESITE_NAME" /> по умолчанию для файлов cookie будет зависеть от пользовательских настроек функций <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> и <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, которые можно задать с помощью экспериментальных функций или путем включения или отключения параметра <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> или <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> соответственно.</translation>

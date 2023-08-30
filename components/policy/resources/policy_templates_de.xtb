@@ -5663,6 +5663,13 @@ Wenn du die Richtlinie nicht konfigurierst oder leer lässt, ist keine Website i
 
 Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet wird</translation>
+<translation id="6197455846673223644">Ist diese Richtlinie aktiviert, ist die anonymisierte URL-Datenerfassung immer aktiv. Das heißt, URLs der von Nutzern besuchten Seiten werden an Google gesendet, um Suchanfragen und das Surfen zu verbessern.
+
+Wenn die Richtlinie deaktiviert ist, erfolgt keine anonymisierte URL-Datenerfassung.
+
+Wenn die Richtlinie nicht konfiguriert ist, können die Nutzer diese Einstellung manuell ändern.
+
+In <ph name="PRODUCT_OS_NAME" /> Kiosk bietet diese Richtlinie nicht die Option „Nutzer kann entscheiden“. Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk nicht festgelegt ist, ist die anonymisierte URL-Datenerfassung immer aktiv.</translation>
 <translation id="6198947200418556248">Diese Richtlinie wurde eingestellt. Falls du immer noch das alte Cookie-Verhalten benötigst, verwende stattdessen „<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />“. Hiermit kann für alle Cookies das alte „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Verhalten wiederhergestellt werden. Wird es wiederhergestellt, werden Cookies, für die kein „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Attribut angegeben ist, so behandelt, als würden sie „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ auch das Attribut „<ph name="ATTRIBUTE_SECURE_NAME" />“ enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
 
           Wenn diese Richtlinie nicht konfiguriert ist, hängt das Standardverhalten von „<ph name="ATTRIBUTE_SAMESITE_NAME" />“ für Cookies von der jeweiligen Konfiguration der „<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />“-, „<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" />“- und „<ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />“-Funktion ab. Dies kann im Rahmen eines Testzeitraums oder durch Aktivieren oder Deaktivieren des „<ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />“-, „<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" />“- oder „<ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />“-Status festgelegt werden.</translation>

@@ -7054,7 +7054,7 @@
 <translation id="6997553674029032185">Иди на сајт</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Евиденција активности</translation>
 <translation id="6997707937646349884">На уређајима:</translation>
-<translation id="6998793565256476099">Региструј уређај за видео конференције</translation>
+<translation id="6998793565256476099">Региструј уређај за видео позиве</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Штампач <ph name="PRINTER_NAME" /> је повезан, али треба да се конфигурише</translation>
 <translation id="7000347579424117903">Користите Ctrl, Alt или Search</translation>
@@ -8413,7 +8413,7 @@
 <translation id="8141418916163800697">Можете да подесите још функција у подешавањима Phone Hub-а</translation>
 <translation id="8141584439523427891">Сада се отвара у алтернативном прегледачу</translation>
 <translation id="8141725884565838206">Управљајте лозинкама</translation>
-<translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео снимка}other{# видео снимака}}</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео снимка}other{# видеа}}</translation>
 <translation id="8143442547342702591">Неважећа апликација</translation>
 <translation id="8143609395536282994">Како можете да управљате подацима:</translation>
 <translation id="8145170459658034418">Уштеда меморије</translation>
@@ -9019,7 +9019,7 @@
 <translation id="8673383193459449849">Проблем са сервером</translation>
 <translation id="8674903726754070732">Нажалост, рачунар је конфигурисан помоћу погрешно форматираног ИД-а хардвера. То спречава да се Chrome OS ажурира најновијим безбедносним исправкама и рачунар <ph name="BEGIN_BOLD" />може да буде подложан злонамерним нападима<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Програм за инсталацију није успео да пронађе исправно одредиште за инсталирање система <ph name="DEVICE_OS" />.</translation>
-<translation id="8676152597179121671">{COUNT,plural, =1{Видео}one{# видео}few{# видео снимка}other{# видео снимака}}</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{Видео}one{# видео}few{# видео снимка}other{# видеа}}</translation>
 <translation id="8676276370198826499">Региструјте се за <ph name="SITE_ETLD_PLUS_ONE" /> уз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676313779986170923">Хвала вам што сте послали повратне информације.</translation>
 <translation id="8676374126336081632">Обриши унос</translation>

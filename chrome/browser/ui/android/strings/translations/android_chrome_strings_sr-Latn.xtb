@@ -1526,7 +1526,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8998729206196772491">Prijavljujete se pomoću naloga kojim upravlja <ph name="MANAGED_DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="9022774213089566801">Često posećivano</translation>
 <translation id="9022871169049522985">Sajtovi i oglašavači mogu da mere učinak svojih oglasa</translation>
-<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video snimak}few{# video snimka}other{# video snimaka}}</translation>
+<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video snimak}few{# video snimka}other{# videa}}</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>
 <translation id="9055497320631373736">Sajt je vraćen u potencijalne sajtove</translation>

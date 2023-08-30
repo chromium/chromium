@@ -7054,7 +7054,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6997553674029032185">Idi na sajt</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Evidencija aktivnosti</translation>
 <translation id="6997707937646349884">Na uređajima:</translation>
-<translation id="6998793565256476099">Registruj uređaj za video konferencije</translation>
+<translation id="6998793565256476099">Registruj uređaj za video pozive</translation>
 <translation id="6999956497249459195">Nova grupa</translation>
 <translation id="7000206553895739324">Štampač <ph name="PRINTER_NAME" /> je povezan, ali treba da se konfiguriše</translation>
 <translation id="7000347579424117903">Koristite Ctrl, Alt ili Search</translation>
@@ -8413,7 +8413,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8141418916163800697">Možete da podesite još funkcija u podešavanjima Phone Hub-a</translation>
 <translation id="8141584439523427891">Sada se otvara u alternativnom pregledaču</translation>
 <translation id="8141725884565838206">Upravljajte lozinkama</translation>
-<translation id="814204052173971714">{COUNT,plural, =1{video}one{# video}few{# video snimka}other{# video snimaka}}</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{video}one{# video}few{# video snimka}other{# videa}}</translation>
 <translation id="8143442547342702591">Nevažeća aplikacija</translation>
 <translation id="8143609395536282994">Kako možete da upravljate podacima:</translation>
 <translation id="8145170459658034418">Ušteda memorije</translation>
@@ -9019,7 +9019,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8673383193459449849">Problem sa serverom</translation>
 <translation id="8674903726754070732">Nažalost, računar je konfigurisan pomoću pogrešno formatiranog ID-a hardvera. To sprečava da se Chrome OS ažurira najnovijim bezbednosnim ispravkama i računar <ph name="BEGIN_BOLD" />može da bude podložan zlonamernim napadima<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Program za instalaciju nije uspeo da pronađe ispravno odredište za instaliranje sistema <ph name="DEVICE_OS" />.</translation>
-<translation id="8676152597179121671">{COUNT,plural, =1{Video}one{# video}few{# video snimka}other{# video snimaka}}</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{Video}one{# video}few{# video snimka}other{# videa}}</translation>
 <translation id="8676276370198826499">Registrujte se za <ph name="SITE_ETLD_PLUS_ONE" /> uz <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676313779986170923">Hvala vam što ste poslali povratne informacije.</translation>
 <translation id="8676374126336081632">Obriši unos</translation>
