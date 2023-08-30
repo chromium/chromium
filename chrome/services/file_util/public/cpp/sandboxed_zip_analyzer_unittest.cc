@@ -93,11 +93,17 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   // |results|.
   void RunAnalyzer(const base::FilePath& file_path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
-    RunAnalyzer(file_path, /*password=*/"", results);
+    RunAnalyzer(file_path, /*password=*/absl::nullopt, results);
   }
 
   void RunAnalyzer(const base::FilePath& file_path,
                    const std::string& password,
+                   safe_browsing::ArchiveAnalyzerResults* results) {
+    RunAnalyzer(file_path, base::optional_ref(password), results);
+  }
+
+  void RunAnalyzer(const base::FilePath& file_path,
+                   base::optional_ref<const std::string> password,
                    safe_browsing::ArchiveAnalyzerResults* results) {
     DCHECK(results);
     mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
@@ -105,9 +111,9 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
     std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-        SandboxedZipAnalyzer::CreateAnalyzer(file_path, password,
-                                             results_getter.GetCallback(),
-                                             std::move(remote));
+        SandboxedZipAnalyzer::CreateAnalyzer(
+            file_path, password.CopyAsOptional(), results_getter.GetCallback(),
+            std::move(remote));
     analyzer->Start();
     run_loop.Run();
   }
@@ -539,7 +545,8 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
       });
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
       SandboxedZipAnalyzer::CreateAnalyzer(
-          temp_path, /*password=*/"", base::DoNothing(), std::move(remote));
+          temp_path, /*password=*/absl::nullopt, base::DoNothing(),
+          std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

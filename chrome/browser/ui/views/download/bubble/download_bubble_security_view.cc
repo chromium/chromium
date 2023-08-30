@@ -924,7 +924,8 @@ bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
     bubble_delegate_->SizeToContents();
   } else {
     delegate_->ProcessDeepScanPress(
-        content_id_, base::UTF16ToUTF8(password_prompt_->GetText()));
+        content_id_,
+        base::optional_ref(base::UTF16ToUTF8(password_prompt_->GetText())));
   }
 
   return false;

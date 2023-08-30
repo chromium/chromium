@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -221,11 +222,12 @@ class DownloadProtectionService {
       DeepScanningRequest::DeepScanTrigger trigger,
       DownloadCheckResult download_check_result,
       enterprise_connectors::AnalysisSettings analysis_settings,
-      const std::string& password);
+      base::optional_ref<const std::string> password);
 
   // Helper function for consumer deep scans.
-  static void UploadForConsumerDeepScanning(download::DownloadItem* item,
-                                            const std::string& password);
+  static void UploadForConsumerDeepScanning(
+      download::DownloadItem* item,
+      base::optional_ref<const std::string> password);
 
   // Uploads a save package `item` for deep scanning. `save_package_file`
   // contains a mapping of on-disk files part of that save package to their

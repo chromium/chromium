@@ -106,7 +106,8 @@ class MockDownloadBubbleSecurityViewDelegate
         item, WarningSurface::BUBBLE_SUBPAGE, action);
   }
 
-  void ProcessDeepScanPress(const ContentId&, const std::string&) override {}
+  void ProcessDeepScanPress(const ContentId&,
+                            base::optional_ref<const std::string>) override {}
   bool IsEncryptedArchive(const ContentId&) override { return false; }
   bool HasPreviousIncorrectPassword(const ContentId&) override { return false; }
 

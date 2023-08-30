@@ -286,11 +286,11 @@ void CheckClientDownloadRequest::UploadBinary(
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY, result,
-        std::move(settings), /*password=*/"");
+        std::move(settings), /*password=*/absl::nullopt);
   } else {
     service()->UploadForDeepScanning(
         item_, callback_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        result, std::move(settings), /*password=*/"");
+        result, std::move(settings), /*password=*/absl::nullopt);
   }
 }
 

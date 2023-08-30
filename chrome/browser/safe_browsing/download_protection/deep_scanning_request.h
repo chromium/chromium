@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -88,7 +89,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
                       CheckDownloadRepeatingCallback callback,
                       DownloadProtectionService* download_service,
                       enterprise_connectors::AnalysisSettings settings,
-                      const std::string& password);
+                      base::optional_ref<const std::string> password);
 
   // Scan the given `item` that corresponds to a save package, with
   // `save_package_page` mapping every currently on-disk file part of that
@@ -254,9 +255,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   std::vector<std::string> request_tokens_;
 
   // Password for the file, if it's an archive.
-  // TODO(crbug/1466287): Make this an absl::optional<std::string>, for
-  // consistency with the SafeArchiveAnalyzer mojo interface.
-  std::string password_;
+  absl::optional<std::string> password_;
 
   // Reason the scanning took place. Used to populate enterprise requests to
   // give more context on what user action lead to a scan.

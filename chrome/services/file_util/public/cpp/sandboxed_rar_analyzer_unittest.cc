@@ -440,7 +440,8 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
       });
   std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter> analyzer =
       SandboxedRarAnalyzer::CreateAnalyzer(
-          temp_path, /*password=*/"", base::DoNothing(), std::move(remote));
+          temp_path, /*password=*/absl::nullopt, base::DoNothing(),
+          std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

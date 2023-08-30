@@ -907,7 +907,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::DEEP_SCAN: {
       safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
-          download_, /*password=*/"");
+          download_, /*password=*/absl::nullopt);
       break;
     }
     case DownloadCommands::CANCEL_DEEP_SCAN: {

@@ -9,6 +9,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -198,7 +199,7 @@ class BinaryUploadService : public KeyedService,
     const std::string& printer_name() const;
     uint64_t user_action_requests_count() const;
     GURL tab_url() const;
-    const std::string& password() const;
+    base::optional_ref<const std::string> password() const;
     enterprise_connectors::ContentAnalysisRequest::Reason reason() const;
 
     // Called when beginning to try upload.

@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/types/optional_ref.h"
 #include "chrome/services/file_util/public/cpp/temporary_file_getter.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -32,7 +33,7 @@ class SandboxedZipAnalyzer {
   // deleter.
   static std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
   CreateAnalyzer(const base::FilePath& zip_file,
-                 const std::string& password,
+                 base::optional_ref<const std::string> password,
                  ResultCallback callback,
                  mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -47,7 +48,7 @@ class SandboxedZipAnalyzer {
  private:
   SandboxedZipAnalyzer(
       const base::FilePath& zip_file,
-      const std::string& password,
+      base::optional_ref<const std::string> password,
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -67,7 +68,7 @@ class SandboxedZipAnalyzer {
   const base::FilePath file_path_;
 
   // The password to use for encrypted entries.
-  const std::string password_;
+  const absl::optional<std::string> password_;
 
   // Callback invoked on the UI thread with the file analyze results.
   ResultCallback callback_;

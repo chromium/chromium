@@ -76,8 +76,9 @@ class DownloadBubbleContentsView : public views::View,
   void AddSecuritySubpageWarningActionEvent(
       const offline_items_collection::ContentId& id,
       DownloadItemWarningData::WarningAction action) override;
-  void ProcessDeepScanPress(const ContentId& id,
-                            const std::string& password) override;
+  void ProcessDeepScanPress(
+      const ContentId& id,
+      base::optional_ref<const std::string> password) override;
   bool IsEncryptedArchive(const ContentId& id) override;
   bool HasPreviousIncorrectPassword(const ContentId& id) override;
 

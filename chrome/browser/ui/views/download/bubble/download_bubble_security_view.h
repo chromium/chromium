@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -53,7 +54,7 @@ class DownloadBubbleSecurityView : public views::View,
     // provided.
     virtual void ProcessDeepScanPress(
         const offline_items_collection::ContentId& id,
-        const std::string& password) = 0;
+        base::optional_ref<const std::string> password) = 0;
 
     // Return whether the download item is an encrypted archive.
     virtual bool IsEncryptedArchive(

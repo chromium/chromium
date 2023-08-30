@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "chrome/services/file_util/public/cpp/temporary_file_getter.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -33,7 +34,7 @@ class SandboxedRarAnalyzer {
   // deleter.
   static std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
   CreateAnalyzer(const base::FilePath& rar_file_path,
-                 const std::string& password,
+                 base::optional_ref<const std::string> password,
                  ResultCallback callback,
                  mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -51,7 +52,7 @@ class SandboxedRarAnalyzer {
  private:
   SandboxedRarAnalyzer(
       const base::FilePath& rar_file_path,
-      const std::string& password,
+      base::optional_ref<const std::string> password,
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
@@ -72,7 +73,7 @@ class SandboxedRarAnalyzer {
   const base::FilePath file_path_;
 
   // The password to use for encrypted entries.
-  const std::string password_;
+  const absl::optional<std::string> password_;
 
   // Callback invoked on the UI thread with the file analyze results.
   ResultCallback callback_;

@@ -56,6 +56,7 @@
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using ReportThreatDetailsResult =
@@ -253,7 +254,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
             weak_ptr_factory_.GetWeakPtr(), item, std::move(callback)),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::UNKNOWN, std::move(settings.value()),
-        /*password=*/"");
+        /*password=*/absl::nullopt);
     return true;
   }
 
@@ -271,7 +272,8 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     UploadForDeepScanning(item, std::move(callback),
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
                           DownloadCheckResult::UNKNOWN,
-                          std::move(settings.value()), /*password=*/"");
+                          std::move(settings.value()),
+                          /*password=*/absl::nullopt);
     return true;
   }
 
@@ -772,7 +774,7 @@ void DownloadProtectionService::UploadForDeepScanning(
     DeepScanningRequest::DeepScanTrigger trigger,
     DownloadCheckResult download_check_result,
     enterprise_connectors::AnalysisSettings analysis_settings,
-    const std::string& password) {
+    base::optional_ref<const std::string> password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto request = std::make_unique<DeepScanningRequest>(
       item, trigger, download_check_result, callback, this,
@@ -787,7 +789,7 @@ void DownloadProtectionService::UploadForDeepScanning(
 // static
 void DownloadProtectionService::UploadForConsumerDeepScanning(
     download::DownloadItem* item,
-    const std::string& password) {
+    base::optional_ref<const std::string> password) {
   if (!item) {
     return;
   }

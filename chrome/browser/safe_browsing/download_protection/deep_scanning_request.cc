@@ -347,7 +347,7 @@ DeepScanningRequest::DeepScanningRequest(
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* download_service,
     enterprise_connectors::AnalysisSettings settings,
-    const std::string& password)
+    base::optional_ref<const std::string> password)
     : item_(item),
       trigger_(trigger),
       callback_(callback),
@@ -355,7 +355,7 @@ DeepScanningRequest::DeepScanningRequest(
       analysis_settings_(std::move(settings)),
       pending_scan_requests_(1),
       pre_scan_download_check_result_(pre_scan_download_check_result),
-      password_(password),
+      password_(password.CopyAsOptional()),
       reason_(enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD),
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
@@ -439,7 +439,9 @@ void DeepScanningRequest::StartSingleFileScan() {
       base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size());
   request->set_digest(sha256);
 
-  request->set_password(password_);
+  if (password_) {
+    request->set_password(*password_);
+  }
 
   file_metadata_.insert({item_->GetFullPath(),
                          enterprise_connectors::FileMetadata(

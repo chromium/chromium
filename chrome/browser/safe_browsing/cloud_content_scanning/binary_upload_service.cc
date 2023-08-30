@@ -302,8 +302,12 @@ GURL BinaryUploadService::Request::tab_url() const {
   return GURL(content_analysis_request_.request_data().tab_url());
 }
 
-const std::string& BinaryUploadService::Request::password() const {
-  return content_analysis_request_.request_data().password();
+base::optional_ref<const std::string> BinaryUploadService::Request::password()
+    const {
+  return content_analysis_request_.request_data().has_password()
+             ? base::optional_ref(
+                   content_analysis_request_.request_data().password())
+             : absl::nullopt;
 }
 
 enterprise_connectors::ContentAnalysisRequest::Reason
