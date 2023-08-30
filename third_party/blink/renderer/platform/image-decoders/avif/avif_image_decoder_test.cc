@@ -793,6 +793,73 @@ void DecodeTask(const SharedBuffer* data, base::RepeatingClosure* done) {
   done->Run();
 }
 
+void InspectImage(
+    const StaticColorCheckParam& param,
+    ImageDecoder::HighBitDepthDecodingOption high_bit_depth_option) {
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoderWithOptions(
+      param.alpha_option, high_bit_depth_option, param.color_behavior,
+      ImageDecoder::AnimationOption::kUnspecified);
+  scoped_refptr<SharedBuffer> data = ReadFile(param.path);
+  ASSERT_TRUE(data.get());
+#if FIXME_DISTINGUISH_LOSSY_OR_LOSSLESS
+  EXPECT_EQ(param.compression_format,
+            ImageDecoder::GetCompressionFormat(data, "image/avif"));
+#endif
+  decoder->SetData(std::move(data), true);
+  EXPECT_EQ(1u, decoder->FrameCount());
+  EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
+  EXPECT_EQ(param.bit_depth > 8, decoder->ImageIsHighBitDepth());
+  auto metadata = decoder->MakeMetadataForDecodeAcceleration();
+  EXPECT_EQ(cc::ImageType::kAVIF, metadata.image_type);
+  // TODO(wtc): Check metadata.yuv_subsampling.
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(param.orientation, decoder->Orientation());
+  EXPECT_EQ(param.color_type == ColorType::kRgbA ||
+                param.color_type == ColorType::kMonoA,
+            frame->HasAlpha());
+  auto get_color_channel = [](SkColorChannel channel, SkColor color) {
+    switch (channel) {
+      case SkColorChannel::kR:
+        return SkColorGetR(color);
+      case SkColorChannel::kG:
+        return SkColorGetG(color);
+      case SkColorChannel::kB:
+        return SkColorGetB(color);
+      case SkColorChannel::kA:
+        return SkColorGetA(color);
+    }
+  };
+  auto color_difference = [get_color_channel](SkColorChannel channel,
+                                              SkColor color1,
+                                              SkColor color2) -> int {
+    return std::abs(static_cast<int>(get_color_channel(channel, color1)) -
+                    static_cast<int>(get_color_channel(channel, color2)));
+  };
+  for (const auto& expected : param.colors) {
+    const SkBitmap& bitmap = frame->Bitmap();
+    SkColor frame_color =
+        bitmap.getColor(expected.point.x(), expected.point.y());
+
+    EXPECT_LE(color_difference(SkColorChannel::kR, frame_color, expected.color),
+              param.color_threshold);
+    EXPECT_LE(color_difference(SkColorChannel::kG, frame_color, expected.color),
+              param.color_threshold);
+    EXPECT_LE(color_difference(SkColorChannel::kB, frame_color, expected.color),
+              param.color_threshold);
+    // TODO(ryoh): Create alpha_threshold field for alpha channels.
+    EXPECT_LE(color_difference(SkColorChannel::kA, frame_color, expected.color),
+              param.color_threshold);
+    if (param.color_type == ColorType::kMono ||
+        param.color_type == ColorType::kMonoA) {
+      EXPECT_EQ(SkColorGetR(frame_color), SkColorGetG(frame_color));
+      EXPECT_EQ(SkColorGetR(frame_color), SkColorGetB(frame_color));
+    }
+  }
+}
+
 }  // namespace
 
 TEST(AnimatedAVIFTests, ValidImages) {
@@ -1636,70 +1703,11 @@ INSTANTIATE_TEST_SUITE_P(Parameterized,
                          ::testing::ValuesIn(kTestParams));
 
 TEST_P(StaticAVIFColorTests, InspectImage) {
-  const StaticColorCheckParam& param = GetParam();
-  // TODO(ryoh): Add tests with ImageDecoder::kHighBitDepthToHalfFloat
-  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoderWithOptions(
-      param.alpha_option, ImageDecoder::kDefaultBitDepth, param.color_behavior,
-      ImageDecoder::AnimationOption::kUnspecified);
-  scoped_refptr<SharedBuffer> data = ReadFile(param.path);
-  ASSERT_TRUE(data.get());
-#if FIXME_DISTINGUISH_LOSSY_OR_LOSSLESS
-  EXPECT_EQ(param.compression_format,
-            ImageDecoder::GetCompressionFormat(data, "image/avif"));
-#endif
-  decoder->SetData(std::move(data), true);
-  EXPECT_EQ(1u, decoder->FrameCount());
-  EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
-  EXPECT_EQ(param.bit_depth > 8, decoder->ImageIsHighBitDepth());
-  auto metadata = decoder->MakeMetadataForDecodeAcceleration();
-  EXPECT_EQ(cc::ImageType::kAVIF, metadata.image_type);
-  // TODO(wtc): Check metadata.yuv_subsampling.
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
-  EXPECT_EQ(param.orientation, decoder->Orientation());
-  EXPECT_EQ(param.color_type == ColorType::kRgbA ||
-                param.color_type == ColorType::kMonoA,
-            frame->HasAlpha());
-  auto get_color_channel = [](SkColorChannel channel, SkColor color) {
-    switch (channel) {
-      case SkColorChannel::kR:
-        return SkColorGetR(color);
-      case SkColorChannel::kG:
-        return SkColorGetG(color);
-      case SkColorChannel::kB:
-        return SkColorGetB(color);
-      case SkColorChannel::kA:
-        return SkColorGetA(color);
-    }
-  };
-  auto color_difference = [get_color_channel](SkColorChannel channel,
-                                              SkColor color1,
-                                              SkColor color2) -> int {
-    return std::abs(static_cast<int>(get_color_channel(channel, color1)) -
-                    static_cast<int>(get_color_channel(channel, color2)));
-  };
-  for (const auto& expected : param.colors) {
-    const SkBitmap& bitmap = frame->Bitmap();
-    SkColor frame_color =
-        bitmap.getColor(expected.point.x(), expected.point.y());
+  InspectImage(GetParam(), ImageDecoder::kDefaultBitDepth);
+}
 
-    EXPECT_LE(color_difference(SkColorChannel::kR, frame_color, expected.color),
-              param.color_threshold);
-    EXPECT_LE(color_difference(SkColorChannel::kG, frame_color, expected.color),
-              param.color_threshold);
-    EXPECT_LE(color_difference(SkColorChannel::kB, frame_color, expected.color),
-              param.color_threshold);
-    // TODO(ryoh): Create alpha_threshold field for alpha channels.
-    EXPECT_LE(color_difference(SkColorChannel::kA, frame_color, expected.color),
-              param.color_threshold);
-    if (param.color_type == ColorType::kMono ||
-        param.color_type == ColorType::kMonoA) {
-      EXPECT_EQ(SkColorGetR(frame_color), SkColorGetG(frame_color));
-      EXPECT_EQ(SkColorGetR(frame_color), SkColorGetB(frame_color));
-    }
-  }
+TEST_P(StaticAVIFColorTests, InspectImageHalfFloat) {
+  InspectImage(GetParam(), ImageDecoder::kHighBitDepthToHalfFloat);
 }
 
 }  // namespace blink

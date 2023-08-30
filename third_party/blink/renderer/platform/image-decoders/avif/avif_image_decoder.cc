@@ -1239,23 +1239,25 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
     rgb_image.pixels =
         reinterpret_cast<uint8_t*>(buffer->GetAddrF16(0, from_row));
     rgb_image.rowBytes = image->width * sizeof(uint64_t);
+    // When decoding to half float, the pixel ordering is always RGBA on all
+    // platforms.
+    rgb_image.format = AVIF_RGB_FORMAT_RGBA;
   } else {
     rgb_image.depth = 8;
     rgb_image.pixels = reinterpret_cast<uint8_t*>(buffer->GetAddr(0, from_row));
     rgb_image.rowBytes = image->width * sizeof(uint32_t);
+    // When decoding to 8-bit, Android uses little-endian RGBA pixels. All other
+    // platforms use BGRA pixels.
+    static_assert(SK_B32_SHIFT == 16 - SK_R32_SHIFT);
+    static_assert(SK_G32_SHIFT == 8);
+    static_assert(SK_A32_SHIFT == 24);
+#if SK_B32_SHIFT
+    rgb_image.format = AVIF_RGB_FORMAT_RGBA;
+#else
+    rgb_image.format = AVIF_RGB_FORMAT_BGRA;
+#endif
   }
   rgb_image.alphaPremultiplied = buffer->PremultiplyAlpha();
-
-  static_assert(SK_B32_SHIFT == 16 - SK_R32_SHIFT);
-  static_assert(SK_G32_SHIFT == 8);
-  static_assert(SK_A32_SHIFT == 24);
-#if SK_B32_SHIFT
-  // Android uses little-endian RGBA pixels.
-  rgb_image.format = AVIF_RGB_FORMAT_RGBA;
-#else
-  rgb_image.format = AVIF_RGB_FORMAT_BGRA;
-#endif
-
   rgb_image.maxThreads = decoder_->maxThreads;
 
   if (save_top_row) {
