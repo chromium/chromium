@@ -14,6 +14,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+constexpr char kSafetyHubNotificationInfoString[] = "notificationInfoString";
+
 struct NotificationPermissions {
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;

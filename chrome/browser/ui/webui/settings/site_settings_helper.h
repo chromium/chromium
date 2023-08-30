@@ -89,7 +89,6 @@ constexpr char kIncognito[] = "incognito";
 constexpr char kIsDirectory[] = "isDirectory";
 constexpr char kIsEmbargoed[] = "isEmbargoed";
 constexpr char kIsWritable[] = "isWritable";
-constexpr char kNotificationInfoString[] = "notificationInfoString";
 constexpr char kObject[] = "object";
 constexpr char kOpenDescription[] = "openDescription";
 constexpr char kOrigin[] = "origin";

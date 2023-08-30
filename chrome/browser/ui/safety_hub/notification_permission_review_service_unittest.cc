@@ -228,9 +228,15 @@ TEST_F(NotificationPermissionReviewServiceTest,
   EXPECT_EQ("https://www.youtube.com:443",
             *notification_permissions[0].GetDict().FindString(
                 site_settings::kOrigin));
+  EXPECT_EQ("About 5 notifications a day",
+            *notification_permissions[0].GetDict().FindString(
+                kSafetyHubNotificationInfoString));
   EXPECT_EQ("https://google.com:443",
             *notification_permissions[1].GetDict().FindString(
                 site_settings::kOrigin));
+  EXPECT_EQ("About 1 notification a day",
+            *notification_permissions[1].GetDict().FindString(
+                kSafetyHubNotificationInfoString));
 
   // Increasing notification count also promotes host in the list.
   RecordNotification(notification_engagement_service,
@@ -241,7 +247,13 @@ TEST_F(NotificationPermissionReviewServiceTest,
   EXPECT_EQ("https://google.com:443",
             *updated_notification_permissions[0].GetDict().FindString(
                 site_settings::kOrigin));
+  EXPECT_EQ("About 11 notifications a day",
+            *updated_notification_permissions[0].GetDict().FindString(
+                kSafetyHubNotificationInfoString));
   EXPECT_EQ("https://www.youtube.com:443",
             *updated_notification_permissions[1].GetDict().FindString(
                 site_settings::kOrigin));
+  EXPECT_EQ("About 5 notifications a day",
+            *updated_notification_permissions[1].GetDict().FindString(
+                kSafetyHubNotificationInfoString));
 }

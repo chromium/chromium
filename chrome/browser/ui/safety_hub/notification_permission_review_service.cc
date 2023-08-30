@@ -261,6 +261,7 @@ NotificationPermissionsReviewService::PopulateNotificationPermissionReviewData(
     std::string notification_info_string = l10n_util::GetPluralStringFUTF8(
         IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL,
         notification_permission.notification_count);
+    permission.Set(kSafetyHubNotificationInfoString, notification_info_string);
     result.Append(std::move(permission));
   }
 
