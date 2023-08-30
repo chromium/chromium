@@ -98,8 +98,10 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
       importModule(
           'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
       importModule(
-          ['ChromeVoxEditableTextBase', 'TextChangedEvent', 'TypingEcho'],
+          ['ChromeVoxEditableTextBase', 'TextChangedEvent'],
           '/chromevox/background/editing/editable_text_base.js'),
+      importModule(
+          'TypingEcho', '/chromevox/background/editing/typing_echo.js'),
       importModule('TtsInterface', '/chromevox/common/tts_interface.js'),
       importModule('LocalStorage', '/common/local_storage.js'),
     ]);

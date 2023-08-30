@@ -38,7 +38,7 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {ClipboardHandler} from './clipboard_handler.js';
 import {Color} from './color.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
-import {TypingEcho} from './editing/editable_text_base.js';
+import {TypingEcho} from './editing/typing_echo.js';
 import {DesktopAutomationInterface} from './event/desktop_automation_interface.js';
 import {EventSource} from './event_source.js';
 import {GestureInterface} from './gesture_interface.js';

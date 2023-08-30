@@ -78,6 +78,7 @@ chromevox_es6_modules = [
   "background/editing/editing.js",
   "background/editing/intent_handler.js",
   "background/editing/text_edit_handler.js",
+  "background/editing/typing_echo.js",
   "background/es6_loader.js",
   "background/event/base_automation_handler.js",
   "background/event/desktop_automation_handler.js",
