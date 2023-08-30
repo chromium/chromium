@@ -11031,47 +11031,6 @@
             ]
         }
     ],
-    "OutOfProcessNetworkService": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableOOPNS_over_6656_Mb_20230410",
-                    "disable_features": [
-                        "NetworkServiceEmptyOutOfProcess",
-                        "NetworkServiceInProcess2"
-                    ]
-                },
-                {
-                    "name": "EmptyOOPNS_20230705",
-                    "enable_features": [
-                        "NetworkServiceEmptyOutOfProcess",
-                        "NetworkServiceInProcess2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OutOfProcessNetworkServiceMemoryControls": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Over_6500_mb_20230410",
-                    "params": {
-                        "network_service_oop_threshold_mb": "6656"
-                    },
-                    "enable_features": [
-                        "NetworkServiceOutOfProcessMemoryThreshold"
-                    ]
-                }
-            ]
-        }
-    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
