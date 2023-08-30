@@ -133,6 +133,8 @@ constexpr CGFloat kButtonTopPadding = 14.0;
       buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
       buttonConfiguration.background.backgroundColor =
           [UIColor colorNamed:kBlueColor];
       _button.configuration = buttonConfiguration;
