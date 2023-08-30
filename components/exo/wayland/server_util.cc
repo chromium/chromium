@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/exo/data_offer.h"
+#include "components/exo/wayland/server.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -84,6 +85,18 @@ SecurityDelegate* GetSecurityDelegate(wl_display* display) {
 
 SecurityDelegate* GetSecurityDelegate(wl_client* client) {
   return GetSecurityDelegate(wl_client_get_display(client));
+}
+
+bool IsClientDestroyed(wl_client* client) {
+  CHECK(client);
+
+  // There should always be a display associated with a client and display will
+  // always outlive the wl_client object.
+  wl_display* display = wl_client_get_display(client);
+  CHECK(display);
+
+  Server* server = Server::GetServerForDisplay(display);
+  return server ? server->IsClientDestroyed(client) : true;
 }
 
 }  // namespace wayland

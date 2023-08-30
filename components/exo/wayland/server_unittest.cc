@@ -68,7 +68,7 @@ TEST_F(ServerTest, SecurityDelegateAssociation) {
 
   auto server = CreateServer(std::move(security_delegate));
 
-  EXPECT_EQ(GetSecurityDelegate(server->GetWaylandDisplayForTesting()),
+  EXPECT_EQ(GetSecurityDelegate(server->GetWaylandDisplay()),
             security_delegate_ptr);
 }
 
@@ -101,7 +101,7 @@ TEST_F(ServerTest, StartFd) {
   EXPECT_NE(client_display, nullptr);
 
   wl_list* all_clients =
-      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
+      wl_display_get_client_list(server->GetWaylandDisplay());
   ASSERT_FALSE(wl_list_empty(all_clients));
   wl_client* client = wl_client_from_link(all_clients->next);
 
@@ -126,7 +126,7 @@ TEST_F(ServerTest, Dispatch) {
   client_thread.Start();
 
   TestListener client_creation_listener;
-  wl_display_add_client_created_listener(server->GetWaylandDisplayForTesting(),
+  wl_display_add_client_created_listener(server->GetWaylandDisplay(),
                                          &client_creation_listener.listener);
 
   base::Lock lock;
@@ -148,13 +148,16 @@ TEST_F(ServerTest, Dispatch) {
     server->Dispatch(base::Milliseconds(10));
   }
 
+  // Remove the listener from the display's client creation signal.
+  wl_list_remove(&client_creation_listener.listener.link);
+
   {
     base::AutoLock locker(lock);
     EXPECT_TRUE(connected_to_server);
   }
 
   wl_list* all_clients =
-      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
+      wl_display_get_client_list(server->GetWaylandDisplay());
   ASSERT_FALSE(wl_list_empty(all_clients));
   wl_client* client = wl_client_from_link(all_clients->next);
 
@@ -168,6 +171,9 @@ TEST_F(ServerTest, Dispatch) {
   while (!client_destruction_listener.notified) {
     server->Dispatch(base::Milliseconds(10));
   }
+
+  // Remove the listener from the client's destroy signal.
+  wl_list_remove(&client_destruction_listener.listener.link);
 }
 
 TEST_F(ServerTest, Flush) {

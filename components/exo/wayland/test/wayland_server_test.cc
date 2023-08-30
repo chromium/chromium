@@ -12,13 +12,22 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/exo/security_delegate.h"
+#include "components/exo/wayland/server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo::wayland::test {
 
-WaylandServerTest::WaylandServerTest() = default;
+WaylandServerTest::WaylandServerTest() {
+  Server::SetServerGetter(base::BindLambdaForTesting([&](wl_display* display) {
+    // Currently tests run with a single Server instance.
+    EXPECT_EQ(display, server_->GetWaylandDisplay());
+    return server_.get();
+  }));
+}
 
-WaylandServerTest::~WaylandServerTest() = default;
+WaylandServerTest::~WaylandServerTest() {
+  Server::SetServerGetter(base::NullCallback());
+}
 
 void WaylandServerTest::SetUp() {
   WaylandServerTestBase::SetUp();

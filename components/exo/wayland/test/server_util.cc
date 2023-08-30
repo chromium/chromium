@@ -21,7 +21,7 @@ wl_resource* LookUpResource(Server* server, const ResourceKey& key) {
 
   wl_client* client = nullptr;
   wl_list* all_clients =
-      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
+      wl_display_get_client_list(server->GetWaylandDisplay());
 
   auto find_closure = [](struct wl_resource* resource, void* data) {
     IteratorData* iterator_data = static_cast<IteratorData*>(data);

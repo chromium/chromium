@@ -14,6 +14,8 @@
 #include "components/exo/security_delegate.h"
 #include "components/exo/wayland/server.h"
 
+struct wl_display;
+
 namespace exo {
 
 namespace wayland {
@@ -48,6 +50,9 @@ class WaylandServerController {
   WaylandServerController& operator=(const WaylandServerController&) = delete;
 
   ~WaylandServerController();
+
+  // Gets the Server instance for the `display` if it exists.
+  wayland::Server* GetServerForDisplay(wl_display* display);
 
   InputMethodSurfaceManager* input_method_surface_manager() {
     return display_->input_method_surface_manager();

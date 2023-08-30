@@ -22,6 +22,11 @@ AuraOutputManager::AuraOutputManager(wl_resource* manager_resource)
 
 // static.
 AuraOutputManager* AuraOutputManager::Get(wl_client* client) {
+  // Avoid querying client resources if it has already begun destruction.
+  if (IsClientDestroyed(client)) {
+    return nullptr;
+  }
+
   AuraOutputManager* output_manager = nullptr;
   wl_client_for_each_resource(
       client,

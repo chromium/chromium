@@ -59,6 +59,7 @@
 #include "build/build_config.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
+#include "components/exo/wayland/client_tracker.h"
 #include "components/exo/wayland/content_type.h"
 #include "components/exo/wayland/overlay_prioritizer.h"
 #include "components/exo/wayland/serial_tracker.h"
@@ -134,6 +135,9 @@ const char kWaylandSocketGroup[] = "wayland";
 // connections. This is *NOT* the maximum number of clients, just pending ones
 // (see `man 2 listen`).
 constexpr int kMaxPendingConnections = 128;
+
+// Callback used to find a Server instance for a given wl_display.
+Server::ServerGetter g_server_getter;
 
 bool IsDrmAtomicAvailable() {
 #if BUILDFLAG(IS_OZONE)
@@ -269,6 +273,8 @@ Server::Server(Display* display,
 
   wl_display_.reset(wl_display_create());
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
+
+  client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
 }
 
 void Server::Initialize() {
@@ -450,6 +456,17 @@ std::unique_ptr<Server> Server::Create(
   return server;
 }
 
+// static.
+Server* Server::GetServerForDisplay(wl_display* display) {
+  return g_server_getter ? g_server_getter.Run(display) : nullptr;
+}
+
+// static.
+void Server::SetServerGetter(Server::ServerGetter server_getter) {
+  CHECK(!server_getter || !g_server_getter);
+  g_server_getter = std::move(server_getter);
+}
+
 void Server::StartWithDefaultPath(StartCallback callback) {
   if (!Open()) {
     std::move(callback).Run(/*success=*/false);
@@ -511,6 +528,10 @@ wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {
     return nullptr;
   }
   return iter->second.get()->GetOutputResourceForClient(client);
+}
+
+bool Server::IsClientDestroyed(wl_client* client) const {
+  return client_tracker_->IsClientDestroyed(client);
 }
 
 void Server::AddWaylandOutput(int64_t id,
