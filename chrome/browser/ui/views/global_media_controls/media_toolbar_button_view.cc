@@ -116,25 +116,8 @@ void MediaToolbarButtonView::Enable() {
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
   if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-    // Live Caption multi language is only enabled when SODA is also enabled.
-    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
       browser_->window()->MaybeShowFeaturePromo(
           feature_engagement::kIPHLiveCaptionFeature);
-    } else {
-      // Live Caption only works for English-language speech for now, so we only
-      // show the promo to users whose fluent languages include english. Fluent
-      // languages are set in chrome://settings/languages.
-      language::LanguageModel* language_model =
-          LanguageModelManagerFactory::GetForBrowserContext(browser_->profile())
-              ->GetPrimaryModel();
-      for (const auto& lang : language_model->GetLanguages()) {
-        if (base::MatchPattern(lang.lang_code, "en*")) {
-          browser_->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHLiveCaptionFeature);
-          break;
-        }
-      }
-    }
   }
 
   for (auto& observer : observers_)
