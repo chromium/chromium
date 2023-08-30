@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 
+#include <vector>
+
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
