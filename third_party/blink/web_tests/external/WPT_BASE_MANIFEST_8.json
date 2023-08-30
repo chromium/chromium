@@ -5581,6 +5581,13 @@
          {}
         ]
        ],
+       "multiple-iframes-with-allow-scripts-crash.html": [
+        "572f119be8e41130c62eb5a01ba4b9c8c0832080",
+        [
+         null,
+         {}
+        ]
+       ],
        "sandbox-toggle-in-inactive-document-crash.html": [
         "654542f6a8e21a23f70d50c1c547e9dac6971c36",
         [
@@ -279726,16 +279733,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "9f02208355d223b2c6423a419cce9a76cfe51f07",
-     []
-    ],
-    "mtime.json": [
-     "e388689318fdd6391a5cdf483f921192486d0f4e",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -306894,15 +306891,11 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "643232da87219679c4029d548c131cabc235bc7f",
+       "6da930a0b80412aeac5a1f7cc722c05d0a50fd5b",
        []
       ],
       "color-computed-relative-color.html.ini": [
        "cd52a07975a7b0d3aaba0c37a1d2f8eef7b47142",
-       []
-      ],
-      "color-invalid-relative-color-expected.txt": [
-       "a518847d1a98c25f6fdb2ff807955d28e7d636d1",
        []
       ],
       "color-invalid-relative-color.html.ini": [
@@ -306915,10 +306908,6 @@
       ],
       "color-valid-lab.html.ini": [
        "d741e16609542dc45851e092d7d2aec18ce8acef",
-       []
-      ],
-      "color-valid-relative-color-expected.txt": [
-       "6dbd4fd909a1f8493235378f1cfab6a2858ba882",
        []
       ],
       "color-valid-relative-color.html.ini": [
@@ -366927,7 +366916,7 @@
       []
      ],
      "color-testcommon.js": [
-      "ab0c4efc9fa9fe751e3861fb920e11b7f69f95c4",
+      "24cad1d97c99fb331b8ae986557d76b9f3e703ac",
       []
      ],
      "computed-testcommon.js": [
@@ -434562,7 +434551,7 @@
        []
       ],
       "dynamic-import-remote-origin-referrer-checker-worker.sub.js": [
-       "3f281faa7c38c9f830f115606ab0879838bc2bc9",
+       "014a3467e86c8a61ae013965a12f7f379b2b4f12",
        []
       ],
       "dynamic-import-remote-origin-script-worker.sub.js": [
@@ -434702,7 +434691,7 @@
        []
       ],
       "static-import-remote-origin-referrer-checker-worker.sub.js": [
-       "45fc5493c92a4fdf1dceb1f985253c60630c253c",
+       "c1f8340f36d71873c96c912e5e2531d5fdc3f2c2",
        []
       ],
       "static-import-remote-origin-script-worker.sub.js": [
@@ -475691,7 +475680,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "6982a490e11c6a71c39049d30c9a9ce06209bb7c",
+       "44d29a0fab55fc325abe5592275f51b87c0b4f01",
        [
         null,
         {}
@@ -475768,7 +475757,7 @@
        ]
       ],
       "color-invalid-relative-color.html": [
-       "1e95ef3997d6fa03abeb9ef7ef5580d2649fff59",
+       "db0aa0b2fe8bb32dd4cc0a138e08d564854d8258",
        [
         null,
         {}
@@ -475838,7 +475827,7 @@
        ]
       ],
       "color-valid-relative-color.html": [
-       "f67264d0c46ce5ded773e9000555f67217e4dc49",
+       "34c6dfb53d0f92b6b21421ac85f2c69d425a8722",
        [
         null,
         {}
