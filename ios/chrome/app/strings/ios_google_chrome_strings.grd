@@ -749,6 +749,9 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_OPEN_TAB_GRID_DESCRIPTION" desc="Shortcut description to open tab grid in chrome [iOS only].">
         Opens the Chrome Tab Grid.
       </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_WITH_VOICE_TITLE" desc="Siri Shortcut for search with voice title [iOS only]">
+        Search With Voice in Chrome
+      </message>
     </messages>
   </release>
 </grit>

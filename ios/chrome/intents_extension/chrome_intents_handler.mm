@@ -13,6 +13,7 @@
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
+#import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 
 @interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
                                     OpenInChromeIntentHandling,
@@ -20,7 +21,8 @@
                                     OpenReadingListIntentHandling,
                                     OpenBookmarksIntentHandling,
                                     OpenRecentTabsIntentHandling,
-                                    OpenTabGridIntentHandling>
+                                    OpenTabGridIntentHandling,
+                                    SearchWithVoiceIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -170,6 +172,22 @@
   OpenTabGridIntentResponse* response = [[OpenTabGridIntentResponse alloc]
       initWithCode:OpenTabGridIntentResponseCodeContinueInApp
       userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - SearchWithVoiceIntentHandling
+
+- (void)handleSearchWithVoice:(SearchWithVoiceIntent*)intent
+                   completion:
+                       (void (^)(SearchWithVoiceIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([SearchWithVoiceIntent class])];
+
+  SearchWithVoiceIntentResponse* response =
+      [[SearchWithVoiceIntentResponse alloc]
+          initWithCode:SearchWithVoiceIntentResponseCodeContinueInApp
+          userActivity:activity];
 
   completion(response);
 }

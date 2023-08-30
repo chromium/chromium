@@ -67,6 +67,24 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>6IUaAa</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SEARCH_WITH_VOICE_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>oq3zlW</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SEARCH_WITH_VOICE_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>7Qq5ww</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SEARCH_WITH_VOICE_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>hB4zxD</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE</string>

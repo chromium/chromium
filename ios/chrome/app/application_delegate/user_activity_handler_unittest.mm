@@ -43,6 +43,7 @@
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
+#import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -988,5 +989,35 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentOpenTabGrid) {
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(OPEN_TAB_GRID,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to search with voice intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentSearchWithVoice) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"SearchWithVoiceIntent"];
+
+  SearchWithVoiceIntent* intent = [[SearchWithVoiceIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(START_VOICE_SEARCH,
             [connectionInformationMock startupParameters].postOpeningAction);
 }

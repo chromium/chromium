@@ -65,6 +65,7 @@ NSString* const kSiriOpenReadingList = @"OpenReadingListIntent";
 NSString* const kSiriOpenBookmarks = @"OpenBookmarksIntent";
 NSString* const kSiriOpenRecentTabs = @"OpenRecentTabsIntent";
 NSString* const kSiriOpenTabGrid = @"OpenTabGridIntent";
+NSString* const kSiriVoiceSearch = @"SearchWithVoiceIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -319,6 +320,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     [connectionInformation
         setStartupParameters:
             [self startupParametersForOpeningNewTabWithAction:OPEN_TAB_GRID]];
+  } else if ([userActivity.activityType isEqualToString:kSiriVoiceSearch]) {
+    [connectionInformation
+        setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
+                                       START_VOICE_SEARCH]];
   } else {
     // Do nothing for unknown activity type.
     return NO;

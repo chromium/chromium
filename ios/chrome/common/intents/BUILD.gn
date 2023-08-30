@@ -14,5 +14,6 @@ intent_definition("intents") {
     "OpenBookmarksIntent",
     "OpenRecentTabsIntent",
     "OpenTabGridIntent",
+    "SearchWithVoiceIntent",
   ]
 }
