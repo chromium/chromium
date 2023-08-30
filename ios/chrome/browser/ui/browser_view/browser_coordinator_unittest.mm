@@ -312,27 +312,35 @@ TEST_F(BrowserCoordinatorTest, ShareChromeApp) {
 // Tests that BrowserCoordinator properly implements
 // the NewTabPageTabHelperDelegate protocol.
 TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
+  // This test is wrapped in an @autoreleasepool because some arguments passed
+  // to methods on some of the mock objects need to be freed before
+  // TestChromeBrowserState is destroyed. Without the @autoreleasepool the
+  // NSInvocation objects which keep these arguments alive aren't destroyed
+  // until the parent PlatformTest class itself is destroyed.
+  @autoreleasepool {
+    BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+    [browser_coordinator start];
 
-  id mockNTPCoordinator = OCMPartialMock(browser_coordinator.NTPCoordinator);
+    id mockNTPCoordinator = OCMPartialMock(browser_coordinator.NTPCoordinator);
 
-  // Insert the web_state into the Browser.
-  InsertWebState();
+    // Insert the web_state into the Browser.
+    InsertWebState();
 
-  // Open an NTP to start the coordinator.
-  OpenURL(GURL("chrome://newtab/"));
-  EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
+    // Open an NTP to start the coordinator.
+    OpenURL(GURL("chrome://newtab/"));
+    EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
-  // Open a non-NTP page and expect a call to the NTP coordinator.
-  [[mockNTPCoordinator expect] didNavigateAwayFromNTP];
-  OpenURL(GURL("chrome://version/"));
-  EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
+    // Open a non-NTP page and expect a call to the NTP coordinator.
+    [[mockNTPCoordinator expect] didNavigateAwayFromNTP];
+    OpenURL(GURL("chrome://version/"));
+    EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
-  // Open another NTP and expect a navigation call.
-  [[mockNTPCoordinator expect] didNavigateToNTPInWebState:GetActiveWebState()];
-  OpenURL(GURL("chrome://newtab/"));
-  EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
+    // Open another NTP and expect a navigation call.
+    [[mockNTPCoordinator expect]
+        didNavigateToNTPInWebState:GetActiveWebState()];
+    OpenURL(GURL("chrome://newtab/"));
+    EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
-  [browser_coordinator stop];
+    [browser_coordinator stop];
+  }
 }
