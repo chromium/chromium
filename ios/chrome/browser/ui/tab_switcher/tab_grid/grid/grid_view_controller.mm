@@ -693,10 +693,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // collection is doing layout (potentially during rotation?). Fudge by
     // duplicating the last cell. The assumption is that there will be another,
     // correct layout shortly after the incorrect one.
-    // Keep array bounds valid, but dump without crashing to report.
+    // Keep array bounds valid.
     if (itemIndex >= self.items.count) {
       itemIndex = self.items.count - 1;
-      base::debug::DumpWithoutCrashing();
     }
 
     TabSwitcherItem* item = self.items[itemIndex];
@@ -952,10 +951,9 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // collection is doing layout (potentially during rotation?). Fudge by
   // duplicating the last cell. The assumption is that there will be another,
   // correct layout shortly after the incorrect one.
-  // Keep array bounds valid, but dump without crashing to report.
+  // Keep array bounds valid.
   if (itemIndex >= self.items.count) {
     itemIndex = self.items.count - 1;
-    base::debug::DumpWithoutCrashing();
   }
 
   TabSwitcherItem* item = self.items[itemIndex];
