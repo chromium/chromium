@@ -57,14 +57,6 @@ try_.builder(
     ),
     os = os.LINUX_DEFAULT,
     main_list_view = "try",
-    tryjob = try_.job(
-        location_filters = [
-            "cc/.+",
-            "third_party/blink/renderer/core/paint/.+",
-            "third_party/blink/renderer/core/svg/.+",
-            "third_party/blink/renderer/platform/graphics/.+",
-        ],
-    ),
 )
 
 try_.builder(

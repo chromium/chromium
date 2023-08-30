@@ -37,10 +37,6 @@
       "retry_failed_shards": false
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "jobs": 150,
@@ -55,6 +51,5 @@
     ]
   },
   "builder_group": "tryserver.blink",
-  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
