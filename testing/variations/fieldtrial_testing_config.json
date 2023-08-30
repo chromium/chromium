@@ -2742,39 +2742,6 @@
             ]
         }
     ],
-    "CacheCodeOnIdle": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230202",
-                    "params": {
-                        "delay-in-ms": "1",
-                        "service-worker-only": "true"
-                    },
-                    "enable_features": [
-                        "CacheCodeOnIdle"
-                    ]
-                },
-                {
-                    "name": "Disabled_20230202",
-                    "disable_features": [
-                        "CacheCodeOnIdle"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheFontFamilyMatching": [
         {
             "platforms": [

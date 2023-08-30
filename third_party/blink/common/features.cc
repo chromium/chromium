@@ -399,12 +399,12 @@ BASE_FEATURE(kCORSErrorsIssueOnly,
 // (https://crbug.com/1260908).
 BASE_FEATURE(kCacheCodeOnIdle,
              "CacheCodeOnIdle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
-                                                         "delay-in-ms", 0};
+                                                         "delay-in-ms", 1};
 // Apply CacheCodeOnIdle only for service workers (https://crbug.com/1410082).
 const base::FeatureParam<bool> kCacheCodeOnIdleDelayServiceWorkerOnlyParam{
-    &kCacheCodeOnIdle, "service-worker-only", false};
+    &kCacheCodeOnIdle, "service-worker-only", true};
 
 // When enabled allows the header name used in the blink
 // CacheStorageCodeCacheHint runtime feature to be modified.  This runtime
