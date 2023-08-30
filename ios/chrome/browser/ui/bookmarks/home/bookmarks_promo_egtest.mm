@@ -85,6 +85,10 @@ using chrome_test_util::SecondarySignInButton;
                    (testNoSyncPromoIfSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector
+                   (testSigninWithSyncPassphraseAndTurnOnSync)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
 
   return config;
