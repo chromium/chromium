@@ -1976,12 +1976,30 @@ TEST_P(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
   ui::ScopedAnimationDurationScaleMode animation_scale_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  std::unique_ptr<ash::WindowResizer> resizer(ash::CreateWindowResizer(
-      window, gfx::PointF(), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_MOUSE));
-  resizer->Drag(gfx::PointF(10, 10), 0);
-  EXPECT_EQ(gfx::Rect(18, 18, 256, 256), window->layer()->GetTargetBounds());
-  EXPECT_EQ(gfx::Rect(18, 18, 256, 256), window->layer()->bounds());
-  resizer->CompleteDrag();
+
+  {
+    // Move the window with a drag.
+    std::unique_ptr<ash::WindowResizer> resizer(ash::CreateWindowResizer(
+        window, gfx::PointF(), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_MOUSE));
+    resizer->Drag(gfx::PointF(10, 10), 0);
+
+    // Make sure that the animation is turned off during drag move.
+    EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+    EXPECT_EQ(gfx::Rect(18, 18, 256, 256), window->layer()->GetTargetBounds());
+    EXPECT_EQ(gfx::Rect(18, 18, 256, 256), window->layer()->bounds());
+    resizer->CompleteDrag();
+  }
+  {
+    // Resize the window with a drag.
+    std::unique_ptr<ash::WindowResizer> resizer(ash::CreateWindowResizer(
+        window, gfx::PointF(), HTRIGHT, ::wm::WINDOW_MOVE_SOURCE_MOUSE));
+    resizer->Drag(gfx::PointF(100, 0), 0);
+
+    // Make sure that animation is turned off during drag resize.
+    EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+    EXPECT_EQ(window->layer()->GetTargetBounds(), window->layer()->bounds());
+    resizer->CompleteDrag();
+  }
 }
 
 TEST_P(ClientControlledShellSurfaceTest,
