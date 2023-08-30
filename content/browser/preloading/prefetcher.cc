@@ -8,6 +8,7 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 
 namespace content {
 
@@ -31,10 +32,15 @@ bool Prefetcher::IsPrefetchAttemptFailedOrDiscarded(const GURL& url) {
 
 void Prefetcher::OnStartSinglePrefetch(
     const std::string& request_id,
-    const network::ResourceRequest& request) {
+    const network::ResourceRequest& request,
+    absl::optional<
+        std::pair<const GURL&,
+                  const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info) {
   auto* ftn = render_frame_host_impl()->frame_tree_node();
   devtools_instrumentation::OnPrefetchRequestWillBeSent(
-      ftn, request_id, render_frame_host().GetLastCommittedURL(), request);
+      ftn, request_id, render_frame_host().GetLastCommittedURL(), request,
+      redirect_info);
 }
 
 void Prefetcher::OnPrefetchResponseReceived(

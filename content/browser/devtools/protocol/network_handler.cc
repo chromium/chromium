@@ -2083,7 +2083,11 @@ void NetworkHandler::PrefetchRequestWillBeSent(
     const network::ResourceRequest& request,
     const GURL& initiator_url,
     Maybe<std::string> frame_token,
-    base::TimeTicks timestamp) {
+    base::TimeTicks timestamp,
+    absl::optional<
+        std::pair<const GURL&,
+                  const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info) {
   if (!enabled_)
     return;
 
@@ -2095,9 +2099,14 @@ void NetworkHandler::PrefetchRequestWillBeSent(
           .SetType(Network::Initiator::TypeEnum::Script)
           .SetUrl(initiator_url.is_valid() ? initiator_url.spec() : "")
           .Build();
-  // TODO: for now redirect is empty
+
   bool redirect_emitted_extra_info = false;
   std::unique_ptr<Network::Response> redirect_response;
+  if (redirect_info) {
+    const auto& [previous_url, head] = *redirect_info;
+    redirect_emitted_extra_info = head.emitted_extra_info;
+    redirect_response = BuildResponse(previous_url, head);
+  }
 
   auto request_info =
       Network::Request::Create()

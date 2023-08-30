@@ -1104,6 +1104,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
           /*no_vary_search_expected=*/absl::nullopt,
           blink::mojom::SpeculationInjectionWorld::kNone,
           /*prefetch_document_manager=*/nullptr);
+  prefetch_container->MakeResourceRequest({});
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   MakeServableStreamingURLLoaderWithRedirectForTest(prefetch_container.get(),
@@ -1218,6 +1219,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*no_vary_search_expected=*/absl::nullopt,
           blink::mojom::SpeculationInjectionWorld::kNone,
           /*prefetch_document_manager=*/nullptr);
+  prefetch_container->MakeResourceRequest({});
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(

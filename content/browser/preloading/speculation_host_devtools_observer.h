@@ -8,6 +8,7 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
@@ -20,7 +21,11 @@ class CONTENT_EXPORT SpeculationHostDevToolsObserver {
  public:
   virtual void OnStartSinglePrefetch(
       const std::string& request_id,
-      const network::ResourceRequest& request) = 0;
+      const network::ResourceRequest& request,
+      absl::optional<
+          std::pair<const GURL&,
+                    const network::mojom::URLResponseHeadDevToolsInfo&>>
+          redirect_info) = 0;
   virtual void OnPrefetchResponseReceived(
       const GURL& url,
       const std::string& request_id,

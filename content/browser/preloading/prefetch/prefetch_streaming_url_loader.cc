@@ -32,12 +32,19 @@ void PrefetchStreamingURLLoader::Start(
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::TimeDelta timeout_duration) {
+  // Copying the ResourceRequest is currently necessary because the Mojo traits
+  // for TrustedParams currently const_cast and then move the underlying
+  // devtools_observer, rather than cloning it. The copy constructor for
+  // TrustedParams, on the other hand, clones it correctly.
+  //
+  // This is a violation of const correctness which lead to a confusing bug
+  // here. If that goes away, then this copy might not be necessary.
   url_loader_factory->CreateLoaderAndStart(
       prefetch_url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |
           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
-      request,
+      network::ResourceRequest(request),
       prefetch_url_loader_client_receiver_.BindNewPipeAndPassRemote(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation));

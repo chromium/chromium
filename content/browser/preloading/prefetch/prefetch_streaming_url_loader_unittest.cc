@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1545,6 +1546,30 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
       PrefetchStreamingURLLoaderStatus::kSuccessfulServedBeforeCompletion, 1);
+}
+
+TEST_F(PrefetchStreamingURLLoaderTest, DoesNotTakeDevToolsObserver) {
+  // These Mojo interfaces aren't actually hooked up to anything, but they
+  // suffice to trigger the same serialization code as in production.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> url_loader_factory;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_remote(
+      url_loader_factory.InitWithNewPipeAndPassRemote());
+  mojo::PendingReceiver<network::mojom::DevToolsObserver> observer;
+
+  network::ResourceRequest request;
+  request.method = "GET";
+  request.url = GURL("https://example.com");
+  request.trusted_params.emplace().devtools_observer =
+      observer.InitWithNewPipeAndPassRemote();
+
+  auto streaming_loader = PrefetchStreamingURLLoader::Create(
+      url_loader_factory_remote.get(), request, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*timeout_duration=*/base::TimeDelta(),
+      base::BindOnce([](network::mojom::URLResponseHead*) {
+        return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
+      }),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(), nullptr);
+  EXPECT_TRUE(request.trusted_params->devtools_observer.is_valid());
 }
 
 }  // namespace

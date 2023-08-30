@@ -95,6 +95,21 @@ class PrefetchContainerTest : public RenderViewHostTestHarness {
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 };
 
+namespace {
+
+// Add a redirect hop with dummy redirect info that should be good enough in
+// most cases.
+void AddRedirectHop(PrefetchContainer& container, const GURL& url) {
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = 302;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = url;
+  redirect_info.new_site_for_cookies = net::SiteForCookies::FromUrl(url);
+  container.AddRedirectHop(redirect_info);
+}
+
+}  // namespace
+
 TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
   PrefetchContainer prefetch_container(
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
@@ -188,12 +203,13 @@ TEST_F(PrefetchContainerTest, CookieListener) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.MakeResourceRequest({});
   prefetch_container.RegisterCookieListener(cookie_manager());
 
   // Add redirect hops, and register its own cookie listener for each hop.
-  prefetch_container.AddRedirectHop(kTestUrl2);
+  AddRedirectHop(prefetch_container, kTestUrl2);
   prefetch_container.RegisterCookieListener(cookie_manager());
-  prefetch_container.AddRedirectHop(kTestUrl3);
+  AddRedirectHop(prefetch_container, kTestUrl3);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
   // Check the cookies for `kTestUrl1`, `kTestUrl2` and `kTestUrl3`,
@@ -325,12 +341,13 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.MakeResourceRequest({});
   prefetch_container.RegisterCookieListener(cookie_manager());
 
-  prefetch_container.AddRedirectHop(kRedirectUrl1);
+  AddRedirectHop(prefetch_container, kRedirectUrl1);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
-  prefetch_container.AddRedirectHop(kRedirectUrl2);
+  AddRedirectHop(prefetch_container, kRedirectUrl2);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
   auto reader = prefetch_container.CreateReader();
@@ -648,6 +665,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       prefetch_document_manager->GetWeakPtr());
+  prefetch_container.MakeResourceRequest({});
 
   // Mark initial prefetch as eligible
   prefetch_container.OnEligibilityCheckComplete(true, absl::nullopt);
@@ -657,7 +675,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
             1);
 
   // Add a redirect, register a callback for it, and then mark it as eligible.
-  prefetch_container.AddRedirectHop(kTestUrl2);
+  AddRedirectHop(prefetch_container, kTestUrl2);
   prefetch_container.OnEligibilityCheckComplete(true, absl::nullopt);
 
   // Referring page metrics is only incremented for the original prefetch URL
@@ -685,6 +703,7 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       prefetch_document_manager->GetWeakPtr());
+  prefetch_container.MakeResourceRequest({});
 
   // Mark initial prefetch as eligible
   prefetch_container.OnEligibilityCheckComplete(true, absl::nullopt);
@@ -694,7 +713,7 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
             1);
 
   // Add a redirect, register a callback for it, and then mark it as ineligible.
-  prefetch_container.AddRedirectHop(kTestUrl2);
+  AddRedirectHop(prefetch_container, kTestUrl2);
   prefetch_container.OnEligibilityCheckComplete(
       false, PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 
@@ -789,9 +808,10 @@ TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.MakeResourceRequest({});
 
-  prefetch_container.AddRedirectHop(GURL("https://redirect1.com"));
-  prefetch_container.AddRedirectHop(GURL("https://redirect2.com"));
+  AddRedirectHop(prefetch_container, GURL("https://redirect1.com"));
+  AddRedirectHop(prefetch_container, GURL("https://redirect2.com"));
   prefetch_container.OnPrefetchComplete();
 
   histogram_tester.ExpectUniqueSample(
@@ -810,32 +830,33 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
       referrer, /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.MakeResourceRequest({});
 
   EXPECT_FALSE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
-  prefetch_container.AddRedirectHop(GURL("https://test.com/redirect"));
-
-  EXPECT_FALSE(
-      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
-  EXPECT_FALSE(prefetch_container
-                   .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
-
-  prefetch_container.AddRedirectHop(GURL("https://m.test.com/redirect"));
+  AddRedirectHop(prefetch_container, GURL("https://test.com/redirect"));
 
   EXPECT_FALSE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_FALSE(prefetch_container
                    .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 
-  prefetch_container.AddRedirectHop(GURL("https://other.com/redirect1"));
+  AddRedirectHop(prefetch_container, GURL("https://m.test.com/redirect"));
+
+  EXPECT_FALSE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_FALSE(prefetch_container
+                   .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
+
+  AddRedirectHop(prefetch_container, GURL("https://other.com/redirect1"));
 
   EXPECT_TRUE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_FALSE(prefetch_container
                    .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 
-  prefetch_container.AddRedirectHop(GURL("https://other.com/redirect2"));
+  AddRedirectHop(prefetch_container, GURL("https://other.com/redirect2"));
 
   EXPECT_TRUE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
@@ -857,6 +878,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container->MakeResourceRequest({});
 
   EXPECT_FALSE(prefetch_container->HasStreamingURLLoadersForTest());
   EXPECT_EQ(prefetch_container->GetLastStreamingURLLoader(), nullptr);
@@ -962,6 +984,7 @@ TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.MakeResourceRequest({});
 
   EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
   EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);

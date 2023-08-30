@@ -30,6 +30,9 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
+#include "net/url_request/redirect_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -571,9 +574,44 @@ bool PrefetchContainer::IsInitialPrefetchEligible() const {
              : false;
 }
 
-void PrefetchContainer::AddRedirectHop(const GURL& url) {
+void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
+  CHECK(resource_request_);
+
+  // There are sometimes other headers that are modified during navigation
+  // redirects; see |NavigationRequest::OnRedirectChecksComplete| (including
+  // some which are added by throttles). These aren't yet supported for
+  // prefetch, including browsing topics and client hints.
+  net::HttpRequestHeaders updated_headers;
+  updated_headers.SetHeader("Sec-Purpose",
+                            IsProxyRequiredForURL(redirect_info.new_url)
+                                ? "prefetch;anonymous-client-ip"
+                                : "prefetch");
+
+  // TODO(jbroman): We have several places that invoke
+  // `net::RedirectUtil::UpdateHttpRequest` and then need to do very similar
+  // work afterward. Ideally we would deduplicate these more.
+  bool should_clear_upload = false;
+  net::RedirectUtil::UpdateHttpRequest(
+      resource_request_->url, resource_request_->method, redirect_info,
+      /*removed_headers=*/absl::nullopt, std::move(updated_headers),
+      &resource_request_->headers, &should_clear_upload);
+  CHECK(!should_clear_upload);
+
+  resource_request_->url = redirect_info.new_url;
+  resource_request_->method = redirect_info.new_method;
+  resource_request_->site_for_cookies = redirect_info.new_site_for_cookies;
+
+  resource_request_->trusted_params->isolation_info =
+      resource_request_->trusted_params->isolation_info.CreateForRedirect(
+          url::Origin::Create(resource_request_->url));
+
+  // TODO(jbroman): This somewhat duplicates |referrer_|. Revisit usage of that
+  // (and related data members) to see if they can/should use this data instead.
+  resource_request_->referrer = GURL(redirect_info.new_referrer);
+  resource_request_->referrer_policy = redirect_info.new_referrer_policy;
+
   redirect_chain_.push_back(
-      std::make_unique<SinglePrefetch>(url, referring_site_));
+      std::make_unique<SinglePrefetch>(redirect_info.new_url, referring_site_));
 }
 
 void PrefetchContainer::RegisterCookieListener(
@@ -988,6 +1026,14 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   }
 }
 
+GURL PrefetchContainer::GetCurrentURL() const {
+  return GetCurrentSinglePrefetchToPrefetch().url_;
+}
+
+GURL PrefetchContainer::GetPreviousURL() const {
+  return GetPreviousSinglePrefetchToPrefetch().url_;
+}
+
 bool PrefetchContainer::IsIsolatedNetworkContextRequiredForCurrentPrefetch()
     const {
   const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
@@ -1040,6 +1086,87 @@ net::SchemefulSite PrefetchContainer::GetSiteForPreviousRedirectHop(
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
   return !referring_origin_.IsSameOriginWith(url) &&
          prefetch_type_.IsProxyRequiredWhenCrossOrigin();
+}
+
+void PrefetchContainer::MakeResourceRequest(
+    const net::HttpRequestHeaders& additional_headers) {
+  // |AddRedirectHop| updates this request later on. Anything here that should
+  // be changed on redirect should happen there.
+
+  const GURL& url = GetURL();
+  url::Origin origin = url::Origin::Create(url);
+  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+      net::SiteForCookies::FromOrigin(origin));
+  network::ResourceRequest::TrustedParams trusted_params;
+  trusted_params.isolation_info = isolation_info;
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = url;
+  request->method = "GET";
+  request->referrer = GetReferrer().url;
+  request->referrer_policy =
+      Referrer::ReferrerPolicyForUrlRequest(GetReferrer().policy);
+  request->enable_load_timing = true;
+  // TODO(https://crbug.com/1317756): Investigate if we need to include the
+  // net::LOAD_DISABLE_CACHE flag.
+  request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
+  request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+  request->headers.MergeFrom(additional_headers);
+  request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
+  request->headers.SetHeader("Sec-Purpose", IsProxyRequiredForURL(url)
+                                                ? "prefetch;anonymous-client-ip"
+                                                : "prefetch");
+  request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
+  // Remove the user agent header if it was set so that the network context's
+  // default is used.
+  request->headers.RemoveHeader("User-Agent");
+
+  // There are sometimes other headers that are set during navigation.  These
+  // aren't yet supported for prefetch, including browsing topics and client
+  // hints.
+
+  request->trusted_params = trusted_params;
+  request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
+
+  // This causes us to reset the site for cookies on cross-site redirect. This
+  // is correct as long as we are looking at top-level navigations. If we ever
+  // implement prefetching for subframes, this will need to consider that.
+  // See also the code which sets this in |NavigationUrlLoaderImpl|.
+  request->update_first_party_url_on_redirect = true;
+
+  request->devtools_request_id = RequestId();
+
+  // This may seem inverted (surely eager prefetches would be higher priority),
+  // but the fact that we're doing this at all for more conservative candidates
+  // suggests a strong engagement signal.
+  //
+  // TODO(crbug.com/1467928): Ideally, we would actually use a combination of
+  // the actual engagement seen (rather than the minimum required to trigger the
+  // candidate) and the declared eagerness, and update them as the prefetch
+  // becomes increasingly likely.
+  blink::mojom::SpeculationEagerness eagerness =
+      GetPrefetchType().GetEagerness();
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kConservative:
+      request->priority = net::RequestPriority::MEDIUM;
+      break;
+    case blink::mojom::SpeculationEagerness::kModerate:
+      request->priority = net::RequestPriority::LOW;
+      break;
+    case blink::mojom::SpeculationEagerness::kEager:
+      request->priority = net::RequestPriority::IDLE;
+      break;
+  }
+
+  const auto& devtools_observer = GetDevToolsObserver();
+  if (devtools_observer && !IsDecoy()) {
+    request->trusted_params->devtools_observer =
+        devtools_observer->MakeSelfOwnedNetworkServiceDevToolsObserver();
+  }
+
+  resource_request_ = std::move(request);
 }
 
 void PrefetchContainer::UpdateReferrer(

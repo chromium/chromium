@@ -7,11 +7,27 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+// Make some broadly reasonable redirect info.
+net::RedirectInfo SyntheticRedirect(const GURL& new_url) {
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = 302;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = new_url;
+  redirect_info.new_site_for_cookies = net::SiteForCookies::FromUrl(new_url);
+  redirect_info.new_referrer = std::string();
+  return redirect_info;
+}
+
+}  // namespace
 
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
@@ -169,8 +185,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
 
   network::URLLoaderCompletionStatus status(net::OK);
 
-  net::RedirectInfo original_redirect_info;
-  original_redirect_info.new_url = redirect_url;
+  net::RedirectInfo original_redirect_info = SyntheticRedirect(redirect_url);
 
   network::TestURLLoaderFactory::Redirects redirects;
   redirects.emplace_back(original_redirect_info,
@@ -181,7 +196,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
       std::move(redirects), network::TestURLLoaderFactory::kResponseDefault);
   on_receive_redirect_loop.Run();
 
-  prefetch_container->AddRedirectHop(redirect_url);
+  prefetch_container->AddRedirectHop(redirect_info);
 
   DCHECK(weak_streaming_loader);
   weak_streaming_loader->HandleRedirect(
@@ -244,8 +259,7 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   auto weak_first_streaming_loader = first_streaming_loader->GetWeakPtr();
   prefetch_container->TakeStreamingURLLoader(std::move(first_streaming_loader));
 
-  net::RedirectInfo original_redirect_info;
-  original_redirect_info.new_url = redirect_url;
+  net::RedirectInfo original_redirect_info = SyntheticRedirect(redirect_url);
 
   network::TestURLLoaderFactory::Redirects redirects;
   redirects.emplace_back(original_redirect_info,
@@ -257,7 +271,7 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       network::TestURLLoaderFactory::kResponseOnlyRedirectsNoDestination);
   on_receive_redirect_loop.Run();
 
-  prefetch_container->AddRedirectHop(redirect_url);
+  prefetch_container->AddRedirectHop(redirect_info);
 
   DCHECK(weak_first_streaming_loader);
   weak_first_streaming_loader->HandleRedirect(

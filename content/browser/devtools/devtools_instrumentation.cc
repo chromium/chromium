@@ -1287,16 +1287,21 @@ bool WillCreateURLLoaderFactory(
   return true;
 }
 
-void OnPrefetchRequestWillBeSent(FrameTreeNode* frame_tree_node,
-                                 const std::string& request_id,
-                                 const GURL& initiator,
-                                 const network::ResourceRequest& request) {
+void OnPrefetchRequestWillBeSent(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const GURL& initiator,
+    const network::ResourceRequest& request,
+    absl::optional<
+        std::pair<const GURL&,
+                  const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info) {
   auto timestamp = base::TimeTicks::Now();
   std::string frame_token =
       frame_tree_node->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(frame_tree_node,
-                   &protocol::NetworkHandler::PrefetchRequestWillBeSent,
-                   request_id, request, initiator, frame_token, timestamp);
+  DispatchToAgents(
+      frame_tree_node, &protocol::NetworkHandler::PrefetchRequestWillBeSent,
+      request_id, request, initiator, frame_token, timestamp, redirect_info);
 }
 
 void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,

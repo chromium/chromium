@@ -114,6 +114,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // The initial URL that was requested to be prefetched.
   GURL GetURL() const { return prefetch_url_; }
 
+  // The current URL being fetched.
+  GURL GetCurrentURL() const;
+
+  // The previous URL, if this has been redirected. Invalid to call otherwise.
+  GURL GetPreviousURL() const;
+
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
 
@@ -135,6 +141,11 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsProxyRequiredForURL(const GURL& url) const;
 
   const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
+
+  const network::ResourceRequest* GetResourceRequest() const {
+    return resource_request_.get();
+  }
+  void MakeResourceRequest(const net::HttpRequestHeaders& additional_headers);
 
   // Updates |referrer_| after a redirect.
   void UpdateReferrer(
@@ -172,7 +183,7 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsInitialPrefetchEligible() const;
 
   // Adds a the new URL to |redirect_chain_|.
-  void AddRedirectHop(const GURL& url);
+  void AddRedirectHop(const net::RedirectInfo& redirect_info);
 
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
@@ -465,6 +476,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // The origin and site of the page that requested the prefetched.
   url::Origin referring_origin_;
   net::SchemefulSite referring_site_;
+
+  // Information about the current prefetch request. Updated when a redirect is
+  // encountered, whether or not the direct can be processed by the same URL
+  // loader or requires the instantiation of a new loader.
+  std::unique_ptr<network::ResourceRequest> resource_request_;
 
   // The No-Vary-Search response data, parsed from the actual response header
   // (`GetHead()`).

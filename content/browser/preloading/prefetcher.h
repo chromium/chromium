@@ -7,6 +7,7 @@
 
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/public/browser/speculation_host_delegate.h"
+#include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 
 namespace content {
 
@@ -30,8 +31,13 @@ class CONTENT_EXPORT Prefetcher : public SpeculationHostDevToolsObserver {
   ~Prefetcher();
 
   // SpeculationHostDevToolsObserver implementation:
-  void OnStartSinglePrefetch(const std::string& request_id,
-                             const network::ResourceRequest& request) override;
+  void OnStartSinglePrefetch(
+      const std::string& request_id,
+      const network::ResourceRequest& request,
+      absl::optional<
+          std::pair<const GURL&,
+                    const network::mojom::URLResponseHeadDevToolsInfo&>>
+          redirect_info) override;
   void OnPrefetchResponseReceived(
       const GURL& url,
       const std::string& request_id,

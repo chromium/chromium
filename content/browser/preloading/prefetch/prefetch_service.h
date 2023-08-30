@@ -245,12 +245,10 @@ class CONTENT_EXPORT PrefetchService {
   void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container,
                            base::WeakPtr<PrefetchContainer> prefetch_to_evict);
 
-  // Makes the network request for the given |prefetch_container| to the given
-  // |url|. This is called when initially starting a prefetch and when a
-  // redirect causes a change in network context and a new request needs to be
-  // made.
-  void MakePrefetchRequest(base::WeakPtr<PrefetchContainer> prefetch_container,
-                           const GURL& url);
+  // Creates a new URL loader and starts a network request for
+  // |prefetch_container|. |MakePrefetchRequest| must have been previously
+  // called.
+  void SendPrefetchRequest(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
