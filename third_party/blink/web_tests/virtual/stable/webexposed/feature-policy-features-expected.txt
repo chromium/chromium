@@ -53,6 +53,7 @@ publickey-credentials-get
 screen-wake-lock
 serial
 sync-xhr
+unload
 usb
 window-placement
 xr-spatial-tracking

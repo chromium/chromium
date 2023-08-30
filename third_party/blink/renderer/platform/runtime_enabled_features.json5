@@ -2857,7 +2857,7 @@
     {
       name: "PermissionsPolicyUnload",
       origin_trial_feature_name: "PermissionsPolicyUnload",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PermissionsRequestRevoke",
