@@ -49,9 +49,19 @@ EventManager* EventManager::Get(content::BrowserContext* browser_context) {
 }
 
 EventManager::EventManager(content::BrowserContext* context)
-    : event_router_(context), browser_context_(context) {}
+    : event_router_(context), browser_context_(context) {
+  extensions::ExtensionRegistry::Get(context)->AddObserver(this);
+}
 
 EventManager::~EventManager() = default;
+
+void EventManager::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  app_ui_observers_.erase(extension->id());
+  event_router_.ResetReceiversForExtension(extension->id());
+}
 
 EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     extensions::ExtensionId extension_id,
