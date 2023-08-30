@@ -370,10 +370,22 @@ void Copier::OnMoveTempToDest(base::File::Error result) {
 }
 
 void Copier::Finish(base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!temp_url_needs_deleting_) {
     std::move(callback_).Run(result);
     return;
   }
+
+  // Normally, the storage::FileStreamWriter is created in OnEnsureFileExists
+  // and destroyed in OnFlush. However, Finish is still called if an error
+  // occurs in between. Just like the fs_writer_.reset() call in OnFlush, we
+  // have to call the storage::FileStreamWriter destructor to close the
+  // temp_url file before we try to delete that file.
+  //
+  // If we failed before OnEnsureFileExists or after OnFlush, reset is
+  // idempotent. A second reset is harmless.
+  fs_writer_.reset();
 
   async_file_util_.DeleteFile(
       DuplicateFileSystemOperationContext(*context_), temp_url_,
