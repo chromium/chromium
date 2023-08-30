@@ -169,6 +169,7 @@ source_set("chromeos") {
     "reporting/network/network_bandwidth_sampler.h",
     "reporting/user_reporting_settings.cc",
     "reporting/user_reporting_settings.h",
+    "reporting/websites/website_metrics_retriever_interface.h",
     "smart_reader/smart_reader_client_impl.cc",
     "smart_reader/smart_reader_client_impl.h",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
@@ -346,6 +347,8 @@ source_set("chromeos") {
       "extensions/login_screen/login/login_api_lock_handler.h",
       "extensions/login_screen/login/shared_session_handler.cc",
       "extensions/login_screen/login/shared_session_handler.h",
+      "reporting/websites/website_metrics_retriever_ash.cc",
+      "reporting/websites/website_metrics_retriever_ash.h",
     ]
     allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
     public_deps += [
@@ -387,6 +390,8 @@ source_set("chromeos") {
       "reporting/device_reporting_settings_lacros.h",
       "reporting/metric_reporting_manager_lacros.cc",
       "reporting/metric_reporting_manager_lacros.h",
+      "reporting/websites/website_metrics_retriever_lacros.cc",
+      "reporting/websites/website_metrics_retriever_lacros.h",
     ]
     public_deps += [
       "//chromeos/lacros",
@@ -583,6 +588,7 @@ source_set("unit_tests") {
       "extensions/login_screen/login/login_api_ash_unittest.cc",
       "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
       "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
+      "reporting/websites/website_metrics_retriever_ash_unittest.cc",
       "tablet_mode/chrome_content_browser_client_tablet_mode_part_unittest.cc",
     ]
     deps += [
@@ -628,6 +634,7 @@ source_set("unit_tests") {
       "policy/dlp/dlp_files_controller_lacros_unittest.cc",
       "reporting/device_reporting_settings_lacros_unittest.cc",
       "reporting/metric_reporting_manager_lacros_unittest.cc",
+      "reporting/websites/website_metrics_retriever_lacros_unittest.cc",
     ]
     deps += [
       "//chromeos/lacros",
