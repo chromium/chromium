@@ -2351,18 +2351,19 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "'iframe').contentDocument.getElementById('username_field')"
       ".getBoundingClientRect();",
       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  int y = content::EvalJs(RenderFrameHost(),
-                          "usernameRect.top + usernameRect.bottom;",
-                          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-              .ExtractInt();
-  int x = content::EvalJs(RenderFrameHost(),
-                          "usernameRect.left + usernameRect.right;",
-                          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-              .ExtractInt();
+  int y =
+      content::EvalJs(RenderFrameHost(),
+                      "Math.floor(usernameRect.top + usernameRect.height / 2)",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractInt();
+  int x =
+      content::EvalJs(RenderFrameHost(),
+                      "Math.floor(usernameRect.left + usernameRect.width / 2)",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractInt();
 
-  content::SimulateMouseClickAt(WebContents(), 0,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(x / 2, y / 2));
+  content::SimulateMouseClickAt(
+      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
   // Verify username and password have been autofilled
   WaitForElementValue("iframe", "username_field", "temp");
   WaitForElementValue("iframe", "password_field", "pa55w0rd");
