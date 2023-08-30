@@ -329,6 +329,11 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
         new_target_ids.y = old_target_ids.y;
       }
 
+      if (snap_area_data.rect.width() > snap_container_data.rect().width() ||
+          snap_area_data.rect.height() > snap_container_data.rect().height()) {
+        snap_container.GetDocument().CountUse(
+            WebFeature::kScrollSnapCoveringSnapArea);
+      }
       snap_container_data.AddSnapAreaData(snap_area_data);
     }
   }

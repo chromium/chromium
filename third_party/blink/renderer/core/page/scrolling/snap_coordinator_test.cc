@@ -997,4 +997,37 @@ TEST_F(SnapCoordinatorTest, UseCounterNestedSnap) {
   EXPECT_FALSE(IsUseCounted(WebFeature::kScrollSnapNestedSnapAreas));
 }
 
+TEST_F(SnapCoordinatorTest, UseCounterCoveringSnapArea) {
+  ClearUseCounter(WebFeature::kScrollSnapCoveringSnapArea);
+  // Create some small snap areas. No covering areas should be reported.
+  SetHTML(R"HTML(
+    <style>
+      .scroller { overflow: auto; scroll-snap-type: y mandatory; height: 400px; }
+      .snap { scroll-snap-align: start; height: 100px; }
+    </style>
+    <div class="scroller">
+      <div class="snap"></div>
+      <div class="snap"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kScrollSnapCoveringSnapArea));
+
+  ClearUseCounter(WebFeature::kScrollSnapCoveringSnapArea);
+  // Create a covering snap area and ensure it's reported.
+  SetHTML(R"HTML(
+    <style>
+      .scroller { overflow: auto; scroll-snap-type: y mandatory; height: 400px; }
+      .snap { scroll-snap-align: start; height: 100px; }
+      .tall { height: 800px; }
+    </style>
+    <div class="scroller">
+      <div class="snap"></div>
+      <div class="tall snap"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kScrollSnapCoveringSnapArea));
+}
+
 }  // namespace blink
