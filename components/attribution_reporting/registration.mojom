@@ -70,7 +70,11 @@ struct DestinationSet {
 // Reporting configuration that controls the early reporting time windows for a
 // source.
 struct EventReportWindows {
-  mojo_base.mojom.TimeDelta start_time;
+  // If `end_times` is non-empty, `start_time_or_window_time` represents the
+  // start time for a report to be attributed to. Otherwise, it represents how
+  // long after source registration an event-level report can be generated with
+  // this source.
+  mojo_base.mojom.TimeDelta start_time_or_window_time;
   array<mojo_base.mojom.TimeDelta> end_times;
 };
 
@@ -83,17 +87,13 @@ struct SourceRegistration {
   // Specifies how long this source is eligible for attribution.
   mojo_base.mojom.TimeDelta? expiry;
 
-  // Optionally specifies how long after source registration an event-level
-  // report can be generated with this source.
-  mojo_base.mojom.TimeDelta? event_report_window;
+  // Optionally specifies a custom set of report windows determining the time
+  // bounds of a report being generated with this source.
+  EventReportWindows? event_report_windows;
 
   // Optionally specifies how long after source registration an aggregatable
   // report can be generated with this source.
   mojo_base.mojom.TimeDelta? aggregatable_report_window;
-
-  // Optionally specifies a custom set of report windows determining the time
-  // bounds of a report being generated with this source.
-  EventReportWindows? event_report_windows;
 
   // Optionally specifies how many event-level reports can be generated with
   // this source, with -1 representing absl::nullopt.

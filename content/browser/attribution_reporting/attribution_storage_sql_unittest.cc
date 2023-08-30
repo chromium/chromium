@@ -1578,7 +1578,7 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .expiry = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(4),
           .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
@@ -1588,7 +1588,7 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .event_report_window = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(30),
           .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(30),
@@ -1599,7 +1599,7 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .event_report_window = base::Days(30),
           .expected_expiry_time = kSourceTime + base::Days(4),
           .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
@@ -1609,7 +1609,7 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .aggregatable_report_window = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(30),
           .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Days(0), {base::Days(30)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
@@ -1620,7 +1620,7 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .aggregatable_report_window = base::Days(30),
           .expected_expiry_time = kSourceTime + base::Days(4),
           .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Days(0), {base::Days(4)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(4),
@@ -1632,7 +1632,7 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
           .aggregatable_report_window = base::Days(5),
           .expected_expiry_time = kSourceTime + base::Days(9),
           .expected_event_report_windows =
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Days(0), {base::Days(7)}),
           .expected_aggregatable_report_window_time =
               kSourceTime + base::Days(5),
@@ -1642,7 +1642,9 @@ TEST_P(AttributionStorageSqlTest, ReportTimes) {
   for (const auto& test_case : kTestCases) {
     attribution_reporting::SourceRegistration reg(destinations);
     reg.expiry = test_case.expiry.value_or(base::Days(30));
-    reg.event_report_window = test_case.event_report_window;
+    reg.event_report_windows =
+        attribution_reporting::EventReportWindows::CreateSingularWindow(
+            test_case.event_report_window.value_or(*reg.expiry));
     reg.aggregatable_report_window = test_case.aggregatable_report_window;
 
     storage()->StoreSource(
@@ -1754,7 +1756,7 @@ TEST_P(AttributionStorageSqlTest,
     // `randomized_response_rate` field will not be set in the serialized proto.
     statement.BindBlob(
         0, SerializeReadOnlySourceData(
-               *attribution_reporting::EventReportWindows::Create(
+               *attribution_reporting::EventReportWindows::CreateWindows(
                    base::Seconds(0), {base::Days(1)}),
                /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1));
     ASSERT_TRUE(statement.Run());

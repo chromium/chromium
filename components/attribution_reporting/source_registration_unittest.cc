@@ -136,47 +136,13 @@ TEST(SourceRegistrationTest, Parse) {
           "event_report_window_valid",
           R"json({"event_report_window":"86401",
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(destination,
-                                 [](SourceRegistration& r) {
-                                   r.event_report_window = base::Seconds(86401);
-                                 }),
-      },
-      {
-          "event_report_window_valid_int",
-          R"json({"event_report_window":86401,
-          "destination":"https://d.example"})json",
-          SourceRegistrationWith(destination,
-                                 [](SourceRegistration& r) {
-                                   r.event_report_window = base::Seconds(86401);
-                                 }),
-      },
-      {
-          "event_report_window_wrong_type",
-          R"json({"event_report_window":86401.1,
-          "destination":"https://d.example"})json",
-          base::unexpected(
-              SourceRegistrationError::kEventReportWindowValueInvalid),
-      },
-      {
-          "event_report_window_invalid",
-          R"json({"event_report_window":"abc",
-          "destination":"https://d.example"})json",
-          base::unexpected(
-              SourceRegistrationError::kEventReportWindowValueInvalid),
-      },
-      {
-          "event_report_window_negative",
-          R"json({"event_report_window":"-86401",
-          "destination":"https://d.example"})json",
-          base::unexpected(
-              SourceRegistrationError::kEventReportWindowValueInvalid),
-      },
-      {
-          "event_report_window_negative_int",
-          R"json({"event_report_window":-86401,
-          "destination":"https://d.example"})json",
-          base::unexpected(
-              SourceRegistrationError::kEventReportWindowValueInvalid),
+          SourceRegistrationWith(
+              destination,
+              [](SourceRegistration& r) {
+                r.event_report_windows =
+                    *EventReportWindows::CreateSingularWindow(
+                        base::Seconds(86401));
+              }),
       },
       {
           "event_report_windows_valid",
@@ -189,23 +155,11 @@ TEST(SourceRegistrationTest, Parse) {
           SourceRegistrationWith(destination,
                                  [](SourceRegistration& r) {
                                    r.event_report_windows =
-                                       *EventReportWindows::Create(
+                                       *EventReportWindows::CreateWindows(
                                            base::Seconds(0),
                                            {base::Seconds(86401)});
                                  }),
 
-      },
-      {
-          "both_event_report_window_fields_present",
-          R"json({
-            "event_report_window":"86401",
-            "event_report_windows": {
-              "end_times": [86401]
-            },
-            "destination":"https://d.example"
-          })json",
-          base::unexpected(
-              SourceRegistrationError::kBothEventReportWindowFieldsFound),
       },
       {
           "aggregatable_report_window_valid",
@@ -394,14 +348,13 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.aggregation_keys = *AggregationKeys::FromKeys({{"a", 2}});
                 r.debug_key = 3;
                 r.debug_reporting = true;
-                r.event_report_window = base::Seconds(4);
+                r.event_report_windows =
+                    *EventReportWindows::CreateSingularWindow(base::Seconds(4));
                 r.expiry = base::Seconds(5);
                 r.filter_data = *FilterData::Create({{"b", {}}});
                 r.priority = -6;
                 r.source_event_id = 7;
-                r.event_report_windows = *EventReportWindows::Create(
-                    base::Seconds(8), {base::Seconds(9)});
-                r.max_event_level_reports = 10;
+                r.max_event_level_reports = 8;
               }),
           R"json({
             "aggregatable_report_window": 1,
@@ -414,11 +367,40 @@ TEST(SourceRegistrationTest, ToJson) {
             "filter_data": {"b": []},
             "priority": "-6",
             "source_event_id": "7",
+            "max_event_level_reports": 8,
+          })json",
+      },
+      {
+          SourceRegistrationWith(
+              destination,
+              [](SourceRegistration& r) {
+                r.aggregatable_report_window = base::Seconds(1);
+                r.aggregation_keys = *AggregationKeys::FromKeys({{"a", 2}});
+                r.debug_key = 3;
+                r.debug_reporting = true;
+                r.event_report_windows = *EventReportWindows::CreateWindows(
+                    base::Seconds(4), {base::Seconds(5)});
+                r.expiry = base::Seconds(6);
+                r.filter_data = *FilterData::Create({{"b", {}}});
+                r.priority = -7;
+                r.source_event_id = 8;
+                r.max_event_level_reports = 9;
+              }),
+          R"json({
+            "aggregatable_report_window": 1,
+            "aggregation_keys": {"a": "0x2"},
+            "debug_key": "3",
+            "debug_reporting": true,
+            "destination":"https://d.example",
             "event_report_windows": {
-              "start_time": 8,
-              "end_times": [9]
+              "start_time": 4,
+              "end_times": [5]
             },
-            "max_event_level_reports": 10,
+            "expiry": 6,
+            "filter_data": {"b": []},
+            "priority": "-7",
+            "source_event_id": "8",
+            "max_event_level_reports": 9,
           })json",
       },
   };

@@ -55,12 +55,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   // These `base::TimeDelta`s should be non-negative, but this is only enforced
   // by the `Parse()` methods.
   absl::optional<base::TimeDelta> expiry;
-  // TODO(tquintanilla): Ideally, it would make sense to make this field an
-  // absl::optional<absl::variant<base::TimeDelta, EventReportWindows>> as
-  // the two fields are mutually exclusive in the registration.
-  absl::optional<base::TimeDelta> event_report_window;
-  absl::optional<base::TimeDelta> aggregatable_report_window;
   absl::optional<EventReportWindows> event_report_windows;
+  absl::optional<base::TimeDelta> aggregatable_report_window;
   // Non-null value should be non-negative
   absl::optional<int> max_event_level_reports;
   int64_t priority = 0;

@@ -465,7 +465,7 @@ EventReportWindows AttributionStorageDelegateImpl::GetDefaultEventReportWindows(
   }
 
   absl::optional<EventReportWindows> event_report_windows =
-      EventReportWindows::CreateAndTruncate(
+      EventReportWindows::CreateWindowsAndTruncate(
           /*start_time=*/base::Days(0), std::move(end_times),
           /*expiry=*/last_report_window);
   DCHECK(event_report_windows.has_value());

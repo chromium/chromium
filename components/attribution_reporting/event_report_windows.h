@@ -13,7 +13,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -29,21 +28,25 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
     kMaxValue = kNotStarted,
   };
 
-  static absl::optional<EventReportWindows> Create(
+  static absl::optional<EventReportWindows> CreateWindows(
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times);
 
+  static absl::optional<EventReportWindows> CreateSingularWindow(
+      base::TimeDelta report_window);
+
   // Creates and sets `report_window` as the last reporting window end time in
   // `end_times`, removing every existing end time greater than it.
-  static absl::optional<EventReportWindows> CreateAndTruncate(
+  static absl::optional<EventReportWindows> CreateWindowsAndTruncate(
       base::TimeDelta start_time,
       std::vector<base::TimeDelta> end_times,
       base::TimeDelta report_window);
 
-  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  FromJSON(const base::Value&);
+  static base::expected<absl::optional<EventReportWindows>,
+                        mojom::SourceRegistrationError>
+  FromJSON(const base::Value::Dict& registration);
 
-  explicit EventReportWindows(mojo::DefaultConstruct::Tag);
+  EventReportWindows();
   ~EventReportWindows();
 
   EventReportWindows(const EventReportWindows&);
@@ -52,11 +55,23 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
   EventReportWindows(EventReportWindows&&);
   EventReportWindows& operator=(EventReportWindows&&);
 
-  base::TimeDelta start_time() const { return start_time_; }
+  base::TimeDelta start_time_or_window_time() const {
+    return start_time_or_window_time_;
+  }
+
+  // Should be used only when this is created with `CreateWindows()`.
+  base::TimeDelta start_time() const;
+
+  // Should be used only when this is created with `CreateWindow()`.
+  base::TimeDelta window_time() const;
 
   const base::flat_set<base::TimeDelta>& end_times() const {
     return end_times_;
   }
+
+  // Returns true if created with `CreateWindow()` or false if created with
+  // `CreateWindows()`
+  bool OnlySingularWindow() const { return end_times_.empty(); }
 
   // Sets `report_window` as the last reporting window end time in `end_times_`,
   // removing every existing end time greater than it.
@@ -73,13 +88,22 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
 
   WindowResult FallsWithin(base::TimeDelta trigger_moment) const;
 
-  base::Value::Dict ToJson() const;
+  void Serialize(base::Value::Dict& dict) const;
 
  private:
   EventReportWindows(base::TimeDelta start_time,
                      base::flat_set<base::TimeDelta> end_times);
 
-  base::TimeDelta start_time_;
+  explicit EventReportWindows(base::TimeDelta window_time);
+
+  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
+  ParseWindowsJSON(const base::Value&);
+
+  // If `end_times_` is non-empty, `start_time_or_window_time` represents the
+  // start time for a report to be attributed to. Otherwise, it represents the
+  // sole report window time found in the `event_report_window` field of the
+  // source registration.
+  base::TimeDelta start_time_or_window_time_;
   base::flat_set<base::TimeDelta> end_times_;
 };
 

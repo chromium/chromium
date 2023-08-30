@@ -148,7 +148,7 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
     Read(attribution_reporting::mojom::EventReportWindowsDataView data,
          attribution_reporting::EventReportWindows* out) {
   base::TimeDelta start_time;
-  if (!data.ReadStartTime(&start_time)) {
+  if (!data.ReadStartTimeOrWindowTime(&start_time)) {
     return false;
   }
 
@@ -157,8 +157,12 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
     return false;
   }
 
-  auto event_report_windows = attribution_reporting::EventReportWindows::Create(
-      start_time, std::move(end_times));
+  auto event_report_windows =
+      end_times.empty()
+          ? attribution_reporting::EventReportWindows::CreateSingularWindow(
+                start_time)
+          : attribution_reporting::EventReportWindows::CreateWindows(
+                start_time, std::move(end_times));
   if (!event_report_windows.has_value()) {
     return false;
   }
@@ -177,10 +181,6 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   }
 
   if (!data.ReadExpiry(&out->expiry)) {
-    return false;
-  }
-
-  if (!data.ReadEventReportWindow(&out->event_report_window)) {
     return false;
   }
 

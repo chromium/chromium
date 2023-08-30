@@ -97,8 +97,6 @@ class SourceBuilder {
 
   SourceBuilder& SetExpiry(base::TimeDelta delta);
 
-  SourceBuilder& SetEventReportWindow(base::TimeDelta delta);
-
   SourceBuilder& SetAggregatableReportWindow(base::TimeDelta delta);
 
   SourceBuilder& SetSourceEventId(uint64_t source_event_id);

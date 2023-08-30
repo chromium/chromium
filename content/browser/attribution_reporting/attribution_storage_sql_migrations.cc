@@ -347,7 +347,7 @@ bool To56(sql::Database& db) {
 
     absl::optional<attribution_reporting::EventReportWindows>
         event_report_windows =
-            attribution_reporting::EventReportWindows::CreateAndTruncate(
+            attribution_reporting::EventReportWindows::CreateWindowsAndTruncate(
                 /*start_time=*/base::Seconds(0), std::move(end_times),
                 /*expiry=*/event_report_window_time - source_time);
     if (!event_report_windows.has_value()) {

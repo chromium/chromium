@@ -1774,9 +1774,10 @@ void StorageHandler::OnSourceHandled(
     out_source->SetExpiry(delta->InSeconds());
   }
 
-  if (absl::optional<base::TimeDelta> delta =
-          registration.event_report_window) {
-    out_source->SetEventReportWindow(delta->InSeconds());
+  if (registration.event_report_windows.has_value() &&
+      registration.event_report_windows->OnlySingularWindow()) {
+    base::TimeDelta delta = registration.event_report_windows->window_time();
+    out_source->SetEventReportWindow(delta.InSeconds());
   }
 
   if (absl::optional<base::TimeDelta> delta =

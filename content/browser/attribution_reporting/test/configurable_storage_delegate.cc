@@ -190,7 +190,7 @@ ConfigurableStorageDelegate::GetDefaultEventReportWindows(
     attribution_reporting::mojom::SourceType source_type,
     base::TimeDelta last_report_window) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return *attribution_reporting::EventReportWindows::Create(
+  return *attribution_reporting::EventReportWindows::CreateWindows(
       base::Seconds(0), {last_report_window});
 }
 

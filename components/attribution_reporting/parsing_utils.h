@@ -11,9 +11,15 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -59,6 +65,10 @@ absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 [[nodiscard]] bool ParseDeduplicationKey(const base::Value::Dict& dict,
                                          absl::optional<uint64_t>& out);
 
+base::expected<base::TimeDelta, mojom::SourceRegistrationError>
+ParseLegacyDuration(const base::Value& value,
+                    mojom::SourceRegistrationError error);
+
 void SerializeUint64(base::Value::Dict&, base::StringPiece key, uint64_t value);
 
 void SerializeInt64(base::Value::Dict&, base::StringPiece key, int64_t value);
@@ -71,6 +81,10 @@ void SerializeDebugReporting(base::Value::Dict&, bool debug_reporting);
 
 void SerializeDeduplicationKey(base::Value::Dict&,
                                absl::optional<uint64_t> dedup_key);
+
+void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
+                                 base::StringPiece key,
+                                 absl::optional<base::TimeDelta> value);
 
 }  // namespace attribution_reporting
 

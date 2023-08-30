@@ -16,8 +16,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +29,8 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
+constexpr char kEventReportWindow[] = "event_report_window";
+constexpr char kEventReportWindows[] = "event_report_windows";
 constexpr char kStartTime[] = "start_time";
 constexpr char kEndTimes[] = "end_times";
 
@@ -37,6 +41,10 @@ bool EventReportWindowsValid(base::TimeDelta start_time,
                              const base::flat_set<base::TimeDelta>& end_times) {
   return !start_time.is_negative() && !end_times.empty() &&
          *end_times.begin() > start_time;
+}
+
+bool EventReportWindowValid(base::TimeDelta window) {
+  return !window.is_negative();
 }
 
 // TODO(tquintanilla): Consolidate with `MaybeTruncate()`.
@@ -58,7 +66,17 @@ base::Time ReportTimeFromDeadline(base::Time source_time,
 
 }  // namespace
 
-absl::optional<EventReportWindows> EventReportWindows::Create(
+// static
+absl::optional<EventReportWindows> EventReportWindows::CreateSingularWindow(
+    base::TimeDelta report_window) {
+  if (!EventReportWindowValid(report_window)) {
+    return absl::nullopt;
+  }
+  return EventReportWindows(report_window);
+}
+
+// static
+absl::optional<EventReportWindows> EventReportWindows::CreateWindows(
     base::TimeDelta start_time,
     std::vector<base::TimeDelta> end_times) {
   if (!base::ranges::is_sorted(end_times)) {
@@ -72,7 +90,8 @@ absl::optional<EventReportWindows> EventReportWindows::Create(
   return EventReportWindows(start_time, std::move(end_times_set));
 }
 
-absl::optional<EventReportWindows> EventReportWindows::CreateAndTruncate(
+// static
+absl::optional<EventReportWindows> EventReportWindows::CreateWindowsAndTruncate(
     base::TimeDelta start_time,
     std::vector<base::TimeDelta> end_times,
     base::TimeDelta expiry) {
@@ -80,19 +99,32 @@ absl::optional<EventReportWindows> EventReportWindows::CreateAndTruncate(
     return absl::nullopt;
   }
   AppendAndMaybeTruncate(end_times, expiry);
-  return Create(start_time, std::move(end_times));
+  return CreateWindows(start_time, std::move(end_times));
+}
+
+base::TimeDelta EventReportWindows::start_time() const {
+  DCHECK(!OnlySingularWindow());
+  return start_time_or_window_time_;
+}
+
+base::TimeDelta EventReportWindows::window_time() const {
+  DCHECK(OnlySingularWindow());
+  return start_time_or_window_time_;
 }
 
 EventReportWindows::EventReportWindows(
     base::TimeDelta start_time,
     base::flat_set<base::TimeDelta> end_times)
-    : start_time_(start_time), end_times_(std::move(end_times)) {
-  DCHECK(EventReportWindowsValid(start_time_, end_times_));
+    : start_time_or_window_time_(start_time), end_times_(std::move(end_times)) {
+  DCHECK(EventReportWindowsValid(start_time_or_window_time_, end_times_));
 }
 
-EventReportWindows::EventReportWindows(mojo::DefaultConstruct::Tag) {
-  DCHECK(!EventReportWindowsValid(start_time_, end_times_));
+EventReportWindows::EventReportWindows(base::TimeDelta window_time)
+    : start_time_or_window_time_(window_time), end_times_({}) {
+  DCHECK(EventReportWindowValid(start_time_or_window_time_));
 }
+
+EventReportWindows::EventReportWindows() = default;
 
 EventReportWindows::~EventReportWindows() = default;
 
@@ -107,7 +139,7 @@ EventReportWindows& EventReportWindows::operator=(EventReportWindows&&) =
     default;
 
 bool EventReportWindows::MaybeTruncate(base::TimeDelta report_window) {
-  if (report_window <= start_time_) {
+  if (report_window <= start_time_or_window_time_) {
     return false;
   }
   if (*end_times_.rbegin() >= report_window) {
@@ -150,7 +182,7 @@ base::Time EventReportWindows::ReportTimeAtWindow(base::Time source_time,
 EventReportWindows::WindowResult EventReportWindows::FallsWithin(
     base::TimeDelta trigger_moment) const {
   DCHECK(!trigger_moment.is_negative());
-  if (trigger_moment < start_time_) {
+  if (trigger_moment < start_time_or_window_time_) {
     return WindowResult::kNotStarted;
   }
   if (trigger_moment >= *end_times_.rbegin()) {
@@ -159,8 +191,35 @@ EventReportWindows::WindowResult EventReportWindows::FallsWithin(
   return WindowResult::kFallsWithin;
 }
 
+base::expected<absl::optional<EventReportWindows>, SourceRegistrationError>
+EventReportWindows::FromJSON(const base::Value::Dict& registration) {
+  const base::Value* singular_window = registration.Find(kEventReportWindow);
+  const base::Value* multiple_windows = registration.Find(kEventReportWindows);
+  if (singular_window && multiple_windows) {
+    return base::unexpected(
+        SourceRegistrationError::kBothEventReportWindowFieldsFound);
+  }
+
+  if (singular_window) {
+    base::TimeDelta report_window;
+
+    ASSIGN_OR_RETURN(
+        report_window,
+        ParseLegacyDuration(
+            *singular_window,
+            SourceRegistrationError::kEventReportWindowValueInvalid));
+
+    return EventReportWindows::CreateSingularWindow(report_window);
+  }
+  if (multiple_windows) {
+    return EventReportWindows::ParseWindowsJSON(*multiple_windows);
+  }
+
+  return absl::nullopt;
+}
+
 base::expected<EventReportWindows, SourceRegistrationError>
-EventReportWindows::FromJSON(const base::Value& v) {
+EventReportWindows::ParseWindowsJSON(const base::Value& v) {
   const base::Value::Dict* dict = v.GetIfDict();
   if (!dict) {
     return base::unexpected(
@@ -232,20 +291,24 @@ EventReportWindows::FromJSON(const base::Value& v) {
   return EventReportWindows(start_time, std::move(end_times));
 }
 
-base::Value::Dict EventReportWindows::ToJson() const {
-  DCHECK(EventReportWindowsValid(start_time_, end_times_));
+void EventReportWindows::Serialize(base::Value::Dict& dict) const {
+  if (OnlySingularWindow()) {
+    SerializeTimeDeltaInSeconds(dict, kEventReportWindow,
+                                start_time_or_window_time_);
+  } else {
+    base::Value::Dict windows_dict;
 
-  base::Value::Dict dict;
+    windows_dict.Set(kStartTime,
+                     static_cast<int>(start_time_or_window_time_.InSeconds()));
 
-  dict.Set("start_time", static_cast<int>(start_time_.InSeconds()));
+    base::Value::List list;
+    for (const auto& end_time : end_times_) {
+      list.Append(static_cast<int>(end_time.InSeconds()));
+    }
 
-  base::Value::List list;
-  for (const auto& end_time : end_times_) {
-    list.Append(static_cast<int>(end_time.InSeconds()));
+    windows_dict.Set(kEndTimes, std::move(list));
+    dict.Set(kEventReportWindows, std::move(windows_dict));
   }
-
-  dict.Set("end_times", std::move(list));
-  return dict;
 }
 
 }  // namespace attribution_reporting

@@ -13,8 +13,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -114,6 +117,33 @@ bool ParseDebugReporting(const base::Value::Dict& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
 
+base::expected<base::TimeDelta, mojom::SourceRegistrationError>
+ParseLegacyDuration(const base::Value& value,
+                    mojom::SourceRegistrationError error) {
+  // Note: The full range of uint64 seconds cannot be represented in the
+  // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
+  // properly clamps out-of-bound values and because the Attribution
+  // Reporting API itself clamps values to 30 days:
+  // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
+
+  if (absl::optional<int> int_value = value.GetIfInt()) {
+    if (*int_value < 0) {
+      return base::unexpected(error);
+    }
+    return base::Seconds(*int_value);
+  }
+
+  if (const std::string* str = value.GetIfString()) {
+    uint64_t seconds;
+    if (!base::StringToUint64(*str, &seconds)) {
+      return base::unexpected(error);
+    }
+    return base::Seconds(seconds);
+  }
+
+  return base::unexpected(error);
+}
+
 void SerializeUint64(base::Value::Dict& dict,
                      base::StringPiece key,
                      uint64_t value) {
@@ -145,6 +175,19 @@ void SerializeDeduplicationKey(base::Value::Dict& dict,
                                absl::optional<uint64_t> dedup_key) {
   if (dedup_key) {
     SerializeUint64(dict, kDeduplicationKey, *dedup_key);
+  }
+}
+
+void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
+                                 base::StringPiece key,
+                                 absl::optional<base::TimeDelta> value) {
+  if (value) {
+    int64_t seconds = value->InSeconds();
+    if (base::IsValueInRangeForNumericType<int>(seconds)) {
+      dict.Set(key, static_cast<int>(seconds));
+    } else {
+      SerializeInt64(dict, key, seconds);
+    }
   }
 }
 

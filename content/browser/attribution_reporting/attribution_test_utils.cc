@@ -141,11 +141,6 @@ SourceBuilder& SourceBuilder::SetExpiry(base::TimeDelta delta) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetEventReportWindow(base::TimeDelta delta) {
-  event_report_window_ = delta;
-  return *this;
-}
-
 SourceBuilder& SourceBuilder::SetAggregatableReportWindow(
     base::TimeDelta delta) {
   aggregatable_report_window_ = delta;
@@ -272,7 +267,6 @@ StorableSource SourceBuilder::Build() const {
   attribution_reporting::SourceRegistration registration(destination_sites_);
   registration.source_event_id = source_event_id_;
   registration.expiry = expiry_;
-  registration.event_report_window = event_report_window_;
   registration.aggregatable_report_window = aggregatable_report_window_;
   registration.event_report_windows = event_report_windows_;
   registration.max_event_level_reports = max_event_level_reports_;
@@ -291,7 +285,7 @@ StoredSource SourceBuilder::BuildStored() const {
       BuildCommonInfo(), source_event_id_, destination_sites_, source_time_,
       expiry_time,
       event_report_windows_.value_or(
-          *attribution_reporting::EventReportWindows::Create(
+          *attribution_reporting::EventReportWindows::CreateWindows(
               base::Milliseconds(0), {event_report_window_.value_or(expiry_)})),
       ComputeReportWindowTime(GetReportWindowTimeForTesting(
                                   aggregatable_report_window_, source_time_),
@@ -850,7 +844,7 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",destination_sites=" << source.destination_sites()
       << ",source_time=" << source.source_time()
       << ",expiry_time=" << source.expiry_time()
-      << ",event_report_windows=" << source.event_report_windows().ToJson()
+      << ",event_report_windows=" << source.event_report_windows()
       << ",aggregatable_report_window_time="
       << source.aggregatable_report_window_time()
       << ",max_event_level_reports=" << source.max_event_level_reports()

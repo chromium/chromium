@@ -85,21 +85,23 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 bool operator==(const EventReportWindows& a, const EventReportWindows& b) {
-  return a.start_time() == b.start_time() && a.end_times() == b.end_times();
+  return a.start_time_or_window_time() == b.start_time_or_window_time() &&
+         a.end_times() == b.end_times();
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const EventReportWindows& event_report_windows) {
-  return out << event_report_windows.ToJson();
+  base::Value::Dict dict;
+  event_report_windows.Serialize(dict);
+  return out << dict;
 }
 
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
-    return std::make_tuple(s.source_event_id, s.destination_set, s.expiry,
-                           s.event_report_window, s.aggregatable_report_window,
-                           s.priority, s.filter_data, s.debug_key,
-                           s.aggregation_keys, s.debug_reporting,
-                           s.event_report_windows, s.max_event_level_reports);
+    return std::make_tuple(
+        s.source_event_id, s.destination_set, s.expiry, s.event_report_windows,
+        s.aggregatable_report_window, s.priority, s.filter_data, s.debug_key,
+        s.aggregation_keys, s.debug_reporting, s.max_event_level_reports);
   };
   return tie(a) == tie(b);
 }

@@ -250,16 +250,21 @@ TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
 }
 
 TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
-  storage()->StoreSource(SourceBuilder()
-                             .SetExpiry(base::Days(30))
-                             .SetEventReportWindow(base::Days(15))
-                             .SetAggregatableReportWindow(base::Days(5))
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetExpiry(base::Days(30))
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::CreateSingularWindow(
+                  base::Days(15)))
+          .SetAggregatableReportWindow(base::Days(5))
+          .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(CommonSourceInfoIs(
                   SourceBuilder()
                       .SetExpiry(base::Days(30))
-                      .SetEventReportWindow(base::Days(15))
+                      .SetEventReportWindows(
+                          *attribution_reporting::EventReportWindows::
+                              CreateSingularWindow(base::Days(15)))
                       .SetAggregatableReportWindow(base::Days(5))
                       .BuildCommonInfo())));
 }
@@ -345,18 +350,6 @@ TEST_F(AttributionStorageTest, ImpressionExpired_NoConversionsStored) {
   task_environment_.FastForwardBy(base::Milliseconds(2));
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-}
-
-TEST_F(AttributionStorageTest, ImpressionReportWindowPassed_NoReportGenerated) {
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetEventReportWindow(kReportDelay + base::Milliseconds(1))
-          .Build());
-
-  task_environment_.FastForwardBy(kReportDelay + base::Milliseconds(1));
-
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowPassed,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
 
@@ -448,7 +441,7 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(
       SourceBuilder()
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Milliseconds(1), {base::Days(30)}))
           .Build());
 
@@ -457,11 +450,11 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest,
-       ImpressionWithNonDefaultReportWindows_NoReportGenerated) {
+       ImpressionReportWindowsPassed_NoReportGenerated) {
   storage()->StoreSource(
       SourceBuilder()
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Milliseconds(0), {base::Milliseconds(1)}))
           .Build());
 
@@ -476,27 +469,26 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(
       SourceBuilder()
           .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
+              *attribution_reporting::EventReportWindows::CreateWindows(
                   base::Seconds(0), {base::Days(10)}))
-          .SetExpiry(base::Days(10))
-          .SetEventReportWindow(base::Days(5))
+          .SetExpiry(base::Days(5))
           .Build());
 
   ASSERT_THAT(storage()->GetActiveSources(),
               ElementsAre(EventReportWindowsIs(
-                  attribution_reporting::EventReportWindows::Create(
+                  attribution_reporting::EventReportWindows::CreateWindows(
                       base::Seconds(0), {base::Days(5)}))));
 }
 
 TEST_F(AttributionStorageTest,
        ImpressionWithReportWindowsStartOverDefaultEnd_RegistrationFailure) {
-  auto source = SourceBuilder()
-                    .SetEventReportWindows(
-                        *attribution_reporting::EventReportWindows::Create(
-                            base::Days(2), {base::Days(5)}))
-                    .SetExpiry(base::Days(1))
-                    .SetEventReportWindow(base::Days(1))
-                    .Build();
+  auto source =
+      SourceBuilder()
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::CreateWindows(
+                  base::Days(2), {base::Days(5)}))
+          .SetExpiry(base::Days(1))
+          .Build();
   EXPECT_EQ(storage()->StoreSource(source).status,
             StorableSource::Result::kEventReportWindowsInvalidStartTime);
 }
