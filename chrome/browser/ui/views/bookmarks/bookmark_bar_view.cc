@@ -385,8 +385,7 @@ class BookmarkButton : public BookmarkButtonBase {
     BookmarkButtonBase::OnMouseEntered(event);
 
     if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
-        kPrerenderBookmarkBarOnMouseHoverTrigger.Get() &&
-        url_->SchemeIs("https")) {
+        kPrerenderBookmarkBarOnMouseHoverTrigger.Get()) {
       preloading_timer_.Start(
           FROM_HERE,
           base::Milliseconds(

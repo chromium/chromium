@@ -343,6 +343,13 @@ PrerenderManager::StartPrerenderBookmark(
                                             content::PreloadingType::kPrerender,
                                             std::move(same_url_matcher));
 
+  // BookmarkBar only allow https protocol.
+  if (!prerendering_url.SchemeIs("https")) {
+    preloading_attempt->SetEligibility(
+        content::PreloadingEligibility::kHttpsOnly);
+    return nullptr;
+  }
+
   if (bookmark_prerender_handle_) {
     if (bookmark_prerender_handle_->GetInitialPrerenderingUrl() ==
         prerendering_url) {

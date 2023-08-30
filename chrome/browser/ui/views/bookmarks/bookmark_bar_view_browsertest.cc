@@ -56,9 +56,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
   BookmarkBarNavigationTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  void SetUp() override {
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -68,6 +66,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
         FILE_PATH_LITERAL("chrome/test/data");
     https_test_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
     https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    ASSERT_TRUE(http_test_server_.Start());
     ASSERT_TRUE(https_test_server_.Start());
 
     // Setup the mock host resolver
@@ -128,9 +127,11 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
+  net::EmbeddedTestServer* http_test_server() { return &http_test_server_; }
 
  private:
   net::EmbeddedTestServer https_test_server_;
+  net::EmbeddedTestServer http_test_server_;
   std::unique_ptr<BookmarkBarViewTestHelper> test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -359,25 +360,24 @@ class PrerenderBookmarkBarNavigationTestBase
     return test_ukm_recorder_.get();
   }
 
-  void CreateBookmarkButton() {
+  void CreateBookmarkButton(GURL& prerender_url) {
     // Populate bookmark bar with a single bookmark.
     bookmarks::BookmarkModel* model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(model);
     model->ClearStore();
-    GURL url = https_test_server()->GetURL("/empty.html?prerender");
-    model->AddURL(model->bookmark_bar_node(), 0, u"Example", url);
+    model->AddURL(model->bookmark_bar_node(), 0, u"Example", prerender_url);
   }
 
   // Currently OnMousePressed will trigger bookmark trigger prerendering,
   // this function simulates the mousePressed and mouseReleased to trigger
   // prerendering and its activation.
-  void NavigateToBookmarkByMousePressed() {
+  void NavigateToBookmarkByMousePressed(GURL& prerender_url,
+                                        bool expect_activation) {
     // Click on the 0th bookmark after setting up a navigation observer that
     // waits for a single navigation to complete successfully.
     content::test::PrerenderHostObserver prerender_observer(
-        *GetActiveWebContents(),
-        https_test_server()->GetURL("/empty.html?prerender"));
+        *GetActiveWebContents(), prerender_url);
     views::LabelButton* button = GetBookmarkButton(0);
 
     gfx::Point center(10, 10);
@@ -391,7 +391,12 @@ class PrerenderBookmarkBarNavigationTestBase
     button->OnMouseReleased(ui::MouseEvent(
         ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-    prerender_observer.WaitForActivation();
+
+    if (expect_activation) {
+      prerender_observer.WaitForActivation();
+    } else {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
  private:
@@ -443,13 +448,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("/empty.html")));
+  GURL prerender_url = https_test_server()->GetURL("/empty.html?prerender");
 
-  content::NavigationHandleObserver activation_observer(
-      GetActiveWebContents(),
-      https_test_server()->GetURL("/empty.html?prerender"));
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        prerender_url);
 
-  CreateBookmarkButton();
-  NavigateToBookmarkByMousePressed();
+  CreateBookmarkButton(prerender_url);
+  NavigateToBookmarkByMousePressed(prerender_url, true);
 
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
@@ -484,6 +489,43 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
       kPreloadingTriggeringOutcomeSuccess, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
+                       PrerenderNonHttps) {
+  base::HistogramTester histogram_tester;
+  // Navigate to an non-empty tab
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_test_server()->GetURL("/empty.html")));
+  GURL prerender_url = http_test_server()->GetURL("/empty.html?prerender");
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        prerender_url);
+
+  CreateBookmarkButton(prerender_url);
+  NavigateToBookmarkByMousePressed(prerender_url, false);
+
+  {
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    // Navigate to a different URL other than the prerender_url to flush the
+    // metrics.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), http_test_server()->GetURL("/empty.html")));
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
+        ukm_source_id, content::PreloadingType::kPrerender,
+        content::PreloadingEligibility::kHttpsOnly,
+        content::PreloadingHoldbackStatus::kUnspecified,
+        content::PreloadingTriggeringOutcome::kUnspecified,
+        content::PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true);
+    EXPECT_EQ(attempt_ukm_entries[0], expected_entry)
+        << content::test::ActualVsExpectedUkmEntryToString(
+               attempt_ukm_entries[0], expected_entry);
+  }
+}
+
 class PrerenderBookmarkBarOnHoverNavigationTest
     : public PrerenderBookmarkBarNavigationTestBase {
  public:
@@ -512,7 +554,7 @@ class PrerenderBookmarkBarOnHoverNavigationTest
             chrome_preloading_predictor::kMouseHoverOnBookmarkBar);
   }
 
-  void TriggerPrerenderByMouseHoverOnBookmark() {
+  void TriggerPrerenderByMouseHoverOnBookmark(bool expect_completion) {
     views::LabelButton* button = GetBookmarkButton(0);
 
     gfx::Point center(10, 10);
@@ -521,9 +563,13 @@ class PrerenderBookmarkBarOnHoverNavigationTest
         /*flags=*/ui::EF_NONE,
         /*changed_button_flags=*/ui::EF_NONE));
 
-    content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
-        *GetActiveWebContents(),
-        https_test_server()->GetURL("/empty.html?prerender"));
+    if (expect_completion) {
+      content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+          *GetActiveWebContents(),
+          https_test_server()->GetURL("/empty.html?prerender"));
+    } else {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   void StopPrerenderingByMouseExited() {
@@ -548,13 +594,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("/empty.html")));
+  GURL prerender_url = https_test_server()->GetURL("/empty.html?prerender");
 
-  content::NavigationHandleObserver activation_observer(
-      GetActiveWebContents(),
-      https_test_server()->GetURL("/empty.html?prerender"));
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        prerender_url);
 
-  CreateBookmarkButton();
-  NavigateToBookmarkByMousePressed();
+  CreateBookmarkButton(prerender_url);
+  NavigateToBookmarkByMousePressed(prerender_url, true);
 
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
@@ -597,14 +643,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("/empty.html")));
+  GURL prerender_url = https_test_server()->GetURL("/empty.html?prerender");
 
-  content::NavigationHandleObserver activation_observer(
-      GetActiveWebContents(),
-      https_test_server()->GetURL("/empty.html?prerender"));
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        prerender_url);
 
-  CreateBookmarkButton();
+  CreateBookmarkButton(prerender_url);
   // Check mouseExited will cancel the mouseHover prerendering.
-  TriggerPrerenderByMouseHoverOnBookmark();
+  TriggerPrerenderByMouseHoverOnBookmark(true);
   StopPrerenderingByMouseExited();
 
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
@@ -614,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
       kFinalStatusTriggerDestroyed, 1);
 
   // Prerender can trigger and activate normally after previous cancellation.
-  NavigateToBookmarkByMousePressed();
+  NavigateToBookmarkByMousePressed(prerender_url, true);
 
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
@@ -663,8 +709,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("/empty.html")));
+  GURL prerender_url = https_test_server()->GetURL("/empty.html?prerender");
 
-  CreateBookmarkButton();
+  CreateBookmarkButton(prerender_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("/empty.html?foo")));
   views::LabelButton* button = GetBookmarkButton(0);
@@ -690,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
   // A `PAGE_TRANSITION_AUTO_BOOKMARK` navigation should be in the predictor's
   // domain.
-  CreateBookmarkButton();
+  CreateBookmarkButton(prerender_url);
   NavigateParams params(browser(),
                         https_test_server()->GetURL("/empty.html?bar"),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
@@ -698,4 +745,44 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   histogram_tester.ExpectBucketCount(
       "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
       /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
+                       PrerenderNonHttps) {
+  base::HistogramTester histogram_tester;
+  // Navigate to an non-empty tab
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html")));
+  GURL prerender_url = http_test_server()->GetURL("/empty.html?prerender");
+
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        prerender_url);
+
+  CreateBookmarkButton(prerender_url);
+  // Check mouseExited will cancel the mouseHover prerendering.
+  TriggerPrerenderByMouseHoverOnBookmark(false);
+
+  {
+    // Navigate to a different URL other than the prerender_url to flush the
+    // metrics.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), http_test_server()->GetURL("/empty.html")));
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
+        ukm_source_id, content::PreloadingType::kPrerender,
+        content::PreloadingEligibility::kHttpsOnly,
+        content::PreloadingHoldbackStatus::kUnspecified,
+        content::PreloadingTriggeringOutcome::kUnspecified,
+        content::PreloadingFailureReason::kUnspecified,
+        /*accurate=*/false);
+    EXPECT_EQ(attempt_ukm_entries[0], expected_entry)
+        << content::test::ActualVsExpectedUkmEntryToString(
+               attempt_ukm_entries[0], expected_entry);
+  }
 }
