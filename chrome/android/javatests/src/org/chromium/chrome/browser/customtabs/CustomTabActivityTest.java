@@ -2605,6 +2605,11 @@ public class CustomTabActivityTest {
         });
         CriteriaHelper.pollUiThread(() -> dialogManager.isShowing(), "Dialog should be displayed");
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.BackPress.Intercept",
+                        BackPressManager.getHistogramValueForTesting(
+                                BackPressHandler.Type.TAB_MODAL_HANDLER));
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCustomTabActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
         });
@@ -2617,6 +2622,7 @@ public class CustomTabActivityTest {
                     is(mTestPage2));
         });
 
+        histogramWatcher.assertExpected("Dialog should be dismissed by back press");
         CriteriaHelper.pollUiThread(
                 () -> !dialogManager.isShowing(), "Dialog should be dismissed by back press");
     }

@@ -441,6 +441,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected boolean handleBackPressed() {
         if (!BackPressManager.isEnabled() && getTabModalLifetimeHandler() != null
                 && getTabModalLifetimeHandler().onBackPressed()) {
+            BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
             return true;
         }
         if (BackPressManager.correctTabNavigationOnFallback()) {
