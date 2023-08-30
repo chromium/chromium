@@ -152,6 +152,7 @@ test("components_unittests") {
     "//components/content_settings/core/common:unit_tests",
     "//components/country_codes:unit_tests",
     "//components/crash/core/common:unit_tests",
+    "//components/cross_device/logging:unit_tests",
     "//components/crx_file:unit_tests",
     "//components/device_event_log:unit_tests",
     "//components/device_signals/core:unit_tests",
