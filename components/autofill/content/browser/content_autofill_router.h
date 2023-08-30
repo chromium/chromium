@@ -240,9 +240,6 @@ class ContentAutofillRouter {
                                void (*callback)(ContentAutofillDriver* target,
                                                 const FormData& form,
                                                 base::TimeTicks timestamp));
-  void DidPreviewAutofillFormData(
-      ContentAutofillDriver* source,
-      void (*callback)(ContentAutofillDriver* target));
   void DidEndTextFieldEditing(ContentAutofillDriver* source,
                               void (*callback)(ContentAutofillDriver* target));
   void SelectOrSelectListFieldOptionsDidChange(

@@ -272,7 +272,6 @@ class ContentAutofillDriver : public AutofillDriver,
                         const gfx::RectF& bounding_box) override;
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override;
-  void DidPreviewAutofillFormData() override;
   void DidEndTextFieldEditing() override;
   void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
   void JavaScriptChangedAutofilledValue(

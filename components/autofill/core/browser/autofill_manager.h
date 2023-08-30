@@ -279,9 +279,6 @@ class AutofillManager
   // whether focus was previously on a form with which the user had interacted.
   void OnFocusNoLongerOnForm(bool had_interacted_form);
 
-  // Invoked when preview autofill value has been shown.
-  void OnDidPreviewAutofillFormData();
-
   // Invoked when textfeild editing ended
   void OnDidEndTextFieldEditing();
 
@@ -441,8 +438,6 @@ class AutofillManager
       const AutofillTriggerDetails& trigger_details) = 0;
 
   virtual void OnFocusNoLongerOnFormImpl(bool had_interacted_form) = 0;
-
-  virtual void OnDidPreviewAutofillFormDataImpl() = 0;
 
   virtual void OnDidEndTextFieldEditingImpl() = 0;
 

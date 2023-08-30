@@ -75,9 +75,6 @@ interface AutofillDriver {
   // Sent when a form is filled with Autofill suggestions.
   DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);
 
-  // Sent when a form is previewed with Autofill suggestions.
-  DidPreviewAutofillFormData();
-
   // Sent when a text field is done editing.
   DidEndTextFieldEditing();
 

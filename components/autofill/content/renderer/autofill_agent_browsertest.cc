@@ -121,7 +121,6 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               DidFillAutofillFormData,
               (const FormData& form, base::TimeTicks timestamp),
               (override));
-  MOCK_METHOD(void, DidPreviewAutofillFormData, (), (override));
   MOCK_METHOD(void, DidEndTextFieldEditing, (), (override));
 
  private:

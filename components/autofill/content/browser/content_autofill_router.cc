@@ -371,13 +371,6 @@ void ContentAutofillRouter::DidFillAutofillFormData(
   callback(target, browser_form, timestamp);
 }
 
-void ContentAutofillRouter::DidPreviewAutofillFormData(
-    ContentAutofillDriver* source,
-    void (*callback)(ContentAutofillDriver* target)) {
-  if (last_queried_target_)
-    callback(last_queried_target_);
-}
-
 void ContentAutofillRouter::DidEndTextFieldEditing(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {

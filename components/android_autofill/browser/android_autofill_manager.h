@@ -67,7 +67,6 @@ class AndroidAutofillManager : public AutofillManager,
   void OnDidFillAutofillFormDataImpl(const FormData& form,
                                      const base::TimeTicks timestamp) override;
 
-  void OnDidPreviewAutofillFormDataImpl() override {}
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
   void OnSelectOrSelectListFieldOptionsDidChangeImpl(

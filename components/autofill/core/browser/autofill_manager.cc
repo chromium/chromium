@@ -546,10 +546,6 @@ void AutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
   OnFocusNoLongerOnFormImpl(had_interacted_form);
 }
 
-void AutofillManager::OnDidPreviewAutofillFormData() {
-  OnDidPreviewAutofillFormDataImpl();
-}
-
 void AutofillManager::OnDidEndTextFieldEditing() {
   OnDidEndTextFieldEditingImpl();
 }

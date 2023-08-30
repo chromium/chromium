@@ -571,16 +571,6 @@ void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,
       });
 }
 
-void ContentAutofillDriver::DidPreviewAutofillFormData() {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
-    return;
-  }
-  autofill_router().DidPreviewAutofillFormData(
-      this, [](ContentAutofillDriver* target) {
-        target->autofill_manager_->OnDidPreviewAutofillFormData();
-      });
-}
-
 void ContentAutofillDriver::DidEndTextFieldEditing() {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;

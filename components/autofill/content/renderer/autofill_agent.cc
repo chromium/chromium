@@ -208,9 +208,6 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
                                base::TimeTicks timestamp) override {
     DeferMsg(&mojom::AutofillDriver::DidFillAutofillFormData, form, timestamp);
   }
-  void DidPreviewAutofillFormData() override {
-    DeferMsg(&mojom::AutofillDriver::DidPreviewAutofillFormData);
-  }
   void DidEndTextFieldEditing() override {
     DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
   }
@@ -680,10 +677,6 @@ void AutofillAgent::FillOrPreviewForm(
     query_node_autofill_state_ = element_.GetAutofillState();
     previewed_elements_ = form_util::ApplyAutofillAction(
         form, element_, mojom::AutofillActionType::kFill, action_persistence);
-
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->DidPreviewAutofillFormData();
-    }
   } else {
     was_last_action_fill_ = true;
 

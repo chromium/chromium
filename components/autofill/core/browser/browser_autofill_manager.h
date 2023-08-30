@@ -248,7 +248,6 @@ class BrowserAutofillManager : public AutofillManager,
                               const gfx::RectF& bounding_box) override;
   void OnDidFillAutofillFormDataImpl(const FormData& form,
                                      const base::TimeTicks timestamp) override;
-  void OnDidPreviewAutofillFormDataImpl() override;
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
   void OnSelectOrSelectListFieldOptionsDidChangeImpl(
