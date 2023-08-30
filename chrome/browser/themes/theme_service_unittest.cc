@@ -799,6 +799,7 @@ TEST_F(ThemeServiceTest, UserColor) {
   EXPECT_EQ(*pref_service_->GetDict(prefs::kNtpCustomBackgroundDict)
                  .FindString("test_data"),
             "foo");
+  EXPECT_EQ(ThemeService::kUserColorThemeID, theme_service_->GetThemeID());
 }
 
 TEST_F(ThemeServiceTest, ThemeResetClearsUserColor) {
@@ -808,6 +809,7 @@ TEST_F(ThemeServiceTest, ThemeResetClearsUserColor) {
   // Check that kUserColor is removed as part of theme reset.
   theme_service_->SetIsGrayscale(true);
   EXPECT_EQ(absl::nullopt, theme_service_->GetUserColor());
+  EXPECT_EQ(ThemeHelper::kDefaultThemeID, theme_service_->GetThemeID());
 }
 
 TEST_F(ThemeServiceTest, IsBaseline) {
@@ -873,6 +875,7 @@ TEST_F(ThemeServiceTest, SetUserColorAndBrowserColorVariant) {
   EXPECT_EQ(*pref_service_->GetDict(prefs::kNtpCustomBackgroundDict)
                  .FindString("test_data"),
             "foo");
+  EXPECT_EQ(ThemeService::kUserColorThemeID, theme_service_->GetThemeID());
 }
 
 TEST_F(ThemeServiceTest, ThemeResetClearsBrowserColorVariant) {
@@ -885,6 +888,7 @@ TEST_F(ThemeServiceTest, ThemeResetClearsBrowserColorVariant) {
   theme_service_->SetIsGrayscale(true);
   EXPECT_EQ(theme_service_->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kSystem);
+  EXPECT_EQ(ThemeHelper::kDefaultThemeID, theme_service_->GetThemeID());
 }
 
 TEST_F(ThemeServiceTest, UseDeviceTheme_DefaultValue) {
