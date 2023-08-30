@@ -7,15 +7,18 @@
 </head>
 <body>
 <script>
-var ctx;
 var lostEventHasFired = false;
 var contextLostTest;
 async_test(t => {
     if (window.internals) {
-        var canvas = new OffscreenCanvas(500, 500);
-        canvas.oncontextlost = contextLost;
-        canvas.oncontextrestored = contextRestored;
-        ctx = canvas.getContext('2d');
+        const canvas = new OffscreenCanvas(500, 500);
+        const ctx = canvas.getContext('2d');
+        canvas.oncontextlost = () => {
+            contextLost(lostEventHasFired, ctx);
+        };
+        canvas.oncontextrestored = () => {
+            contextRestored(lostEventHasFired, ctx);
+        };
 
         ctx.fillRect(0, 0, 1, 1);
         // setTimeout creates a frame barrier that locks the canvas into gpu
@@ -39,15 +42,6 @@ async_test(t => {
         t.done();
     }
 }, "Test the behavior of disconneced canvas recovery after a gpu context loss");
-
-function contextLost() {
-    contextLost(lostEventHasFired, ctx);
-}
-
-function contextRestored() {
-    contextRestored(lostEventHasFired, ctx);
-}
-
 </script>
 </body>
 </html>

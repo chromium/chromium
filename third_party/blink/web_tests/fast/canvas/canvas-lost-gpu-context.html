@@ -7,24 +7,19 @@
 </head>
 <body>
 <script>
-var ctx;
 var lostEventHasFired = false;
 var contextLostTest;
 
-function contextLostWrapper() {
-    contextLost(lostEventHasFired, ctx);
-}
-
-function contextRestoredWrapper() {
-    contextRestored(lostEventHasFired, ctx);
-}
-
 async_test(function(t) {
     if (window.internals) {
-        var canvas = document.createElement('canvas');
-        canvas.addEventListener('contextlost', contextLostWrapper);
-        canvas.addEventListener('contextrestored', contextRestoredWrapper);
-        ctx = canvas.getContext('2d');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.addEventListener('contextlost', () => {
+            contextLost(lostEventHasFired, ctx);
+        });
+        canvas.addEventListener('contextrestored', () => {
+            contextRestored(lostEventHasFired, ctx);
+        });
         document.body.appendChild(ctx.canvas);
 
         ctx.fillRect(0, 0, 1, 1);
