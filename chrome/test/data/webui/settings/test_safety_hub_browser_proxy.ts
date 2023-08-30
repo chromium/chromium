@@ -4,7 +4,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {NotificationPermission, UnusedSitePermissions, SafetyHubBrowserProxy} from 'chrome://settings/lazy_load.js';
+import {CardInfo, CardState, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
@@ -15,8 +15,17 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
     SafetyHubBrowserProxy {
+  private dummyCardInfo: CardInfo = {
+    header: 'Dummy Header',
+    subheader: 'Dummy Subheader',
+    state: CardState.INFO,
+  };
+
   private unusedSitePermissions_: UnusedSitePermissions[] = [];
   private reviewNotificationList_: NotificationPermission[] = [];
+  private passwordCardData_: CardInfo = this.dummyCardInfo;
+  private safeBrowsingCardData_: CardInfo = this.dummyCardInfo;
+  private versionCardData_: CardInfo = this.dummyCardInfo;
 
   constructor() {
     super([
@@ -31,6 +40,9 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
       'ignoreNotificationPermissionForOrigins',
       'undoIgnoreNotificationPermissionForOrigins',
       'resetNotificationPermissionForOrigins',
+      'getPasswordCardData',
+      'getSafeBrowsingCardData',
+      'getVersionCardData',
     ]);
   }
 
@@ -92,5 +104,32 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
 
   resetNotificationPermissionForOrigins(origins: string[]): void {
     this.methodCalled('resetNotificationPermissionForOrigins', origins);
+  }
+
+  getPasswordCardData(): Promise<CardInfo> {
+    this.methodCalled('getPasswordCardData');
+    return Promise.resolve(this.passwordCardData_);
+  }
+
+  setPasswordCardData(data: CardInfo): void {
+    this.passwordCardData_ = data;
+  }
+
+  getSafeBrowsingCardData(): Promise<CardInfo> {
+    this.methodCalled('getSafeBrowsingCardData');
+    return Promise.resolve(this.safeBrowsingCardData_);
+  }
+
+  setSafeBrowsingCardData(data: CardInfo): void {
+    this.safeBrowsingCardData_ = data;
+  }
+
+  getVersionCardData(): Promise<CardInfo> {
+    this.methodCalled('getVersionCardData');
+    return Promise.resolve(this.versionCardData_);
+  }
+
+  setVersionCardData(data: CardInfo): void {
+    this.versionCardData_ = data;
   }
 }

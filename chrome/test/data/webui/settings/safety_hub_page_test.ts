@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {ContentSettingsTypes, SafetyHubEvent, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
+import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -27,10 +27,34 @@ suite('SafetyHubPage', function() {
     expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
   }];
 
+  const passwordCardMockData: CardInfo = {
+    header: '2 compromised passwords',
+    subheader: 'You should change these now',
+    state: CardState.WARNING,
+  };
+
+  const versionCardMockData: CardInfo = {
+    header: 'Chrome is up to date',
+    subheader: 'Checked just now',
+    state: CardState.SAFE,
+  };
+
+  const safeBrowsingCardMockData: CardInfo = {
+    header: 'Safe Browsing is off',
+    subheader: 'An Extension turned off Safe Browsing',
+    state: CardState.INFO,
+  };
+
   setup(function() {
     safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
+    safetyHubBrowserProxy.setPasswordCardData(passwordCardMockData);
+    safetyHubBrowserProxy.setVersionCardData(versionCardMockData);
+    safetyHubBrowserProxy.setSafeBrowsingCardData(safeBrowsingCardMockData);
+    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
+
     passwordManagerProxy = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManagerProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
     document.body.appendChild(testElement);
@@ -86,6 +110,20 @@ suite('SafetyHubPage', function() {
         testElement, 'settings-safety-hub-unused-site-permissions'));
   });
 
+  test('Password Card', async function() {
+    assertTrue(isChildVisible(testElement, '#passwords'));
+
+    // Card header and subheader should be what the browser proxy provides.
+    assertEquals(
+        testElement.$.passwords!.shadowRoot!.querySelector(
+                                                '#header')!.textContent!.trim(),
+        passwordCardMockData.header);
+    assertEquals(
+        testElement.$.passwords!.shadowRoot!.querySelector('#subheader')!
+            .textContent!.trim(),
+        passwordCardMockData.subheader);
+  });
+
   test('Password Card Clicked', async function() {
     testElement.$.passwords.click();
 
@@ -94,11 +132,39 @@ suite('SafetyHubPage', function() {
     assertEquals(PasswordManagerPage.CHECKUP, param);
   });
 
+  test('Version Card', async function() {
+    assertTrue(isChildVisible(testElement, '#version'));
+
+    // Card header and subheader should be what the browser proxy provides.
+    assertEquals(
+        testElement.$.version!.shadowRoot!.querySelector(
+                                              '#header')!.textContent!.trim(),
+        versionCardMockData.header);
+    assertEquals(
+        testElement.$.version!.shadowRoot!.querySelector('#subheader')!
+            .textContent!.trim(),
+        versionCardMockData.subheader);
+  });
+
   test('Version Card Clicked', function() {
     testElement.$.version.click();
 
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Safe Browsing Card', async function() {
+    assertTrue(isChildVisible(testElement, '#safeBrowsing'));
+
+    // Card header and subheader should be what the browser proxy provides.
+    assertEquals(
+        testElement.$.safeBrowsing!.shadowRoot!.querySelector('#header')!
+            .textContent!.trim(),
+        safeBrowsingCardMockData.header);
+    assertEquals(
+        testElement.$.safeBrowsing!.shadowRoot!.querySelector('#subheader')!
+            .textContent!.trim(),
+        safeBrowsingCardMockData.subheader);
   });
 
   test('Safe Browsing Card Clicked', function() {

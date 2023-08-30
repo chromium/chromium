@@ -111,6 +111,15 @@ export interface SafetyHubBrowserProxy {
 
   /** Resets the notification permission for the origins. */
   resetNotificationPermissionForOrigins(origin: string[]): void;
+
+  /** Gets data for the password top card. */
+  getPasswordCardData(): Promise<CardInfo>;
+
+  /** Gets data for the Safe Browsing top card. */
+  getSafeBrowsingCardData(): Promise<CardInfo>;
+
+  /** Gets data for the version top card. */
+  getVersionCardData(): Promise<CardInfo>;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -161,6 +170,33 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
 
   resetNotificationPermissionForOrigins(origins: string[]) {
     chrome.send('resetNotificationPermissionForOrigins', [origins]);
+  }
+
+  getPasswordCardData() {
+    // TODO(crbug.com/1443466): Replace dummy response with handler response.
+    return Promise.resolve({
+      header: 'dummy header',
+      subheader: 'dummy subheader',
+      state: CardState.SAFE,
+    });
+  }
+
+  getSafeBrowsingCardData() {
+    // TODO(crbug.com/1443466): Replace dummy response with handler response.
+    return Promise.resolve({
+      header: 'dummy header',
+      subheader: 'dummy subheader',
+      state: CardState.SAFE,
+    });
+  }
+
+  getVersionCardData() {
+    // TODO(crbug.com/1443466): Replace dummy response with handler response.
+    return Promise.resolve({
+      header: 'dummy header',
+      subheader: 'dummy subheader',
+      state: CardState.SAFE,
+    });
   }
 
   static getInstance(): SafetyHubBrowserProxy {

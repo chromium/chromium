@@ -19,7 +19,7 @@ import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwor
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {CardInfo, CardState, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import {CardInfo, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_page.html.js';
 
 export interface SettingsSafetyHubPageElement {
@@ -73,6 +73,8 @@ export class SettingsSafetyHubPageElement extends
   private safeBrowsingCardData_: CardInfo;
   private showUnusedSitePermissions_: boolean;
   private showNoRecommendationsState_: boolean;
+  private browserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -82,24 +84,17 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private initializeCards_() {
-    // TODO(crbug.com/1443466): Replace dummy values with the real values.
-    const dummyText = this.i18n('privacyPageTitle');
-    this.passwordCardData_ = {
-      header: dummyText,
-      subheader: dummyText,
-      state: CardState.INFO,
-    };
-    this.versionCardData_ = {
-      header: dummyText,
-      subheader: dummyText,
-      state: CardState.INFO,
-    };
+    this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
+      this.passwordCardData_ = data;
+    });
 
-    this.safeBrowsingCardData_ = {
-      header: dummyText,
-      subheader: dummyText,
-      state: CardState.INFO,
-    };
+    this.browserProxy_.getSafeBrowsingCardData().then((data: CardInfo) => {
+      this.safeBrowsingCardData_ = data;
+    });
+
+    this.browserProxy_.getVersionCardData().then((data: CardInfo) => {
+      this.versionCardData_ = data;
+    });
   }
 
   private initializeModules_() {
@@ -108,11 +103,9 @@ export class SettingsSafetyHubPageElement extends
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
 
-    SafetyHubBrowserProxyImpl.getInstance()
-        .getRevokedUnusedSitePermissionsList()
-        .then(
-            (sites: UnusedSitePermissions[]) =>
-                this.onUnusedSitePermissionListChanged_(sites));
+    this.browserProxy_.getRevokedUnusedSitePermissionsList().then(
+        (sites: UnusedSitePermissions[]) =>
+            this.onUnusedSitePermissionListChanged_(sites));
   }
 
   private onPasswordsClick_() {
