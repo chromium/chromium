@@ -44003,6 +44003,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4637" label="SharedStorageAPI_Fetch_Attribute"/>
   <int value="4638" label="SharedStorageAPI_Image_Attribute"/>
   <int value="4639" label="SharedStorageAPI_Iframe_Attribute"/>
+  <int value="4640" label="VirtualKeyboardShow"/>
+  <int value="4641" label="VirtualKeyboardHide"/>
+  <int value="4642" label="VirtualKeyboardOverlayPolicy"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

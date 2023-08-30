@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/virtualkeyboard/virtual_keyboard.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -92,10 +93,15 @@ void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
             "Setting overlaysContent is only supported from "
             "the top level browsing context"));
   }
+  if (GetExecutionContext()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kVirtualKeyboardOverlayPolicy);
+  }
 }
 
 void VirtualKeyboard::VirtualKeyboardOverlayChanged(
     const gfx::Rect& keyboard_rect) {
+  TRACE_EVENT0("vk", "VirtualKeyboard::VirtualKeyboardOverlayChanged");
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
@@ -120,6 +126,7 @@ void VirtualKeyboard::VirtualKeyboardOverlayChanged(
 }
 
 void VirtualKeyboard::show() {
+  TRACE_EVENT0("vk", "VirtualKeyboard::show");
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
@@ -138,6 +145,7 @@ void VirtualKeyboard::show() {
 }
 
 void VirtualKeyboard::hide() {
+  TRACE_EVENT0("vk", "VirtualKeyboard::hide");
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
