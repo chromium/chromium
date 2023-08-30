@@ -29,7 +29,8 @@ class PageWithFrame(page_module.Page):
         shared_page_state_class=shared_page_state.SharedDesktopPageState,
         extra_browser_args=[
             '''--enable-features=PrivacySandboxAdsAPIsOverride,FencedFrames,
-                SharedStorageAPI,FencedFrames:implementation_type/mparch''',
+                SharedStorageAPI,FencedFrames:implementation_type/mparch,
+                FencedFramesDefaultMode''',
             '--enable-privacy-sandbox-ads-apis',
             '--expose-internals-for-testing',
             '--disk-cache-dir=/dev/null',
