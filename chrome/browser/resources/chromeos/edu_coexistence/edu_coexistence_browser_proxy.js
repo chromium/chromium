@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {AuthCompletedCredentials} from '../../gaia_auth_host/authenticator.js';
+
+import {EduCoexistenceParams} from './edu_coexistence_controller.js';
 
 /** TODO(yilkal): Improve the naming of methods in the proxy. */
 
@@ -16,7 +17,7 @@ export class EduCoexistenceBrowserProxy {
 
   /**
    * Sends 'initializeEduArgs' message to provide the parameters.
-   * @return {!Promise<Object>}
+   * @return {!Promise<!EduCoexistenceParams>}
    */
   initializeEduArgs() {}
 
@@ -126,6 +127,17 @@ export class EduCoexistenceBrowserProxyImpl {
   getDialogArguments() {
     return chrome.getVariableValue('dialogArguments');
   }
+
+  /** @return {!EduCoexistenceBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new EduCoexistenceBrowserProxyImpl());
+  }
+
+  /** @param {!EduCoexistenceBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(EduCoexistenceBrowserProxyImpl);
+/** @type {?EduCoexistenceBrowserProxy} */
+let instance = null;

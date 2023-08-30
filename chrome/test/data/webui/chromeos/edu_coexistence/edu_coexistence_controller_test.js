@@ -27,7 +27,7 @@ suite(edu_coexistence_controller_tests.suiteName, function() {
 
   setup(function() {
     testBrowserProxy = new TestEduCoexistenceBrowserProxy();
-    EduCoexistenceBrowserProxyImpl.instance_ = testBrowserProxy;
+    EduCoexistenceBrowserProxyImpl.setInstance(testBrowserProxy);
     testBrowserProxy.setInitializeEduArgsResponse(async function() {
       return {
         url: 'https://foo.example.com/supervision/coexistence/intro',

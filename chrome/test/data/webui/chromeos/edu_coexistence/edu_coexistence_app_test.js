@@ -43,7 +43,7 @@ suite(edu_coexistence_app_tests.suiteName, function() {
    */
   function setupWithParams(dialogArgs) {
     testBrowserProxy = new TestEduCoexistenceBrowserProxy();
-    EduCoexistenceBrowserProxyImpl.instance_ = testBrowserProxy;
+    EduCoexistenceBrowserProxyImpl.setInstance(testBrowserProxy);
     testBrowserProxy.setDialogArguments(dialogArgs);
     testBrowserProxy.setInitializeEduArgsResponse(async function() {
       return {
