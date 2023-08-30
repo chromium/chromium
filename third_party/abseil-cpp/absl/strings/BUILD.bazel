@@ -92,6 +92,7 @@ cc_library(
         "string_view.h",
     ],
     deps = [
+        ":charset",
         ":internal",
         ":string_view",
         "//absl/base",
@@ -115,7 +116,6 @@ cc_library(
         "internal/utf8.cc",
     ],
     hdrs = [
-        "internal/char_map.h",
         "internal/escaping.h",
         "internal/ostringstream.h",
         "internal/resize_uninitialized.h",
@@ -303,6 +303,50 @@ cc_test(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:dynamic_annotations",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "charset_benchmark",
+    size = "small",
+    srcs = [
+        "charset_benchmark.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    tags = [
+        "benchmark",
+    ],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":charset",
+        "//absl/log:check",
+        "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_library(
+    name = "charset",
+    hdrs = [
+        "charset.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":string_view",
+        "//absl/base:core_headers",
+    ],
+)
+
+cc_test(
+    name = "charset_test",
+    size = "small",
+    srcs = ["charset_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":charset",
+        ":strings",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -1083,27 +1127,6 @@ cc_test(
     deps = [
         ":strings",
         "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "char_map_test",
-    srcs = ["internal/char_map_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    deps = [
-        ":internal",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "char_map_benchmark",
-    srcs = ["internal/char_map_benchmark.cc"],
-    copts = ABSL_TEST_COPTS,
-    tags = ["benchmark"],
-    deps = [
-        ":internal",
-        "@com_github_google_benchmark//:benchmark_main",
     ],
 )
 

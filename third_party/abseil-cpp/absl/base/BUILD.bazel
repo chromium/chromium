@@ -157,6 +157,8 @@ cc_library(
 
 cc_library(
     name = "core_headers",
+    srcs = [
+    ],
     hdrs = [
         "attributes.h",
         "const_init.h",

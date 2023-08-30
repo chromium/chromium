@@ -237,6 +237,7 @@ if (build_with_chromium) {
         "absl/status:statusor_test",
         "absl/strings:ascii_test",
         "absl/strings:char_formatting_test",
+        "absl/strings:charset_test",
         "absl/strings:cord_buffer_test",
         "absl/strings:cord_data_edge_test",
         "absl/strings:cord_rep_btree_navigator_test",

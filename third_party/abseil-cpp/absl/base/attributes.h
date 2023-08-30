@@ -747,9 +747,52 @@
 #define ABSL_CONST_INIT
 #endif
 
-// These annotations are not available yet due to fear of breaking code.
-#define ABSL_ATTRIBUTE_PURE_FUNCTION
-#define ABSL_ATTRIBUTE_CONST_FUNCTION
+// ABSL_ATTRIBUTE_PURE_FUNCTION
+//
+// ABSL_ATTRIBUTE_PURE_FUNCTION is used to annotate declarations of "pure"
+// functions. A function is pure if its return value is only a function of its
+// arguments. The pure attribute prohibits a function from modifying the state
+// of the program that is observable by means other than inspecting the
+// function's return value. Declaring such functions with the pure attribute
+// allows the compiler to avoid emitting some calls in repeated invocations of
+// the function with the same argument values.
+//
+// Example:
+//
+//  ABSL_ATTRIBUTE_PURE_FUNCTION std::string FormatTime(Time t);
+#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::pure)
+#define ABSL_ATTRIBUTE_PURE_FUNCTION [[gnu::pure]]
+#elif ABSL_HAVE_ATTRIBUTE(pure)
+#define ABSL_ATTRIBUTE_PURE_FUNCTION __attribute__((pure))
+#else
+// If the attribute isn't defined, we'll fallback to ABSL_MUST_USE_RESULT since
+// pure functions are useless if its return is ignored.
+#define ABSL_ATTRIBUTE_PURE_FUNCTION ABSL_MUST_USE_RESULT
+#endif
+
+// ABSL_ATTRIBUTE_CONST_FUNCTION
+//
+// ABSL_ATTRIBUTE_CONST_FUNCTION is used to annotate declarations of "const"
+// functions. A const function is similar to a pure function, with one
+// exception: Pure functions may return value that depend on a non-volatile
+// object that isn't provided as a function argument, while the const function
+// is guaranteed to return the same result given the same arguments.
+//
+// Example:
+//
+//  ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Milliseconds(Duration d);
+#if defined(_MSC_VER) && !defined(__clang__)
+// Put the MSVC case first since MSVC seems to parse const as a C++ keyword.
+#define ABSL_ATTRIBUTE_CONST_FUNCTION ABSL_ATTRIBUTE_PURE_FUNCTION
+#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::const)
+#define ABSL_ATTRIBUTE_CONST_FUNCTION [[gnu::const]]
+#elif ABSL_HAVE_ATTRIBUTE(const)
+#define ABSL_ATTRIBUTE_CONST_FUNCTION __attribute__((const))
+#else
+// Since const functions are more restrictive pure function, we'll fallback to a
+// pure function if the const attribute is not handled.
+#define ABSL_ATTRIBUTE_CONST_FUNCTION ABSL_ATTRIBUTE_PURE_FUNCTION
+#endif
 
 // ABSL_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function
 // parameter or implicit object parameter is retained by the return value of the

@@ -682,6 +682,7 @@ static const intptr_t kMuOne = 0x0100;  // a count of one reader
 // flags passed to Enqueue and LockSlow{,WithTimeout,Loop}
 static const int kMuHasBlocked = 0x01;  // already blocked (MUST == 1)
 static const int kMuIsCond = 0x02;      // conditional waiter (CV or Condition)
+static const int kMuIsFer = 0x04;       // wait morphing from a CondVar
 
 static_assert(PerThreadSynch::kAlignment > kMuLow,
               "PerThreadSynch::kAlignment must be greater than kMuLow");
@@ -920,20 +921,23 @@ static PerThreadSynch* Enqueue(PerThreadSynch* head, SynchWaitParams* waitp,
   s->wake = false;     // not being woken
   s->cond_waiter = ((flags & kMuIsCond) != 0);
 #ifdef ABSL_HAVE_PTHREAD_GETSCHEDPARAM
-  int64_t now_cycles = CycleClock::Now();
-  if (s->next_priority_read_cycles < now_cycles) {
-    // Every so often, update our idea of the thread's priority.
-    // pthread_getschedparam() is 5% of the block/wakeup time;
-    // CycleClock::Now() is 0.5%.
-    int policy;
-    struct sched_param param;
-    const int err = pthread_getschedparam(pthread_self(), &policy, &param);
-    if (err != 0) {
-      ABSL_RAW_LOG(ERROR, "pthread_getschedparam failed: %d", err);
-    } else {
-      s->priority = param.sched_priority;
-      s->next_priority_read_cycles =
-          now_cycles + static_cast<int64_t>(CycleClock::Frequency());
+  if ((flags & kMuIsFer) == 0) {
+    assert(s == Synch_GetPerThread());
+    int64_t now_cycles = CycleClock::Now();
+    if (s->next_priority_read_cycles < now_cycles) {
+      // Every so often, update our idea of the thread's priority.
+      // pthread_getschedparam() is 5% of the block/wakeup time;
+      // CycleClock::Now() is 0.5%.
+      int policy;
+      struct sched_param param;
+      const int err = pthread_getschedparam(pthread_self(), &policy, &param);
+      if (err != 0) {
+        ABSL_RAW_LOG(ERROR, "pthread_getschedparam failed: %d", err);
+      } else {
+        s->priority = param.sched_priority;
+        s->next_priority_read_cycles =
+            now_cycles + static_cast<int64_t>(CycleClock::Frequency());
+      }
     }
   }
 #endif
@@ -2436,7 +2440,8 @@ void Mutex::Fer(PerThreadSynch* w) {
     } else {
       if ((v & (kMuSpin | kMuWait)) == 0) {  // no waiters
         // This thread tries to become the one and only waiter.
-        PerThreadSynch* new_h = Enqueue(nullptr, w->waitp, v, kMuIsCond);
+        PerThreadSynch* new_h =
+            Enqueue(nullptr, w->waitp, v, kMuIsCond | kMuIsFer);
         ABSL_RAW_CHECK(new_h != nullptr,
                        "Enqueue failed");  // we must queue ourselves
         if (mu_.compare_exchange_strong(
@@ -2447,7 +2452,7 @@ void Mutex::Fer(PerThreadSynch* w) {
       } else if ((v & kMuSpin) == 0 &&
                  mu_.compare_exchange_strong(v, v | kMuSpin | kMuWait)) {
         PerThreadSynch* h = GetPerThreadSynch(v);
-        PerThreadSynch* new_h = Enqueue(h, w->waitp, v, kMuIsCond);
+        PerThreadSynch* new_h = Enqueue(h, w->waitp, v, kMuIsCond | kMuIsFer);
         ABSL_RAW_CHECK(new_h != nullptr,
                        "Enqueue failed");  // we must queue ourselves
         do {

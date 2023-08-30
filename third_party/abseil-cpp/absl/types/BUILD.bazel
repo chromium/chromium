@@ -208,44 +208,6 @@ cc_test(
 )
 
 cc_library(
-    name = "conformance_testing",
-    testonly = 1,
-    hdrs = [
-        "internal/conformance_aliases.h",
-        "internal/conformance_archetype.h",
-        "internal/conformance_profile.h",
-        "internal/conformance_testing.h",
-        "internal/conformance_testing_helpers.h",
-        "internal/parentheses.h",
-        "internal/transform_args.h",
-    ],
-    copts = ABSL_TEST_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        "//absl/algorithm:container",
-        "//absl/meta:type_traits",
-        "//absl/strings",
-        "//absl/utility",
-        "@com_google_googletest//:gtest",
-    ],
-)
-
-cc_test(
-    name = "conformance_testing_test",
-    size = "small",
-    srcs = [
-        "internal/conformance_testing_test.cc",
-    ],
-    copts = ABSL_TEST_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        ":conformance_testing",
-        "//absl/meta:type_traits",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_library(
     name = "variant",
     srcs = ["internal/variant.h"],
     hdrs = ["variant.h"],

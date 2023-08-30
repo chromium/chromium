@@ -78,6 +78,7 @@ absl_cc_library(
     absl::strings_internal
     absl::base
     absl::bits
+    absl::charset
     absl::config
     absl::core_headers
     absl::endian
@@ -89,12 +90,24 @@ absl_cc_library(
   PUBLIC
 )
 
+absl_cc_library(
+  NAME
+    charset
+  HDRS
+    charset.h
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::core_headers
+    absl::string_view
+  PUBLIC
+)
+
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     strings_internal
   HDRS
-    "internal/char_map.h"
     "internal/escaping.cc"
     "internal/escaping.h"
     "internal/ostringstream.h"
@@ -357,13 +370,13 @@ absl_cc_test(
 
 absl_cc_test(
   NAME
-    char_map_test
+    charset_test
   SRCS
-    "internal/char_map_test.cc"
+    "charset_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
-    absl::strings_internal
+    absl::strings
     GTest::gmock_main
 )
 

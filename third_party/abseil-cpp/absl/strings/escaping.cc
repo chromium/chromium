@@ -26,7 +26,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/unaligned_access.h"
 #include "absl/strings/ascii.h"
-#include "absl/strings/internal/char_map.h"
+#include "absl/strings/charset.h"
 #include "absl/strings/internal/escaping.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/internal/utf8.h"

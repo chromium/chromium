@@ -63,6 +63,7 @@ using absl::strings_internal::strtouint32_test_cases;
 using absl::strings_internal::strtouint64_test_cases;
 using testing::Eq;
 using testing::MatchesRegex;
+using testing::Pointee;
 
 // Number of floats to test with.
 // 5,000,000 is a reasonable default for a test that only takes a few seconds.
@@ -1713,6 +1714,27 @@ TEST(FastHexToBufferZeroPad16, Smoke) {
         absl::LogUniform(rng, std::numeric_limits<uint64_t>::min(),
                          std::numeric_limits<uint64_t>::max()));
   }
+}
+
+template <typename Int>
+void ExpectWritesNull() {
+  {
+    char buf[absl::numbers_internal::kFastToBufferSize];
+    Int x = std::numeric_limits<Int>::min();
+    EXPECT_THAT(absl::numbers_internal::FastIntToBuffer(x, buf), Pointee('\0'));
+  }
+  {
+    char buf[absl::numbers_internal::kFastToBufferSize];
+    Int x = std::numeric_limits<Int>::max();
+    EXPECT_THAT(absl::numbers_internal::FastIntToBuffer(x, buf), Pointee('\0'));
+  }
+}
+
+TEST(FastIntToBuffer, WritesNull) {
+  ExpectWritesNull<int32_t>();
+  ExpectWritesNull<uint32_t>();
+  ExpectWritesNull<int64_t>();
+  ExpectWritesNull<uint32_t>();
 }
 
 }  // namespace

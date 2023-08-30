@@ -168,10 +168,9 @@ constexpr uint64_t kDivisionBy100Div = 1 << 20;
 // Encode functions write the ASCII output of input `n` to `out_str`.
 inline char* EncodeHundred(uint32_t n, char* out_str) {
   int num_digits = static_cast<int>(n - 10) >> 8;
-  uint32_t base = kTwoZeroBytes;
   uint32_t div10 = (n * kDivisionBy10Mul) / kDivisionBy10Div;
   uint32_t mod10 = n - 10u * div10;
-  base += div10 + (mod10 << 8);
+  uint32_t base = kTwoZeroBytes + div10 + (mod10 << 8);
   base >>= num_digits & 8;
   little_endian::Store16(out_str, static_cast<uint16_t>(base));
   return out_str + 2 + num_digits;
@@ -196,19 +195,33 @@ inline char* EncodeTenThousand(uint32_t n, char* out_str) {
   // to a multiple to 8 to strip zero bytes, not all zero bits.
   // countr_zero to help.
   // 0 minus 8 to make MSVC happy.
-  uint32_t zeroes = static_cast<uint32_t>(absl::countr_zero(tens)) & (0 - 8ull);
+  uint32_t zeroes = static_cast<uint32_t>(absl::countr_zero(tens)) & (0 - 8u);
   tens += kFourZeroBytes;
   tens >>= zeroes;
   little_endian::Store32(out_str, tens);
   return out_str + sizeof(tens) - zeroes / 8;
 }
 
-// Prepare functions return an integer that should be written to out_str
-// (but possibly include trailing zeros).
-// For hi < 10000, lo < 10000 returns uint64_t as encoded in ASCII with
-// possibly trailing zeroes of the number hi * 10000 + lo.
-inline uint64_t PrepareTenThousands(uint64_t hi, uint64_t lo) {
-  uint64_t merged = hi | (lo << 32);
+// Helper function to produce an ASCII representation of `i`.
+//
+// Function returns an 8-byte integer which when summed with `kEightZeroBytes`,
+// can be treated as a printable buffer with ascii representation of `i`,
+// possibly with leading zeros.
+//
+// Example:
+//
+//  uint64_t buffer = PrepareEightDigits(102030) + kEightZeroBytes;
+//  char* ascii = reinterpret_cast<char*>(&buffer);
+//  // Note two leading zeros:
+//  EXPECT_EQ(absl::string_view(ascii, 8), "00102030");
+//
+// Pre-condition: `i` must be less than 100000000.
+inline uint64_t PrepareEightDigits(uint32_t i) {
+  ABSL_ASSUME(i < 10000'0000);
+  // Prepare 2 blocks of 4 digits "in parallel".
+  uint32_t hi = i / 10000;
+  uint32_t lo = i % 10000;
+  uint64_t merged = hi | (uint64_t{lo} << 32);
   uint64_t div100 = ((merged * kDivisionBy100Mul) / kDivisionBy100Div) &
                     ((0x7Full << 32) | 0x7Full);
   uint64_t mod100 = merged - 100ull * div100;
@@ -219,25 +232,52 @@ inline uint64_t PrepareTenThousands(uint64_t hi, uint64_t lo) {
   return tens;
 }
 
-inline char* EncodeFullU32(uint32_t n, char* out_str) {
+inline ABSL_ATTRIBUTE_ALWAYS_INLINE char* EncodeFullU32(uint32_t n,
+                                                        char* out_str) {
+  if (n < 10) {
+    *out_str = static_cast<char>('0' + n);
+    return out_str + 1;
+  }
   if (n < 100'000'000) {
-    uint64_t bottom = PrepareTenThousands(n / 10000, n % 10000);
+    uint64_t bottom = PrepareEightDigits(n);
     ABSL_ASSUME(bottom != 0);
     // 0 minus 8 to make MSVC happy.
-    uint32_t zeroes = static_cast<uint32_t>(absl::countr_zero(bottom))
-        & (0 - 8ull);
-    uint64_t bottom_res = bottom + kEightZeroBytes;
-    bottom_res >>= zeroes;
-    little_endian::Store64(out_str, bottom_res);
+    uint32_t zeroes =
+        static_cast<uint32_t>(absl::countr_zero(bottom)) & (0 - 8u);
+    little_endian::Store64(out_str, (bottom + kEightZeroBytes) >> zeroes);
     return out_str + sizeof(bottom) - zeroes / 8;
   }
-  uint32_t top = n / 100'000'000;
-  n %= 100'000'000;
-  uint64_t bottom = PrepareTenThousands(n / 10000, n % 10000);
-  uint64_t bottom_res = bottom + kEightZeroBytes;
-  out_str = EncodeHundred(top, out_str);
-  little_endian::Store64(out_str, bottom_res);
+  uint32_t div08 = n / 100'000'000;
+  uint32_t mod08 = n % 100'000'000;
+  uint64_t bottom = PrepareEightDigits(mod08) + kEightZeroBytes;
+  out_str = EncodeHundred(div08, out_str);
+  little_endian::Store64(out_str, bottom);
   return out_str + sizeof(bottom);
+}
+
+inline ABSL_ATTRIBUTE_ALWAYS_INLINE char* EncodeFullU64(uint64_t i,
+                                                        char* buffer) {
+  if (i <= std::numeric_limits<uint32_t>::max()) {
+    return EncodeFullU32(static_cast<uint32_t>(i), buffer);
+  }
+  uint32_t mod08;
+  if (i < 1'0000'0000'0000'0000ull) {
+    uint32_t div08 = static_cast<uint32_t>(i / 100'000'000ull);
+    mod08 =  static_cast<uint32_t>(i % 100'000'000ull);
+    buffer = EncodeFullU32(div08, buffer);
+  } else {
+    uint64_t div08 = i / 100'000'000ull;
+    mod08 =  static_cast<uint32_t>(i % 100'000'000ull);
+    uint32_t div016 = static_cast<uint32_t>(div08 / 100'000'000ull);
+    uint32_t div08mod08 = static_cast<uint32_t>(div08 % 100'000'000ull);
+    uint64_t mid_result = PrepareEightDigits(div08mod08) + kEightZeroBytes;
+    buffer = EncodeTenThousand(div016, buffer);
+    little_endian::Store64(buffer, mid_result);
+    buffer += sizeof(mid_result);
+  }
+  uint64_t mod_result = PrepareEightDigits(mod08) + kEightZeroBytes;
+  little_endian::Store64(buffer, mod_result);
+  return buffer + sizeof(mod_result);
 }
 
 }  // namespace
@@ -252,16 +292,7 @@ void numbers_internal::PutTwoDigits(uint32_t i, char* buf) {
 }
 
 char* numbers_internal::FastIntToBuffer(uint32_t n, char* out_str) {
-  if (n < 100) {
-    out_str = EncodeHundred(n, out_str);
-    goto set_last_zero;
-  }
-  if (n < 10000) {
-    out_str = EncodeTenThousand(n, out_str);
-    goto set_last_zero;
-  }
   out_str = EncodeFullU32(n, out_str);
-set_last_zero:
   *out_str = '\0';
   return out_str;
 }
@@ -275,45 +306,13 @@ char* numbers_internal::FastIntToBuffer(int32_t i, char* buffer) {
     // we write the equivalent expression "0 - u" instead.
     u = 0 - u;
   }
-  return numbers_internal::FastIntToBuffer(u, buffer);
+  buffer = EncodeFullU32(u, buffer);
+  *buffer = '\0';
+  return buffer;
 }
 
 char* numbers_internal::FastIntToBuffer(uint64_t i, char* buffer) {
-  uint32_t u32 = static_cast<uint32_t>(i);
-  if (u32 == i) return numbers_internal::FastIntToBuffer(u32, buffer);
-
-  // 10**9 < 2**32 <= i < 10**10, we can do 2+8
-  uint64_t div08 = i / 100'000'000ull;
-  uint64_t mod08 = i % 100'000'000ull;
-  uint64_t mod_result =
-      PrepareTenThousands(mod08 / 10000, mod08 % 10000) + kEightZeroBytes;
-  if (i < 10'000'000'000ull) {
-    buffer = EncodeHundred(static_cast<uint32_t>(div08), buffer);
-    little_endian::Store64(buffer, mod_result);
-    buffer += 8;
-    goto set_last_zero;
-  }
-
-  // i < 10**16, in this case 8+8
-  if (i < 10'000'000'000'000'000ull) {
-    buffer = EncodeFullU32(static_cast<uint32_t>(div08), buffer);
-    little_endian::Store64(buffer, mod_result);
-    buffer += 8;
-    goto set_last_zero;
-  } else {
-    // 4 + 8 + 8
-    uint64_t div016 = i / 10'000'000'000'000'000ull;
-    buffer = EncodeTenThousand(static_cast<uint32_t>(div016), buffer);
-    uint64_t mid_result = div08 - div016 * 100'000'000ull;
-    mid_result = PrepareTenThousands(mid_result / 10000, mid_result % 10000) +
-                 kEightZeroBytes;
-    little_endian::Store64(buffer, mid_result);
-    buffer += 8;
-    little_endian::Store64(buffer, mod_result);
-    buffer += 8;
-    goto set_last_zero;
-  }
-set_last_zero:
+  buffer = EncodeFullU64(i, buffer);
   *buffer = '\0';
   return buffer;
 }
@@ -322,9 +321,14 @@ char* numbers_internal::FastIntToBuffer(int64_t i, char* buffer) {
   uint64_t u = static_cast<uint64_t>(i);
   if (i < 0) {
     *buffer++ = '-';
+    // We need to do the negation in modular (i.e., "unsigned")
+    // arithmetic; MSVC++ apparently warns for plain "-u", so
+    // we write the equivalent expression "0 - u" instead.
     u = 0 - u;
   }
-  return numbers_internal::FastIntToBuffer(u, buffer);
+  buffer = EncodeFullU64(u, buffer);
+  *buffer = '\0';
+  return buffer;
 }
 
 // Given a 128-bit number expressed as a pair of uint64_t, high half first,

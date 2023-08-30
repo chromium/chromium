@@ -36,9 +36,15 @@
 #include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/memory/memory.h"
+#include "absl/synchronization/internal/create_thread_identity.h"
 #include "absl/synchronization/internal/thread_pool.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
+
+#ifdef ABSL_HAVE_PTHREAD_GETSCHEDPARAM
+#include <pthread.h>
+#include <string.h>
+#endif
 
 namespace {
 
@@ -1867,6 +1873,60 @@ TEST(Mutex, WriterPriority) {
   t3.join();
   EXPECT_TRUE(saw_wrote.load());
 }
+
+#ifdef ABSL_HAVE_PTHREAD_GETSCHEDPARAM
+TEST(Mutex, CondVarPriority) {
+  // A regression test for a bug in condition variable wait morphing,
+  // which resulted in the waiting thread getting priority of the waking thread.
+  int err = 0;
+  sched_param param;
+  param.sched_priority = 7;
+  std::thread test([&]() {
+    err = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+  });
+  test.join();
+  if (err) {
+    // Setting priority usually requires special privileges.
+    GTEST_SKIP() << "failed to set priority: " << strerror(err);
+  }
+  absl::Mutex mu;
+  absl::CondVar cv;
+  bool locked = false;
+  bool notified = false;
+  bool waiting = false;
+  bool morph = false;
+  std::thread th([&]() {
+    EXPECT_EQ(0, pthread_setschedparam(pthread_self(), SCHED_FIFO, &param));
+    mu.Lock();
+    locked = true;
+    mu.Await(absl::Condition(&notified));
+    mu.Unlock();
+    EXPECT_EQ(absl::synchronization_internal::GetOrCreateCurrentThreadIdentity()
+                  ->per_thread_synch.priority,
+              param.sched_priority);
+    mu.Lock();
+    mu.Await(absl::Condition(&waiting));
+    morph = true;
+    absl::SleepFor(absl::Seconds(1));
+    cv.Signal();
+    mu.Unlock();
+  });
+  mu.Lock();
+  mu.Await(absl::Condition(&locked));
+  notified = true;
+  mu.Unlock();
+  mu.Lock();
+  waiting = true;
+  while (!morph) {
+    cv.Wait(&mu);
+  }
+  mu.Unlock();
+  th.join();
+  EXPECT_NE(absl::synchronization_internal::GetOrCreateCurrentThreadIdentity()
+                ->per_thread_synch.priority,
+            param.sched_priority);
+}
+#endif
 
 TEST(Mutex, LockWhenWithTimeoutResult) {
   // Check various corner cases for Await/LockWhen return value
