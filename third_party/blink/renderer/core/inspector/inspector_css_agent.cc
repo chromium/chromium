@@ -610,6 +610,17 @@ InspectorCSSAgent::InspectorCSSAgent(
       local_fonts_enabled_(&agent_state_, /*default_value=*/true) {
   DCHECK(dom_agent);
   DCHECK(network_agent);
+
+  if (recordreplay::IsInReplayCode()) {
+    // RUN-2521: Make sure documents are registered.
+    // This is partial copy-and-paste from |CompleteEnabled|
+    dom_agent_->AddDOMListener(this);
+    HeapVector<Member<Document>> documents = dom_agent_->Documents();
+    for (Document* document : documents) {
+      UpdateActiveStyleSheets(document);
+    }
+    enable_completed_ = true;
+  }
 }
 
 InspectorCSSAgent::~InspectorCSSAgent() = default;
@@ -988,14 +999,12 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules,
     Maybe<int>* parentLayoutNodeId) {
-  if (!recordreplay::HasDivergedFromRecording()) {
-    Response response = AssertEnabled();
-    if (!response.IsSuccess())
-      return response;
-  }
+  Response response = AssertEnabled();
+  if (!response.IsSuccess())
+    return response;
 
   Element* element = nullptr;
-  auto response = dom_agent_->AssertElement(node_id, element);
+  response = dom_agent_->AssertElement(node_id, element);
   if (!response.IsSuccess())
     return response;
 
@@ -2370,10 +2379,6 @@ InspectorStyleSheet* InspectorCSSAgent::ViaInspectorStyleSheet(
 }
 
 Response InspectorCSSAgent::AssertEnabled() {
-  if (recordreplay::HasDivergedFromRecording()) {
-    // [replay] act as though it is enabled
-    return Response::Success();
-  }
   return enable_completed_ ? Response::Success()
                            : Response::ServerError("CSS agent was not enabled");
 }

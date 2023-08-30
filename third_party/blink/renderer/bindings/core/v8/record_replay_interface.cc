@@ -4609,7 +4609,7 @@ static void HandleNetworkDidReceiveDataEvent(const base::DictionaryValue& info) 
 }
 
 /** ###########################################################################
- * blink (DOM, CSS etc.)
+ * blink (DOM, CSS etc.) queries
  * @see https://static.replay.io/protocol/tot/DOM/
  * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/
  * ##########################################################################*/
@@ -4637,8 +4637,6 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
   v8::Isolate* isolate = args.GetIsolate();
 
-  auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
-
   // convert v8::String → v8::String::Utf8Value → v8_inspector::StringView
   v8::String::Utf8Value cdpId(isolate, args[0]);
   const uint8_t* cdpIdPtr = reinterpret_cast<const uint8_t*>(*cdpId);
@@ -4648,8 +4646,8 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (getObjectByCdpId(isolate, cdpIdV8, nodeObj)) {
     Node* node = V8Node::ToImpl(nodeObj);
     if (node) {
-      // hackfix: bind node here
-      //   (if the DOMAgent was enabled, it would track nodes automatically)
+      // Bind node and get nodeId.
+      auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
       int nodeId = domAgent->BindDocumentNode(node);
       args.GetReturnValue().Set(v8::Number::New(isolate, nodeId));
       return;
@@ -4659,7 +4657,6 @@ static void fromJsGetNodeId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   } else { /* already reported */
   }
 
-  // auto response = domAgent->requestNode(cdpId, &nodeId);
   args.GetReturnValue().SetNull();
 }
 
@@ -4718,11 +4715,9 @@ static void fromJsGetMatchedStylesForElement(
   Maybe<int> parentLayoutNodeId;
 
   auto response = cssAgent->getMatchedStylesForNode(
-      nodeId, &inlineStyle, &attributesStyle, &matchedRules, &pseudoIdMatches,
-      &inheritedEntries, &inherited_pseudo_id_matches, &keyframesRules,
-      &parentLayoutNodeId);
-
-  // WIP: will fix everything up and clean up when done w/ RUN-981
+    nodeId, &inlineStyle, &attributesStyle, &matchedRules, &pseudoIdMatches,
+    &inheritedEntries, &inherited_pseudo_id_matches, &keyframesRules,
+    &parentLayoutNodeId);
 
   if (!response.IsSuccess()) {
     recordreplay::Warning(
@@ -4730,34 +4725,35 @@ static void fromJsGetMatchedStylesForElement(
         "%d): %s",
         nodeId, response.Code(), response.Message().c_str());
     args.GetReturnValue().SetNull();
-  } else {
-    v8::Local<v8::Object> result = v8::Object::New(isolate);
-    // NOTE: not sure what `attributesStyle` is and how its different from `inlineStyle`?
-    if (attributesStyle.isJust()) {
-      auto rulesJs = convertCborToJS(isolate, attributesStyle.fromJust());
-      if (!rulesJs.IsEmpty()) {
-        SetDataProperty(isolate, result, "attributesStyle",
-                        rulesJs.ToLocalChecked());
-      }
-    }
-    if (matchedRules.isJust()) {
-      auto rulesJs = convertCborToJS(isolate, matchedRules.fromJust());
-      SetDataProperty(isolate, result, "matchedRules", rulesJs);
-    }
-    if (pseudoIdMatches.isJust()) {
-      auto rulesJs = convertCborToJS(isolate, pseudoIdMatches.fromJust());
-      SetDataProperty(isolate, result, "pseudoIdMatches", rulesJs);
-    }
-    if (inheritedEntries.isJust()) {
-      auto rulesJs = convertCborToJS(isolate, inheritedEntries.fromJust());
-      SetDataProperty(isolate, result, "inheritedEntries", rulesJs);
-    }
-    if (keyframesRules.isJust()) {
-      auto rulesJs = convertCborToJS(isolate, keyframesRules.fromJust());
-      SetDataProperty(isolate, result, "keyframesRules", rulesJs);
-    }
-    args.GetReturnValue().Set(result);
+    return;
   }
+
+  v8::Local<v8::Object> result = v8::Object::New(isolate);
+  // NOTE: not sure what `attributesStyle` is and how its different from `inlineStyle`?
+  if (attributesStyle.isJust()) {
+    auto rulesJs = convertCborToJS(isolate, attributesStyle.fromJust());
+    if (!rulesJs.IsEmpty()) {
+      SetDataProperty(isolate, result, "attributesStyle",
+                      rulesJs.ToLocalChecked());
+    }
+  }
+  if (matchedRules.isJust()) {
+    auto rulesJs = convertCborToJS(isolate, matchedRules.fromJust());
+    SetDataProperty(isolate, result, "matchedRules", rulesJs);
+  }
+  if (pseudoIdMatches.isJust()) {
+    auto rulesJs = convertCborToJS(isolate, pseudoIdMatches.fromJust());
+    SetDataProperty(isolate, result, "pseudoIdMatches", rulesJs);
+  }
+  if (inheritedEntries.isJust()) {
+    auto rulesJs = convertCborToJS(isolate, inheritedEntries.fromJust());
+    SetDataProperty(isolate, result, "inheritedEntries", rulesJs);
+  }
+  if (keyframesRules.isJust()) {
+    auto rulesJs = convertCborToJS(isolate, keyframesRules.fromJust());
+    SetDataProperty(isolate, result, "keyframesRules", rulesJs);
+  }
+  args.GetReturnValue().Set(result);
 }
 
 
@@ -4793,6 +4789,9 @@ static void fromJsDomPerformSearch(
   bool includeUserAgentShadowDom = true;
   String searchId;
   int resultCount;
+
+  // NOTE: We modified performSearch to work even though the agent is not
+  // enabled.
   auto response = domAgent->performSearch(query, includeUserAgentShadowDom,
                                           &searchId, &resultCount);
   if (checkCDPResponse("DOM.performSearch", response, args)) {

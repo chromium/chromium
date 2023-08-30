@@ -841,7 +841,7 @@ int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push,
   if (!document_)
     return 0;
 
-  if (!enabled_.Get() && recordreplay::HasDivergedFromRecording()) {
+  if (!enabled_.Get() && recordreplay::IsInReplayCode()) {
     // [replay] hackfix: track node if `DevToolsSession` is not active
     //    TODO: This might not handle dangling nodes properly - https://linear.app/replay/issue/RUN-1005/
     return BindDocumentNode(node_to_push);
@@ -1158,9 +1158,8 @@ Response InspectorDOMAgent::performSearch(
     Maybe<bool> optional_include_user_agent_shadow_dom,
     String* search_id,
     int* result_count) {
-  
-  if (!recordreplay::HasDivergedFromRecording()) {
-    // [replay] act as though it is enabled
+  if (!recordreplay::IsInReplayCode()) {
+    // [replay] act as though it is enabled when in Replay code.
     if (!enabled_.Get()) {
       return Response::ServerError("DOM agent is not enabled");
     }
