@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -37,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 
@@ -139,9 +139,9 @@ public class WebappLauncherActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        long createTimestamp = SystemClock.elapsedRealtime();
         // Triggers UnsafeIntentLaunch lint warning. https://crbug.com/1412281
         Intent intent = getIntent();
+        BrowserIntentUtils.addStartupTimestampsToIntent(intent);
 
         if (WebappActionsNotificationManager.handleNotificationAction(intent)) {
             finish();
@@ -174,7 +174,7 @@ public class WebappLauncherActivity extends Activity {
         }
 
         if (launchData != null) {
-            launchWebapp(this, intent, launchData, createTimestamp);
+            launchWebapp(this, intent, launchData);
             return;
         }
 
@@ -232,9 +232,9 @@ public class WebappLauncherActivity extends Activity {
         return (isValidMacForUrl(launchData.url, webappMac) || wasIntentFromChrome(intent));
     }
 
-    private static void launchWebapp(Activity launchingActivity, Intent intent,
-            @NonNull LaunchData launchData, long createTimestamp) {
-        Intent launchIntent = createIntentToLaunchForWebapp(intent, launchData, createTimestamp);
+    private static void launchWebapp(
+            Activity launchingActivity, Intent intent, @NonNull LaunchData launchData) {
+        Intent launchIntent = createIntentToLaunchForWebapp(intent, launchData);
 
         WarmupManager.getInstance().maybePrefetchDnsForUrlInBackground(
                 launchingActivity, launchData.url);
@@ -319,7 +319,7 @@ public class WebappLauncherActivity extends Activity {
     /** Returns intent to launch for the web app. */
     @VisibleForTesting
     public static Intent createIntentToLaunchForWebapp(
-            Intent intent, @NonNull LaunchData launchData, long createTimestamp) {
+            Intent intent, @NonNull LaunchData launchData) {
         String launchActivityClassName = selectWebappActivitySubclass(launchData);
 
         Intent launchIntent = new Intent();
@@ -329,7 +329,6 @@ public class WebappLauncherActivity extends Activity {
         // Firing intents with the exact same data should relaunch a particular Activity.
         launchIntent.setData(Uri.parse(WebappActivity.WEBAPP_SCHEME + "://" + launchData.id));
 
-        IntentHandler.addTimestampToIntent(launchIntent, createTimestamp);
         if (launchData.isForWebApk) {
             WebappIntentUtils.copyWebApkLaunchIntentExtras(intent, launchIntent);
         } else {

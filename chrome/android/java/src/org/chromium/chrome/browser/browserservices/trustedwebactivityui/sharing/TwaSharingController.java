@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.trustedwebactivityui.sharing;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -71,6 +73,7 @@ public class TwaSharingController {
         if (shareTarget == null || shareData == null) {
             return Promise.fulfilled(false);
         }
+        Intent intent = intentDataProvider.getIntent();
 
         return mVerifierDelegate.verify(shareTarget.getAction())
                 .then((Function<Boolean, Boolean>) (verified) -> {
@@ -86,7 +89,9 @@ public class TwaSharingController {
                     }
 
                     mNavigationController.navigate(
-                            computeStartUrlForGETShareTarget(shareData, shareTarget));
+                            new LoadUrlParams(
+                                    computeStartUrlForGETShareTarget(shareData, shareTarget)),
+                            intent);
                     mUmaRecorder.recordShareTargetRequest(ShareRequestMethod.GET);
                     return true;
                 });

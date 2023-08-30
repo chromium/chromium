@@ -17,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsService;
@@ -323,7 +322,7 @@ public class IntentHandlerUnitTest {
         WebappLauncherActivity.LaunchData launchData = new WebappLauncherActivity.LaunchData("id",
                 GOOGLE_URL, null /* webApkPackageName */, false /* isSplashProvidedByWebApk */);
         mIntent = WebappLauncherActivity.createIntentToLaunchForWebapp(
-                webappLauncherActivityIntent, launchData, 0);
+                webappLauncherActivityIntent, launchData);
         Assert.assertEquals(GOOGLE_URL, IntentHandler.getUrlFromIntent(mIntent));
     }
 
@@ -526,23 +525,6 @@ public class IntentHandlerUnitTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testAddTimestampToIntent() {
-        Intent intent = new Intent();
-        Assert.assertEquals(-1, IntentHandler.getTimestampFromIntent(intent));
-        // Check both before and after to make sure that the returned value is
-        // really from {@link SystemClock#elapsedRealtime()}.
-        long before = SystemClock.elapsedRealtime();
-        IntentHandler.addTimestampToIntent(intent);
-        long after = SystemClock.elapsedRealtime();
-        Assert.assertTrue("Time should be increasing",
-                before <= IntentHandler.getTimestampFromIntent(intent));
-        Assert.assertTrue(
-                "Time should be increasing", IntentHandler.getTimestampFromIntent(intent) <= after);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Android-AppBase"})
     public void testGeneratedReferrer() {
         Context context = ApplicationProvider.getApplicationContext();
         String packageName = context.getPackageName();
@@ -667,7 +649,7 @@ public class IntentHandlerUnitTest {
         WebappLauncherActivity.LaunchData launchData = new WebappLauncherActivity.LaunchData("id",
                 GOOGLE_URL, null /* webApkPackageName */, false /* isSplashProvidedByWebApk */);
         Intent intent = WebappLauncherActivity.createIntentToLaunchForWebapp(
-                webappLauncherActivityIntent, launchData, 0);
+                webappLauncherActivityIntent, launchData);
 
         assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
     }

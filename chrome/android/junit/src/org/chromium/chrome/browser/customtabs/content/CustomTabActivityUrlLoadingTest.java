@@ -155,7 +155,8 @@ public class CustomTabActivityUrlLoadingTest {
         env.changeTab(newTab);
 
         clearInvocations(env.tabFromFactory);
-        mNavigationController.navigate(OTHER_URL);
+        LoadUrlParams params = new LoadUrlParams(OTHER_URL);
+        mNavigationController.navigate(params, new Intent());
         verify(newTab).loadUrl(any());
         verify(env.tabFromFactory, never()).loadUrl(any());
     }
@@ -184,7 +185,7 @@ public class CustomTabActivityUrlLoadingTest {
 
         clearInvocations(env.tabFromFactory);
         LoadUrlParams params = new LoadUrlParams(SPECULATED_URL);
-        mNavigationController.navigate(params, 0);
+        mNavigationController.navigate(params, new Intent());
         verify(hiddenTab).loadUrl(params);
     }
 

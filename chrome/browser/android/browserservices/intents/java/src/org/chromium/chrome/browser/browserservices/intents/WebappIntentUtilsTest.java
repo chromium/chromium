@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import android.content.Intent;
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 
 import java.util.ArrayList;
 
@@ -56,6 +58,7 @@ public class WebappIntentUtilsTest {
         fromIntent.putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 1L);
         fromIntent.putExtra(WebappConstants.EXTRA_DARK_THEME_COLOR, 2L);
         fromIntent.putExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, 3L);
+        BrowserIntentUtils.addStartupTimestampsToIntent(fromIntent);
 
         Intent toIntent = new Intent();
         WebappIntentUtils.copyWebappLaunchIntentExtras(fromIntent, toIntent);
@@ -67,6 +70,8 @@ public class WebappIntentUtilsTest {
         assertEquals(1L, toIntent.getLongExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 0L));
         assertEquals(2L, toIntent.getLongExtra(WebappConstants.EXTRA_DARK_THEME_COLOR, 0L));
         assertEquals(3L, toIntent.getLongExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, 0L));
+        assertNotEquals(-1L, BrowserIntentUtils.getStartupRealtimeMillis(toIntent));
+        assertNotEquals(-1L, BrowserIntentUtils.getStartupUptimeMillis(toIntent));
     }
 
     /**

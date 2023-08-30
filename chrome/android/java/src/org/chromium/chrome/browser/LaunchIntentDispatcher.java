@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -123,8 +124,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Needs to be called as early as possible, to accurately capture the
         // time at which the intent was received.
-        if (mIntent != null && IntentHandler.getTimestampFromIntent(mIntent) == -1) {
-            IntentHandler.addTimestampToIntent(mIntent);
+        if (mIntent != null && BrowserIntentUtils.getStartupRealtimeMillis(mIntent) == -1) {
+            BrowserIntentUtils.addStartupTimestampsToIntent(mIntent);
         }
 
         recordIntentMetrics();

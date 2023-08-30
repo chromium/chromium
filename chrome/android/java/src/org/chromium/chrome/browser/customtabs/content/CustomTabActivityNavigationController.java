@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -185,18 +184,10 @@ public class CustomTabActivityNavigationController
     }
 
     /**
-     * Navigates to given url.
-     */
-    public void navigate(String url) {
-        navigate(new LoadUrlParams(url), SystemClock.elapsedRealtime());
-    }
-
-    /**
      * Performs navigation using given {@link LoadUrlParams}.
-     * Uses provided timestamp as the initial time for tracking page loading times
-     * (see {@link CustomTabObserver}).
+     * The source Intent is used for tracking page loading times (see {@link CustomTabObserver}).
      */
-    public void navigate(final LoadUrlParams params, long timeStamp) {
+    public void navigate(final LoadUrlParams params, Intent sourceIntent) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
             assert false;
@@ -211,7 +202,7 @@ public class CustomTabActivityNavigationController
 
         // TODO(pkotwicz): Figure out whether we want to record these metrics for WebAPKs.
         if (mIntentDataProvider.getWebappExtras() == null) {
-            mCustomTabObserver.get().trackNextPageLoadFromTimestamp(tab, timeStamp);
+            mCustomTabObserver.get().trackNextPageLoadForLaunch(tab, sourceIntent);
         }
 
         IntentHandler.addReferrerAndHeaders(params, mIntentDataProvider.getIntent());

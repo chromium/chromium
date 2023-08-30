@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -30,7 +31,8 @@ public class WebappIntentUtils {
             WebappConstants.EXTRA_ORIENTATION, WebappConstants.EXTRA_THEME_COLOR,
             WebappConstants.EXTRA_BACKGROUND_COLOR, WebappConstants.EXTRA_IS_ICON_GENERATED,
             WebappConstants.EXTRA_IS_ICON_ADAPTIVE, WebappConstants.EXTRA_DARK_THEME_COLOR,
-            WebappConstants.EXTRA_DARK_BACKGROUND_COLOR};
+            WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, BrowserIntentUtils.EXTRA_STARTUP_UPTIME_MS,
+            BrowserIntentUtils.EXTRA_STARTUP_REALTIME_MS};
 
     /**
      * WebAPK intent extras. Used for copying intent extras for {@link WebappActivity} launch
@@ -44,7 +46,8 @@ public class WebappIntentUtils {
             WebApkConstants.EXTRA_NEW_STYLE_SPLASH_SHOWN_TIME,
             WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
             Intent.EXTRA_SUBJECT, Intent.EXTRA_TEXT, Intent.EXTRA_STREAM,
-            Browser.EXTRA_APPLICATION_ID};
+            Browser.EXTRA_APPLICATION_ID, BrowserIntentUtils.EXTRA_STARTUP_UPTIME_MS,
+            BrowserIntentUtils.EXTRA_STARTUP_REALTIME_MS};
 
     /**
      * Converts color from signed Integer where an unspecified color is represented as null to

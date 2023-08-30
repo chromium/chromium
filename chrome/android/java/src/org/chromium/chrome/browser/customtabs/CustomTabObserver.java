@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Process;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,12 +56,12 @@ public class CustomTabObserver extends EmptyTabObserver {
     private int mContentBitmapWidth;
     private int mContentBitmapHeight;
 
-    private long mIntentReceivedTimestamp;
-    private long mLaunchedForSpeculationTimestamp;
+    private long mIntentReceivedRealtimeMillis;
+    private long mLaunchedForSpeculationRealtimeMillis;
     @Nullable
     private Boolean mUsedHiddenTabSpeculation;
-    private long mPageLoadStartedTimestamp;
-    private long mFirstCommitTimestamp;
+    private long mPageLoadStartedRealtimeMillis;
+    private long mFirstCommitRealtimeMillis;
 
     @IntDef({State.RESET, State.WAITING_LOAD_START, State.WAITING_LOAD_FINISH})
     @Retention(RetentionPolicy.SOURCE)
@@ -104,19 +106,20 @@ public class CustomTabObserver extends EmptyTabObserver {
      * If a load is already happening, we track its PLT.
      * If not, we track NavigationCommit timing + PLT for the next load.
      */
-    public void trackNextPageLoadFromTimestamp(Tab tab, long timestamp) {
-        mIntentReceivedTimestamp = timestamp;
+    public void trackNextPageLoadForLaunch(Tab tab, Intent sourceIntent) {
+        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
         if (tab.isLoading()) {
-            mPageLoadStartedTimestamp = -1;
+            mPageLoadStartedRealtimeMillis = -1;
             mCurrentState = State.WAITING_LOAD_FINISH;
         } else {
             mCurrentState = State.WAITING_LOAD_START;
         }
     }
 
-    public void trackNextPageLoadForHiddenTab(boolean usedSpeculation, long timestamp) {
+    public void trackNextPageLoadForHiddenTab(boolean usedSpeculation, Intent sourceIntent) {
         mUsedHiddenTabSpeculation = usedSpeculation;
-        mLaunchedForSpeculationTimestamp = timestamp;
+        mLaunchedForSpeculationRealtimeMillis =
+                BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
     }
 
     @Override
@@ -129,14 +132,14 @@ public class CustomTabObserver extends EmptyTabObserver {
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
         if (mCurrentState == State.WAITING_LOAD_START) {
-            mPageLoadStartedTimestamp = SystemClock.elapsedRealtime();
+            mPageLoadStartedRealtimeMillis = SystemClock.elapsedRealtime();
             mCurrentState = State.WAITING_LOAD_FINISH;
         } else if (mCurrentState == State.WAITING_LOAD_FINISH) {
             if (mCustomTabsConnection != null) {
                 mCustomTabsConnection.sendNavigationInfo(
                         mSession, tab.getUrl().getSpec(), tab.getTitle(), (Uri) null);
             }
-            mPageLoadStartedTimestamp = SystemClock.elapsedRealtime();
+            mPageLoadStartedRealtimeMillis = SystemClock.elapsedRealtime();
         }
         if (mCustomTabsConnection != null) {
             mCustomTabsConnection.setSendNavigationInfoForSession(mSession, false);
@@ -153,11 +156,13 @@ public class CustomTabObserver extends EmptyTabObserver {
     public void onPageLoadFinished(Tab tab, GURL url) {
         long pageLoadFinishedTimestamp = SystemClock.elapsedRealtime();
 
-        if (mCurrentState == State.WAITING_LOAD_FINISH && mIntentReceivedTimestamp > 0) {
+        if (mCurrentState == State.WAITING_LOAD_FINISH && mIntentReceivedRealtimeMillis > 0) {
             String histogramPrefix = mOpenedByChrome ? "ChromeGeneratedCustomTab" : "CustomTabs";
-            long timeToPageLoadFinishedMs = pageLoadFinishedTimestamp - mIntentReceivedTimestamp;
-            if (mPageLoadStartedTimestamp > 0) {
-                long timeToPageLoadStartedMs = mPageLoadStartedTimestamp - mIntentReceivedTimestamp;
+            long timeToPageLoadFinishedMs =
+                    pageLoadFinishedTimestamp - mIntentReceivedRealtimeMillis;
+            if (mPageLoadStartedRealtimeMillis > 0) {
+                long timeToPageLoadStartedMs =
+                        mPageLoadStartedRealtimeMillis - mIntentReceivedRealtimeMillis;
                 // Intent to Load Start is recorded here to make sure we do not record
                 // failed/aborted page loads.
                 RecordHistogram.recordCustomTimesHistogram(
@@ -172,8 +177,9 @@ public class CustomTabObserver extends EmptyTabObserver {
                     timeToPageLoadFinishedMs, 10, DateUtils.MINUTE_IN_MILLIS * 10, 100);
 
             // Not all page loads go through a navigation commit (prerender for instance).
-            if (mPageLoadStartedTimestamp != 0) {
-                long timeToFirstCommitMs = mFirstCommitTimestamp - mIntentReceivedTimestamp;
+            if (mPageLoadStartedRealtimeMillis != 0) {
+                long timeToFirstCommitMs =
+                        mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
                 // Current median is 550ms, and long tail is very long. ZoomedIn gives good view of
                 // the median and ZoomedOut gives a good overview.
                 RecordHistogram.recordCustomTimesHistogram(
@@ -197,12 +203,12 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     @Override
     public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
-        boolean firstNavigation = mFirstCommitTimestamp == 0;
+        boolean firstNavigation = mFirstCommitRealtimeMillis == 0;
         boolean isFirstMainFrameCommit = firstNavigation && navigation.hasCommitted()
                 && !navigation.isErrorPage() && !navigation.isSameDocument();
         if (!isFirstMainFrameCommit) return;
 
-        mFirstCommitTimestamp = SystemClock.elapsedRealtime();
+        mFirstCommitRealtimeMillis = SystemClock.elapsedRealtime();
 
         if (mCustomTabsConnection == null) return;
 
@@ -215,17 +221,17 @@ public class CustomTabObserver extends EmptyTabObserver {
         // Note that this will exclude Webapp launches in all cases due to either
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
-            duration = mFirstCommitTimestamp - mLaunchedForSpeculationTimestamp;
+            duration = mFirstCommitRealtimeMillis - mLaunchedForSpeculationRealtimeMillis;
             histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Speculated";
-        } else if (mIntentReceivedTimestamp > 0) {
+        } else if (mIntentReceivedRealtimeMillis > 0) {
             if (warmedUp) {
-                duration = mFirstCommitTimestamp - mIntentReceivedTimestamp;
+                duration = mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.WarmedUp";
             } else if (SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
-                duration = mFirstCommitTimestamp - Process.getStartElapsedRealtime();
+                duration = mFirstCommitRealtimeMillis - Process.getStartElapsedRealtime();
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Cold";
             } else {
-                duration = mFirstCommitTimestamp - mIntentReceivedTimestamp;
+                duration = mFirstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
                 histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Warm";
             }
         }
@@ -252,7 +258,7 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     private void resetPageLoadTracking() {
         mCurrentState = State.RESET;
-        mIntentReceivedTimestamp = -1;
+        mIntentReceivedRealtimeMillis = -1;
     }
 
     private void captureNavigationInfo(final Tab tab) {

@@ -2265,7 +2265,8 @@ public class CustomTabActivityTest {
         // lifetime.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
-            activity.getComponent().resolveNavigationController().navigate("about:blank");
+            activity.getComponent().resolveNavigationController().navigate(
+                    new LoadUrlParams("about:blank"), intent);
         });
 
         if (allowMetrics) {

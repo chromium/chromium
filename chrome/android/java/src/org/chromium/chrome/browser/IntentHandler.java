@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.provider.Browser;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -189,11 +188,6 @@ public class IntentHandler {
     /** Extra specifying to show regular overview mode. */
     public static final String EXTRA_OPEN_REGULAR_OVERVIEW_MODE =
             "org.chromium.chrome.browser.open_regular_overview_mode";
-
-    /**
-     * Key to associate a timestamp with an intent.
-     */
-    private static final String EXTRA_TIMESTAMP_MS = "org.chromium.chrome.browser.timestamp";
 
     /**
      * For multi-window, passes the id of the window. On Android S, this is synonymous with
@@ -912,33 +906,6 @@ public class IntentHandler {
         }
 
         return extraHeaders.length() == 0 ? null : extraHeaders.toString();
-    }
-
-    /**
-     * Adds a timestamp to an intent, as returned by {@link SystemClock#elapsedRealtime()}.
-     *
-     * To track page load time, this needs to be called as close as possible to
-     * the entry point (in {@link Activity#onCreate()} for instance).
-     */
-    public static void addTimestampToIntent(Intent intent) {
-        addTimestampToIntent(intent, SystemClock.elapsedRealtime());
-    }
-
-    /**
-     * Adds provided timestamp to an intent.
-     *
-     * To track page load time, the value passed in should be as close as possible to
-     * the entry point (in {@link Activity#onCreate()} for instance).
-     */
-    public static void addTimestampToIntent(Intent intent, long timeStamp) {
-        intent.putExtra(EXTRA_TIMESTAMP_MS, timeStamp);
-    }
-
-    /**
-     * @return the timestamp associated with an intent, or -1.
-     */
-    public static long getTimestampFromIntent(Intent intent) {
-        return intent.getLongExtra(EXTRA_TIMESTAMP_MS, -1);
     }
 
     /**
