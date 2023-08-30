@@ -4012,6 +4012,85 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabStrip.PlaceholderStripLeftoverTabsCount"
+    units="tabs" expires_after="2023-12-31">
+  <owner>nemco@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    We show empty placeholder tabs on the tablet tab strip during startup. The
+    placeholders will be replaced by real tabs once they are restored,
+    preventing a visual flicker/scroll jank as the restored tabs are rapidly
+    populated to the strip. The number of placeholders and positioning of the
+    active tab is calculated based on tab metadata saved to disk, and thus does
+    not account for tabs created by other means during startup (e.g. user
+    interaction). This histogram records the number of placeholder tabs, if any
+    that are leftover when all tabs have been restored. This is captured when
+    all tabs are finished restoring.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.TabStrip.PlaceholderStripTabsCreatedDuringRestoreCount"
+    units="tabs" expires_after="2023-12-31">
+  <owner>nemco@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    We show empty placeholder tabs on the tablet tab strip during startup. The
+    placeholders will be replaced by real tabs once they are restored,
+    preventing a visual flicker/scroll jank as the restored tabs are rapidly
+    populated to the strip. The number of placeholders and positioning of the
+    active tab is calculated based on tab metadata saved to disk, and thus does
+    not account for tabs created by other means during startup (e.g. user
+    interaction). This histogram records the number of tabs created in this way
+    (and thus are not accounted for in the placeholder strip). This is captured
+    when all tabs are finished restoring.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabStrip.PlaceholderStripTabsNeededDuringRestoreCount"
+    units="tabs" expires_after="2023-12-31">
+  <owner>nemco@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    We show empty placeholder tabs on the tablet tab strip during startup. The
+    placeholders will be replaced by real tabs once they are restored,
+    preventing a visual flicker/scroll jank as the restored tabs are rapidly
+    populated to the strip. The number of placeholders and positioning of the
+    active tab is calculated based on tab metadata saved to disk, and thus does
+    not account for tabs created by other means during startup (e.g. user
+    interaction). This histogram records the number of restored tabs, if any,
+    that we unexpectedly did not allocate a placeholder for. This is captured
+    when all tabs are finished restoring.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabStrip.PlaceholderStripVisibleDuration" units="ms"
+    expires_after="2023-12-31">
+  <owner>nemco@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    We show empty placeholder tabs on the tablet tab strip during startup. The
+    placeholders will be replaced by real tabs once they are restored,
+    preventing a visual flicker/scroll jank as the restored tabs are rapidly
+    populated to the strip. The number of placeholders and positioning of the
+    active tab is calculated based on tab metadata saved to disk, and thus does
+    not account for tabs created by other means during startup (e.g. user
+    interaction). This histogram records the amount of time for which the
+    placeholders are ready to be shown before the tab state is initialized. This
+    will roughly measure the amount of time that we could have been seeing the
+    flicker/scroll jank without this feature. This is captured when all tabs are
+    finished restoring.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabStrip.TimeToBufferSwapAfterInitializeTabState"
     units="ms" expires_after="2023-12-31">
   <owner>nemco@google.com</owner>

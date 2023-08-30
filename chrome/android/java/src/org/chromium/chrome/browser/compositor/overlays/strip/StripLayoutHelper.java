@@ -165,6 +165,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
             DateUtils.MINUTE_IN_MILLIS;
 
+    // Histogram Constants
+    private static final String PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME =
+            "Android.TabStrip.PlaceholderStripLeftoverTabsCount";
+    private static final String PLACEHOLDER_TABS_CREATED_DURING_RESTORE_HISTOGRAM_NAME =
+            "Android.TabStrip.PlaceholderStripTabsCreatedDuringRestoreCount";
+    private static final String PLACEHOLDER_TABS_NEEDED_DURING_RESTORE_HISTOGRAM_NAME =
+            "Android.TabStrip.PlaceholderStripTabsNeededDuringRestoreCount";
+    private static final String PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME =
+            "Android.TabStrip.PlaceholderStripVisibleDuration";
+
     // External influences
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
@@ -257,6 +267,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private int mTabCountOnStartup;
     private int mActiveTabIndexOnStartup;
     private int mCurrentPlaceholderIndex;
+
+    private long mPlaceholderCreationTime;
+    private int mTabsCreatedDuringRestore;
+    private int mPlaceholdersNeededDuringRestore;
 
     // Tab Drag and Drop state to hold clicked tab being dragged.
     private MultiInstanceManager mMultiInstanceManager;
@@ -658,6 +672,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mSelectedOnStartup = mModel.isActiveModel();
             if (mPlaceholderStripReady) replacePlaceholdersForRestoredTabs();
         } else {
+            RecordHistogram.recordTimesHistogram(PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
+
             computeAndUpdateTabOrders(false, false);
         }
     }
@@ -668,8 +684,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     protected void onTabStateInitialized() {
         mTabStateInitialized = true;
 
-        // TODO(https://crbug.com/1446844): Iterate through tabs and record if a placeholder
-        //  remained when the tab state initialized.
+        if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
+            int numLeftoverPlaceholders = 0;
+            for (int i = 0; i < mStripTabs.length; i++) {
+                if (mStripTabs[i].getIsPlaceholder()) numLeftoverPlaceholders++;
+            }
+
+            RecordHistogram.recordCount1000Histogram(
+                    PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME, numLeftoverPlaceholders);
+            RecordHistogram.recordCount1000Histogram(
+                    PLACEHOLDER_TABS_CREATED_DURING_RESTORE_HISTOGRAM_NAME,
+                    mTabsCreatedDuringRestore);
+            RecordHistogram.recordCount1000Histogram(
+                    PLACEHOLDER_TABS_NEEDED_DURING_RESTORE_HISTOGRAM_NAME,
+                    mPlaceholdersNeededDuringRestore);
+            RecordHistogram.recordMediumTimesHistogram(PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME,
+                    SystemClock.uptimeMillis() - mPlaceholderCreationTime);
+        }
 
         // Recreate the StripLayoutTabs from the TabModel, now that all of the real Tabs have been
         // restored. This will reuse valid tabs, discard invalid tabs, and correct tab orders.
@@ -916,6 +947,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Mark that the placeholder strip layout is ready and request a visual update.
         mPlaceholderStripReady = true;
+        mPlaceholderCreationTime = SystemClock.uptimeMillis();
         mUpdateHost.requestUpdate();
     }
 
@@ -989,12 +1021,17 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mCurrentPlaceholderIndex++;
         }
 
-        // TODO(https://crbug.com/1444818): Investigate if non-restored tabs can be created
-        //  before the tab state is initialized.
-        assert onStartup;
+        // Tab manually created while tabs were still restoring on startup.
+        if (!onStartup) {
+            mTabsCreatedDuringRestore++;
+            return;
+        }
 
-        // TODO(https://crbug.com/1446844): Investigate if we ever allot too few placeholders.
-        assert mCurrentPlaceholderIndex < mStripTabs.length || selected;
+        // Unexpectedly ran out of placeholders.
+        if (mCurrentPlaceholderIndex >= mStripTabs.length && !selected) {
+            mPlaceholdersNeededDuringRestore++;
+            return;
+        }
 
         // Replace the matching placeholder.
         int replaceIndex;
