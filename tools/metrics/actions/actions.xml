@@ -21275,6 +21275,13 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobilePasswordCheckupOpen">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Checkup page. iOS only.
+  </description>
+</action>
+
 <action name="MobilePasswordCheckupSettingsBack">
   <owner>noemies@google.com</owner>
   <description>
@@ -21287,6 +21294,51 @@ should be able to be added at any place in this file.
   <owner>noemies@google.com</owner>
   <description>
     Reported when Password Checkup Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordDetailsCopy">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user copies a credential's site, username or passwords from
+    the password details view. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordDetailsOpen">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens a password details page. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordDetailsViewPassword">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user taps the eye icon to view a password from the password
+    details view. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordManagerAddPassword">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user adds a password from the Password Manager page. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordManagerOpen">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Manager. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordManagerSearchPasswords">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user uses the Password Manager search bar to search their
+    passwords. iOS only.
   </description>
 </action>
 

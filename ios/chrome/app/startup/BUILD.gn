@@ -73,6 +73,7 @@ source_set("startup") {
   deps = [
     ":startup_basic",
     "//base",
+    "//components/password_manager/core/browser",
     "//components/search_engines:search_engines",
     "//ios/chrome/app",
     "//ios/chrome/browser/default_browser:utils",
@@ -98,6 +99,7 @@ source_set("unit_tests") {
     ":startup",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/browser",
     "//ios/chrome/app",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/common/app_group",

@@ -215,6 +215,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // Whether the search controller should be set as active when the view is
   // presented.
   BOOL _shouldOpenInSearchMode;
+  // Whether or not a search user action was recorded for the current search
+  // session.
+  BOOL _searchPasswordsUserActionWasRecorded;
 }
 
 // Current passwords search term.
@@ -390,6 +393,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   if (!_didReceivePasswords) {
     [self showLoadingSpinnerBackground];
   }
+
+  base::RecordAction(base::UserMetricsAction("MobilePasswordManagerOpen"));
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -950,8 +955,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)willDismissSearchController:(UISearchController*)searchController {
-  // This is needed to restore the transparency of the navigation bar at scroll
-  // edge in iOS 15+.
+  _searchPasswordsUserActionWasRecorded = false;
+
+  // This is needed to restore the transparency of the navigation bar at
+  // scroll edge in iOS 15+.
   self.navigationController.navigationBar.backgroundColor = nil;
 
   // No need to restore UI if the Password Manager is being dismissed or if a
@@ -1051,6 +1058,12 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 
   [self searchForTerm:searchText];
+
+  // Only record a search user action once per search session.
+  if (!_searchPasswordsUserActionWasRecorded) {
+    base::RecordAction(
+        base::UserMetricsAction("MobilePasswordManagerSearchPasswords"));
+  }
 }
 
 #pragma mark - Private methods

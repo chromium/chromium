@@ -62,6 +62,9 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
   if ([kind isEqualToString:@"LockscreenLauncherGameWidget"]) {
     return WidgetKitExtensionKind::kLockscreenLauncherGame;
   }
+  if ([kind isEqualToString:@"SearchPasswordsWidget"]) {
+    return WidgetKitExtensionKind::kSearchPasswords;
+  }
 
   NOTREACHED() << base::SysNSStringToUTF8(kind);
   return WidgetKitExtensionKind::kObsolete;

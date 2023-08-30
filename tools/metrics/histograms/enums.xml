@@ -56155,6 +56155,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="10" label="Quick Actions Widget - Lens"/>
   <int value="11" label="Shortcuts Widget - Search"/>
   <int value="12" label="Shortcuts Widget - Open Shortcut"/>
+  <int value="13" label="Search Passwords Widget - Search Passwords"/>
 </enum>
 
 <enum name="IOSWidgetKitExtensionKind">
@@ -56167,6 +56168,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="6" label="Lockscreen launcher widget - Voice Search"/>
   <int value="7" label="Lockscreen launcher widget - Dino Game"/>
   <int value="8" label="Shortcuts widget"/>
+  <int value="9" label="Search Passwords widget"/>
 </enum>
 
 <enum name="IOSWKWebViewLinkPreviewAction">
@@ -69645,6 +69647,7 @@ from previous Chrome versions.
   <int value="15" label="Biometric Authentication before filling"/>
   <int value="16" label="Chrome menu item"/>
   <int value="17" label="Shared Passwords Notification Bubble"/>
+  <int value="18" label="Search Passwords widget"/>
 </enum>
 
 <enum name="MandatoryReauthAuthEvent">

@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
@@ -239,6 +240,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
 
   [self setOrExtendAuthValidityTimer];
+
+  base::RecordAction(base::UserMetricsAction("MobilePasswordDetailsOpen"));
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -1333,6 +1336,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     ]];
   } else {
     [self attemptToShowPasswordFor:ReauthenticationReasonShow];
+    base::RecordAction(
+        base::UserMetricsAction("MobilePasswordDetailsViewPassword"));
   }
 }
 
@@ -1377,6 +1382,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 // Copies the password information to system pasteboard and shows a toast of
 // success/failure.
 - (void)copyPasswordDetails:(id)sender {
+  base::RecordAction(base::UserMetricsAction("MobilePasswordDetailsCopy"));
+
   [self setOrExtendAuthValidityTimer];
   UIMenuController* menu =
       base::apple::ObjCCastStrict<UIMenuController>(sender);

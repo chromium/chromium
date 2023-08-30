@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -725,6 +726,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if ([secureSourceApp isEqualToString:kWidgetKitHostSearchPasswordsWidget]) {
     LogWidgetKitAction(WidgetKitExtensionAction::
                            ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS);
+    UMA_HISTOGRAM_ENUMERATION(
+        "PasswordManager.ManagePasswordsReferrer",
+        password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget);
   }
   return params;
 }

@@ -195,6 +195,8 @@ void SetUpTrailingIconAndAccessoryType(
   [self updateTableViewHeaderView];
 
   [self loadModel];
+
+  base::RecordAction(base::UserMetricsAction("MobilePasswordCheckupOpen"));
 }
 
 - (void)viewWillAppear:(BOOL)animated {

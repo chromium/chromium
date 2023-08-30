@@ -8,6 +8,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -534,6 +535,26 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherGame) {
 
   EXPECT_EQ(params.externalURL, expected_url);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 9, 1);
+}
+
+// Tests that search passwords widget url is parsed correctly, and the right
+// metric is recorded.
+TEST_F(AppStartupParametersTest, ParseSearchPasswordsWidgetKit) {
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"chromewidgetkit://search-passwords-widget/search-passwords"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_TRUE(params.externalURL.is_empty());
+  EXPECT_EQ(params.postOpeningAction, SEARCH_PASSWORDS);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 13, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget, 1);
 }
 
 }  // namespace
