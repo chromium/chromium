@@ -44,6 +44,16 @@ public class PolicyCacheProvider extends PolicyProvider {
             assert false : "Invalid policy type from cache";
         }
         mSettings = settings;
-        notifySettingsAvailable(settings);
+        if (!mSettings.isEmpty()) {
+            // There's a trade off between Java code correctness and native code correctness here.
+            // The native code assumes that policies are ready immediately and does not wait. So
+            // this class attempts to get cached polices to native as fast as possible to improve
+            // correctness. However this decreases Java code correctness, as now the PolicyService
+            // claims to be initialized before real app restrictions are applied. When the settings
+            // are empty, there's no point in pushing these to native. And it's possible we're in a
+            // first run scenario where there are no cached values and sending an early init signal
+            // breaks certain policies.
+            notifySettingsAvailable(settings);
+        }
     }
 }
