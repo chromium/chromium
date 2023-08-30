@@ -163,6 +163,11 @@ interface PhishingModelSetter {
   SetPhishingFlatBufferModel(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
                              mojo_base.mojom.ReadOnlyFile? tflite_model);
 
+  // When OptimizationGuide server sends a null model, this signals there is a
+  // bad model on disk. Calling this function clears the current Scorer object
+  // in the renderer so that classification isn't used with the bad model.
+  ClearScorer();
+
   // This is used in tests to ensure that the model has been set before sending
   // IPCs to start classification.
   SetTestObserver(pending_remote<PhishingModelSetterTestObserver>? observer) =>

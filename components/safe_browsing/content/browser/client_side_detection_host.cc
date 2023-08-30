@@ -626,9 +626,13 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           &token);
     }
 
+    // The check for image embedding model is important because the
+    // OptimizationGuide server can send a null model to signal there is a bad
+    // model in disk.
     if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-        csd_service_->IsModelMetadataImageEmbeddingVersionMatching()) {
+        csd_service_->IsModelMetadataImageEmbeddingVersionMatching() &&
+        csd_service_->HasImageEmbeddingModel()) {
       content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
       phishing_image_embedder_.reset();

@@ -37,6 +37,7 @@ class PhishingModelSetterImpl : public mojom::PhishingModelSetter,
   void SetPhishingFlatBufferModel(
       base::ReadOnlySharedMemoryRegion flatbuffer_region,
       base::File tflite_visual_model) override;
+  void ClearScorer() override;
   void SetTestObserver(
       mojo::PendingRemote<mojom::PhishingModelSetterTestObserver> observer,
       SetTestObserverCallback callback) override;

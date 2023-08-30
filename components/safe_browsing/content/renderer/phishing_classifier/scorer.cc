@@ -596,6 +596,13 @@ void ScorerStorage::SetScorer(std::unique_ptr<Scorer> scorer) {
     obs.OnScorerChanged();
 }
 
+void ScorerStorage::ClearScorer() {
+  scorer_.reset();
+  for (Observer& obs : observers_) {
+    obs.OnScorerChanged();
+  }
+}
+
 Scorer* ScorerStorage::GetScorer() const {
   return scorer_.get();
 }

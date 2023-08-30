@@ -515,7 +515,11 @@ void ClientSideDetectionService::OnRenderProcessHostCreated(
 
 void ClientSideDetectionService::SetPhishingModel(
     content::RenderProcessHost* rph) {
-  if (!IsModelAvailable()) {
+  // We want to check if the trigger model has been sent. If we have received a
+  // callback after sending the trigger models before and the models are now
+  // unavailable, that means the OptimizationGuide server sent us a null model
+  // to signal that a bad model is in disk.
+  if (!IsModelAvailable() && !sent_trigger_models_) {
     return;
   }
   if (!rph->GetChannel()) {
@@ -524,6 +528,11 @@ void ClientSideDetectionService::SetPhishingModel(
 
   mojo::AssociatedRemote<mojom::PhishingModelSetter> model_setter;
   rph->GetChannel()->GetRemoteAssociatedInterface(&model_setter);
+  if (!IsModelAvailable() && sent_trigger_models_) {
+    model_setter->ClearScorer();
+    return;
+  }
+
   switch (GetModelType()) {
     case CSDModelType::kNone:
       return;
@@ -532,7 +541,14 @@ void ClientSideDetectionService::SetPhishingModel(
           IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
           base::FeatureList::IsEnabled(
               kClientSideDetectionModelImageEmbedder)) {
-        if (IsModelMetadataImageEmbeddingVersionMatching()) {
+        // The check for image embedding model is important because the
+        // OptimizationGuide server can send a null image embedding model to
+        // signal there is a bad model in disk. If the image embedding model
+        // isn't available because of this, the scorer will be created without
+        // the image embedder model, temporarily halting the image embedding
+        // process on the renderer.
+        if (IsModelMetadataImageEmbeddingVersionMatching() &&
+            HasImageEmbeddingModel()) {
           base::UmaHistogramBoolean(
               "SBClientPhishing.ImageEmbeddingModelVersionMatch", true);
           model_setter->SetImageEmbeddingAndPhishingFlatBufferModel(
@@ -548,6 +564,7 @@ void ClientSideDetectionService::SetPhishingModel(
         model_setter->SetPhishingFlatBufferModel(
             GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate());
       }
+      sent_trigger_models_ = true;
       return;
   }
 }
@@ -640,6 +657,14 @@ bool ClientSideDetectionService::IsModelAvailable() {
 
   return client_side_phishing_model_ &&
          client_side_phishing_model_->IsEnabled();
+}
+
+bool ClientSideDetectionService::HasImageEmbeddingModel() {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
+    return client_side_phishing_model_ &&
+           client_side_phishing_model_->HasImageEmbeddingModel();
+  }
+  return false;
 }
 
 bool ClientSideDetectionService::IsSubscribedToImageEmbeddingModelUpdates() {

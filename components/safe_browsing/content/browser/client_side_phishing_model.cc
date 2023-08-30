@@ -180,12 +180,29 @@ void ClientSidePhishingModel::OnModelUpdated(
     return;
   }
 
-  if (!model_info.has_value()) {
-    return;
-  }
-
   if (optimization_target ==
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
+    // If the model_info has no value, that means the OptimizationGuide server
+    // has sent an intentionally null model value to indicate that there is a
+    // bad model on disk and it should be removed. Therefore, we will clear the
+    // current model in the class.
+    if (!model_info.has_value()) {
+      mapped_region_ = base::MappedReadOnlyRegion();
+      if (visual_tflite_model_) {
+        background_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
+      }
+      // Run callback to remove models from the renderer process. When a
+      // callback is called and there are no models in this class while the
+      // model type is set, it's expected that it's asked to remove the models.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadModelAndVisualTfLiteFile,
@@ -197,6 +214,22 @@ void ClientSidePhishingModel::OnModelUpdated(
   } else if (optimization_target ==
              optimization_guide::proto::
                  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
+    // If the model_info has no value for this target, we only remove the image
+    // embedding model, and if the trigger models are still valid, then the
+    // scorer will be created with the trigger models only.
+    if (!model_info.has_value()) {
+      if (image_embedding_model_) {
+        background_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&CloseModelFile,
+                                      std::move(*image_embedding_model_)));
+      }
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadImageEmbeddingModelFile,
@@ -337,6 +370,14 @@ void ClientSidePhishingModel::OnImageEmbeddingModelLoaded(
     absl::optional<optimization_guide::proto::Any> model_metadata,
     base::File image_embedding_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (image_embedding_model_) {
+    // If the image embedding model file is already loaded, it should be closed
+    // on a background thread.
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+  }
 
   image_embedding_model_ = std::move(image_embedding_model);
 

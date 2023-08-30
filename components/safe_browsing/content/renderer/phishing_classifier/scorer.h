@@ -208,6 +208,9 @@ class ScorerStorage {
 
   void SetScorer(std::unique_ptr<Scorer> scorer);
   Scorer* GetScorer() const;
+  // We will clear the scorer in situations where the OptimizationGuide server
+  // provides a null model to replace a bad model on disk.
+  void ClearScorer();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

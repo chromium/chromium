@@ -185,6 +185,10 @@ class ClientSideDetectionService
   // that mock classes can override it.
   virtual bool IsModelAvailable();
 
+  // Checks whether the model class has an image embedding model available or
+  // not.
+  bool HasImageEmbeddingModel();
+
   // For testing the model in browser test.
   void SetModelAndVisualTfLiteForTesting(const base::FilePath& model,
                                          const base::FilePath& visual_tf_lite);
@@ -269,6 +273,12 @@ class ClientSideDetectionService
   // Whether the service is in extended reporting mode or not. This affects the
   // choice of model.
   bool extended_reporting_ = false;
+
+  // Whether the trigger models have been sent or not. This is used to determine
+  // whether an empty model in the model class determines whether the models
+  // haven't been sent or we should clear the models in the scorer because they
+  // have been sent.
+  bool sent_trigger_models_ = false;
 
   // Map of client report phishing request to the corresponding callback that
   // has to be invoked when the request is done.
