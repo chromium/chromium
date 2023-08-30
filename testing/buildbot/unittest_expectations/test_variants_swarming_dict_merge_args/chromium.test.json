@@ -20,43 +20,6 @@
         },
         "test": "args_test",
         "variant_id": "args"
-      },
-      {
-        "args": [
-          "--iam"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "args_test mixins",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "iama": "mixin",
-            "os": "Linux"
-          }
-        },
-        "test": "args_test",
-        "variant_id": "mixins"
-      },
-      {
-        "args": [
-          "--iam"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "args_test swarming",
-        "swarming": {
-          "a": "b",
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "hello": "world",
-            "os": "Linux"
-          }
-        },
-        "test": "args_test",
-        "variant_id": "swarming"
       }
     ]
   }
