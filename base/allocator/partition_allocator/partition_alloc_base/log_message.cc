@@ -15,6 +15,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/stack_trace.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/safe_sprintf.h"
@@ -107,6 +108,24 @@ LogMessage::~LogMessage() {
 
   // Always use RawLog() if g_log_message_handler doesn't filter messages.
   RawLog(severity_, str_newline);
+
+  // TODO(1293552): Enable a stack trace on a fatal on fuchsia.
+#if !defined(OFFICIAL_BUILD) && (BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)) && \
+    !defined(__UCLIBC__) && !BUILDFLAG(IS_AIX)
+  // TODO(1293552): Show a stack trace on a fatal, unless a debugger is
+  // attached.
+  if (severity_ == LOGGING_FATAL) {
+    constexpr size_t kMaxTracesOfLoggingFatal = 32u;
+    void* traces[kMaxTracesOfLoggingFatal];
+    size_t num_traces =
+        base::debug::CollectStackTrace(traces, kMaxTracesOfLoggingFatal);
+    base::debug::PrintStackTrace(traces, num_traces);
+  }
+#endif
+
+  if (severity_ == LOGGING_FATAL) {
+    PA_IMMEDIATE_CRASH();
+  }
 }
 
 // writes the common header info to the stream

@@ -113,9 +113,6 @@ void RawLog(int level, const char* message) {
       WriteToStderr("\n", 1);
     }
   }
-
-  if (level == LOGGING_FATAL)
-    PA_IMMEDIATE_CRASH();
 }
 
 // This was defined at the beginning of this file.

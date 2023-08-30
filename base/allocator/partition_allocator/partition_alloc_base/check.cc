@@ -83,7 +83,7 @@ CheckError::~CheckError() {
 
 void RawCheckFailure(const char* message) {
   RawLog(LOGGING_FATAL, message);
-  __builtin_unreachable();
+  PA_IMMEDIATE_CRASH();
 }
 
 }  // namespace partition_alloc::internal::logging
