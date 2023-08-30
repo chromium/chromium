@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);
@@ -59,11 +60,11 @@ import * as Common from 'devtools/core/common/common.js';
       typeName = 'XMLView';
     } else if (compontentView instanceof SourceFrame.JSONView) {
       typeName = 'JSONView';
-    } else if (compontentView instanceof Network.RequestHTMLView) {
+    } else if (compontentView instanceof Network.RequestHTMLView.RequestHTMLView) {
       typeName = 'RequestHTMLView';
     } else if (compontentView instanceof UI.EmptyWidget) {
       typeName = 'EmptyWidget';
-    } else if (compontentView instanceof Network.RequestHTMLView) {
+    } else if (compontentView instanceof Network.RequestHTMLView.RequestHTMLView) {
       typeName = 'RequestHTMLView';
     }
 
@@ -79,7 +80,7 @@ import * as Common from 'devtools/core/common/common.js';
 
   function trySearches(request, searches, callback) {
     var networkPanel = UI.panels.network;
-    TestRunner.addSniffer(Network.RequestPreviewView.prototype, 'doShowPreview', async function() {
+    TestRunner.addSniffer(Network.RequestPreviewView.RequestPreviewView.prototype, 'doShowPreview', async function() {
       previewViewHandled(searches, callback, await this.contentViewPromise);
       networkPanel.hideRequestPanel();
     });

@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+
 (async function() {
   TestRunner.addResult(`Tests search in network requests\n`);
   await TestRunner.loadLegacyModule('console');
@@ -32,7 +34,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   async function search(label, isRegex, ignoreCase, query = 'd.search') {
     TestRunner.addResult(label);
-    const view = await Network.SearchNetworkView.openSearch(query);
+    const view = await Network.NetworkPanel.SearchNetworkView.openSearch(query);
     view.matchCaseButton.setToggled(!ignoreCase);
     view.regexButton.setToggled(isRegex);
     const promise = TestRunner.addSnifferPromise(view, 'searchFinished');
