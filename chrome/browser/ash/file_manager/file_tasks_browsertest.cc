@@ -858,9 +858,31 @@ class NonManagedAccount : public TestAccountBrowserTest {
   apps::AppServiceTest app_service_test_;
 };
 
-// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns true when a
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when a
 // non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccount,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_TRUE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+}
+
+class NonManagedAccountWithEnterpriseFlag : public TestAccountBrowserTest {
+ public:
+  NonManagedAccountWithEnterpriseFlag() : TestAccountBrowserTest(kNonManaged) {
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kUploadOfficeToCloud,
+         chromeos::features::kUploadOfficeToCloudForEnterprise},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when a
+// non-managed user is logged in and both |kUploadOfficeToCloud| and
+// |kUploadOfficeToCloudForEnterprise| are enabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_TRUE(
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
@@ -919,11 +941,33 @@ class EnterpriseAccount : public TestAccountBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when an
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when an
 // enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_FALSE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+}
+
+class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
+ public:
+  EnterpriseAccountWithEnterpriseFlag() : TestAccountBrowserTest(kEnterprise) {
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kUploadOfficeToCloud,
+         chromeos::features::kUploadOfficeToCloudForEnterprise},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when an
+// enterprise user is logged in and both |kUploadOfficeToCloud| and
+// |kUploadOfficeToCloudForEnterprise| are enabled.
+IN_PROC_BROWSER_TEST_F(EnterpriseAccountWithEnterpriseFlag,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_TRUE(
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
@@ -938,9 +982,31 @@ class ChildAccount : public TestAccountBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when a
 // child user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+}
+
+class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
+ public:
+  ChildAccountWithEnterpriseFlag() : TestAccountBrowserTest(kChild) {
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kUploadOfficeToCloud,
+         chromeos::features::kUploadOfficeToCloudForEnterprise},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when a
+// child user is logged in and both |kUploadOfficeToCloud| and
+// |kUploadOfficeToCloudForEnterprise| are enabled.
+IN_PROC_BROWSER_TEST_F(ChildAccountWithEnterpriseFlag,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_FALSE(
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
@@ -956,7 +1022,7 @@ class NonManagedAccountNoFlag : public TestAccountBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when a
 // non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
