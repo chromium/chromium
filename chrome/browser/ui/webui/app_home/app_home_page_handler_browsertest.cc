@@ -268,6 +268,12 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
 
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
+
+#if BUILDFLAG(IS_WIN)
+  // This is used as a fallback to prevent creating shortcuts in the startup
+  // dir if tasks are still running when `override_registration_` is reset.
+  base::ScopedPathOverride override_start_dir_{base::DIR_USER_STARTUP};
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 MATCHER_P(MatchAppName, expected_app_name, "") {
