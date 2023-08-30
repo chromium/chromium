@@ -24,8 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/path_service.h"
@@ -509,8 +507,6 @@ class UnpinShortcutsHelper {
                       base::OnceClosure completion_callback);
 
  private:
-  static void RecordUnpinShortcutProcessError(bool error);
-
   UnpinShortcutsHelper(const std::vector<base::FilePath>& shortcuts,
                        base::OnceClosure completion_callback);
 
@@ -523,11 +519,6 @@ class UnpinShortcutsHelper {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-// static
-void UnpinShortcutsHelper::RecordUnpinShortcutProcessError(bool error) {
-  base::UmaHistogramBoolean("Windows.UnpinShortcut.ProcessError", error);
-}
 
 // static
 void UnpinShortcutsHelper::DoUnpin(const std::vector<base::FilePath>& shortcuts,
@@ -554,7 +545,6 @@ UnpinShortcutsHelper::UnpinShortcutsHelper(
 
 void UnpinShortcutsHelper::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordUnpinShortcutProcessError(true);
   std::move(completion_callback_).Run();
   delete this;
 }
@@ -562,7 +552,6 @@ void UnpinShortcutsHelper::OnConnectionError() {
 void UnpinShortcutsHelper::OnUnpinShortcutResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RecordUnpinShortcutProcessError(false);
   std::move(completion_callback_).Run();
   delete this;
 }
