@@ -471,7 +471,7 @@ if (enable_java_templates && is_android) {
   #
   # FooSwitches.java.tmpl
   #
-  # // Copyright {YEAR} The Chromium Authors. All rights reserved.
+  # // Copyright {YEAR} The Chromium Authors
   # // Use of this source code is governed by a BSD-style license that can be
   # // found in the LICENSE file.
   #
@@ -544,7 +544,7 @@ if (enable_java_templates && is_android) {
   #
   # FooFeatures.java.tmpl
   #
-  # // Copyright $YEAR The Chromium Authors. All rights reserved.
+  # // Copyright $YEAR The Chromium Authors
   # // Use of this source code is governed by a BSD-style license that can be
   # // found in the LICENSE file.
   #
