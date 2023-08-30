@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_DRIVE_FILE_SYSTEM_UTIL_H_
 #define CHROME_BROWSER_ASH_DRIVE_FILE_SYSTEM_UTIL_H_
 
+#include <ostream>
+
 #include "base/files/file_path.h"
 
 class Profile;
@@ -41,24 +43,27 @@ bool IsDriveEnabledForProfile(const Profile* profile);
 bool IsDriveFsBulkPinningEnabled(const Profile* profile = nullptr);
 bool IsOobeDrivePinningEnabled(const Profile* profile = nullptr);
 
-// Enum type for describing the current connection status to Drive.
-enum ConnectionStatusType {
+// Connection status to Drive.
+enum class ConnectionStatus {
   // Disconnected because Drive service is unavailable for this account (either
   // disabled by a flag or the account has no Google account (e.g., guests)).
-  DRIVE_DISCONNECTED_NOSERVICE,
+  kNoService,
   // Disconnected because no network is available.
-  DRIVE_DISCONNECTED_NONETWORK,
+  kNoNetwork,
   // Disconnected because authentication is not ready.
-  DRIVE_DISCONNECTED_NOTREADY,
-  // Connected by cellular network. Background sync is disabled.
-  DRIVE_CONNECTED_METERED,
-  // Connected without condition (WiFi, Ethernet, or cellular with the
+  kNotReady,
+  // Connected by metered network (eg cellular network, or metered WiFi.)
+  // Background sync is disabled.
+  kMetered,
+  // Connected without limitation (WiFi, Ethernet, or cellular with the
   // disable-sync preference turned off.)
-  DRIVE_CONNECTED,
+  kConnected,
 };
 
+std::ostream& operator<<(std::ostream& out, ConnectionStatus status);
+
 // Returns the Drive connection status for the |profile|.
-ConnectionStatusType GetDriveConnectionStatus(Profile* profile);
+ConnectionStatus GetDriveConnectionStatus(Profile* profile);
 
 // Returns true if the supplied mime type is of a pinnable type. This indicates
 // the file can be made available offline.

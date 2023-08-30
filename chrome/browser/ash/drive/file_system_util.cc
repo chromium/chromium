@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "ash/constants/ash_constants.h"
@@ -162,17 +163,35 @@ bool IsOobeDrivePinningEnabled(const Profile* const profile) {
          IsDriveFsBulkPinningEnabled(profile);
 }
 
-ConnectionStatusType GetDriveConnectionStatus(Profile* const profile) {
-  using enum ConnectionStatusType;
+std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
+  switch (status) {
+#define PRINT(s)               \
+  case ConnectionStatus::k##s: \
+    return out << #s;
+    PRINT(NoService)
+    PRINT(NoNetwork)
+    PRINT(NotReady)
+    PRINT(Metered)
+    PRINT(Connected)
+#undef PRINT
+  }
+
+  return out << "ConnectionStatus("
+             << static_cast<std::underlying_type_t<ConnectionStatus>>(status)
+             << ")";
+}
+
+ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
+  using enum ConnectionStatus;
 
   if (!GetIntegrationServiceByProfile(profile)) {
     VLOG(1) << "GetDriveConnectionStatus: no Drive integration service";
-    return DRIVE_DISCONNECTED_NOSERVICE;
+    return kNoService;
   }
 
   if (!ash::NetworkHandler::IsInitialized()) {
     VLOG(1) << "GetDriveConnectionStatus: no network handler";
-    return DRIVE_DISCONNECTED_NONETWORK;
+    return kNoNetwork;
   }
 
   ash::NetworkStateHandler* const handler =
@@ -182,23 +201,23 @@ ConnectionStatusType GetDriveConnectionStatus(Profile* const profile) {
   const ash::NetworkState* const network = handler->DefaultNetwork();
   if (!network) {
     VLOG(1) << "GetDriveConnectionStatus: no network";
-    return DRIVE_DISCONNECTED_NONETWORK;
+    return kNoNetwork;
   }
 
   if (!network->IsOnline()) {
     VLOG(1) << "GetDriveConnectionStatus: not ready";
-    return DRIVE_DISCONNECTED_NOTREADY;
+    return kNotReady;
   }
 
   DCHECK(profile);
   if (profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular) &&
       handler->default_network_is_metered()) {
     VLOG(1) << "GetDriveConnectionStatus: metered";
-    return DRIVE_CONNECTED_METERED;
+    return kMetered;
   }
 
   VLOG(1) << "GetDriveConnectionStatus: connected";
-  return DRIVE_CONNECTED;
+  return kConnected;
 }
 
 bool IsPinnableGDocMimeType(const std::string& mime_type) {

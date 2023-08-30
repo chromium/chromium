@@ -828,32 +828,28 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateGetDriveConnectionStateFunction::Run() {
   api::file_manager_private::DriveConnectionState result;
 
+  using enum drive::util::ConnectionStatus;
+  using enum api::file_manager_private::DriveConnectionStateType;
+  using enum api::file_manager_private::DriveOfflineReason;
   switch (drive::util::GetDriveConnectionStatus(
       Profile::FromBrowserContext(browser_context()))) {
-    case drive::util::DRIVE_DISCONNECTED_NOSERVICE:
-      result.type =
-          api::file_manager_private::DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
-      result.reason =
-          api::file_manager_private::DRIVE_OFFLINE_REASON_NO_SERVICE;
+    case kNoService:
+      result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
+      result.reason = DRIVE_OFFLINE_REASON_NO_SERVICE;
       break;
-    case drive::util::DRIVE_DISCONNECTED_NONETWORK:
-      result.type =
-          api::file_manager_private::DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
-      result.reason =
-          api::file_manager_private::DRIVE_OFFLINE_REASON_NO_NETWORK;
+    case kNoNetwork:
+      result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
+      result.reason = DRIVE_OFFLINE_REASON_NO_NETWORK;
       break;
-    case drive::util::DRIVE_DISCONNECTED_NOTREADY:
-      result.type =
-          api::file_manager_private::DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
-      result.reason = api::file_manager_private::DRIVE_OFFLINE_REASON_NOT_READY;
+    case kNotReady:
+      result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
+      result.reason = DRIVE_OFFLINE_REASON_NOT_READY;
       break;
-    case drive::util::DRIVE_CONNECTED_METERED:
-      result.type =
-          api::file_manager_private::DRIVE_CONNECTION_STATE_TYPE_METERED;
+    case kMetered:
+      result.type = DRIVE_CONNECTION_STATE_TYPE_METERED;
       break;
-    case drive::util::DRIVE_CONNECTED:
-      result.type =
-          api::file_manager_private::DRIVE_CONNECTION_STATE_TYPE_ONLINE;
+    case kConnected:
+      result.type = DRIVE_CONNECTION_STATE_TYPE_ONLINE;
       break;
   }
 
@@ -861,7 +857,7 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
       ash::NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
           ash::NetworkTypePattern::Mobile());
 
-  const auto& enabled_extensions =
+  const ExtensionSet& enabled_extensions =
       extensions::ExtensionRegistry::Get(browser_context())
           ->enabled_extensions();
   result.can_pin_hosted_files =

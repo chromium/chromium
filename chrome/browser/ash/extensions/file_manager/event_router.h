@@ -169,7 +169,7 @@ class EventRouter
   // DriveIntegrationServiceObserver override.
   void OnFileSystemMountFailed() override;
   void OnDriveConnectionStatusChanged(
-      drive::util::ConnectionStatusType status) override;
+      drive::util::ConnectionStatus status) override;
 
   // guest_os::GuestOsSharePath::Observer overrides.
   void OnPersistedPathRegistered(const std::string& vm_name,
