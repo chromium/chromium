@@ -7628,21 +7628,6 @@
             ]
         }
     ],
-    "HideSettingsSyncPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HideSettingsSyncPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "HlsBuiltinPlayer": [
         {
             "platforms": [

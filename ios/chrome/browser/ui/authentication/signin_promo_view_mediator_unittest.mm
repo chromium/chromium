@@ -8,6 +8,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -466,6 +468,9 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateVisible) {
 
 // Tests the view state while signing in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kHideSettingsSyncPromo);
+
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
   __block ShowSigninCommandCompletionCallback completion;
@@ -503,6 +508,9 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
 // while the sign-in is in progress, when an identity is added.
 TEST_F(SigninPromoViewMediatorTest,
        SigninPromoViewNoUpdateNotificationWhileSignin) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kHideSettingsSyncPromo);
+
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
   __block ShowSigninCommandCompletionCallback completion;
@@ -537,6 +545,9 @@ TEST_F(SigninPromoViewMediatorTest,
 // while the sign-in is in progress.
 TEST_F(SigninPromoViewMediatorTest,
        SigninPromoViewNoUpdateNotificationWhileSignin2) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kHideSettingsSyncPromo);
+
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
@@ -608,6 +619,9 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
 // called at the end of the sign-in.
 TEST_F(SigninPromoViewMediatorTest,
        RemoveSigninPromoAndDeallocMediatorWhileSignedIn) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kHideSettingsSyncPromo);
+
   // Setup.
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
@@ -645,6 +659,9 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests that the sign-in promo view being removed, and tests the consumer is
 // still called at the end of the sign-in.
 TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kHideSettingsSyncPromo);
+
   // Setup.
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
