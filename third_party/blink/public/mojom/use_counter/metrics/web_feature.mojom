@@ -3980,6 +3980,7 @@ enum WebFeature {
   kVirtualKeyboardShow = 4640,
   kVirtualKeyboardHide = 4641,
   kVirtualKeyboardOverlayPolicy = 4642,
+  kScrollSnapNestedSnapAreas = 4643,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

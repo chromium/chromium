@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 
 #include "base/containers/contains.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -137,6 +138,10 @@ void NGFragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
     for (auto& child_snap_area : *child_snap_areas) {
       snap_areas.insert(child_snap_area);
     }
+  }
+
+  if (child.IsSnapArea() && child.PropagatedSnapAreas()) {
+    child.GetDocument().CountUse(WebFeature::kScrollSnapNestedSnapAreas);
   }
 }
 
