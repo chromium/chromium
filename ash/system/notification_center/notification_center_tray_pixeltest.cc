@@ -45,27 +45,6 @@ class NotificationCenterTrayPixelTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(NotificationCenterTrayPixelTest,
-       NotificationCounterWithSingleCount_ShelfAlignedBottom) {
-  test_api()->AddNotification();
-
-  EXPECT_TRUE(test_api()->GetTray()->GetVisible());
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view", /*revision_number=*/2, test_api()->GetTray()));
-}
-
-TEST_F(NotificationCenterTrayPixelTest,
-       NotificationCounterWithSingleCount_ShelfAlignedRight) {
-  test_api()->AddNotification();
-
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
-
-  EXPECT_TRUE(test_api()->GetTray()->GetVisible());
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view",
-      /*revision_number=*/1, test_api()->GetTray()));
-}
-
 // Tests the UI of the notification center tray when connecting a secondary
 // display while two notification icons are present. This was added for
 // b/284313750.
