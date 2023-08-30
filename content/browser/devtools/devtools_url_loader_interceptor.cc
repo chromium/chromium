@@ -1623,8 +1623,9 @@ void InterceptionJob::OnReceiveResponse(
   const network::ResourceRequest& request = create_loader_params_->request;
   request_info->is_download =
       request_info->is_navigation &&
-      (is_download_ || download_utils::IsDownload(
-                           request.url, head->headers.get(), head->mime_type));
+      (is_download_ ||
+       download_utils::IsDownload(/*browser_context=*/nullptr, request.url,
+                                  head->headers.get(), head->mime_type));
 
   response_metadata_ = std::make_unique<ResponseMetadata>(std::move(head));
   response_metadata_->cached_metadata = std::move(cached_metadata);

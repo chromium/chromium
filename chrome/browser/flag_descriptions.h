@@ -4158,6 +4158,9 @@ extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 extern const char kTouchTextEditingRedesignName[];
 extern const char kTouchTextEditingRedesignDescription[];
 
+extern const char kQuickOfficeForceFileDownloadName[];
+extern const char kQuickOfficeForceFileDownloadDescription[];
+
 extern const char kIgnoreUiGainsName[];
 extern const char kIgnoreUiGainsDescription[];
 

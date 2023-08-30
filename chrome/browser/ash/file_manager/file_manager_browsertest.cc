@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -47,15 +48,20 @@
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/download/public/common/download_item.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
@@ -67,6 +73,7 @@
 #include "components/user_manager/user_manager_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/download_test_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace file_manager {
@@ -1386,6 +1393,134 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
 IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest, Test) {
   StartTest();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
+ public:
+  QuickOfficeBrowserTestBase() = default;
+  ~QuickOfficeBrowserTestBase() override = default;
+
+  QuickOfficeBrowserTestBase(const QuickOfficeBrowserTestBase&) = delete;
+  QuickOfficeBrowserTestBase& operator=(const QuickOfficeBrowserTestBase&) =
+      delete;
+
+ protected:
+  // extensions::ExtensionApiTest:
+  void SetUpOnMainThread() override {
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+    extensions::ExtensionService* service =
+        extensions::ExtensionSystem::Get(browser()->profile())
+            ->extension_service();
+    service->component_loader()->AddDefaultComponentExtensions(false);
+
+    embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+    embedded_test_server()->Start();
+
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  base::FilePath GetTestDataDirectory() {
+    base::FilePath test_file_directory;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_file_directory);
+    return test_file_directory;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class QuickOfficeForceFileDownloadEnabledBrowserTest
+    : public QuickOfficeBrowserTestBase {
+ public:
+  QuickOfficeForceFileDownloadEnabledBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kQuickOfficeForceFileDownload);
+  }
+  ~QuickOfficeForceFileDownloadEnabledBrowserTest() override = default;
+
+  QuickOfficeForceFileDownloadEnabledBrowserTest(
+      const QuickOfficeForceFileDownloadEnabledBrowserTest&) = delete;
+  QuickOfficeForceFileDownloadEnabledBrowserTest& operator=(
+      const QuickOfficeForceFileDownloadEnabledBrowserTest&) = delete;
+};
+
+class QuickOfficeForceFileDownloadDisabledBrowserTest
+    : public QuickOfficeBrowserTestBase {
+ public:
+  QuickOfficeForceFileDownloadDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kQuickOfficeForceFileDownload);
+  }
+  ~QuickOfficeForceFileDownloadDisabledBrowserTest() override = default;
+
+  QuickOfficeForceFileDownloadDisabledBrowserTest(
+      const QuickOfficeForceFileDownloadDisabledBrowserTest&) = delete;
+  QuickOfficeForceFileDownloadDisabledBrowserTest& operator=(
+      const QuickOfficeForceFileDownloadDisabledBrowserTest&) = delete;
+};
+
+IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
+                       OfficeDocumentsAreDownloaded) {
+  using download::DownloadItem;
+
+  GURL download_url =
+      embedded_test_server()->GetURL("/chromeos/file_manager/text.docx");
+
+  content::DownloadManager* download_manager =
+      browser()->profile()->GetDownloadManager();
+  std::unique_ptr<content::DownloadTestObserver> download_observer(
+      new content::DownloadTestObserverTerminal(
+          download_manager, /*num_downloads=*/1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+
+  // This call will not wait for the download to finish.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), download_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Wait for the download itself to complete.
+  download_observer->WaitForFinished();
+  EXPECT_EQ(1u,
+            download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+
+  std::vector<DownloadItem*> downloads;
+  download_manager->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+
+  DownloadItem* download = downloads[0];
+
+  download->Cancel(true);
+}
+
+IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadDisabledBrowserTest,
+                       OfficeDocumentsAreNotDownloaded) {
+  using download::DownloadItem;
+
+  GURL download_url =
+      embedded_test_server()->GetURL("/chromeos/file_manager/text.docx");
+
+  content::DownloadManager* download_manager =
+      browser()->profile()->GetDownloadManager();
+  std::unique_ptr<content::DownloadTestObserver> download_observer(
+      new content::DownloadTestObserverTerminal(
+          download_manager, /*num_downloads=*/1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+
+  // This call will block until the condition X, but will not wait for the
+  // download to finish.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), download_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_EQ(0u, download_observer->NumDownloadsSeenInState(
+                    DownloadItem::IN_PROGRESS));
+  EXPECT_EQ(0u,
+            download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+
+  std::vector<DownloadItem*> downloads;
+  download_manager->GetAllDownloads(&downloads);
+  ASSERT_EQ(0u, downloads.size());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // INSTANTIATE_TEST_SUITE_P expands to code that stringizes the arguments. Thus
 // macro parameters such as |prefix| and |test_class| won't be expanded by the

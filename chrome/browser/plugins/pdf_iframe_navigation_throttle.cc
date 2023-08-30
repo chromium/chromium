@@ -103,8 +103,9 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
 
   // We MUST download responses marked as attachments rather than showing
   // a placeholder.
-  if (content::download_utils::MustDownload(navigation_handle()->GetURL(),
-                                            response_headers, mime_type)) {
+  if (content::download_utils::MustDownload(
+          navigation_handle()->GetWebContents()->GetBrowserContext(),
+          navigation_handle()->GetURL(), response_headers, mime_type)) {
     return content::NavigationThrottle::PROCEED;
   }
 

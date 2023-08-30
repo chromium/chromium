@@ -219,7 +219,8 @@ class DownloadTestContentBrowserClient : public content::ContentBrowserClient {
   explicit DownloadTestContentBrowserClient(bool must_download)
       : must_download_(must_download) {}
 
-  bool ShouldForceDownloadResource(const GURL& url,
+  bool ShouldForceDownloadResource(content::BrowserContext* browser_context,
+                                   const GURL& url,
                                    const std::string& mime_type) override {
     return must_download_;
   }

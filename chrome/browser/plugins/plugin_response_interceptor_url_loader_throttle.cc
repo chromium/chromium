@@ -97,16 +97,17 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (content::download_utils::MustDownload(response_url,
-                                            response_head->headers.get(),
-                                            response_head->mime_type)) {
-    return;
-  }
 
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   if (!web_contents)
     return;
+
+  if (content::download_utils::MustDownload(
+          web_contents->GetBrowserContext(), response_url,
+          response_head->headers.get(), response_head->mime_type)) {
+    return;
+  }
 
   std::string extension_id = PluginUtils::GetExtensionIdForMimeType(
       web_contents->GetBrowserContext(), response_head->mime_type);

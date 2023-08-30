@@ -1959,8 +1959,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Called on IO or UI thread to determine whether or not to allow load and
   // render MHTML page from http/https URLs.
-  virtual bool ShouldForceDownloadResource(const GURL& url,
-                                           const std::string& mime_type);
+  virtual bool ShouldForceDownloadResource(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const std::string& mime_type);
 
   virtual void CreateDeviceInfoService(
       RenderFrameHost* render_frame_host,

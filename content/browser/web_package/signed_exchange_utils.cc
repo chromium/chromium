@@ -76,8 +76,8 @@ bool ShouldHandleAsSignedHTTPExchange(
   // (Example: data:application/signed-exchange,)
   if (!head.headers.get())
     return false;
-  if (download_utils::MustDownload(request_url, head.headers.get(),
-                                   head.mime_type)) {
+  if (download_utils::MustDownload(/*browser_context=*/nullptr, request_url,
+                                   head.headers.get(), head.mime_type)) {
     return false;
   }
   return true;

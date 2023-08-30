@@ -1080,6 +1080,7 @@ bool ContentBrowserClient::AllowRenderingMhtmlOverHttp(
 }
 
 bool ContentBrowserClient::ShouldForceDownloadResource(
+    content::BrowserContext* browser_context,
     const GURL& url,
     const std::string& mime_type) {
   return false;

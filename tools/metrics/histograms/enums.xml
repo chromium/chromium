@@ -60195,6 +60195,7 @@ from previous Chrome versions.
   <int value="-2146263880" label="LensRegionSearch:disabled"/>
   <int value="-2145472146" label="OfflinePagesResourceBasedSnapshot:disabled"/>
   <int value="-2144796781" label="TurnOffStreamingMediaCachingAlways:enabled"/>
+  <int value="-2144492880" label="QuickOfficeForceFileDownload:enabled"/>
   <int value="-2143961262" label="D3DVsync:disabled"/>
   <int value="-2143681040" label="ViewsCastDialog:enabled"/>
   <int value="-2143328006"
@@ -65661,6 +65662,7 @@ from previous Chrome versions.
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
   <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>
+  <int value="565002365" label="QuickOfficeForceFileDownload:disabled"/>
   <int value="565254510" label="LensRegionSearchStaticPage:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
   <int value="566031886" label="DIPS:disabled"/>

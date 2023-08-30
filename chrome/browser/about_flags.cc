@@ -5539,6 +5539,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchTextEditingRedesignDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
+    {"quickoffice-force-file-download",
+     flag_descriptions::kQuickOfficeForceFileDownloadName,
+     flag_descriptions::kQuickOfficeForceFileDownloadDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kQuickOfficeForceFileDownload)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
     {"enable-retry-capture-device-enumeration-on-crash",

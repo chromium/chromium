@@ -323,6 +323,7 @@
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
 #include "gpu/config/gpu_switches.h"
@@ -6543,14 +6544,31 @@ bool ChromeContentBrowserClient::AllowRenderingMhtmlOverHttp(
 }
 
 bool ChromeContentBrowserClient::ShouldForceDownloadResource(
+    content::BrowserContext* browser_context,
     const GURL& url,
     const std::string& mime_type) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Special-case user scripts to get downloaded instead of viewed.
-  return extensions::UserScript::IsURLUserScript(url, mime_type);
-#else
+  if (extensions::UserScript::IsURLUserScript(url, mime_type)) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // QuickOffice file interception is deprecated. If QuickOffice would
+  // have intercepted this file and this feature is disabled, download
+  // it instead.
+  if (base::FeatureList::IsEnabled(features::kQuickOfficeForceFileDownload) &&
+      browser_context) {
+    std::string extension_id =
+        PluginUtils::GetExtensionIdForMimeType(browser_context, mime_type);
+
+    if (extension_misc::IsQuickOfficeExtension(extension_id)) {
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
-#endif
 }
 
 content::BluetoothDelegate* ChromeContentBrowserClient::GetBluetoothDelegate() {

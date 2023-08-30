@@ -913,8 +913,8 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     return;
   }
 
-  bool must_download = download_utils::MustDownload(url_, head_->headers.get(),
-                                                    head_->mime_type);
+  bool must_download = download_utils::MustDownload(
+      browser_context_, url_, head_->headers.get(), head_->mime_type);
   bool known_mime_type = blink::IsSupportedMimeType(head_->mime_type);
 
 #if BUILDFLAG(ENABLE_PLUGINS)

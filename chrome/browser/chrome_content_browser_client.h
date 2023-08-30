@@ -652,7 +652,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::Value::Dict GetNetLogConstants() override;
   bool AllowRenderingMhtmlOverHttp(
       content::NavigationUIData* navigation_ui_data) override;
-  bool ShouldForceDownloadResource(const GURL& url,
+  bool ShouldForceDownloadResource(content::BrowserContext* browser_context,
+                                   const GURL& url,
                                    const std::string& mime_type) override;
   content::BluetoothDelegate* GetBluetoothDelegate() override;
   content::UsbDelegate* GetUsbDelegate() override;

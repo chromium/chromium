@@ -7247,6 +7247,12 @@ const char kSyncChromeOSExplicitPassphraseSharingDescription[] =
 const char kTouchTextEditingRedesignName[] = "Touch Text Editing Redesign";
 const char kTouchTextEditingRedesignDescription[] =
     "Enables new touch text editing features.";
+
+const char kQuickOfficeForceFileDownloadName[] =
+    "Basic Office Editor File Download";
+const char kQuickOfficeForceFileDownloadDescription[] =
+    "Forces the Basic Office Editor to download files instead of intercepting "
+    "navigations to document types it can handle.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
