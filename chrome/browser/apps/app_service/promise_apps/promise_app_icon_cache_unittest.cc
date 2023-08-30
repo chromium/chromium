@@ -4,9 +4,14 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
 
+#include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "content/public/test/browser_task_environment.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -44,7 +49,32 @@ class PromiseAppIconCacheTest : public testing::Test {
     return bitmap;
   }
 
+  const SkBitmap GetPlaceholderIconBitmap(int size_in_dip,
+                                          IconEffects icon_effects) {
+    base::test::TestFuture<std::unique_ptr<apps::IconValue>> callback;
+    apps::LoadIconFromResource(
+        /*profile=*/nullptr, absl::nullopt, IconType::kStandard, size_in_dip,
+        IDR_APP_DEFAULT_ICON,
+        /*is_placeholder_icon=*/true, icon_effects, callback.GetCallback());
+    apps::IconValue* placeholder_iv = callback.Get().get();
+    return *placeholder_iv->uncompressed.bitmap();
+  }
+
+  SkBitmap ApplyEffectsToBitmap(SkBitmap bitmap, IconEffects effects) {
+    auto iv = std::make_unique<apps::IconValue>();
+    iv->uncompressed = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+    iv->icon_type = apps::IconType::kUncompressed;
+
+    base::test::TestFuture<IconValuePtr> image_with_effects;
+    ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, effects,
+                     bitmap.width(), std::move(iv),
+                     image_with_effects.GetCallback());
+
+    return *image_with_effects.Get()->uncompressed.bitmap();
+  }
+
  private:
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PromiseAppIconCache> cache_;
 };
 
@@ -94,33 +124,63 @@ TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
                                    CreateBitmapWithColor(1024, kGreen)));
 }
 
-TEST_F(PromiseAppIconCacheTest, GetIcon_NoIcons) {
-  std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
-  EXPECT_EQ(icons_saved.size(), 0u);
-
-  gfx::ImageSkia returned_icon = icon_cache()->GetIcon(kTestPackageId, 512);
-  EXPECT_TRUE(returned_icon.isNull());
-}
-
-TEST_F(PromiseAppIconCacheTest, GetIcon_Simple) {
-  PromiseAppIconPtr icon = CreatePromiseAppIcon(/*width=*/512, kRed);
+TEST_F(PromiseAppIconCacheTest, GetIconWithEffects) {
+  PromiseAppIconPtr icon = CreatePromiseAppIcon(512, kRed);
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
 
+  // Confirm that we have an icon in the icon cache.
   std::vector<PromiseAppIcon*> icons_saved =
       icon_cache()->GetIconsForTesting(kTestPackageId);
   EXPECT_EQ(icons_saved.size(), 1u);
 
-  gfx::ImageSkia returned_icon = icon_cache()->GetIcon(kTestPackageId, 128);
+  // Attempt to load icon for test package.
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128,
+                                       IconEffects::kCrOsStandardMask,
+                                       test_callback.GetCallback());
 
-  // Verify we have an icon of the correct dip size.
-  EXPECT_FALSE(returned_icon.isNull());
-  EXPECT_EQ(returned_icon.width(), 128);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(*returned_icon.bitmap(),
-                                   CreateBitmapWithColor(128, kRed)));
+  // Confirm the details of the icon in the callback.
+  IconValue* result_icon = test_callback.Get().get();
+  EXPECT_FALSE(result_icon->uncompressed.isNull());
+  EXPECT_EQ(result_icon->icon_type, IconType::kStandard);
+  EXPECT_FALSE(result_icon->is_placeholder_icon);
+  EXPECT_TRUE(result_icon->is_maskable_icon);
+  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
+
+  // Confirm that the icon has the correct effects applied to it.
+  SkBitmap expected_bitmap =
+      ApplyEffectsToBitmap(CreateBitmapWithColor(128, kRed), kCrOsStandardMask);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(*result_icon->uncompressed.bitmap(),
+                                   expected_bitmap));
 }
 
-TEST_F(PromiseAppIconCacheTest, GetIcon_ReturnsLargestIconIfAllIconsTooSmall) {
+TEST_F(PromiseAppIconCacheTest, GetPlaceholderIconWhenNoIconsAvailable) {
+  // Confirm that we have no icons in the icon cache.
+  std::vector<PromiseAppIcon*> icons_saved =
+      icon_cache()->GetIconsForTesting(kTestPackageId);
+  EXPECT_EQ(icons_saved.size(), 0u);
+
+  // Load icon for test package.
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128,
+                                       IconEffects::kCrOsStandardMask,
+                                       test_callback.GetCallback());
+
+  // Confirm the details of the icon in the callback.
+  IconValue* result_icon = test_callback.Get().get();
+  EXPECT_FALSE(result_icon->uncompressed.isNull());
+  EXPECT_EQ(result_icon->icon_type, IconType::kStandard);
+  EXPECT_TRUE(result_icon->is_placeholder_icon);
+  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
+
+  // Confirm that the icon is the correct one.
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *result_icon->uncompressed.bitmap(),
+      GetPlaceholderIconBitmap(/*size_in_dip=*/128,
+                               IconEffects::kCrOsStandardMask)));
+}
+
+TEST_F(PromiseAppIconCacheTest, GetLargestIconIfAllIconsTooSmall) {
   PromiseAppIconPtr icon_small = CreatePromiseAppIcon(/*width=*/10, kRed);
   PromiseAppIconPtr icon_small_2 = CreatePromiseAppIcon(/*width=*/30, kGreen);
   PromiseAppIconPtr icon_small_3 = CreatePromiseAppIcon(/*width=*/50, kBlue);
@@ -134,22 +194,25 @@ TEST_F(PromiseAppIconCacheTest, GetIcon_ReturnsLargestIconIfAllIconsTooSmall) {
 
   // All icons returned should be the largest icon resized for our requested
   // scales.
-  gfx::ImageSkia returned_icon = icon_cache()->GetIcon(kTestPackageId, 128);
-  EXPECT_FALSE(returned_icon.isNull());
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128, IconEffects::kNone,
+                                       test_callback.GetCallback());
+  IconValue* icon_value = test_callback.Get().get();
+  gfx::ImageSkia icon = icon_value->uncompressed;
+  EXPECT_FALSE(icon.isNull());
 
-  gfx::ImageSkiaRep image_rep = returned_icon.GetRepresentation(1.0f);
+  gfx::ImageSkiaRep image_rep = icon.GetRepresentation(1.0f);
   EXPECT_EQ(image_rep.pixel_width(), 128);
   EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep.GetBitmap(),
                                    CreateBitmapWithColor(128, kBlue)));
 
-  image_rep = returned_icon.GetRepresentation(2.0f);
+  image_rep = icon.GetRepresentation(2.0f);
   EXPECT_EQ(image_rep.pixel_width(), 256);
   EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep.GetBitmap(),
                                    CreateBitmapWithColor(256, kBlue)));
 }
 
-TEST_F(PromiseAppIconCacheTest,
-       GetIcon_ReturnsCorrectRepresentationsForScaleFactors) {
+TEST_F(PromiseAppIconCacheTest, GetCorrectIconRepresentationsForScaleFactors) {
   PromiseAppIconPtr icon_small = CreatePromiseAppIcon(/*width=*/128, kRed);
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
   PromiseAppIconPtr icon_large = CreatePromiseAppIcon(/*width=*/512, kGreen);
@@ -157,10 +220,14 @@ TEST_F(PromiseAppIconCacheTest,
 
   EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 2u);
 
-  gfx::ImageSkia returned_icon = icon_cache()->GetIcon(kTestPackageId, 128);
-  EXPECT_FALSE(returned_icon.isNull());
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128, IconEffects::kNone,
+                                       test_callback.GetCallback());
+  IconValue* icon_value = test_callback.Get().get();
+  gfx::ImageSkia icon = icon_value->uncompressed;
+  EXPECT_FALSE(icon.isNull());
 
-  gfx::ImageSkiaRep image_rep_default = returned_icon.GetRepresentation(1.0f);
+  gfx::ImageSkiaRep image_rep_default = icon.GetRepresentation(1.0f);
   EXPECT_FALSE(image_rep_default.is_null());
   EXPECT_EQ(image_rep_default.pixel_width(), 128);
   EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep_default.GetBitmap(),
@@ -168,7 +235,7 @@ TEST_F(PromiseAppIconCacheTest,
 
   // Verify that the large icon gets resized to become smaller for the 2.0 scale
   // factor (instead of the small icon being resized up).
-  gfx::ImageSkiaRep image_rep_larger = returned_icon.GetRepresentation(2.0f);
+  gfx::ImageSkiaRep image_rep_larger = icon.GetRepresentation(2.0f);
   EXPECT_FALSE(image_rep_larger.is_null());
   EXPECT_EQ(image_rep_larger.pixel_width(), 256);
   EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep_larger.GetBitmap(),

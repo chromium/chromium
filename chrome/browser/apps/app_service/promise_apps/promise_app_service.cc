@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
@@ -148,32 +147,8 @@ void PromiseAppService::LoadIcon(const PackageId& package_id,
                                  int32_t size_hint_in_dip,
                                  apps::IconEffects icon_effects,
                                  apps::LoadIconCallback callback) {
-  // We will always be able to synchronously get the icon from the cache because
-  // we already downloaded them all immediately after the promise app was
-  // registered, and verified that all the icons were valid before allowing the
-  // promise app to surface in the Launcher or Shelf.
-  gfx::ImageSkia icon =
-      promise_app_icon_cache_->GetIcon(package_id, size_hint_in_dip);
-
-  if (icon.isNull()) {
-    VLOG(1) << "No icon loaded for Package ID: " << package_id.ToString();
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
-    return;
-  }
-
-  IconValuePtr icon_value = std::make_unique<IconValue>();
-  icon_value->icon_type = IconType::kStandard;
-  icon_value->is_placeholder_icon = false;
-  icon_value->is_maskable_icon = true;
-  icon_value->uncompressed = icon;
-
-  if (icon_effects == apps::IconEffects::kNone) {
-    std::move(callback).Run(std::move(icon_value));
-    return;
-  }
-  apps::ApplyIconEffects(
-      /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
-      size_hint_in_dip, std::move(icon_value), std::move(callback));
+  promise_app_icon_cache_->GetIconAndApplyEffects(
+      package_id, size_hint_in_dip, icon_effects, std::move(callback));
 }
 
 void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
@@ -226,35 +201,22 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
     absl::optional<PromiseAppWrapper> promise_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!promise_app_info.has_value()) {
-    LOG(ERROR) << "Request for app details from the Almanac Promise App API "
-                  "failed for package "
-               << package_id.ToString();
-
-    // TODO(b/276841106): Remove promise app from the cache and its observers.
-    return;
-  }
-  if (!promise_app_info->GetPackageId().has_value() ||
-      promise_app_info->GetIcons().size() == 0) {
-    LOG(ERROR) << "Cannot update promise app " << package_id.ToString()
-               << " due to incomplete Almanac Promise App API response.";
-    return;
-  }
-
-  // The response's Package ID should match with our original request.
-  if (package_id != promise_app_info->GetPackageId().value()) {
-    LOG(ERROR) << "Cannot update promise app due to mismatching package IDs "
-                  "between the request ("
-               << package_id.ToString() << ") and response ("
-               << promise_app_info->GetPackageId().value().ToString() << ")";
-    return;
-  }
-
   // If the promise app doesn't exist in the registry, drop the update. The app
   // installation may have completed before the Almanac returned a response.
   if (!promise_app_registry_cache_->HasPromiseApp(package_id)) {
     LOG(ERROR) << "Cannot update promise app " << package_id.ToString()
                << " as it does not exist in PromiseAppRegistry";
+    return;
+  }
+
+  // If Almanac doesn't provide any meaningful response, continue to show the
+  // promise app item. When an icon is requested, the PromiseAppIconCache will
+  // fallback to returning a placeholder icon.
+  if (!promise_app_info.has_value() ||
+      promise_app_info->GetIcons().size() == 0) {
+    PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+    promise_app->should_show = true;
+    promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
     return;
   }
 
@@ -306,12 +268,6 @@ void PromiseAppService::OnIconDownloaded(
     return;
   }
   pending_download_count_.erase(package_id);
-
-  // If there are no successfully downloaded icons, we don't want to update or
-  // show the promise icon at all.
-  if (!promise_app_icon_cache_->DoesPackageIdHaveIcons(package_id)) {
-    return;
-  }
 
   // Update the promise app so it can show to the user.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);

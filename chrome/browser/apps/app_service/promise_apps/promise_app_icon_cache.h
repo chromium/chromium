@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
@@ -32,7 +33,10 @@ class PromiseAppIconCache {
   bool DoesPackageIdHaveIcons(const PackageId& package_id);
 
   // Get the icon for the specified package ID.
-  gfx::ImageSkia GetIcon(const PackageId& package_id, int32_t size_hint_in_dip);
+  void GetIconAndApplyEffects(const PackageId& package_id,
+                              int32_t size_hint_in_dip,
+                              IconEffects icon_effects,
+                              LoadIconCallback callback);
 
   // Removes the icons cached for a specified package ID.
   void RemoveIconsForPackageId(const PackageId& package_id);

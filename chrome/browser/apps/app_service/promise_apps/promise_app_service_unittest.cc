@@ -89,19 +89,6 @@ class PromiseAppServiceTest : public testing::Test,
     return image_string;
   }
 
-  SkBitmap ApplyEffectsToBitmap(SkBitmap bitmap, IconEffects effects) {
-    auto iv = std::make_unique<apps::IconValue>();
-    iv->uncompressed = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
-    iv->icon_type = apps::IconType::kUncompressed;
-
-    base::test::TestFuture<IconValuePtr> image_with_effects;
-    ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, effects,
-                     bitmap.width(), std::move(iv),
-                     image_with_effects.GetCallback());
-
-    return *image_with_effects.Get()->uncompressed.bitmap();
-  }
-
   // Set the number of updates we expect the Promise App Registry Cache to
   // receive in the test.
   void ExpectNumUpdates(int num_updates) {
@@ -234,49 +221,31 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 }
 
-TEST_F(PromiseAppServiceTest, LoadIcon_NoIcons) {
-  // Check that we don't have any icons yet.
+// Tests that for an empty Almanac response, we still show the promise app (but
+// it will eventually result in using a placeholder icon).
+TEST_F(PromiseAppServiceTest, ShowPromiseAppDespiteErrorAlmanacResponse) {
+  url_loader_factory()->AddResponse(
+      PromiseAppAlmanacConnector::GetServerUrl().spec(),
+      /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // We expect a Promise App Registry Cache update when we initially register
+  // the promise app in the cache, then a subsequent update that sets the
+  // promise app should_show=true after receiving the Almanac response.
+  ExpectNumUpdates(2);
+
+  // Add promise app to the cache, which will trigger an Almanac API call.
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+
+  // Wait for all the updates to trigger.
+  WaitForPromiseAppUpdates();
+
+  // Confirm that we have no icons in the icon cache but that the promise app is
+  // visible anyway.
   std::vector<PromiseAppIcon*> icons_saved =
       icon_cache()->GetIconsForTesting(kTestPackageId);
   EXPECT_EQ(icons_saved.size(), 0u);
-
-  // Attempt to load icon for test package.
-  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  service()->LoadIcon(kTestPackageId, 512, IconEffects::kCrOsStandardMask,
-                      test_callback.GetCallback());
-
-  // Confirm that there is no icon in the callback.
-  IconValue* result_icon = test_callback.Get().get();
-  EXPECT_TRUE(result_icon->uncompressed.isNull());
-}
-
-TEST_F(PromiseAppServiceTest, LoadIcon) {
-  PromiseAppIconPtr icon = CreatePromiseAppIcon(512);
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
-
-  // Confirm that we have an icon in the icon cache.
-  std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
-  EXPECT_EQ(icons_saved.size(), 1u);
-
-  // Attempt to load icon for test package.
-  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  service()->LoadIcon(kTestPackageId, 128, IconEffects::kCrOsStandardMask,
-                      test_callback.GetCallback());
-
-  // Confirm the details of the icon in the callback.
-  IconValue* result_icon = test_callback.Get().get();
-  EXPECT_FALSE(result_icon->uncompressed.isNull());
-  EXPECT_EQ(result_icon->icon_type, IconType::kStandard);
-  EXPECT_FALSE(result_icon->is_placeholder_icon);
-  EXPECT_TRUE(result_icon->is_maskable_icon);
-  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
-
-  // Confirm that the icon has the correct effects applied to it.
-  SkBitmap expected_bitmap = ApplyEffectsToBitmap(
-      gfx::test::CreateBitmap(128, 128), kCrOsStandardMask);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(*result_icon->uncompressed.bitmap(),
-                                   expected_bitmap));
+  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
+  EXPECT_TRUE(promise_app_result->should_show);
 }
 
 TEST_F(PromiseAppServiceTest, CompleteAppInstallationRemovesPromiseApp) {
