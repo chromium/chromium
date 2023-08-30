@@ -115,8 +115,7 @@ void UnusedSitePermissionsService::UnusedSitePermissionsResult::
     AddRevokedPermission(ContentSettingsPattern origin,
                          std::set<ContentSettingsType> permission_types,
                          base::Time expiration) {
-  RevokedPermission revoked_permission(std::move(origin),
-                                       std::set<ContentSettingsType>(),
+  RevokedPermission revoked_permission(std::move(origin), permission_types,
                                        std::move(expiration));
   revoked_permissions_.push_back(std::move(revoked_permission));
 }
