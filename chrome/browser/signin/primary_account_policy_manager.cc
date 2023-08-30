@@ -236,11 +236,11 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Disabling signin in chrome and 'RestrictSigninToPattern' policy
-  // are not supported on Lacros. This code should be unreachable. The main
-  // profile should never be deleted.
-  DCHECK(false)
-      << "Disabling signin in chrome and 'RestrictSigninToPattern' policy "
-         "are not supported on Lacros.";
+  // are not supported on Lacros. This code should be unreachable, except in
+  // Guest sessions. The main profile should never be deleted.
+  DCHECK(!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) &&
+         profile->IsGuestSession())
+      << "On Lacros, signin may only be disallowed in the guest session.";
 #else
   if (ChromeSigninClientFactory::GetForProfile(profile)
           ->IsClearPrimaryAccountAllowed(identity_manager->HasPrimaryAccount(

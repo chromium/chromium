@@ -67,7 +67,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -769,7 +768,3 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-BEGIN_METADATA(ProfileMenuView, ProfileMenuViewBase)
-ADD_READONLY_PROPERTY_METADATA(gfx::ImageSkia, SyncIcon)
-END_METADATA

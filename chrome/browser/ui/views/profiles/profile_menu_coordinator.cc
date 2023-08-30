@@ -45,12 +45,19 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
       feature_engagement::kIPHProfileSwitchFeature);
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
-  if (browser.profile()->IsIncognitoProfile()) {
+  bool is_incognito = browser.profile()->IsIncognitoProfile();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, the guest session returns true for `IsIncognitoProfile()`, see
+  // https://crbug.com/1348572
+  is_incognito &= !browser.profile()->IsGuestSession();
+#endif
+
+  if (is_incognito) {
     bubble =
         std::make_unique<IncognitoMenuView>(avatar_toolbar_button, &browser);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Note: on Ash, Guest Sessions have incognito profiles.
+    // Note: on Ash, only incognito windows have a profile menu.
     NOTREACHED_NORETURN() << "The profile menu is not implemented on Ash.";
 #else
     bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, &browser);

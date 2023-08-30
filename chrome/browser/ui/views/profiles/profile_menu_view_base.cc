@@ -1202,3 +1202,7 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };
+
+BEGIN_METADATA(ProfileMenuViewBase, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(gfx::ImageSkia, SyncIcon)
+END_METADATA

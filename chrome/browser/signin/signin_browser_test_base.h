@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 // Template for adding account management utilities to any test fixture which is
@@ -88,6 +89,10 @@ class SigninBrowserTestBaseT : public T {
 #if (IS_CHROMEOS_LACROS)
     DCHECK_EQ(GetProfile()->IsMainProfile(), use_main_profile_);
 #endif
+
+    if (GetProfile()->IsOffTheRecord()) {
+      return;
+    }
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());

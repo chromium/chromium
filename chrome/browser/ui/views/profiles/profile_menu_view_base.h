@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -43,6 +44,8 @@ class ImageModel;
 class ProfileMenuViewBase : public content::WebContentsDelegate,
                             public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(ProfileMenuViewBase);
+
   // Enumeration of all actionable items in the profile menu.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

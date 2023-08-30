@@ -98,6 +98,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #endif
@@ -887,8 +889,9 @@ class ProfileMenuClickTest : public SyncTest,
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 };
 
-#define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \
-  class test_case_name : public ProfileMenuClickTest {                    \
+#define PROFILE_MENU_CLICK_TEST_F(FixtureClass, actionable_item_list,     \
+                                  test_case_name)                         \
+  class test_case_name : public FixtureClass {                            \
    public:                                                                \
     test_case_name() = default;                                           \
     test_case_name(const test_case_name&) = delete;                       \
@@ -905,6 +908,12 @@ class ProfileMenuClickTest : public SyncTest,
       ::testing::Range(size_t(0), std::size(actionable_item_list)));      \
                                                                           \
   IN_PROC_BROWSER_TEST_P(test_case_name, test_case_name)
+
+// Specialized variant of `PROFILE_MENU_CLICK_TEST_F` using
+// `ProfileMenuClickTest` as `FixtureClass`.
+#define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)   \
+  PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTest, actionable_item_list, \
+                            test_case_name)
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
@@ -1260,6 +1269,33 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
 
   RunTest();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+class ProfileMenuClickTestGuestSession : public ProfileMenuClickTest {
+ public:
+  // Enable the guest session.
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->session_type = crosapi::mojom::SessionType::kGuestSession;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+    ProfileMenuClickTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+};
+
+// This tests the device guest session, which is not the same as the browser
+// guest mode.
+PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestGuestSession,
+                          kActionableItems_GuestProfile,
+                          ProfileMenuClickTest_GuestSession) {
+  SetTargetBrowser(browser());
+
+  RunTest();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // List of actionable items in the correct order as they appear in the menu.
