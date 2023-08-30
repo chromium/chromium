@@ -52,7 +52,10 @@ class NearbyPresenceCredentialStorage
           ::nearby::internal::LocalCredential>> private_db,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
-          public_db);
+          local_public_db,
+      std::unique_ptr<
+          leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
+          remote_public_db);
 
  private:
   void OnPrivateCredentialsSaved(
@@ -61,17 +64,23 @@ class NearbyPresenceCredentialStorage
 
   void OnPrivateDatabaseInitialized(
       base::OnceCallback<void(bool)> on_fully_initialized,
-      leveldb_proto::Enums::InitStatus status);
-  void OnPublicDatabaseInitialized(
+      leveldb_proto::Enums::InitStatus private_db_initialization_status);
+  void OnLocalPublicDatabaseInitialized(
       base::OnceCallback<void(bool)> on_fully_initialized,
-      leveldb_proto::Enums::InitStatus status);
+      leveldb_proto::Enums::InitStatus local_public_db_initialization_status);
+  void OnRemotePublicDatabaseInitialized(
+      base::OnceCallback<void(bool)> on_fully_initialized,
+      leveldb_proto::Enums::InitStatus remote_public_db_initialization_status);
 
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<::nearby::internal::LocalCredential>>
       private_db_;
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
-      public_db_;
+      local_public_db_;
+  std::unique_ptr<
+      leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
+      remote_public_db_;
   base::WeakPtrFactory<NearbyPresenceCredentialStorage> weak_ptr_factory_{this};
 };
 

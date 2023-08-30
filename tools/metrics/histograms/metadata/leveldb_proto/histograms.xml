@@ -50,10 +50,12 @@ chromium-metrics-reviews@google.com.
   <variant name="MerchantTrustSignalDatabase"
       summary="Database for Chrome merchant trust signals events."/>
   <variant name="Metadata" summary="Metadata of shared databases"/>
+  <variant name="NearbyPresenceLocalPublicCredentialDatabase"
+      summary="Database for Nearby Presence local public credentials."/>
   <variant name="NearbyPresencePrivateCredentialDatabase"
       summary="Database for Nearby Presence private credentials."/>
-  <variant name="NearbyPresencePublicCredentialDatabase"
-      summary="Database for Nearby Presence public credentials."/>
+  <variant name="NearbyPresenceRemotePublicCredentialDatabase"
+      summary="Database for Nearby Presence remote public credentials."/>
   <variant name="NearbySharePublicCertificateDatabase"
       summary="Database for Nearby Share public certificates."/>
   <variant name="NotificationSchedulerIcons"

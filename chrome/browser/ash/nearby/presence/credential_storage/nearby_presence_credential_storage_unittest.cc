@@ -82,10 +82,14 @@ class TestNearbyPresenceCredentialStorage
           ::nearby::internal::LocalCredential>> private_db,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
-          public_db)
+          local_public_db,
+      std::unique_ptr<
+          leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
+          remote_public_db)
       : ash::nearby::presence::NearbyPresenceCredentialStorage(
             std::move(private_db),
-            std::move(public_db)) {}
+            std::move(local_public_db),
+            std::move(remote_public_db)) {}
 };
 
 ash::nearby::presence::mojom::LocalCredentialPtr CreateLocalCredential(
@@ -139,24 +143,20 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
     auto private_db = std::make_unique<
         leveldb_proto::test::FakeDB<::nearby::internal::LocalCredential>>(
         &private_db_entries_);
-    auto public_db = std::make_unique<
+    auto local_public_db = std::make_unique<
         leveldb_proto::test::FakeDB<::nearby::internal::SharedCredential>>(
-        &public_db_entries_);
+        &local_public_db_entries_);
+    auto remote_public_db = std::make_unique<
+        leveldb_proto::test::FakeDB<::nearby::internal::SharedCredential>>(
+        &remote_public_db_entries_);
 
     private_db_ = private_db.get();
-    public_db_ = public_db.get();
+    local_public_db_ = local_public_db.get();
+    remote_public_db_ = remote_public_db.get();
 
     credential_storage_ = std::make_unique<TestNearbyPresenceCredentialStorage>(
-        std::move(private_db), std::move(public_db));
-  }
-
-  void TearDown() override {
-    // Reset the raw pointer to prevent a dangling pointer while
-    // NearbyPresenceCredentialStorageTest is being deconstructed.
-    private_db_ = nullptr;
-    public_db_ = nullptr;
-
-    credential_storage_.reset();
+        std::move(private_db), std::move(local_public_db),
+        std::move(remote_public_db));
   }
 
   void InitializeCredentialStorage(base::RunLoop& run_loop,
@@ -172,21 +172,29 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
     InitializeCredentialStorage(run_loop, /*expected_success=*/true);
 
     private_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-    public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+    local_public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+    remote_public_db_->InitStatusCallback(
+        leveldb_proto::Enums::InitStatus::kOK);
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  raw_ptr<leveldb_proto::test::FakeDB<::nearby::internal::LocalCredential>>
-      private_db_;
-  raw_ptr<leveldb_proto::test::FakeDB<::nearby::internal::SharedCredential>>
-      public_db_;
+  std::unique_ptr<NearbyPresenceCredentialStorage> credential_storage_;
+
   std::map<std::string, ::nearby::internal::LocalCredential>
       private_db_entries_;
   std::map<std::string, ::nearby::internal::SharedCredential>
-      public_db_entries_;
-  std::unique_ptr<NearbyPresenceCredentialStorage> credential_storage_;
+      local_public_db_entries_;
+  std::map<std::string, ::nearby::internal::SharedCredential>
+      remote_public_db_entries_;
+
+  raw_ptr<leveldb_proto::test::FakeDB<::nearby::internal::LocalCredential>>
+      private_db_;
+  raw_ptr<leveldb_proto::test::FakeDB<::nearby::internal::SharedCredential>>
+      local_public_db_;
+  raw_ptr<leveldb_proto::test::FakeDB<::nearby::internal::SharedCredential>>
+      remote_public_db_;
 };
 
 TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_Successful) {
@@ -195,7 +203,8 @@ TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_Successful) {
   InitializeCredentialStorage(run_loop, /*expected_success=*/true);
 
   private_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-  public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  local_public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  remote_public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
   run_loop.Run();
 }
@@ -205,20 +214,38 @@ TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_PrivateFails) {
 
   InitializeCredentialStorage(run_loop, /*expected_success=*/false);
 
-  // Only the private status callback is set, as the public callback will
+  // Only the private status callback is set, as the public callbacks will
   // never be bound.
   private_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kCorrupt);
 
   run_loop.Run();
 }
 
-TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_PublicFails) {
+TEST_F(NearbyPresenceCredentialStorageTest,
+       InitializeDatabases_LocalPublicFails) {
+  base::RunLoop run_loop;
+
+  InitializeCredentialStorage(run_loop, /*expected_success=*/false);
+
+  // Failure of the local public database will cause the remote public database
+  // callback to never be bound.
+  private_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  local_public_db_->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kCorrupt);
+
+  run_loop.Run();
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest,
+       InitializeDatabases_RemotePublicFails) {
   base::RunLoop run_loop;
 
   InitializeCredentialStorage(run_loop, /*expected_success=*/false);
 
   private_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-  public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kCorrupt);
+  local_public_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  remote_public_db_->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kCorrupt);
 
   run_loop.Run();
 }
