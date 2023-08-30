@@ -232,4 +232,8 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
   return command_line;
 }
 
+void SetPlatformPolicies(const base::Value::Dict& values) {
+  // TODO(crbug.com/1464354): implement.
+}
+
 }  // namespace updater::test

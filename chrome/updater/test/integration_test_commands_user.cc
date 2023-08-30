@@ -85,6 +85,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetGroupPolicies(values);
   }
 
+  void SetPlatformPolicies(const base::Value::Dict& values) const override {
+    updater::test::SetPlatformPolicies(values);
+  }
+
   void SetMachineManaged(bool is_managed_device) const override {
     updater::test::SetMachineManaged(is_managed_device);
   }

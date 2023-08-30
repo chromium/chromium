@@ -2003,4 +2003,27 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
   return command_line;
 }
 
+void SetPlatformPolicies(const base::Value::Dict& values) {
+  base::win::RegKey policy_key;
+  ASSERT_EQ(ERROR_SUCCESS,
+            policy_key.Create(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
+                              KEY_SET_VALUE));
+
+  for (const auto [app_id, policies] : values) {
+    ASSERT_TRUE(policies.is_dict());
+    for (const auto [name, value] : policies.GetDict()) {
+      const std::wstring& key = base::ASCIIToWide(
+          base::StringPrintf("%s%s", name.c_str(), app_id.c_str()));
+      if (value.is_string()) {
+        policy_key.WriteValue(key.c_str(),
+                              base::ASCIIToWide(value.GetString()).c_str());
+      } else if (value.is_int()) {
+        policy_key.WriteValue(key.c_str(), static_cast<DWORD>(value.GetInt()));
+      } else if (value.is_bool()) {
+        policy_key.WriteValue(key.c_str(), static_cast<DWORD>(value.GetBool()));
+      }
+    }
+  }
+}
+
 }  // namespace updater::test

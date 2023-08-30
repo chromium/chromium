@@ -212,6 +212,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetGroupPolicies(values);
   }
 
+  void SetPlatformPolicies(const base::Value::Dict& values) {
+    test_commands_->SetPlatformPolicies(values);
+  }
+
   void SetMachineManaged(bool is_managed_device) {
     test_commands_->SetMachineManaged(is_managed_device);
   }
@@ -1600,23 +1604,6 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     ExpectAppInstalled(app_id, version);
   }
 
-  void SetUpdateDefaultGroupPolicy(int policy) {
-    EXPECT_EQ(ERROR_SUCCESS,
-              base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                                Wow6432(KEY_WRITE))
-                  .WriteValue(L"UpdateDefault", policy));
-  }
-
-  void SetAppUpdateGroupPolicy(const std::string& appid, int policy) {
-    EXPECT_EQ(ERROR_SUCCESS,
-              base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                                Wow6432(KEY_WRITE))
-                  .WriteValue(base::ASCIIToWide(
-                                  base::StringPrintf("Update%s", appid.c_str()))
-                                  .c_str(),
-                              policy));
-  }
-
   void SetCloudPolicyOverridesPlatformPolicy() {
     EXPECT_EQ(ERROR_SUCCESS,
               base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
@@ -1794,7 +1781,10 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId1, kApp1InitialVersion));
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId2, kApp2InitialVersion));
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId3, kApp3InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId2, kPolicyEnabled));
+
+  base::Value::Dict policies;
+  policies.Set(kAppId2, base::Value::Dict().Set("Update", kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   // Cloud policy sets update default to disabled, app1 to auto-update, and
   // app2 to manual-update.
@@ -1856,10 +1846,12 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId2, kApp2InitialVersion));
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId3, kApp3InitialVersion));
 
-  ASSERT_NO_FATAL_FAILURE(SetUpdateDefaultGroupPolicy(kPolicyDisabled));
-  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId1, kPolicyDisabled));
-  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId2, kPolicyEnabled));
-  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId3, kPolicyEnabled));
+  base::Value::Dict policies;
+  policies.Set("Default", base::Value::Dict().Set("Update", kPolicyDisabled));
+  policies.Set(kAppId1, base::Value::Dict().Set("Update", kPolicyDisabled));
+  policies.Set(kAppId2, base::Value::Dict().Set("Update", kPolicyEnabled));
+  policies.Set(kAppId3, base::Value::Dict().Set("Update", kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   // Overrides app1 to auto-update, app2 to manual-update with cloud policy.
   PushEnrollmentToken(kEnrollmentToken);

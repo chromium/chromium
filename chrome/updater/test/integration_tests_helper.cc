@@ -278,6 +278,7 @@ void AppTestHelper::FirstTaskRun() {
                                                  Wrap(&EnterTestMode)))))},
     {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
     {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
+    {"set_platform_policies", WithSwitch("values", Wrap(&SetPlatformPolicies))},
     {"set_machine_managed", WithSwitch("managed", Wrap(&SetMachineManaged))},
     {"fill_log", WithSystemScope(Wrap(&FillLog))},
     {"expect_log_rotated", WithSystemScope(Wrap(&ExpectLogRotated))},

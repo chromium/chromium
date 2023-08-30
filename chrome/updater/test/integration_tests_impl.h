@@ -104,6 +104,10 @@ void ExitTestMode(UpdaterScope scope);
 // Sets the external constants for group policies.
 void SetGroupPolicies(const base::Value::Dict& values);
 
+// Sets platform policies. Platform policy is group policy on Windows, and
+// Managed Preferences on macOS.
+void SetPlatformPolicies(const base::Value::Dict& values);
+
 // Sets whether the machine is in managed state.
 void SetMachineManaged(bool is_managed_device);
 
