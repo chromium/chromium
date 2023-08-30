@@ -18,6 +18,7 @@ upstream_only_webview_deps = [
   "//android_webview:platform_service_bridge_upstream_implementation_java",
   "//android_webview/nonembedded:icon_resources",
   "//components/environment_integrity/android:integrity_service_bridge_public_impl_java",
+  "//content/public/android:identity_credentials_public_impl_java",
 ]
 
 if (webview_includes_weblayer) {

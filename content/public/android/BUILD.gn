@@ -403,7 +403,27 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
   ]
 
+  public_deps = [ ":identity_credentials_java" ]
+
   proguard_configs = [ "proguard.flags" ]
+}
+
+# TODO(crbug.com/1475970) simplify these build targets once GMSCore publishes identity-credentials.
+android_library("identity_credentials_java") {
+  sources = [
+    "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",
+    "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java",
+  ]
+  deps = [ "//base:base_java" ]
+  jar_excluded_patterns = [ "*/IdentityCredentialsDelegateImpl.class" ]
+}
+
+android_library("identity_credentials_public_impl_java") {
+  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java" ]
+  deps = [
+    ":identity_credentials_java",
+    "//base:base_java",
+  ]
 }
 
 java_strings_grd("content_strings_grd") {
