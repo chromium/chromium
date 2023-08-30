@@ -38,6 +38,7 @@ enum class BorealisInstallResult {
   kDlcNeedUpdateError = 11,
   kStartupFailed = 12,
   kMainAppNotPresent = 13,
+  // Remember to add new entries to histograms/enums.xml.
   kMaxValue = kMainAppNotPresent,
 };
 
@@ -64,6 +65,7 @@ enum class BorealisStartupResult {
   kSyncDiskFailed = 6,
   kRequestWaylandFailed = 7,
   kDisallowed = 8,
+  // Remember to add new entries to histograms/enums.xml.
   kMaxValue = kDisallowed,
 };
 

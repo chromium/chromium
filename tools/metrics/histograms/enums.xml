@@ -13650,6 +13650,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="DLC faced an unknown error"/>
   <int value="10" label="Device is offline"/>
   <int value="11" label="DLC couldn't find an image at the correct version"/>
+  <int value="12" label="Unable to first-time launch VM"/>
+  <int value="13" label="Main app never showed up"/>
 </enum>
 
 <enum name="BorealisStartupFsckResult">
@@ -13680,6 +13682,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Failed creating disk image"/>
   <int value="4" label="Failed starting VM"/>
   <int value="5" label="Failed awaiting startup"/>
+  <int value="6" label="Failed Syncing Disks"/>
+  <int value="7" label="Failed starting wayland server"/>
+  <int value="8" label="Disallowed"/>
 </enum>
 
 <enum name="BorealisSyncDiskSizeResult">
