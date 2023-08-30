@@ -676,10 +676,14 @@ TEST_P(CompositingTest, HitTestOpaqueness) {
     </svg>
   )HTML");
 
-  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
+                ? cc::HitTestOpaqueness::kTransparent
+                : cc::HitTestOpaqueness::kMixed,
             CcLayersByDOMElementId(RootCcLayer(), "transparent1")[0]
                 ->hit_test_opaqueness());
-  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
+                ? cc::HitTestOpaqueness::kTransparent
+                : cc::HitTestOpaqueness::kMixed,
             CcLayersByDOMElementId(RootCcLayer(), "transparent2")[0]
                 ->hit_test_opaqueness());
   EXPECT_EQ(cc::HitTestOpaqueness::kMixed,
@@ -745,7 +749,9 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
+                ? cc::HitTestOpaqueness::kTransparent
+                : cc::HitTestOpaqueness::kMixed,
             target_layer->hit_test_opaqueness());
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
@@ -767,7 +773,9 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
   EXPECT_TRUE(display_item_client->IsValid());
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent,
+  EXPECT_EQ(RuntimeEnabledFeatures::HitTestTransparencyEnabled()
+                ? cc::HitTestOpaqueness::kTransparent
+                : cc::HitTestOpaqueness::kMixed,
             target_layer->hit_test_opaqueness());
 
   parent->removeAttribute(html_names::kInertAttr);

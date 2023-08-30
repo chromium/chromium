@@ -109,8 +109,12 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
 
   cc_picture_layer_->SetBounds(layer_bounds);
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    cc_picture_layer_->SetHitTestOpaqueness(
-        pending_layer.GetHitTestOpaqueness());
+    auto hit_test_opaqueness = pending_layer.GetHitTestOpaqueness();
+    if (hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent &&
+        !RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+      hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+    }
+    cc_picture_layer_->SetHitTestOpaqueness(hit_test_opaqueness);
   } else {
     cc_picture_layer_->SetHitTestable(true);
   }
