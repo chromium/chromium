@@ -52,7 +52,7 @@ async function perform2SecondsOfWebSocketActivity() {
     // Close the port if we've received at least three messages *and* two
     // seconds have passed; otherwise, keep waiting.
     if (receivedMessages == 9) {
-      const millis = Date.now() - start;
+      const millis = performance.now() - start;
       if (millis > waitForMs) {
         reachedEnd = true;
       } else {
