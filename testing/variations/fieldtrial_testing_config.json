@@ -750,7 +750,7 @@
             ]
         }
     ],
-    "ArcVmIdleManager": [
+    "ArcVmIdleManagerV2": [
         {
             "platforms": [
                 "chromeos"
@@ -764,7 +764,7 @@
                     "enable_features": [
                         "ArcIdleManager"
                     ],
-                    "min_os_version": "15452.0.0"
+                    "min_os_version": "15591.0.0"
                 }
             ]
         }
