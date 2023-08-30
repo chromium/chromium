@@ -110053,6 +110053,9 @@ Full version information for the fingerprint enum values:
   <int value="144" label="kWinMediaFoundationSourceCreationFailed"/>
   <int value="145" label="kWinDirectShowDeviceFilterCreationFailed"/>
   <int value="146" label="kWinDirectShowDeviceInitializationFailed"/>
+  <int value="147" label="kVideoCaptureDeviceFactorySecondCreateDenied"/>
+  <int value="148" label="kScreenCaptureKitResetStreamError"/>
+  <int value="149" label="kWinMediaFoundationCameraBusy"/>
 </enum>
 
 <enum name="VideoCaptureEvent">
