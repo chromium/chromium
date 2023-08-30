@@ -719,6 +719,28 @@ public class AutofillPaymentMethodsFragmentTest {
         Assert.assertTrue(saveCvcToggle.isChecked());
     }
 
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testDeleteSavedCvcsButton_notShownWhenFeatureDisabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference expectedNullDeleteSavedCvcsToggle = getPreferenceScreen(activity).findPreference(
+                AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        Assert.assertNull(expectedNullDeleteSavedCvcsToggle);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testDeleteSavedCvcsButton_shown() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference deleteSavedCvcsToggle = getPreferenceScreen(activity).findPreference(
+                AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        Assert.assertNotNull(deleteSavedCvcsToggle);
+    }
+
     private void setUpBiometricAuthenticationResult(boolean success) {
         // We have to manually invoke the passed-in callback.
         doAnswer(invocation -> {

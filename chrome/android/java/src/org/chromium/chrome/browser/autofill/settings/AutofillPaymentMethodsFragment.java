@@ -12,6 +12,9 @@ import android.graphics.drawable.Drawable;
 import android.hardware.biometrics.BiometricManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,6 +42,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -54,6 +58,7 @@ public class AutofillPaymentMethodsFragment
     // The Fido pref is used as a key on the settings toggle. This key helps in the retrieval of the
     // Fido toggle during tests.
     static final String PREF_FIDO = "fido";
+    static final String PREF_DELETE_SAVED_CVCS = "delete_saved_cvcs";
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     static final String PREF_SAVE_CVC = "save_cvc";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
@@ -210,6 +215,13 @@ public class AutofillPaymentMethodsFragment
             // is ON, show the cvc storage pref value.
             saveCvcSwitch.setChecked(PersonalDataManager.isAutofillCreditCardEnabled()
                     && PersonalDataManager.isPaymentCvcStorageEnabled());
+
+            // Add the deletion button for saved Cvc. Note that this button's presence doesn't
+            // depend on "Save And Fill Payments Methods" value. Since we would like to allow user
+            // to delete saved cvcs even when "Save And Fill Payments Methods" is disabled.
+            // TODO(crbug.com/1474710): Conditionally show the deletion button based on whether
+            // there is cvc stored.
+            createDeleteSavedCvcs();
         }
 
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {
@@ -416,6 +428,24 @@ public class AutofillPaymentMethodsFragment
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
                 getActivity(), AutofillLocalCardEditor.class, preference.getExtras());
+    }
+
+    /**
+     * Create a clickable "Delete saved cvcs" button and add it to the preference screen.
+     * No divider line above this preference.
+     */
+    private void createDeleteSavedCvcs() {
+        ChromeBasePreference deleteSavedCvcs = new ChromeBasePreference(getStyledContext());
+        deleteSavedCvcs.setKey(PREF_DELETE_SAVED_CVCS);
+        SpannableString spannableString = new SpannableString(
+                getResources().getString(R.string.autofill_settings_page_bulk_remove_cvc_label));
+        spannableString.setSpan(new ForegroundColorSpan(getContext().getColor(
+                                        R.color.default_text_color_link_baseline)),
+                0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        deleteSavedCvcs.setSummary(spannableString);
+        deleteSavedCvcs.setDividerAllowedAbove(false);
+        // TODO(crbug.com/1474710): Add click listener.
+        getPreferenceScreen().addPreference(deleteSavedCvcs);
     }
 
     @Override
