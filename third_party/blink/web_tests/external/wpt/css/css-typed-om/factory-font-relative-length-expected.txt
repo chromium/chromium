@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL CSS.cap() produces cap length CSS[unit] is not a function
+PASS CSS.ch() produces ch length
+PASS CSS.em() produces em length
+PASS CSS.ex() produces ex length
+FAIL CSS.ic() produces ic length CSS[unit] is not a function
+FAIL CSS.lh() produces lh length CSS[unit] is not a function
+FAIL CSS.rcap() produces rcap length CSS[unit] is not a function
+FAIL CSS.rch() produces rch length CSS[unit] is not a function
+PASS CSS.rem() produces rem length
+FAIL CSS.rex() produces rex length CSS[unit] is not a function
+FAIL CSS.ric() produces ric length CSS[unit] is not a function
+FAIL CSS.rlh() produces rlh length CSS[unit] is not a function
+Harness: the test ran to completion.
+

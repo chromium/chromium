@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 98 tests; 86 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 90 tests; 78 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS 'scale(cos(0))' as a specified value should serialize as 'scale(calc(1))'.
 PASS 'scale(calc(cos(0)))' as a specified value should serialize as 'scale(calc(1))'.
 PASS 'scale(sin(0))' as a specified value should serialize as 'scale(calc(0))'.
@@ -50,10 +50,6 @@ PASS 'scale(tan(0.78539816rad))' as a specified value should serialize as 'scale
 PASS 'scale(calc(tan(0.78539816rad)))' as a specified value should serialize as 'scale(calc(1))'.
 PASS 'scale(tan(0.125turn))' as a specified value should serialize as 'scale(calc(1))'.
 PASS 'scale(calc(tan(0.125turn)))' as a specified value should serialize as 'scale(calc(1))'.
-PASS 'scale(tan(90deg))' as a specified value should serialize as 'scale(calc(infinity))'.
-PASS 'scale(calc(tan(90deg)))' as a specified value should serialize as 'scale(calc(infinity))'.
-PASS 'scale(tan(-90deg))' as a specified value should serialize as 'scale(calc(-infinity))'.
-PASS 'scale(calc(tan(-90deg)))' as a specified value should serialize as 'scale(calc(-infinity))'.
 FAIL 'scale(sin(180deg))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(sin(180deg))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(1.22465e-16))"
 FAIL 'scale(calc(sin(180deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(calc(sin(180deg)))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(1.22465e-16))"
 PASS 'scale(cos(180deg))' as a specified value should serialize as 'scale(calc(-1))'.
@@ -64,8 +60,6 @@ PASS 'scale(sin(270deg))' as a specified value should serialize as 'scale(calc(-
 PASS 'scale(calc(sin(270deg)))' as a specified value should serialize as 'scale(calc(-1))'.
 FAIL 'scale(cos(270deg))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(cos(270deg))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(-1.83697e-16))"
 FAIL 'scale(calc(cos(270deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(calc(cos(270deg)))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(-1.83697e-16))"
-PASS 'scale(tan(270deg))' as a specified value should serialize as 'scale(calc(-infinity))'.
-PASS 'scale(calc(tan(270deg)))' as a specified value should serialize as 'scale(calc(-infinity))'.
 FAIL 'scale(sin(-180deg))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(sin(-180deg))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(-1.22465e-16))"
 FAIL 'scale(calc(sin(-180deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(calc(sin(-180deg)))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(-1.22465e-16))"
 PASS 'scale(cos(-180deg))' as a specified value should serialize as 'scale(calc(-1))'.
@@ -76,8 +70,6 @@ PASS 'scale(sin(-270deg))' as a specified value should serialize as 'scale(calc(
 PASS 'scale(calc(sin(-270deg)))' as a specified value should serialize as 'scale(calc(1))'.
 FAIL 'scale(cos(-270deg))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(cos(-270deg))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(-1.83697e-16))"
 FAIL 'scale(calc(cos(-270deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_equals: 'scale(calc(cos(-270deg)))' and 'scale(calc(0))' should serialize the same in specified values. expected "scale(calc(0))" but got "scale(calc(-1.83697e-16))"
-PASS 'scale(tan(-270deg))' as a specified value should serialize as 'scale(calc(infinity))'.
-PASS 'scale(calc(tan(-270deg)))' as a specified value should serialize as 'scale(calc(infinity))'.
 PASS 'scale(calc(sin(30deg) + cos(60deg) + tan(45deg)))' as a specified value should serialize as 'scale(calc(2))'.
 PASS 'scale(calc(calc(sin(30deg) + cos(60deg) + tan(45deg))))' as a specified value should serialize as 'scale(calc(2))'.
 PASS 'scale(calc(sin(infinity)))' as a specified value should serialize as 'scale(calc(NaN))'.

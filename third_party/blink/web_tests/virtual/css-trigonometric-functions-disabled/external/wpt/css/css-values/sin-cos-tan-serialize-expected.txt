@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 98 tests; 0 PASS, 98 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 90 tests; 0 PASS, 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL 'scale(cos(0))' as a specified value should serialize as 'scale(calc(1))'. assert_not_equals: 'scale(cos(0))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(cos(0)))' as a specified value should serialize as 'scale(calc(1))'. assert_not_equals: 'scale(calc(cos(0)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(sin(0))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(sin(0))' should be valid in transform. got disallowed value ""
@@ -50,10 +50,6 @@ FAIL 'scale(tan(0.78539816rad))' as a specified value should serialize as 'scale
 FAIL 'scale(calc(tan(0.78539816rad)))' as a specified value should serialize as 'scale(calc(1))'. assert_not_equals: 'scale(calc(tan(0.78539816rad)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(tan(0.125turn))' as a specified value should serialize as 'scale(calc(1))'. assert_not_equals: 'scale(tan(0.125turn))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(tan(0.125turn)))' as a specified value should serialize as 'scale(calc(1))'. assert_not_equals: 'scale(calc(tan(0.125turn)))' should be valid in transform. got disallowed value ""
-FAIL 'scale(tan(90deg))' as a specified value should serialize as 'scale(calc(infinity))'. assert_not_equals: 'scale(tan(90deg))' should be valid in transform. got disallowed value ""
-FAIL 'scale(calc(tan(90deg)))' as a specified value should serialize as 'scale(calc(infinity))'. assert_not_equals: 'scale(calc(tan(90deg)))' should be valid in transform. got disallowed value ""
-FAIL 'scale(tan(-90deg))' as a specified value should serialize as 'scale(calc(-infinity))'. assert_not_equals: 'scale(tan(-90deg))' should be valid in transform. got disallowed value ""
-FAIL 'scale(calc(tan(-90deg)))' as a specified value should serialize as 'scale(calc(-infinity))'. assert_not_equals: 'scale(calc(tan(-90deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(sin(180deg))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(sin(180deg))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(sin(180deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(calc(sin(180deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(cos(180deg))' as a specified value should serialize as 'scale(calc(-1))'. assert_not_equals: 'scale(cos(180deg))' should be valid in transform. got disallowed value ""
@@ -64,8 +60,6 @@ FAIL 'scale(sin(270deg))' as a specified value should serialize as 'scale(calc(-
 FAIL 'scale(calc(sin(270deg)))' as a specified value should serialize as 'scale(calc(-1))'. assert_not_equals: 'scale(calc(sin(270deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(cos(270deg))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(cos(270deg))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(cos(270deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(calc(cos(270deg)))' should be valid in transform. got disallowed value ""
-FAIL 'scale(tan(270deg))' as a specified value should serialize as 'scale(calc(-infinity))'. assert_not_equals: 'scale(tan(270deg))' should be valid in transform. got disallowed value ""
-FAIL 'scale(calc(tan(270deg)))' as a specified value should serialize as 'scale(calc(-infinity))'. assert_not_equals: 'scale(calc(tan(270deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(sin(-180deg))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(sin(-180deg))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(sin(-180deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(calc(sin(-180deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(cos(-180deg))' as a specified value should serialize as 'scale(calc(-1))'. assert_not_equals: 'scale(cos(-180deg))' should be valid in transform. got disallowed value ""
@@ -76,8 +70,6 @@ FAIL 'scale(sin(-270deg))' as a specified value should serialize as 'scale(calc(
 FAIL 'scale(calc(sin(-270deg)))' as a specified value should serialize as 'scale(calc(1))'. assert_not_equals: 'scale(calc(sin(-270deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(cos(-270deg))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(cos(-270deg))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(cos(-270deg)))' as a specified value should serialize as 'scale(calc(0))'. assert_not_equals: 'scale(calc(cos(-270deg)))' should be valid in transform. got disallowed value ""
-FAIL 'scale(tan(-270deg))' as a specified value should serialize as 'scale(calc(infinity))'. assert_not_equals: 'scale(tan(-270deg))' should be valid in transform. got disallowed value ""
-FAIL 'scale(calc(tan(-270deg)))' as a specified value should serialize as 'scale(calc(infinity))'. assert_not_equals: 'scale(calc(tan(-270deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(sin(30deg) + cos(60deg) + tan(45deg)))' as a specified value should serialize as 'scale(calc(2))'. assert_not_equals: 'scale(calc(sin(30deg) + cos(60deg) + tan(45deg)))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(calc(sin(30deg) + cos(60deg) + tan(45deg))))' as a specified value should serialize as 'scale(calc(2))'. assert_not_equals: 'scale(calc(calc(sin(30deg) + cos(60deg) + tan(45deg))))' should be valid in transform. got disallowed value ""
 FAIL 'scale(calc(sin(infinity)))' as a specified value should serialize as 'scale(calc(NaN))'. assert_not_equals: 'scale(calc(sin(infinity)))' should be valid in transform. got disallowed value ""
