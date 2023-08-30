@@ -34,7 +34,7 @@ void HandleSafetyCheckPasswordTap(
 int CheckIssuesCount(SafetyCheckState* state);
 
 // Returns true if the Safety Check can be run given `last_run_time`.
-bool CanRunSafetyCheck(base::Time last_run_time);
+bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time);
 
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
     absl::optional<base::Time> last_run_time);

@@ -881,10 +881,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type {
   if (type == ContentSuggestionsModuleType::kSafetyCheck ||
       type == ContentSuggestionsModuleType::kSafetyCheckMultiRow) {
-    absl::optional<base::Time> lastRunTime =
-        absl::optional<base::Time>(_safetyCheckState.lastRunTime);
-
-    return FormatElapsedTimeSinceLastSafetyCheck(lastRunTime);
+    return FormatElapsedTimeSinceLastSafetyCheck(_safetyCheckState.lastRunTime);
   }
 
   return @"";

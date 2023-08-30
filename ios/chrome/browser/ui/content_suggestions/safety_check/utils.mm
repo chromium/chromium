@@ -155,8 +155,13 @@ int CheckIssuesCount(SafetyCheckState* state) {
   return invalid_check_count;
 }
 
-bool CanRunSafetyCheck(base::Time last_run_time) {
-  base::TimeDelta last_run_age = base::Time::Now() - last_run_time;
+bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time) {
+  // The Safety Check should be run if it's never been run before.
+  if (!last_run_time.has_value()) {
+    return true;
+  }
+
+  base::TimeDelta last_run_age = base::Time::Now() - last_run_time.value();
 
   if (last_run_age > kSafetyCheckRunThreshold) {
     return true;

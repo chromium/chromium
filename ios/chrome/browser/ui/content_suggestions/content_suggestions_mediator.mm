@@ -114,6 +114,9 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 using RequestSource = SearchTermsData::RequestSource;
 
+// The Safety Check (Magic Stack) module runs (at minimum) once every 24 hours.
+constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
+
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
@@ -747,16 +750,26 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   state.compromisedPasswordsCount = counts.compromised_count;
 
   // Last run time.
-  state.lastRunTime = safetyCheckManager->GetLastSafetyCheckRunTime();
+  base::Time lastRunTimeViaModule =
+      safetyCheckManager->GetLastSafetyCheckRunTime();
 
-  // Last run time (from the Safety Check via Settings).
   base::Time lastRunTimeViaSettings =
       base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
 
-  if (lastRunTimeViaSettings > state.lastRunTime) {
-    state.lastRunTime = lastRunTimeViaSettings;
-  }
+  // Use the most recent Last Run Time—regardless of where the Safety Check was
+  // run—to minimize user confusion.
+  base::Time lastRunTime = lastRunTimeViaModule > lastRunTimeViaSettings
+                               ? lastRunTimeViaModule
+                               : lastRunTimeViaSettings;
+
+  base::TimeDelta lastRunAge = base::Time::Now() - lastRunTime;
+
+  // Only display the Last Run Time in the module if the run happened within the
+  // last 24hr.
+  state.lastRunTime = lastRunAge <= kSafetyCheckRunThreshold
+                          ? absl::optional<base::Time>(lastRunTime)
+                          : absl::nullopt;
 
   state.runningState = CanRunSafetyCheck(state.lastRunTime)
                            ? RunningSafetyCheckState::kRunning
