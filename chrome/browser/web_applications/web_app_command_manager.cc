@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -256,7 +258,9 @@ void WebAppCommandManager::AddValueToLog(base::Value value) {
   // production builds.
   DVLOG(1) << value.DebugString();
 #endif
-  static constexpr const int kMaxLogLength = 20;
+  static const size_t kMaxLogLength =
+      base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
+                                                                     : 20;
   command_debug_log_.push_front(std::move(value));
   if (command_debug_log_.size() > kMaxLogLength)
     command_debug_log_.resize(kMaxLogLength);
