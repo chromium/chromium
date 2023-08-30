@@ -2512,6 +2512,11 @@ bool MarginBlock::ParseShorthand(
       marginBlockShorthand(), important, context, range, properties);
 }
 
+bool MarginBlock::IsLayoutDependent(const ComputedStyle* style,
+                                    LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
+}
+
 const CSSValue* MarginBlock::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
@@ -2532,10 +2537,7 @@ bool Margin::ParseShorthand(
 
 bool Margin::IsLayoutDependent(const ComputedStyle* style,
                                LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox() &&
-         (!style || !style->MarginBottom().IsFixed() ||
-          !style->MarginTop().IsFixed() || !style->MarginLeft().IsFixed() ||
-          !style->MarginRight().IsFixed());
+  return layout_object && layout_object->IsBox();
 }
 
 const CSSValue* Margin::CSSValueFromComputedStyleInternal(
@@ -2554,6 +2556,11 @@ bool MarginInline::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       marginInlineShorthand(), important, context, range, properties);
+}
+
+bool MarginInline::IsLayoutDependent(const ComputedStyle* style,
+                                     LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
 }
 
 const CSSValue* MarginInline::CSSValueFromComputedStyleInternal(

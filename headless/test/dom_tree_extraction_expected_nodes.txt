@@ -182,7 +182,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": "Some text.",
-   "styleIndex": 2
+   "styleIndex": 3
 }
 {
    "backendNodeId": "?",
@@ -214,7 +214,7 @@
    "nodeName": "IFRAME",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 3
+   "styleIndex": 4
 }
 {
    "backendNodeId": "?",
@@ -250,7 +250,7 @@
    "nodeName": "HTML",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 4
+   "styleIndex": 5
 }
 {
    "backendNodeId": "?",
@@ -271,7 +271,7 @@
    "nodeName": "BODY",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 5
+   "styleIndex": 6
 }
 {
    "backendNodeId": "?",
@@ -299,7 +299,7 @@
    "nodeName": "H1",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 6
+   "styleIndex": 7
 }
 {
    "backendNodeId": "?",
@@ -324,7 +324,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": "Hello from the iframe!",
-   "styleIndex": 6
+   "styleIndex": 8
 }
 {
    "backendNodeId": "?",
@@ -440,7 +440,7 @@
    "nodeName": "A",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 7
+   "styleIndex": 9
 }
 {
    "backendNodeId": "?",
@@ -465,7 +465,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": "Google!",
-   "styleIndex": 7
+   "styleIndex": 9
 }
 {
    "backendNodeId": "?",
@@ -495,7 +495,7 @@
    "nodeName": "P",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 8
+   "styleIndex": 10
 }
 {
    "backendNodeId": "?",
@@ -520,7 +520,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": "A paragraph!",
-   "styleIndex": 8
+   "styleIndex": 10
 }
 {
    "backendNodeId": "?",
@@ -551,7 +551,7 @@
    "nodeName": "BR",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 3
+   "styleIndex": 4
 }
 {
    "backendNodeId": "?",
@@ -576,7 +576,7 @@
    "nodeName": "DIV",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 9
+   "styleIndex": 11
 }
 {
    "backendNodeId": "?",
@@ -601,7 +601,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": "Some ",
-   "styleIndex": 9
+   "styleIndex": 11
 }
 {
    "backendNodeId": "?",
@@ -616,7 +616,7 @@
    "nodeName": "EM",
    "nodeType": 1,
    "nodeValue": "",
-   "styleIndex": 10
+   "styleIndex": 12
 }
 {
    "backendNodeId": "?",
@@ -641,7 +641,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": "green",
-   "styleIndex": 10
+   "styleIndex": 12
 }
 {
    "backendNodeId": "?",
@@ -666,7 +666,7 @@
    "nodeName": "#text",
    "nodeType": 3,
    "nodeValue": " text...",
-   "styleIndex": 9
+   "styleIndex": 11
 }
 {
    "backendNodeId": "?",
