@@ -41,14 +41,27 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
 
-const FormData PrepareFormData(const std::vector<bool>& focusability_vector) {
+enum class FormFieldFocusabilityType {
+  kFocusableInput,
+  kFocusableCheckbox,
+  kNonFocusableInput,
+};
+
+const FormData PrepareFormData(
+    const std::vector<FormFieldFocusabilityType>& focusability_vector) {
   FormData form;
-  base::ranges::transform(focusability_vector, std::back_inserter(form.fields),
-                          [](bool is_focusable) {
-                            autofill::FormFieldData field;
-                            field.is_focusable = is_focusable;
-                            return field;
-                          });
+  base::ranges::transform(
+      focusability_vector, std::back_inserter(form.fields),
+      [](FormFieldFocusabilityType type) {
+        autofill::FormFieldData field;
+        field.is_focusable =
+            (type == FormFieldFocusabilityType::kFocusableInput ||
+             type == FormFieldFocusabilityType::kFocusableCheckbox);
+        field.form_control_type =
+            (type == FormFieldFocusabilityType::kFocusableCheckbox) ? "checkbox"
+                                                                    : "input";
+        return field;
+      });
   return form;
 }
 
@@ -61,49 +74,77 @@ const std::vector<
                                    /*password_field_index=*/0,
                                    SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kError},
-        {SubmissionReadinessParams(PrepareFormData({false, false}),
-                                   /*username_field_index=*/2,
-                                   /*password_field_index=*/2,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kNonFocusableInput,
+                              FormFieldFocusabilityType::kNonFocusableInput}),
+             /*username_field_index=*/2,
+             /*password_field_index=*/2,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kError},
         // There's no password field in this case, so expected
         // SubmissionReadiness is `kNoPasswordField`.
-        {SubmissionReadinessParams(PrepareFormData({true, true}),
-                                   /*username_field_index=*/0,
-                                   /*password_field_index=*/2,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/2,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kNoPasswordField},
         // There's no username field in this case, so expected
         // SubmissionReadiness is `kNoUsernameField`.
-        {SubmissionReadinessParams(PrepareFormData({true, true}),
-                                   /*username_field_index=*/2,
-                                   /*password_field_index=*/0,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput}),
+             /*username_field_index=*/2,
+             /*password_field_index=*/0,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kNoUsernameField},
         // There's a focusable field between username and password fields
-        {SubmissionReadinessParams(PrepareFormData({true, true, true}),
-                                   /*username_field_index=*/0,
-                                   /*password_field_index=*/2,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/2,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kFieldBetweenUsernameAndPassword},
         // There's an ignorable field between username and password fields. It's
         // doesn't matter if it's empty.
-        {SubmissionReadinessParams(PrepareFormData({true, false, true}),
-                                   /*username_field_index=*/0,
-                                   /*password_field_index=*/2,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kNonFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/2,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kTwoFields},
         // There's a focusable field after password field.
-        {SubmissionReadinessParams(PrepareFormData({true, true, true}),
-                                   /*username_field_index=*/0,
-                                   /*password_field_index=*/1,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/1,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kFieldAfterPasswordField},
         // There are unfocusable fields other than username and password fields.
-        {SubmissionReadinessParams(PrepareFormData({true, false, true, false}),
-                                   /*username_field_index=*/0,
-                                   /*password_field_index=*/2,
-                                   SubmissionReadinessState::kNoInformation),
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kNonFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kNonFocusableInput}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/2,
+             SubmissionReadinessState::kNoInformation),
+         SubmissionReadinessState::kTwoFields},
+        // There is a checkbox field after the password field.
+        {SubmissionReadinessParams(
+             PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableInput,
+                              FormFieldFocusabilityType::kFocusableCheckbox}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/1,
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kTwoFields},
 };
 

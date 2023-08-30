@@ -77,14 +77,13 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   };
 
   for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (ShouldIgnoreField(form_data.fields[i])) {
-      continue;
+    if (!ShouldIgnoreField(form_data.fields[i])) {
+      return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
     }
-    return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
   }
 
   for (size_t i = password_index + 1; i < number_of_elements; ++i) {
-    if (form_data.fields[i].IsFocusable()) {
+    if (!ShouldIgnoreField(form_data.fields[i])) {
       return SubmissionReadinessState::kFieldAfterPasswordField;
     }
   }
