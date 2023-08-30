@@ -384,14 +384,9 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 AutofillType AutofillField::ComputedType() const {
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always use the server prediction as html types are not very reliable.
-  if ((GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
-           FieldTypeGroup::kPhoneBilling ||
-       GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
-           FieldTypeGroup::kPhoneHome) &&
-      (GroupTypeOfServerFieldType(server_type()) ==
-           FieldTypeGroup::kPhoneBilling ||
-       GroupTypeOfServerFieldType(server_type()) ==
-           FieldTypeGroup::kPhoneHome)) {
+  if (GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
+          FieldTypeGroup::kPhone &&
+      GroupTypeOfServerFieldType(server_type()) == FieldTypeGroup::kPhone) {
     return AutofillType(server_type());
   }
 

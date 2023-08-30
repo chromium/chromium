@@ -13,13 +13,10 @@ namespace autofill {
 FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
   switch (field_type_group) {
     case FieldTypeGroup::kName:
-    case FieldTypeGroup::kNameBilling:
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kAddressHome:
-    case FieldTypeGroup::kAddressBilling:
-    case FieldTypeGroup::kPhoneHome:
-    case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kAddress:
+    case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kBirthdateField:
       return FormType::kAddressForm;
     case FieldTypeGroup::kCreditCard:

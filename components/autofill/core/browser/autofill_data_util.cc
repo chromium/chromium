@@ -280,13 +280,13 @@ void AddGroupToBitmask(uint32_t* group_bitmask, ServerFieldType type) {
     case autofill::FieldTypeGroup::kName:
       *group_bitmask |= kName;
       break;
-    case autofill::FieldTypeGroup::kAddressHome:
+    case autofill::FieldTypeGroup::kAddress:
       *group_bitmask |= kAddress;
       break;
     case autofill::FieldTypeGroup::kEmail:
       *group_bitmask |= kEmail;
       break;
-    case autofill::FieldTypeGroup::kPhoneHome:
+    case autofill::FieldTypeGroup::kPhone:
       *group_bitmask |= kPhone;
       break;
     default:

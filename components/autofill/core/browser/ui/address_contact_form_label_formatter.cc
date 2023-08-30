@@ -34,11 +34,10 @@ std::u16string AddressContactFormLabelFormatter::GetLabelForProfile(
     FieldTypeGroup focused_group) const {
   std::vector<std::u16string> label_parts;
 
-  bool street_address_is_focused =
-      focused_group == FieldTypeGroup::kAddressHome &&
-      IsStreetAddressPart(focused_field_type());
+  bool street_address_is_focused = focused_group == FieldTypeGroup::kAddress &&
+                                   IsStreetAddressPart(focused_field_type());
   bool non_street_address_is_focused =
-      focused_group == FieldTypeGroup::kAddressHome &&
+      focused_group == FieldTypeGroup::kAddress &&
       !IsStreetAddressPart(focused_field_type());
 
   if (focused_group != FieldTypeGroup::kName &&
@@ -55,7 +54,7 @@ std::u16string AddressContactFormLabelFormatter::GetLabelForProfile(
         &label_parts);
   }
 
-  if (focused_group != FieldTypeGroup::kPhoneHome && phone_disambiguates_) {
+  if (focused_group != FieldTypeGroup::kPhone && phone_disambiguates_) {
     AddLabelPartIfNotEmpty(GetLabelPhone(profile, app_locale()), &label_parts);
   }
 

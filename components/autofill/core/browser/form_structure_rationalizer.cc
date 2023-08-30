@@ -770,7 +770,7 @@ bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
     if ((*fields_)[field_index]->IsFocusable() &&
         AutofillType((*fields_)[field_index]->Type().GetStorableType())
-                .group() == FieldTypeGroup::kAddressHome &&
+                .group() == FieldTypeGroup::kAddress &&
         (*fields_)[field_index]->section == (*fields_)[upper_index]->section) {
       return false;
     }

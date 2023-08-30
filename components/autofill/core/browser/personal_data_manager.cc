@@ -1660,9 +1660,8 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   auto is_field_type_profile_related = [](ServerFieldType type) {
     FieldTypeGroup group = AutofillType(type).group();
     return group == FieldTypeGroup::kName ||
-           group == FieldTypeGroup::kAddressHome ||
-           group == FieldTypeGroup::kPhoneHome ||
-           group == FieldTypeGroup::kEmail;
+           group == FieldTypeGroup::kAddress ||
+           group == FieldTypeGroup::kPhone || group == FieldTypeGroup::kEmail;
   };
   if (base::ranges::count_if(field_types, is_field_type_profile_related) > 1) {
     for (auto& suggestion : unique_suggestions) {

@@ -799,7 +799,7 @@ TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
               {.trigger_source =
                    autofill::AutofillTriggerSource::kFastCheckout})));
   EXPECT_CALL(*autofill_manager(),
-              SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddressHome,
+              SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress,
                                    fast_checkout_client()->run_id_));
   fast_checkout_client()->OnAfterLoadedServerPredictions(*autofill_manager());
   EXPECT_THAT(

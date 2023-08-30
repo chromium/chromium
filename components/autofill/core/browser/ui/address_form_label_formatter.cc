@@ -27,7 +27,7 @@ AddressFormLabelFormatter::~AddressFormLabelFormatter() {}
 std::u16string AddressFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
-  if (focused_group != FieldTypeGroup::kAddressHome) {
+  if (focused_group != FieldTypeGroup::kAddress) {
     return GetLabelNationalAddress(field_types_for_labels(), profile,
                                    app_locale());
   } else {

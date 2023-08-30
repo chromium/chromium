@@ -170,7 +170,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
       break;
 
     case FieldTypeGroup::kName:
-    case FieldTypeGroup::kNameBilling:
       group = GROUP_NAME;
       break;
 
@@ -182,8 +181,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
       group = GROUP_IBAN;
       break;
 
-    case FieldTypeGroup::kAddressHome:
-    case FieldTypeGroup::kAddressBilling:
+    case FieldTypeGroup::kAddress:
       switch (AutofillType(field_type).GetStorableType()) {
         case ADDRESS_HOME_LINE1:
           group = GROUP_ADDRESS_LINE_1;
@@ -351,8 +349,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
       group = GROUP_EMAIL;
       break;
 
-    case FieldTypeGroup::kPhoneHome:
-    case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kPhone:
       group = GROUP_PHONE;
       break;
 

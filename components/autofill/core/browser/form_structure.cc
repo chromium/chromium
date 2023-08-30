@@ -1466,8 +1466,9 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // Forms often ask for multiple phone numbers -- e.g. both a daytime and
     // evening phone number.  Our phone number detection is also generally a
     // little off.  Hence, ignore this field type as a signal here.
-    if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
+    if (AutofillType(current_type).group() == FieldTypeGroup::kPhone) {
       already_saw_current_type = false;
+    }
 
     bool ignored_field = !field->IsFocusable();
 
@@ -1625,8 +1626,9 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
       // Forms often ask for multiple phone numbers -- e.g. both a daytime and
       // evening phone number.  Our phone number detection is also generally a
       // little off.  Hence, ignore this field type as a signal here.
-      if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
+      if (AutofillType(current_type).group() == FieldTypeGroup::kPhone) {
         already_saw_current_type = false;
+      }
 
       bool ignored_field = !field->IsFocusable();
 

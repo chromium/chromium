@@ -43,14 +43,14 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
       groups_(groups) {
   const FieldTypeGroup focused_group = AutofillType(focused_field_type).group();
   DenseSet<FieldTypeGroup> groups_for_labels{
-      FieldTypeGroup::kName, FieldTypeGroup::kAddressHome,
-      FieldTypeGroup::kEmail, FieldTypeGroup::kPhoneHome};
+      FieldTypeGroup::kName, FieldTypeGroup::kAddress, FieldTypeGroup::kEmail,
+      FieldTypeGroup::kPhone};
 
   // If a user is focused on an address field, then parts of the address may be
   // shown in the label. For example, if the user is focusing on a street
   // address field, then it may be helpful to show the city in the label.
   // Otherwise, the focused field should not appear in the label.
-  if (focused_group != FieldTypeGroup::kAddressHome) {
+  if (focused_group != FieldTypeGroup::kAddress) {
     groups_for_labels.erase(focused_group);
   }
 

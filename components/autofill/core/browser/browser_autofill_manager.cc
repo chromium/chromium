@@ -174,7 +174,6 @@ std::string_view GetSkipFieldFillLogMessage(SkipStatus skip_status) {
 // Returns whether the |field| is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
   return field.Type().group() == FieldTypeGroup::kName ||
-         field.Type().group() == FieldTypeGroup::kNameBilling ||
          field.Type().GetStorableType() == CREDIT_CARD_NAME_FULL ||
          field.Type().GetStorableType() == CREDIT_CARD_NAME_FIRST ||
          field.Type().GetStorableType() == CREDIT_CARD_NAME_LAST;
@@ -666,16 +665,13 @@ PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
     case FieldTypeGroup::kIban:
       return PopupType::kIbans;
 
-    case FieldTypeGroup::kAddressHome:
-    case FieldTypeGroup::kAddressBilling:
+    case FieldTypeGroup::kAddress:
       return PopupType::kAddresses;
 
     case FieldTypeGroup::kName:
-    case FieldTypeGroup::kNameBilling:
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kPhoneHome:
-    case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kBirthdateField:
       return FormHasAddressField(form) ? PopupType::kAddresses
                                        : PopupType::kPersonalInformation;
@@ -2769,8 +2765,7 @@ bool BrowserAutofillManager::FormHasAddressField(const FormData& form) {
   for (const FormFieldData& field : form.fields) {
     const AutofillField* autofill_field = GetAutofillField(form, field);
     if (autofill_field &&
-        (autofill_field->Type().group() == FieldTypeGroup::kAddressHome ||
-         autofill_field->Type().group() == FieldTypeGroup::kAddressBilling)) {
+        autofill_field->Type().group() == FieldTypeGroup::kAddress) {
       return true;
     }
   }

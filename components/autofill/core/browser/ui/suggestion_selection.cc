@@ -161,8 +161,7 @@ void AddNameChildSuggestions(const AutofillType& type,
                              const std::string& app_locale,
                              Suggestion& suggestion) {
   const FieldTypeGroup field_type_group = type.group();
-  if (field_type_group == FieldTypeGroup::kName ||
-      field_type_group == FieldTypeGroup::kNameBilling) {
+  if (field_type_group == FieldTypeGroup::kName) {
     // Note that this suggestion can only be added if name infos exist in the
     // profile.
     suggestion.children.push_back(
@@ -231,8 +230,7 @@ void AddAddressChildSuggestions(const AutofillType& type,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
   const FieldTypeGroup field_type_group = type.group();
-  if (field_type_group == FieldTypeGroup::kAddressHome ||
-      field_type_group == FieldTypeGroup::kAddressBilling) {
+  if (field_type_group == FieldTypeGroup::kAddress) {
     // Note that this suggestion can only be added if address infos exist in the
     // profile.
     suggestion.children.push_back(
@@ -265,8 +263,7 @@ void AddContactChildSuggestions(const AutofillType& type,
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
     Suggestion phone_number_suggestion(
         profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
-    const bool is_phone_field = type.group() == FieldTypeGroup::kPhoneHome ||
-                                type.group() == FieldTypeGroup::kPhoneBilling;
+    const bool is_phone_field = type.group() == FieldTypeGroup::kPhone;
     phone_number_suggestion.popup_item_id =
         is_phone_field ? PopupItemId::kFillFullPhoneNumber
                        : PopupItemId::kFieldByFieldFilling;
@@ -369,7 +366,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
             &prefix_matched_suggestion)) {
       matched_profiles->push_back(profile);
 
-      if (type.group() == FieldTypeGroup::kPhoneHome) {
+      if (type.group() == FieldTypeGroup::kPhone) {
         bool format_phone;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -482,8 +479,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
   // Phones should do a substring match because they can be trimmed to remove
   // the first parts (e.g. country code or prefix). It is still considered a
   // prefix match in order to put it at the top of the suggestions.
-  if ((type.group() == FieldTypeGroup::kPhoneHome ||
-       type.group() == FieldTypeGroup::kPhoneBilling) &&
+  if (type.group() == FieldTypeGroup::kPhone &&
       suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
   }

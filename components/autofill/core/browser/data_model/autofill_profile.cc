@@ -88,8 +88,9 @@ ServerFieldType GetStorableTypeCollapsingGroups(ServerFieldType type) {
   if (AutofillType(storable_type).group() == FieldTypeGroup::kName)
     return NAME_FULL;
 
-  if (AutofillType(storable_type).group() == FieldTypeGroup::kPhoneHome)
+  if (AutofillType(storable_type).group() == FieldTypeGroup::kPhone) {
     return PHONE_HOME_WHOLE_NUMBER;
+  }
 
   return storable_type;
 }
@@ -662,7 +663,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         // conditions that follow.
         return false;
       }
-    } else if (AutofillType(type).group() == FieldTypeGroup::kPhoneHome) {
+    } else if (AutofillType(type).group() == FieldTypeGroup::kPhone) {
       // Phone numbers should be canonicalized before comparing.
       if (type != PHONE_HOME_WHOLE_NUMBER &&
           type != PHONE_HOME_CITY_AND_NUMBER) {
@@ -1162,7 +1163,6 @@ const FormGroup* AutofillProfile::FormGroupForType(
 FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
   switch (type.group()) {
     case FieldTypeGroup::kName:
-    case FieldTypeGroup::kNameBilling:
       return &name_;
 
     case FieldTypeGroup::kEmail:
@@ -1171,12 +1171,10 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
     case FieldTypeGroup::kCompany:
       return &company_;
 
-    case FieldTypeGroup::kPhoneHome:
-    case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kPhone:
       return &phone_number_;
 
-    case FieldTypeGroup::kAddressHome:
-    case FieldTypeGroup::kAddressBilling:
+    case FieldTypeGroup::kAddress:
       return &address_;
 
     case FieldTypeGroup::kBirthdateField:

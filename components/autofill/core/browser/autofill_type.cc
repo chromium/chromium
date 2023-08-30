@@ -45,7 +45,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
     case PHONE_HOME_WHOLE_NUMBER:
     case PHONE_HOME_EXTENSION:
-      return FieldTypeGroup::kPhoneHome;
+      return FieldTypeGroup::kPhone;
 
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
@@ -78,7 +78,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
-      return FieldTypeGroup::kAddressHome;
+      return FieldTypeGroup::kAddress;
 
     case CREDIT_CARD_NAME_FULL:
     case CREDIT_CARD_NAME_FIRST:
@@ -154,9 +154,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HtmlFieldType::kAdditionalName:
     case HtmlFieldType::kAdditionalNameInitial:
     case HtmlFieldType::kFamilyName:
-      return field_mode == HtmlFieldMode::kBilling
-                 ? FieldTypeGroup::kNameBilling
-                 : FieldTypeGroup::kName;
+      return FieldTypeGroup::kName;
 
     case HtmlFieldType::kOrganization:
       return FieldTypeGroup::kCompany;
@@ -172,9 +170,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HtmlFieldType::kCountryName:
     case HtmlFieldType::kPostalCode:
     case HtmlFieldType::kFullAddress:
-      return field_mode == HtmlFieldMode::kBilling
-                 ? FieldTypeGroup::kAddressBilling
-                 : FieldTypeGroup::kAddressHome;
+      return FieldTypeGroup::kAddress;
 
     case HtmlFieldType::kCreditCardNameFull:
     case HtmlFieldType::kCreditCardNameFirst:
@@ -203,9 +199,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HtmlFieldType::kTelLocalPrefix:
     case HtmlFieldType::kTelLocalSuffix:
     case HtmlFieldType::kTelExtension:
-      return field_mode == HtmlFieldMode::kBilling
-                 ? FieldTypeGroup::kPhoneBilling
-                 : FieldTypeGroup::kPhoneHome;
+      return FieldTypeGroup::kPhone;
 
     case HtmlFieldType::kEmail:
       return FieldTypeGroup::kEmail;

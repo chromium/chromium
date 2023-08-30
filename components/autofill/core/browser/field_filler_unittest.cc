@@ -176,18 +176,18 @@ TEST_F(AutofillFieldFillerTest, Type) {
   field.set_server_predictions(
       {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_LINE1)});
   EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
 
   // Checks that overall_type trumps everything.
   field.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP));
   EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
 
   // Checks that setting server type resets overall type.
   field.set_server_predictions(
       {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_LINE1)});
   EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
 
   // Remove the server type to make sure the heuristic type is preserved.
   field.set_server_predictions(
@@ -198,7 +198,7 @@ TEST_F(AutofillFieldFillerTest, Type) {
   // Checks that overall_type trumps everything.
   field.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP));
   EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddress, field.Type().group());
 
   // Set the heuristic type and check it and reset overall Type.
   field.set_heuristic_type(GetActivePatternSource(), NAME_FIRST);

@@ -46,13 +46,10 @@ bool IsStreetNameOrHouseNumberType(const ServerFieldType type) {
 bool IsAddressType(const AutofillType& type) {
   switch (type.group()) {
     case FieldTypeGroup::kName:
-    case FieldTypeGroup::kNameBilling:
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kAddressHome:
-    case FieldTypeGroup::kAddressBilling:
-    case FieldTypeGroup::kPhoneHome:
-    case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kAddress:
+    case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kBirthdateField:
       return true;
     case FieldTypeGroup::kNoGroup:

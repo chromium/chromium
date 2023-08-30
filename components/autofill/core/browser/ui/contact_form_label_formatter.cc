@@ -37,7 +37,7 @@ std::u16string ContactFormLabelFormatter::GetLabelForProfile(
         &label_parts);
   }
 
-  if (focused_group != FieldTypeGroup::kPhoneHome) {
+  if (focused_group != FieldTypeGroup::kPhone) {
     AddLabelPartIfNotEmpty(MaybeGetPhone(profile), &label_parts);
   }
 

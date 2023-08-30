@@ -938,7 +938,7 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
   const AutofillType type = field.Type();
   std::u16string value = profile.GetInfo(type, app_locale);
 
-  if (type.group() == FieldTypeGroup::kPhoneHome) {
+  if (type.group() == FieldTypeGroup::kPhone) {
     // If the `field_data` is a selection box and having the type
     // `PHONE_HOME_COUNTRY_CODE`, call
     // `GetPhoneCountryCodeSelectControlForInput`.

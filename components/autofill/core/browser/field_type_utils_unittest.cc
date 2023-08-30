@@ -23,12 +23,11 @@ TEST(AutofillFieldTypeUtils, NumberOfPossibleTypesInGroup) {
       NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kCreditCard),
       1U);
 
-  EXPECT_EQ(
-      NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kAddressHome),
-      0U);
+  EXPECT_EQ(NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kAddress),
+            0U);
 
-  EXPECT_EQ(
-      NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kPhoneHome), 0U);
+  EXPECT_EQ(NumberOfPossibleFieldTypesInGroup(field, FieldTypeGroup::kPhone),
+            0U);
 }
 
 TEST(AutofillFieldTypeUtils, FieldHasMeaningfulFieldTypes) {

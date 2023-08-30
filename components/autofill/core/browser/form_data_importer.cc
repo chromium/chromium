@@ -75,8 +75,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
   if (types_seen.count(field_type) && field_type != EMAIL_ADDRESS &&
       (!base::FeatureList::IsEnabled(
            features::kAutofillEnableImportWhenMultiplePhoneNumbers) ||
-       (field_type_group != FieldTypeGroup::kPhoneBilling &&
-        field_type_group != FieldTypeGroup::kPhoneHome))) {
+       field_type_group != FieldTypeGroup::kPhone)) {
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
         << "Multiple fields of type "
@@ -523,8 +522,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
     // Found phone number component field.
     // TODO(crbug.com/1156315) Remove feature check when launched.
-    if ((field_type.group() == FieldTypeGroup::kPhoneBilling ||
-         field_type.group() == FieldTypeGroup::kPhoneHome) &&
+    if (field_type.group() == FieldTypeGroup::kPhone &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
       if (ignore_phone_number_fields)
