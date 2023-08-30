@@ -2497,6 +2497,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf openRecentTabs];
       };
+    case OPEN_TAB_GRID:
+      return ^{
+        [weakSelf.mainCoordinator showTabGrid];
+      };
     default:
       return nil;
   }

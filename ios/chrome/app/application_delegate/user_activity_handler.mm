@@ -64,6 +64,7 @@ NSString* const kSiriShortcutOpenInIncognito = @"OpenInChromeIncognitoIntent";
 NSString* const kSiriOpenReadingList = @"OpenReadingListIntent";
 NSString* const kSiriOpenBookmarks = @"OpenBookmarksIntent";
 NSString* const kSiriOpenRecentTabs = @"OpenRecentTabsIntent";
+NSString* const kSiriOpenTabGrid = @"OpenTabGridIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -314,6 +315,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     [connectionInformation
         setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
                                        OPEN_RECENT_TABS]];
+  } else if ([userActivity.activityType isEqualToString:kSiriOpenTabGrid]) {
+    [connectionInformation
+        setStartupParameters:
+            [self startupParametersForOpeningNewTabWithAction:OPEN_TAB_GRID]];
   } else {
     // Do nothing for unknown activity type.
     return NO;

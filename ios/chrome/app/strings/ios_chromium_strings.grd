@@ -737,6 +737,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_OPEN_RECENT_TABS_DESCRIPTION" desc="Shortcut description to open recent tabs in chrome [iOS only].">
         Opens the Chromium Recent Tabs.
       </message>
+      <message name="IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE" desc="Siri Shortcut for open tab grid title [iOS only]">
+        Visit the Tab Grid in Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_TAB_GRID_DESCRIPTION" desc="Shortcut description to open tab grid in chrome [iOS only].">
+        Opens the Chromium Tab Grid.
+      </message>
     </messages>
   </release>
 </grit>

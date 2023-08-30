@@ -13,5 +13,6 @@ intent_definition("intents") {
     "OpenReadingListIntent",
     "OpenBookmarksIntent",
     "OpenRecentTabsIntent",
+    "OpenTabGridIntent",
   ]
 }

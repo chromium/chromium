@@ -67,6 +67,30 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>hB4zxD</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>0wmLKV</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>j61w32</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_TAB_GRID_DESCRIPTION</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE</string>
+					<key>output</key>
+					<string>t9NbV2</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>vp7qIi</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_OPEN_RECENT_TABS_TITLE</string>

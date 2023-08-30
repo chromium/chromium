@@ -11,6 +11,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
+#import "ios/chrome/common/intents/OpenTabGridIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 
 @interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
@@ -18,7 +19,8 @@
                                     SearchInChromeIntentHandling,
                                     OpenReadingListIntentHandling,
                                     OpenBookmarksIntentHandling,
-                                    OpenRecentTabsIntentHandling>
+                                    OpenRecentTabsIntentHandling,
+                                    OpenTabGridIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -153,6 +155,20 @@
 
   OpenRecentTabsIntentResponse* response = [[OpenRecentTabsIntentResponse alloc]
       initWithCode:OpenRecentTabsIntentResponseCodeContinueInApp
+      userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - OpenTabGridIntentHandling
+
+- (void)handleOpenTabGrid:(OpenTabGridIntent*)intent
+               completion:(void (^)(OpenTabGridIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([OpenTabGridIntent class])];
+
+  OpenTabGridIntentResponse* response = [[OpenTabGridIntentResponse alloc]
+      initWithCode:OpenTabGridIntentResponseCodeContinueInApp
       userActivity:activity];
 
   completion(response);

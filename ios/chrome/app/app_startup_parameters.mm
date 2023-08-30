@@ -94,6 +94,9 @@
     case OPEN_RECENT_TABS:
       [description appendString:@", should open recent tabs"];
       break;
+    case OPEN_TAB_GRID:
+      [description appendString:@", should open tab grid"];
+      break;
     default:
       break;
   }
