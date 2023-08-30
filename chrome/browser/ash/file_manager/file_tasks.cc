@@ -63,6 +63,8 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -441,14 +443,10 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
                        drive::util::ConnectionStatus::kConnected;
   if (!integration_service || !integration_service->IsMounted() ||
       !integration_service->GetDriveFsInterface()) {
-    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveOpenErrors::kDriveFsInterface);
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
         ash::office_fallback::FallbackReason::kDriveUnavailable);
   } else if (offline) {
-    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveOpenErrors::kOffline);
     // TODO(petermarshall): Quick Office vs. other default handler.
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
@@ -469,8 +467,6 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
                              const std::vector<FileSystemURL>& file_urls,
                              gfx::NativeWindow modal_parent) {
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName,
-                              OfficeOneDriveOpenErrors::kOffline);
     return GetUserFallbackChoice(
         profile, task, file_urls, modal_parent,
         ash::office_fallback::FallbackReason::kOffline);
@@ -573,6 +569,39 @@ OfficeOpenExtensions GetOfficeOpenExtension(const FileSystemURL& url) {
 // returns whether the given MIME type denotes such a file.
 bool IsEncryptedEntry(const extensions::EntryInfo& entry) {
   return drive::util::IsEncryptedMimeType(entry.mime_type);
+}
+
+void LogOneDriveOpenErrorUmaAfterFallback(
+    ash::office_fallback::FallbackReason fallback_reason,
+    ash::cloud_upload::OfficeTaskResult task_result) {
+  switch (fallback_reason) {
+    case ash::office_fallback::FallbackReason::kOffline:
+      UMA_HISTOGRAM_ENUMERATION(kOneDriveErrorMetricName,
+                                OfficeOneDriveOpenErrors::kOffline);
+      break;
+    case ash::office_fallback::FallbackReason::kDriveUnavailable:
+      NOTREACHED();
+      break;
+  }
+  UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOneDriveTaskResultMetricName,
+                            task_result);
+}
+
+void LogGoogleDriveOpenErrorUmaAfterFallback(
+    ash::office_fallback::FallbackReason fallback_reason,
+    ash::cloud_upload::OfficeTaskResult task_result) {
+  switch (fallback_reason) {
+    case ash::office_fallback::FallbackReason::kOffline:
+      UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                                OfficeDriveOpenErrors::kOffline);
+      break;
+    case ash::office_fallback::FallbackReason::kDriveUnavailable:
+      UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                                OfficeDriveOpenErrors::kDriveFsInterface);
+      break;
+  }
+  UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+                            task_result);
 }
 
 }  // namespace
@@ -1016,23 +1045,29 @@ void LaunchQuickOffice(Profile* profile,
   return;
 }
 
-void OnDialogChoiceReceived(Profile* profile,
-                            const TaskDescriptor& task,
-                            const std::vector<FileSystemURL>& file_urls,
-                            gfx::NativeWindow modal_parent,
-                            const std::string& choice) {
+void OnDialogChoiceReceived(
+    Profile* profile,
+    const TaskDescriptor& task,
+    const std::vector<FileSystemURL>& file_urls,
+    gfx::NativeWindow modal_parent,
+    const std::string& choice,
+    ash::office_fallback::FallbackReason fallback_reason) {
   if (choice == ash::office_fallback::kDialogChoiceQuickOffice) {
     if (IsWebDriveOfficeTask(task)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      LogGoogleDriveOpenErrorUmaAfterFallback(
+          fallback_reason,
           ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice);
     } else if (IsOpenInOfficeTask(task)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kOneDriveTaskResultMetricName,
+      LogOneDriveOpenErrorUmaAfterFallback(
+          fallback_reason,
           ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice);
     }
     LaunchQuickOffice(profile, file_urls);
   } else if (choice == ash::office_fallback::kDialogChoiceTryAgain) {
+    // When retrying, the original open result is thrown away, so that
+    // (likely the same) result codes from repeated retries are not counted.
+    // Only the last open result is recorded: when the user either selects
+    // QO or cancels.
     if (IsWebDriveOfficeTask(task)) {
       ExecuteWebDriveOfficeTask(profile, task, file_urls, modal_parent);
     } else if (IsOpenInOfficeTask(task)) {
@@ -1040,13 +1075,11 @@ void OnDialogChoiceReceived(Profile* profile,
     }
   } else if (choice == ash::office_fallback::kDialogChoiceCancel) {
     if (IsWebDriveOfficeTask(task)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kGoogleDriveTaskResultMetricName,
-          ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
+      LogGoogleDriveOpenErrorUmaAfterFallback(
+          fallback_reason, ash::cloud_upload::OfficeTaskResult::kCancelled);
     } else if (IsOpenInOfficeTask(task)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          ash::cloud_upload::kOneDriveTaskResultMetricName,
-          ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
+      LogOneDriveOpenErrorUmaAfterFallback(
+          fallback_reason, ash::cloud_upload::OfficeTaskResult::kCancelled);
     }
   }
 }

@@ -402,11 +402,13 @@ void LaunchQuickOffice(Profile* profile,
 // If user's `choice` is `kDialogChoiceQuickOffice`, launch QuickOffice.
 // If user's `choice` is `kDialogChoiceTryAgain`, execute the `task`.
 // If user's `choice` is `kDialogChoiceCancel`, do nothing.
-void OnDialogChoiceReceived(Profile* profile,
-                            const TaskDescriptor& task,
-                            const std::vector<FileSystemURL>& file_urls,
-                            gfx::NativeWindow modal_parent,
-                            const std::string& choice);
+void OnDialogChoiceReceived(
+    Profile* profile,
+    const TaskDescriptor& task,
+    const std::vector<FileSystemURL>& file_urls,
+    gfx::NativeWindow modal_parent,
+    const std::string& choice,
+    ash::office_fallback::FallbackReason fallback_reason);
 
 // Shows a new dialog for users to choose what to do next. Returns True
 // if a new dialog has been effectively created.

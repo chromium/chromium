@@ -12,14 +12,15 @@
 
 namespace ash::office_fallback {
 
-using DialogChoiceCallback =
-    base::OnceCallback<void(const std::string& choice)>;
-
 // The reason why the user's file can't open.
 enum class FallbackReason {
   kOffline,
   kDriveUnavailable,
 };
+
+using DialogChoiceCallback =
+    base::OnceCallback<void(const std::string& choice,
+                            FallbackReason fallback_reason)>;
 
 // Defines the web dialog used to allow users to choose what to do when failing
 // to open office files.
@@ -31,7 +32,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   // Creates and shows the dialog. Returns true if a new dialog has been
   // effectively created.
   static bool Show(const std::vector<storage::FileSystemURL>& file_urls,
-                   const FallbackReason fallback_reason,
+                   FallbackReason fallback_reason,
                    const std::string& action_id,
                    DialogChoiceCallback callback);
 
@@ -42,6 +43,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
 
  protected:
   OfficeFallbackDialog(const std::vector<storage::FileSystemURL>& file_urls,
+                       FallbackReason fallback_reason,
                        const std::string& title_text,
                        const std::string& reason_message,
                        const std::string& instructions_message,
@@ -52,6 +54,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
 
  private:
   const std::vector<storage::FileSystemURL> file_urls_;
+  const FallbackReason fallback_reason_;
   const std::string title_text_;
   const std::string reason_message_;
   const std::string instructions_message_;
