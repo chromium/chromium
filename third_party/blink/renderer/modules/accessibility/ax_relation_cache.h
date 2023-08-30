@@ -84,8 +84,8 @@ class AXRelationCache {
   void UpdateReverseTextRelations(Element& relation_source,
                                   const Vector<String>& target_ids);
 
-  void UpdateReverseActiveDescendantRelations(Node* relation_source,
-                                              const String& id);
+  void UpdateReverseActiveDescendantRelations(Element& relation_source);
+  void UpdateReverseOwnsRelations(Element& relation_source);
 
   // Process a new element and cache relations from its relevant attributes
   // using values of type IDREF/IDREFS.

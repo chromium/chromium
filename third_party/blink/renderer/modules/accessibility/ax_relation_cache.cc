@@ -68,13 +68,7 @@ void AXRelationCache::CacheRelationIds(Element& element) {
 #endif
 
   // Register aria-owns.
-  Vector<String> owned_ids;
-  AXObject::TokenVectorFromAttribute(&element, owned_ids,
-                                     html_names::kAriaOwnsAttr);
-  if (!owned_ids.empty()) {
-    UpdateReverseRelations(id_attr_to_owns_relation_mapping_, &element,
-                           owned_ids);
-  }
+  UpdateReverseOwnsRelations(element);
 
   // Register <label for>.
   const auto& id = element.FastGetAttribute(html_names::kForAttr);
@@ -86,11 +80,7 @@ void AXRelationCache::CacheRelationIds(Element& element) {
   UpdateReverseTextRelations(element);
 
   // Register aria-activedescendant.
-  if (auto& activedescendant_id =
-          AccessibleNode::GetPropertyOrARIAAttributeValue(
-              &element, AOMRelationProperty::kActiveDescendant)) {
-    UpdateReverseActiveDescendantRelations(&element, activedescendant_id);
-  }
+  UpdateReverseActiveDescendantRelations(element);
 }
 
 #if DCHECK_IS_ON()
@@ -283,11 +273,23 @@ void AXRelationCache::UpdateReverseTextRelations(
 }
 
 void AXRelationCache::UpdateReverseActiveDescendantRelations(
-    Node* relation_source,
-    const String& id) {
-  Vector<String> ids = {id};
-  UpdateReverseRelations(id_attr_to_active_descendant_mapping_, relation_source,
-                         ids);
+    Element& relation_source) {
+  const AtomicString& id = AccessibleNode::GetPropertyOrARIAAttributeValue(
+      &relation_source, AOMRelationProperty::kActiveDescendant);
+  if (!id) {
+    return;
+  }
+  UpdateReverseRelations(id_attr_to_active_descendant_mapping_,
+                         &relation_source, {id});
+}
+
+void AXRelationCache::UpdateReverseOwnsRelations(Element& relation_source) {
+  Vector<String> owned_id_vector;
+  AXObject::TokenVectorFromAttribute(&relation_source, owned_id_vector,
+                                     html_names::kAriaOwnsAttr);
+  // Track reverse relations for future tree updates.
+  UpdateReverseRelations(id_attr_to_owns_relation_mapping_, &relation_source,
+                         owned_id_vector);
 }
 
 // ContainsCycle() should:
@@ -595,9 +597,6 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
     Vector<String> owned_id_vector;
     owner->TokenVectorFromAttribute(element, owned_id_vector,
                                     html_names::kAriaOwnsAttr);
-    // Track reverse relations for future tree updates.
-    UpdateReverseRelations(id_attr_to_owns_relation_mapping_, element,
-                           owned_id_vector);
     for (const String& id_name : owned_id_vector) {
       Element* child_element = scope.getElementById(AtomicString(id_name));
       // Pass in owner parent assuming that the owns relationship will be valid.

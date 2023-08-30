@@ -3740,11 +3740,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     // Perform updates specific to each attribute.
     if (attr_name == html_names::kAriaActivedescendantAttr) {
       if (relation_cache_) {
-        if (auto& value = AccessibleNode::GetPropertyOrARIAAttributeValue(
-                element, AOMRelationProperty::kActiveDescendant)) {
-          relation_cache_->UpdateReverseActiveDescendantRelations(element,
-                                                                  value);
-        }
+        relation_cache_->UpdateReverseActiveDescendantRelations(*element);
       }
       DeferTreeUpdate(TreeUpdateReason::kActiveDescendantChanged, element);
     } else if (attr_name == html_names::kAriaValuenowAttr ||
@@ -3782,6 +3778,9 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       DeferTreeUpdate(TreeUpdateReason::kInvalidateCachedValuesOnSubtree,
                       element);
     } else if (attr_name == html_names::kAriaOwnsAttr) {
+      if (relation_cache_) {
+        relation_cache_->UpdateReverseOwnsRelations(*element);
+      }
       DeferTreeUpdate(TreeUpdateReason::kAriaOwnsChanged, element);
     } else if (attr_name == html_names::kAriaHaspopupAttr) {
       if (AXObject* obj = Get(element)) {
