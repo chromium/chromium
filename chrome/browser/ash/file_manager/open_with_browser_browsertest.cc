@@ -139,36 +139,6 @@ IN_PROC_BROWSER_TEST_P(OpenWithBrowserBrowserTest, OpenTextFile) {
   ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
 }
 
-// Test to check that OpenNewTabForHostedOfficeFile() doesn't crash when passed
-// an invalid URL.
-IN_PROC_BROWSER_TEST_P(OpenWithBrowserBrowserTest,
-                       InvalidUrlDoesNotCauseCrash) {
-  // Create an empty, invalid URL.
-  GURL invalid_url = GURL();
-  ASSERT_FALSE(invalid_url.is_valid());
-
-  OpenNewTabForHostedOfficeFile(invalid_url);
-}
-
-// Test to check that OpenNewTabForHostedOfficeFile() correctly adds a query
-// parameter to the input office url and attempts to open the resulting url in
-// the browser.
-IN_PROC_BROWSER_TEST_P(OpenWithBrowserBrowserTest,
-                       AddQueryParamToOfficeFileUrl) {
-  const std::string& test_url =
-      "https://docs.google.com/document/d/testurl/edit";
-  GURL page_url = GURL(test_url);
-  GURL page_url_with_query_param = GURL(test_url + "?cros_files=true");
-
-  content::TestNavigationObserver navigation_observer(
-      page_url_with_query_param);
-
-  // Start watching for the opening of `page_url_with_query_param`
-  navigation_observer.StartWatchingNewWebContents();
-  OpenNewTabForHostedOfficeFile(page_url);
-  navigation_observer.Wait();
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     OpenWithBrowserBrowserTest,

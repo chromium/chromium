@@ -28,9 +28,9 @@
 #include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/filename_util.h"
-#include "net/base/url_util.h"
 #include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 
@@ -195,46 +195,6 @@ bool OpenFileWithBrowser(Profile* profile,
   // Failed to open the file of unknown type.
   LOG(WARNING) << "Unknown file type: " << file_path.value();
   return false;
-}
-
-bool OpenNewTabForHostedOfficeFile(const GURL& url) {
-  GURL url_with_query_param =
-      net::AppendOrReplaceQueryParameter(url, "cros_files", "true");
-
-  if (!url_with_query_param.is_valid()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveOpenErrors::kInvalidAlternateUrl);
-    UMA_HISTOGRAM_ENUMERATION(
-        ash::cloud_upload::kGoogleDriveTaskResultMetricName,
-        ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
-    LOG(ERROR) << "Invalid URL";
-    return false;
-  }
-  if (url_with_query_param.host() == "drive.google.com") {
-    UMA_HISTOGRAM_ENUMERATION(
-        file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveOpenErrors::kDriveAlternateUrl);
-    UMA_HISTOGRAM_ENUMERATION(
-        ash::cloud_upload::kGoogleDriveTaskResultMetricName,
-        ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
-    LOG(ERROR) << "URL was from drive.google.com";
-    return false;
-  }
-  if (url_with_query_param.host() != "docs.google.com") {
-    UMA_HISTOGRAM_ENUMERATION(
-        file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveOpenErrors::kUnexpectedAlternateUrl);
-    UMA_HISTOGRAM_ENUMERATION(
-        ash::cloud_upload::kGoogleDriveTaskResultMetricName,
-        ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
-    LOG(ERROR) << "URL was not from docs.google.com";
-    return false;
-  }
-  UMA_HISTOGRAM_ENUMERATION(file_tasks::kDriveErrorMetricName,
-                            file_tasks::OfficeDriveOpenErrors::kSuccess);
-
-  return OpenNewTab(url_with_query_param);
 }
 
 }  // namespace util

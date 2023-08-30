@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
@@ -50,6 +51,7 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/constants.h"
+#include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -125,40 +127,64 @@ enum class Microsoft365Availability {
   kMaxValue = kODFS,
 };
 
+// Opens the file specified by |url| in a new tab. |url| must be a
+// docs.google.com URL for an office file.
+fm_tasks::OfficeDriveOpenErrors OpenDriveUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    LOG(ERROR) << "Invalid URL";
+    return fm_tasks::OfficeDriveOpenErrors::kInvalidAlternateUrl;
+  }
+  if (url.host() == "drive.google.com") {
+    LOG(ERROR) << "URL was from drive.google.com";
+    return fm_tasks::OfficeDriveOpenErrors::kDriveAlternateUrl;
+  }
+  if (url.host() != "docs.google.com") {
+    LOG(ERROR) << "URL was not from docs.google.com";
+    return fm_tasks::OfficeDriveOpenErrors::kUnexpectedAlternateUrl;
+  }
+
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      net::AppendOrReplaceQueryParameter(url, "cros_files", "true"),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  return fm_tasks::OfficeDriveOpenErrors::kSuccess;
+}
+
+// Logs UMA when the Drive task ends with an attempt to open a file.
+void LogGoogleDriveOpenResultUMA(OfficeTaskResult success_task_result,
+                                 fm_tasks::OfficeDriveOpenErrors open_result) {
+  UMA_HISTOGRAM_ENUMERATION(fm_tasks::kDriveErrorMetricName, open_result);
+  UMA_HISTOGRAM_ENUMERATION(
+      kGoogleDriveTaskResultMetricName,
+      open_result == fm_tasks::OfficeDriveOpenErrors::kSuccess
+          ? success_task_result
+          : OfficeTaskResult::kFailedToOpen);
+}
+
 // Open a hosted MS Office file e.g. .docx, from a url hosted in
 // DriveFS. Check the file was successfully uploaded to DriveFS.
-void OpenUploadedDriveUrl(const GURL& url,
-                          const OfficeTaskResult task_result_uma) {
+void OpenUploadedDriveUrl(const GURL& url, const OfficeTaskResult task_result) {
   // TODO(b/296950967): This function logs both open result and task result (but
   // only if open fails) metrics internally, pull them up to a higher level so
   // all the metrics are logged in one place.
-  bool opened = file_manager::util::OpenNewTabForHostedOfficeFile(url);
-  if (opened) {
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              task_result_uma);
-  }
+  fm_tasks::OfficeDriveOpenErrors open_result = OpenDriveUrl(url);
+  LogGoogleDriveOpenResultUMA(task_result, open_result);
 }
 
 // Open an already hosted MS Office file e.g. .docx, from a url hosted in
 // DriveFS. Check there was no error retrieving the file's metadata.
-void OpenAlreadyHostedDriveUrl(drive::FileError error,
-                               drivefs::mojom::FileMetadataPtr metadata) {
-  if (error != drive::FILE_ERROR_OK) {
-    UMA_HISTOGRAM_ENUMERATION(fm_tasks::kDriveErrorMetricName,
-                              fm_tasks::OfficeDriveOpenErrors::kNoMetadata);
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToOpen);
+void OnGoogleDriveGetMetadata(drive::FileError error,
+                              drivefs::mojom::FileMetadataPtr metadata) {
+  fm_tasks::OfficeDriveOpenErrors open_result =
+      fm_tasks::OfficeDriveOpenErrors::kSuccess;
+  if (error == drive::FILE_ERROR_OK) {
+    GURL hosted_url(metadata->alternate_url);
+    open_result = OpenDriveUrl(hosted_url);
+  } else {
     LOG(ERROR) << "Drive metadata error: " << error;
-    return;
+    open_result = fm_tasks::OfficeDriveOpenErrors::kNoMetadata;
   }
-
-  GURL hosted_url(metadata->alternate_url);
-  bool opened = file_manager::util::OpenNewTabForHostedOfficeFile(hosted_url);
-
-  if (opened) {
-    UMA_HISTOGRAM_ENUMERATION(kGoogleDriveTaskResultMetricName,
-                              OfficeTaskResult::kOpened);
-  }
+  LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
 }
 
 // Logs UMA when the OneDrive task ends with an attempt to open a file.
@@ -560,7 +586,7 @@ void CloudOpenTask::OpenAlreadyHostedDriveUrls() {
     if (integration_service->GetRelativeDrivePath(file_url.path(),
                                                   &relative_path)) {
       integration_service->GetDriveFsInterface()->GetMetadata(
-          relative_path, base::BindOnce(&OpenAlreadyHostedDriveUrl));
+          relative_path, base::BindOnce(&OnGoogleDriveGetMetadata));
     } else {
       LOG(ERROR) << "Unexpected error obtaining the relative path ";
     }
