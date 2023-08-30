@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.LayoutInflater;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -35,7 +35,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.ViewAndroidDelegate;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,13 +58,17 @@ public class TouchToFillPasswordGenerationModuleTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
+    private WebContents mWebContents;
+    @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
     private TouchToFillPasswordGenerationCoordinator.Delegate mDelegate;
+    @Mock
+    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     private static final String sTestEmailAddress = "test@email.com";
     private static final String sGeneratedPassword = "Strong generated password";
-    private View mContent;
+    private ViewGroup mContent;
 
     @Before
     public void setUp() {
@@ -69,13 +76,14 @@ public class TouchToFillPasswordGenerationModuleTest {
 
         mActivityScenarioRule.getScenario().onActivity(activity -> {
             setUpBottomSheetController();
-            mContent = LayoutInflater.from(activity).inflate(
+            mContent = (ViewGroup) LayoutInflater.from(activity).inflate(
                     R.layout.touch_to_fill_password_generation, null);
             TouchToFillPasswordGenerationView touchToFillPasswordGenerationView =
                     new TouchToFillPasswordGenerationView(activity, mContent);
             activity.setContentView(mContent);
-            mCoordinator = new TouchToFillPasswordGenerationCoordinator(
-                    mBottomSheetController, touchToFillPasswordGenerationView, mDelegate);
+            mCoordinator = new TouchToFillPasswordGenerationCoordinator(mWebContents,
+                    mBottomSheetController, touchToFillPasswordGenerationView,
+                    mKeyboardVisibilityDelegate, mDelegate);
         });
     }
 
@@ -131,6 +139,18 @@ public class TouchToFillPasswordGenerationModuleTest {
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
         verify(mDelegate).onGeneratedPasswordRejected();
+    }
+
+    @Test
+    public void testKeyboardIsDisplayedWhenPasswordRejected() {
+        ViewAndroidDelegate viewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mContent);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
+
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+
+        Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
+        rejectPasswordButton.performClick();
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mContent);
     }
 
     @Test

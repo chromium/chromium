@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -41,7 +44,9 @@ class TouchToFillPasswordGenerationCoordinator {
         void onGeneratedPasswordRejected();
     }
 
+    private final WebContents mWebContents;
     private final TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
+    private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Delegate mTouchToFillPasswordGenerationDelegate;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -52,8 +57,11 @@ class TouchToFillPasswordGenerationCoordinator {
     };
 
     public TouchToFillPasswordGenerationCoordinator(BottomSheetController bottomSheetController,
-            Context context, Delegate touchToFillPasswordGenerationDelegate) {
-        this(bottomSheetController, createView(context), touchToFillPasswordGenerationDelegate);
+            Context context, WebContents webContents,
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            Delegate touchToFillPasswordGenerationDelegate) {
+        this(webContents, bottomSheetController, createView(context), keyboardVisibilityDelegate,
+                touchToFillPasswordGenerationDelegate);
     }
 
     private static TouchToFillPasswordGenerationView createView(Context context) {
@@ -63,9 +71,13 @@ class TouchToFillPasswordGenerationCoordinator {
     }
 
     @VisibleForTesting
-    TouchToFillPasswordGenerationCoordinator(BottomSheetController bottomSheetController,
+    TouchToFillPasswordGenerationCoordinator(WebContents webContents,
+            BottomSheetController bottomSheetController,
             TouchToFillPasswordGenerationView touchToFillPasswordGenerationView,
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Delegate touchToFillPasswordGenerationDelegate) {
+        mWebContents = webContents;
+        mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mTouchToFillPasswordGenerationDelegate = touchToFillPasswordGenerationDelegate;
         mBottomSheetController = bottomSheetController;
         mTouchToFillPasswordGenerationView = touchToFillPasswordGenerationView;
@@ -110,6 +122,17 @@ class TouchToFillPasswordGenerationCoordinator {
     private void onGeneratedPasswordRejected() {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordRejected();
         onDismissed(StateChangeReason.INTERACTION_COMPLETE);
+        restoreKeyboardFocus();
+    }
+
+    void restoreKeyboardFocus() {
+        if (mWebContents.getViewAndroidDelegate() == null) return;
+        if (mWebContents.getViewAndroidDelegate().getContainerView() == null) return;
+
+        View webContentView = mWebContents.getViewAndroidDelegate().getContainerView();
+        if (webContentView.requestFocus()) {
+            mKeyboardVisibilityDelegate.showKeyboard(webContentView);
+        }
     }
 
     /**

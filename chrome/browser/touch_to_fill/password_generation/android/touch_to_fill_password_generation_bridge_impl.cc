@@ -37,7 +37,7 @@ bool TouchToFillPasswordGenerationBridgeImpl::Show(
   java_object_.Reset(Java_TouchToFillPasswordGenerationBridge_create(
       base::android::AttachCurrentThread(),
       web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      reinterpret_cast<intptr_t>(this)));
+      web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this)));
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> j_password =

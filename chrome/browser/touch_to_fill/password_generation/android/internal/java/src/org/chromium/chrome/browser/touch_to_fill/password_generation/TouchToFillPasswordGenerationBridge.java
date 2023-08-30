@@ -10,6 +10,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -21,20 +23,20 @@ class TouchToFillPasswordGenerationBridge
     private long mNativeTouchToFillPasswordGenerationBridge;
 
     @CalledByNative
-    private static TouchToFillPasswordGenerationBridge create(
-            WindowAndroid windowAndroid, long nativeTouchToFillPasswordGenerationBridge) {
+    private static TouchToFillPasswordGenerationBridge create(WindowAndroid windowAndroid,
+            WebContents webContents, long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         Context context = windowAndroid.getContext().get();
-        return new TouchToFillPasswordGenerationBridge(
-                nativeTouchToFillPasswordGenerationBridge, bottomSheetController, context);
+        return new TouchToFillPasswordGenerationBridge(nativeTouchToFillPasswordGenerationBridge,
+                bottomSheetController, context, webContents);
     }
 
     public TouchToFillPasswordGenerationBridge(long nativeTouchToFillPasswordGenerationBridge,
-            BottomSheetController bottomSheetController, Context context) {
+            BottomSheetController bottomSheetController, Context context, WebContents webContents) {
         mNativeTouchToFillPasswordGenerationBridge = nativeTouchToFillPasswordGenerationBridge;
-        mCoordinator =
-                new TouchToFillPasswordGenerationCoordinator(bottomSheetController, context, this);
+        mCoordinator = new TouchToFillPasswordGenerationCoordinator(bottomSheetController, context,
+                webContents, KeyboardVisibilityDelegate.getInstance(), this);
     }
 
     @CalledByNative

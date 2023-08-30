@@ -37,6 +37,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.io.IOException;
@@ -98,7 +99,8 @@ public class TouchToFillPasswordGenerationRenderTest {
             TouchToFillPasswordGenerationView view =
                     new TouchToFillPasswordGenerationView(mActivityTestRule.getActivity(), content);
             mCoordinator = new TouchToFillPasswordGenerationCoordinator(
-                    mBottomSheetController, view, mDelegateMock);
+                    mActivityTestRule.getWebContents(), mBottomSheetController, view,
+                    KeyboardVisibilityDelegate.getInstance(), mDelegateMock);
         });
     }
 
