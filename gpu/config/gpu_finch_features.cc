@@ -287,6 +287,8 @@ BASE_FEATURE(kWebGPUService, "WebGPUService", WEBGPU_ENABLED);
 BASE_FEATURE(kWebGPUBlobCache, "WebGPUBlobCache", WEBGPU_ENABLED);
 #undef WEBGPU_ENABLED
 
+BASE_FEATURE(kWebGPUUseDXC, "WebGPUUseDXC", base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
