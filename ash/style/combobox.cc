@@ -501,17 +501,20 @@ void Combobox::ShowDropDownMenu() {
 }
 
 void Combobox::CloseDropDownMenu() {
-  // Commit selection before closing the menu.
-  OnPerformAction();
-
   menu_view_ = nullptr;
   menu_.reset();
+
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
   title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kInactiveTitleAndIconColorId, kArrowIconSize));
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+
+  // Commit the selection once the combobox view state has been updated.
+  // NOTE: This may run selection callback, which may end up deleting this,
+  // depending on how the callback is handled.
+  OnPerformAction();
 }
 
 void Combobox::OnPerformAction() {
@@ -562,9 +565,9 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
   // Reset selected index to avoid using the destroying model.
   SetSelectedIndex(absl::nullopt);
-  CloseDropDownMenu();
   model_ = nullptr;
   observation_.Reset();
+  CloseDropDownMenu();
 }
 
 bool Combobox::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
