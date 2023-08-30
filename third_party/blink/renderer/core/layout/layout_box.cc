@@ -1312,7 +1312,8 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   }
   // We must have a length because HasOverrideIntrinsicContentWidth() is true.
   DCHECK(intrinsic_length.GetLength().has_value());
-  return *intrinsic_length.GetLength();
+  DCHECK(intrinsic_length.GetLength()->IsFixed());
+  return LayoutUnit(intrinsic_length.GetLength()->Value());
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
@@ -1336,7 +1337,8 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   }
   // We must have a length because HasOverrideIntrinsicContentHeight() is true.
   DCHECK(intrinsic_length.GetLength().has_value());
-  return *intrinsic_length.GetLength();
+  DCHECK(intrinsic_length.GetLength()->IsFixed());
+  return LayoutUnit(intrinsic_length.GetLength()->Value());
 }
 
 LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {

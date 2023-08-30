@@ -16,10 +16,8 @@ class StyleIntrinsicLength {
  public:
   // Style data for contain-intrinsic-size:
   //  none | <length> | auto && <length> | auto && none.
-  StyleIntrinsicLength(bool has_auto, const absl::optional<double>& length)
-      : has_auto_(has_auto),
-        length_(length ? absl::optional<LayoutUnit>(LayoutUnit(*length))
-                       : absl::nullopt) {}
+  StyleIntrinsicLength(bool has_auto, const absl::optional<Length>& length)
+      : has_auto_(has_auto), length_(length) {}
 
   StyleIntrinsicLength() = default;
 
@@ -31,7 +29,7 @@ class StyleIntrinsicLength {
 
   void SetHasAuto() { has_auto_ = true; }
 
-  const absl::optional<LayoutUnit>& GetLength() const { return length_; }
+  const absl::optional<Length>& GetLength() const { return length_; }
 
   bool operator==(const StyleIntrinsicLength& o) const {
     return has_auto_ == o.has_auto_ && length_ == o.length_;
@@ -41,7 +39,7 @@ class StyleIntrinsicLength {
 
  private:
   bool has_auto_ = false;
-  absl::optional<LayoutUnit> length_;
+  absl::optional<Length> length_;
 };
 
 }  // namespace blink

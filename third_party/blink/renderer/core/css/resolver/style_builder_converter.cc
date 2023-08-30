@@ -2963,8 +2963,7 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(0))) {
     DCHECK_EQ(list->length(), 1u);
     return StyleIntrinsicLength(
-        /*has_auto=*/false,
-        ConvertLayoutUnit(state, *primitive_value).ToDouble());
+        /*has_auto=*/false, ConvertLength(state, *primitive_value));
   }
 
   // The rest of the syntax will have "auto" as the first keyword.
@@ -2976,8 +2975,7 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   // Handle "auto && <length>"
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(1))) {
     return StyleIntrinsicLength(
-        /*has_auto=*/true,
-        ConvertLayoutUnit(state, *primitive_value).ToDouble());
+        /*has_auto=*/true, ConvertLength(state, *primitive_value));
   }
 
   // The only grammar left is "auto && none".

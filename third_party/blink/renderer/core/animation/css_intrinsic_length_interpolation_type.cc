@@ -102,7 +102,8 @@ CSSIntrinsicLengthInterpolationType::CreateInterpolableIntrinsicDimension(
     return nullptr;
   }
 
-  return InterpolableLength::CreatePixels(length->ToDouble());
+  DCHECK(length->IsFixed());
+  return InterpolableLength::CreatePixels(length->Value());
 }
 
 PairwiseInterpolationValue
@@ -210,10 +211,8 @@ void CSSIntrinsicLengthInterpolationType::ApplyStandardPropertyValue(
         state.StyleBuilder(),
         StyleIntrinsicLength(
             non_interpolable->HasAuto(),
-            interpolable
-                .CreateLength(state.CssToLengthConversionData(),
-                              Length::ValueRange::kNonNegative)
-                .Value()));
+            interpolable.CreateLength(state.CssToLengthConversionData(),
+                                      Length::ValueRange::kNonNegative)));
   }
 }
 void CSSIntrinsicLengthInterpolationType::Composite(

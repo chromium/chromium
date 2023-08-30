@@ -3940,8 +3940,8 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   }
 
-  if (const absl::optional<LayoutUnit>& length = intrinsic_length.GetLength()) {
-    list->Append(*ZoomAdjustedPixelValue(*length, style));
+  if (const absl::optional<Length>& length = intrinsic_length.GetLength()) {
+    list->Append(*ZoomAdjustedPixelValueForLength(*length, style));
   } else {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
   }
