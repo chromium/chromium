@@ -8,7 +8,7 @@ function verifyContextLost(shouldBeLost, ctx) {
     // Verify context loss experimentally as well as contextLost
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 1, 1);
-    contextLostTest = ctx.getImageData(0, 0, 1, 1).data[1] == 0;
+    const contextLostTest = ctx.getImageData(0, 0, 1, 1).data[1] == 0;
     if (shouldBeLost) {
         assert_true(contextLostTest);
         assert_true(ctx.isContextLost());
