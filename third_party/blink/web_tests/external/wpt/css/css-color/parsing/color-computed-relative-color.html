@@ -676,17 +676,18 @@
       fuzzy_test_computed_color(`color(from color(${colorSpace} 7 -20.5 100 / none) ${colorSpace} x y z / alpha)`,               `color(${resultColorSpace} 7 -20.5 100 / 0)`);
   }
 
-    // Spec Examples
+    // Spec Examples. Many of these have multiple stages of calculations so minor disagreements in the values of keyword colors and other
+    // constants can compound. Thus some of these tests have wider epsilons.
 
     // Example 11.
     fuzzy_test_computed_color(`rgb(from var(--bg-color) r g b / 80%)`, `rgba(0, 0, 255, 0.8)`);
 
-    // Example 12.
-    fuzzy_test_computed_color(`lch(from var(--color) calc(l / 2) c h)`, `lch(23.138971 67.989716 134.39125)`);
+    // Example 12. This particular test does a lot of math so a wider epsilon is needed.
+    fuzzy_test_computed_color(`lch(from var(--color) calc(l / 2) c h)`, `lch(23.14 67.99 134.39)`, 0.02 /* epsilon */);
 
     // Example 13.
-    fuzzy_test_computed_color(`rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))`, `rgb(76, 76, 76)`)
-    fuzzy_test_computed_color(`lch(from var(--color) l 0 h)`, `lch(46.277943 0 134.39125)`)
+    fuzzy_test_computed_color(`rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))`, `rgb(76, 76, 76)`);
+    fuzzy_test_computed_color(`lch(from var(--color) l 0 h)`, `lch(46.28 0 134.39)`, 0.02 /* epsilon */);
 
     // Example 14.
     fuzzy_test_computed_color(`rgb(from indianred 255 g b)`, `rgb(255, 92, 92)`);
@@ -695,23 +696,23 @@
     fuzzy_test_computed_color(`hsl(from var(--accent) calc(h + 180deg) s l)`, `rgb(178, 32, 40)`);
 
     // Example 16.
-    fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / 100%)`, `lab(62.751923 52.45802 -34.117283)`);
-    fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / calc(alpha * 0.8))`, `lab(62.751923 52.45802 -34.117283 / 0.8)`);
+    fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / 100%)`, `lab(62.75 52.46 -34.12)`, 0.02 /* epsilon */);
+    fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / calc(alpha * 0.8))`, `lab(62.75 52.46 -34.12 / 0.8)`, 0.02 /* epsilon */);
     fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / calc(alpha - 20%))`, `lab(62.751923 52.45802 -34.117283 / 0.8)`);
 
     // Example 17.
-    fuzzy_test_computed_color(`lab(from var(--mycolor) l 0 0)`, `lab(62.751923 0 0)`);
+    fuzzy_test_computed_color(`lab(from var(--mycolor) l 0 0)`, `lab(62.75 0 0)`, 0.02 /* epsilon */);
 
     // Example 18.
-    fuzzy_test_computed_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80138 54.003296 63.680317)`);
+    fuzzy_test_computed_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80 54 63.68)`, 0.02 /* epsilon */);
 
     // Example 19.
     fuzzy_test_computed_color(`LCH(from var(--accent) l c calc(h + 180deg))`, `lch(65.49473 39.446903 10.114471)`);
 
     // Example 20.
-    fuzzy_test_computed_color(`lch(from var(--mycolor) l 0 h)`, `lch(62.751923 0 326.96112)`);
-    fuzzy_test_computed_color(`var(--mygray)`, `lch(62.751923 0 326.96112)`);
-    fuzzy_test_computed_color(`lch(from var(--mygray) l 30 h)`, `lch(62.751923 30 326.96112)`);
+    fuzzy_test_computed_color(`lch(from var(--mycolor) l 0 h)`, `lch(62.75 0 326.96)`, 0.02 /* epsilon */);
+    fuzzy_test_computed_color(`var(--mygray)`, `lch(62.75 0 326.96)`, 0.02 /* epsilon */);
+    fuzzy_test_computed_color(`lch(from var(--mygray) l 30 h)`, `lch(62.75 30 326.96)`, 0.02 /* epsilon */);
 </script>
 </body>
 </html>

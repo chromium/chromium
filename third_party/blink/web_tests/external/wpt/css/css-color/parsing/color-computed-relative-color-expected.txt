@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 910 tests; 898 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 910 tests; 907 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'rgb(from rebeccapurple r g b)'
 PASS Property color value 'rgb(from rebeccapurple r g b / alpha)'
 PASS Property color value 'rgb(from rgb(20%, 40%, 60%, 80%) r g b / alpha)'
@@ -896,19 +896,28 @@ PASS Property color value 'color(from color(xyz-d65 none none none / none) xyz-d
 PASS Property color value 'color(from color(xyz-d65 7 none 100) xyz-d65 x y z)'
 PASS Property color value 'color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha)'
 PASS Property color value 'rgb(from var(--bg-color) r g b / 80%)'
-FAIL Property color value 'lch(from var(--color) calc(l / 2) c h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 23.138971 +/- 0.0001, expected 23.138971 but got 23.1363
+PASS Property color value 'lch(from var(--color) calc(l / 2) c h)'
 PASS Property color value 'rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))'
-FAIL Property color value 'lch(from var(--color) l 0 h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 46.277943 +/- 0.0001, expected 46.277943 but got 46.2725
+PASS Property color value 'lch(from var(--color) l 0 h)'
 PASS Property color value 'rgb(from indianred 255 g b)'
-FAIL Property color value 'hsl(from var(--accent) calc(h + 180deg) s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 178 +/- 0.0001, expected 178 but got 0
-FAIL Property color value 'lab(from var(--mycolor) l a b / 100%)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 62.746
-FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha * 0.8))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 62.746
-FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha - 20%))' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
-FAIL Property color value 'lab(from var(--mycolor) l 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 62.746
-FAIL Property color value 'lch(from peru calc(l * 0.8) c h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 49.80138 +/- 0.0001, expected 49.80138 but got 49.7972
-FAIL Property color value 'LCH(from var(--accent) l c calc(h + 180deg))' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 65.49473 +/- 0.0001, expected 65.49473 but got 0
-FAIL Property color value 'lch(from var(--mycolor) l 0 h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 62.746
-FAIL Property color value 'var(--mygray)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 62.746
-FAIL Property color value 'lch(from var(--mygray) l 30 h)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 62.751923 +/- 0.0001, expected 62.751923 but got 62.746
+FAIL Property color value 'hsl(from var(--accent) calc(h + 180deg) s l)' Colors do not match.
+Actual:   rgb(0, 0, 0)
+Expected: rgb(178, 32, 40).
+Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 178 +/- 0.0001, expected 178 but got 0
+PASS Property color value 'lab(from var(--mycolor) l a b / 100%)'
+PASS Property color value 'lab(from var(--mycolor) l a b / calc(alpha * 0.8))'
+FAIL Property color value 'lab(from var(--mycolor) l a b / calc(alpha - 20%))' Colors do not match.
+Actual:   rgb(0, 0, 0)
+Expected: lab(62.751923 52.45802 -34.117283 / 0.8).
+Error: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
+PASS Property color value 'lab(from var(--mycolor) l 0 0)'
+PASS Property color value 'lch(from peru calc(l * 0.8) c h)'
+FAIL Property color value 'LCH(from var(--accent) l c calc(h + 180deg))' Colors do not match.
+Actual:   rgb(0, 0, 0)
+Expected: lch(65.49473 39.446903 10.114471).
+Error: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 65.49473 +/- 0.0001, expected 65.49473 but got 0
+PASS Property color value 'lch(from var(--mycolor) l 0 h)'
+PASS Property color value 'var(--mygray)'
+PASS Property color value 'lch(from var(--mygray) l 30 h)'
 Harness: the test ran to completion.
 

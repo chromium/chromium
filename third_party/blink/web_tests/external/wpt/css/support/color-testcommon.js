@@ -13,11 +13,11 @@ function set_up_fuzzy_color_test(epsilon) {
   }
 
   // The function
-  function fuzzy_compare_colors(color1, color2) {
+  function fuzzy_compare_colors(input, expected) {
     const colorElementDividers = /( |\(|,)/;
     // Return the string stripped of numbers.
     function getNonNumbers(color) {
-      return color.replace(/[0-9]/g, '');
+      return color.replace(/[0-9\.]/g, '');
     }
     // Return an array of all numbers in the color.
     function getNumbers(color) {
@@ -31,9 +31,13 @@ function set_up_fuzzy_color_test(epsilon) {
       return result;
     }
 
-    assert_array_approx_equals(getNumbers(color1), getNumbers(color2), epsilon, "Numeric parameters are approximately equal.");
-    // Assert that the text of the two colors are equal. i.e. colorSpace, colorFunction and format.
-    assert_equals(getNonNumbers(color1), getNonNumbers(color2), "Color format is correct.");
+    try {
+      assert_array_approx_equals(getNumbers(input), getNumbers(expected), epsilon, "Numeric parameters are approximately equal.");
+      // Assert that the text of the two colors are equal. i.e. colorSpace, colorFunction and format.
+      assert_equals(getNonNumbers(input), getNonNumbers(expected), "Color format is correct.");
+    } catch (error) {
+      throw `Colors do not match.\nActual:   ${input}\nExpected: ${expected}.\n${error}`
+    }
   }
 
   return fuzzy_compare_colors;

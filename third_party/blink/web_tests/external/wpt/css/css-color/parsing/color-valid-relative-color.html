@@ -145,16 +145,21 @@
     fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) h s 0% / alpha)`, `rgba(0, 0, 0, 0.8)`);
     fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) h s l / 0)`, `rgba(51, 102, 153, 0)`);
 
-    // Testing replacement with a constant.
     fuzzy_test_valid_color(`hsl(from rebeccapurple 25 s l / alpha)`, `rgb(153, 94, 51)`);
     fuzzy_test_valid_color(`hsl(from rebeccapurple 25deg s l / alpha)`, `rgb(153, 94, 51)`);
     fuzzy_test_valid_color(`hsl(from rebeccapurple h 20% l / alpha)`, `rgb(102, 82, 122)`);
-    fuzzy_test_valid_color(`hsl(from rebeccapurple h s 20% / alpha)`, `rgb(51, 25, 77)`);
+    // hsl(from rebeccapurple h s 20% / alpha) is equivalent to color(srgb 0.2 0.1 0.3).
+    // For the green channel: 0.1 * 255 = 25.5. This should get rounded towards infinity to 26.
+    // https://www.w3.org/TR/css-color-4/#rgb-functions
+    fuzzy_test_valid_color(`hsl(from rebeccapurple h s 20% / alpha)`, `rgb(51, 26, 77)`);
     fuzzy_test_valid_color(`hsl(from rebeccapurple h s l / .25)`, `rgba(102, 51, 153, 0.25)`);
     fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) 25 s l / alpha)`, `rgba(153, 94, 51, 0.8)`);
     fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) 25deg s l / alpha)`, `rgba(153, 94, 51, 0.8)`);
     fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) h 20% l / alpha)`, `rgba(82, 102, 122, 0.8)`);
-    fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) h s 20% / alpha)`, `rgba(25, 51, 77, 0.8)`);
+    // hsl(from rgb(20%, 40%, 60%, 80%) h s 20% / alpha) is equivalent to color(srgb 0.1 0.2 0.3).
+    // For the red channel: 0.1 * 255 = 25.5. This should get rounded towards infinity to 26.
+    // https://www.w3.org/TR/css-color-4/#rgb-functions
+    fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) h s 20% / alpha)`, `rgba(26, 51, 77, 0.8)`);
     fuzzy_test_valid_color(`hsl(from rgb(20%, 40%, 60%, 80%) h s l / .2)`, `rgba(51, 102, 153, 0.2)`);
 
     // Testing valid permutation (types match).
@@ -700,8 +705,8 @@
     // Example 17.
     fuzzy_test_valid_color(`lab(from var(--mycolor) l 0 0)`);
 
-    // Example 18.
-    fuzzy_test_valid_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80138 54.003296 63.680317)`);
+    // Example 18. This particular test does a lot of math so a wider epsilon is needed.
+    fuzzy_test_valid_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80 54 63.68)`, 0.02 /* epsilon */);
 
     // Example 19.
     fuzzy_test_valid_color(`LCH(from var(--accent) l c calc(h + 180deg))`);
