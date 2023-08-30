@@ -54,6 +54,9 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
   const AppId* GetPendingLaunchAppId() const;
 
  private:
+  bool IsInScope(const WebAppLaunchParams& launch_params,
+                 const GURL& current_url);
+
   // Reset self back to the initial state.
   void Reset();
 
