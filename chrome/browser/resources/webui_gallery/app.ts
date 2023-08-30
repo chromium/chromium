@@ -69,6 +69,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_checkbox/cr_checkbox_demo.js',
             },
             {
+              name: 'Chips',
+              path: 'chips',
+              src: 'cr_chip/cr_chip_demo.js',
+            },
+            {
               name: 'Dialogs',
               path: 'dialogs',
               src: 'cr_dialog/cr_dialog_demo.js',

@@ -274,6 +274,13 @@
   E_CPONLY(kColorCheckboxOutlineDisabled) \
   E_CPONLY(kColorCheckboxForegroundChecked) \
   E_CPONLY(kColorCheckboxForegroundUnchecked) \
+  E_CPONLY(kColorChipBackgroundHover) \
+  E_CPONLY(kColorChipBackgroundSelected) \
+  E_CPONLY(kColorChipBorder) \
+  E_CPONLY(kColorChipForeground) \
+  E_CPONLY(kColorChipForegroundSelected) \
+  E_CPONLY(kColorChipIcon) \
+  E_CPONLY(kColorChipIconSelected) \
   E_CPONLY(kColorComboboxBackground) \
   E_CPONLY(kColorComboboxBackgroundDisabled) \
   E_CPONLY(kColorComboboxContainerOutline) \

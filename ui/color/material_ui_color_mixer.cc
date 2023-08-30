@@ -61,6 +61,13 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorCheckboxContainerDisabled] = {kColorSysStateDisabledContainer};
   mixer[kColorCheckboxOutline] = {kColorSysOutline};
   mixer[kColorCheckboxOutlineDisabled] = {kColorSysStateDisabledContainer};
+  mixer[kColorChipBackgroundHover] = {kColorSysStateHoverOnSubtle};
+  mixer[kColorChipBackgroundSelected] = {kColorSysTonalContainer};
+  mixer[kColorChipBorder] = {kColorSysTonalOutline};
+  mixer[kColorChipForeground] = {kColorSysOnSurface};
+  mixer[kColorChipForegroundSelected] = {kColorSysOnTonalContainer};
+  mixer[kColorChipIcon] = {kColorSysPrimary};
+  mixer[kColorChipIconSelected] = {kColorSysOnTonalContainer};
   mixer[kColorComboboxBackground] = {kColorSysSurface};
   mixer[kColorComboboxBackgroundDisabled] = {GetResultingPaintColor(
       {kColorSysStateDisabledContainer}, {kColorComboboxBackground})};
