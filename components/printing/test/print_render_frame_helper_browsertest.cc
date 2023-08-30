@@ -864,8 +864,8 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, Pixels) {
     <div style="width:24px; height:24px; border-color:#0000ff;"></div>
   )HTML");
 
-  printer()->set_should_print_backgrounds(true);
   printer()->set_should_generate_page_images(true);
+  printer()->Params().should_print_backgrounds = true;
   OnPrintPages();
 
   // First page:
@@ -932,9 +932,9 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, RoundingAndHeadersAndFooters) {
   )HTML");
 
   // Print without headers and footers.
-  printer()->set_should_print_backgrounds(true);
   printer()->set_should_generate_page_images(true);
-  printer()->set_should_display_header_footer(false);
+  printer()->Params().should_print_backgrounds = true;
+  printer()->Params().display_header_footer = false;
   OnPrintPages();
   const MockPrinterPage* page = printer()->GetPrinterPage(0);
   ASSERT_TRUE(page);
@@ -946,7 +946,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, RoundingAndHeadersAndFooters) {
   // footers will actually be shown, since the page margins are so small, so
   // this should look identical to the output with headers and footers turned
   // off.
-  printer()->set_should_display_header_footer(true);
+  printer()->Params().display_header_footer = true;
 
   OnPrintPages();
 
