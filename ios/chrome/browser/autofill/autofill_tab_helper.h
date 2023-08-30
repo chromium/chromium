@@ -19,10 +19,6 @@ namespace autofill {
 class ChromeAutofillClientIOS;
 }
 
-namespace password_manager {
-class PasswordManager;
-}
-
 // Class binding an instance of AutofillAgent to a WebState.
 class AutofillTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<AutofillTabHelper> {
@@ -41,8 +37,7 @@ class AutofillTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<AutofillTabHelper>;
 
-  AutofillTabHelper(web::WebState* web_state,
-                    password_manager::PasswordManager* password_manager);
+  AutofillTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
   void WebStateDestroyed(web::WebState* web_state) override;

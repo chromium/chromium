@@ -250,9 +250,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     AutofillBottomSheetTabHelper::CreateForWebState(
         web_state, PasswordTabHelper::FromWebState(web_state)
                        ->GetPasswordsAccountStorageNoticeHandler());
-    AutofillTabHelper::CreateForWebState(
-        web_state,
-        PasswordTabHelper::FromWebState(web_state)->GetPasswordManager());
+    AutofillTabHelper::CreateForWebState(web_state);
 
     FormSuggestionTabHelper::CreateForWebState(web_state, @[
       PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),

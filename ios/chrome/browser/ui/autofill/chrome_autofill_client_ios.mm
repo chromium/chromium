@@ -35,10 +35,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
-#import "components/password_manager/ios/ios_password_manager_driver.h"
-#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -86,8 +83,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     ChromeBrowserState* browser_state,
     web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
-    id<AutofillClientIOSBridge> bridge,
-    password_manager::PasswordManager* password_manager)
+    id<AutofillClientIOSBridge> bridge)
     : pref_service_(browser_state->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForBrowserState(browser_state)),
       personal_data_manager_(PersonalDataManagerFactory::GetForBrowserState(
@@ -111,7 +107,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           personal_data_manager_,
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
-      password_manager_(password_manager),
       unmask_controller_(browser_state->GetPrefs()),
       // TODO(crbug.com/928595): Replace the closure with a callback to the
       // renderer that indicates if log messages should be sent from the
@@ -478,26 +473,6 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
 void ChromeAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
-  web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
-  if (!frame) {
-    return;
-  }
-
-  // If the frame exists, then the driver will exist/be created.
-  IOSPasswordManagerDriver* password_manager_driver =
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_,
-                                                               frame);
-
-  // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
-  // transitions to events that will already have this signature.
-  FormDataAndServerPredictions args = GetFormDataAndServerPredictions(forms);
-  std::vector<const FormData*> form_pointers;
-  form_pointers.reserve(args.form_datas.size());
-  for (const FormData& form : args.form_datas) {
-    form_pointers.push_back(&form);
-  }
-  password_manager_->ProcessAutofillPredictions(
-      password_manager_driver, form_pointers, args.predictions);
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewForm(

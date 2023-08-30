@@ -95,8 +95,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state());
     autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
-        browser_state(), web_state(), infobar_manager, autofill_agent_,
-        /*password_generation_manager=*/nullptr));
+        browser_state(), web_state(), infobar_manager, autofill_agent_));
 
     std::string locale("en");
     autofill::AutofillDriverIOSFactory::CreateForWebState(

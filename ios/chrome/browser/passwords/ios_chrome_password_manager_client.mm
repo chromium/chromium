@@ -9,11 +9,15 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/types/optional_util.h"
+#import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_change_success_tracker.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -24,6 +28,7 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -46,6 +51,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "net/cert/cert_status_flags.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -84,6 +90,8 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       ios::PasswordManagerLogRouterFactory::GetForBrowserState(
           bridge_.browserState),
       base::RepeatingClosure());
+  frames_manager_observation_.Observe(
+      bridge_.webState->GetPageWorldWebFramesManager());
 }
 
 IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
@@ -326,6 +334,50 @@ bool IOSChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled()
 
 bool IOSChromePasswordManagerClient::IsNewTabPage() const {
   return false;
+}
+
+void IOSChromePasswordManagerClient::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
+  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      bridge_.webState, web_frame);
+  if (!driver) {
+    return;
+  }
+  autofill_manager_observations_.AddObservation(driver->autofill_manager());
+}
+
+void IOSChromePasswordManagerClient::OnAutofillManagerDestroyed(
+    autofill::AutofillManager& manager) {
+  autofill_manager_observations_.RemoveObservation(&manager);
+}
+
+void IOSChromePasswordManagerClient::OnFieldTypesDetermined(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    FieldTypeSource source) {
+  auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+  web::WebFrame* frame = driver.web_frame();
+  if (!frame) {
+    return;
+  }
+
+  autofill::FormStructure* form_structure = manager.FindCachedFormById(form_id);
+  if (!form_structure) {
+    return;
+  }
+  autofill::FormDataAndServerPredictions forms_and_predictions =
+      autofill::GetFormDataAndServerPredictions(
+          base::make_span(&form_structure, 1u));
+  // `GetFormDataAndServerPredictions` returns the same number of `FormData` as
+  // `FormStructure` that are passed to it, i.e. one in this case. Therefore
+  // take the front.
+  std::array<const autofill::FormData*, 1> form_pointers = {
+      &forms_and_predictions.form_datas.front()};
+  bridge_.passwordManager->ProcessAutofillPredictions(
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(bridge_.webState,
+                                                               frame),
+      form_pointers, forms_and_predictions.predictions);
 }
 
 safe_browsing::PasswordProtectionService*
