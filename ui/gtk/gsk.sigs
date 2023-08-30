@@ -14,3 +14,4 @@ GskRenderNode* gsk_gl_shader_node_get_child(GskRenderNode* node, guint idx);
 guint gsk_container_node_get_n_children(GskRenderNode* node);
 guint gsk_gl_shader_node_get_n_children(GskRenderNode* node);
 GdkTexture* gsk_texture_node_get_texture(GskRenderNode* node);
+float gsk_opacity_node_get_opacity(const GskRenderNode* node);
