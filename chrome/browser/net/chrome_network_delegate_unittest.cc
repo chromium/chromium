@@ -64,6 +64,7 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_TRUE(IsAccessAllowed("/usr/share/chromeos-assets", ""));
   EXPECT_TRUE(IsAccessAllowed(temp_dir.AsUTF8Unsafe(), ""));
   EXPECT_TRUE(IsAccessAllowed("/var/log", ""));
+  EXPECT_TRUE(IsAccessAllowed("/var/log/lacros/lacros.log", ""));
   // Files under the directories are allowed.
   EXPECT_TRUE(IsAccessAllowed("/var/log/foo.txt", ""));
   // Make sure similar paths are not allowed.
