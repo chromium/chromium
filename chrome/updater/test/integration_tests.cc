@@ -2018,7 +2018,27 @@ class IntegrationTestMsi : public IntegrationTest {
   const base::Version kMsiUpdatedVersion = base::Version("2.0.0.0");
 };
 
-TEST_F(IntegrationTestMsi, MsiInstallUpgrade) {
+TEST_F(IntegrationTestMsi, Install) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          AppUpdateExpectation({}, kMsiAppId, base::Version({0, 0, 0, 0}),
+                               kMsiUpdatedVersion,
+                               /*is_install=*/true,
+                               /*should_update=*/true, false, "", crx_path),
+      });
+
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kMsiAppId));
+  ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestMsi, Upgrade) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   InstallMsiWithVersion(kMsiInitialVersion);
@@ -2038,6 +2058,7 @@ TEST_F(IntegrationTestMsi, MsiInstallUpgrade) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
