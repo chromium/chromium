@@ -675,6 +675,61 @@ suite('acceleratorEditDialogTest', function() {
     assertTrue(addButtonContainer.hidden);
   });
 
+  test('maxReachedHintNotVisibleWithDisabledAccelerator', async () => {
+    const acceleratorInfo1: AcceleratorInfo =
+        createCustomStandardAcceleratorInfo(
+            Modifier.CONTROL | Modifier.SHIFT,
+            /*key=*/ 71,
+            /*keyDisplay=*/ 'g', AcceleratorState.kDisabledByUser);
+    const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo3: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.COMMAND,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo4: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    const acceleratorInfo5: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+
+    // Initialize with max accelerators.
+    const accelerators = [
+      acceleratorInfo1,
+      acceleratorInfo2,
+      acceleratorInfo3,
+      acceleratorInfo4,
+      acceleratorInfo5,
+    ];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(4, acceleratorElements.length);
+
+    // Expect maxAccelsReachedHint is not visible and addButton is visible.
+    const maxAccelReachedHint =
+        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
+        HTMLDivElement;
+    const addButtonContainer =
+        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
+        HTMLDivElement;
+    assertTrue(maxAccelReachedHint.hidden);
+    assertFalse(addButtonContainer.hidden);
+  });
+
   test('buttonsVisibility', async () => {
     // Set the default accelerators the same as the initialized accelerators.
     const defaultAccelerators: Accelerator[] = [{

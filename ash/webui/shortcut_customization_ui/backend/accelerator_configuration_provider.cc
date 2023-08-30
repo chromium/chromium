@@ -502,9 +502,11 @@ size_t GetNumOriginalAccelerators(
     // If a standard accelerator has an `original_accelerator` value then it is
     // a generated aliased accelerator. Do not count it as part of the original
     // number of accelerators.
+    // Ignore disabled accelerators as counting towards the maximum.
     if (info->layout_properties->is_standard_accelerator()) {
       if (info->layout_properties->get_standard_accelerator()
-              ->original_accelerator.has_value()) {
+              ->original_accelerator.has_value() ||
+          info->state != mojom::AcceleratorState::kEnabled) {
         continue;
       }
     }

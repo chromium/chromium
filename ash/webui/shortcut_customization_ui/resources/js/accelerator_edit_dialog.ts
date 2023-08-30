@@ -241,7 +241,8 @@ export class AcceleratorEditDialogElement extends
         // we only care about the original accelerator that the user or system
         // originally provided.
         if (acceleratorInfo.layoutProperties.standardAccelerator
-                ?.originalAccelerator !== undefined) {
+                    ?.originalAccelerator !== undefined ||
+            acceleratorInfo.state !== AcceleratorState.kEnabled) {
           continue;
         }
         ++originalAcceleratorsCount;
