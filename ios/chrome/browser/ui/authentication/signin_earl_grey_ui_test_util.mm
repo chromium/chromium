@@ -80,17 +80,27 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
         fakeIdentity.gaiaID, [SigninEarlGreyAppInterface primaryAccountGaiaID]);
     return;
   }
-  [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    [self tapSigninBottomSheetAndHistoryConfirmationDialog];
+
+  if ([SigninEarlGreyAppInterface isSignedOut] ||
+      ![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kIdentityButtonControlIdentifier)]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                            fakeIdentity.userEmail)]
+        performAction:grey_tap()];
   } else {
-    [self tapSigninConfirmationDialog];
+    [SigninEarlGreyUI
+        openRecentTabsAndTapButton:
+            grey_accessibilityID(
+                kRecentTabsTabSyncOffButtonAccessibilityIdentifier)];
+  }
+
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    [SigninEarlGreyUI maybeTapSigninBottomSheetAndHistoryConfirmationDialog];
+  } else {
+    [SigninEarlGreyUI tapSigninConfirmationDialog];
     CloseSigninManagedAccountDialogIfAny(fakeIdentity);
   }
 
@@ -202,12 +212,16 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
 }
 
-+ (void)tapSigninBottomSheetAndHistoryConfirmationDialog {
-  // First tap the "Continue as ..." button in the signin bottom sheet.
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
-      performAction:grey_tap()];
+// Taps the sign-in sheet confirmation if the user is not signed-in yet, and
+// the history opt-in confirmation if the user is not opted-in yet.
++ (void)maybeTapSigninBottomSheetAndHistoryConfirmationDialog {
+  if ([SigninEarlGreyAppInterface isSignedOut]) {
+    // First tap the "Continue as ..." button in the signin bottom sheet.
+    [ChromeEarlGreyUI waitForAppToIdle];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            WebSigninPrimaryButtonMatcher()]
+        performAction:grey_tap()];
+  }
 
   [ChromeEarlGreyUI waitForAppToIdle];
   // If the history type isn't enabled yet, the history opt-in dialog should
@@ -330,18 +344,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 }
 
 + (void)tapPrimarySignInButtonInRecentTabs {
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::RecentTabsDestinationButton()];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)
-      onElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI openRecentTabsAndTapButton:PrimarySignInButton()];
 }
 
 + (void)tapPrimarySignInButtonInTabSwitcher {
@@ -392,6 +395,23 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   // grey_replaceText triggers textFieldDidEndEditing, which the
   // SyncEncryptionPassphraseTableViewController will treat as a signInPressed,
   // so there's no reason to tap the 'enter' button.
+}
+
+#pragma mark - Private
+
++ (void)openRecentTabsAndTapButton:(id<GREYMatcher>)buttonMatcher {
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::RecentTabsDestinationButton()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(buttonMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
 }
 
 @end
