@@ -278,6 +278,9 @@ Polymer({
 
     // Success case. Close dialog.
     if (result === SmbMountResult.SUCCESS) {
+      this.dispatchEvent(new CustomEvent(
+          'smb-successfully-mounted-once', {bubbles: true, composed: true}));
+
       this.$.dialog.close();
       return;
     }

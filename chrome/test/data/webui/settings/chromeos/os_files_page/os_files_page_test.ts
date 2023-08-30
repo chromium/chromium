@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsFilesPageElement} from 'chrome://os-settings/lazy_load.js';
+import {OsSettingsFilesPageElement, SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://os-settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,11 +13,46 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertAsync} from '../utils.js';
 
 import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+
+class TestSmbBrowserProxy extends TestBrowserProxy implements SmbBrowserProxy {
+  smbMountResult = SmbMountResult.SUCCESS;
+  anySmbMounted = false;
+
+  constructor() {
+    super([
+      'hasAnySmbMountedBefore',
+    ]);
+  }
+
+  smbMount(
+      smbUrl: string, smbName: string, username: string, password: string,
+      authMethod: string, shouldOpenFileManagerAfterMount: boolean,
+      saveCredentials: boolean): Promise<SmbMountResult> {
+    this.methodCalled(
+        'smbMount', smbUrl, smbName, username, password, authMethod,
+        shouldOpenFileManagerAfterMount, saveCredentials);
+    return Promise.resolve(this.smbMountResult);
+  }
+
+  startDiscovery(): void {
+    this.methodCalled('startDiscovery');
+  }
+
+  updateCredentials(mountId: string, username: string, password: string): void {
+    this.methodCalled('updateCredentials', mountId, username, password);
+  }
+
+  hasAnySmbMountedBefore(): Promise<boolean> {
+    this.methodCalled('hasAnySmbMountedBefore');
+    return Promise.resolve(this.anySmbMounted);
+  }
+}
 
 suite('<os-settings-files-page>', () => {
   /* The <os-settings-files-page> app. */
@@ -25,6 +60,8 @@ suite('<os-settings-files-page>', () => {
 
   /* The element that maintains all the preferences. */
   let prefElement: SettingsPrefsElement;
+
+  let smbBrowserProxy: TestSmbBrowserProxy;
 
   /**
    * Returns a list of fake preferences that are used at some point in any test,
@@ -54,6 +91,11 @@ suite('<os-settings-files-page>', () => {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      {
+        key: 'network_file_shares.allowed.value',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
     ];
   }
 
@@ -72,6 +114,7 @@ suite('<os-settings-files-page>', () => {
    * sets up the files page with the prefs element associated.
    */
   async function resetFilesPageWithLoadTimeData(data: {[key: string]: any}) {
+    smbBrowserProxy.resetResolver('hasAnySmbMountedBefore');
     teardownFilesPage();
 
     loadTimeData.overrideValues(data);
@@ -92,6 +135,9 @@ suite('<os-settings-files-page>', () => {
   });
 
   setup(async () => {
+    smbBrowserProxy = new TestSmbBrowserProxy();
+    SmbBrowserProxyImpl.setInstance(smbBrowserProxy);
+
     await resetFilesPageWithLoadTimeData({
       showOfficeSettings: false,
       enableDriveFsBulkPinning: false,
@@ -301,5 +347,81 @@ suite('<os-settings-files-page>', () => {
 
       assertEquals('File sync on', googleDriveRow.subLabel);
     });
+  });
+
+  suite(
+      'with flag isRevampWayfindingEnabled enabled and no SMB mounted before,',
+      () => {
+        setup(async () => {
+          // Must set before the page gets reconstructed.
+          smbBrowserProxy.anySmbMounted = false;
+
+          await resetFilesPageWithLoadTimeData({
+            isRevampWayfindingEnabled: true,
+          });
+
+          // Called once files page has been created.
+          await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+        });
+
+        test(
+            'the Add File Share button only appears on the Files page when no file\
+         share has been set-up.',
+            () => {
+              const addFilesButton =
+                  filesPage.shadowRoot!.querySelector('#smbSharesRowButton');
+              const addFilesRow =
+                  filesPage.shadowRoot!.querySelector('#smbSharesRow');
+
+              assertTrue(isVisible(addFilesButton));
+              assertFalse(isVisible(addFilesRow));
+            });
+      });
+
+  suite('with flag isRevampWayfindingEnabled enabled', () => {
+    setup(async () => {
+      // Must set before the page gets reconstructed.
+      smbBrowserProxy.anySmbMounted = true;
+
+      await resetFilesPageWithLoadTimeData({
+        isRevampWayfindingEnabled: true,
+      });
+
+      // Called once files page has been created.
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+    });
+
+    test(
+        'the Network Files share clickable row appears when file share has been\
+         previously set-up.',
+        () => {
+          const addFilesButton =
+              filesPage.shadowRoot!.querySelector('#smbSharesRowButton');
+          const addFilesRow =
+              filesPage.shadowRoot!.querySelector('#smbSharesRow');
+
+          assertTrue(isVisible(addFilesRow));
+          assertFalse(isVisible(addFilesButton));
+        });
+  });
+
+  suite('with flag isRevampWayfindingEnabled disabled', () => {
+    setup(async () => {
+      await resetFilesPageWithLoadTimeData({
+        isRevampWayfindingEnabled: false,
+      });
+    });
+
+    test(
+        'the Network Files share clickable row appears on the Files page',
+        () => {
+          const addFilesButton =
+              filesPage.shadowRoot!.querySelector('#smbSharesRowButton');
+          const addFilesRow =
+              filesPage.shadowRoot!.querySelector('#smbSharesRow');
+
+          assertFalse(isVisible(addFilesButton));
+          assertTrue(isVisible(addFilesRow));
+        });
   });
 });

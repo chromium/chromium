@@ -35,10 +35,36 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-      <cr-link-row id="smbSharesRow" class="hr" on-click="onTapSmbShares_"
-          label="$i18n{smbSharesTitle}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
+      <template is="dom-if" if="[[computeShowSmbButton_(isRevampWayfindingEnabled_, showAddSmbButton_)]]" restamp>
+        <div id="smbSharesRowButton" class="settings-box two-line">
+          <div class="start">
+            <div class="settings-box-text">
+              <div>
+                $i18n{smbSharesTitle}
+              </div>
+              <div class="secondary" id="secondaryText">
+                <localized-link
+                    localized-string="$i18n{smbSharesTitleDescription}"
+                    link-url="$i18n{smbSharesLearnMoreURL}">
+                </localized-link>
+              </div>
+            </div>
+          </div>
+          <controlled-button id="addShareButton" class="action-button"
+              on-click="onAddShareClick_"
+              label="$i18n{addSmbShare}"
+              disabled="[[!prefs.network_file_shares.allowed.value]]"
+              pref="[[prefs.network_file_shares.allowed]]"
+              end-justified>
+          </controlled-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[computeShowSmbLinkRow_(isRevampWayfindingEnabled_, showAddSmbButton_)]]" restamp>
+        <cr-link-row id="smbSharesRow" class="hr" on-click="onTapSmbShares_"
+            label="$i18n{smbSharesTitle}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
     </settings-card>
   </div>
 
@@ -73,3 +99,10 @@
     </template>
   </template>
 </os-settings-animated-pages>
+
+<template is="dom-if" if="[[showAddSmbDialog_]]" restamp>
+  <add-smb-share-dialog on-close="onAddSmbDialogClosed_"
+      last-url="[[prefs.network_file_shares.most_recently_used_url.value]]"
+      should-open-file-manager-after-mount>
+  </add-smb-share-dialog>
+</template>

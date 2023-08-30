@@ -54,6 +54,23 @@ void SmbHandler::RegisterMessages() {
       "updateCredentials",
       base::BindRepeating(&SmbHandler::HandleUpdateCredentials,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "hasAnySmbMountedBefore",
+      base::BindRepeating(&SmbHandler::HandleHasAnySmbMountedBefore,
+                          base::Unretained(this)));
+}
+
+void SmbHandler::SetSmbServiceForTesting(smb_client::SmbService* smb_service) {
+  CHECK(smb_service);
+  test_smb_service_ = smb_service;
+}
+
+smb_client::SmbService* SmbHandler::GetLocalSmbService() {
+  if (test_smb_service_) {
+    return test_smb_service_;
+  }
+  return GetSmbService(profile_);
 }
 
 void SmbHandler::HandleSmbMount(const base::Value::List& args) {
@@ -116,6 +133,24 @@ void SmbHandler::HandleDiscoveryDone() {
   if (!stored_mount_call_.is_null()) {
     std::move(stored_mount_call_).Run();
   }
+}
+
+void SmbHandler::HandleHasAnySmbMountedBefore(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  std::string callback_id = args[0].GetString();
+  smb_client::SmbService* const service = GetLocalSmbService();
+
+  AllowJavascript();
+
+  if (!service) {
+    // Return the default value false so no changes would take place on the
+    // Settings page.
+    ResolveJavascriptCallback(base::Value(callback_id), base::Value(false));
+    return;
+  }
+
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(service->IsAnySmbShareConfigured()));
 }
 
 void SmbHandler::HandleGatherSharesResponse(

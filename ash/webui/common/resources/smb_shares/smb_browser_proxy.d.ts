@@ -32,6 +32,7 @@ export interface SmbBrowserProxy {
       saveCredentials: boolean): Promise<SmbMountResult>;
   startDiscovery(): void;
   updateCredentials(mountId: string, username: string, password: string): void;
+  hasAnySmbMountedBefore(): Promise<boolean>;
 }
 
 declare class SmbBrowserProxyImpl implements SmbBrowserProxy {
@@ -43,6 +44,7 @@ declare class SmbBrowserProxyImpl implements SmbBrowserProxy {
       saveCredentials: boolean): Promise<SmbMountResult>;
   startDiscovery(): void;
   updateCredentials(mountId: string, username: string, password: string): void;
+  hasAnySmbMountedBefore(): Promise<boolean>;
 }
 
 export {SmbBrowserProxyImpl};

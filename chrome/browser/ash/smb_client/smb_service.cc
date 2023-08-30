@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -697,6 +698,16 @@ void SmbService::RecordMountCount() const {
       GetProviderService()->GetProvidedFileSystemInfoList(provider_id_);
   UMA_HISTOGRAM_COUNTS_100("NativeSmbFileShare.MountCount",
                            file_systems.size() + smbfs_shares_.size());
+}
+
+bool SmbService::IsAnySmbShareConfigured() {
+  std::vector<SmbUrl> preconfigured_shares =
+      GetPreconfiguredSharePathsForPremount();
+
+  std::vector<SmbShareInfo> saved_smbfs_shares;
+  saved_smbfs_shares = registry_.GetAll();
+
+  return !saved_smbfs_shares.empty() || !preconfigured_shares.empty();
 }
 
 }  // namespace smb_client

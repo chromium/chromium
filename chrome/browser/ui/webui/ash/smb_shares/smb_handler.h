@@ -30,9 +30,16 @@ class SmbHandler : public content::WebUIMessageHandler {
 
   ~SmbHandler() override;
 
- private:
   // content::WebUIMessageHandler
   void RegisterMessages() override;
+
+  void SetSmbServiceForTesting(smb_client::SmbService* smb_service);
+
+ protected:
+  void HandleHasAnySmbMountedBefore(const base::Value::List& args);
+
+ private:
+  friend class TestSmbHandler;
 
   // WebUI call to mount an Smb Filesystem.
   void HandleSmbMount(const base::Value::List& args);
@@ -55,10 +62,13 @@ class SmbHandler : public content::WebUIMessageHandler {
   // Callback handler that indicates discovery is complete.
   void HandleDiscoveryDone();
 
+  smb_client::SmbService* GetLocalSmbService();
+
   bool host_discovery_done_ = false;
   base::OnceClosure stored_mount_call_;
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   UpdateCredentialsCallback update_cred_callback_;
+  raw_ptr<smb_client::SmbService> test_smb_service_ = nullptr;
   base::WeakPtrFactory<SmbHandler> weak_ptr_factory_{this};
 };
 

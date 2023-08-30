@@ -6,6 +6,7 @@
  * @fileoverview
  * 'os-settings-files-page' is the settings page containing files settings.
  */
+import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
@@ -15,12 +16,15 @@ import './office_page.js';
 import './smb_shares_page.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 
+import {SmbBrowserProxy, SmbBrowserProxyImpl} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -31,8 +35,8 @@ import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
 import {OneDriveConnectionState} from './one_drive_subpage.js';
 import {getTemplate} from './os_files_page.html.js';
 
-const OsSettingsFilesPageElementBase =
-    PrefsMixin(DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement))));
+const OsSettingsFilesPageElementBase = WebUiListenerMixin(
+    PrefsMixin(DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)))));
 
 export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   static get is() {
@@ -88,6 +92,24 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
           return OneDriveConnectionState.LOADING;
         },
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
+
+      showAddSmbDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showAddSmbButton_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -113,7 +135,11 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   private oneDriveConnectionState_: string;
   private oneDriveEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
+  private osFilesPageProxy_: SmbBrowserProxy;
   private section_: Section;
+  private isRevampWayfindingEnabled_: boolean;
+  private showAddSmbDialog_: boolean;
+  private showAddSmbButton_: boolean;
 
   constructor() {
     super();
@@ -125,6 +151,8 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
       this.oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
       this.initPromise = this.updateOneDriveEmail_();
     }
+
+    this.osFilesPageProxy_ = SmbBrowserProxyImpl.getInstance();
   }
 
   override currentRouteChanged(route: Route, oldRoute?: Route) {
@@ -165,6 +193,16 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     super.ready();
 
     this.addFocusConfig(routes.SMB_SHARES, '#smbSharesRow');
+
+    this.addEventListener(
+        'smb-successfully-mounted-once',
+        this.smbSuccessfullyMountedOnce.bind(this));
+
+    // Only show the button if there has not been a SMB mounted before.
+    this.osFilesPageProxy_.hasAnySmbMountedBefore().then(
+        (hasMountedBefore: boolean) => {
+          this.showAddSmbButton_ = !hasMountedBefore;
+        });
   }
 
   private onTapSmbShares_() {
@@ -222,6 +260,34 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
       default:
         return '';
     }
+  }
+
+  private getSmbSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('smbSharesTitleDescription') :
+        null;
+  }
+
+  private onAddShareClick_(): void {
+    this.showAddSmbDialog_ = true;
+  }
+
+  private onAddSmbDialogClosed_(): void {
+    this.showAddSmbDialog_ = false;
+  }
+
+  private computeShowSmbButton_(): boolean {
+    return this.isRevampWayfindingEnabled_ && this.showAddSmbButton_;
+  }
+
+  private computeShowSmbLinkRow_(): boolean {
+    return !this.isRevampWayfindingEnabled_ ||
+        (this.isRevampWayfindingEnabled_ && !this.showAddSmbButton_);
+  }
+
+  private smbSuccessfullyMountedOnce(): void {
+    // Do not show SMB button on the Files page if an SMB mounts.
+    this.showAddSmbButton_ = false;
   }
 }
 

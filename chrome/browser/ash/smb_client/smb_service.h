@@ -118,6 +118,9 @@ class SmbService : public KeyedService,
   void SetSmbFsMounterCreationCallbackForTesting(
       SmbFsShare::MounterCreationCallback callback);
 
+  // Returns true if any SMB shares have been configured or saved before.
+  bool IsAnySmbShareConfigured();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SmbServiceWithSmbfsTest, MountInvalidSaved);
   FRIEND_TEST_ALL_PREFIXES(SmbServiceWithSmbfsTest, MountInvalidPreconfigured);

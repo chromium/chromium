@@ -207,7 +207,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL},
       {"alwaysMoveToOneDrivePreferenceLabel",
        IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL},
-  };
+      {"smbSharesTitleDescription",
+       IDS_OS_SETTINGS_REVAMP_DOWNLOADS_SMB_SHARES_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   smb_dialog::AddLocalizedStrings(html_source);
