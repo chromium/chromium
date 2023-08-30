@@ -188,7 +188,6 @@ class WebAppInstallFinalizer {
 
   void OnUpdateHooksFinished(InstallFinalizedCallback callback,
                              AppId app_id,
-                             std::string old_name,
                              OsHooksErrors os_hooks_errors);
 
   // Returns a value indicating whether the file handlers registered with the OS

@@ -154,8 +154,7 @@ class UpdateAwaiter : public WebAppInstallManagerObserver {
   void AwaitUpdate(const base::Location& location = base::Location::Current());
 
   // WebAppInstallManagerObserver:
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
+  void OnWebAppManifestUpdated(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
  private:

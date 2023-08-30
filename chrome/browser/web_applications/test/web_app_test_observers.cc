@@ -83,10 +83,9 @@ void WebAppInstallManagerObserverAdapter::OnWebAppInstalledWithOsHooks(
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppManifestUpdated(
-    const AppId& app_id,
-    base::StringPiece old_name) {
+    const AppId& app_id) {
   if (app_manifest_updated_delegate_)
-    app_manifest_updated_delegate_.Run(app_id, old_name);
+    app_manifest_updated_delegate_.Run(app_id);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppWillBeUninstalled(
@@ -124,13 +123,6 @@ void WebAppInstallManagerObserverAdapter::SignalRunLoopAndStoreAppId(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, wait_loop_.QuitClosure());
   is_listening_ = false;
-}
-
-void WebAppInstallManagerObserverAdapter::SignalRunLoopAndStoreAppIdAndOldName(
-    const AppId& app_id,
-    base::StringPiece old_name) {
-  old_name_ = old_name;
-  SignalRunLoopAndStoreAppId(app_id);
 }
 
 WebAppTestRegistryObserverAdapter::WebAppTestRegistryObserverAdapter(
@@ -280,7 +272,7 @@ void WebAppTestManifestUpdatedObserver::BeginListening(
 #endif
   is_listening_ = true;
   app_manifest_updated_delegate_ = base::BindRepeating(
-      &WebAppTestManifestUpdatedObserver::SignalRunLoopAndStoreAppIdAndOldName,
+      &WebAppTestManifestUpdatedObserver::SignalRunLoopAndStoreAppId,
       weak_factory_.GetWeakPtr());
 }
 

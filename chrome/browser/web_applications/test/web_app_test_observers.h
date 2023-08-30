@@ -49,8 +49,7 @@ class WebAppInstallManagerObserverAdapter
   void SetWebAppUninstalledDelegate(WebAppUninstalledDelegate delegate);
 
   using WebAppManifestUpdateDelegate =
-      base::RepeatingCallback<void(const AppId& app_id,
-                                   base::StringPiece old_name)>;
+      base::RepeatingCallback<void(const AppId& app_id)>;
   void SetWebAppManifestUpdateDelegate(WebAppManifestUpdateDelegate delegate);
 
   using WebAppSourceRemovedDelegate =
@@ -59,8 +58,7 @@ class WebAppInstallManagerObserverAdapter
 
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
+  void OnWebAppManifestUpdated(const AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppUninstalled(
       const AppId& app_id,
@@ -73,14 +71,11 @@ class WebAppInstallManagerObserverAdapter
   // Expects that the users set `is_listening_` to `true` and
   // optionally set `optional_app_ids_`.
   void SignalRunLoopAndStoreAppId(const AppId& app_id);
-  void SignalRunLoopAndStoreAppIdAndOldName(const AppId& app_id,
-                                            base::StringPiece old_name);
 
   bool is_listening_ = false;
   std::set<AppId> optional_app_ids_;
   base::RunLoop wait_loop_;
   AppId last_app_id_;
-  base::StringPiece old_name_;
 
   WebAppInstalledDelegate app_installed_delegate_;
   WebAppInstalledWithOsHooksDelegate app_installed_with_os_hooks_delegate_;

@@ -32,10 +32,7 @@ class WebAppInstallManagerObserver : public base::CheckedObserver {
       webapps::WebappUninstallSource uninstall_source) {}
 
   // Called when any field of a web app's local manifest is updated.
-  // Note that |old_name| will always be the same as the current name as we
-  // don't support name updating yet. See TODO(crbug.com/1088338).
-  virtual void OnWebAppManifestUpdated(const AppId& app_id,
-                                       base::StringPiece old_name) {}
+  virtual void OnWebAppManifestUpdated(const AppId& app_id) {}
 
   // Called when the WebAppInstallManager is about to be destroyed.
   virtual void OnWebAppInstallManagerDestroyed() {}

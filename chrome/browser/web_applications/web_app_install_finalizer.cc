@@ -619,17 +619,17 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
   }
 
   if (!ShouldUpdateOsHooks(app_id)) {
-    provider_->install_manager().NotifyWebAppManifestUpdated(app_id, old_name);
+    provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
     std::move(callback).Run(
         app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled,
         OsHooksErrors());
     return;
   }
 
-  auto os_hooks_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     app_id, old_name));
+  auto os_hooks_barrier =
+      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
+          &WebAppInstallFinalizer::OnUpdateHooksFinished,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id));
 
   // TODO(crbug.com/1401125): Remove UpdateOsHooks() once OS integration
   // sub managers have been implemented.
@@ -643,9 +643,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
 void WebAppInstallFinalizer::OnUpdateHooksFinished(
     InstallFinalizedCallback callback,
     AppId app_id,
-    std::string old_name,
     OsHooksErrors os_hooks_errors) {
-  provider_->install_manager().NotifyWebAppManifestUpdated(app_id, old_name);
+  provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
   std::move(callback).Run(
       app_id,
       os_hooks_errors.any()

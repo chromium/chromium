@@ -305,8 +305,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
+  void OnWebAppManifestUpdated(const AppId& app_id) override;
   void OnWebAppUninstalled(
       const AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;

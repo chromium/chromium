@@ -142,11 +142,9 @@ void WebAppInstallManager::NotifyWebAppUninstalled(
   }
 }
 
-void WebAppInstallManager::NotifyWebAppManifestUpdated(
-    const AppId& app_id,
-    base::StringPiece old_name) {
+void WebAppInstallManager::NotifyWebAppManifestUpdated(const AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
-    observer.OnWebAppManifestUpdated(app_id, old_name);
+    observer.OnWebAppManifestUpdated(app_id);
   }
 }
 

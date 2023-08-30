@@ -3727,9 +3727,7 @@ void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
-    const AppId& app_id,
-    base::StringPiece old_name) {
+void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(const AppId& app_id) {
   LOG(INFO) << "Manifest update received for " << app_id << ".";
   DCHECK(!delegate_->IsSyncTest())
       << "Manifest update waiting only supported on non-sync tests.";

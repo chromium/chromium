@@ -131,8 +131,7 @@ class WebAppBrowserController : public AppBrowserController,
   void OnWebAppUninstalled(
       const AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
+  void OnWebAppManifestUpdated(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   base::CallbackListSubscription AddHomeTabIconLoadCallbackForTesting(

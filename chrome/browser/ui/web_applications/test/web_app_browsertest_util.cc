@@ -416,8 +416,7 @@ void UpdateAwaiter::AwaitUpdate(const base::Location& location) {
   run_loop_.Run(location);
 }
 
-void UpdateAwaiter::OnWebAppManifestUpdated(const AppId& app_id,
-                                            base::StringPiece old_name) {
+void UpdateAwaiter::OnWebAppManifestUpdated(const AppId& app_id) {
   run_loop_.Quit();
 }
 

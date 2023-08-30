@@ -1373,9 +1373,7 @@ void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
   }
 }
 
-void WebAppPublisherHelper::OnWebAppManifestUpdated(
-    const AppId& app_id,
-    base::StringPiece old_name) {
+void WebAppPublisherHelper::OnWebAppManifestUpdated(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     auto app = CreateWebApp(web_app);

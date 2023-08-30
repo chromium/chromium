@@ -64,8 +64,7 @@ class TestInstallManagerObserver : public WebAppInstallManagerObserver {
     install_manager_observation_.Observe(install_manager);
   }
 
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override {
+  void OnWebAppManifestUpdated(const AppId& app_id) override {
     web_app_manifest_updated_called_ = true;
   }
 

@@ -319,8 +319,7 @@ void WebAppBrowserController::OnWebAppUninstalled(
 }
 
 void WebAppBrowserController::OnWebAppManifestUpdated(
-    const AppId& updated_app_id,
-    base::StringPiece old_name) {
+    const AppId& updated_app_id) {
   if (updated_app_id == app_id()) {
     UpdateThemePack();
     app_icon_.reset();

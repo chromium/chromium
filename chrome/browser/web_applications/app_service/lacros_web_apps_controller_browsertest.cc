@@ -891,8 +891,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask |
                 IconEffects::kBlocked);
 
-  provider().install_manager().NotifyWebAppManifestUpdated(app_id,
-                                                           base::StringPiece());
+  provider().install_manager().NotifyWebAppManifestUpdated(app_id);
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 7U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
