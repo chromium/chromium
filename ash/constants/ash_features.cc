@@ -1563,7 +1563,7 @@ BASE_FEATURE(kKerberosRememberPasswordByDefault,
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 BASE_FEATURE(kKioskEnableImeButton,
              "KioskEnableImeButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to use lacros-chrome as the only web browser on ChromeOS.
 // This may not be allowed depending on user types and/or policies.

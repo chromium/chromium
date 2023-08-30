@@ -212,22 +212,20 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 };
 
 TEST_F(FloatingAccessibilityControllerTest, ImeButtonNotShowWhenDisabled) {
+  features_.InitAndDisableFeature(features::kKioskEnableImeButton);
+
   SetUpVisibleMenu();
 
   EXPECT_FALSE(IsButtonVisible(FloatingAccessibilityView::ButtonId::kIme));
 }
 
 TEST_F(FloatingAccessibilityControllerTest, ImeButtonShownWhenEnabled) {
-  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
-
   SetUpVisibleMenu();
 
   EXPECT_TRUE(IsButtonVisible(FloatingAccessibilityView::ButtonId::kIme));
 }
 
 TEST_F(FloatingAccessibilityControllerTest, ImeButtonHiddenWhenSingleLanguage) {
-  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
-
   SetSingleAvailableIme();
   SetUpVisibleMenu();
 
@@ -235,8 +233,6 @@ TEST_F(FloatingAccessibilityControllerTest, ImeButtonHiddenWhenSingleLanguage) {
 }
 
 TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayVisibility) {
-  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
-
   SetUpVisibleMenu();
 
   // Tray bubble is visible when  a user taps on the IME icon.
@@ -249,16 +245,12 @@ TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayVisibility) {
 }
 
 TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayBottomButtons) {
-  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
-
   SetUpVisibleMenu();
   EXPECT_FALSE(GetImeTray()->AnyBottomButtonShownForTest());
 }
 
 TEST_F(FloatingAccessibilityControllerTest,
        ImeTrayNotOverlapWithFloatingBubble) {
-  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
-
   SetUpVisibleMenu();
 
   // Tray bubble is visible when  a user taps on the IME icon.
@@ -631,7 +623,9 @@ TEST_F(FloatingAccessibilityControllerTest, ActiveFeaturesButtons) {
   EXPECT_EQ(GetMenuViewBounds(), original_bounds);
 }
 
-TEST_F(FloatingAccessibilityControllerTest, AccelatorFocusMenu) {
+TEST_F(FloatingAccessibilityControllerTest, AcceleratorFocusMenuImeDisabled) {
+  // The IME menu is not shown for a single language.
+  SetSingleAvailableIme();
   SetUpVisibleMenu();
 
   ASSERT_TRUE(widget());
