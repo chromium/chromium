@@ -316,11 +316,11 @@ bool Progress::HasEnoughFreeSpace() const {
   // The free space should not go below this limit.
   const int64_t margin = int64_t(2) << 30;
   const bool enough = required_space + margin <= free_space;
-  LOG_IF(ERROR, !enough) << "Not enough space: Free space "
-                         << HumanReadableSize(free_space)
-                         << " is less than required space "
-                         << HumanReadableSize(required_space) << " + margin "
-                         << HumanReadableSize(margin);
+  VLOG_IF(1, !enough) << "Not enough space: Free space "
+                      << HumanReadableSize(free_space)
+                      << " is less than required space "
+                      << HumanReadableSize(required_space) << " + margin "
+                      << HumanReadableSize(margin);
   return enough;
 }
 
@@ -1108,6 +1108,12 @@ void PinManager::Complete(const Stage stage) {
       break;
 
     default:
+      LOG_IF(ERROR, progress_.stage == Stage::kNotEnoughSpace)
+          << "Not enough space: Free space "
+          << HumanReadableSize(progress_.free_space)
+          << " is less than required space "
+          << HumanReadableSize(progress_.required_space) << " + margin";
+
       LOG(ERROR) << "Finished with error: " << Quote(stage);
 
       switch (progress_.stage) {
