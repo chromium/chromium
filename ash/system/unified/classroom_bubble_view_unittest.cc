@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -180,6 +181,14 @@ class ClassroomBubbleStudentViewTest : public ClassroomBubbleViewTest {
     view_ = widget_->SetContentsView(
         std::make_unique<ClassroomBubbleStudentView>(&detailed_view_delegate_));
   }
+
+  int GetLastSelectedAssignmentsListPrefValue() const {
+    return Shell::Get()
+        ->session_controller()
+        ->GetActivePrefService()
+        ->GetInteger(
+            "ash.glanceables.classroom.student.last_selected_assignments_list");
+  }
 };
 
 class ClassroomBubbleTeacherViewTest : public ClassroomBubbleViewTest {
@@ -227,21 +236,25 @@ TEST_F(ClassroomBubbleStudentViewTest, RendersComboBoxView) {
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
   EXPECT_EQ(0u, *combobox_view->GetSelectedIndex());
   EXPECT_EQ(u"Due soon", combobox_view->GetTextForRow(0u));
+  EXPECT_EQ(0, GetLastSelectedAssignmentsListPrefValue());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
   EXPECT_EQ(1u, *combobox_view->GetSelectedIndex());
   EXPECT_EQ(u"No due date", combobox_view->GetTextForRow(1u));
+  EXPECT_EQ(1, GetLastSelectedAssignmentsListPrefValue());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
   EXPECT_EQ(2u, *combobox_view->GetSelectedIndex());
   EXPECT_EQ(u"Missing", combobox_view->GetTextForRow(2u));
+  EXPECT_EQ(2, GetLastSelectedAssignmentsListPrefValue());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
   EXPECT_EQ(3u, *combobox_view->GetSelectedIndex());
   EXPECT_EQ(u"Done", combobox_view->GetTextForRow(3u));
+  EXPECT_EQ(3, GetLastSelectedAssignmentsListPrefValue());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
@@ -287,6 +300,34 @@ TEST_F(ClassroomBubbleTeacherViewTest, RendersComboBoxView) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
   EXPECT_EQ(3u, *combobox_view->GetSelectedIndex());
+}
+
+TEST_F(ClassroomBubbleStudentViewTest, ReadsInitialComboBoxViewValueFromPrefs) {
+  EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
+      .Times(2)
+      .WillRepeatedly(
+          [](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
+            std::move(cb).Run(/*success=*/true, {});
+          });
+
+  ASSERT_TRUE(GetComboBoxView());
+
+  // The first menu item is selected initially.
+  EXPECT_EQ(GetLastSelectedAssignmentsListPrefValue(), 0);
+  EXPECT_EQ(GetComboBoxView()->GetSelectedIndex(), 0u);
+
+  // Update selection in the `combobox_view`, this should update prefs.
+  GetComboBoxView()->SelectMenuItemForTest(3u);
+  EXPECT_EQ(GetLastSelectedAssignmentsListPrefValue(), 3);
+  EXPECT_EQ(GetComboBoxView()->GetSelectedIndex(), 3u);
+
+  // Swap `widget_`'s content. Verify that the new `view_` contains a combobox
+  // with the correct initial value.
+  view_ = widget_->SetContentsView(
+      std::make_unique<ClassroomBubbleStudentView>(&detailed_view_delegate_));
+  ASSERT_TRUE(GetComboBoxView());
+  EXPECT_EQ(GetLastSelectedAssignmentsListPrefValue(), 3);
+  EXPECT_EQ(GetComboBoxView()->GetSelectedIndex(), 3u);
 }
 
 TEST_F(ClassroomBubbleStudentViewTest,

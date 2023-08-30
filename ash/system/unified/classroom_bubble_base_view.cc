@@ -79,7 +79,6 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
       std::make_unique<Combobox>(std::move(combobox_model)));
   combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
-  combo_box_view_->SetSelectedIndex(0);
   combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
   combo_box_view_->SetAccessibleDescription(u"");
