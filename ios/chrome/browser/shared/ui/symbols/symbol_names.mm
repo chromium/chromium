@@ -48,6 +48,7 @@ NSString* const kTunerSymbol = @"tuner";
 NSString* const kMoveFolderSymbol = @"folder_badge_arrow_forward";
 NSString* const kTopOmniboxOptionSymbol = @"top_omnibox_option";
 NSString* const kBottomOmniboxOptionSymbol = @"bottom_omnibox_option";
+NSString* const kDangerousOmniboxSymbol = @"dangerous_omnibox";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

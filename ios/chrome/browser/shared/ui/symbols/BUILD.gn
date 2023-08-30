@@ -66,6 +66,7 @@ source_set("symbols") {
     "//ios/chrome/browser/shared/ui/symbols/resources:cloud_slash",
     "//ios/chrome/browser/shared/ui/symbols/resources:custom_platter_filled_bottom_and_arrow_down_iphone",
     "//ios/chrome/browser/shared/ui/symbols/resources:custom_platter_filled_top_and_arrow_up_iphone",
+    "//ios/chrome/browser/shared/ui/symbols/resources:dangerous_omnibox",
     "//ios/chrome/browser/shared/ui/symbols/resources:dino",
     "//ios/chrome/browser/shared/ui/symbols/resources:folder_badge_arrow_forward",
     "//ios/chrome/browser/shared/ui/symbols/resources:incognito",
