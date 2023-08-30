@@ -332,6 +332,12 @@ public class TabImpl implements Tab {
         updateInteractableState();
     }
 
+    public void didChangeCloseSignalInterceptStatus() {
+        for (TabObserver observer : mObservers) {
+            observer.onDidChangeCloseSignalInterceptStatus();
+        }
+    }
+
     /**
      * Sets a custom {@link View} for this {@link Tab} that replaces Content view.
      */

@@ -65,6 +65,11 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
+    public boolean isCloseWatcherActive() {
+        return false;
+    }
+
+    @Override
     public boolean signalCloseWatcherIfActive() {
         return false;
     }

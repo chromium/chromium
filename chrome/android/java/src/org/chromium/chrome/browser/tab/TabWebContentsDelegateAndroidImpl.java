@@ -398,6 +398,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
                 mTab.getWebContents(), url);
     }
 
+    @Override
+    public void didChangeCloseSignalInterceptStatus() {
+        mTab.didChangeCloseSignalInterceptStatus();
+    }
+
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);

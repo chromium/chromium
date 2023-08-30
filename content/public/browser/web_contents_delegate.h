@@ -752,6 +752,14 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Initiates previewing the given `url` within the given `web_contents`.
   virtual void InitiatePreview(WebContents& web_contents, const GURL& url) {}
 
+  // CloseWatcher web API support. If the currently focused frame has a
+  // CloseWatcher registered in JavaScript, the CloseWatcher should receive the
+  // next "close" operation, based on what the OS convention for closing is.
+  // This function is called when the focused frame changes or a CloseWatcher
+  // is registered/unregistered to update whether the CloseWatcher should
+  // intercept.
+  virtual void DidChangeCloseSignalInterceptStatus() {}
+
  protected:
   virtual ~WebContentsDelegate();
 

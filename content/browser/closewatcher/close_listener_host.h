@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_CLOSE_LISTENER_HOST_H_
-#define CONTENT_BROWSER_RENDERER_HOST_CLOSE_LISTENER_HOST_H_
+#ifndef CONTENT_BROWSER_CLOSEWATCHER_CLOSE_LISTENER_HOST_H_
+#define CONTENT_BROWSER_CLOSEWATCHER_CLOSE_LISTENER_HOST_H_
 
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
@@ -12,6 +12,7 @@
 
 namespace content {
 
+class CloseListenerManager;
 class RenderFrameHost;
 
 // CloseListenerHost is a helper class that notifies a CloseListener
@@ -24,11 +25,16 @@ class CONTENT_EXPORT CloseListenerHost
   CloseListenerHost& operator=(const CloseListenerHost&) = delete;
 
   void SetListener(mojo::PendingRemote<blink::mojom::CloseListener> listener);
+  bool IsActive();
   bool SignalIfActive();
 
  private:
   explicit CloseListenerHost(RenderFrameHost* render_frame_host);
   friend class DocumentUserData<CloseListenerHost>;
+
+  CloseListenerManager* GetOrCreateManager();
+
+  void OnDisconnect();
 
   mojo::Remote<blink::mojom::CloseListener> close_listener_;
   DOCUMENT_USER_DATA_KEY_DECL();
@@ -36,4 +42,4 @@ class CONTENT_EXPORT CloseListenerHost
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_CLOSE_LISTENER_HOST_H_
+#endif  // CONTENT_BROWSER_CLOSEWATCHER_CLOSE_LISTENER_HOST_H_

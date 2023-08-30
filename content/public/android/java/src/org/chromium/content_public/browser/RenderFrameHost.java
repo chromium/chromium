@@ -110,6 +110,11 @@ public interface RenderFrameHost {
     void notifyWebAuthnAssertionRequestSucceeded();
 
     /**
+     * @return Whether this frame has an active CloseWatcher in javascript.
+     */
+    boolean isCloseWatcherActive();
+
+    /**
      * If a CloseWatcher is active in this RenderFrameHost, signal it to close.
      * @return Whether a close signal was sent.
      */

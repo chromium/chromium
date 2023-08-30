@@ -147,6 +147,12 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public boolean isCloseWatcherActive() {
+        return RenderFrameHostImplJni.get().isCloseWatcherActive(
+                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
+    }
+
+    @Override
     public boolean signalCloseWatcherIfActive() {
         return RenderFrameHostImplJni.get().signalCloseWatcherIfActive(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
@@ -260,6 +266,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void notifyWebAuthnAssertionRequestSucceeded(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
+        boolean isCloseWatcherActive(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean signalCloseWatcherIfActive(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isRenderFrameLive(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);

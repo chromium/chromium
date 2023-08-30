@@ -65,6 +65,10 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&);
 
+  jboolean IsCloseWatcherActive(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>&) const;
+
   jboolean SignalCloseWatcherIfActive(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;

@@ -14,7 +14,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/renderer_host/close_listener_host.h"
+#include "content/browser/closewatcher/close_listener_host.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/android/content_jni_headers/RenderFrameHostImpl_jni.h"
@@ -168,6 +168,14 @@ void RenderFrameHostAndroid::NotifyWebAuthnAssertionRequestSucceeded(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) {
   render_frame_host_->WebAuthnAssertionRequestSucceeded();
+}
+
+jboolean RenderFrameHostAndroid::IsCloseWatcherActive(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&) const {
+  auto* close_listener_host =
+      CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_);
+  return close_listener_host->IsActive();
 }
 
 jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(

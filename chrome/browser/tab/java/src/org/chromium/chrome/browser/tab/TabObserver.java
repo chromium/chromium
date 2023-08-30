@@ -342,4 +342,12 @@ public interface TabObserver {
      * Back press refactor related. Called when navigation state is invalidated.
      */
     void onNavigationStateChanged();
+
+    /**
+     * CloseWatcher web API support. If the currently focused frame has a CloseWatcher registered in
+     * JavaScript, the CloseWatcher should receive the next "close" operation, based on what the OS
+     * convention for closing is. This function is called when the focused frame changes or a
+     * CloseWatcher registered/unregistered to update whether the CloseWatcher should intercept.
+     */
+    void onDidChangeCloseSignalInterceptStatus();
 }
