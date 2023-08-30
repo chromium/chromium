@@ -9452,21 +9452,6 @@
             ]
         }
     ],
-    "MacAllowBackgroundingRenderProcesses": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220218",
-                    "enable_features": [
-                        "MacAllowBackgroundingRenderProcesses"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacWebContentsOcclusion": [
         {
             "platforms": [
