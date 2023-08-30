@@ -44,14 +44,12 @@ const StateType = chrome.automation.StateType;
  * for automation tree text fields.
  */
 export class AutomationEditableText extends ChromeVoxEditableTextBase {
-  /**
-   * @param {!AutomationNode} node
-   */
+  /** @param {!AutomationNode} node */
   constructor(node) {
     if (!node.state.editable) {
       throw Error('Node must have editable state set to true.');
     }
-    const value = AutomationEditableText.getProcessedValue_(node) || '';
+    const value = AutomationEditableText.getProcessedValue_(node) ?? '';
     const lineBreaks = AutomationEditableText.getLineBreaks_(value);
     const start = node.textSelStart;
     const end = node.textSelEnd;
@@ -77,14 +75,14 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     const oldStart = this.start;
     const oldEnd = this.end;
     const newValue =
-        AutomationEditableText.getProcessedValue_(this.node_) || '';
+        AutomationEditableText.getProcessedValue_(this.node_) ?? '';
     if (oldValue !== newValue) {
       this.lineBreaks_ = AutomationEditableText.getLineBreaks_(newValue);
     }
 
     const textChangeEvent = new TextChangeEvent(
-        newValue, Math.min(this.node_.textSelStart || 0, newValue.length),
-        Math.min(this.node_.textSelEnd || 0, newValue.length),
+        newValue, Math.min(this.node_.textSelStart ?? 0, newValue.length),
+        Math.min(this.node_.textSelEnd ?? 0, newValue.length),
         true /* triggered by user */);
     this.changed(textChangeEvent);
     this.outputBraille_(oldValue, oldStart, oldEnd);
@@ -130,21 +128,36 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
   }
 
   /** @private */
-  outputBraille_(oldValue, oldStart, oldEnd) {
+  getLineIndexForBrailleOutput_(oldStart) {
     let lineIndex = this.getLineIndex(this.start);
     // Output braille at the end of the selection that changed, if start and end
     // differ.
     if (this.start !== this.end && this.start === oldStart) {
       lineIndex = this.getLineIndex(this.end);
     }
-    const lineStart = this.getLineStart(lineIndex);
-    let lineText =
-        this.value.substr(lineStart, this.getLineEnd(lineIndex) - lineStart);
+    return lineIndex;
+  }
+
+  /** @private */
+  getTextFromIndexAndStart_(lineIndex, lineStart) {
+    const lineEnd = this.getLineEnd(lineIndex);
+    let lineText = this.value.substr(lineStart, lineEnd - lineStart);
 
     if (lineIndex === 0) {
-      lineText += ' ' +
+      const textFieldTypeMsg =
           Msgs.getMsg(this.multiline ? 'tag_textarea_brl' : 'role_textbox_brl');
+      lineText += ' ' + textFieldTypeMsg;
     }
+
+    return lineText;
+  }
+
+  /** @private */
+  outputBraille_(oldValue, oldStart, oldEnd) {
+    const lineIndex = this.getLineIndexForBrailleOutput_(oldStart);
+    const lineStart = this.getLineStart(lineIndex);
+    let lineText = this.getTextFromIndexAndStart_(lineIndex, lineStart);
+
     const startIndex = this.start - lineStart;
     const endIndex = this.end - lineStart;
 
@@ -168,8 +181,11 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
    * @private
    */
   static getProcessedValue_(node) {
-    const value = node.value;
-    return (value && node.inputType === 'tel') ? value['trimEnd']() : value;
+    let value = node.value;
+    if (node.inputType === 'tel') {
+      value = value?.trimEnd();
+    }
+    return value;
   }
 
   /**
@@ -180,7 +196,8 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
   static getLineBreaks_(value) {
     const lineBreaks = [];
     const lines = value.split('\n');
-    for (let i = 0, total = 0; i < lines.length; i++) {
+    let total = 0;
+    for (let i = 0; i < lines.length; i++) {
       total += lines[i].length;
       lineBreaks[i] = total;
 
@@ -190,7 +207,6 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return lineBreaks;
   }
 }
-
 
 /**
  * A |ChromeVoxEditableTextBase| that implements text editing feedback
