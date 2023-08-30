@@ -215,7 +215,7 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetBodyText()
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    int string_id = pdm->IsSyncEnabledFor(syncer::UserSelectableType::kAutofill)
+    int string_id = pdm->IsSyncFeatureEnabledForAutofill()
                         ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
                         : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 

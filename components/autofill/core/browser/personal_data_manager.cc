@@ -2067,13 +2067,12 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
   GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
 }
 
-bool PersonalDataManager::IsSyncEnabledFor(
-    syncer::UserSelectableType data_type) const {
-  // TODO(crbug.com/1462286): Investigate usage of IsSyncFeatureEnabled() below
-  // and consider if it can be removed, since GetSelectedTypes() deals well
-  // with all sign-in states.
+bool PersonalDataManager::IsSyncFeatureEnabledForAutofill() const {
+  // TODO(crbug.com/1462552): Remove this method once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
-         sync_service_->GetUserSettings()->GetSelectedTypes().Has(data_type);
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kAutofill);
 }
 
 void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(

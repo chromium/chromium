@@ -620,8 +620,11 @@ class PersonalDataManager : public KeyedService,
   // updates. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
 
-  // Returns true if Sync is enabled for `data_type`.
-  bool IsSyncEnabledFor(syncer::UserSelectableType data_type) const;
+  // Returns true if Sync-the-feature is enabled and
+  // UserSelectableType::kAutofill is among the user's selected data types.
+  // TODO(crbug.com/1462552): Remove this method once ConsentLevel::kSync and
+  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
+  bool IsSyncFeatureEnabledForAutofill() const;
 
   // The functions below are related to the payments mandatory re-auth feature.
   // All of this functionality is done through per-profile per-device prefs.

@@ -99,7 +99,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
   // to their Google account.
   if (is_migration_to_account_) {
     return l10n_util::GetStringFUTF16(
-        personal_data_->IsSyncEnabledFor(syncer::UserSelectableType::kAutofill)
+        personal_data_->IsSyncFeatureEnabledForAutofill()
             ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
             : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
         base::UTF8ToUTF16(account_info.email));

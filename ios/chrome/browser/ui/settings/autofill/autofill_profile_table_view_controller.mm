@@ -540,8 +540,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     self.userEmail = identity.userEmail;
-    self.syncEnabled = _personalDataManager->IsSyncEnabledFor(
-        syncer::UserSelectableType::kAutofill);
+    self.syncEnabled = _personalDataManager->IsSyncFeatureEnabledForAutofill();
   }
 }
 

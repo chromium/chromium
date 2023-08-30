@@ -57,8 +57,10 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
 
   // If sync is enabled for autofill, defer running cleanups until address
   // sync and card sync have started; otherwise, do it now.
-  if (!personal_data_manager_->IsSyncEnabledFor(
-          syncer::UserSelectableType::kAutofill)) {
+  // TODO(crbug.com/1477292): This should also cover Sync-the-transport (not
+  // only Sync-the-feature), and for the credit card fixes, it should check
+  // whether Payments specifically is enabled, not the overall Autofill.
+  if (!personal_data_manager_->IsSyncFeatureEnabledForAutofill()) {
     ApplyAddressFixesAndCleanups();
     ApplyCardFixesAndCleanups();
   }
