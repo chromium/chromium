@@ -99,7 +99,11 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         // No actual load to do if the hidden tab already has the exact correct url.
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
-        if (TextUtils.equals(speculatedUrl, url)) {
+
+        boolean useSpeculation = TextUtils.equals(speculatedUrl, url);
+        mCustomTabObserver.get().trackNextPageLoadForHiddenTab(
+                useSpeculation, getTimestamp(intentDataProvider));
+        if (useSpeculation) {
             if (tab.isLoading()) {
                 // CustomTabObserver and CustomTabActivityNavigationObserver are attached
                 // as observers in CustomTabActivityTabController, not when the navigation is

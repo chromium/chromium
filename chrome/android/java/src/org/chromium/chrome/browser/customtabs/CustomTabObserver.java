@@ -9,18 +9,22 @@ import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQuali
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Process;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -51,6 +55,9 @@ public class CustomTabObserver extends EmptyTabObserver {
     private int mContentBitmapHeight;
 
     private long mIntentReceivedTimestamp;
+    private long mLaunchedForSpeculationTimestamp;
+    @Nullable
+    private Boolean mUsedHiddenTabSpeculation;
     private long mPageLoadStartedTimestamp;
     private long mFirstCommitTimestamp;
 
@@ -105,6 +112,11 @@ public class CustomTabObserver extends EmptyTabObserver {
         } else {
             mCurrentState = State.WAITING_LOAD_START;
         }
+    }
+
+    public void trackNextPageLoadForHiddenTab(boolean usedSpeculation, long timestamp) {
+        mUsedHiddenTabSpeculation = usedSpeculation;
+        mLaunchedForSpeculationTimestamp = timestamp;
     }
 
     @Override
@@ -188,7 +200,39 @@ public class CustomTabObserver extends EmptyTabObserver {
         boolean firstNavigation = mFirstCommitTimestamp == 0;
         boolean isFirstMainFrameCommit = firstNavigation && navigation.hasCommitted()
                 && !navigation.isErrorPage() && !navigation.isSameDocument();
-        if (isFirstMainFrameCommit) mFirstCommitTimestamp = SystemClock.elapsedRealtime();
+        if (!isFirstMainFrameCommit) return;
+
+        mFirstCommitTimestamp = SystemClock.elapsedRealtime();
+
+        if (mCustomTabsConnection == null) return;
+
+        String histogram = null;
+        long duration = 0;
+        @CalledWarmup
+        int warmedState = mCustomTabsConnection.getWarmupState(mSession);
+        boolean warmedUp = warmedState == CalledWarmup.SESSION_NO_WARMUP_ALREADY_CALLED
+                || warmedState == CalledWarmup.SESSION_WARMUP;
+        // Note that this will exclude Webapp launches in all cases due to either
+        // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
+        if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
+            duration = mFirstCommitTimestamp - mLaunchedForSpeculationTimestamp;
+            histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Speculated";
+        } else if (mIntentReceivedTimestamp > 0) {
+            if (warmedUp) {
+                duration = mFirstCommitTimestamp - mIntentReceivedTimestamp;
+                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.WarmedUp";
+            } else if (SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
+                duration = mFirstCommitTimestamp - Process.getStartElapsedRealtime();
+                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Cold";
+            } else {
+                duration = mFirstCommitTimestamp - mIntentReceivedTimestamp;
+                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Warm";
+            }
+        }
+        if (histogram != null) {
+            RecordHistogram.recordCustomTimesHistogram(
+                    histogram, duration, 20, DateUtils.SECOND_IN_MILLIS * 20, 50);
+        }
     }
 
     @Override

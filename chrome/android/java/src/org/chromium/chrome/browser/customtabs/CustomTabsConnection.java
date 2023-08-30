@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
+import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1818,6 +1819,13 @@ public class CustomTabsConnection {
 
     protected boolean isCCTAPIDeprecated(String featureParamName) {
         return false;
+    }
+
+    /**
+     * @return The CalledWarmup state for the session.
+     */
+    public @CalledWarmup int getWarmupState(CustomTabsSessionToken session) {
+        return mClientManager.getWarmupState(session);
     }
 
     public static void setInstanceForTesting(CustomTabsConnection connection) {
