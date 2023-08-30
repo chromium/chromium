@@ -38,3 +38,6 @@ per-file roll_webrtc.py=mbonadei@chromium.org
 per-file download_optimization_profile.py=gbiv@chromium.org
 
 per-file update_pgo_profiles.py=jeffyoon@google.com
+
+per-file sample_clang_tidy_results.py=dsinclair@chromium.org
+per-file sample_clang_tidy_results.py=gbiv@chromium.org
