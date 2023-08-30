@@ -76,6 +76,10 @@ class VirtualCardEnrollBubbleControllerImpl
   bool DidShowBottomSheetForTesting() const {
     return !!autofill_vcn_enroll_bottom_sheet_bridge_;
   }
+
+  void SetFieldsForTesting(const VirtualCardEnrollmentFields& fields) {
+    virtual_card_enrollment_fields_ = fields;
+  }
 #endif  // IS_ANDROID
 #endif  // UNIT_TEST
 

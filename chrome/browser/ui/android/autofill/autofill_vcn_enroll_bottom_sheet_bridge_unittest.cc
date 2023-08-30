@@ -4,14 +4,48 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
 
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 namespace {
 
-using AutofillVCNEnrollBottomSheetBridgeTest = ChromeRenderViewHostTestHarness;
+class AutofillVCNEnrollBottomSheetBridgeTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  AutofillVCNEnrollBottomSheetBridgeTest()
+      : card_art_image_(gfx::test::CreateImage().AsImageSkia()) {}
+  ~AutofillVCNEnrollBottomSheetBridgeTest() override = default;
+
+  VirtualCardEnrollBubbleControllerImpl* BuildController() {
+    VirtualCardEnrollBubbleControllerImpl* controller =
+        static_cast<VirtualCardEnrollBubbleControllerImpl*>(
+            VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents()));
+    VirtualCardEnrollmentFields virtual_card_enrollment_fields;
+    virtual_card_enrollment_fields.credit_card = test::GetFullServerCard();
+    virtual_card_enrollment_fields.card_art_image = &card_art_image_;
+    virtual_card_enrollment_fields.google_legal_message = {
+        TestLegalMessageLine("google_test_legal_message")};
+    virtual_card_enrollment_fields.issuer_legal_message = {
+        TestLegalMessageLine("issuer_test_legal_message")};
+    virtual_card_enrollment_fields.virtual_card_enrollment_source =
+        VirtualCardEnrollmentSource::kUpstream;
+    controller->SetFieldsForTesting(virtual_card_enrollment_fields);
+    return controller;
+  }
+
+ private:
+  gfx::ImageSkia card_art_image_;
+};
 
 TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,
        RequestShowContentWithoutWebContents) {
@@ -25,12 +59,34 @@ TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,
 
 TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,
        RequestShowContentWithWebContents) {
+  auto delegate =
+      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
+          BuildController());
   AutofillVCNEnrollBottomSheetBridge bridge;
 
   bool did_show =
-      bridge.RequestShowContent(web_contents(), /*delegate=*/nullptr);
+      bridge.RequestShowContent(web_contents(), std::move(delegate));
 
   EXPECT_FALSE(did_show);
+}
+
+class MockDelegate : public AutofillVirtualCardEnrollmentInfoBarDelegateMobile {
+ public:
+  explicit MockDelegate(VirtualCardEnrollBubbleControllerImpl* controller)
+      : AutofillVirtualCardEnrollmentInfoBarDelegateMobile(controller) {}
+  ~MockDelegate() override = default;
+  MOCK_METHOD(void, InfoBarDismissed, (), (override));
+};
+
+TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, DismissCallback) {
+  auto delegate = std::make_unique<MockDelegate>(BuildController());
+  MockDelegate& delegate_reference = *delegate;
+  AutofillVCNEnrollBottomSheetBridge bridge;
+  bridge.RequestShowContent(web_contents(), std::move(delegate));
+
+  EXPECT_CALL(delegate_reference, InfoBarDismissed());
+
+  bridge.OnDismiss(/*env=*/nullptr);
 }
 
 }  // namespace

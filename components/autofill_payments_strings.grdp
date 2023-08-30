@@ -743,6 +743,15 @@
     Virtual card
   </message>
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONTENT_DESCRIPTION" desc="The description of the virtual card enrollment dialog for the accessbility screen reader." formatter_data="android_java">
+      Virtual card enrollment
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_FULL_HEIGHT_CONTENT_DESCRIPTION" desc="The description of the full height virtual card enrollment dialog for the accessbility screen reader." formatter_data="android_java">
+      Virtual card enrollment opened at full height
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CLOSED_DESCRIPTION" desc="The description of the virtual card enrollment dialog closing for the accessbility screen reader." formatter_data="android_java">
+      Virtual card enrollment closed
+    </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
       Virtual card number not filled in?
     </message>
