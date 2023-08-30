@@ -145,6 +145,15 @@ class Cache {
 
 }  // namespace
 
+// static
+std::u16string AddressRewriter::RewriteForCountryCode(
+    const std::u16string& country_code,
+    const std::u16string& normalized_text) {
+  AddressRewriter rewriter = AddressRewriter::ForCountryCode(country_code);
+  return rewriter.Rewrite(normalized_text);
+}
+
+// static
 AddressRewriter AddressRewriter::ForCountryCode(
     const std::u16string& country_code) {
   const std::string region =
@@ -156,6 +165,7 @@ AddressRewriter AddressRewriter::ForCountryCode(
   return rewriter;
 }
 
+// static
 AddressRewriter AddressRewriter::ForCustomRules(
     const std::string& custom_rules) {
   const CompiledRuleVector* rules =

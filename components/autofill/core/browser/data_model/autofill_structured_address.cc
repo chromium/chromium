@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
@@ -25,20 +26,11 @@
 
 namespace autofill {
 
-namespace {
-// Applies the |country_code| specific rewriter to the normalized value. If
-// |country_code| is empty, it defaults to US.
-std::u16string RewriteValue(const std::u16string& value,
-                            const std::u16string& country_code) {
-  return RewriterCache::Rewrite(country_code.empty() ? u"US" : country_code,
-                                value);
-}
-}  // namespace
-
 std::u16string AddressComponentWithRewriter::GetValueForComparison(
     const std::u16string& value,
     const AddressComponent& other) const {
-  return RewriteValue(NormalizeValue(value), GetCommonCountry(other));
+  return NormalizeAndRewrite(GetCommonCountry(other), value,
+                             /*keep_white_space=*/true);
 }
 
 StreetNameNode::StreetNameNode(AddressComponent* parent)
@@ -340,8 +332,8 @@ std::u16string PostalCodeNode::GetNormalizedValue() const {
 std::u16string PostalCodeNode::GetValueForComparison(
     const std::u16string& value,
     const AddressComponent& other) const {
-  return RewriteValue(NormalizeValue(value, /*keep_white_space=*/false),
-                      GetCommonCountry(other));
+  return NormalizeAndRewrite(GetCommonCountry(other), value,
+                             /*keep_white_space=*/false);
 }
 
 SortingCodeNode::SortingCodeNode(AddressComponent* parent)

@@ -228,8 +228,12 @@ TEST(AutofillStructuredAddressUtils, NormalizeValue) {
 }
 
 TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
-  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"unit #3"), u"u 3");
-  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"california"), u"ca");
+  EXPECT_EQ(NormalizeAndRewrite(u"us", u"unit #3",
+                                /*keep_white_space=*/true),
+            u"u 3");
+  EXPECT_EQ(NormalizeAndRewrite(u"us", u"california",
+                                /*keep_white_space=*/true),
+            u"ca");
 }
 
 TEST(AutofillStructuredAddressUtils, AreStringTokenCompatible) {

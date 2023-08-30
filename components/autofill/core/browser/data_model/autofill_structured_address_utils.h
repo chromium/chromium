@@ -132,38 +132,6 @@ class Re2RegExCache {
   base::Lock lock_;
 };
 
-// A cache for address rewriter for different countries.
-class RewriterCache {
- public:
-  RewriterCache& operator=(const RewriterCache&) = delete;
-  RewriterCache(const RewriterCache&) = delete;
-  ~RewriterCache() = delete;
-
-  // Returns a singleton instance.
-  static RewriterCache* GetInstance();
-
-  // Applies the rewriter to |text| for a specific county given by
-  // |country_code|.
-  static std::u16string Rewrite(const std::u16string& country_code,
-                                const std::u16string& text);
-
- private:
-  RewriterCache();
-
-  // Returns the Rewriter for |country_code|.
-  const AddressRewriter& GetRewriter(const std::u16string& country_code);
-
-  // Since the constructor is private, |base::NoDestructor| must be friend to be
-  // allowed to construct the cache.
-  friend class base::NoDestructor<RewriterCache>;
-
-  // Stores a country-specific Rewriter keyed by its corresponding |pattern|.
-  std::map<std::u16string, const AddressRewriter> rewriter_map_;
-
-  // A lock to prevent concurrent access to the map.
-  base::Lock lock_;
-};
-
 // Returns true if |name| has the characteristics of a Chinese, Japanese or
 // Korean name:
 // * It must only contain CJK characters with at most one separator in between.
@@ -272,6 +240,12 @@ std::string CaptureTypeWithPattern(
     const ServerFieldType& type,
     const std::string& pattern,
     const CaptureOptions options = CaptureOptions());
+
+// Normalizes and rewrites |text| using the rules for |country_code|.
+// If |country_code| is empty, it defaults to US.
+std::u16string NormalizeAndRewrite(const std::u16string& country_code,
+                                   const std::u16string& text,
+                                   bool keep_white_space);
 
 // Collapses white spaces and line breaks, converts the string to lower case and
 // removes diacritics.

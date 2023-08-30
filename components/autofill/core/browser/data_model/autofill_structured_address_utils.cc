@@ -95,39 +95,6 @@ const RE2* Re2RegExCache::GetRegEx(std::string_view pattern) {
   return result.first->second.get();
 }
 
-RewriterCache::RewriterCache() = default;
-
-// static
-RewriterCache* RewriterCache::GetInstance() {
-  static base::NoDestructor<RewriterCache> g_rewriter_cache;
-  return g_rewriter_cache.get();
-}
-
-// static
-std::u16string RewriterCache::Rewrite(const std::u16string& country_code,
-                                      const std::u16string& text) {
-  return GetInstance()->GetRewriter(country_code).Rewrite(NormalizeValue(text));
-}
-
-const AddressRewriter& RewriterCache::GetRewriter(
-    const std::u16string& country_code) {
-  // For thread safety, acquire a lock to prevent concurrent access.
-  base::AutoLock lock(lock_);
-
-  auto it = rewriter_map_.find(country_code);
-  if (it != rewriter_map_.end()) {
-    const AddressRewriter& rewriter = it->second;
-    return rewriter;
-  }
-
-  // Insert the expression into the map, check the success and return the
-  // pointer.
-  auto result = rewriter_map_.emplace(
-      country_code, AddressRewriter::ForCountryCode(country_code));
-  DCHECK(result.second);
-  return result.first->second;
-}
-
 std::unique_ptr<const RE2> BuildRegExFromPattern(std::string_view pattern) {
   RE2::Options opt;
   // By default, patters are case sensitive.
@@ -336,6 +303,14 @@ std::string CaptureTypeWithPattern(const ServerFieldType& type,
                                    CaptureOptions options) {
   return CaptureTypeWithAffixedPattern(type, std::string(), pattern,
                                        std::string(), options);
+}
+
+std::u16string NormalizeAndRewrite(const std::u16string& country_code,
+                                   const std::u16string& text,
+                                   bool keep_white_space) {
+  return AddressRewriter::RewriteForCountryCode(
+      country_code.empty() ? u"US" : country_code,
+      NormalizeValue(text, keep_white_space));
 }
 
 std::u16string NormalizeValue(base::StringPiece16 value,

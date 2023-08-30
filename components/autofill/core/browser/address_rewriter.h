@@ -18,6 +18,11 @@ namespace autofill {
 // copyable, movable, and passable by value.
 class AddressRewriter {
  public:
+  // Rewrites |text| using the rules for |country_code|.
+  static std::u16string RewriteForCountryCode(
+      const std::u16string& country_code,
+      const std::u16string& normalized_text);
+
   // Get an AddressRewrite instance which applies the rules for |country_code|.
   static AddressRewriter ForCountryCode(const std::u16string& country_code);
 
