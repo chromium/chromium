@@ -709,7 +709,10 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE))]
+                                   [ChromeEarlGrey
+                                       isReplaceSyncWithSigninEnabled]
+                                       ? IDS_IOS_HISTORY_SYNC_TITLE
+                                       : IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
