@@ -753,10 +753,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
         if (!mAutocompleteResult.equals(autocompleteResult)) {
             mAutocompleteResult = autocompleteResult;
-            List<DropdownItemViewInfo> viewInfoList =
+            var viewInfoList =
                     mDropdownViewInfoListBuilder.buildDropdownViewInfoList(autocompleteResult);
-            mDropdownViewInfoListManager.setSourceViewInfoList(
-                    viewInfoList, autocompleteResult.getGroupsInfo());
+            mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
             boolean defaultMatchIsSearch = true;
             if (!TextUtils.isEmpty(mUrlBarEditingTextProvider.getTextWithoutAutocomplete())
                     && !newSuggestions.isEmpty()) {

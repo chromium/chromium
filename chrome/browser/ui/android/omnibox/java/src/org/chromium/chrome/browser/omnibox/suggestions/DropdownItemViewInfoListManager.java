@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.GroupsProto.GroupSection;
-import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -97,13 +96,9 @@ class DropdownItemViewInfoListManager {
      * Specify the input list of DropdownItemViewInfo elements.
      *
      * @param sourceList Source list of ViewInfo elements.
-     * @param groupsInfo Group ID to GroupConfig map carrying group collapsed state information.
      */
-    void setSourceViewInfoList(
-            @NonNull List<DropdownItemViewInfo> sourceList, @NonNull GroupsInfo groupsInfo) {
+    void setSourceViewInfoList(@NonNull List<DropdownItemViewInfo> sourceList) {
         mSourceViewInfoList = sourceList;
-
-        final var groupsDetails = groupsInfo.getGroupConfigsMap();
 
         // Build a new list of suggestions. Honor the default collapsed state.
         final List<ListItem> suggestionsList = new ArrayList<>();
@@ -134,9 +129,7 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
             if (shouldShowModernizeVisualUpdate && item.processor.allowBackgroundRounding()) {
-                var groupConfig = groupsDetails.get(item.groupId);
-                currentSection = groupConfig != null ? groupConfig.getSection()
-                                                     : GroupSection.SECTION_DEFAULT;
+                currentSection = item.groupConfig.getSection();
                 var applyRounding = currentSection != previousSection;
                 int topMargin;
                 if (previousItemWasHeader) {

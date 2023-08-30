@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,6 +42,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -128,13 +130,13 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.HEADER);
         Assert.assertEquals(model.get(0).processor, mMockHeaderProcessor);
-        Assert.assertEquals(model.get(0).groupId, 1);
+        Assert.assertEquals(model.get(0).groupConfig, SECTION_2_WITH_HEADER);
         Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.DEFAULT);
         Assert.assertEquals(model.get(1).processor, mMockSuggestionProcessor);
-        Assert.assertEquals(model.get(1).groupId, 1);
+        Assert.assertEquals(model.get(1).groupConfig, SECTION_2_WITH_HEADER);
         Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
         Assert.assertEquals(model.get(2).processor, mMockSuggestionProcessor);
-        Assert.assertEquals(model.get(2).groupId, 1);
+        Assert.assertEquals(model.get(2).groupConfig, SECTION_2_WITH_HEADER);
     }
 
     @Test
@@ -184,22 +186,24 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .populateModel(eq(suggestionForGroup2), any(), eq(4));
         Assert.assertEquals(7, model.size()); // 2 headers + 5 suggestions.
 
+        var defaultGroupConfig = GroupConfig.getDefaultInstance();
+
         Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(0).groupId, -1);
+        Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
 
         Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.HEADER);
-        Assert.assertEquals(model.get(1).groupId, 1);
+        Assert.assertEquals(model.get(1).groupConfig, SECTION_2_WITH_HEADER);
         Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(2).groupId, 1);
+        Assert.assertEquals(model.get(2).groupConfig, SECTION_2_WITH_HEADER);
         Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(3).groupId, 1);
+        Assert.assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
 
         Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.HEADER);
-        Assert.assertEquals(model.get(4).groupId, 2);
+        Assert.assertEquals(model.get(4).groupConfig, SECTION_3_WITH_HEADER);
         Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(5).groupId, 2);
+        Assert.assertEquals(model.get(5).groupConfig, SECTION_3_WITH_HEADER);
         Assert.assertEquals(model.get(6).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(6).groupId, 2);
+        Assert.assertEquals(model.get(6).groupConfig, SECTION_3_WITH_HEADER);
     }
 
     @Test
@@ -249,22 +253,24 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         // Make sure no other headers were ever constructed.
         verify(mMockHeaderProcessor, times(1)).populateModel(any(), any());
 
+        var defaultGroupConfig = GroupConfig.getDefaultInstance();
+
         Assert.assertEquals(6, model.size()); // 1 header + 5 suggestions.
 
         Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(0).groupId, -1);
+        Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
 
         Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(1).groupId, 1);
+        Assert.assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
         Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(2).groupId, 1);
+        Assert.assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
 
         Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.HEADER);
-        Assert.assertEquals(model.get(3).groupId, 2);
+        Assert.assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
         Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(4).groupId, 2);
+        Assert.assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
         Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
-        Assert.assertEquals(model.get(5).groupId, 2);
+        Assert.assertEquals(model.get(5).groupConfig, SECTION_2_WITH_HEADER);
     }
 
     @Test
@@ -521,6 +527,59 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         // Skipping scenario where all suggestions are below the keyboard, because in this scenario
         // the user can't realistically interact with them.
+    }
+
+    @Test
+    public void buildVerticalSuggestionsGroup_withoutGroupHeader() {
+        var match = AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                            .setGroupId(1)
+                            .build();
+        var matches = List.of(match, match);
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+        clearInvocations(mMockHeaderProcessor, mMockSuggestionProcessor);
+
+        var result = mBuilder.buildVerticalSuggestionsGroup(
+                SECTION_1_NO_HEADER, matches, /* firstVerticalPosition=*/5);
+
+        verify(mMockSuggestionProcessor, times(2)).createModel();
+        verify(mMockSuggestionProcessor, atLeastOnce()).getViewTypeId();
+        verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 5);
+        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(5));
+        verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 6);
+        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(6));
+
+        verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
+
+        assertEquals(/* 0 header + 2 suggestions = */ 2, result.size());
+    }
+
+    @Test
+    public void buildVerticalSuggestionsGroup_withGroupHeader() {
+        var match = AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                            .setGroupId(1)
+                            .build();
+        var matches = List.of(match, match);
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+        clearInvocations(mMockHeaderProcessor, mMockSuggestionProcessor);
+
+        var result = mBuilder.buildVerticalSuggestionsGroup(
+                SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition=*/7);
+
+        verify(mMockHeaderProcessor).createModel();
+        verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();
+        verify(mMockHeaderProcessor)
+                .populateModel(any(), eq(SECTION_2_WITH_HEADER.getHeaderText()));
+
+        verify(mMockSuggestionProcessor, times(2)).createModel();
+        verify(mMockSuggestionProcessor, atLeastOnce()).getViewTypeId();
+        verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 7);
+        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(7));
+        verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 8);
+        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(8));
+
+        verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
+
+        assertEquals(/* 1 header + 2 suggestions = */ 3, result.size());
     }
 
     @Test
