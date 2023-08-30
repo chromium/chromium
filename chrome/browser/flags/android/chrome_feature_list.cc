@@ -339,6 +339,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebOtpCrossDeviceSimpleString,
     &content_creation::kWebNotesStylizeEnabled,
     &kWebApkAllowIconUpdate,
+    &kWebApkBackupAndRestoreBackend,
     &kWebApkInstallService,
     &kWebApkTrampolineOnInitialIntent,
     &features::kDnsOverHttps,
@@ -1156,6 +1157,10 @@ BASE_FEATURE(kWebOtpCrossDeviceSimpleString,
 
 BASE_FEATURE(kWebApkAllowIconUpdate,
              "WebApkAllowIconUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebApkBackupAndRestoreBackend,
+             "WebApkBackupAndRestoreBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Chrome Android WebAPK-install service.
