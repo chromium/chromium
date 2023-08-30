@@ -74,3 +74,13 @@ CR_OCMOCK_RETURN_IMPL(CGFloat, CGFloat);
 }
 
 @end
+
+@implementation OCMockObject (CrExtensions)
+
+- (void)clearInvocations {
+  @synchronized(invocations) {
+    [invocations removeAllObjects];
+  }
+}
+
+@end

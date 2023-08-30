@@ -46,6 +46,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/ocmock_extensions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::SysNSStringToUTF16;
@@ -625,31 +626,40 @@ TEST_F(SigninPromoViewMediatorTest,
   // Setup.
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  [mediator_ signinPromoViewIsVisible];
-  __block ShowSigninCommandCompletionCallback completion;
-  id completion_arg =
-      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
-        completion = value;
-        return YES;
-      }];
   __weak __typeof(mediator_) weak_mediator = mediator_;
-  id mediator_checker = [OCMArg checkWithBlock:^BOOL(id value) {
-    return value == weak_mediator;
-  }];
-  OCMExpect([consumer_ signinPromoViewMediator:mediator_checker
-                  shouldOpenSigninWithIdentity:identity_
-                                   promoAction:signin_metrics::PromoAction::
-                                                   PROMO_ACTION_WITH_DEFAULT
-                                    completion:completion_arg]);
-  OCMExpect([consumer_ promoProgressStateDidChange]);
-  ExpectConfiguratorNotification(NO /* identity changed */);
-  // Start sign-in with an identity.
-  [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
-  // Remove the sign-in promo.
-  [mediator_ disconnect];
-  EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
-  // Dealloc the mediator.
-  mediator_ = nil;
+  __block ShowSigninCommandCompletionCallback completion;
+  // This test wants to verify behavior when `mediator_` gets deallocated.
+  // OCMock uses autorelease in places, which could result in `mediator_`
+  // staying allocated longer than we want without this @autoreleasepool.
+  @autoreleasepool {
+    [mediator_ signinPromoViewIsVisible];
+    id completion_arg = [OCMArg
+        checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
+          completion = value;
+          return YES;
+        }];
+    OCMExpect([consumer_ signinPromoViewMediator:mediator_
+                    shouldOpenSigninWithIdentity:identity_
+                                     promoAction:signin_metrics::PromoAction::
+                                                     PROMO_ACTION_WITH_DEFAULT
+                                      completion:completion_arg]);
+    OCMExpect([consumer_ promoProgressStateDidChange]);
+    ExpectConfiguratorNotification(NO /* identity changed */);
+    // Start sign-in with an identity.
+    [mediator_
+        signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
+    // Remove the sign-in promo.
+    [mediator_ disconnect];
+    EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
+    // Dealloc the mediator.
+    mediator_ = nil;
+    // Also clear all invocations from `consumer_` after verifying them, as the
+    // invocations also contain a reference to `mediator_`. Generally this is
+    // what `stopMocking` is meant for, but we still want to verify that
+    // `signinDidfinish` is called below, so we can't just stop mocking yet.
+    EXPECT_OCMOCK_VERIFY(consumer_);
+    [(OCMockObject*)consumer_ clearInvocations];
+  }
   EXPECT_EQ(weak_mediator, nil);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);

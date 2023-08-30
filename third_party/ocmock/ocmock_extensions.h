@@ -50,4 +50,15 @@
 + (id)conformsToProtocol:(Protocol*)protocol;
 @end
 
+@interface OCMockObject (CrExtensions)
+// Recorded invocations can contain objects that clients expect to be
+// deallocated by now, and they can also have a strong reference to self,
+// creating a retain cycle. Get rid of all of the invocations to hopefully
+// let their objects deallocate, and to break any retain cycles involving self.
+// This is similar to `stopMocking`, but calling the latter will also cause the
+// mock object to no longer be usable, while sometimes it is desirable to
+// clear references while still keeping the mock object iself alive and usable.
+- (void)clearInvocations;
+@end
+
 #endif  // THIRD_PARTY_OCMOCK_OCMOCK_EXTENSIONS_H_
