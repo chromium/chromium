@@ -211,7 +211,19 @@ async function openFileDialogExpectEntryDimmed(volume, name) {
   const fileEntry = `#file-list [file-name="${name}"]`;
   const closer = async (dialog) => {
     const element = await remoteCall.waitForElement(dialog, fileEntry);
-    chrome.test.assertTrue(element.attributes['class'].includes('dim'));
+    let dimmed = false;
+    for (const className of element.attributes['class'].split(' ')) {
+      if (className === 'dim-offline') {
+        // The 'dim-offline' class dims an element only if the connection
+        // status is 'OFFLINE', which is not something this test is verifying.
+        continue;
+      }
+      if (className.startsWith('dim')) {
+        dimmed = true;
+        break;
+      }
+    }
+    chrome.test.assertTrue(dimmed, 'The file entry should be dimmed');
     clickOpenFileDialogButton(name, cancelButton, dialog);
   };
 
