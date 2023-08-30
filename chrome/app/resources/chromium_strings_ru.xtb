@@ -205,11 +205,13 @@
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>
 <translation id="5614091477838198795">Также выполняется выход из Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступно обновление Chromium}=1{Доступно обновление Chromium}one{Обновление Chromium доступно # день}few{Обновление Chromium доступно # дня}many{Обновление Chromium доступно # дней}other{Обновление Chromium доступно # дня}}</translation>
+<translation id="5643865575100044307">Всегда удалять с устройства данные сайтов при закрытии Chromium</translation>
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
 <translation id="5883558403894052917">Браузер Chromium обнаружил, что эти объекты содержат вредоносное ПО:</translation>
+<translation id="5889361821821684993">Chromium регулярно проверяет, используются ли в браузере максимально безопасные настройки. Мы сообщим, если потребуется ваше участие.</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5903106910045431592">"<ph name="PAGE_TITLE" />" – вход в сеть</translation>
 <translation id="5924017743176219022">Подключение к интернету…</translation>
@@ -220,6 +222,7 @@
 <translation id="5988505247484123880">Обычно сайты, которые вы посещаете, запоминают ваши интересы, чтобы показывать персонализированную рекламу. В том числе они могут хранить об этом информацию в Chromium.</translation>
 <translation id="6003112304606738118">Скачивание… Осталось: <ph name="HOURS" /> ч.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
+<translation id="6055611795418209449">Chromium блокирует скачивание некоторых файлов</translation>
 <translation id="6055895534982063517">Доступна новая версия Chromium, которая стала еще быстрее.</translation>
 <translation id="6063093106622310249">&amp;Открыть в Chromium</translation>
 <translation id="6072279588547424923">Расширение "<ph name="EXTENSION_NAME" />" добавлено в Chromium</translation>
@@ -233,6 +236,7 @@
 <translation id="6132897690380286411">Chromium скоро будет закрыт, а данные о работе удалены</translation>
 <translation id="6134968993075716475">Безопасный просмотр отключен. Chromium рекомендует включить его.</translation>
 <translation id="6145820983052037069">Здесь можно переключиться на другой профиль Chromium</translation>
+<translation id="6175304430031192654">В зависимости от настроек Chromium также может передавать файлы cookie и ваш текущий URL.</translation>
 <translation id="6183079672144801177">Убедитесь, что вы вошли в Chromium на устройстве <ph name="TARGET_DEVICE_NAME" />, и попробуйте повторить отправку.</translation>
 <translation id="6212496753309875659">На этом компьютере установлена актуальная версия Chromium. Если программа не работает, удалите Chromium и повторите попытку.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапускается}=1{Chromium перезапустится через 1 секунду}one{Chromium перезапустится через # секунду}few{Chromium перезапустится через # секунды}many{Chromium перезапустится через # секунд}other{Chromium перезапустится через # секунды}}</translation>
@@ -253,6 +257,7 @@
 <translation id="6373523479360886564">Вы действительно хотите удалить Chromium?</translation>
 <translation id="6375219077595103062">Добавьте ярлык для Менеджера паролей.</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> Chromium может предполагать, какие темы вам интересны. Сайты, которые вы посетите в дальнейшем, могут обращаться к Chromium, чтобы получать сведения о ваших интересах и показывать вам подходящую рекламу.</translation>
+<translation id="6400112897226594999">Логотип Chromium на экране компьютера.</translation>
 <translation id="6403826409255603130">Chromium – браузер, который открывает веб-страницы и приложения за секунды. Он быстр, стабилен в работе и прост в использовании. Встроенная в Chromium защита от мошенничества и вредоносного ПО обеспечивает максимально безопасную работу в Интернете.</translation>
 <translation id="6442900851116057561">Перезапустите Chromium OS</translation>
 <translation id="6455857529632101747">Представляем профили Chromium</translation>
@@ -301,6 +306,7 @@
 <translation id="718435575166326686">Браузер Chromium запрашивает доступ к камере для этого сайта.</translation>
 <translation id="7196312274710523067">Не удалось запустить Chromium. Повторите попытку.</translation>
 <translation id="7197677400338048821">Не удается проверить пароли в Chromium. Повторите попытку через 24 часа.</translation>
+<translation id="7213407614656404070">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chromium</translation>
 <translation id="7223968959479464213">Диспетчер задач – Chromium</translation>
 <translation id="7246575524853130370">Ваши интересы по данным Chromium</translation>
 <translation id="7309928523159922338">Сайты, которые вы посещаете, смогут проводить оценку эффективности рекламы, запрашивая информацию у Chromium. Оценка эффективности рекламы ограничивает межсайтовое отслеживание, сокращая объем информации, передаваемой между сайтами, до минимума.</translation>

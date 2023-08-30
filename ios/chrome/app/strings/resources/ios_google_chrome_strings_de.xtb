@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="1180362651362502943">Chrome-Daten in deinem Google-Konto weiterhin verwenden.</translation>
 <translation id="1282031177488366470">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="1352919863522755794">Der Google Passwortmanager konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
+<translation id="1407843355326180937">Melde dich bei dieser Website und in Chrome an, um deine Lesezeichen und mehr auf allen deinen Geräten abzurufen.</translation>
 <translation id="1462727070346936664">Wenn du Chrome optimal nutzen möchtest, melde dich an.</translation>
 <translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1491435845014430217">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
 <translation id="1511320244449497906">Du bist angemeldet und deine Daten werden mit einem Konto synchronisiert, das von <ph name="DOMAIN" /> verwaltet wird. Der Administrator dieser Domain kann jetzt spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chrome verändern können.</translation>
+<translation id="1526327845902180576">Wenn aktiviert:
+<ph name="BEGIN_INDENT" /> • Du hilfst, Chrome für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
+
+Wichtige Hinweise:
+<ph name="BEGIN_INDENT" /> • Daten zu deiner Chrome-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
+
+  • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
+
+  • Falls du die Synchronisierung deines Verlaufs in deinem Google-Konto aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du nutzt den umfangreichen Schutz von Chrome vor schädlichen Websites</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
 <translation id="1733654336159102143">Sperre die Inkognitotabs, wenn du Chrome verlässt oder zu einer anderen App wechselst.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
+<translation id="3901001113120561395">Chrome optimal nutzen.</translation>
 <translation id="3980220367029651214">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chrome-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="3984746313391923992">Deine Organisation verlangt, dass du aus Chrome abgemeldet bleibst.</translation>
 <translation id="3988789688219830639">Chrome hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Melde dich bei dieser Website und in Chrome an.</translation>
 <translation id="4698415050768537821">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+
+        Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="484033449593719797">Wird von Chrome Beta nicht unterstützt</translation>
 <translation id="4840404732697892756">Der Google Passwortmanager kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="4903674399067644695">Auf dieser Karte findest du Vorschläge, wie du Chrome optimal nutzen kannst.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Chrome verbessern</translation>
 <translation id="5119391094379141756">Chrome auswählen</translation>
 <translation id="5162467219239570114">Chrome ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chrome möglicherweise nicht mehr.</translation>
+<translation id="5190139289262548459">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="5395376160638294582">Achte darauf, dass du die Chrome-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="6676840375528380067">Deine Chrome-Daten vom Gerät löschen?</translation>
 <translation id="6709398533399187136">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
+<translation id="6815466750807582739">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
+
+Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="8808828119384186784">Chrome-Einstellungen</translation>
+<translation id="8856877214925961642">Die Passphrasenverschlüsselung erstreckt sich nicht auf Zahlungsmethoden und Adressen.
+
+Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="8897749957032330183">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="8969290730818637510">Wenn aktiviert:

@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Ich möchte dabei helfen, die Funktionen und die Leistung von Chromium zu verbessern</translation>
 <translation id="1531155317299575425">Aufforderungen für die Anmeldung in Chromium werden angezeigt.</translation>
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
+<translation id="1647558790457890304">Chromium-Einstellungen</translation>
 <translation id="1722370509450468186">Dein Passwort wird in deinem Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="1736662517232558588">Chromium-Daten gelöscht</translation>
 <translation id="1758508597843173586">Sperre die Inkognitotabs, wenn du Chromium verlässt oder zu einer anderen App wechselst.</translation>
@@ -53,6 +54,10 @@
 <translation id="3780779443901618967">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chromium überspringen.</translation>
 <translation id="3805899903892079518">Chromium hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
+<translation id="3886689467633467988">Melde dich bei dieser Website und in Chromium an, um deine Lesezeichen und mehr auf allen deinen Geräten abzurufen.</translation>
+<translation id="394413318816989199">Die Passphrasenverschlüsselung erstreckt sich nicht auf Zahlungsmethoden und Adressen.
+
+Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Chromium über jede App öffnen</translation>
 <translation id="4043291146360695975">Passwörter werden auf diesem Gerät nur im Passwortmanager gespeichert.</translation>
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
@@ -64,14 +69,19 @@
 <translation id="4654936625574199632">Chromium sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
 <translation id="4736424910885271643">Dein Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, deine Chromium-Daten werden von diesem Gerät gelöscht</translation>
+<translation id="4790638144988730920">Chromium-Daten in deinem Google-Konto weiterhin verwenden.</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4996471330284142407">Jetzt mit dem neuen ultraschnellen Chromium ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="4999538639245140991">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="5042011327527167688">Tippe auf „In Chromium mit Maps ansehen“.</translation>
 <translation id="5048795749726991615">Verwende „Autofill“ in Chromium, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
+<translation id="5131565040785979529">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chromium.</translation>
 <translation id="5171868502429358653">In Chromium anmelden</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
+<translation id="5242782538551259282">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
+
+        Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5396916991083608703">Chromium als Standardbrowser festlegen?</translation>
 <translation id="5453478652154926037">Chromium kann deine Passwörter nicht prüfen.</translation>
@@ -81,7 +91,17 @@
 <translation id="5688047395118852662">Auf dieser Karte findest du Vorschläge, wie du Chromium optimal nutzen kannst.</translation>
 <translation id="5700709190537129682">Chromium kann deine Passwörter nicht prüfen</translation>
 <translation id="5777187867430702742">Chromium-Seite</translation>
+<translation id="5889847953983052353">Wenn aktiviert:
+<ph name="BEGIN_INDENT" /> • Du hilfst, Chromium für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
+
+Wichtige Hinweise:
+<ph name="BEGIN_INDENT" /> • Daten zu deiner Chromium-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
+
+  • Falls Chromium abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
+
+  • Falls du die Synchronisierung deines Verlaufs in deinem Google-Konto aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chromium abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
+<translation id="5951593919357934226">Chromium optimal nutzen.</translation>
 <translation id="5983312940147103417">Chromium verbessern</translation>
 <translation id="6062449165341879460">Deine Organisation <ph name="DOMAIN" /> hat Zugriff auf deine Daten, Lesezeichen, Passwörter und deinen Verlauf in Chromium sowie auf andere Einstellungen, die du in diesem Konto speicherst. Wenn du dich abmeldest, werden deine Daten von diesem Gerät gelöscht.  Die Daten bleiben jedoch in deinem verwalteten Google-Konto gespeichert und können von deiner Organisation abgerufen werden. Deine Organisation kann auch spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chromium verändern können.</translation>
 <translation id="61109258320235597">Gib deine Passphrase ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
@@ -93,6 +113,9 @@
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
 <translation id="6337530241089703714">Möchtest du deine Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
+<translation id="6407399265324739055">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chromium-Browserverlauf wird nicht synchronisiert.
+
+Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chromium<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>

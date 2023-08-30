@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Das Fenster für Firmwareupdates für externe Geräte ist geöffnet. Es sind <ph name="NUM_UPDATES" /> Updates verfügbar.</translation>
 <translation id="1145516343487477149">Hier findest du Hilfeartikel und Antworten auf häufig gestellte Fragen zu Chromebooks</translation>
+<translation id="1154390310959620237">Du kannst maximal fünf Tastenkombinationen anpassen. Wenn du eine neue Tastenkombination hinzufügen möchtest, musst du vorher eine bestehende löschen.</translation>
 <translation id="1164939766849482256">Bildschirmschoner – Sonnenauf- bis -untergang</translation>
 <translation id="1167755866710282443">Öffne das Menü, um die Schlüssel anzupassen. Ziehe das Menü zum Verschieben.</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Wird neu gestartet…</translation>
 <translation id="2533048460510040082">Vorgeschlagene Hilfeartikel</translation>
 <translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
+<translation id="2555662516429796509">Drücke eine bis vier Modifikatortasten und eine weitere Taste auf deiner Tastatur</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
 <translation id="2597774443162333062">Dateien werden zur Fehlerbehebung an Google gesendet</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
 <translation id="3373141842870501561">Earth Flow-Bildschirmschoner</translation>
 <translation id="337375748120863155">Informationen in Bezug auf deine Auswahl. Verwende die Links- oder Rechtspfeiltaste, um auf Steuerelemente zuzugreifen.</translation>
+<translation id="3383623117265110236">Exklusiv</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">Helligkeit verringern</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4176659219503619100">Steuerfeld</translation>
+<translation id="4185315616950253617">Bei Tastenkombinationen mit Tasten aus der obersten Reihe muss die Suchtaste enthalten sein.</translation>
 <translation id="420283545744377356">Bildschirmschoner deaktivieren</translation>
 <translation id="4213104098953699324">USB-Tastatur</translation>
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP-Latenz</translation>
 <translation id="4271957103967917607">Vollbildmodus aufrufen</translation>
 <translation id="4275663329226226506">Medien</translation>
+<translation id="4278766082079064416">Für „<ph name="CONFLICT_ACCEL_NAME" />“ wird eine Tastenkombination verwendet. Bearbeite oder entferne sie, um den Konflikt zu beheben.</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4289849978083912975">Diashow</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
 <translation id="4873827928179867585">Authentifizierungsalgorithmus</translation>
 <translation id="4880328057631981605">Name des Zugangspunkts</translation>
+<translation id="488307179443832524">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Drücke eine andere Verknüpfung.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Lege so schnell wie möglich ein neues fest</translation>
 <translation id="4891842000192098784">Belastung</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Displayhelligkeit erhöhen</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
+<translation id="5816802250591013230">Keine Tastenkombination zugewiesen</translation>
 <translation id="5826644637650799838">Informationen zum Bild</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Das Gerät ist nicht verbunden.</translation>
+<translation id="7046522406494308071">Alle Tastenkombinationen auf Standardeinstellungen zurücksetzen?</translation>
 <translation id="7058278511608979688">Speichern und beenden</translation>
 <translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Gerät vorbereiten</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Fehler – Autorisierung fehlgeschlagen</translation>
 <translation id="7103252855940681301">Der Name des Geräts <ph name="INDEX" /> von <ph name="COUNT" /> lautet „<ph name="NAME" />“.</translation>
+<translation id="7107255225945990211">Exklusives Kunstwerk für <ph name="PRODUCT_NAME" /> auswählen</translation>
 <translation id="7108668606237948702">Eingabe</translation>
 <translation id="7130438335435247835">Zugangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
 <translation id="725133483556299729">E-Mail-Adresse auswählen</translation>
 <translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuche es später noch einmal.</translation>
+<translation id="7273347807225967898">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination unter Verwendung einer Modifikatortaste (Strg, Alt, Umschalt-, Such- oder Launcher-Taste).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sanfte Brise</translation>
 <translation id="7287310195820267359">Hintergrundsammlungen</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">Tastaturbeleuchtung</translation>
 <translation id="773153675489693198">Ladezyklen</translation>
 <translation id="7747039790905080783">Vorinstallierter Schlüssel</translation>
+<translation id="7752963721013053477">Sonnenauf- bis -untergang – exklusiv</translation>
 <translation id="7762130827864645708">Du hast dein Passwort geändert. Bitte verwende ab jetzt das neue Passwort.</translation>
 <translation id="7763470514545477072">Domain-Suffix stimmt überein</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
 <translation id="7882501334836096755">Öffentlicher Schlüssel</translation>
+<translation id="7903695460270716054">Ausgewählte Kunstwerke und Bilder auswählen</translation>
 <translation id="7915220255123750251">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her.</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7942349550061667556">Rot</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8094062939584182041">Zulassen, dass Google dir eine E-Mail zu diesem Problem sendet</translation>
 <translation id="8104083085214006426">Du verwendest ein offenes und unsicheres Netzwerk</translation>
+<translation id="8111706652656628199">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination unter Verwendung der Umschalttaste und einer weiteren Modifikatortaste (Strg, Alt, Such- oder Launcher-Taste).</translation>
 <translation id="811820734797650957">(Android) Gateway kann kontaktiert werden</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Traffic-Zähler anfordern</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Drücke eine andere Verknüpfung. Wenn du die ursprüngliche Tastenkombination ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
 <translation id="879568662008399081">Dieses Netzwerk hat möglicherweise ein Captive Portal</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>

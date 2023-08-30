@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">अनलाइन खोल्नुहोस्</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
+<translation id="1073417869336441572">हामीलाई तपाईंले किन तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभयो भन्ने कुराका बारेमा बताएर Chrome को गुणस्तर सुधार गर्न सघाउनुहोस् <ph name="BEGIN_LINK" />प्रतिक्रिया पठाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">यस कार्यले साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> बराबरका डेटा र कुकीहरू मेटाउने छ।</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">अनुमति छ, तेस्रो-पक्ष बाहेकलाई</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
 <translation id="1994173015038366702">साइट URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{१ दिनमा म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
 <translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="2025115093177348061">अग्मेन्टेड रियालिटी</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> मा फर्कन ट्याप गर्नुहोस्</translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">साइटहरूलाई तपाईँको स्थान थाहा पाउने अनुमति दिनु भन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome ले भोलि फेरि कुकीहरू ब्लक गर्ने छ}other{Chrome ले # दिनपछि फेरि कुकीहरू ब्लक गर्ने छ}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> अन्तर्गतका साइटहरू</translation>
 <translation id="3538390592868664640">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन नदिनुहोस्</translation>
 <translation id="3544058026430919413">कुनै कम्पनीले तपाईंले यो समूहमा गर्ने गतिविधिसम्बन्धी जानकारी सेयर गर्न कुकीहरू प्रयोग गर्न सक्ने साइटहरूको समूह बनाउन सक्छ। इन्कोग्निटो मोडमा यो सुविधा अफ हुन्छ।</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">फोन नम्बरहरू</translation>
 <translation id="3826050100957962900">तेस्रो पक्षीय साइन इन</translation>
 <translation id="3835233591525155343">तपाईंको डिभाइसको प्रयोग</translation>
+<translation id="3843916486309149084">Chrome ले आज फेरि कुकीहरू ब्लक गर्ने छ</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3859306556332390985">अगाडि खोज्नुहोस्</translation>
 <translation id="3895926599014793903">जूम सक्षम गर्न दबाब दिनु</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">निश्चित साइटमा तेस्रो पक्षको खातामार्फत साइन इन गर्न रोक लगाउनुहोस्।</translation>
 <translation id="6388207532828177975">खाली गरेर रिसेट गर्नुहोस्</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
+<translation id="640163077447496506">आज म्याद सकिन्छ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8154912474061769055">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="8168435359814927499">सामग्री</translation>
+<translation id="8186479265534291036">साइटले काम गरिरहेको छैन? तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>

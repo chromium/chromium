@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
 <translation id="1531155317299575425">‏יוצגו הודעות לצורך כניסה אל Chromium.</translation>
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
+<translation id="1647558790457890304">‏ההגדרות של Chromium</translation>
 <translation id="1722370509450468186">הסיסמה שלך תישמר בחשבון (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">‏נתוני Chromium נמחקו</translation>
 <translation id="1758508597843173586">‏נעילת המצב הפרטי כשיוצאים מ-Chromium או עוברים לאפליקציה אחרת.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chromium.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
+<translation id="3886689467633467988">‏יש לך אפשרות להיכנס לאתר הזה ול-Chromium כדי שהסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך.</translation>
+<translation id="394413318816989199">‏הצפנה בעזרת ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות.
+
+כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">‏פתיחת Chromium מכל אפליקציה</translation>
 <translation id="4043291146360695975">סיסמאות נשמרות במנהל הסיסמאות במכשיר הזה בלבד.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">‏כדי לעזור בשיפור האפליקציה, Chromium ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏הפעלת הסורק של Chromium</translation>
 <translation id="4736424910885271643">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chromium יימחקו מהמכשיר הזה</translation>
+<translation id="4790638144988730920">‏המשך השימוש בנתוני Chromium בחשבון Google שלך.</translation>
 <translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4996471330284142407">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="5042011327527167688">‏מקישים על 'הצגה במפות Google ב-Chromium'.</translation>
 <translation id="5048795749726991615">‏אפשר להשתמש ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
+<translation id="5131565040785979529">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שנכנסת אליו ואת אופן השימוש ב-Chromium.</translation>
 <translation id="5171868502429358653">‏כניסה אל Chromium</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
+<translation id="5242782538551259282">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google.
+
+        כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="5308226104666789935">‏Chromium לא יכול לחפש עדכונים</translation>
 <translation id="5396916991083608703">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="5453478652154926037">‏Chromium לא יכול לבדוק את הסיסמאות שלך.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
 <translation id="5700709190537129682">‏Chromium לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="5777187867430702742">‏דף Chromium</translation>
+<translation id="5889847953983052353">‏כשהאפשרות פועלת:
+<ph name="BEGIN_INDENT" />  • עוזרים לשפר את Chromium אצל אנשים שמשתמשים בדפדפן בצורה דומה.<ph name="END_INDENT" />
+
+דברים שחשוב להביא בחשבון:
+<ph name="BEGIN_INDENT" />  • מידע לגבי השימוש שלך ב‑Chromium יישלח אל Google, אבל לא יקושר אליך.
+
+  • אם Chromium קורס, הפרטים על הקריסה עשויים לכלול גם פרטים אישיים מסוימים.
+
+  • אם הפעלת סנכרון של ההיסטוריה עם חשבון Google, יכול להיות שהמדדים יכללו פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">‏הכניסה שלך נעשית באמצעות חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chromium. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chromium תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
+<translation id="5951593919357934226">‏ליהנות מכל מה ש-Chromium מציע.</translation>
 <translation id="5983312940147103417">‏משפרים את Chromium</translation>
 <translation id="6062449165341879460">‏לדומיין <ph name="DOMAIN" /> של הארגון תהיה גישה לנתונים, לסימניות, להיסטוריה, לסיסמאות ולהגדרות אחרות ששמרת בחשבון הזה ב-Chromium. לאחר היציאה מהחשבון, הנתונים יימחקו מהמכשיר הזה.  עם זאת, הנתונים יישארו בחשבון Google המנוהל שלך ויהיו זמינים לארגון שלך. בנוסף, לארגון יש אפשרות להגדיר מדיניות משתמש ספציפית לחשבון, שיכולה לשנות את אופן הפעולה של Chromium.</translation>
 <translation id="61109258320235597">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="632825460376924298">‏התרת כניסה אל Chromium</translation>
 <translation id="6337530241089703714">‏האם למחוק את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>
+<translation id="6407399265324739055">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chromium לא תסונכרן.
+
+רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6563921047760808519">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chromium<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">‏עכשיו יש ב-Chromium תמיכה במדיניות משתמש בחשבון המנוהל שלך</translation>

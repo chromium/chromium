@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Gesamtanzahl der Dateien</translation>
 <translation id="1755345808328621801">Diese Datei wurde für Computer mit Windows-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">Für <ph name="VM_NAME" /> freigeben</translation>
 <translation id="1773212559869067373">Lokale Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="1775381402323441512">Videoinformationen</translation>
 <translation id="180035236176489073">Du musst online sein, um auf diese Dateien zugreifen zu können.</translation>
@@ -212,6 +213,7 @@
 <translation id="2718540689505416944">App mit Linux installieren</translation>
 <translation id="2719020180254996569">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Details</translation>
 <translation id="2724954091494693138">Türkisch mit F-Tastatur</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" />-Freigaben verwalten</translation>
 <translation id="2732839045120506979">Vietnamesisch (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop erlauben, Dateien im Ordner „<ph name="FOLDER_NAME" />“ zu ändern</translation>
 <translation id="2764206540577097904">Dein gesamter individueller Google Workspace-Speicher ist belegt.</translation>
@@ -306,6 +308,7 @@
 <translation id="3509680540198371098">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3511705761158917664">Synchronisierung von <ph name="NUMBER_OF_ITEMS" /> Elementen wird vorbereitet…</translation>
 <translation id="3522708245912499433">Portugiesisch</translation>
+<translation id="3523225005467146490">1 Ordner für <ph name="VM_NAME" /> freigegeben</translation>
 <translation id="3524311639100184459">Vorsicht: Dies sind temporäre Dateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3548125359243647069">Es wurde zu oft die falsche PIN eingegeben.</translation>
@@ -666,6 +669,7 @@
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6177854567773392726">Speicherplatz wird geprüft… <ph name="ITEMS_FOUND" /> Elemente gefunden</translation>
+<translation id="6181912134988520389">Du gibst <ph name="VM_NAME" /> die Berechtigung, auf Dateien in Google Drive zuzugreifen. Änderungen werden mit deinen anderen Geräten synchronisiert.</translation>
 <translation id="6187719147498869044">Ungarisch</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6199801702437275229">Speicherplatzangaben werden abgerufen...</translation>
@@ -769,6 +773,7 @@
 <translation id="6989942356279143254">Schwedisch</translation>
 <translation id="6990081529015358884">Du hast keinen freien Speicherplatz mehr.</translation>
 <translation id="6993826899923627728">Diese Elemente befinden sich im Papierkorb</translation>
+<translation id="6996593023542748157">Ordner für <ph name="VM_NAME" /> freigeben</translation>
 <translation id="7008426324576352165">Deine Organisation benötigt mehr Speicherplatz, um den Upload abzuschließen.</translation>
 <translation id="7009985720488544166">Die Administratorrichtlinie blockiert das Verschieben von <ph name="COUNT" /> Dateien</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -954,6 +959,7 @@
 <translation id="8335837413233998004">Belarussisch</translation>
 <translation id="8336153091935557858">Gestern <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Es ist bereits eine Datei oder ein Verzeichnis mit dem gleichen Namen vorhanden.</translation>
+<translation id="83651606385705612">Du gibst <ph name="VM_NAME" /> die Berechtigung, auf Dateien im Ordner „<ph name="FOLDER_NAME" />“ zuzugreifen</translation>
 <translation id="8372369524088641025">Ungültiger WEP-Schlüssel</translation>
 <translation id="8372852072747894550">Griechisch</translation>
 <translation id="8386903983509584791">Suche abgeschlossen</translation>
@@ -963,6 +969,7 @@
 <translation id="8408068190360279472">Netzwerk: <ph name="NETWORK_TYPE" />, Verbindung wird hergestellt</translation>
 <translation id="8425213833346101688">Ändern</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> Ordner für <ph name="VM_NAME" /> freigegeben</translation>
 <translation id="8431909052837336408">PIN für SIM-Karte ändern</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Keine SIM-Karte vorhanden</translation>

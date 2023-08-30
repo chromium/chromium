@@ -278,6 +278,7 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
           In Zukunft wird diese Richtlinie möglicherweise abhängig von der Weiterentwicklung der Spezifikationen auf alle ursprungsübergreifenden Anfragen angewendet, die an private IP-Adressen oder „localhost“ gesendet werden.
 
           Wenn die Richtlinie auf „true“ gesetzt ist, dürfen Websites vorbehaltlich anderer ursprungsübergreifender Prüfungen Anfragen an alle Netzwerk-Endpunkte senden.</translation>
+<translation id="1240559668501539326">Legt Metadaten fest, die vom Installationsprogramm für Bruschetta-VMs auf <ph name="PRODUCT_OS_NAME" />-Geräten vor der Installation verwendet werden.</translation>
 <translation id="1240722269871366886">Diese Richtlinie ermöglicht <ph name="PRODUCT_OS_NAME" />, Emojis vorzuschlagen, wenn Nutzer Text mit ihrer Bildschirmtastatur oder physischen Tastatur eingeben.
       Wenn diese Richtlinie auf "true" gesetzt ist, wird die Funktion aktiviert und kann vom Nutzer geändert werden.
       Standardmäßig ist diese Richtlinie auf "false" gesetzt. Es werden keine Emojis vorgeschlagen und Nutzer können diese Einstellung nicht ändern.</translation>
@@ -635,6 +636,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
+<translation id="1534007181698071943">Erlaubt die standardmäßige Deaktivierung von unloud-Event-Handlern während der Einstellungsphase</translation>
 <translation id="1542491165152947087">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1550295162561011575">Mit dieser Richtlinie können Administratoren eine Automatisierung für das Starten von Apps auf <ph name="PRODUCT_NAME" />-Geräten konfigurieren. Diese Apps können bei der Nutzeranmeldung oder gemeinsam von Nutzern über den Launcher gestartet werden.</translation>
 <translation id="1552418937045050762">Wenn diese Einstellung aktiviert ist, können Nutzer der Verwendung von Nearby Share zustimmen und Dateien mit Personen austauschen, die sich in der Nähe befinden.
@@ -996,6 +998,14 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
       * PIN und Fingerabdruck zulassen: ["PIN", "FINGERPRINT"].
 
       Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine WebAuthn-Faktoren zur Verfügung.</translation>
+<translation id="1881471688033371681"><ph name="UNLOAD_EVENT_NAME" />-Event-Handler werden nicht mehr unterstützt. Ob sie ausgelöst werden, hängt von <ph name="UNLOAD_EVENT_NAME" />-<ph name="PERMISSIONS_POLICY_NAME" /> ab. Derzeit sind sie standardmäßig durch die Richtlinie zugelassen. Zukünftig werden sie schrittweise standardmäßig deaktiviert. Websites müssen sie dann mithilfe von <ph name="PERMISSIONS_POLICY_NAME" />-Headern explizit aktivieren. Mit dieser Unternehmensrichtlinie kann diese schrittweise Einstellung deaktiviert werden. Dabei wird die Aktivierung als Standardeinstellung erzwungen.
+ 
+Seiten können auf <ph name="UNLOAD_EVENT_NAME" />-Event-Handler angewiesen sein, um Daten zu speichern oder dem Server das Ende einer Nutzersitzung zu signalisieren. Dies wird nicht empfohlen, da es unzuverlässig ist und die Leistung durch die Blockierung von <ph name="PRODUCT_NAME" /> beeinträchtigt. Es gibt zwar empfohlene Alternativen, allerdings wird das <ph name="UNLOAD_EVENT_NAME" />-Ereignis schon seit Langem verwendet. Daher wird es von einigen Anwendungen möglicherweise noch immer genutzt.
+
+Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden <ph name="UNLOAD_EVENT_NAME" />-Event-Handler nach Beginn der Einstellung schrittweise nicht mehr unterstützt und Websites, für die der <ph name="PERMISSIONS_POLICY_NAME" />-Header nicht festgelegt ist, stellen das Auslösen von „Unload“-Ereignissen ein.
+
+Ist diese Richtlinie dagegen auf „true“ gesetzt, funktionieren <ph name="UNLOAD_EVENT_NAME" />-Event-Handler standardmäßig weiter.
+</translation>
 <translation id="1883274744253492031">Automatisches Upgrade für gemischte Inhalte aktivieren</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
 <translation id="1888871729456797026">Das Registrierungstoken der Cloud-Richtlinie auf dem Desktop</translation>
@@ -1585,6 +1595,7 @@ Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Va
 <translation id="2366301887862414321">Native Nachrichtenhosts sowohl auf Nutzer- als auch auf Systemebene zulassen</translation>
 <translation id="2373014700224092497">Zulassen, dass Nutzer Kerberos-Konten hinzufügen</translation>
 <translation id="2376134474855349829">Bildschirmtastatur auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, sie vorübergehend zu aktivieren</translation>
+<translation id="2376151922689284770">Name, der auf der Benutzeroberfläche des Installationsprogramms angezeigt werden soll, z. B. „Happy VM“. Falls nicht konfiguriert, wird ein Fallback-Name angezeigt. Dies ist entweder der (nach Anzeigereihenfolge) erste Eintrag der BruschettaVMConfiguration-Richtlinie oder, falls dieser nicht gefunden wird, ein generischer Name.</translation>
 <translation id="2382672620906337383">Die JavaScript-Funktion „setTimeout()“ wird nach Überschreiten eines höheren Verschachtelungsgrenzwerts verzögert.</translation>
 <translation id="2384233438419344179">Wenn diese Richtlinie aktiviert ist, können Websiteelemente, die nicht von der Domain in der Adressleiste des Browsers stammen, keine Cookies setzen. Wenn die Richtlinie deaktiviert ist, können diese Elemente Cookies setzen und Nutzer können diese Einstellung nicht ändern.
 
@@ -1827,6 +1838,7 @@ Hinweis: Wenn du ein Feld auslässt, gelten alle Werte für dieses Feld als übe
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.</translation>
 <translation id="2581338546762479588">Automatischen Neustart nach Updates zulassen</translation>
+<translation id="2582855747769273665">Eine URL, über die Nutzer mehr erfahren können. Sofern nicht konfiguriert, gibt es im Installationsprogramm keine URL „Weitere Informationen“.</translation>
 <translation id="2586117300379904732">Wakelocks für die Energieverwaltung zulassen</translation>
 <translation id="2586231026319371211">Die Zeit wird in der jeweiligen Ortszeit im 24-Stunden-Format angegeben.</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> als Standardbrowser festlegen</translation>
@@ -2868,6 +2880,7 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
       Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer ihren Druckauftragsverlauf über die App zur Verwaltung von Druckaufträgen oder durch Löschen ihres Browserverlaufs löschen.
 
       Wenn diese Richtlinie deaktiviert ist, können Nutzer ihren Druckauftragsverlauf weder über die App zur Verwaltung von Druckaufträgen noch durch Löschen ihres Browserverlaufs löschen.</translation>
+<translation id="3507745622376866366">Erzwingen, dass unloud-Event-Handler während der Einstellungsphase standardmäßig aktiviert bleiben</translation>
 <translation id="350797926066071931">Übersetzung aktivieren</translation>
 <translation id="3513265258454735822">Speichern des Browserverlaufs aktivieren</translation>
 <translation id="3513655665999652754">Der Quirks-Server stellt hardwarespezifische Konfigurationsdateien bereit, wie
@@ -2967,6 +2980,7 @@ Wenn diese Richtlinie nicht konfiguriert oder deaktiviert ist, sind die Kiosk-To
 
 Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere in Produktionsbereitstellungen.</translation>
 <translation id="357917253161699596">Nutzern erlauben, Nutzerzertifikate zu verwalten</translation>
+<translation id="3579976772194405786">Bruschetta</translation>
 <translation id="3580414086211696382">Verwendung der File System API zum Lesen steuern</translation>
 <translation id="3584194414857209694">Aktiviert experimentelle Richtlinien</translation>
 <translation id="3584722841530002134">Wenn diese Richtlinie konfiguriert ist, werden Server zugewiesen, an die <ph name="PRODUCT_NAME" /> Anmeldedaten von Nutzern weiterleiten kann. Trenne mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
@@ -3264,6 +3278,7 @@ Das Feld <ph name="RUN_ON_OS_LOGIN_FIELD" /> gibt an, ob eine Web-App während O
 <translation id="3838094946886335701">Wenn diese Richtlinie konfiguriert ist – jedoch nur wie empfohlen –, kannst du eine Liste mit Protokoll-Handlern registrieren, die mit den vom Nutzer registrierten zusammengeführt werden. Nachfolgend werden beide Handler-Gruppen verwendet. Setze die Eigenschaft "protocol" auf das Schema, z. B. "mailto", und die Eigenschaft "URL" auf das URL-Muster der Anwendung, die das im Feld "protocol" angegebene Schema bearbeitet. In dem Muster kann es einen "%s"-Platzhalter geben, der von der verarbeiteten URL ersetzt wird.
 
       Ein von der Richtlinie registrierter Protokoll-Handler kann vom Nutzer nicht entfernt werden. Allerdings können durch Installation eines neuen Standard-Handlers die von der Richtlinie installierten Protokoll-Handler geändert werden.</translation>
+<translation id="3846610415459148921">Berichte zur Websitenutzung</translation>
 <translation id="3851443303439635700">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird</translation>
 <translation id="3858128774616573616">Wenn die Richtlinie aktiviert ist, erscheint das Google Cast-Symbol in der Symbolleiste oder im Dreipunkt-Menü und Nutzer können es nicht entfernen.
 
@@ -3755,6 +3770,11 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 
       Gibt es auf einem verwalteten Gerät mehrere Nutzerkonten, wird die Benachrichtigung nur angezeigt, wenn diese Richtlinie aktiviert ist.</translation>
 <translation id="4298476374822550051">Kyber-Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS aktivieren</translation>
+<translation id="4298577205501733707">Meldet Website-Aktivitätsdaten für verknüpfte Nutzer.
+
+Wenn diese Richtlinie konfiguriert ist, wird die Berichterstellung für Öffnungs- und Schließereignisse von Website-URLs für URLs auf der Zulassungsliste gesteuert.
+Wenn sie nicht konfiguriert ist, werden keine Website-Ereignisse gemeldet.
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Für diese Richtlinie sind nur HTTP- und HTTPS-URL-Schemata zulässig.</translation>
 <translation id="4303167373847512281">Entwicklermodus zulassen</translation>
 <translation id="4307116964468610577">Die Richtlinie verlängert die Lebensdauer von Systemakkus, indem sie nur einmal pro Tag vollständig aufgeladen werden. Für den Rest des Tages werden die Akkus in einem niedrigeren Ladezustand gehalten. So werden sie geschont, auch wenn das System an eine Stromquelle angeschlossen ist.
 
@@ -4011,6 +4031,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Diese Richtlinie betrifft nur Nutzer, die sich über GAIA ohne SAML authentifizieren.
 
       Der Wert der Richtlinie muss in Tagen angegeben werden.</translation>
+<translation id="4525328580251166229">Steuert zum Bruschetta-Subsystem gehörige Richtlinien.</translation>
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
 <translation id="4531706050939927436">Die Installation von Android-Apps kann von der Google Admin-Konsole aus über Google Play erzwungen werden. Android-Apps nutzen diese Richtlinie nicht.</translation>
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
@@ -4574,6 +4595,17 @@ Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, gilt f
       Wenn diese Richtlinie nicht konfiguriert oder deaktiviert ist, hat „webkitRequestFileSystem“ mit persistentem Typ ein temporäres Kontingent.
       </translation>
 <translation id="5105313908130842249">Verzögerung für die Bildschirmsperre im Akkubetrieb</translation>
+<translation id="510604120100968366">Aktiviert die Funktion für Ton bei niedrigem Akkustand.
+
+          Diese Funktion sorgt dafür, dass bei niedrigem Akkustand ein Ton abgespielt wird.
+
+          Wenn diese Richtlinie aktiviert ist, wird ein Ton abgespielt, wenn der Akkustand niedrig ist oder die verbleibende Zeit einen bestimmten Grenzwert erreicht.
+
+          Ist sie deaktiviert, wird kein Ton abgespielt.
+
+          Wenn sie konfiguriert ist, kann sie von Nutzern nicht geändert oder überschrieben werden.
+
+          Ist die Richtlinie nicht konfiguriert, ist diese Funktion für bestehende Nutzer deaktiviert oder für neue Nutzer auf den verwalteten <ph name="PRODUCT_OS_NAME" />-Geräten anfangs aktiviert, kann aber von ihnen jederzeit aktiviert oder deaktiviert werden.</translation>
 <translation id="5108031557082757679">Deaktivierte, an Geräte gebundene Unternehmensdrucker</translation>
 <translation id="5109383437323376357">Die Verfügbarkeit von Variationen bestimmen</translation>
 <translation id="5109866581154565900">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Bildschirm für die Scrollrichtung des Touchpads angezeigt wird.
@@ -4939,6 +4971,9 @@ wird die Funktion "<ph name="PRODUCT_NAME" />" aktiviert.
           </translation>
 <translation id="5435888298115339571">Desktop-Freigabe in der Omnibox und im Dreipunkt-Menü aktivieren</translation>
 <translation id="5441508088704391614">Keine besonderen Einschränkungen. Standard.</translation>
+<translation id="5441642583310045749">Häufigkeit, mit der Telemetriedaten zur Websitenutzung auf registrierten Geräten für verknüpfte Nutzer erhoben werden. Die geringste zulässige Häufigkeit beträgt 5 Minuten.
+
+Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
 <translation id="5442026853063570579">Mit dieser Richtlinie wird außerdem der Zugriff auf Android-Entwickleroptionen festgelegt. Wenn du diese Richtlinie auf "DeveloperToolsDisallowed" (Wert 2) setzt, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht festlegst, können Nutzer auf die Entwickleroptionen zugreifen, indem sie in der Android-App "Einstellungen" siebenmal auf die Build-Nummer tippen.</translation>
 <translation id="5443582909255996887">Wenn die Richtlinie aktiviert ist, werden unter Android alle Websites isoliert. Jede Website wird dann in einem eigenen Prozess ausgeführt. Nutzer können diese Einstellung nicht ändern. Eine Website ist ein Protokoll plus eTLD+1 (z. B. https://beispiel.de). Ab <ph name="PRODUCT_NAME" />-Version 77 werden unter Android bestimmte sensible Websites standardmäßig isoliert. Diese Richtlinie weitet diesen Modus für die standardmäßige Website-Isolierung auf alle Websites aus.
 
@@ -5144,6 +5179,14 @@ Wenn die Richtlinie nicht konfiguriert ist, können keine Domains auf „file://
 <translation id="5608114828230655271">Standardverhalten des Geräts</translation>
 <translation id="5611869109049836323">Einschränkungen in lokal hinzugefügten Trust-Anchors erzwingen</translation>
 <translation id="5614865701790130558">Ereignisse für richtlinienbasierte Erweiterungsinstallationen protokollieren</translation>
+<translation id="561493980641967737">Ist diese Richtlinie aktiviert, ist die anonymisierte URL-Datenerfassung immer aktiv. Das heißt, URLs der von Nutzern besuchten Seiten werden an Google gesendet, um Suchanfragen und das Surfen zu verbessern.
+
+Wenn die Richtlinie deaktiviert ist, erfolgt keine anonymisierte URL-Datenerfassung.
+
+Wenn die Richtlinie nicht konfiguriert ist, können die Nutzer diese Einstellung manuell ändern.
+
+In <ph name="PRODUCT_OS_NAME" /> Kiosk bietet diese Richtlinie nicht die Option „Nutzer kann entscheiden“. Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk nicht festgelegt ist, ist die anonymisierte URL-Datenerfassung immer aktiv.
+Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, wird die URL-Messwerterfassung für Kiosk-Apps aktiviert.</translation>
 <translation id="5618398258385745432">Die entsprechende Einstellung wurde verwendet, bevor die erneute Authentifizierung bei der Ansicht von Passwörtern aktiviert wurde. Seither haben die Einstellung und folglich auch diese Richtlinie keinen Einfluss auf das Verhalten von Chrome. Aktuell werden Passwörter auf der Einstellungsseite des Passwortmanagers nicht als Klartext angezeigt. Dies bedeutet, dass die Einstellungsseite nur einen Platzhalter enthält und das Passwort in Chrome nur dann angezeigt wird, wenn der Nutzer auf "Anzeigen" klickt und sich gegebenenfalls noch einmal authentifiziert. Die ursprüngliche Beschreibung der Richtlinie findest du unten.
 
           Legt fest, ob Nutzer Passwörter im Passwortmanager als Klartext anzeigen können.
@@ -5360,6 +5403,7 @@ Wenn die Richtlinie deaktiviert ist, ist auch der <ph name="SAFE_BROWSING_NAME" 
 <translation id="5836064773277134605">Vom Host für den Remotezugriff verwendeten UDP-Portbereich einschränken</translation>
 <translation id="583627479140113555">Import von gespeicherten Passwörtern bei der ersten Ausführung aktivieren</translation>
 <translation id="5838452040629810808">„Mauszeiger hervorheben“ aktivieren</translation>
+<translation id="5841157246593092717">Steuert, ob <ph name="UNLOAD_EVENT_NAME" />-Event-Handler deaktiviert werden können.</translation>
 <translation id="5842283830553218200">Bei deaktivierten Formularsteuerelementen wird standardmäßig die neue Ereignisweiterleitung verwendet.</translation>
 <translation id="5847509620317822100">Diese Funktion wurde in Chrome 100 entfernt.
 
@@ -7243,6 +7287,11 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn diese Richtlinie deaktiviert ist, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist.
       </translation>
+<translation id="7458654009558330347">Meldet Telemetriedaten zur Websitenutzung für verknüpfte Nutzer.
+
+Wenn diese Richtlinie konfiguriert ist, wird die Berichterstellung zu Telemetriedaten zur Websitenutzung für URLs auf der Zulassungsliste gesteuert.
+Ist die Richtlinie nicht konfiguriert, werden keine Telemetriedaten zur Websitenutzung gemeldet.
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Für diese Richtlinie sind nur HTTP- und HTTPS-URL-Schemata zulässig.</translation>
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
 <translation id="7459633275230216698">Dialogfelder zur Dateiauswahl zulassen</translation>
 <translation id="7462256705280836453">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung deaktiviert werden kann</translation>
@@ -7362,6 +7411,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine Modi für das schnelle Entsperren zur Verfügung.</translation>
 <translation id="754176366378585605">Verwendung der File Handling API steuern</translation>
+<translation id="754421082295668587">Metadaten des Installationsprogramms</translation>
 <translation id="7544392541165889987">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, kann <ph name="PRODUCT_NAME" /> als Proxy zwischen <ph name="CLOUD_PRINT_NAME" /> und älteren Druckern fungieren, die an den Computer angeschlossen sind. Nutzer können den Cloud Print-Proxy durch die Authentifizierung mit ihrem Google-Konto aktivieren.
 
       Ist die Richtlinie deaktiviert, können Nutzer den Proxy nicht aktivieren und die Drucker des Computers können nicht für <ph name="CLOUD_PRINT_NAME" /> freigegeben werden.</translation>
@@ -7511,6 +7561,17 @@ Wenn diese Richtlinie aktiviert ist, verwendet der PDF-Viewer den Skia-Renderer.
 Wenn diese Richtlinie deaktiviert ist, verwendet er den aktuellen AGG-Renderer.
 
 Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser ausgewählt.</translation>
+<translation id="7707869387893611318">Dadurch wird die Funktion für Ladetöne aktiviert.
+
+          Diese Funktion sorgt dafür, dass die Ladetöne abgespielt werden.
+
+          Wenn diese Richtlinie aktiviert ist, werden die Ladetöne abgespielt, wenn das Gerät an ein Netzteil angeschlossen ist.
+
+          Ist die Richtlinie deaktiviert, wird kein Ladeton abgespielt.
+
+          Wenn sie konfiguriert ist, kann sie von Nutzern nicht geändert oder überschrieben werden.
+
+          Ist die Richtlinie nicht konfiguriert, ist diese Funktion auf den verwalteten <ph name="PRODUCT_OS_NAME" />-Geräten anfangs deaktiviert, kann aber von Nutzern jederzeit aktiviert oder deaktiviert werden.</translation>
 <translation id="7708934468069982537">Diese Richtlinie wurde in M58 entfernt, nachdem DHE aus <ph name="PRODUCT_NAME" /> entfernt wurde.
 
       Wenn sie nicht konfiguriert oder auf „false“ festgelegt ist, werden DHE-Cipher Suites in TLS nicht aktiviert. Die Richtlinie kann auf „true“ eingestellt werden, um DHE-Cipher Suites zu aktivieren und die Kompatibilität mit veralteten Servern zu gewährleisten. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.
@@ -8493,6 +8554,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8583509234908413302">Veraltetes TLS/DTLS-Downgrade in WebRTC erlauben</translation>
 <translation id="8584279193368801689">Schränkt den PIN-Druckmodus ein. Ist die Richtlinie nicht konfiguriert, gelten keine Einschränkungen. Ist der Modus nicht verfügbar, wird diese Richtlinie ignoriert. Der PIN-Druckmodus wird nur für Drucker angewendet, die das IPPS-, HTTPS- oder USB-Protokoll bzw. IPP über USB verwenden.</translation>
 <translation id="8587229956764455752">Erstellung neuer Nutzerkonten erlauben</translation>
+<translation id="8587388061942446874">Berichte zu Websiteaktivitäten</translation>
 <translation id="8591713876665299827">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
           Hiermit wird angegeben, nach welchem Zeitraum ohne Nutzereingabe im Netzbetrieb in den Inaktivitätsmodus gewechselt wird.
@@ -8543,6 +8605,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8633550872001751090"><ph name="PRODUCT_NAME" />-Daten in Sicherungen einschließen</translation>
 <translation id="8634062512783775032"><ph name="AES_KL_NAME" /> als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden, wenn diese unterstützt wird</translation>
 <translation id="8637566476051166626">Ausdrücklich erlaubte Netzwerkports</translation>
+<translation id="864092909205038982">Häufigkeit der Erhebung von Telemetriedaten zur Websitenutzung in Millisekunden.</translation>
 <translation id="8643838501942693770">Drittanbieter-Cookies zulassen, aber Nutzern ermöglichen, diese Einstellung zu ändern</translation>
 <translation id="864611373241249369">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, alle Daten zu migrieren.</translation>
 <translation id="8648844602494595665">Mit dieser Richtlinie legst du fest, wie das Schloss-Symbol in der Omnibox gehandhabt wird.
@@ -9277,6 +9340,7 @@ Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.
 
 Wenn <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> aktiviert ist, wird <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> ignoriert und ist immer deaktiviert.</translation>
 <translation id="989197274317162189">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“.</translation>
+<translation id="990830704772547092">Installationsprogramm für Bruschetta-VMs auf <ph name="PRODUCT_OS_NAME" />-Geräten konfigurieren</translation>
 <translation id="991560005425213776">Nutzer- und Dateiname an native Drucker senden</translation>
 <translation id="99202634486128833">Wenn die Richtlinie auf "CopyCaCerts" gesetzt ist, werden alle über ONC installierten CA-Zertifikate mit <ph name="WEB_TRUSTED_BIT" /> für ARC-Apps verfügbar.
 

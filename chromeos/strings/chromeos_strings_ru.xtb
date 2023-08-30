@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Открыто окно со сведениями о доступных обновлениях (<ph name="NUM_UPDATES" />) встроенного ПО для внешних устройств.</translation>
 <translation id="1145516343487477149">Находите нужные справочные статьи и ответы на частые вопросы об устройствах Chromebook.</translation>
+<translation id="1154390310959620237">Можно настроить не более пяти сочетаний клавиш. Чтобы добавить новое сочетание, удалите одно из существующих.</translation>
 <translation id="1164939766849482256">Заставка с рассветом, переходящим в закат</translation>
 <translation id="1167755866710282443">Откройте меню, чтобы настроить клавиши. Перетащите меню, чтобы изменить его расположение.</translation>
 <translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Перезапуск…</translation>
 <translation id="2533048460510040082">Рекомендованный справочный контент</translation>
 <translation id="2536159006530886390">Ошибка подключения к Интернету.</translation>
+<translation id="2555662516429796509">Нажмите до четырех модификаторов и любую другую клавишу на клавиатуре.</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
 <translation id="2584559707064218956">Чтобы задать конфигурацию сети, перейдите в настройки.</translation>
 <translation id="2597774443162333062">Файлы будут отправлены в Google для отладки</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
 <translation id="3373141842870501561">Динамические обои с Землей</translation>
 <translation id="337375748120863155">Информация, связанная с выделенным текстом. Чтобы перейти к настройкам, нажимайте клавиши со стрелками влево и вправо.</translation>
+<translation id="3383623117265110236">Эксклюзивно</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">уменьшить яркость</translation>
 <translation id="4176463684765177261">Отключено</translation>
 <translation id="4176659219503619100">Панель управления</translation>
+<translation id="4185315616950253617">В сочетании с клавишами верхнего ряда необходимо использовать клавишу поиска.</translation>
 <translation id="420283545744377356">Не использовать заставку</translation>
 <translation id="4213104098953699324">Клавиатура USB</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
 <translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
 <translation id="4275663329226226506">Камера и микрофон </translation>
+<translation id="4278766082079064416">Это сочетание клавиш используется для действия <ph name="CONFLICT_ACCEL_NAME" />. Чтобы устранить конфликт, измените или удалите сочетание.</translation>
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="4873827928179867585">Алгоритм аутентификации</translation>
 <translation id="4880328057631981605">Название точки доступа</translation>
+<translation id="488307179443832524">Это сочетание клавиш используется для действия <ph name="CONFLICT_ACCEL_NAME" />. Выберите другое.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4891842000192098784">Стресс-тестирование</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Увеличение яркости экрана</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
+<translation id="5816802250591013230">Сочетание клавиш не назначено.</translation>
 <translation id="5826644637650799838">Подробнее</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Устройство не подключено.</translation>
+<translation id="7046522406494308071">Восстановить сочетания клавиш по умолчанию?</translation>
 <translation id="7058278511608979688">Завершить и сохранить</translation>
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Подготовьте устройство</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Сбой: ошибка авторизации</translation>
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> из <ph name="COUNT" /> под названием "<ph name="NAME" />".</translation>
+<translation id="7107255225945990211">Выбрать эксклюзивное видео для <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Войти</translation>
 <translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
 <translation id="725133483556299729">Выбор адреса электронной почты</translation>
 <translation id="7271040990581020067">Сканер уже используется. Повторите попытку позже.</translation>
+<translation id="7273347807225967898">Недопустимое сочетание клавиш. Используйте клавишу-модификатор: Ctrl, Alt, Shift, клавишу поиска или панели запуска.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Легкий бриз</translation>
 <translation id="7287310195820267359">Коллекция обоев</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">подсветка клавиатуры</translation>
 <translation id="773153675489693198">Количество циклов</translation>
 <translation id="7747039790905080783">Общий ключ</translation>
+<translation id="7752963721013053477">От рассвета до заката (эксклюзивно)</translation>
 <translation id="7762130827864645708">Вы установили новый пароль. В дальнейшем используйте его.</translation>
 <translation id="7763470514545477072">Совпадение с доменным суффиксом</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7882501334836096755">Открытый ключ</translation>
+<translation id="7903695460270716054">Выбрать произведения искусства и красивые фото</translation>
 <translation id="7915220255123750251">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом.</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7942349550061667556">Красный</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8094062939584182041">Разрешить Google отправлять вам сообщения об этой проблеме по электронной почте</translation>
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
+<translation id="8111706652656628199">Недопустимое сочетание клавиш. Чтобы выбрать новое, нажмите Shift и ещё одну клавишу-модификатор: Ctrl, Alt, клавишу поиска или панели запуска.</translation>
 <translation id="811820734797650957">Запрос ping к шлюзу (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Запросить счетчики трафика</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом в Google Фото</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Это сочетание клавиш используется для действия <ph name="CONFLICT_ACCEL_NAME" />. Нажмите его ещё раз, чтобы заменить исходное сочетание клавиш, или выберите новое.</translation>
 <translation id="879568662008399081">У этой сети может быть страница входа.</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8798441408945964110">Название провайдера</translation>

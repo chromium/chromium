@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
 <translation id="1145516343487477149">‏חיפוש של מאמרי עזרה ותשובות לשאלות נפוצות בנושא Chromebook</translation>
+<translation id="1154390310959620237">אפשר להתאים אישית רק 5 קיצורי דרך. עליך למחוק קיצור דרך כדי להוסיף קיצור דרך חדש.</translation>
 <translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
 <translation id="1167755866710282443">פתיחת התפריט להתאמה אישית של המפתחות. יש לגרור את התפריט כדי להזיז אותו.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">מתבצעת הפעלה מחדש…</translation>
 <translation id="2533048460510040082">הצעות לתוכן עזרה</translation>
 <translation id="2536159006530886390">לא ניתן להתחבר לאינטרנט.</translation>
+<translation id="2555662516429796509">מקישים על מקשי הצירוף 1-4 ועל מקש אחד אחר במקלדת</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
 <translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
 <translation id="3373141842870501561">הטפט של זרימה בכדור הארץ</translation>
 <translation id="337375748120863155">מידע שקשור לאפשרות שבחרת. ניתן לגשת לפקדים באמצעות מקש החץ שמאלה או מקש החץ ימינה.</translation>
+<translation id="3383623117265110236">בלעדי</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">הפחתת הבהירות</translation>
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4176659219503619100">לוח הבקרה</translation>
+<translation id="4185315616950253617">קיצור דרך עם מקשים בשורה העליונה צריך לכלול את מקש החיפוש.</translation>
 <translation id="420283545744377356">השבתה של שומר המסך</translation>
 <translation id="4213104098953699324">‏מקלדת USB</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
 <translation id="4271957103967917607">הצגת מסך מלא</translation>
 <translation id="4275663329226226506">מדיה</translation>
+<translation id="4278766082079064416">נעשה שימוש במקש קיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. צריך לערוך או להסיר אותו כדי לפתור את ההתנגשות.</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4289849978083912975">מצגת</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />. נותר ניסיון אחד ({0})}one{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}two{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}other{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}}</translation>
 <translation id="4873827928179867585">האלגוריתם לאימות</translation>
 <translation id="4880328057631981605">‏שם נקודת גישה (APN)</translation>
+<translation id="488307179443832524">נעשה שימוש במקש הקיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. אפשר להקיש על קיצור דרך חדש.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
+<translation id="5816802250591013230">לא הוקצה קיצור דרך</translation>
 <translation id="5826644637650799838">מידע על יצירת האומנות</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7041549558901442110">המכשיר לא מחובר.</translation>
+<translation id="7046522406494308071">לאפס את כל קיצורי הדרך לברירות המחדל?</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
 <translation id="7068619307603204412">הכנת המכשיר</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="7273347807225967898">‏קיצור הדרך לא זמין. יש להקיש על קיצור דרך חדש באמצעות מקש צירוף (Ctrl, Alt, Shift, חיפוש או מרכז האפליקציות).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">אוויר לנשימה</translation>
 <translation id="7287310195820267359">אוספים של טפטים</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">תאורה במקלדת</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
+<translation id="7752963721013053477">מעלות השחר עד לרדת החושך – בלעדי</translation>
 <translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7882501334836096755">מפתח ציבורי</translation>
+<translation id="7903695460270716054">בחירת תמונות ויצירות אומנות מתוך אוסף</translation>
 <translation id="7915220255123750251">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט.</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7942349550061667556">אדום</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
 <translation id="8104083085214006426">הרשת שאליה התחברת פתוחה ואינה מאובטחת</translation>
+<translation id="8111706652656628199">‏קיצור הדרך לא זמין. מקישים על קיצור דרך חדש באמצעות Shift ומקש צירוף נוסף (Ctrl, Alt, חיפוש או מרכז האפליקציות).</translation>
 <translation id="811820734797650957">‏אפשר לבדוק אם יש חיבור לשער באמצעות פינג (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">נעשה שימוש במקש הקיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. אפשר להקיש על קיצור דרך חדש. כדי להחליף את קיצור הדרך המקורי, צריך להקיש שוב על קיצור הדרך הזה.</translation>
 <translation id="879568662008399081">יכול להיות שברשת הזאת יש פורטל שבוי</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8798441408945964110">שם ספק</translation>

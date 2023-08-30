@@ -94,6 +94,7 @@
 <translation id="174937106936716857">מספר הקבצים הכולל</translation>
 <translation id="1755345808328621801">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. יש לחפש אפליקציה חלופית מתאימה בחנות האינטרנט של Chrome.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">שיתוף עם <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">אישור האימות נדחה מקומית</translation>
 <translation id="1775381402323441512">פרטי הסרטון</translation>
 <translation id="180035236176489073">עליך להיות במצב מקוון כדי לגשת לקבצים אלה.</translation>
@@ -212,6 +213,7 @@
 <translation id="2718540689505416944">‏התקנת אפליקציה עם Linux</translation>
 <translation id="2719020180254996569">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, פרטים</translation>
 <translation id="2724954091494693138">‏טורקית עם מקלדת F</translation>
+<translation id="2732288874651063549">ניהול השיתוף עם <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">‏וייטנאמית VNI</translation>
 <translation id="2735623501230989521">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">‏השתמשת בכל נפח האחסון לשימוש פרטי שלך ב-Google Workspace.</translation>
@@ -306,6 +308,7 @@
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3511705761158917664">בהכנה לסנכרון של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
+<translation id="3523225005467146490">תיקייה אחת שותפה עם <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
 <translation id="3548125359243647069">הוזן קוד אימות שגוי יותר מדי פעמים.</translation>
@@ -667,6 +670,7 @@
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6170470584681422115">כריך</translation>
 <translation id="6177854567773392726">נפח האחסון בבדיקה… נמצאו <ph name="ITEMS_FOUND" /> פריטים</translation>
+<translation id="6181912134988520389">‏הענקת הרשאה ל-<ph name="VM_NAME" /> לגשת לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="6187719147498869044">הונגרית</translation>
 <translation id="6198252989419008588">שינוי קוד אימות</translation>
 <translation id="6199801702437275229">בהמתנה למידע על נפח האחסון...</translation>
@@ -770,6 +774,7 @@
 <translation id="6989942356279143254">שוודית</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
 <translation id="6993826899923627728">הפריטים האלה נמצאים באשפה</translation>
+<translation id="6996593023542748157">שיתוף התיקייה עם <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">על פי דרישת הארגון שלך, יש צורך בנפח אחסון נוסף כדי להשלים את ההעלאה.</translation>
 <translation id="7009985720488544166">בהתאם למדיניות האדמין, ההעברה של <ph name="COUNT" /> קבצים חסומה</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -955,6 +960,7 @@
 <translation id="8335837413233998004">בלארוסית</translation>
 <translation id="8336153091935557858">אתמול <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">קובץ או ספרייה עם אותו שם כבר קיימים.</translation>
+<translation id="83651606385705612">הענקת הרשאה ל-<ph name="VM_NAME" /> לגשת לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">‏מקש WEP גרוע</translation>
 <translation id="8372852072747894550">יוונית</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
@@ -964,6 +970,7 @@
 <translation id="8408068190360279472">רשת <ph name="NETWORK_TYPE" />, מתבצעת התחברות</translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8428213095426709021">הגדרות</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">‏שינוי קוד האימות של ה-SIM</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8452135315243592079">‏כרטיס SIM חסר</translation>
