@@ -17,6 +17,7 @@
 @class FeedWrapperViewController;
 @protocol NewTabPageContentDelegate;
 @class NewTabPageHeaderViewController;
+@protocol NewTabPageMutator;
 @protocol OverscrollActionsControllerDelegate;
 
 // View controller containing all the content presented on a standard,
@@ -38,7 +39,7 @@
 @property(nonatomic, weak) NewTabPageHeaderViewController* headerViewController;
 
 // Delegate for actions relating to the NTP content.
-@property(nonatomic, weak) id<NewTabPageContentDelegate> ntpContentDelegate;
+@property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
 
 // The view controller representing the content suggestions.
 @property(nonatomic, strong)
@@ -73,6 +74,9 @@
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.
 @property(nonatomic, assign) BOOL focusAccessibilityOmniboxWhenViewAppears;
+
+// The mutator to provide updates to the NTP mediator.
+@property(nonatomic, weak) id<NewTabPageMutator> mutator;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
@@ -111,6 +115,10 @@
 
 // Resets any relevant NTP states due for a content reload.
 - (void)resetStateUponReload;
+
+// Sets the feed collection contentOffset to the top of the page. Resets fake
+// omnibox back to initial state.
+- (void)setContentOffsetToTop;
 
 // Sets the NTP collection view's scroll position to `contentOffset`, unless it
 // is beyond the top of the feed. In that case, sets the scroll position to the

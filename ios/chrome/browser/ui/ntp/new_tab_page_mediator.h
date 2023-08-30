@@ -8,10 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_mutator.h"
 
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+namespace web {
+class WebState;
+}  // namespace web
 
 class AuthenticationService;
 class ChromeAccountManagerService;
@@ -20,14 +24,17 @@ class DiscoverFeedService;
 @class FeedMetricsRecorder;
 class GURL;
 @protocol NewTabPageConsumer;
+@protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
+@class NewTabPageState;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 @protocol UserAccountImageUpdateDelegate;
 
 // Mediator for the NTP Home panel, handling the interactions with the
 // suggestions.
-@interface NewTabPageMediator : NSObject <FeedManagementNavigationDelegate>
+@interface NewTabPageMediator
+    : NSObject <FeedManagementNavigationDelegate, NewTabPageMutator>
 
 - (instancetype)
     initWithTemplateURLService:(TemplateURLService*)templateURLService
@@ -51,12 +58,20 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<NewTabPageHeaderConsumer> headerConsumer;
 // Delegate for controlling the current feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
+// Delegate for actions relating to the NTP content.
+@property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
 
 // Inits the mediator.
 - (void)setUp;
 
 // Cleans the mediator.
 - (void)shutdown;
+
+// Saves the current state of the NTP.
+- (void)saveNTPStateForWebState:(web::WebState*)webState;
+
+// Restores the current state of the NTP.
+- (void)restoreNTPStateForWebState:(web::WebState*)webState;
 
 // Handles the actions following a tap on the "Learn More" item in the Discover
 // feed menu.

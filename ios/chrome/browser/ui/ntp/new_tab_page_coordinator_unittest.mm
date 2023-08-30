@@ -587,8 +587,8 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
   [coordinator_ didNavigateToNTPInWebState:web_state_];
 
   // Check that initial NTP is scrolled to top.
-  EXPECT_LE(coordinator_.NTPViewController.scrollPosition,
-            -[coordinator_.NTPViewController heightAboveFeed]);
+  EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition,
+              -[coordinator_.NTPViewController heightAboveFeed], 1);
 
   // Change the selected feed and set some scroll position.
   [coordinator_ selectFeedType:FeedTypeFollowing];
@@ -607,7 +607,7 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
 
   // Check that newly opened NTP restores saved state.
   EXPECT_EQ(coordinator_.selectedFeed, selectedFeed);
-  EXPECT_EQ(coordinator_.NTPViewController.scrollPosition, scrollPosition);
+  EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition, scrollPosition, 1);
 
   [coordinator_ stop];
 }

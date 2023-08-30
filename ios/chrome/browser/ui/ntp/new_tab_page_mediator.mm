@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -93,6 +95,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 @implementation NewTabPageMediator
 
+// Synthesized from NewTabPageMutator.
+@synthesize scrollPositionToSave = _scrollPositionToSave;
+
 - (instancetype)
     initWithTemplateURLService:(TemplateURLService*)templateURLService
                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
@@ -146,6 +151,23 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)handleFeedLearnMoreTapped {
   [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
   [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
+}
+
+- (void)saveNTPStateForWebState:(web::WebState*)webState {
+  NewTabPageTabHelper::FromWebState(webState)->SetNTPState(
+      [[NewTabPageState alloc]
+          initWithScrollPosition:self.scrollPositionToSave
+                    selectedFeed:[self.feedControlDelegate selectedFeed]]);
+}
+
+- (void)restoreNTPStateForWebState:(web::WebState*)webState {
+  NewTabPageState* ntpState =
+      NewTabPageTabHelper::FromWebState(webState)->GetNTPState();
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    [self.NTPContentDelegate updateForSelectedFeed:ntpState.selectedFeed];
+  }
+
+  [self.consumer restoreScrollPosition:ntpState.scrollPosition];
 }
 
 #pragma mark - FeedManagementNavigationDelegate
