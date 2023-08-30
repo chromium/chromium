@@ -78,6 +78,7 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
     {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
     {version_ui::kCompany, IDS_ABOUT_VERSION_COMPANY_NAME},
     {version_ui::kCopyLabel, IDS_VERSION_UI_COPY_LABEL},
+    {version_ui::kCopyNotice, IDS_VERSION_UI_COPY_NOTICE},
     {version_ui::kRevision, IDS_VERSION_UI_REVISION},
     {version_ui::kUserAgentName, IDS_VERSION_UI_USER_AGENT},
     {version_ui::kCommandLineName, IDS_VERSION_UI_COMMAND_LINE},

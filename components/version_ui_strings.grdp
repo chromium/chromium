@@ -67,6 +67,9 @@
   <message name="IDS_VERSION_UI_COPY_LABEL" desc="label for the button to copy the version string">
     Copy version string
   </message>
+  <message name="IDS_VERSION_UI_COPY_NOTICE" desc="text to be read by a screenreader when the version string is done being copied">
+    Copied version string to clipboard
+  </message>
   <message name="IDS_VERSION_UI_EXECUTABLE_PATH" desc="label for the executable path on the about:version page">
     Executable Path
   </message>

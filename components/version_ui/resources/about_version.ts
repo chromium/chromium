@@ -14,6 +14,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 import './strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 // <if expr="chromeos_ash or is_win or is_chromeos">
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
@@ -126,7 +127,25 @@ function crosUrlVersionRedirect() {
 // </if>
 
 function copyToClipboard() {
-  navigator.clipboard.writeText(getRequiredElement('copy-content').innerText);
+  navigator.clipboard.writeText(getRequiredElement('copy-content').innerText)
+      .then(announceCopy);
+}
+
+function announceCopy() {
+  const messagesDiv = getRequiredElement('messages');
+  messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
+
+  // <if expr="is_macosx">
+  // VoiceOver on Mac does not seem to consistently read out the contents of
+  // a static alert element. Toggling the role of alert seems to force VO
+  // to consistently read out the messages.
+  messagesDiv.removeAttribute('role');
+  messagesDiv.setAttribute('role', 'alert');
+  // </if>
+
+  const div = document.createElement('div');
+  div.innerText = loadTimeData.getString('copy_notice');
+  messagesDiv.append(div);
 }
 
 // <if expr="chromeos_lacros">
