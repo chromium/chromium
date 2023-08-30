@@ -199,18 +199,23 @@ std::string GetParamValue(const base::Feature& feature,
   return value;
 }
 
-void LogParamValueParseError(const std::string& feature_name,
+void LogParamValueParseError(Logger* logger,
+                             const base::Location& location,
+                             const std::string& feature_name,
                              const std::string& param_name) {
-  DLOG(WARNING) << feature_name << " does not have a valid " << param_name
-                << " param value. Stop parsing the config.";
+  logger->Log(
+      location,
+      base::StringPrintf(
+          "%s does not have a valid %s param value. Stop parsing the config.",
+          feature_name.c_str(), param_name.c_str()));
 }
 
-UiType ParseUiType(const base::Feature& feature) {
+UiType ParseUiType(Logger* logger, const base::Feature& feature) {
   std::string ui_type = GetParamValue(feature, kCustomUiTypeParamName);
   if (ui_type != kCustomUiTypeValueNotification &&
       ui_type != kCustomUiTypeValueBubble &&
       ui_type != kCustomUiTypeValueNone) {
-    DLOG(WARNING) << ui_type << " is not a valid UI type.";
+    SCALABLE_IPH_LOG(logger) << ui_type << " is not a valid UI type.";
   }
 
   if (ui_type == kCustomUiTypeValueNotification) {
@@ -255,52 +260,60 @@ std::string ParseActionEventName(const std::string& event_used_param) {
 }
 
 std::unique_ptr<NotificationParams> ParseNotificationParams(
+    Logger* logger,
     const base::Feature& feature) {
   std::unique_ptr<NotificationParams> param =
       std::make_unique<NotificationParams>();
   param->notification_id =
       GetParamValue(feature, kCustomNotificationIdParamName);
   if (param->notification_id.empty()) {
-    LogParamValueParseError(feature.name, kCustomNotificationIdParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomNotificationIdParamName);
     return nullptr;
   }
   param->title = GetParamValue(feature, kCustomNotificationTitleParamName);
   if (param->title.empty()) {
-    LogParamValueParseError(feature.name, kCustomNotificationTitleParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomNotificationTitleParamName);
     return nullptr;
   }
   param->text = GetParamValue(feature, kCustomNotificationBodyTextParamName);
   if (param->text.empty()) {
-    LogParamValueParseError(feature.name, kCustomNotificationBodyTextParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomNotificationBodyTextParamName);
     return nullptr;
   }
   param->button.text =
       GetParamValue(feature, kCustomNotificationButtonTextParamName);
   if (param->button.text.empty()) {
-    LogParamValueParseError(feature.name,
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
                             kCustomNotificationButtonTextParamName);
     return nullptr;
   }
   std::string action_type =
       GetParamValue(feature, kCustomButtonActionTypeParamName);
   if (action_type.empty()) {
-    LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomButtonActionTypeParamName);
     return nullptr;
   }
   param->button.action.action_type = ParseActionType(action_type);
   if (param->button.action.action_type == ActionType::kInvalid) {
-    LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomButtonActionTypeParamName);
     return nullptr;
   }
   std::string event_used =
       GetParamValue(feature, kCustomButtonActionEventParamName);
   if (event_used.empty()) {
-    LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomButtonActionEventParamName);
     return nullptr;
   }
   param->button.action.iph_event_name = ParseActionEventName(event_used);
   if (param->button.action.iph_event_name.empty()) {
-    LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomButtonActionEventParamName);
     return nullptr;
   }
 
@@ -323,18 +336,21 @@ BubbleIcon ParseBubbleIcon(const std::string& icon_string) {
   return it->second;
 }
 
-std::unique_ptr<BubbleParams> ParseBubbleParams(const base::Feature& feature) {
+std::unique_ptr<BubbleParams> ParseBubbleParams(Logger* logger,
+                                                const base::Feature& feature) {
   std::unique_ptr<BubbleParams> param = std::make_unique<BubbleParams>();
   param->bubble_id = GetParamValue(feature, kCustomBubbleIdParamName);
   if (param->bubble_id.empty()) {
-    LogParamValueParseError(feature.name, kCustomBubbleIdParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomBubbleIdParamName);
     return nullptr;
   }
   // Title of bubble could be empty.
   param->title = GetParamValue(feature, kCustomBubbleTitleParamName);
   param->text = GetParamValue(feature, kCustomBubbleTextParamName);
   if (param->text.empty()) {
-    LogParamValueParseError(feature.name, kCustomBubbleTextParamName);
+    LogParamValueParseError(logger, FROM_HERE, feature.name,
+                            kCustomBubbleTextParamName);
     return nullptr;
   }
 
@@ -345,25 +361,29 @@ std::unique_ptr<BubbleParams> ParseBubbleParams(const base::Feature& feature) {
     std::string action_type =
         GetParamValue(feature, kCustomButtonActionTypeParamName);
     if (action_type.empty()) {
-      LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+      LogParamValueParseError(logger, FROM_HERE, feature.name,
+                              kCustomButtonActionTypeParamName);
       return nullptr;
     }
 
     param->button.action.action_type = ParseActionType(action_type);
     if (param->button.action.action_type == ActionType::kInvalid) {
-      LogParamValueParseError(feature.name, kCustomButtonActionTypeParamName);
+      LogParamValueParseError(logger, FROM_HERE, feature.name,
+                              kCustomButtonActionTypeParamName);
       return nullptr;
     }
 
     std::string event_used =
         GetParamValue(feature, kCustomButtonActionEventParamName);
     if (event_used.empty()) {
-      LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+      LogParamValueParseError(logger, FROM_HERE, feature.name,
+                              kCustomButtonActionEventParamName);
       return nullptr;
     }
     param->button.action.iph_event_name = ParseActionEventName(event_used);
     if (param->button.action.iph_event_name.empty()) {
-      LogParamValueParseError(feature.name, kCustomButtonActionEventParamName);
+      LogParamValueParseError(logger, FROM_HERE, feature.name,
+                              kCustomButtonActionEventParamName);
       return nullptr;
     }
   }
@@ -589,14 +609,15 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
   }
 
   if (session_state_ != ScalableIphDelegate::SessionState::kActive) {
-    DLOG(WARNING)
+    SCALABLE_IPH_LOG(logger())
         << "No event is expected to be recorded outside of an active session.";
     return;
   }
 
   auto it = GetEventNamesMap().find(event);
   if (it == GetEventNamesMap().end()) {
-    DCHECK(false) << "Missing ScalableIph::Event to event name string mapping.";
+    SCALABLE_IPH_LOG(logger())
+        << "Missing ScalableIph::Event to event name string mapping.";
     return;
   }
 
@@ -609,7 +630,8 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
 
 void ScalableIph::CheckTriggerConditionsOnInitSuccess(bool init_success) {
   if (!init_success) {
-    DCHECK(false) << "Failed to initialize feature_engagement::Tracker.";
+    SCALABLE_IPH_LOG(logger())
+        << "Failed to initialize feature_engagement::Tracker.";
     return;
   }
 
@@ -633,22 +655,24 @@ void ScalableIph::CheckTriggerConditions() {
     }
 
     if (!ValidateVersionNumber(*feature)) {
-      DLOG(WARNING) << "Version number does not match with the current version "
-                       "number. Skipping a config: "
-                    << feature->name;
+      SCALABLE_IPH_LOG(logger())
+          << "Version number does not match with the current version "
+             "number. Skipping a config: "
+          << feature->name;
       continue;
     }
 
     if (CheckCustomConditions(*feature) &&
         tracker_->ShouldTriggerHelpUI(*feature)) {
-      UiType ui_type = ParseUiType(*feature);
+      UiType ui_type = ParseUiType(logger(), *feature);
       switch (ui_type) {
         case UiType::kNotification: {
           std::unique_ptr<NotificationParams> notification_params =
-              ParseNotificationParams(*feature);
+              ParseNotificationParams(logger(), *feature);
           if (!notification_params) {
-            DLOG(WARNING) << "Failed to parse notification params for "
-                          << feature->name << ". Skipping the config.";
+            SCALABLE_IPH_LOG(logger())
+                << "Failed to parse notification params for " << feature->name
+                << ". Skipping the config.";
             continue;
           }
           delegate_->ShowNotification(
@@ -658,10 +682,11 @@ void ScalableIph::CheckTriggerConditions() {
         }
         case UiType::kBubble: {
           std::unique_ptr<BubbleParams> bubble_params =
-              ParseBubbleParams(*feature);
+              ParseBubbleParams(logger(), *feature);
           if (!bubble_params) {
-            DLOG(WARNING) << "Failed to parse bubble params for "
-                          << feature->name << ". Skipping the config.";
+            SCALABLE_IPH_LOG(logger())
+                << "Failed to parse bubble params for " << feature->name
+                << ". Skipping the config.";
             continue;
           }
           delegate_->ShowBubble(
@@ -691,8 +716,9 @@ bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {
   // If an invalid value is provided, does not satisfy a condition for a
   // fail-safe behavior.
   if (connection_condition != kCustomConditionNetworkConnectionOnline) {
-    DLOG(WARNING) << "Only " << kCustomConditionNetworkConnectionOnline
-                  << " is the valid value for network connection condition";
+    SCALABLE_IPH_LOG(logger())
+        << "Only " << kCustomConditionNetworkConnectionOnline
+        << " is the valid value for network connection condition";
     return false;
   }
 
@@ -706,25 +732,27 @@ bool ScalableIph::CheckClientAge(const base::Feature& feature) {
     return true;
   }
 
-  // Use `DLOG`s for logging instead of `DCHECK(false)` as we want to test those
-  // fail-safe behaviors in browser_tests.
+  // Use `SCALABLE_IPH_LOG`s for logging instead of `DCHECK(false)` as we want
+  // to test those fail-safe behaviors in browser_tests.
   int max_client_age = 0;
   if (!base::StringToInt(client_age_condition, &max_client_age)) {
-    DLOG(WARNING)
+    SCALABLE_IPH_LOG(logger())
         << "Failed to parse client age condition. It must be an integer.";
     return false;
   }
 
   if (max_client_age < 0) {
-    DLOG(WARNING) << "Client age condition must be a positive integer value.";
+    SCALABLE_IPH_LOG(logger())
+        << "Client age condition must be a positive integer value.";
     return false;
   }
 
   int client_age = delegate_->ClientAgeInDays();
   if (client_age < 0) {
-    DLOG(WARNING) << "Client age is a negative number. This can happen if a "
-                     "user changes time zone, etc. Condition is not satisfied "
-                     "for a fail safe behavior.";
+    SCALABLE_IPH_LOG(logger())
+        << "Client age is a negative number. This can happen if a "
+           "user changes time zone, etc. Condition is not satisfied "
+           "for a fail safe behavior.";
     return false;
   }
 
@@ -742,7 +770,7 @@ bool ScalableIph::CheckHasSavedPrinters(const base::Feature& feature) {
           kCustomConditionHasSavedPrintersValueTrue &&
       has_saved_printers_condition !=
           kCustomConditionHasSavedPrintersValueFalse) {
-    DLOG(WARNING)
+    SCALABLE_IPH_LOG(logger())
         << "Invalid value provided for "
         << kCustomConditionHasSavedPrintersParamName
         << ". This condition is not satisfied for a fail-safe behavior.";
