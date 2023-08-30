@@ -72,6 +72,9 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static ash::AppStatus ConvertPromiseStatusToAppStatus(
       apps::PromiseStatus promise_status);
 
+  // Check whether this item is an app service shortcut.
+  static bool IsAppServiceShortcut(Profile* profile, const std::string& id);
+
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.
   // Note that already running applications are ignored by the restore process.

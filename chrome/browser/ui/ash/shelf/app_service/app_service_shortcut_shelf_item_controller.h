@@ -21,6 +21,11 @@ class AppServiceShortcutShelfItemController : public ash::ShelfItemDelegate {
   ~AppServiceShortcutShelfItemController() override;
 
   // ash::ShelfItemDelegate overrides:
+  void ItemSelected(std::unique_ptr<ui::Event> event,
+                    int64_t display_id,
+                    ash::ShelfLaunchSource source,
+                    ItemSelectedCallback callback,
+                    const ItemFilterPredicate& filter_predicate) override;
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,

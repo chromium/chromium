@@ -118,19 +118,16 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
-    std::u16string shortcut_title;
-    if (apps::AppServiceProxyFactory::GetForProfile(profile)
+  if (IsAppServiceShortcut(profile, app_id)) {
+    absl::optional<std::string> shortcut_name =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
             ->ShortcutRegistryCache()
-            ->HasShortcut(apps::ShortcutId(app_id))) {
-      absl::optional<std::string> shortcut_name =
-          apps::AppServiceProxyFactory::GetForProfile(profile)
-              ->ShortcutRegistryCache()
-              ->GetShortcut(apps::ShortcutId(app_id))
-              ->name;
-      if (shortcut_name.has_value()) {
-        shortcut_title = base::UTF8ToUTF16(shortcut_name.value());
-      }
+            ->GetShortcut(apps::ShortcutId(app_id))
+            ->name;
+
+    std::u16string shortcut_title;
+    if (shortcut_name.has_value()) {
+      shortcut_title = base::UTF8ToUTF16(shortcut_name.value());
     }
 
     if (!shortcut_title.empty()) {
@@ -251,6 +248,15 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
   }
 }
 
+// static
+bool ShelfControllerHelper::IsAppServiceShortcut(Profile* profile,
+                                                 const std::string& id) {
+  return base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate) &&
+         apps::AppServiceProxyFactory::GetForProfile(profile)
+             ->ShortcutRegistryCache()
+             ->HasShortcut(apps::ShortcutId(id));
+}
+
 bool ShelfControllerHelper::IsValidIDForCurrentUser(
     const std::string& app_id) const {
   if (IsValidIDForArcApp(app_id))
@@ -278,6 +284,12 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
     proxy->Launch(app_id, event_flags,
                   ShelfLaunchSourceToAppsLaunchSource(source),
                   std::make_unique<apps::WindowInfo>(display_id));
+    return;
+  }
+
+  // Launch the shortcut if the shelf item is a shortcut to an app.
+  if (IsAppServiceShortcut(profile_, app_id)) {
+    proxy->LaunchShortcut(apps::ShortcutId(app_id), display_id);
     return;
   }
 
