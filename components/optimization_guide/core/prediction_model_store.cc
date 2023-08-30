@@ -72,6 +72,56 @@ proto::OptimizationTarget ParseOptimizationTargetFromString(
   return static_cast<proto::OptimizationTarget>(optimization_target);
 }
 
+void RemoveInvalidModelDirs(const base::FilePath& base_store_dir,
+                            std::set<base::FilePath> valid_model_dirs) {
+  std::vector<base::FilePath> invalid_model_dirs;
+  base::FileEnumerator enumerator(base_store_dir, /*recursive=*/false,
+                                  base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath optimization_target_dir = enumerator.Next();
+       !optimization_target_dir.empty();
+       optimization_target_dir = enumerator.Next()) {
+    proto::OptimizationTarget optimization_target =
+        ParseOptimizationTargetFromString(
+            optimization_target_dir.BaseName().AsUTF8Unsafe());
+    if (optimization_target == proto::OPTIMIZATION_TARGET_UNKNOWN) {
+      // Remove the unknown dirs within the model store dir. This can
+      // potentially happen when the opt target is deprecated, and marked as
+      // reserved.
+      invalid_model_dirs.push_back(optimization_target_dir);
+      RecordPredictionModelStoreModelRemovalVersionHistogram(
+          proto::OPTIMIZATION_TARGET_UNKNOWN,
+          PredictionModelStoreModelRemovalReason::kInconsistentModelDir);
+      continue;
+    }
+    base::FileEnumerator model_cache_keys_enumerator(
+        optimization_target_dir, false, base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath model_cache_key_dir =
+             model_cache_keys_enumerator.Next();
+         !model_cache_key_dir.empty();
+         model_cache_key_dir = model_cache_keys_enumerator.Next()) {
+      base::FileEnumerator models_enumerator(model_cache_key_dir,
+                                             /*recursive=*/false,
+                                             base::FileEnumerator::DIRECTORIES);
+      for (base::FilePath model_dir = models_enumerator.Next();
+           !model_dir.empty(); model_dir = models_enumerator.Next()) {
+        DCHECK(model_dir.IsAbsolute());
+        if (valid_model_dirs.find(ConvertToRelativePath(
+                base_store_dir, model_dir)) == valid_model_dirs.end()) {
+          invalid_model_dirs.push_back(model_dir);
+          RecordPredictionModelStoreModelRemovalVersionHistogram(
+              optimization_target,
+              PredictionModelStoreModelRemovalReason::kInconsistentModelDir);
+        }
+      }
+    }
+  }
+  // The invalid dirs can be removed immediately, since this is called at init.
+  for (const auto& invalid_model_dir : invalid_model_dirs) {
+    DCHECK(invalid_model_dir.IsAbsolute());
+    base::DeletePathRecursively(invalid_model_dir);
+  }
+}
+
 void RecordModelStorageMetrics(const base::FilePath& base_store_dir) {
   base::FileEnumerator enumerator(base_store_dir, false,
                                   base::FileEnumerator::DIRECTORIES);
@@ -138,6 +188,10 @@ void PredictionModelStore::Initialize(PrefService* local_state,
   // sessions.
   CleanUpOldModelFiles();
 
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RemoveInvalidModelDirs, base_store_dir_,
+                     ModelStoreMetadataEntry::GetValidModelDirs(local_state_)));
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&RecordModelStorageMetrics, base_store_dir_));
 }
