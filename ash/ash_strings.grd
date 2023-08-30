@@ -2111,10 +2111,10 @@ Style notes:
         CPU usage snapshot, <ph name="CPU_USEAGE">$1<ex>89</ex></ph>%. Temperature <ph name="TEMPERATURE">$2<ex>34</ex></ph> degrees celsius, current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ">$3<ex>1.52</ex></ph>GHz
       </message>
       <message name="IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current memory usage information in the launcher.">
-        Memory <ph name="USED_MEMORY">$1<ex>2.4 GB</ex></ph> | <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
+        Memory <ph name="AVAILABLE_MEMORY">$1<ex>2.4 GB</ex></ph> | <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
       </message>
       <message name="IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_ACCESSIBILITY_LABEL" desc="Message content for the accessibility label of the answer card with the current memory usage information in the launcher.">
-        Memory <ph name="USED_MEMORY">$1<ex>2.4 GB</ex></ph> available out of <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
+        Memory <ph name="AVAILABLE_MEMORY">$1<ex>2.4 GB</ex></ph> available out of <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
       </message>
       <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT_SHORT" desc="Message content for the short description on the left of the battery answer card.">
         Battery <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>%
