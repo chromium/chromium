@@ -1411,7 +1411,7 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingAligned) {
                                  {128, 2 * internal::PartitionPageSize()},
                                  {(4 << 20) + 1, 1 << 19}};
   for (auto [requested_size, alignment] : size_alignments) {
-    void* ptr = root()->AlignedAllocWithFlags(0, alignment, requested_size);
+    void* ptr = root()->AlignedAlloc(alignment, requested_size);
     ASSERT_TRUE(ptr);
     alloc_count++;
     total_size += root()->GetUsableSize(ptr);

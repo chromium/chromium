@@ -81,7 +81,7 @@ PartitionAlloc guarantees that returned pointers are aligned on
 64-bit systems, and 8B on 32-bit).
 
 PartitionAlloc also supports higher levels of alignment, that can be requested
-via `PartitionAlloc::AlignedAllocWithFlags()` or platform-specific APIs (such as
+via `PartitionAlloc::AlignedAlloc()` or platform-specific APIs (such as
 `posix_memalign()`). The requested
 alignment has to be a power of two. PartitionAlloc reserves the right to round
 up the requested size to the nearest power of two, greater than or equal to the

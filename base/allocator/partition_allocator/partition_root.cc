@@ -1343,101 +1343,6 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(void* object,
   return object;
 }
 
-void* PartitionRoot::ReallocWithFlags(unsigned int flags,
-                                      void* ptr,
-                                      size_t new_size,
-                                      const char* type_name) {
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  CHECK_MAX_SIZE_OR_RETURN_NULLPTR(new_size, flags);
-  void* result = realloc(ptr, new_size);
-  PA_CHECK(result || flags & AllocFlags::kReturnNull);
-  return result;
-#else
-  bool no_hooks = flags & AllocFlags::kNoHooks;
-  if (PA_UNLIKELY(!ptr)) {
-    return no_hooks
-               ? AllocWithFlagsNoHooks(flags, new_size,
-                                       internal::PartitionPageSize())
-               : AllocWithFlagsInternal(
-                     flags, new_size, internal::PartitionPageSize(), type_name);
-  }
-
-  if (PA_UNLIKELY(!new_size)) {
-    FreeInUnknownRoot(ptr);
-    return nullptr;
-  }
-
-  if (new_size > internal::MaxDirectMapped()) {
-    if (flags & AllocFlags::kReturnNull) {
-      return nullptr;
-    }
-    internal::PartitionExcessiveAllocationSize(new_size);
-  }
-
-  const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
-  bool overridden = false;
-  size_t old_usable_size;
-  if (!no_hooks && hooks_enabled) {
-    overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
-        &old_usable_size, ptr);
-  }
-  if (PA_LIKELY(!overridden)) {
-    // |ptr| may have been allocated in another root.
-    SlotSpan* slot_span = SlotSpan::FromObject(ptr);
-    auto* old_root = PartitionRoot::FromSlotSpan(slot_span);
-    bool success = false;
-    bool tried_in_place_for_direct_map = false;
-    {
-      ::partition_alloc::internal::ScopedGuard guard{
-          internal::PartitionRootLock(old_root)};
-      // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
-      DCheckIsValidSlotSpan(slot_span);
-      old_usable_size = old_root->GetSlotUsableSize(slot_span);
-
-      if (PA_UNLIKELY(slot_span->bucket->is_direct_mapped())) {
-        tried_in_place_for_direct_map = true;
-        // We may be able to perform the realloc in place by changing the
-        // accessibility of memory pages and, if reducing the size, decommitting
-        // them.
-        success = old_root->TryReallocInPlaceForDirectMap(slot_span, new_size);
-      }
-    }
-    if (success) {
-      if (PA_UNLIKELY(!no_hooks && hooks_enabled)) {
-        PartitionAllocHooks::ReallocObserverHookIfEnabled(
-            CreateFreeNotificationData(ptr),
-            CreateAllocationNotificationData(ptr, new_size, type_name));
-      }
-      return ptr;
-    }
-
-    if (PA_LIKELY(!tried_in_place_for_direct_map)) {
-      if (old_root->TryReallocInPlaceForNormalBuckets(ptr, slot_span,
-                                                      new_size)) {
-        return ptr;
-      }
-    }
-  }
-
-  // This realloc cannot be resized in-place. Sadness.
-  void* ret =
-      no_hooks ? AllocWithFlagsNoHooks(flags, new_size,
-                                       internal::PartitionPageSize())
-               : AllocWithFlagsInternal(
-                     flags, new_size, internal::PartitionPageSize(), type_name);
-  if (!ret) {
-    if (flags & AllocFlags::kReturnNull) {
-      return nullptr;
-    }
-    internal::PartitionExcessiveAllocationSize(new_size);
-  }
-
-  memcpy(ret, ptr, std::min(old_usable_size, new_size));
-  FreeInUnknownRoot(ptr);  // Implicitly protects the old ptr on MTE systems.
-  return ret;
-#endif
-}
-
 void PartitionRoot::PurgeMemory(int flags) {
   {
     ::partition_alloc::internal::ScopedGuard guard{
@@ -1772,6 +1677,19 @@ void PartitionRoot::SetSortSmallerSlotSpanFreeListsEnabled(bool new_value) {
 void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
   sort_active_slot_spans_ = new_value;
 }
+
+// Explicitly define common template instantiations to reduce compile time.
+#define EXPORT_TEMPLATE \
+  template PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
+EXPORT_TEMPLATE void* PartitionRoot::Alloc<0>(size_t, const char*);
+EXPORT_TEMPLATE void* PartitionRoot::Alloc<AllocFlags::kReturnNull>(
+    size_t,
+    const char*);
+EXPORT_TEMPLATE void* PartitionRoot::Realloc<0>(void*, size_t, const char*);
+EXPORT_TEMPLATE void*
+PartitionRoot::Realloc<AllocFlags::kReturnNull>(void*, size_t, const char*);
+EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<0>(size_t, size_t);
+#undef EXPORT_TEMPLATE
 
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
                   offsetof(PartitionRoot, buckets) +

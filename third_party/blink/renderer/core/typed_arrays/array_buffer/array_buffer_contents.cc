@@ -152,9 +152,9 @@ void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
   std::memcpy(other.Data(), Data(), DataLength());
 }
 
-void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
-                                                   InitializationPolicy policy,
-                                                   unsigned int flags) {
+template <unsigned int flags>
+void* ArrayBufferContents::AllocateMemory(size_t size,
+                                          InitializationPolicy policy) {
   // The array buffer contents are sometimes expected to be 16-byte aligned in
   // order to get the best optimization of SSE, especially in case of audio and
   // video buffers.  Hence, align the given size up to 16-byte boundary.
@@ -181,14 +181,22 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
   // hooks (which are e.g. used by the heap profiler) should still be invoked.
   // Using the kNoOverrideHooks and kNoMemoryToolOverride flags with
   // accomplishes this.
-  flags |= partition_alloc::AllocFlags::kNoOverrideHooks;
-  flags |= partition_alloc::AllocFlags::kNoMemoryToolOverride;
+  constexpr auto new_flags = flags |
+                             partition_alloc::AllocFlags::kNoOverrideHooks |
+                             partition_alloc::AllocFlags::kNoMemoryToolOverride;
+#else
+  constexpr auto new_flags = flags;
 #endif
+  void* data;
   if (policy == kZeroInitialize) {
-    flags |= partition_alloc::AllocFlags::kZeroFill;
+    data = WTF::Partitions::ArrayBufferPartition()
+               ->Alloc<new_flags | partition_alloc::AllocFlags::kZeroFill>(
+                   size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
+  } else {
+    data = WTF::Partitions::ArrayBufferPartition()->Alloc<new_flags>(
+        size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
   }
-  void* data = WTF::Partitions::ArrayBufferPartition()->AllocWithFlags(
-      flags, size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
+
   if (partition_alloc::internal::kAlignment < 16) {
     char* ptr = reinterpret_cast<char*>(data);
     DCHECK_EQ(base::bits::AlignUp(ptr, 16), ptr)
@@ -201,15 +209,14 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
 
 void* ArrayBufferContents::AllocateMemoryOrNull(size_t size,
                                                 InitializationPolicy policy) {
-  return AllocateMemoryWithFlags(size, policy,
-                                 partition_alloc::AllocFlags::kReturnNull);
+  return AllocateMemory<partition_alloc::AllocFlags::kReturnNull>(size, policy);
 }
 
 void ArrayBufferContents::FreeMemory(void* data) {
   InstanceCounters::DecrementCounter(
       InstanceCounters::kArrayBufferContentsCounter);
 #ifdef V8_ENABLE_SANDBOX
-  // See |AllocateMemoryWithFlags|.
+  // See |AllocateMemory|.
   WTF::Partitions::ArrayBufferPartition()
       ->Free<partition_alloc::FreeFlags::kNoMemoryToolOverride>(data);
 #else

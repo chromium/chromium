@@ -137,9 +137,8 @@ class CORE_EXPORT ArrayBufferContents {
   static void FreeMemory(void*);
 
  private:
-  static void* AllocateMemoryWithFlags(size_t,
-                                       InitializationPolicy,
-                                       unsigned int);
+  template <unsigned int flags>
+  static void* AllocateMemory(size_t, InitializationPolicy);
 
   std::shared_ptr<v8::BackingStore> backing_store_;
 };

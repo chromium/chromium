@@ -39,13 +39,13 @@ void* NonScannableAllocatorImpl<quarantinable>::Alloc(size_t size) {
   // TODO(bikineev): Change to LIKELY once PCScan is enabled by default.
   if (PA_UNLIKELY(pcscan_enabled_.load(std::memory_order_acquire))) {
     PA_DCHECK(allocator_.get());
-    return allocator_->root()->AllocWithFlagsNoHooks(
-        0, size, partition_alloc::PartitionPageSize());
+    return allocator_->root()->AllocNoHooks(
+        size, partition_alloc::PartitionPageSize());
   }
 #endif  // BUILDFLAG(USE_STARSCAN)
   // Otherwise, dispatch to default partition.
   return allocator_shim::internal::PartitionAllocMalloc::Allocator()
-      ->AllocWithFlagsNoHooks(0, size, partition_alloc::PartitionPageSize());
+      ->AllocNoHooks(size, partition_alloc::PartitionPageSize());
 }
 
 template <bool quarantinable>

@@ -25,8 +25,8 @@
 
 namespace partition_alloc {
 
-// Bit flag constants used as `flag` argument of PartitionRoot::AllocWithFlags,
-// AlignedAllocWithFlags, etc.
+// Bit flag constants used as `flag` argument of PartitionRoot::Alloc<flags>,
+// AlignedAlloc, etc.
 struct AllocFlags {
   static constexpr unsigned int kReturnNull = 1 << 0;
   static constexpr unsigned int kZeroFill = 1 << 1;
@@ -420,7 +420,7 @@ PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
   return (1UL << 31) - kSuperPageSize;
 }
 
-// Max alignment supported by AlignedAllocWithFlags().
+// Max alignment supported by AlignedAlloc().
 // kSuperPageSize alignment can't be easily supported, because each super page
 // starts with guard pages & metadata.
 constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 2;

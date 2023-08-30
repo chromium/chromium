@@ -32,8 +32,8 @@ void ThreadIsolatedAllocator::Initialize(int pkey) {
 }
 
 void* ThreadIsolatedAllocator::Allocate(size_t size) {
-  return allocator_.root()->AllocWithFlagsNoHooks(
-      0, size, partition_alloc::PartitionPageSize());
+  return allocator_.root()->AllocNoHooks(size,
+                                         partition_alloc::PartitionPageSize());
 }
 
 void ThreadIsolatedAllocator::Free(void* object) {

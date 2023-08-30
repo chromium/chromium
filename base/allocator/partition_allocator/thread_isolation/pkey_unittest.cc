@@ -137,8 +137,8 @@ class PkeyTest : public testing::Test {
 // In the final use, we'll likely allow at least read access to the default
 // pkey.
 ISOLATED_FUNCTION uint64_t IsolatedAllocFree(void* arg) {
-  char* buf = (char*)isolated_globals.allocator->root()->AllocWithFlagsNoHooks(
-      0, 1024, partition_alloc::PartitionPageSize());
+  char* buf = (char*)isolated_globals.allocator->root()->AllocNoHooks(
+      1024, partition_alloc::PartitionPageSize());
   if (!buf) {
     return 0xffffffffffffffffllu;
   }

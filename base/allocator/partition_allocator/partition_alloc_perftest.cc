@@ -96,7 +96,7 @@ class PartitionAllocator : public Allocator {
   ~PartitionAllocator() override { alloc_.DestructForTesting(); }
 
   void* Alloc(size_t size) override {
-    return alloc_.AllocWithFlagsNoHooks(0, size, PartitionPageSize());
+    return alloc_.AllocNoHooks(size, PartitionPageSize());
   }
   void Free(void* data) override {
     // Even though it's easy to invoke the fast path with alloc_.FreeNoHooks(),
@@ -122,8 +122,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   ~PartitionAllocatorWithThreadCache() override = default;
 
   void* Alloc(size_t size) override {
-    return allocator_.root()->AllocWithFlagsNoHooks(0, size,
-                                                    PartitionPageSize());
+    return allocator_.root()->AllocNoHooks(size, PartitionPageSize());
   }
   void Free(void* data) override {
     // Even though it's easy to invoke the fast path with alloc_.Free(),
@@ -159,7 +158,7 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
   }
 
   void* Alloc(size_t size) override {
-    return alloc_.AllocWithFlags(0, size, nullptr);
+    return alloc_.AllocInline(size, nullptr);
   }
 
   void Free(void* data) override {

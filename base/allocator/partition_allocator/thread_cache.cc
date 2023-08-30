@@ -460,9 +460,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root) {
 
   auto* bucket = root->buckets + PartitionRoot::SizeToBucketIndex(
                                      raw_size, root->GetBucketDistribution());
-  uintptr_t buffer = root->RawAlloc(bucket, AllocFlags::kZeroFill, raw_size,
-                                    internal::PartitionPageSize(), &usable_size,
-                                    &already_zeroed);
+  uintptr_t buffer = root->RawAlloc<AllocFlags::kZeroFill>(
+      bucket, raw_size, internal::PartitionPageSize(), &usable_size,
+      &already_zeroed);
   ThreadCache* tcache =
       new (internal::SlotStartAddr2Ptr(buffer)) ThreadCache(root);
 
@@ -615,11 +615,12 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // |raw_size| is set to the slot size, as we don't know it. However, it is
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
-    uintptr_t slot_start = root_->AllocFromBucket(
-        &root_->buckets[bucket_index],
-        AllocFlags::kFastPathOrReturnNull | AllocFlags::kReturnNull,
-        root_->buckets[bucket_index].slot_size /* raw_size */,
-        internal::PartitionPageSize(), &usable_size, &is_already_zeroed);
+    uintptr_t slot_start =
+        root_->AllocFromBucket<AllocFlags::kFastPathOrReturnNull |
+                               AllocFlags::kReturnNull>(
+            &root_->buckets[bucket_index],
+            root_->buckets[bucket_index].slot_size /* raw_size */,
+            internal::PartitionPageSize(), &usable_size, &is_already_zeroed);
 
     // Either the previous allocation would require a slow path allocation, or
     // the central allocator is out of memory. If the bucket was filled with

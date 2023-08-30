@@ -45,9 +45,8 @@ class MetadataAllocator {
   }
 
   value_type* allocate(size_t size) {
-    return static_cast<value_type*>(
-        PCScanMetadataAllocator().AllocWithFlagsNoHooks(
-            0, size * sizeof(value_type), PartitionPageSize()));
+    return static_cast<value_type*>(PCScanMetadataAllocator().AllocNoHooks(
+        size * sizeof(value_type), PartitionPageSize()));
   }
 
   void deallocate(value_type* ptr, size_t size) {
@@ -58,8 +57,7 @@ class MetadataAllocator {
 // Inherit from it to make a class allocated on the metadata partition.
 struct AllocatedOnPCScanMetadataPartition {
   static void* operator new(size_t size) {
-    return PCScanMetadataAllocator().AllocWithFlagsNoHooks(0, size,
-                                                           PartitionPageSize());
+    return PCScanMetadataAllocator().AllocNoHooks(size, PartitionPageSize());
   }
   static void operator delete(void* ptr) {
     PCScanMetadataAllocator().FreeNoHooks(ptr);
@@ -68,9 +66,8 @@ struct AllocatedOnPCScanMetadataPartition {
 
 template <typename T, typename... Args>
 T* MakePCScanMetadata(Args&&... args) {
-  auto* memory =
-      static_cast<T*>(PCScanMetadataAllocator().AllocWithFlagsNoHooks(
-          0, sizeof(T), PartitionPageSize()));
+  auto* memory = static_cast<T*>(
+      PCScanMetadataAllocator().AllocNoHooks(sizeof(T), PartitionPageSize()));
   return new (memory) T(std::forward<Args>(args)...);
 }
 
