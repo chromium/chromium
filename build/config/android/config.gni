@@ -26,6 +26,7 @@ if (is_android || is_chromeos) {
   import("//build/config/chromecast_build.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
+  import("//build/toolchain/siso.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
 
@@ -86,6 +87,12 @@ if (is_android || is_chromeos) {
   # Avoid typos when setting android_static_analysis in args.gn.
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
          android_static_analysis == "build_server")
+
+  # Build server modifies stamp files independently of builds.
+  # Siso is not well-suited for this use case.
+  assert(
+      !(android_static_analysis == "build_server" && use_siso),
+      "Siso doesn't support android_static_analysis=\"build_server\". Please set android_static_analysis=\"on\"")
 
   # This configuration has not bot coverage and has broken multiple times.
   # Warn against it.
