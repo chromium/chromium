@@ -433,11 +433,3 @@ The test behavior can change whether the site is configured to open as a window 
 | C | install_or_shortcut(SubApp1) | install_or_shortcut(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | check_has_sub_app(HasSubApps, SubApp1)
 | C | install_or_shortcut_windowed(SubApp1) | install_or_shortcut(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_not_has_sub_app(HasSubApps, SubApp1) | check_app_in_list_windowed(SubApp1) | check_platform_shortcut_and_icon(SubApp1)
 | C | install_or_shortcut_tabbed(SubApp1) | install_or_shortcut(HasSubApps) | install_sub_app(HasSubApps, SubApp1, UserAllow) | remove_sub_app(HasSubApps, SubApp1) | check_not_has_sub_app(HasSubApps, SubApp1) | check_app_in_list_tabbed(SubApp1) | check_platform_shortcut_and_icon(SubApp1)
-
-
-## Tabbed
-
-| #Platforms | Test -> | | | | | | | | | | | | | | | | |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_or_shortcut_windowed(Tabbed) | maybe_close_pwa | launch(Tabbed) | new_app_tab(Tabbed) | check_app_tab_created | check_app_tab_is_site(Tabbed, One) |
-| WMLC | install_or_shortcut_windowed(TabbedWithHomeTab) | maybe_close_pwa | launch(TabbedWithHomeTab) | new_app_tab(TabbedWithHomeTab) | check_app_tab_created | check_app_tab_is_site(TabbedNestedA, One) |
