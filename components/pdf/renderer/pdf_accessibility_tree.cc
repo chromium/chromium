@@ -85,6 +85,7 @@ PdfOcrService::PdfOcrService(
   CHECK(features::IsPdfOcrEnabled());
   render_frame.GetBrowserInterfaceBroker()->GetInterface(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
+  ComputeAndSetPagesPerBatch(page_count);
 }
 
 PdfOcrService::~PdfOcrService() {
@@ -94,6 +95,14 @@ PdfOcrService::~PdfOcrService() {
 void PdfOcrService::ResetPageCount(uint32_t page_count) {
   CHECK_GT(page_count, 0u);
   remaining_page_count_ = page_count;
+}
+
+void PdfOcrService::ComputeAndSetPagesPerBatch(uint32_t page_count) {
+  constexpr uint32_t kMinPagesPerBatch = 1u;
+  constexpr uint32_t kMaxPagesPerBatch = 20u;
+
+  pages_per_batch_ = std::clamp<uint32_t>(page_count * 0.1, kMinPagesPerBatch,
+                                          kMaxPagesPerBatch);
 }
 
 void PdfOcrService::OcrPage(base::queue<PdfOcrRequest> page_requests) {
@@ -1664,6 +1673,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (ocr_service_) {
     ocr_service_->ResetPageCount(page_count_);
+    ocr_service_->ComputeAndSetPagesPerBatch(page_count_);
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

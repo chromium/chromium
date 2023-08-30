@@ -118,6 +118,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     // reset the page count in this class, i.e. the `remaining_page_count_`
     // field, to its correct value.
     void ResetPageCount(uint32_t page_count);
+    void ComputeAndSetPagesPerBatch(uint32_t page_count);
     void OcrPage(base::queue<PdfOcrRequest> page_requests);
     bool AreAllPagesOcred() const;
     bool AreAllPagesInBatchOcred() const;
@@ -125,9 +126,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
         mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
             screen_ai_annotator);
     void ResetRemainingPageCountForTesting();
-    void SetPagesPerBatchForTesting(uint32_t pages_per_batch) {
-      pages_per_batch_ = pages_per_batch;
-    }
+    uint32_t pages_per_batch_for_testing() { return pages_per_batch_; }
 
    private:
     uint32_t pages_per_batch_ = 20u;
