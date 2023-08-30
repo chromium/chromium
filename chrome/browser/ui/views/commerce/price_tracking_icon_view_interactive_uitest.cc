@@ -62,7 +62,7 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
     test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
-        {});
+        {commerce::kPriceInsights});
   }
 
   PriceTrackingIconViewInteractiveTest(
@@ -424,7 +424,7 @@ class PriceTrackingIconViewErrorHandelingTest
     test_features_.InitWithFeaturesAndParameters(
         {{commerce::kShoppingList,
           {{commerce::kRevertIconOnFailureParam, "true"}}}},
-        {});
+        {commerce::kPriceInsights});
   }
 
  private:
@@ -488,7 +488,8 @@ class PriceTrackingIconViewEngagementTest
   PriceTrackingIconViewEngagementTest() {
     test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
-         feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature});
+         feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature},
+        {commerce::kPriceInsights});
   }
 
   void SetUpOnMainThread() override {
@@ -875,7 +876,8 @@ class PriceTrackingIconViewUnifiedSidePanelInteractiveTest
   PriceTrackingIconViewUnifiedSidePanelInteractiveTest() {
     test_features_.InitAndEnableFeatures(
         {commerce::kShoppingList,
-         feature_engagement::kIPHPriceTrackingInSidePanelFeature});
+         feature_engagement::kIPHPriceTrackingInSidePanelFeature},
+        {commerce::kPriceInsights});
   }
 
  private:
