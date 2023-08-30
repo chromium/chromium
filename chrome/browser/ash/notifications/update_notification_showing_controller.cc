@@ -33,19 +33,8 @@ int CurrentMilestone() {
 }
 
 int LastShownMilestone(Profile* profile) {
-  int last_shown_milestone = profile->GetPrefs()->GetInteger(
+  return profile->GetPrefs()->GetInteger(
       prefs::kUpdateNotificationLastShownMilestone);
-  if (profile->GetPrefs()
-          ->FindPreference(prefs::kUpdateNotificationLastShownMilestone)
-          ->IsDefaultValue()) {
-    // We don't know if the user has seen any notification before as we have
-    // never set which milestone was last seen. So use the version of chrome
-    // where the profile was created instead.
-    base::Version profile_version(
-        ChromeVersionService::GetVersion(profile->GetPrefs()));
-    last_shown_milestone = profile_version.components()[0];
-  }
-  return last_shown_milestone;
 }
 
 bool IsEligibleProfile(Profile* profile) {
