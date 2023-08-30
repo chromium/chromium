@@ -4,30 +4,74 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+# App Discovery Service is Ash-only.
 assert(is_chromeos_ash)
 
-source_set("almanac_fetcher") {
+source_set("app_discovery_service") {
   sources = [
+    "app_discovery_service.cc",
+    "app_discovery_service.h",
+    "app_discovery_service_factory.cc",
+    "app_discovery_service_factory.h",
+    "app_discovery_util.h",
+    "app_fetcher_manager.cc",
+    "app_fetcher_manager.h",
+    "game_extras.cc",
+    "game_extras.h",
+    "game_fetcher.cc",
+    "game_fetcher.h",
     "launcher_app_almanac_connector.cc",
     "launcher_app_almanac_connector.h",
+    "play_extras.cc",
+    "play_extras.h",
+    "recommended_arc_app_fetcher.cc",
+    "recommended_arc_app_fetcher.h",
+    "result.cc",
+    "result.h",
+    "test_fetcher.cc",
+    "test_fetcher.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/app_discovery_service/almanac_api:proto",
+    "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
+    "//chrome/browser/apps/app_provisioning_service",
+    "//chrome/browser/profiles:profile",
+    "//components/country_codes",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "launcher_app_almanac_connector_unittest.cc" ]
+  sources = [
+    "app_discovery_service_unittest.cc",
+    "game_fetcher_unittest.cc",
+    "launcher_app_almanac_connector_unittest.cc",
+    "recommended_arc_app_fetcher_unittest.cc",
+  ]
 
   deps = [
-    ":almanac_fetcher",
+    ":app_discovery_service",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:unit_tests",
+    "//chrome/browser/apps/app_provisioning_service/proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

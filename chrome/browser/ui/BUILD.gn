@@ -3434,6 +3434,7 @@ static_library("ui") {
       "//ash/webui/web_applications",
       "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",
+      "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/ash",
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/util:proto",
