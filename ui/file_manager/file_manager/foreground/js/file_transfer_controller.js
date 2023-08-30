@@ -19,6 +19,7 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getFileData, getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
@@ -998,6 +999,13 @@ export class FileTransferController {
       if (util.isSameEntry(entries[i], destinationEntry)) {
         return;
       }
+    }
+
+    // Disallow drop target for disabled destination entries.
+    const fileData =
+        getFileData(getStore().getState(), destinationEntry.toURL());
+    if (fileData?.disabled) {
+      return;
     }
 
     this.destinationEntry_ = destinationEntry;
