@@ -52,6 +52,10 @@ suite('<settings-system-preferences-page>', () => {
         `${elementTagName} should be visible.`);
   }
 
+  setup(() => {
+    Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
+  });
+
   teardown(() => {
     page.remove();
     Router.getInstance().resetRouteForTesting();
@@ -59,7 +63,6 @@ suite('<settings-system-preferences-page>', () => {
 
   suite('Date and Time subsection', () => {
     test('Date and Time card is visible', async () => {
-      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
       await createPage();
 
       const dateTimeCard =
@@ -72,8 +75,7 @@ suite('<settings-system-preferences-page>', () => {
       await createPage();
 
       await navigateToSubpage(routes.DATETIME_TIMEZONE_SUBPAGE);
-      const subpage = page.shadowRoot!.querySelector('timezone-subpage');
-      assertTrue(isVisible(subpage), 'Subpage should be visible.');
+      assertSubpageIsVisible('timezone-subpage');
     });
   });
 
@@ -89,7 +91,6 @@ suite('<settings-system-preferences-page>', () => {
     });
 
     test('Language settings card is visible', async () => {
-      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
       await createPage();
 
       const languageSettingsCard =
@@ -129,7 +130,6 @@ suite('<settings-system-preferences-page>', () => {
       test(
           `${elementTagName} subpage element is visible for route ${routeName}`,
           async () => {
-            Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
             await createPage();
 
             await navigateToSubpage(routes[routeName]);
@@ -141,7 +141,6 @@ suite('<settings-system-preferences-page>', () => {
   suite('Reset subsection', () => {
     test('Reset card is visible if powerwash is allowed', async () => {
       loadTimeData.overrideValues({allowPowerwash: true});
-      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
       await createPage();
 
       const resetCard = page.shadowRoot!.querySelector('settings-reset-card');
@@ -150,7 +149,6 @@ suite('<settings-system-preferences-page>', () => {
 
     test('Reset card is not visible if powerwash is disallowed', async () => {
       loadTimeData.overrideValues({allowPowerwash: false});
-      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
       await createPage();
 
       const resetCard = page.shadowRoot!.querySelector('settings-reset-card');
@@ -160,7 +158,6 @@ suite('<settings-system-preferences-page>', () => {
 
   suite('Search & Assistant subsection', () => {
     test('Search and Assistant card is visible', async () => {
-      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
       await createPage();
 
       const card =
@@ -174,8 +171,7 @@ suite('<settings-system-preferences-page>', () => {
       await createPage();
 
       await navigateToSubpage(routes.SEARCH_SUBPAGE);
-      const subpage = page.shadowRoot!.querySelector('settings-search-subpage');
-      assertTrue(isVisible(subpage), 'Subpage should be visible.');
+      assertSubpageIsVisible('settings-search-subpage');
     });
 
     test(
@@ -195,9 +191,7 @@ suite('<settings-system-preferences-page>', () => {
       await createPage();
 
       await navigateToSubpage(routes.GOOGLE_ASSISTANT);
-      const subpage =
-          page.shadowRoot!.querySelector('settings-google-assistant-subpage');
-      assertTrue(isVisible(subpage), 'Subpage should be visible.');
+      assertSubpageIsVisible('settings-google-assistant-subpage');
     });
 
     test(
