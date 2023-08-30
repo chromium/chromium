@@ -65,18 +65,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.GetBoundingBox" units="microseconds"
-    expires_after="2022-12-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time taken to get the bounding box of the batch of captured content.
-
-    Note that this metrics is only recorded on clients on which a
-    high-resolution clock is available.
-  </summary>
-</histogram>
-
 <histogram
     name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
     enum="PermissionType" expires_after="2024-07-10">
