@@ -13,9 +13,13 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -23,16 +27,15 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/ash/components/network/managed_state.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 using content::BrowserThread;
 
@@ -174,42 +177,27 @@ bool IsOobeDrivePinningEnabled() {
   return IsOobeDrivePinningEnabled(ProfileManager::GetActiveUserProfile());
 }
 
-ConnectionStatusType GetDriveConnectionStatus(Profile* const profile) {
-  using enum ConnectionStatusType;
-
-  if (!GetIntegrationServiceByProfile(profile)) {
-    VLOG(1) << "GetDriveConnectionStatus: no Drive integration service";
+ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
+  auto* drive_integration_service = GetIntegrationServiceByProfile(profile);
+  if (!drive_integration_service) {
     return DRIVE_DISCONNECTED_NOSERVICE;
   }
-
-  if (!ash::NetworkHandler::IsInitialized()) {
-    VLOG(1) << "GetDriveConnectionStatus: no network handler";
+  auto* network_connection_tracker = content::GetNetworkConnectionTracker();
+  if (network_connection_tracker->IsOffline()) {
     return DRIVE_DISCONNECTED_NONETWORK;
   }
 
-  ash::NetworkStateHandler* const handler =
-      ash::NetworkHandler::Get()->network_state_handler();
-  DCHECK(handler);
+  auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  network_connection_tracker->GetConnectionType(&connection_type,
+                                                base::DoNothing());
+  const bool is_connection_cellular =
+      network::NetworkConnectionTracker::IsConnectionCellular(connection_type);
+  const bool disable_sync_over_celluar =
+      profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular);
 
-  const ash::NetworkState* const network = handler->DefaultNetwork();
-  if (!network) {
-    VLOG(1) << "GetDriveConnectionStatus: no network";
-    return DRIVE_DISCONNECTED_NONETWORK;
-  }
-
-  if (!network->IsOnline()) {
-    VLOG(1) << "GetDriveConnectionStatus: not ready";
-    return DRIVE_DISCONNECTED_NOTREADY;
-  }
-
-  DCHECK(profile);
-  if (profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular) &&
-      handler->default_network_is_metered()) {
-    VLOG(1) << "GetDriveConnectionStatus: metered";
+  if (is_connection_cellular && disable_sync_over_celluar) {
     return DRIVE_CONNECTED_METERED;
   }
-
-  VLOG(1) << "GetDriveConnectionStatus: connected";
   return DRIVE_CONNECTED;
 }
 

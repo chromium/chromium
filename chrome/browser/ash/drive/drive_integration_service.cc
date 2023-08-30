@@ -59,6 +59,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_api_util.h"
+#include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_errors.h"
@@ -78,6 +79,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -386,13 +388,14 @@ void RecordBulkPinningMountFailureReason(const Profile* profile,
 
 // Observes drive disable Preference's change.
 class DriveIntegrationService::PreferenceWatcher
-    : ash::NetworkStateHandlerObserver {
+    : public NetworkConnectionTracker::NetworkConnectionObserver,
+      public ash::NetworkStateHandlerObserver {
  public:
   using NetworkHandler = ash::NetworkHandler;
   using NetworkState = ash::NetworkState;
-  using NetworkStateHandler = ash::NetworkStateHandler;
+  using PortalState = NetworkState::PortalState;
 
-  explicit PreferenceWatcher(Profile* const profile)
+  explicit PreferenceWatcher(Profile* profile)
       : profile_(profile), pref_service_(profile->GetPrefs()) {
     DCHECK(pref_service_);
     pref_change_registrar_.Init(pref_service_);
@@ -423,34 +426,35 @@ class DriveIntegrationService::PreferenceWatcher
   PreferenceWatcher& operator=(const PreferenceWatcher&) = delete;
 
   ~PreferenceWatcher() override {
-    if (network_state_handler_) {
-      network_state_handler_->RemoveObserver(this);
+    if (integration_service_) {
+      content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
+          this);
+      if (NetworkHandler::IsInitialized()) {
+        NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+      }
     }
   }
 
-  void SetIntegrationService(DriveIntegrationService* const service) {
-    DCHECK(!integration_service_);
-    integration_service_ = service;
-    DCHECK(integration_service_);
+  void SetIntegrationService(DriveIntegrationService* integration_service) {
+    integration_service_ = integration_service;
+    content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
 
-    if (!NetworkHandler::IsInitialized()) {
-      return;  // Test environment.
-    }
-
-    DCHECK(!network_state_handler_);
-    network_state_handler_ = NetworkHandler::Get()->network_state_handler();
-    DCHECK(network_state_handler_);
-    network_state_handler_->AddObserver(this);
-
-    UpdateSyncPauseState();
+    AddNetworkPortalDetectorObserver();
   }
+
+  void UpdateSyncPauseState() {
+    if (ConnectionType type = ConnectionType::CONNECTION_UNKNOWN;
+        content::GetNetworkConnectionTracker()->GetConnectionType(
+            &type, base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
+                                      OnConnectionChanged,
+                                  weak_ptr_factory_.GetWeakPtr()))) {
+      OnConnectionChanged(type);
+    }
+  }
+
+  bool IsOnline() const { return portal_state_ == PortalState::kOnline; }
 
  private:
-  void UpdateSyncPauseState() {
-    DCHECK(integration_service_);
-    integration_service_->UpdateNetworkState();
-  }
-
   void OnPreferenceChanged() {
     DCHECK(integration_service_);
     integration_service_->SetEnabled(
@@ -481,17 +485,53 @@ class DriveIntegrationService::PreferenceWatcher
     integration_service_->ToggleBulkPinning();
   }
 
-  void DefaultNetworkChanged(const NetworkState*) override {
-    VLOG(1) << "DefaultNetworkChanged";
-    UpdateSyncPauseState();
+  void AddNetworkPortalDetectorObserver() {
+    if (!NetworkHandler::IsInitialized()) {
+      return;  // Test environment.
+    }
+    ash::NetworkStateHandler* const handler =
+        NetworkHandler::Get()->network_state_handler();
+    DCHECK(handler);
+    handler->AddObserver(this);
+    const NetworkState* const network = handler->DefaultNetwork();
+    PortalStateChanged(
+        network, network ? network->GetPortalState() : PortalState::kUnknown);
+  }
+
+  // NetworkStateHandlerObserver
+  void PortalStateChanged(const NetworkState* default_network,
+                          PortalState portal_state) override {
+    VLOG(1) << "PortalStateChanged: " << portal_state;
+    portal_state_ = portal_state;
+
+    if (integration_service_->remount_when_online_ && IsOnline()) {
+      integration_service_->remount_when_online_ = false;
+      integration_service_->mount_start_ = {};
+      integration_service_->AddDriveMountPoint();
+    }
+
+    if (PinManager* const pin_manager = integration_service_->GetPinManager()) {
+      pin_manager->SetOnline(IsOnline());
+    }
   }
 
   void OnShuttingDown() override {
-    VLOG(1) << "OnShuttingDown";
-    if (network_state_handler_) {
-      network_state_handler_->RemoveObserver(this);
-      network_state_handler_ = nullptr;
-    }
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  }
+
+  // NetworkConnectionTracker::NetworkConnectionObserver
+  void OnConnectionChanged(const ConnectionType type) override {
+    DCHECK(integration_service_);
+
+    const bool online = type != ConnectionType::CONNECTION_NONE;
+    const bool pause_syncing =
+        NetworkConnectionTracker::IsConnectionCellular(type) &&
+        pref_service_->GetBoolean(prefs::kDisableDriveOverCellular);
+
+    VLOG(1) << "OnConnectionChanged: {type: " << type << ", online: " << online
+            << ", pause_syncing: " << pause_syncing << "}";
+
+    integration_service_->UpdateNetworkState(pause_syncing, !online);
   }
 
   const raw_ptr<const Profile, ExperimentalAsh> profile_;
@@ -499,8 +539,7 @@ class DriveIntegrationService::PreferenceWatcher
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<DriveIntegrationService, ExperimentalAsh> integration_service_ =
       nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  PortalState portal_state_ = PortalState::kUnknown;
 
   base::WeakPtrFactory<PreferenceWatcher> weak_ptr_factory_{this};
 };
@@ -825,6 +864,10 @@ void DriveIntegrationService::SetEnabled(bool enabled) {
   }
 }
 
+bool DriveIntegrationService::IsOnline() const {
+  return preference_watcher_ && preference_watcher_->IsOnline();
+}
+
 bool DriveIntegrationService::IsMounted() const {
   if (mount_point_name_.empty()) {
     return false;
@@ -1063,7 +1106,9 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
     }
   }
 
-  UpdateNetworkState();
+  if (preference_watcher_) {
+    preference_watcher_->UpdateSyncPauseState();
+  }
 
   if (!GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated)) {
     MigratePinnedFiles();
@@ -1109,7 +1154,8 @@ void DriveIntegrationService::MaybeRemountFileSystem(
   RemoveDriveMountPoint();
 
   if (!remount_delay) {
-    if (failed_to_mount && !is_online_) {
+    if (failed_to_mount && preference_watcher_ &&
+        !preference_watcher_->IsOnline()) {
       logger_->Log(logging::LOGGING_WARNING,
                    "DriveFs failed to start; will retry when online");
       remount_when_online_ = true;
@@ -1201,8 +1247,9 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     pin_manager_->AddObserver(bulk_pinning_pref_updater_.get());
     GetDriveFsHost()->AddObserver(pin_manager_.get());
 
-    // Ensure the new PinManager has the right view of the network state.
-    pin_manager_->SetOnline(is_online_);
+    if (preference_watcher_) {
+      pin_manager_->SetOnline(preference_watcher_->IsOnline());
+    }
 
     ToggleBulkPinning();
 
@@ -1787,31 +1834,16 @@ void DriveIntegrationService::GetDocsOfflineStats(
   GetDriveFsInterface()->GetDocsOfflineStats(std::move(callback));
 }
 
-void DriveIntegrationService::UpdateNetworkState() {
-  const util::ConnectionStatusType status =
-      util::GetDriveConnectionStatus(profile_);
-  VLOG(1) << "UpdateNetworkState: " << status;
-
-  using enum util::ConnectionStatusType;
-  is_online_ = status == DRIVE_CONNECTED_METERED || status == DRIVE_CONNECTED;
-
+void DriveIntegrationService::UpdateNetworkState(bool pause_syncing,
+                                                 bool is_offline) {
   if (DriveFs* const drivefs = GetDriveFsInterface()) {
-    const bool pause_syncing = status == DRIVE_CONNECTED_METERED;
-    drivefs->UpdateNetworkState(pause_syncing, !is_online_);
+    drivefs->UpdateNetworkState(pause_syncing, is_offline);
   }
 
-  for (DriveIntegrationServiceObserver& observer : observers_) {
-    observer.OnDriveConnectionStatusChanged(status);
-  }
-
-  if (remount_when_online_ && is_online_) {
-    remount_when_online_ = false;
-    mount_start_ = {};
-    AddDriveMountPoint();
-  }
-
-  if (pin_manager_) {
-    pin_manager_->SetOnline(is_online_);
+  util::ConnectionStatusType connection_status =
+      util::GetDriveConnectionStatus(profile_);
+  for (auto& observer : observers_) {
+    observer.OnDriveConnectionStatusChanged(connection_status);
   }
 }
 
