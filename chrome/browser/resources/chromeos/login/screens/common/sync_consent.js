@@ -74,7 +74,7 @@ export let OsSyncItems;
  * @implements {MultiStepBehaviorInterface}
  */
 const SyncConsentScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{

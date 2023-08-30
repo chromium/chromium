@@ -58,7 +58,7 @@ const FingerprintUIState = {
  * @implements {MultiStepBehaviorInterface}
  */
 const FingerprintSetupBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{

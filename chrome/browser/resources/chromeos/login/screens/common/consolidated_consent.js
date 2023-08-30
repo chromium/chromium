@@ -91,7 +91,7 @@ const ConsolidatedConsentUserAction = {
  * @implements {MultiStepBehaviorInterface}
  */
 const ConsolidatedConsentScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @polymer

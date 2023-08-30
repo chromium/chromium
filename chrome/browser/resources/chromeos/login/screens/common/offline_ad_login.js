@@ -77,7 +77,7 @@ var EncryptionSelectListType;
  * @implements {OobeI18nBehaviorInterface}
  */
 const OfflineAdLoginBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{

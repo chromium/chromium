@@ -39,7 +39,7 @@ const tpmUIState = {
  * @implements {MultiStepBehaviorInterface}
  */
 const TPMErrorMessageElementBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{

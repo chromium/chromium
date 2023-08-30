@@ -59,7 +59,7 @@ const GUEST_TOS_ONLINE_LOAD_TIMEOUT_IN_MS = 10000;
  * @implements {MultiStepBehaviorInterface}
  */
 const GuestTosScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @polymer

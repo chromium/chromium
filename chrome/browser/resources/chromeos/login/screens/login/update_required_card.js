@@ -49,7 +49,7 @@ const UpdateRequiredUIState = {
  * @implements {OobeI18nBehaviorInterface}
  */
 const UpdateRequiredBase = mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{
