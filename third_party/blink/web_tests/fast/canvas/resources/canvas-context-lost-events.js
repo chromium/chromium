@@ -24,7 +24,7 @@ function contextLost(lostEventHasFired, ctx) {
     verifyContextLost(true, ctx);
 }
 
-function contextRestoredlostEventHasFired(lostEventHasFired, ctx) {
+function contextRestored(lostEventHasFired, ctx) {
     assert_true(lostEventHasFired, 'Context restored event dispatched after context lost.');
     verifyContextLost(false, ctx);
 }
