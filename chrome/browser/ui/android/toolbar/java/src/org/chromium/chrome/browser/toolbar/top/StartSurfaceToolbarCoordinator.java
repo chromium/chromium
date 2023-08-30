@@ -67,7 +67,6 @@ public class StartSurfaceToolbarCoordinator {
             UserEducationHelper userEducationHelper, ButtonDataProvider identityDiscController,
             ThemeColorProvider provider, MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isTabToGtsAnimationEnabled,
-            boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
             boolean shouldCreateLogoInToolbar, Callback<Boolean> finishedTransitionCallback,
@@ -97,10 +96,9 @@ public class StartSurfaceToolbarCoordinator {
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 menuButtonCoordinator, identityDiscController, identityDiscButtonSupplier,
-                isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
-                isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
-                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(), shouldCreateLogoInToolbar,
-                finishedTransitionCallback, toolbarColorObserverManager);
+                isTabToGtsFadeAnimationEnabled, isIncognitoModeEnabledSupplier, logoClickedCallback,
+                isRefactorEnabled, StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(),
+                shouldCreateLogoInToolbar, finishedTransitionCallback, toolbarColorObserverManager);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

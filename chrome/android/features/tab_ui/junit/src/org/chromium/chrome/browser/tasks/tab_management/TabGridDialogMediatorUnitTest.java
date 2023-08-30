@@ -44,7 +44,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
@@ -204,9 +203,6 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void setupTabGroupTitleEdit() {
-        assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                           ContextUtils.getApplicationContext()),
-                equalTo(true));
         // Setup editable title.
         assertThat(mMediator.getKeyboardVisibilityListenerForTesting(),
                 instanceOf(KeyboardVisibilityDelegate.KeyboardVisibilityListener.class));

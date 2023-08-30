@@ -301,8 +301,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 mStartSurface.setStartSurfaceState(StartSurfaceState.SHOWING_TABSWITCHER);
             }
 
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
-                    && AccessibilityState.isTouchExplorationEnabled()) {
+            if (AccessibilityState.isTouchExplorationEnabled()) {
                 // Intentionally disable the shrinking animation when touch exploration is enabled.
                 // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
                 // Chrome is in a temporary no "valid" focus target state. This result in focus
@@ -879,8 +878,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     @Override
     public boolean canHostBeFocusable() {
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
-                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             // We don't allow this layout to gain focus when accessibility is enabled so that the
             // CompositorViewHolder doesn't steal focus when entering tab switcher.

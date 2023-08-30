@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
@@ -430,16 +429,10 @@ class TabListMediator {
                 return;
             }
             if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-                mModel.get(mModel.indexFromId(tab.getId()))
-                        .model.set(TabProperties.FAVICON_FETCHER,
-                                mTabListFaviconProvider.getDefaultFaviconFetcher(
-                                        tab.isIncognito()));
-            } else {
-                mModel.get(mModel.indexFromId(tab.getId()))
-                        .model.set(TabProperties.FAVICON,
-                                mTabListFaviconProvider.getDefaultFavicon(tab.isIncognito()));
-            }
+
+            mModel.get(mModel.indexFromId(tab.getId()))
+                    .model.set(TabProperties.FAVICON_FETCHER,
+                            mTabListFaviconProvider.getDefaultFaviconFetcher(tab.isIncognito()));
         }
 
         @Override
@@ -462,7 +455,6 @@ class TabListMediator {
 
         @Override
         public void onUrlUpdated(Tab tab) {
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) return;
             int index = mModel.indexFromId(tab.getId());
 
             if (index == TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
@@ -1072,40 +1064,35 @@ class TabListMediator {
                     .addTabGroupObserver(mTabGroupObserver);
         }
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            mTabGroupTitleEditor = new TabGroupTitleEditor(mContext, mTabModelSelector) {
-                @Override
-                protected void updateTabGroupTitle(Tab tab, String title) {
-                    // Only update title in PropertyModel for tab switcher.
-                    if (!mActionsOnAllRelatedTabs) return;
-                    Tab currentGroupSelectedTab =
-                            TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, tab);
-                    int index = mModel.indexFromId(currentGroupSelectedTab.getId());
-                    if (index == TabModel.INVALID_TAB_INDEX) return;
-                    mModel.get(index).model.set(TabProperties.TITLE, title);
-                    updateDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
-                    if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-                        updateCloseButtonDescriptionString(
-                                PseudoTab.fromTab(tab), mModel.get(index).model);
-                    }
-                }
+        mTabGroupTitleEditor = new TabGroupTitleEditor(mContext, mTabModelSelector) {
+            @Override
+            protected void updateTabGroupTitle(Tab tab, String title) {
+                // Only update title in PropertyModel for tab switcher.
+                if (!mActionsOnAllRelatedTabs) return;
+                Tab currentGroupSelectedTab =
+                        TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, tab);
+                int index = mModel.indexFromId(currentGroupSelectedTab.getId());
+                if (index == TabModel.INVALID_TAB_INDEX) return;
+                mModel.get(index).model.set(TabProperties.TITLE, title);
+                updateDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
+                updateCloseButtonDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
+            }
 
-                @Override
-                protected void deleteTabGroupTitle(int tabRootId) {
-                    TabGroupTitleUtils.deleteTabGroupTitle(tabRootId);
-                }
+            @Override
+            protected void deleteTabGroupTitle(int tabRootId) {
+                TabGroupTitleUtils.deleteTabGroupTitle(tabRootId);
+            }
 
-                @Override
-                protected String getTabGroupTitle(int tabRootId) {
-                    return TabGroupTitleUtils.getTabGroupTitle(tabRootId);
-                }
+            @Override
+            protected String getTabGroupTitle(int tabRootId) {
+                return TabGroupTitleUtils.getTabGroupTitle(tabRootId);
+            }
 
-                @Override
-                protected void storeTabGroupTitle(int tabRootId, String title) {
-                    TabGroupTitleUtils.storeTabGroupTitle(tabRootId, title);
-                }
-            };
-        }
+            @Override
+            protected void storeTabGroupTitle(int tabRootId, String title) {
+                TabGroupTitleUtils.storeTabGroupTitle(tabRootId, title);
+            }
+        };
     }
 
     private void onTabClosedFrom(int tabId, String fromComponent) {
@@ -1354,9 +1341,7 @@ class TabListMediator {
         mModel.get(index).model.set(
                 TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
         updateDescriptionString(pseudoTab, mModel.get(index).model);
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
-        }
+        updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
         if (isRealTab) {
             mModel.get(index).model.set(
                     TabProperties.URL_DOMAIN, getDomainForTab(pseudoTab.getTab()));
@@ -1502,9 +1487,6 @@ class TabListMediator {
      * @param helper The {@link TabGridAccessibilityHelper} used to setup accessibility support.
      */
     void setupAccessibilityDelegate(TabGridAccessibilityHelper helper) {
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            return;
-        }
         mAccessibilityDelegate = new View.AccessibilityDelegate() {
             @Override
             public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
@@ -1611,7 +1593,6 @@ class TabListMediator {
                         .with(TabProperties.TITLE, getLatestTitleForTab(pseudoTab))
                         .with(TabProperties.URL_DOMAIN,
                                 isRealTab ? getDomainForTab(pseudoTab.getTab()) : null)
-                        .with(TabProperties.FAVICON, null)
                         .with(TabProperties.FAVICON_FETCHER, null)
                         .with(TabProperties.FAVICON_FETCHED, false)
                         .with(TabProperties.IS_SELECTED, isSelected)
@@ -1631,13 +1612,8 @@ class TabListMediator {
                         .with(CARD_TYPE, TAB)
                         .build();
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            tabInfo.set(TabProperties.FAVICON_FETCHER,
-                    mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
-        } else {
-            tabInfo.set(TabProperties.FAVICON,
-                    mTabListFaviconProvider.getDefaultFavicon(pseudoTab.isIncognito()));
-        }
+        tabInfo.set(TabProperties.FAVICON_FETCHER,
+                mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
 
         if (mUiType == UiType.SELECTABLE) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
@@ -1668,9 +1644,7 @@ class TabListMediator {
             tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
             tabInfo.set(TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
             updateDescriptionString(pseudoTab, tabInfo);
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-                updateCloseButtonDescriptionString(pseudoTab, tabInfo);
-            }
+            updateCloseButtonDescriptionString(pseudoTab, tabInfo);
         }
 
         if (index >= mModel.size()) {
@@ -1703,7 +1677,6 @@ class TabListMediator {
 
     // TODO(wychen): make this work with PseudoTab.
     private String getDomainForTab(Tab tab) {
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) return "";
         if (!mActionsOnAllRelatedTabs) return getDomain(tab);
 
         List<Tab> relatedTabs = getRelatedTabsForId(tab.getId());
@@ -1736,7 +1709,6 @@ class TabListMediator {
     }
 
     private void updateCloseButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) return;
         if (mActionsOnAllRelatedTabs) {
             int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
             if (numOfRelatedTabs > 1) {
@@ -1842,21 +1814,9 @@ class TabListMediator {
         if (modelIndex == Tab.INVALID_TAB_ID) return;
         List<Tab> relatedTabList = getRelatedTabsForId(pseudoTab.getId());
 
-        Callback<TabListFaviconProvider.TabFavicon> faviconCallback = favicon -> {
-            assert favicon != null;
-            // Need to re-get the index because the original index can be stale when callback is
-            // triggered.
-            int index = mModel.indexFromId(pseudoTab.getId());
-            if (index != TabModel.INVALID_TAB_INDEX && favicon != null) {
-                mModel.get(index).model.set(TabProperties.FAVICON, favicon);
-            }
-        };
-
         if (mActionsOnAllRelatedTabs && relatedTabList.size() > 1) {
-            if (mMode != TabListMode.LIST
-                    || !TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
+            if (mMode != TabListMode.LIST) {
                 // For tab group card in grid tab switcher, the favicon is set to be null.
-                mModel.get(modelIndex).model.set(TabProperties.FAVICON, null);
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, null);
                 return;
             }
@@ -1882,25 +1842,15 @@ class TabListMediator {
 
         // If there is an available icon, we fetch favicon synchronously; otherwise asynchronously.
         if (icon != null && iconUrl != null) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-                mModel.get(modelIndex)
-                        .model.set(TabProperties.FAVICON_FETCHER,
-                                mTabListFaviconProvider.getFaviconFromBitmapFetcher(icon, iconUrl));
-            } else {
-                TabFavicon favicon = mTabListFaviconProvider.getFaviconFromBitmap(icon, iconUrl);
-                mModel.get(modelIndex).model.set(TabProperties.FAVICON, favicon);
-            }
+            mModel.get(modelIndex)
+                    .model.set(TabProperties.FAVICON_FETCHER,
+                            mTabListFaviconProvider.getFaviconFromBitmapFetcher(icon, iconUrl));
             return;
         }
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForUrlFetcher(
-                    pseudoTab.getUrl(), pseudoTab.isIncognito());
-            mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, fetcher);
-        } else {
-            mTabListFaviconProvider.getFaviconForUrlAsync(
-                    pseudoTab.getUrl(), pseudoTab.isIncognito(), faviconCallback);
-        }
+        TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForUrlFetcher(
+                pseudoTab.getUrl(), pseudoTab.isIncognito());
+        mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, fetcher);
     }
 
     /**

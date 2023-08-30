@@ -101,15 +101,6 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether the tab group continuation feature is enabled and available for use.
-     * @param context The activity context.
-     */
-    public static boolean isTabGroupsAndroidContinuationEnabled(Context context) {
-        // TODO(crbug/1466158): Remove this.
-        return true;
-    }
-
-    /**
      * @return Whether the Tab-to-Grid (and Grid-to-Tab) transition animation is enabled.
      */
     public static boolean isTabToGtsAnimationEnabled(Context context) {

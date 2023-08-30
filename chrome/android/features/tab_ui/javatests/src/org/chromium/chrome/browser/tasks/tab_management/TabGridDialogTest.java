@@ -1620,15 +1620,11 @@ public class TabGridDialogTest {
                     if (noMatchException != null) throw noMatchException;
                     Assert.assertTrue(v instanceof ListView);
                     ListView listView = (ListView) v;
-                    int menuItemCount = 1;
                     verifyTabGridDialogToolbarMenuItem(
                             listView, 0, cta.getString(R.string.menu_select_tabs));
-                    if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(cta)) {
-                        menuItemCount += 1;
-                        verifyTabGridDialogToolbarMenuItem(listView, menuItemCount - 1,
+                    verifyTabGridDialogToolbarMenuItem(listView, 1,
                                 cta.getString(R.string.tab_grid_dialog_toolbar_edit_group_name));
-                    }
-                    assertEquals(menuItemCount, listView.getCount());
+                    assertEquals(2, listView.getCount());
                 });
     }
 

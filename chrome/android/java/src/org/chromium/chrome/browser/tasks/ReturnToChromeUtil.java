@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -546,8 +545,7 @@ public final class ReturnToChromeUtil {
     public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
         // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                && !(ChromeFeatureList.sStartSurfaceWithAccessibility.isEnabled()
-                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context));
+                && !(ChromeFeatureList.sStartSurfaceWithAccessibility.isEnabled());
     }
 
     /**

@@ -837,9 +837,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     public void finishedShowing() {
         mIsTabSwitcherShowing = true;
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            requestAccessibilityFocusOnCurrentTab();
-        }
+        requestAccessibilityFocusOnCurrentTab();
 
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedShowing();

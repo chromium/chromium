@@ -10,16 +10,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 
 import java.util.List;
 import java.util.Locale;
@@ -72,17 +69,8 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 // TabGridDialog is showing. If so, don't show the undo bar because TabGridDialog
                 // has its own undo bar. See crbug.com/1119899. Note that we don't disable attempts
                 // to dismiss snack bar to make sure that snack bar state is in sync with tab model.
-                if (showingUndoBar && dialogVisibilitySupplier != null
-                        && dialogVisibilitySupplier.get()) {
-                    return true;
-                }
-                // If grid / group M5 is enabled, show the undo snack bar regardless of whether
-                // accessibility mode is enabled.
-                if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
-                    return false;
-                }
-                return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                        || DeviceClassManager.enableAccessibilityLayout(mContext);
+                return showingUndoBar && dialogVisibilitySupplier != null
+                        && dialogVisibilitySupplier.get();
             }
 
             @Override

@@ -478,28 +478,15 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void testNewTabButtonWithAccessibilityOnAndContinuationOn() {
+    public void testNewTabButtonWithAccessibilityOn() {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
 
-        createMediator(false, true);
+        createMediator(false);
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is enabled, new tab
         // button shouldn't show on homepage.
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
-    }
-
-    @Test
-    public void testNewTabButtonWithAccessibilityOnAndContinuationOff() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-
-        createMediator(false, false);
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-
-        // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is disabled, new tab
-        // button should show on homepage.
-        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
     }
 
     @Test
@@ -607,8 +594,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void testUpdateStartSurfaceToolbarBackgroundColor() {
         assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
-        createMediator(/*hideIncognitoSwitchWhenNoTabs =*/
-                false, /*isTabGroupsAndroidContinuationEnabled= */ false);
+        createMediator(/*hideIncognitoSwitchWhenNoTabs=*/false);
         @ColorInt
         int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, false);
         assertEquals(backgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
@@ -623,11 +609,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
-        createMediator(hideIncognitoSwitchWhenNoTabs, false);
-    }
-
-    private void createMediator(
-            boolean hideIncognitoSwitchWhenNoTabs, boolean isTabGroupsAndroidContinuationEnabled) {
         boolean shouldCreateLogoInToolbar =
                 (!ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
                         || SharedPreferencesManager.getInstance().readBoolean(
@@ -641,7 +622,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting(),
                                 mMediator.getLayoutTypeForTesting()),
-                /*isTabToGtsFadeAnimationEnabled=*/false, isTabGroupsAndroidContinuationEnabled,
+                /*isTabToGtsFadeAnimationEnabled=*/false,
                 ()
                         -> false,
                 /*logoClickedCallback=*/null,

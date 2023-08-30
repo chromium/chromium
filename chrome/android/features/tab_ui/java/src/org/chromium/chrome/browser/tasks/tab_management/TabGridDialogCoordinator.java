@@ -111,9 +111,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     (TabGroupUiToolbarView) LayoutInflater.from(activity).inflate(
                             R.layout.bottom_tab_grid_toolbar, recyclerView, false);
             toolbarView.setupDialogToolbarLayout();
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
-                toolbarView.hideTitleWidget();
-            }
             mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
                     new TabGridPanelViewBinder.ViewHolder(toolbarView, recyclerView, mDialogView),
                     TabGridPanelViewBinder::bind);

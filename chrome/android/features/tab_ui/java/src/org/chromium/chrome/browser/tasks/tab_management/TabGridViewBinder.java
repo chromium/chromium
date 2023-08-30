@@ -113,17 +113,7 @@ class TabGridViewBinder {
             updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
             updateFavicon(view, model);
-        } else if (TabProperties.FAVICON == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
-                return;
-            }
-
-            updateFavicon(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
-                return;
-            }
-
             updateFavicon(view, model);
         } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
             view.setContentDescription(model.get(TabProperties.CONTENT_DESCRIPTION_STRING));
@@ -134,8 +124,6 @@ class TabGridViewBinder {
             view.getLayoutParams().height = cardSize.getHeight();
             view.getLayoutParams().width = cardSize.getWidth();
             view.setLayoutParams(view.getLayoutParams());
-            TabGridThumbnailView thumbnail =
-                    (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
             updateThumbnail(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
@@ -179,14 +167,6 @@ class TabGridViewBinder {
             });
         } else if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
-        } else if (TabProperties.TITLE == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
-                return;
-            }
-            String title = model.get(TabProperties.TITLE);
-            view.fastFindViewById(R.id.action_button)
-                    .setContentDescription(view.getResources().getString(
-                            R.string.accessibility_tabstrip_btn_close_tab, title));
         } else if (TabProperties.IPH_PROVIDER == propertyKey) {
             TabListMediator.IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
             if (provider != null) provider.showIPH(view.fastFindViewById(R.id.tab_thumbnail));
@@ -226,8 +206,7 @@ class TabGridViewBinder {
             view.setSelected(model.get(TabProperties.IS_SELECTED));
             updateColorForActionButton(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-        } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
-                && TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
+        } else if (TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(
                             model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING));
@@ -319,8 +298,7 @@ class TabGridViewBinder {
                 thumbnail.setImageDrawable(null);
             }
         };
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
-                && sThumbnailFetcherForTesting != null) {
+        if (sThumbnailFetcherForTesting != null) {
             sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
         } else {
             fetcher.fetch(callback, thumbnailSize, isSelected);
@@ -372,22 +350,17 @@ class TabGridViewBinder {
      * #bindCommonProperties}.
      */
     private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(rootView.getContext())) {
-            final TabListFaviconProvider.TabFaviconFetcher fetcher =
-                    model.get(TabProperties.FAVICON_FETCHER);
-            if (fetcher == null) {
-                setFavicon(rootView, model, null);
-                return;
-            }
-            fetcher.fetch(tabFavicon -> {
-                if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
-
-                setFavicon(rootView, model, tabFavicon);
-            });
+        final TabListFaviconProvider.TabFaviconFetcher fetcher =
+                model.get(TabProperties.FAVICON_FETCHER);
+        if (fetcher == null) {
+            setFavicon(rootView, model, null);
             return;
         }
-        TabListFaviconProvider.TabFavicon favicon = model.get(TabProperties.FAVICON);
-        setFavicon(rootView, model, favicon);
+        fetcher.fetch(tabFavicon -> {
+            if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
+
+            setFavicon(rootView, model, tabFavicon);
+        });
     }
 
     /**

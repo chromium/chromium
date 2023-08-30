@@ -135,11 +135,9 @@ public class TabGridDialogMenuCoordinator {
         ModelList itemList = new ModelList();
         itemList.add(new ListItem(ListItemType.MENU_ITEM,
                 buildPropertyModel(context, R.string.menu_select_tabs, R.id.select_tabs)));
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            itemList.add(new ListItem(ListItemType.MENU_ITEM,
-                    buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_edit_group_name,
-                            R.id.edit_group_name)));
-        }
+        itemList.add(new ListItem(ListItemType.MENU_ITEM,
+                buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_edit_group_name,
+                        R.id.edit_group_name)));
         return itemList;
     }
 

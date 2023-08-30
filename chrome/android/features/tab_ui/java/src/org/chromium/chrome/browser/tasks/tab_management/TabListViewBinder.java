@@ -35,17 +35,7 @@ class TabListViewBinder {
         if (TabProperties.TITLE == propertyKey) {
             String title = model.get(TabProperties.TITLE);
             ((TextView) view.findViewById(R.id.title)).setText(title);
-        } else if (TabProperties.FAVICON == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
-                return;
-            }
-
-            Drawable favicon = model.get(TabProperties.FAVICON).getDefaultDrawable();
-            setFavicon(view, favicon);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
-                return;
-            }
             final TabListFaviconProvider.TabFaviconFetcher fetcher =
                     model.get(TabProperties.FAVICON_FETCHER);
             if (fetcher == null) {

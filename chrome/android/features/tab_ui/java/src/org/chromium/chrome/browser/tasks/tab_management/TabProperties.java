@@ -49,9 +49,6 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
             TAB_CLOSED_LISTENER = new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListFaviconProvider.TabFavicon> FAVICON =
-            new WritableObjectPropertyKey<>();
-
     /**
      * Indicator that a {@link TabProperties.FAVICON_FETCHER} has completed fetching a favicon. Only
      * used by TabStrip for the {@link TabStripSnapshotter}.
@@ -129,7 +126,7 @@ public class TabProperties {
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS_TAB_GRID = new PropertyKey[] {TAB_ID,
-            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, FAVICON_FETCHED, FAVICON_FETCHER,
+            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON_FETCHED, FAVICON_FETCHER,
             IS_SELECTED, IS_INCOGNITO, GRID_CARD_SIZE, THUMBNAIL_FETCHER, IPH_PROVIDER, TITLE,
             CHECKED_DRAWABLE_STATE_LIST, CREATE_GROUP_LISTENER, CARD_ALPHA, CARD_ANIMATION_STATUS,
             SELECTABLE_TAB_CLICKED_LISTENER, TAB_SELECTION_DELEGATE,
@@ -140,6 +137,6 @@ public class TabProperties {
             SHOPPING_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP = new PropertyKey[] {TAB_ID,
-            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, FAVICON_FETCHED, FAVICON_FETCHER,
+            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON_FETCHED, FAVICON_FETCHER,
             IS_SELECTED, TITLE, TABSTRIP_FAVICON_BACKGROUND_COLOR_ID, IS_INCOGNITO};
 }

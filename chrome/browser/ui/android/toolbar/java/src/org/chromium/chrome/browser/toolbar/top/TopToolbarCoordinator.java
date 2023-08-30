@@ -148,8 +148,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param isIncognitoModeEnabledSupplier A supplier for whether browsing is currently incognito.
      * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
-     * @param isTabGroupsAndroidContinuationEnabled Whether flag TabGroupsContinuationAndroid is
-     *        enabled.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
      *        homepage is enabled.
@@ -186,9 +184,9 @@ public class TopToolbarCoordinator implements Toolbar {
             Supplier<ButtonData> identityDiscButtonSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier, boolean isTabToGtsAnimationEnabled,
-            boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled,
-            HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
-            OfflineDownloader offlineDownloader, boolean initializeWithIncognitoColors,
+            boolean isStartSurfaceEnabled, HistoryDelegate historyDelegate,
+            BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader,
+            boolean initializeWithIncognitoColors,
             Callback<LoadUrlParams> startSurfaceLogoClickedCallback,
             boolean isStartSurfaceRefactorEnabled, ObservableSupplier<Integer> constraintsSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
@@ -211,10 +209,10 @@ public class TopToolbarCoordinator implements Toolbar {
             mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
                     userEducationHelper, identityDiscController, overviewThemeColorProvider,
                     overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
-                    isTabToGtsAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
-                    isIncognitoModeEnabledSupplier, startSurfaceLogoClickedCallback,
-                    mIsStartSurfaceRefactorEnabled, shouldCreateLogoInStartToolbar,
-                    this::onStartSurfaceToolbarTransitionFinished, mToolbarColorObserverManager);
+                    isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier,
+                    startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled,
+                    shouldCreateLogoInStartToolbar, this::onStartSurfaceToolbarTransitionFinished,
+                    mToolbarColorObserverManager);
         } else if (mToolbarLayout instanceof ToolbarPhone
                 || mToolbarLayout instanceof ToolbarTablet) {
             mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,

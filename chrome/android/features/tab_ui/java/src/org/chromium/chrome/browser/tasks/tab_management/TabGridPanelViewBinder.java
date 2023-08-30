@@ -200,23 +200,12 @@ class TabGridPanelViewBinder {
         } else if (TITLE_CURSOR_VISIBILITY == propertyKey) {
             viewHolder.toolbarView.setTitleCursorVisibility(model.get(TITLE_CURSOR_VISIBILITY));
         } else if (IS_TITLE_TEXT_FOCUSED == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                        viewHolder.contentView.getContext())) {
-                viewHolder.toolbarView.updateTitleTextFocus(model.get(IS_TITLE_TEXT_FOCUSED));
-                return;
-            }
+            viewHolder.toolbarView.updateTitleTextFocus(model.get(IS_TITLE_TEXT_FOCUSED));
         } else if (IS_KEYBOARD_VISIBLE == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                        viewHolder.contentView.getContext())) {
-                viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
-                return;
-            }
+            viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
         } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                        viewHolder.contentView.getContext())) {
-                viewHolder.toolbarView.setLeftButtonContentDescription(
-                        model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
-            }
+            viewHolder.toolbarView.setLeftButtonContentDescription(
+                    model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
         }
     }
 

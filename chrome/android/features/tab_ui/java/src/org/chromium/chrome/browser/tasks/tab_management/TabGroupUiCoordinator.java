@@ -217,10 +217,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 && mBottomSheetController.getSheetState()
                         == BottomSheetController.SheetState.HIDDEN) {
             TabGroupUtils.maybeShowIPH(FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-                    mTabStripCoordinator.getContainerView(),
-                    TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)
-                            ? mBottomSheetController
-                            : null);
+                    mTabStripCoordinator.getContainerView(), mBottomSheetController);
         }
         mTabStripCoordinator.resetWithListOfTabs(tabs);
     }
@@ -310,23 +307,20 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 (TabGroupModelFilter) provider.getTabModelFilter(true);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
         RecordHistogram.recordCount1MHistogram("TabGroups.UserGroupCount", groupCount);
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
-            int namedGroupCount = 0;
-            for (int i = 0; i < normalFilter.getTabGroupCount(); i++) {
-                int rootId = CriticalPersistedTabData.from(normalFilter.getTabAt(i)).getRootId();
-                if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
-                    namedGroupCount += 1;
-                }
+        int namedGroupCount = 0;
+        for (int i = 0; i < normalFilter.getTabGroupCount(); i++) {
+            int rootId = CriticalPersistedTabData.from(normalFilter.getTabAt(i)).getRootId();
+            if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
+                namedGroupCount += 1;
             }
-            for (int i = 0; i < incognitoFilter.getTabGroupCount(); i++) {
-                int rootId = CriticalPersistedTabData.from(incognitoFilter.getTabAt(i)).getRootId();
-                if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
-                    namedGroupCount += 1;
-                }
-            }
-            RecordHistogram.recordCount1MHistogram(
-                    "TabGroups.UserNamedGroupCount", namedGroupCount);
         }
+        for (int i = 0; i < incognitoFilter.getTabGroupCount(); i++) {
+            int rootId = CriticalPersistedTabData.from(incognitoFilter.getTabAt(i)).getRootId();
+            if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
+                namedGroupCount += 1;
+            }
+        }
+        RecordHistogram.recordCount1MHistogram("TabGroups.UserNamedGroupCount", namedGroupCount);
     }
 
     private void recordSessionCount() {

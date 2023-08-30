@@ -85,7 +85,6 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void updateTitleTextFocus(boolean shouldFocus) {
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())) return;
         if (mTitleTextView.isFocused() == shouldFocus) return;
         if (shouldFocus) {
             mTitleTextView.requestFocus();
@@ -95,7 +94,6 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void updateKeyboardVisibility(boolean shouldShow) {
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())) return;
         // This is equal to the animation duration of toolbar menu hiding.
         int showKeyboardDelay = 150;
         if (shouldShow) {

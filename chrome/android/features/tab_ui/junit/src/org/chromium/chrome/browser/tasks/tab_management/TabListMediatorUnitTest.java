@@ -2908,7 +2908,6 @@ public class TabListMediatorUnitTest {
     @Test
     public void testUpdateFaviconFetcherForGroup() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
-        mModel.get(0).model.set(TabProperties.FAVICON, null);
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
 
         // Test a group of three.
@@ -2918,11 +2917,9 @@ public class TabListMediatorUnitTest {
         mTabObserver.onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
         List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageFetcher(eq(urls), anyBoolean());
-        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
 
         // Test a group of five.
-        mModel.get(1).model.set(TabProperties.FAVICON, null);
         mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
         TabImpl tab4 = prepareTab(0, "tab 4", TAB2_URL);
         TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
@@ -2931,15 +2928,12 @@ public class TabListMediatorUnitTest {
         mTabObserver.onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);
         urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageFetcher(eq(urls), anyBoolean());
-        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
     public void testUpdateFaviconFetcherForGroup_StaleIndex_SelectAnotherTabWithinGroup() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
-        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
-        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
 
@@ -2957,15 +2951,12 @@ public class TabListMediatorUnitTest {
         mModel.get(1).model.set(TabProperties.TAB_ID, TAB3_ID);
 
         assertNotEquals(1, mModel.indexFromId(TAB2_ID));
-        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
         assertNotNull(mModel.get(1).model.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
     public void testUpdateFaviconFetcherForGroup_StaleIndex_CloseTab() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
-        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
-        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
 
@@ -2989,8 +2980,6 @@ public class TabListMediatorUnitTest {
     @Test
     public void testUpdateFaviconFetcherForGroup_StaleIndex_Reset() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
-        assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
-        assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
 
@@ -3330,20 +3319,8 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mActivity)) {
-            assertNull(mModel.get(0).model.get(TabProperties.FAVICON));
-            assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
-            assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
-            assertNotNull(mModel.get(1).model.get(TabProperties.FAVICON_FETCHER));
-        } else {
-            assertThat(
-                    mModel.get(0).model.get(TabProperties.FAVICON), instanceOf(TabFavicon.class));
-            assertThat(
-                    mModel.get(1).model.get(TabProperties.FAVICON), instanceOf(TabFavicon.class));
-            assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
-            assertNull(mModel.get(1).model.get(TabProperties.FAVICON_FETCHER));
-        }
-
+        assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        assertNotNull(mModel.get(1).model.get(TabProperties.FAVICON_FETCHER));
         assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
 
@@ -3435,17 +3412,10 @@ public class TabListMediatorUnitTest {
         int tabModelObserverCount = mTabModelObserverCaptor.getAllValues().size();
         mMediator.initWithNative();
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mActivity)) {
-            assertThat(mTabModelObserverCaptor.getAllValues().size(),
-                    equalTo(tabModelObserverCount + 2));
-            assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().size(),
-                    equalTo(tabGroupModelFilterObserverCount + 4));
-        } else {
-            assertThat(mTabModelObserverCaptor.getAllValues().size(),
-                    equalTo(tabModelObserverCount + 1));
-            assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().size(),
-                    equalTo(tabGroupModelFilterObserverCount + 2));
-        }
+        assertThat(
+                mTabModelObserverCaptor.getAllValues().size(), equalTo(tabModelObserverCount + 2));
+        assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().size(),
+                equalTo(tabGroupModelFilterObserverCount + 4));
 
         mMediatorTabModelObserver =
                 mTabModelObserverCaptor.getAllValues().get(tabModelObserverCount);

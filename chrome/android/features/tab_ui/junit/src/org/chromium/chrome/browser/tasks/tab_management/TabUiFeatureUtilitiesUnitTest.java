@@ -55,8 +55,6 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd() {
-        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                 ContextUtils.getApplicationContext()));
@@ -64,8 +62,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
-        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                 ContextUtils.getApplicationContext()));
@@ -74,8 +70,6 @@ public class TabUiFeatureUtilitiesUnitTest {
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_LowEnd() {
-        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                 ContextUtils.getApplicationContext()));
@@ -83,8 +77,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
-        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
-                ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
                 ContextUtils.getApplicationContext()));
