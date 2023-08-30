@@ -163,10 +163,11 @@ to include the appropriate flags.
 Specifically, if you connect your DUT via SSH’s reverse proxy, you can specify
 --device=localhost:8022 (assuming your forwarding port is 8022).
 
-You can now launch your copy of lacros-chrome by clicking on the yellow Lacros
-icon in the app list or shelf. Logs go to /home/chronos/user/lacros/lacros.log.
-Use LOG() macros to emit logs, or use stdout/stderr. All of them output to the
-file.su.
+You can now launch your copy of lacros-chrome by clicking on the
+Chrome icon in the app list or shelf. Logs go to the /var/log/lacros
+directory, with /var/log/lacros/lacros.log being the latest file. Use
+LOG() macros to emit logs, or use stdout/stderr. All of them output to
+the file.
 
 See Appendix if you need to launch lacros-chrome manually from the DUT command
 line.
