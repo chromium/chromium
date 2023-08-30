@@ -323,20 +323,32 @@ function resume(cameraManager: CameraManager): void {
 async function setupMultiWindowHandling(
     cameraManager: CameraManager, cameraView: Camera,
     cameraResourceInitialized: WaitableEvent): Promise<void> {
-  async function exploitUsage() {
-    if (cameraResourceInitialized.isSignaled()) {
-      resume(cameraManager);
-    } else {
-      // CCA must get camera usage for completing its initialization when
-      // first launched.
-      await cameraManager.initialize(cameraView);
-      await cameraView.initialize();
-      cameraResourceInitialized.signal();
+  async function handleResume() {
+    try {
+      if (cameraResourceInitialized.isSignaled()) {
+        resume(cameraManager);
+      } else {
+        // CCA must get camera usage for completing its initialization when
+        // first launched.
+        await cameraManager.initialize(cameraView);
+        await cameraView.initialize();
+        cameraResourceInitialized.signal();
+      }
+    } catch (e) {
+      reportError(
+          ErrorType.RESUME_CAMERA_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
     }
   }
-  async function releaseUsage() {
-    assert(cameraResourceInitialized.isSignaled());
-    await suspend(cameraManager);
+  async function handleSuspend() {
+    try {
+      assert(cameraResourceInitialized.isSignaled());
+      await suspend(cameraManager);
+    } catch (e) {
+      reportError(
+          ErrorType.SUSPEND_CAMERA_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
+    }
   }
 
   const multiWindowManagerWorker = new SharedWorker(
@@ -351,7 +363,7 @@ async function setupMultiWindowHandling(
     });
   });
   await windowInstance.init(
-      Comlink.proxy(releaseUsage), Comlink.proxy(exploitUsage));
+      Comlink.proxy(handleSuspend), Comlink.proxy(handleResume));
   await ChromeHelper.getInstance().initCameraWindowController();
   windowController.addWindowStateListener((states) => {
     const isMinimizing = states.includes(WindowStateType.MINIMIZED);
