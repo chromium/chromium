@@ -98,11 +98,7 @@ const base::FeatureParam<std::string>
 
 namespace {
 
-#if !defined(NDEBUG)
-constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Seconds(60);
-#else
 constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
-#endif
 
 // For group freshness metrics.
 constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
