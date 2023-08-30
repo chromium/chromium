@@ -17,7 +17,6 @@ import {getTemplate} from './read_anything_toolbar.html.js';
 
 export interface ReadAnythingToolbar {
   $: {
-    menu: CrActionMenuElement,
     colorSubmenu: CrActionMenuElement,
     lineSpacingSubmenu: CrActionMenuElement,
     letterSpacingSubmenu: CrActionMenuElement,
@@ -234,7 +233,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     assert(shadowRoot);
     const button = shadowRoot.getElementById('play-pause');
     assert(button);
-    button.setAttribute('iron-icon', 'read-anything:pause');
+    button.setAttribute('iron-icon', 'read-anything-20:pause');
     this.isPaused = false;
   }
 
@@ -243,7 +242,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     assert(shadowRoot);
     const button = shadowRoot.getElementById('play-pause');
     assert(button);
-    button.setAttribute('iron-icon', 'read-anything:play');
+    button.setAttribute('iron-icon', 'read-anything-20:play');
     this.isPaused = true;
   }
 
@@ -279,45 +278,38 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private closeMenus_() {
-    this.$.menu.close();
     this.$.colorSubmenu.close();
     this.$.lineSpacingSubmenu.close();
     this.$.letterSpacingSubmenu.close();
     this.$.fontSubmenu.close();
   }
 
-  private onShowSettingsMenuClick_() {
-    this.openMenu_(this.$.menu);
+  private onShowColorSubMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.colorSubmenu, event.target as HTMLElement);
   }
 
-  private onShowColorSubMenuClick_() {
-    this.openMenu_(this.$.colorSubmenu);
+  private onShowLineSpacingSubMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.lineSpacingSubmenu, event.target as HTMLElement);
   }
 
-  private onShowLineSpacingSubMenuClick_() {
-    this.openMenu_(this.$.lineSpacingSubmenu);
+  private onShowLetterSpacingSubMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.letterSpacingSubmenu, event.target as HTMLElement);
   }
 
-  private onShowLetterSpacingSubMenuClick_() {
-    this.openMenu_(this.$.letterSpacingSubmenu);
+  private onShowFontSubMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.fontSubmenu, event.target as HTMLElement);
   }
 
-  private onBackClick_() {
-    this.openMenu_(this.$.menu);
-  }
-
-  private onShowFontSubMenuClick_() {
-    this.openMenu_(this.$.fontSubmenu);
-  }
-
-  private openMenu_(menuToOpen: CrActionMenuElement) {
+  private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
     this.closeMenus_();
 
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
-    const button = shadowRoot.getElementById('settings');
-    assert(button);
-    menuToOpen.showAt(button, this.showAtPositionConfig_);
+    menuToOpen.showAt(target, {
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      noOffset: true,
+    });
   }
 
   private onFontClick_(fontName: string) {
