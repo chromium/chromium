@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -104,6 +105,14 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabPickupThreshold);
+
+  if ([self isRunningTest:@selector(testTabPickupSettingsSynced)]) {
+    // With kReplaceSyncPromosWithSignInPromos enabled, Sync can't be enabled
+    // anymore.
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
   return config;
 }
 
@@ -158,16 +167,20 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
   OpenTabsSettings();
   OpenTabPickupFromTabsSettings();
 
-  // Check the "Sync" link.
-  [[EarlGrey selectElementWithMatcher:TabPickupPrivacyFooterSyncLink()]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // The "Sync" links only exists without isReplaceSyncWithSigninEnabled.
+  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // Check the "Sync" link.
+    [[EarlGrey selectElementWithMatcher:TabPickupPrivacyFooterSyncLink()]
+        performAction:grey_tap()];
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton(
-                                          0)] performAction:grey_tap()];
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton(0)]
+        performAction:grey_tap()];
+  }
 
   // Check the "Google Services" link.
   [[EarlGrey

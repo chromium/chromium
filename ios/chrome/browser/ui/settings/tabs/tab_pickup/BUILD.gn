@@ -53,6 +53,7 @@ source_set("eg2_tests") {
   deps = [
     "//base:i18n",
     "//base/test:test_support",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin:fake_system_identity",
