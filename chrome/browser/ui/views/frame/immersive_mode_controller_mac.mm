@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,6 +35,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -496,6 +498,11 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
     if (child == find_bar_controller->find_bar()->GetHostWidget()) {
       return true;
     }
+  }
+
+  if (child->GetNativeWindowProperty(views::kWidgetIdentifierKey) ==
+      constrained_window::kConstrainedWindowWidgetIdentifier) {
+    return true;
   }
 
   // Widgets that have an anchor view contained within top chrome should be

@@ -31,6 +31,8 @@ class WebContentsModalDialogHost;
 
 namespace constrained_window {
 
+extern const void* kConstrainedWindowWidgetIdentifier;
+
 class ConstrainedWindowViewsClient;
 
 // Sets the ConstrainedWindowClient impl.

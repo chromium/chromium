@@ -19,6 +19,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -32,6 +33,9 @@ using web_modal::ModalDialogHost;
 using web_modal::ModalDialogHostObserver;
 
 namespace constrained_window {
+
+const void* kConstrainedWindowWidgetIdentifier = "ConstrainedWindowWidget";
+
 namespace {
 
 // Storage access for the currently active ConstrainedWindowViewsClient.
@@ -213,9 +217,14 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
         << ", scheme=" << url.scheme_piece() << ", host=" << url.host_piece();
   }
 
-  return views::DialogDelegate::CreateDialogWidget(
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
       manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
+  widget->SetNativeWindowProperty(
+      views::kWidgetIdentifierKey,
+      const_cast<void*>(kConstrainedWindowWidgetIdentifier));
+
+  return widget;
 }
 
 views::Widget* CreateBrowserModalDialogViews(
@@ -234,6 +243,9 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
       parent ? CurrentClient()->GetDialogHostView(parent) : nullptr;
   views::Widget* widget =
       views::DialogDelegate::CreateDialogWidget(dialog, nullptr, parent_view);
+  widget->SetNativeWindowProperty(
+      views::kWidgetIdentifierKey,
+      const_cast<void*>(kConstrainedWindowWidgetIdentifier));
 
   bool requires_positioning = dialog->use_custom_frame();
 
