@@ -161,6 +161,17 @@ void OpenAlreadyHostedDriveUrl(drive::FileError error,
   }
 }
 
+// Logs UMA when the OneDrive task ends with an attempt to open a file.
+void LogOneDriveOpenResultUMA(OfficeTaskResult success_task_result,
+                              fm_tasks::OfficeOneDriveOpenErrors open_result) {
+  UMA_HISTOGRAM_ENUMERATION(fm_tasks::kOneDriveErrorMetricName, open_result);
+  UMA_HISTOGRAM_ENUMERATION(
+      kOneDriveTaskResultMetricName,
+      open_result == fm_tasks::OfficeOneDriveOpenErrors::kSuccess
+          ? success_task_result
+          : OfficeTaskResult::kFailedToOpen);
+}
+
 // Handle system error notification "Sign in" click.
 void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
@@ -259,39 +270,31 @@ void OpenFileFromODFS(
     Profile* profile,
     file_system_provider::ProvidedFileSystemInterface* file_system,
     const base::FilePath& file_path,
-    const OfficeTaskResult task_result_uma) {
+    base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback) {
   file_system->GetActions(
       {file_path},
       base::BindOnce(
           [](base::WeakPtr<Profile> profile_weak_ptr,
-             const OfficeTaskResult task_result_uma,
+             base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)>
+                 callback,
              const file_system_provider::Actions& actions,
              base::File::Error result) {
             Profile* profile = profile_weak_ptr.get();
             if (!profile) {
-              UMA_HISTOGRAM_ENUMERATION(
-                  fm_tasks::kOneDriveErrorMetricName,
+              std::move(callback).Run(
                   fm_tasks::OfficeOneDriveOpenErrors::kNoProfile);
-              UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                                        OfficeTaskResult::kFailedToOpen);
               return;
             }
             if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
               ShowAccessDeniedNotification(profile);
-              UMA_HISTOGRAM_ENUMERATION(fm_tasks::kOneDriveErrorMetricName,
-                                        fm_tasks::OfficeOneDriveOpenErrors::
-                                            kGetActionsReauthRequired);
-              UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                                        OfficeTaskResult::kFailedToOpen);
+              std::move(callback).Run(fm_tasks::OfficeOneDriveOpenErrors::
+                                          kGetActionsReauthRequired);
               return;
             }
             if (result != base::File::Error::FILE_OK) {
               ShowUnableToOpenNotification(profile);
-              UMA_HISTOGRAM_ENUMERATION(
-                  fm_tasks::kOneDriveErrorMetricName,
+              std::move(callback).Run(
                   fm_tasks::OfficeOneDriveOpenErrors::kGetActionsGenericError);
-              UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                                        OfficeTaskResult::kFailedToOpen);
               return;
             }
             for (const file_system_provider::Action& action : actions) {
@@ -300,11 +303,8 @@ void OpenFileFromODFS(
                 // attribute to be opened using an installed web app.
                 GURL url(action.title);
                 if (!url.is_valid()) {
-                  UMA_HISTOGRAM_ENUMERATION(fm_tasks::kOneDriveErrorMetricName,
-                                            fm_tasks::OfficeOneDriveOpenErrors::
-                                                kGetActionsInvalidUrl);
-                  UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                                            OfficeTaskResult::kFailedToOpen);
+                  std::move(callback).Run(fm_tasks::OfficeOneDriveOpenErrors::
+                                              kGetActionsInvalidUrl);
                   return;
                 }
 
@@ -314,43 +314,35 @@ void OpenFileFromODFS(
                                         /*event_flags=*/ui::EF_NONE, url,
                                         apps::LaunchSource::kFromFileManager,
                                         /*window_info=*/nullptr);
-                UMA_HISTOGRAM_ENUMERATION(
-                    fm_tasks::kOneDriveErrorMetricName,
+                std::move(callback).Run(
                     fm_tasks::OfficeOneDriveOpenErrors::kSuccess);
-                UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                                          task_result_uma);
                 return;
               }
             }
           },
-          profile->GetWeakPtr(), task_result_uma));
+          profile->GetWeakPtr(), std::move(callback)));
 }
 
 // Open office file using the ODFS |url|.
-void OpenODFSUrl(Profile* profile,
-                 const storage::FileSystemURL& url,
-                 const OfficeTaskResult task_result_uma) {
+void OpenODFSUrl(
+    Profile* profile,
+    const storage::FileSystemURL& url,
+    base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback) {
   if (!url.is_valid()) {
     LOG(ERROR) << "Invalid uploaded file URL";
-    UMA_HISTOGRAM_ENUMERATION(
-        fm_tasks::kOneDriveErrorMetricName,
+    std::move(callback).Run(
         fm_tasks::OfficeOneDriveOpenErrors::kNoFileSystemURL);
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToOpen);
     return;
   }
   ash::file_system_provider::util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     LOG(ERROR) << "Path not in FSP";
-    UMA_HISTOGRAM_ENUMERATION(
-        fm_tasks::kOneDriveErrorMetricName,
+    std::move(callback).Run(
         fm_tasks::OfficeOneDriveOpenErrors::kInvalidFileSystemURL);
-    UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
-                              OfficeTaskResult::kFailedToOpen);
     return;
   }
   OpenFileFromODFS(profile, parser.file_system(), parser.file_path(),
-                   task_result_uma);
+                   std::move(callback));
 }
 
 // Open office files from ODFS that were originally selected from Android
@@ -367,9 +359,9 @@ void OpenAndroidOneDriveUrls(
       LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
       return;
     }
-    OpenFileFromODFS(profile, fs_and_path->file_system,
-                     fs_and_path->file_path_within_odfs,
-                     OfficeTaskResult::kOpened);
+    OpenFileFromODFS(
+        profile, fs_and_path->file_system, fs_and_path->file_path_within_odfs,
+        base::BindOnce(&LogOneDriveOpenResultUMA, OfficeTaskResult::kOpened));
   }
 }
 
@@ -577,7 +569,8 @@ void CloudOpenTask::OpenAlreadyHostedDriveUrls() {
 
 void CloudOpenTask::OpenODFSUrls(const OfficeTaskResult task_result_uma) {
   for (const auto& file_url : file_urls_) {
-    OpenODFSUrl(profile_, file_url, task_result_uma);
+    OpenODFSUrl(profile_, file_url,
+                base::BindOnce(&LogOneDriveOpenResultUMA, task_result_uma));
   }
 }
 
@@ -859,7 +852,8 @@ void CloudOpenTask::FinishedOneDriveUpload(
         transfer_required_ == OfficeFilesTransferRequired::kCopy
             ? OfficeTaskResult::kCopied
             : OfficeTaskResult::kMoved;
-    OpenODFSUrl(profile, url.value(), task_result_uma);
+    OpenODFSUrl(profile, url.value(),
+                base::BindOnce(&LogOneDriveOpenResultUMA, task_result_uma));
   } else {
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTaskResultMetricName,
                               OfficeTaskResult::kFailedToUpload);
