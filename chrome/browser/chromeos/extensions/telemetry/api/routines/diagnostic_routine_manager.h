@@ -5,8 +5,26 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_DIAGNOSTIC_ROUTINE_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_DIAGNOSTIC_ROUTINE_MANAGER_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/containers/flat_map.h"
+#include "base/types/expected.h"
+#include "base/uuid.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/routines/remote_diagnostic_routines_service_strategy.h"
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -17,8 +35,14 @@ namespace chromeos {
 // A routine can only be started if the PWA for an extension is currently open.
 // Once the PWA is closed, we also close the routine connection and thus end
 // execution of that routine.
-class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI {
+class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
+                                 extensions::ExtensionRegistryObserver {
  public:
+  enum Error {
+    kAppUiClosed,
+    kExtensionUnloaded,
+  };
+
   explicit DiagnosticRoutineManager(content::BrowserContext* context);
 
   DiagnosticRoutineManager(const DiagnosticRoutineManager&) = delete;
@@ -35,18 +59,58 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI {
   static DiagnosticRoutineManager* Get(
       content::BrowserContext* browser_context);
 
+  base::expected<base::Uuid, Error> CreateRoutine(
+      extensions::ExtensionId extension_id,
+      crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument);
+
+  // `ExtensionRegistryObserver`:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
+
  private:
   friend class extensions::BrowserContextKeyedAPIFactory<
       DiagnosticRoutineManager>;
+  friend class TelemetryExtensionDiagnosticRoutinesManagerTest;
+
+  void OnAppUiClosed(extensions::ExtensionId extension_id);
+
+  base::expected<std::unique_ptr<AppUiObserver>,
+                 DiagnosticRoutineManager::Error>
+  CreateAppUiObserver(extensions::ExtensionId extension_id);
+
+  mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutinesService>&
+  GetRemoteService();
 
   // extensions::BrowserContextKeyedAPI:
   static const char* service_name() { return "DiagnosticRoutineManager"; }
   static const bool kServiceIsCreatedInGuestMode = false;
   static const bool kServiceRedirectedInIncognito = true;
 
-  const raw_ptr<content::BrowserContext> browser_context_;
+  base::flat_map<extensions::ExtensionId, std::unique_ptr<AppUiObserver>>
+      app_ui_observers_;
+  base::flat_map<extensions::ExtensionId,
+                 std::vector<std::unique_ptr<DiagnosticRoutine>>>
+      routines_per_extension_;
+
+  std::unique_ptr<RemoteDiagnosticRoutineServiceStrategy> remote_strategy_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
 };
 
 }  // namespace chromeos
+
+namespace extensions {
+
+template <>
+struct extensions::BrowserContextFactoryDependencies<
+    chromeos::DiagnosticRoutineManager> {
+  static void DeclareFactoryDependencies(
+      extensions::BrowserContextKeyedAPIFactory<
+          chromeos::DiagnosticRoutineManager>* factory) {
+    factory->DependsOn(ExtensionRegistryFactory::GetInstance());
+  }
+};
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_DIAGNOSTIC_ROUTINE_MANAGER_H_

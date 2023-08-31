@@ -30,6 +30,8 @@ class FakeDiagnosticRoutinesService
   FakeDiagnosticRoutineControl* GetCreatedRoutineControlForRoutineType(
       crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag tag);
 
+  void FlushForTesting();
+
   // `TelemetryDiagnosticRoutinesService`:
   void CreateRoutine(
       crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument,

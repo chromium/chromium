@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -105,6 +106,12 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
         return;
       }
     }
+  }
+
+  // The `EventRouter` might be unavailable in unittests.
+  if (!extensions::EventRouter::Get(browser_context_)) {
+    CHECK_IS_TEST();
+    return;
   }
 
   extensions::EventRouter::Get(browser_context_)

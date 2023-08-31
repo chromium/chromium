@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_observation.h"
@@ -60,6 +61,11 @@ void DiagnosticRoutine::OnRoutineControlDisconnect(uint32_t error_code,
       cx_diag::OnRoutineException::kEventName,
       base::Value::List().Append(exception.ToValue()), info_.browser_context);
 
+  // The `EventRouter` might be unavailable in unittests.
+  if (!extensions::EventRouter::Get(info_.browser_context)) {
+    CHECK_IS_TEST();
+    return;
+  }
   extensions::EventRouter::Get(info_.browser_context)
       ->DispatchEventToExtension(info_.extension_id, std::move(event));
 }

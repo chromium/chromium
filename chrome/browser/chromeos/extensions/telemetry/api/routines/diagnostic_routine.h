@@ -56,6 +56,8 @@ class DiagnosticRoutine {
                                   const std::string& message);
 
  private:
+  friend class TelemetryExtensionDiagnosticRoutinesManagerTest;
+
   mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineControl>
       routine_control_;
   DiagnosticRoutineObservation observation_;

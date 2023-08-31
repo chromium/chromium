@@ -68,9 +68,11 @@ source_set("routine_manager") {
   ]
 
   deps = [
+    ":routines",
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
+    "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]
 
@@ -82,15 +84,37 @@ source_set("routine_manager") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "diagnostic_routine_converters_unittest.cc" ]
+  sources = [
+    "diagnostic_routine_converters_unittest.cc",
+    "diagnostic_routine_manager_unittest.cc",
+  ]
 
   deps = [
+    ":routine_manager",
     ":routines",
+    ":test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/common/chromeos/extensions/api",
+    "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/telemetry_extension/routines",
+      "//chrome/common/chromeos/extensions",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
 }
 
 source_set("browser_tests") {

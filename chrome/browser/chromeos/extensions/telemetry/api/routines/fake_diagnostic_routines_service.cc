@@ -32,6 +32,10 @@ FakeDiagnosticRoutinesService::GetCreatedRoutineControlForRoutineType(
   return &(it->second);
 }
 
+void FakeDiagnosticRoutinesService::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
 void FakeDiagnosticRoutinesService::CreateRoutine(
     crosapi::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
     mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineControl>
