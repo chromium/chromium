@@ -734,7 +734,9 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
   if (webauthn::WebAuthnCredManDelegate::IsCredManEnabled()) {
     webauthn::WebAuthnCredManDelegate* delegate =
         client_->GetWebAuthnCredManDelegateForDriver(driver_.get());
-    return delegate ? delegate->HasResults() : false;
+    return delegate ? delegate->HasPasskeys() ==
+                          webauthn::WebAuthnCredManDelegate::kHasPasskeys
+                    : false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   WebAuthnCredentialsDelegate* delegate =

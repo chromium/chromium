@@ -334,7 +334,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
               driver_supplier_.Run(&GetWebContents())) {
         if (webauthn::WebAuthnCredManDelegate* delegate =
                 password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
-          delegate->TriggerFullRequest();
+          delegate->TriggerCredManUi();
         }
       }
       return;
@@ -440,8 +440,10 @@ void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
     if (webauthn::WebAuthnCredManDelegate* delegate =
             password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
       GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
-          ShouldShowCredManReentryAction(focused_field_type,
-                                         delegate->HasResults()),
+          ShouldShowCredManReentryAction(
+              focused_field_type,
+              delegate->HasPasskeys() ==
+                  webauthn::WebAuthnCredManDelegate::kHasPasskeys),
           autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
     }
   }

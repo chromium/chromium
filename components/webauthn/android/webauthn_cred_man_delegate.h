@@ -17,6 +17,12 @@ namespace webauthn {
 // only.
 class WebAuthnCredManDelegate {
  public:
+  enum State {
+    kNotReady,
+    kNoPasskeys,
+    kHasPasskeys,
+  };
+
   explicit WebAuthnCredManDelegate(content::WebContents* web_contents);
 
   WebAuthnCredManDelegate(const WebAuthnCredManDelegate&) = delete;
@@ -29,17 +35,20 @@ class WebAuthnCredManDelegate {
   // interaction.
   void OnCredManConditionalRequestPending(
       bool has_results,
-      base::RepeatingCallback<void(bool)> full_assertion_request);
+      base::RepeatingCallback<void(bool)> show_cred_man_ui_callback);
 
   // Called when the CredMan UI is closed.
   void OnCredManUiClosed(bool success);
 
   // Called when the user focuses a webauthn login form. This will trigger
   // CredMan UI.
-  void TriggerFullRequest();
+  void TriggerCredManUi();
 
-  bool HasResults();
+  // Returns whether there are passkeys in the Android Credential Manager UI.
+  // Returns `kNotReady` if Credential Manager has not replied yet.
+  State HasPasskeys();
 
+  // Clears the cached `show_cred_man_ui_callback_` and `has_results_`.
   void CleanUpConditionalRequest();
 
   // The setter for `request_completion_callback_`. Classes can set
@@ -68,8 +77,8 @@ class WebAuthnCredManDelegate {
 #endif
 
  private:
-  bool has_results_ = false;
-  base::RepeatingCallback<void(bool)> full_assertion_request_;
+  State has_passkeys_ = kNotReady;
+  base::RepeatingCallback<void(bool)> show_cred_man_ui_callback_;
   base::RepeatingCallback<void(bool)> request_completion_callback_;
   base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       filling_callback_;
