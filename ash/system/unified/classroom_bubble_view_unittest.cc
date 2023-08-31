@@ -159,7 +159,13 @@ class ClassroomBubbleViewTest : public AshTestBase {
  protected:
   testing::StrictMock<TestClient> classroom_client_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<ClassroomBubbleBaseView, ExperimentalAsh> view_;
+  // Example of flake occurrence:
+  // - Test:
+  // ClassroomBubbleStudentViewTest.ReadsInitialComboBoxViewValueFromPrefs
+  // -
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel/1690881/overview
+  raw_ptr<ClassroomBubbleBaseView, FlakyDanglingUntriaged | ExperimentalAsh>
+      view_;
   DetailedViewDelegate detailed_view_delegate_{nullptr};
 
  private:
