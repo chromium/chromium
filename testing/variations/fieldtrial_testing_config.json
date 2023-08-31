@@ -13654,6 +13654,29 @@
             ]
         }
     ],
+    "SafeBrowsingHashPrefixRealTimeLookups": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl": "https://test.ohttp.endpoint.com/"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingHashPrefixRealTimeLookups"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingLookupMechanismExperiment": [
         {
             "platforms": [
