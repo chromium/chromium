@@ -59,6 +59,7 @@ void AppServiceShortcutShelfContextMenu::GetMenuModel(
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                      ui::kColorAshSystemUIMenuIcon,
                                      ash::kAppContextMenuIconSize));
+  AddPinMenu(menu_model.get());
   std::move(callback).Run(std::move(menu_model));
 }
 

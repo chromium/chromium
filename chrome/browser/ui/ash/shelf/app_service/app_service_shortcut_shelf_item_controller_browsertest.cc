@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_shortcut_shelf_item_controller.h"
 
+#include <memory>
+
 #include "ash/public/cpp/shelf_model.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/app_constants/constants.h"
@@ -22,6 +25,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/vector_icons.h"
 #include "url/gurl.h"
 
 class AppServiceShortcutShelfItemControllerBrowserTest
@@ -123,4 +127,41 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
       app_url, content::NotificationService::AllSources());
   menu_model->ActivatedAt(launch_new_command_index.value());
   url_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
+                       ContextMenuTooglePin) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  PinAppWithIDToShelf(shortcut_id.value());
+
+  ash::ShelfItemDelegate* delegate =
+      controller()->shelf_model()->GetShelfItemDelegate(
+          ash::ShelfID(shortcut_id.value()));
+
+  ASSERT_TRUE(delegate);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  delegate->GetContextMenu(display::kDefaultDisplayId, future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  auto tootle_pin_command_index =
+      menu_model->GetIndexOfCommandId(ash::TOGGLE_PIN);
+  ASSERT_TRUE(tootle_pin_command_index);
+  EXPECT_EQ(tootle_pin_command_index.value(), 1u);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SHELF_CONTEXT_MENU_UNPIN),
+            menu_model->GetLabelAt(tootle_pin_command_index.value()));
+  EXPECT_EQ(&views::kUnpinIcon,
+            menu_model->GetIconAt(tootle_pin_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  menu_model->ActivatedAt(tootle_pin_command_index.value());
+
+  EXPECT_FALSE(controller()->GetItem(ash::ShelfID(shortcut_id.value())));
 }
