@@ -66,7 +66,7 @@
 namespace {
 
 // The amount of padding between the label and the sync icon.
-constexpr int kSyncIconPaddingFromLabel = 4;
+constexpr int kSyncIconPaddingFromLabel = 2;
 
 class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -499,14 +499,16 @@ void TabGroupHeader::VisualsChanged() {
 
     // horizontal and vertical insets of the title chip.
     const gfx::Insets title_chip_insets =
-        group_style_->GetInsetsForHeaderChip();
+        group_style_->GetInsetsForHeaderChip(ShouldShowSyncIcon());
     const int title_chip_vertical_inset = title_chip_insets.top();
-    const int title_chip_horizontal_inset = title_chip_insets.left();
+    const int title_chip_horizontal_inset_left = title_chip_insets.left();
+    const int title_chip_horizontal_inset_right = title_chip_insets.right();
 
     // Width of title chip should atleast be the width of an empty title chip.
     const int title_chip_width =
         std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
-                 content_width + 2 * title_chip_horizontal_inset);
+                 content_width + title_chip_horizontal_inset_left +
+                     title_chip_horizontal_inset_right);
 
     // The bounds and background for the `title_chip_` is set here.
     const gfx::Point title_chip_origin =
@@ -518,14 +520,18 @@ void TabGroupHeader::VisualsChanged() {
         views::CreateRoundedRectBackground(color, corner_radius));
 
     // Bounds and background of the `title_` and the `sync_icon` are set here.
-    // Cannot use `title_chip_horizontal_inset` as x coordinate in the case
-    // `title_chip_width` is the width of an empty title chip.
-    const int start_of_sync_icon = (title_chip_->width() - content_width) / 2;
-    sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
-                          sync_icon_size.width(), text_height);
-    title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
-                          padding_between_label_sync_icon,
-                      title_chip_vertical_inset, text_width, text_height);
+    const int start_of_sync_icon = title_chip_horizontal_inset_left;
+    if (!ShouldShowSyncIcon()) {
+      sync_icon_->SetBounds(0, 0, 0, 0);
+      title_->SetBounds(title_chip_horizontal_inset_left,
+                        title_chip_vertical_inset, text_width, text_height);
+    } else {
+      sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
+                            sync_icon_size.width(), text_height);
+      title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
+                            padding_between_label_sync_icon,
+                        title_chip_vertical_inset, text_width, text_height);
+    }
   }
 
   if (views::FocusRing::Get(this)) {

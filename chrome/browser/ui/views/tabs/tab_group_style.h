@@ -45,7 +45,7 @@ class TabGroupStyle {
       const views::View* title) const;
 
   // Returns the insets for a header chip that has text.
-  virtual gfx::Insets GetInsetsForHeaderChip() const;
+  virtual gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const;
 
   // While calculating desired width of a tab group an adjustment value is added
   // for the distance between the tab group header and the right tab.
@@ -90,7 +90,7 @@ class ChromeRefresh2023TabGroupStyle : public TabGroupStyle {
       SkColor color) const override;
   int GetHighlightPathGeneratorCornerRadius(
       const views::View* title) const override;
-  gfx::Insets GetInsetsForHeaderChip() const override;
+  gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const override;
   int GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
       std::u16string title) const override;
   float GetEmptyChipSize() const override;
