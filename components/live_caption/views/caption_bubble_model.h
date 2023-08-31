@@ -134,6 +134,10 @@ class CaptionBubbleModel {
 
   OnCaptionBubbleClosedCallback caption_bubble_closed_callback_;
 
+  // Used to calculate and log the amount of flickering between partial results.
+  int erasure_count_ = 0;
+  int partial_result_count_ = 0;
+
   const raw_ptr<CaptionBubbleContext, DanglingUntriaged> context_;
 };
 

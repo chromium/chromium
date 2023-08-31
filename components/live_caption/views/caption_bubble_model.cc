@@ -4,15 +4,32 @@
 
 #include "components/live_caption/views/caption_bubble_model.h"
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/views/caption_bubble.h"
+#include "media/base/media_switches.h"
 
 namespace {
 // The caption bubble contains 2 lines of text in its normal size and 8 lines
 // in its expanded size, so the maximum number of lines before truncating is 9.
 constexpr int kMaxLines = 9;
+
+// Returns the length of the longest common prefix between two strings.
+int GetLongestCommonPrefixLength(const std::string& str1,
+                                   const std::string& str2) {
+  int length = 0;
+  for (unsigned long i = 0, j = 0; i < str1.length() && j < str2.length();
+       i++, j++, length++) {
+    if (str1[i] != str2[j]) {
+      break;
+    }
+  }
+
+  return length;
+}
+
 }  // namespace
 
 namespace captions {
@@ -26,6 +43,15 @@ CaptionBubbleModel::CaptionBubbleModel(CaptionBubbleContext* context,
 }
 
 CaptionBubbleModel::~CaptionBubbleModel() {
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionLogFlickerRate)) {
+    // Log the number of erasures per partial result.
+    double flicker_rate = (partial_result_count_ > 0)
+                              ? erasure_count_ / partial_result_count_
+                              : 0;
+    LOG(WARNING) << "Live caption flicker rate:" << flicker_rate
+                 << ". (not a warning)";
+  }
+
   if (observer_)
     observer_->SetModel(nullptr);
 }
@@ -59,6 +85,13 @@ void CaptionBubbleModel::OnAutoDetectedLanguageChanged() {
 }
 
 void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionLogFlickerRate)) {
+    erasure_count_ +=
+        partial_text_.size() -
+        GetLongestCommonPrefixLength(partial_text, partial_text_);
+    partial_result_count_++;
+  }
+
   partial_text_ = partial_text;
   OnTextChanged();
   if (has_error_) {
