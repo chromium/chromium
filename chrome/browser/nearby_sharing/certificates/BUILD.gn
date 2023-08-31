@@ -38,6 +38,7 @@ source_set("certificates") {
     "//chromeos/ash/components/nearby/common/proto",
     "//chromeos/ash/components/nearby/common/scheduling",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/logging:logging",
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",

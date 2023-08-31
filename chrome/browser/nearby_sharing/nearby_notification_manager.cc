@@ -29,7 +29,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -40,6 +39,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
@@ -493,7 +493,7 @@ class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
   void OnFileRead(std::unique_ptr<std::string> contents,
                   bool is_contents_read) {
     if (!is_contents_read || !contents || contents->empty()) {
-      NS_LOG(VERBOSE) << __func__ << ": Image contents not found.";
+      CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Image contents not found.";
       OnDecodeImageFailed();
       return;
     }
@@ -722,8 +722,9 @@ bool ShouldShowNearbyDeviceTryingToShareNotification(
   base::TimeDelta last_dismissed_delta = base::Time::Now() - last_dismissed;
   if (last_dismissed_delta <
       NearbyNotificationManager::kNearbyDeviceTryingToShareDismissedTimeout) {
-    NS_LOG(VERBOSE) << "Not showing onboarding notification: the user recently "
-                       "dismissed the notification.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << "Not showing onboarding notification: the user recently "
+           "dismissed the notification.";
     return false;
   }
 

@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -134,7 +134,7 @@ NearbyShareContactDownloaderImpl::NearbyShareContactDownloaderImpl(
 NearbyShareContactDownloaderImpl::~NearbyShareContactDownloaderImpl() = default;
 
 void NearbyShareContactDownloaderImpl::OnRun() {
-  NS_LOG(VERBOSE) << __func__ << ": Starting contacts download.";
+  CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Starting contacts download.";
   start_timestamp_ = base::TimeTicks::Now();
   CallListContactPeople(/*next_page_token=*/absl::nullopt);
 }
@@ -142,10 +142,10 @@ void NearbyShareContactDownloaderImpl::OnRun() {
 void NearbyShareContactDownloaderImpl::CallListContactPeople(
     const absl::optional<std::string>& next_page_token) {
   ++current_page_number_;
-  NS_LOG(VERBOSE) << __func__
-                  << ": Making ListContactPeople RPC call to fetch page number "
-                  << current_page_number_
-                  << " with page token: " << next_page_token.value_or("[null]");
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Making ListContactPeople RPC call to fetch page number "
+      << current_page_number_
+      << " with page token: " << next_page_token.value_or("[null]");
   timer_.Start(
       FROM_HERE, timeout_,
       base::BindOnce(
@@ -184,8 +184,8 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Download of " << contacts_.size()
-                  << " contacts succeeded.";
+  CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Download of "
+                               << contacts_.size() << " contacts succeeded.";
   RecordContactDownloadResultMetrics(/*success=*/true, current_page_number_,
                                      start_timestamp_);
   RecordContactDistributionMetrics(contacts_);
@@ -201,9 +201,9 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
                      nearbyshare::proto::ContactRecord::DEVICE_CONTACT;
             }),
         contacts_.end());
-    NS_LOG(VERBOSE) << __func__ << ": Removed "
-                    << initial_num_contacts - contacts_.size()
-                    << " device contacts.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Removed " << initial_num_contacts - contacts_.size()
+        << " device contacts.";
   }
 
   // Remove unreachable contacts.
@@ -216,9 +216,9 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
       contacts_.end());
   uint32_t num_unreachable_contacts_filtered_out =
       initial_num_contacts - contacts_.size();
-  NS_LOG(VERBOSE) << __func__ << ": Removed "
-                  << num_unreachable_contacts_filtered_out
-                  << " unreachable contacts.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Removed " << num_unreachable_contacts_filtered_out
+      << " unreachable contacts.";
 
   Succeed(std::move(contacts_), num_unreachable_contacts_filtered_out);
 }
@@ -232,8 +232,9 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleFailure(
   RecordContactDownloadResultMetrics(/*success=*/false, current_page_number_,
                                      start_timestamp_);
 
-  NS_LOG(ERROR) << __func__ << ": Contact download RPC call failed with error "
-                << error << " fetching page number " << current_page_number_;
+  CD_LOG(ERROR, Feature::NS)
+      << __func__ << ": Contact download RPC call failed with error " << error
+      << " fetching page number " << current_page_number_;
   Fail();
 }
 
@@ -243,6 +244,7 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleTimeout() {
   RecordContactDownloadResultMetrics(/*success=*/false, current_page_number_,
                                      start_timestamp_);
 
-  NS_LOG(ERROR) << __func__ << ": Contact download RPC call timed out.";
+  CD_LOG(ERROR, Feature::NS)
+      << __func__ << ": Contact download RPC call timed out.";
   Fail();
 }

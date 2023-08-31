@@ -8,8 +8,8 @@
 
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
+#include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"
@@ -40,7 +40,7 @@ absl::optional<std::vector<uint8_t>> DecryptMetadataKey(
   std::unique_ptr<crypto::Encryptor> encryptor =
       CreateNearbyShareCtrEncryptor(secret_key, encrypted_metadata_key.salt());
   if (!encryptor) {
-    NS_LOG(ERROR)
+    CD_LOG(ERROR, Feature::NS)
         << "Cannot decrypt metadata key: Could not create CTR encryptor.";
     return absl::nullopt;
   }
@@ -146,16 +146,18 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
       DecryptMetadataPayload(encrypted_metadata, *decrypted_metadata_key,
                              secret_key.get());
   if (!decrypted_metadata_bytes) {
-    NS_LOG(ERROR) << "Metadata decryption failed: Failed to decrypt metadata "
-                  << "payload.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Metadata decryption failed: Failed to decrypt metadata "
+        << "payload.";
     return absl::nullopt;
   }
 
   nearbyshare::proto::EncryptedMetadata unencrypted_metadata;
   if (!unencrypted_metadata.ParseFromArray(decrypted_metadata_bytes->data(),
                                            decrypted_metadata_bytes->size())) {
-    NS_LOG(ERROR) << "Metadata decryption failed: Failed to parse decrypted "
-                  << "metadata payload.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Metadata decryption failed: Failed to parse decrypted "
+        << "metadata payload.";
     return absl::nullopt;
   }
 
@@ -219,7 +221,8 @@ bool NearbyShareDecryptedPublicCertificate::VerifySignature(
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256, signature,
                            public_key_)) {
-    NS_LOG(ERROR) << "Verification failed: Initialization unsuccessful.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Verification failed: Initialization unsuccessful.";
     return false;
   }
 

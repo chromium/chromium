@@ -19,6 +19,7 @@ source_set("client") {
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/nearby_sharing/proto",
     "//chromeos/ash/components/nearby/common/client",
+    "//components/cross_device/logging:logging",
     "//components/signin/public/identity_manager",
     "//net",
     "//net/traffic_annotation",

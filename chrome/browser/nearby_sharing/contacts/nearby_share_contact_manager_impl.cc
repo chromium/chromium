@@ -17,13 +17,13 @@
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/secure_hash.h"
 
@@ -274,13 +274,14 @@ std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
 }
 
 void NearbyShareContactManagerImpl::OnPeriodicContactsUploadRequested() {
-  NS_LOG(VERBOSE) << __func__
-                  << ": Periodic Nearby Share contacts upload requested. "
-                  << "Upload will occur after next contacts download.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Periodic Nearby Share contacts upload requested. "
+      << "Upload will occur after next contacts download.";
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadRequested() {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby Share contacts download requested.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Nearby Share contacts download requested.";
 
   DCHECK(!contact_downloader_);
   contact_downloader_ = NearbyShareContactDownloaderImpl::Factory::Create(
@@ -298,8 +299,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
     uint32_t num_unreachable_contacts_filtered_out) {
   contact_downloader_.reset();
 
-  NS_LOG(INFO) << __func__ << ": Nearby Share download of " << contacts.size()
-               << " contacts succeeded.";
+  CD_LOG(INFO, Feature::NS) << __func__ << ": Nearby Share download of "
+                            << contacts.size() << " contacts succeeded.";
 
   // Remove contacts from the allowlist that are not in the contact list.
   SetAllowlist(
@@ -322,9 +323,9 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
   base::UmaHistogramBoolean("Nearby.Share.Contacts.CanGetProfileUserName",
                             user_name.has_value());
   if (!user_name) {
-    NS_LOG(WARNING) << __func__
-                    << ": Profile user name is not valid; could not "
-                    << "add self to list of contacts to upload.";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Profile user name is not valid; could not "
+        << "add self to list of contacts to upload.";
   } else {
     contacts_to_upload.push_back(CreateLocalContact(*user_name));
   }
@@ -334,9 +335,9 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
       contact_upload_hash !=
       pref_service_->GetString(prefs::kNearbySharingContactUploadHashPrefName);
   if (did_contacts_change_since_last_upload) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Contact list or allowlist changed since last "
-                    << "successful upload to the Nearby Share server.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Contact list or allowlist changed since last "
+        << "successful upload to the Nearby Share server.";
   }
 
   // Request a contacts upload if the contact list or allowlist has changed
@@ -359,7 +360,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 void NearbyShareContactManagerImpl::OnContactsDownloadFailure() {
   contact_downloader_.reset();
 
-  NS_LOG(WARNING) << __func__ << ": Nearby Share contacts download failed.";
+  CD_LOG(WARNING, Feature::NS)
+      << __func__ << ": Nearby Share contacts download failed.";
 
   // Notify mojo remotes.
   for (auto& remote : observers_set_) {
@@ -373,9 +375,10 @@ void NearbyShareContactManagerImpl::OnContactsUploadFinished(
     bool did_contacts_change_since_last_upload,
     const std::string& contact_upload_hash,
     bool success) {
-  NS_LOG(INFO) << __func__ << ": Upload of contacts to Nearby Share server "
-               << (success ? "succeeded." : "failed.")
-               << " Contact upload hash: " << contact_upload_hash;
+  CD_LOG(INFO, Feature::NS)
+      << __func__ << ": Upload of contacts to Nearby Share server "
+      << (success ? "succeeded." : "failed.")
+      << " Contact upload hash: " << contact_upload_hash;
   if (success) {
     // Only resolve the periodic upload request on success; let the
     // download-and-upload scheduler handle any failure retries. The periodic

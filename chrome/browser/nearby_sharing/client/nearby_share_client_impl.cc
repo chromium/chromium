@@ -13,13 +13,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -376,7 +376,8 @@ void NearbyShareClientImpl::OnFlowSuccess(
 
 void NearbyShareClientImpl::OnApiCallFailed(
     ash::nearby::NearbyHttpError error) {
-  NS_LOG(ERROR) << "Nearby Share RPC call failed with error " << error;
+  CD_LOG(ERROR, Feature::NS)
+      << "Nearby Share RPC call failed with error " << error;
   std::move(error_callback_).Run(error);
 }
 

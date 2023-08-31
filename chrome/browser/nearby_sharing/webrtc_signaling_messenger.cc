@@ -7,8 +7,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/token.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/webrtc_request_builder.h"
+#include "components/cross_device/logging/logging.h"
 
 WebRtcSignalingMessenger::WebRtcSignalingMessenger(
     signin::IdentityManager* identity_manager,
@@ -27,10 +27,10 @@ void WebRtcSignalingMessenger::SendMessage(
   chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
       request = BuildSendRequest(self_id, peer_id, std::move(location_hint));
 
-  NS_LOG(VERBOSE) << __func__ << ": self_id=" << self_id
-                  << ", peer_id=" << peer_id
-                  << ", request_id=" << request.header().request_id()
-                  << ", message size=" << message.size();
+  CD_LOG(VERBOSE, Feature::NC)
+      << __func__ << ": self_id=" << self_id << ", peer_id=" << peer_id
+      << ", request_id=" << request.header().request_id()
+      << ", message size=" << message.size();
 
   chrome_browser_nearby_sharing_instantmessaging::InboxMessage* inbox_message =
       request.mutable_message();

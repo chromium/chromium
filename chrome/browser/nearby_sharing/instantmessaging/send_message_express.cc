@@ -11,8 +11,8 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "components/cross_device/logging/logging.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -69,9 +69,9 @@ void LogSendResult(bool success,
   ss << "Instant messaging send express " << (success ? "succeeded" : "failed")
      << " for request " << request_id << ". HTTP status: " << http_status;
   if (success) {
-    NS_LOG(VERBOSE) << ss.str();
+    CD_LOG(VERBOSE, Feature::NS) << ss.str();
   } else {
-    NS_LOG(ERROR) << ss.str();
+    CD_LOG(ERROR, Feature::NS) << ss.str();
   }
   base::UmaHistogramBoolean(
       "Nearby.Connections.InstantMessaging.SendExpress.Result", success);
@@ -110,7 +110,7 @@ void SendMessageExpress::DoSendMessage(
       "Nearby.Connections.InstantMessaging.SendExpress.OAuthTokenFetchResult",
       !oauth_token.empty());
   if (oauth_token.empty()) {
-    NS_LOG(ERROR) << __func__ << ": Failed to fetch OAuth token.";
+    CD_LOG(ERROR, Feature::NS) << __func__ << ": Failed to fetch OAuth token.";
     std::move(callback).Run(false);
     // NOTE: |this| might be destroyed here after running the callback
     return;

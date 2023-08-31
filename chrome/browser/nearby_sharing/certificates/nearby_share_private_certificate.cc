@@ -16,8 +16,8 @@
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
+#include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
@@ -144,7 +144,7 @@ base::TimeDelta GetCertificateValidityPeriod() {
   if (!base::StringToInt(certificate_validity_period_hours_str,
                          &certificate_validity_period_hours) ||
       certificate_validity_period_hours < 1) {
-    NS_LOG(ERROR)
+    CD_LOG(ERROR, Feature::NS)
         << __func__
         << ": Invalid value provided for certificate validity period override.";
     return kNearbyShareCertificateValidityPeriod;
@@ -232,14 +232,16 @@ absl::optional<NearbyShareEncryptedMetadataKey>
 NearbySharePrivateCertificate::EncryptMetadataKey() {
   absl::optional<std::vector<uint8_t>> salt = GenerateUnusedSalt();
   if (!salt) {
-    NS_LOG(ERROR) << "Encryption failed: Salt generation unsuccessful.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Encryption failed: Salt generation unsuccessful.";
     return absl::nullopt;
   }
 
   std::unique_ptr<crypto::Encryptor> encryptor =
       CreateNearbyShareCtrEncryptor(secret_key_.get(), *salt);
   if (!encryptor) {
-    NS_LOG(ERROR) << "Encryption failed: Could not create CTR encryptor.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Encryption failed: Could not create CTR encryptor.";
     return absl::nullopt;
   }
 
@@ -247,7 +249,8 @@ NearbySharePrivateCertificate::EncryptMetadataKey() {
             metadata_encryption_key_.size());
   std::vector<uint8_t> encrypted_metadata_key;
   if (!encryptor->Encrypt(metadata_encryption_key_, &encrypted_metadata_key)) {
-    NS_LOG(ERROR) << "Encryption failed: Could not encrypt metadata key.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Encryption failed: Could not encrypt metadata key.";
     return absl::nullopt;
   }
 
@@ -261,7 +264,7 @@ absl::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
 
   std::vector<uint8_t> signature;
   if (!signer->Sign(payload, &signature)) {
-    NS_LOG(ERROR) << "Signing failed.";
+    CD_LOG(ERROR, Feature::NS) << "Signing failed.";
     return absl::nullopt;
   }
 
@@ -279,21 +282,22 @@ absl::optional<nearbyshare::proto::PublicCertificate>
 NearbySharePrivateCertificate::ToPublicCertificate() const {
   std::vector<uint8_t> public_key;
   if (!key_pair_->ExportPublicKey(&public_key)) {
-    NS_LOG(ERROR) << "Failed to export public key.";
+    CD_LOG(ERROR, Feature::NS) << "Failed to export public key.";
     return absl::nullopt;
   }
 
   absl::optional<std::vector<uint8_t>> encrypted_metadata_bytes =
       EncryptMetadata();
   if (!encrypted_metadata_bytes) {
-    NS_LOG(ERROR) << "Failed to encrypt metadata.";
+    CD_LOG(ERROR, Feature::NS) << "Failed to encrypt metadata.";
     return absl::nullopt;
   }
 
   absl::optional<std::vector<uint8_t>> metadata_encryption_key_tag =
       CreateMetadataEncryptionKeyTag(metadata_encryption_key_);
   if (!metadata_encryption_key_tag) {
-    NS_LOG(ERROR) << "Failed to compute metadata encryption key tag.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Failed to compute metadata encryption key tag.";
     return absl::nullopt;
   }
 
@@ -439,7 +443,7 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
 absl::optional<std::vector<uint8_t>>
 NearbySharePrivateCertificate::GenerateUnusedSalt() {
   if (consumed_salts_.size() >= kNearbyShareMaxNumMetadataEncryptionKeySalts) {
-    NS_LOG(ERROR) << "All salts exhausted for certificate.";
+    CD_LOG(ERROR, Feature::NS) << "All salts exhausted for certificate.";
     return absl::nullopt;
   }
 
@@ -461,8 +465,9 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
     }
   }
 
-  NS_LOG(ERROR) << "Salt generation exceeded max number of retries. This is "
-                   "highly improbable.";
+  CD_LOG(ERROR, Feature::NS)
+      << "Salt generation exceeded max number of retries. This is "
+         "highly improbable.";
   return absl::nullopt;
 }
 

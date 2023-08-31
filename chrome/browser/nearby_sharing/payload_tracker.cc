@@ -7,11 +7,11 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/cross_device/logging/logging.h"
 
 PayloadTracker::PayloadTracker(
     const ShareTarget& share_target,
@@ -25,7 +25,7 @@ PayloadTracker::PayloadTracker(
   for (const auto& file : share_target.file_attachments) {
     auto it = attachment_info_map.find(file.id());
     if (it == attachment_info_map.end() || !it->second.payload_id) {
-      NS_LOG(WARNING)
+      CD_LOG(WARNING, Feature::NS)
           << __func__
           << ": Failed to retrieve payload for file attachment id - "
           << file.id();
@@ -40,7 +40,7 @@ PayloadTracker::PayloadTracker(
   for (const auto& text : share_target.text_attachments) {
     auto it = attachment_info_map.find(text.id());
     if (it == attachment_info_map.end() || !it->second.payload_id) {
-      NS_LOG(WARNING)
+      CD_LOG(WARNING, Feature::NS)
           << __func__
           << ": Failed to retrieve payload for text attachment id - "
           << text.id();
@@ -56,9 +56,9 @@ PayloadTracker::PayloadTracker(
        share_target.wifi_credentials_attachments) {
     auto it = attachment_info_map.find(wifi_credentials.id());
     if (it == attachment_info_map.end() || !it->second.payload_id) {
-      NS_LOG(WARNING) << __func__
-                      << ": Failed to retrieve payload for Wi-Fi Credentials "
-                      << "attachment id - " << wifi_credentials.id();
+      CD_LOG(WARNING, Feature::NS)
+          << __func__ << ": Failed to retrieve payload for Wi-Fi Credentials "
+          << "attachment id - " << wifi_credentials.id();
       continue;
     }
 
@@ -88,8 +88,9 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update,
   if (it->second.status != update->status) {
     it->second.status = update->status;
 
-    NS_LOG(VERBOSE) << __func__ << ": Payload id " << update->payload_id
-                    << " had status change: " << update->status;
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Payload id " << update->payload_id
+        << " had status change: " << update->status;
   }
 
   // The number of bytes transferred should never go down. That said, some
@@ -108,7 +109,8 @@ void PayloadTracker::OnTransferUpdate() {
     const bool is_transfer_complete =
         (GetTotalTransferred() >= total_transfer_size_) ? true : false;
     if (is_transfer_complete) {
-      NS_LOG(VERBOSE) << __func__ << ": All payloads are complete.";
+      CD_LOG(VERBOSE, Feature::NS)
+          << __func__ << ": All payloads are complete.";
       EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kSuccess);
       update_callback_.Run(share_target_,
                            TransferMetadataBuilder()
@@ -118,7 +120,7 @@ void PayloadTracker::OnTransferUpdate() {
       return;
     }
 
-    NS_LOG(VERBOSE) << __func__ << ": Payloads incomplete.";
+    CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Payloads incomplete.";
     EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kFailure);
     update_callback_.Run(
         share_target_,
@@ -131,7 +133,7 @@ void PayloadTracker::OnTransferUpdate() {
   }
 
   if (IsCancelled()) {
-    NS_LOG(VERBOSE) << __func__ << ": Payloads cancelled.";
+    CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Payloads cancelled.";
     EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kCanceled);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
@@ -141,7 +143,7 @@ void PayloadTracker::OnTransferUpdate() {
   }
 
   if (HasFailed()) {
-    NS_LOG(VERBOSE) << __func__ << ": Payloads failed.";
+    CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Payloads failed.";
     EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kFailure);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
@@ -208,7 +210,7 @@ uint64_t PayloadTracker::GetTotalTransferred() const {
 
 double PayloadTracker::CalculateProgressPercent() const {
   if (!total_transfer_size_) {
-    NS_LOG(WARNING) << __func__ << ": Total attachment size is 0";
+    CD_LOG(WARNING, Feature::NS) << __func__ << ": Total attachment size is 0";
     return 100.0;
   }
 

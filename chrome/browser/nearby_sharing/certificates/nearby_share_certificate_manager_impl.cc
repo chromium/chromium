@@ -25,12 +25,12 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -70,8 +70,9 @@ size_t NumPrivateCertificates() {
   int num_certificates = 0;
   if (!base::StringToInt(num_certificates_str, &num_certificates) ||
       num_certificates < 1) {
-    NS_LOG(ERROR) << __func__
-                  << ": Invalid value provided with num certificates override.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__
+        << ": Invalid value provided with num certificates override.";
     return kNearbyShareNumPrivateCertificates;
   }
 
@@ -89,7 +90,7 @@ size_t NumExpectedPrivateCertificates() {
 absl::optional<std::string> GetBluetoothMacAddress(
     device::BluetoothAdapter* bluetooth_adapter) {
   if (!bluetooth_adapter) {
-    NS_LOG(WARNING)
+    CD_LOG(WARNING, Feature::NS)
         << __func__
         << ": Failed to get Bluetooth MAC address; Bluetooth adapter is null.";
     return absl::nullopt;
@@ -100,17 +101,17 @@ absl::optional<std::string> GetBluetoothMacAddress(
     // device::BluetoothAdapter::Observer::AdapterPresentChanged() before trying
     // to generate private certificates. We take the simple but unsophisticated
     // approach by failing and retrying.
-    NS_LOG(WARNING) << __func__
-                    << ": Failed to get Bluetooth MAC address; Bluetooth "
-                    << "adapter is not present.";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to get Bluetooth MAC address; Bluetooth "
+        << "adapter is not present.";
     return absl::nullopt;
   }
 
   std::array<uint8_t, 6> bytes;
   if (!device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes)) {
-    NS_LOG(WARNING) << __func__
-                    << ": Failed to get Bluetooth MAC address; cannot parse "
-                    << "address: " << bluetooth_adapter->GetAddress();
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to get Bluetooth MAC address; cannot parse "
+        << "address: " << bluetooth_adapter->GetAddress();
     return absl::nullopt;
   }
 
@@ -125,9 +126,9 @@ absl::optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
     device::BluetoothAdapter* bluetooth_adapter) {
   nearbyshare::proto::EncryptedMetadata metadata;
   if (device_name.empty()) {
-    NS_LOG(WARNING) << __func__
-                    << ": Failed to create private certificate metadata; "
-                    << "missing device name.";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to create private certificate metadata; "
+        << "missing device name.";
     return absl::nullopt;
   }
 
@@ -199,8 +200,8 @@ void TryDecryptPublicCertificates(
     std::unique_ptr<std::vector<nearbyshare::proto::PublicCertificate>>
         public_certificates) {
   if (!success || !public_certificates) {
-    NS_LOG(ERROR) << __func__
-                  << ": Failed to read public certificates from storage.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << ": Failed to read public certificates from storage.";
     RecordGetDecryptedPublicCertificateResultMetric(
         GetDecryptedPublicCertificateResult::kStorageFailure);
     std::move(callback).Run(absl::nullopt);
@@ -212,16 +213,16 @@ void TryDecryptPublicCertificates(
         NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
             cert, encrypted_metadata_key);
     if (decrypted) {
-      NS_LOG(VERBOSE) << __func__
-                      << ": Successfully decrypted public certificate with ID "
-                      << base::HexEncode(decrypted->id());
+      CD_LOG(VERBOSE, Feature::NS)
+          << __func__ << ": Successfully decrypted public certificate with ID "
+          << base::HexEncode(decrypted->id());
       RecordGetDecryptedPublicCertificateResultMetric(
           GetDecryptedPublicCertificateResult::kSuccess);
       std::move(callback).Run(std::move(decrypted));
       return;
     }
   }
-  NS_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::NS)
       << __func__
       << ": Metadata key could not decrypt any public certificates.";
   RecordGetDecryptedPublicCertificateResultMetric(
@@ -396,9 +397,9 @@ NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
     }
   }
 
-  NS_LOG(WARNING) << __func__
-                  << ": No valid private certificate found with visibility "
-                  << visibility;
+  CD_LOG(WARNING, Feature::NS)
+      << __func__ << ": No valid private certificate found with visibility "
+      << visibility;
   return absl::nullopt;
 }
 
@@ -464,7 +465,7 @@ NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
 }
 
 void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
-  NS_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::NS)
       << __func__
       << ": Private certificate expiration detected; refreshing certificates.";
 
@@ -481,8 +482,8 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
   std::vector<NearbySharePrivateCertificate> certs =
       *certificate_storage_->GetPrivateCertificates();
   if (certs.size() == NumExpectedPrivateCertificates()) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": All private certificates are still valid.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": All private certificates are still valid.";
     private_certificate_expiration_scheduler_->HandleResult(/*success=*/true);
     return;
   }
@@ -508,7 +509,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
                     profile_info_provider_->GetProfileUserName(),
                     bluetooth_adapter.get());
   if (!metadata) {
-    NS_LOG(WARNING)
+    CD_LOG(WARNING, Feature::NS)
         << __func__
         << "Failed to create private certificates; cannot create metadata";
     private_certificate_expiration_scheduler_->HandleResult(/*success=*/false);
@@ -520,7 +521,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
   // switch).
   size_t num_certificates = NumPrivateCertificates();
   if (features::IsSelfShareEnabled()) {
-    NS_LOG(INFO)
+    CD_LOG(INFO, Feature::NS)
         << __func__ << ": Creating "
         << num_certificates -
                num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
@@ -533,7 +534,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
                num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
         << " your-devices private certificates.";
   } else {
-    NS_LOG(INFO)
+    CD_LOG(INFO, Feature::NS)
         << __func__ << ": Creating "
         << num_certificates -
                num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
@@ -574,7 +575,8 @@ void NearbyShareCertificateManagerImpl::
     public_certs.push_back(*private_cert.ToPublicCertificate());
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Uploading local device certificates.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Uploading local device certificates.";
   local_device_data_manager_->UploadCertificates(
       std::move(public_certs),
       base::BindOnce(&NearbyShareCertificateManagerImpl::
@@ -584,8 +586,9 @@ void NearbyShareCertificateManagerImpl::
 
 void NearbyShareCertificateManagerImpl::OnLocalDeviceCertificateUploadFinished(
     bool success) {
-  NS_LOG(INFO) << __func__ << ": Upload of local device certificates "
-               << (success ? "succeeded" : "failed.");
+  CD_LOG(INFO, Feature::NS)
+      << __func__ << ": Upload of local device certificates "
+      << (success ? "succeeded" : "failed.");
   upload_local_device_certificates_scheduler_->HandleResult(success);
 }
 
@@ -634,7 +637,8 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
   // could result in hitting this limit. Add the secret IDs of all locally
   // stored public certificates when this length restriction is circumvented.
 
-  NS_LOG(VERBOSE) << __func__ << ": Downloading public certificates.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Downloading public certificates.";
 
   timer_.Start(
       FROM_HERE, kListPublicCertificatesTimeout,
@@ -670,8 +674,8 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess(
 
   client_.reset();
 
-  NS_LOG(INFO) << __func__ << ": " << certs.size()
-               << " public certificates downloaded.";
+  CD_LOG(INFO, Feature::NS)
+      << __func__ << ": " << certs.size() << " public certificates downloaded.";
   certificate_storage_->AddPublicCertificates(
       certs, base::BindOnce(&NearbyShareCertificateManagerImpl::
                                 OnPublicCertificatesAddedToStorage,
@@ -722,7 +726,7 @@ void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
     size_t page_number,
     size_t certificate_count) {
   if (success) {
-    NS_LOG(VERBOSE)
+    CD_LOG(VERBOSE, Feature::NS)
         << __func__
         << ": Public certificates successfully downloaded and stored.";
     NotifyPublicCertificatesDownloaded();
@@ -730,11 +734,12 @@ void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
     // Recompute the expiration timer to account for new certificates.
     public_certificate_expiration_scheduler_->Reschedule();
   } else if (http_result == ash::nearby::NearbyHttpResult::kSuccess) {
-    NS_LOG(ERROR) << __func__ << ": Public certificates not stored.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << ": Public certificates not stored.";
   } else {
-    NS_LOG(ERROR) << __func__
-                  << ": Public certificates download failed with HTTP error: "
-                  << http_result;
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << ": Public certificates download failed with HTTP error: "
+        << http_result;
   }
   RecordDownloadPublicCertificatesResultMetrics(success, http_result,
                                                 page_number, certificate_count);

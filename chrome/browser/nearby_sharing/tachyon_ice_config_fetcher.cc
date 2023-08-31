@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/duration.pb.h"
 #include "chrome/browser/nearby_sharing/proto/ice.pb.h"
 #include "chrome/browser/nearby_sharing/proto/tachyon.pb.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/nearby_sharing/proto/tachyon_enums.pb.h"
 #include "chrome/services/sharing/public/cpp/sharing_webrtc_metrics.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "components/cross_device/logging/logging.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -155,13 +155,15 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader,
   RecordResultMetric(status);
 
   if (!status.IsSuccess()) {
-    NS_LOG(ERROR) << "TachyonIceConfigFetcher (request_id=" << request_id
-                  << ") " << status << " " << status.GetResultCodeForMetrics();
+    CD_LOG(ERROR, Feature::NC)
+        << "TachyonIceConfigFetcher (request_id=" << request_id << ") "
+        << status << " " << status.GetResultCodeForMetrics();
     return false;
   }
 
-  NS_LOG(VERBOSE) << "TachyonIceConfigFetcher (request_id=" << request_id
-                  << ") GetIceServers succeeded";
+  CD_LOG(VERBOSE, Feature::NC)
+      << "TachyonIceConfigFetcher (request_id=" << request_id
+      << ") GetIceServers succeeded";
   return true;
 }
 
@@ -228,7 +230,8 @@ void TachyonIceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
   // If a previous request cached the ICE servers and the expiration time hasn't
   // lapsed, return a copy of the cached servers immediately.
   if (ice_server_cache_ && ice_server_cache_expiration_ >= base::Time::Now()) {
-    NS_LOG(VERBOSE) << "TachyonIceConfigFetcher returning cached ice servers";
+    CD_LOG(VERBOSE, Feature::NC)
+        << "TachyonIceConfigFetcher returning cached ice servers";
     std::move(callback).Run(CloneIceServerList(*ice_server_cache_));
     RecordCacheHitMetric(/*cache_hit=*/true);
     return;
@@ -245,7 +248,7 @@ void TachyonIceConfigFetcher::GetIceServersWithToken(
     GetIceServersCallback callback,
     const std::string& token) {
   if (token.empty()) {
-    NS_LOG(ERROR)
+    CD_LOG(ERROR, Feature::NC)
         << "TachyonIceConfigFetcher failed to fetch OAuth access token, "
            "returning default ICE servers";
     std::move(callback).Run(GetDefaultIceServers());
@@ -271,9 +274,10 @@ void TachyonIceConfigFetcher::GetIceServersWithToken(
   url_loader->AttachStringForUpload(request.SerializeAsString(),
                                     "application/x-protobuf");
 
-  NS_LOG(VERBOSE) << __func__
-                  << ": Requesting ICE Servers from Tachyon (request_id="
-                  << request_id << ")";
+  CD_LOG(VERBOSE, Feature::NC)
+      << __func__
+      << ": Requesting ICE Servers from Tachyon (request_id=" << request_id
+      << ")";
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&TachyonIceConfigFetcher::OnIceServersResponse,
@@ -295,8 +299,9 @@ void TachyonIceConfigFetcher::OnIceServersResponse(
   sharing::LogWebRtcIceConfigFetched(ice_servers.size());
 
   if (ice_servers.empty()) {
-    NS_LOG(VERBOSE) << "TachyonIceConfigFetcher (request_id=" << request_id
-                    << ") empty response, returning default ICE servers";
+    CD_LOG(VERBOSE, Feature::NC)
+        << "TachyonIceConfigFetcher (request_id=" << request_id
+        << ") empty response, returning default ICE servers";
     ice_servers = GetDefaultIceServers();
   }
 
@@ -310,8 +315,8 @@ TachyonIceConfigFetcher::ParseIceServersResponse(
   std::vector<sharing::mojom::IceServerPtr> servers_mojo;
   tachyon_proto::GetICEServerResponse response;
   if (!response.ParseFromString(serialized_proto)) {
-    NS_LOG(ERROR) << __func__ << ": (request_id=" << request_id
-                  << ") Failed to parse response";
+    CD_LOG(ERROR, Feature::NC) << __func__ << ": (request_id=" << request_id
+                               << ") Failed to parse response";
     return servers_mojo;
   }
 

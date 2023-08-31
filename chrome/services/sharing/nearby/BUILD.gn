@@ -28,6 +28,7 @@ source_set("nearby") {
     "//base",
     "//chrome/services/sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/logging:logging",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:connections",
     "//third_party/nearby:connections_credential_proto",

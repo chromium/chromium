@@ -28,6 +28,7 @@ source_set("contacts") {
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/scheduling",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/logging:logging",
     "//components/prefs",
     "//crypto",
   ]

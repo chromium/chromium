@@ -7,9 +7,9 @@
 #include <type_traits>
 
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -101,7 +101,8 @@ void IncomingFramesReader::ReadNextFrame() {
 void IncomingFramesReader::OnTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NS_LOG(WARNING) << __func__ << ": Timed out reading from NearbyConnection.";
+  CD_LOG(WARNING, Feature::NS)
+      << __func__ << ": Timed out reading from NearbyConnection.";
   Done(absl::nullopt);
 }
 
@@ -114,7 +115,7 @@ void IncomingFramesReader::OnDataReadFromConnection(
   }
 
   if (!bytes) {
-    NS_LOG(WARNING) << __func__ << ": Failed to read frame";
+    CD_LOG(WARNING, Feature::NS) << __func__ << ": Failed to read frame";
     Done(absl::nullopt);
     return;
   }
@@ -123,7 +124,7 @@ void IncomingFramesReader::OnDataReadFromConnection(
       GetOrStartNearbySharingDecoder();
 
   if (!decoder) {
-    NS_LOG(WARNING)
+    CD_LOG(WARNING, Feature::NS)
         << __func__
         << ": Cannot decode frame. Not currently bound to nearby process";
     Done(absl::nullopt);
@@ -142,7 +143,8 @@ void IncomingFramesReader::OnFrameDecoded(sharing::mojom::FramePtr frame) {
   }
 
   if (!frame->is_v1()) {
-    NS_LOG(VERBOSE) << __func__ << ": Frame read does not have V1Frame";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Frame read does not have V1Frame";
     ReadNextFrame();
     return;
   }
@@ -150,16 +152,16 @@ void IncomingFramesReader::OnFrameDecoded(sharing::mojom::FramePtr frame) {
   sharing::mojom::V1FramePtr v1_frame(std::move(frame->get_v1()));
   sharing::mojom::V1Frame::Tag v1_frame_type = v1_frame->which();
   if (frame_type_ && *frame_type_ != v1_frame_type) {
-    NS_LOG(WARNING) << __func__ << ": Failed to read frame of type "
-                    << *frame_type_ << ", but got frame of type "
-                    << v1_frame_type << ". Cached for later.";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to read frame of type " << *frame_type_
+        << ", but got frame of type " << v1_frame_type << ". Cached for later.";
     cached_frames_.insert({v1_frame_type, std::move(v1_frame)});
     ReadNextFrame();
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Successfully read frame of type "
-                  << v1_frame_type;
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Successfully read frame of type " << v1_frame_type;
   Done(std::move(v1_frame));
 }
 
@@ -176,9 +178,10 @@ void IncomingFramesReader::Done(
 
 absl::optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
     absl::optional<sharing::mojom::V1Frame::Tag> frame_type) {
-  NS_LOG(VERBOSE) << __func__ << ": Fetching cached frame";
+  CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Fetching cached frame";
   if (frame_type)
-    NS_LOG(VERBOSE) << __func__ << ": Requested frame type - " << *frame_type;
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Requested frame type - " << *frame_type;
 
   auto iter =
       frame_type ? cached_frames_.find(*frame_type) : cached_frames_.begin();
@@ -186,7 +189,8 @@ absl::optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
   if (iter == cached_frames_.end())
     return absl::nullopt;
 
-  NS_LOG(VERBOSE) << __func__ << ": Successfully read cached frame";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Successfully read cached frame";
   sharing::mojom::V1FramePtr frame = std::move(iter->second);
   cached_frames_.erase(iter);
   return frame;
@@ -200,8 +204,8 @@ IncomingFramesReader::GetOrStartNearbySharingDecoder() {
                        weak_ptr_factory_.GetWeakPtr()));
 
     if (!process_reference_) {
-      NS_LOG(WARNING) << __func__
-                      << "Failed to get a reference to the nearby process.";
+      CD_LOG(WARNING, Feature::NS)
+          << __func__ << "Failed to get a reference to the nearby process.";
       is_process_stopped_ = true;
       return nullptr;
     }
@@ -213,8 +217,8 @@ IncomingFramesReader::GetOrStartNearbySharingDecoder() {
       process_reference_->GetNearbySharingDecoder().get();
 
   if (!decoder)
-    NS_LOG(WARNING) << __func__
-                    << "Failed to get decoder from process reference.";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << "Failed to get decoder from process reference.";
 
   return decoder;
 }

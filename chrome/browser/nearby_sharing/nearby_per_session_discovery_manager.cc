@@ -12,9 +12,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_confirmation_manager.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-forward.h"
+#include "components/cross_device/logging/logging.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -120,24 +120,25 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
   if (!transfer_update_listener_.is_bound()) {
     // This can happen when registering the send surface and an existing
     // transfer is happening or recently happened.
-    NS_LOG(VERBOSE) << __func__
-                    << ": transfer_update_listener_ is not is_bound(), cannot "
-                       "forward transfer updates";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": transfer_update_listener_ is not is_bound(), cannot "
+           "forward transfer updates";
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Nearby per-session discovery manager: "
-                  << "Transfer update for share target with ID "
-                  << share_target.id << ": "
-                  << TransferMetadata::StatusToString(
-                         transfer_metadata.status());
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Nearby per-session discovery manager: "
+      << "Transfer update for share target with ID " << share_target.id << ": "
+      << TransferMetadata::StatusToString(transfer_metadata.status());
 
   absl::optional<nearby_share::mojom::TransferStatus> status =
       GetTransferStatus(transfer_metadata);
 
   if (!status) {
-    NS_LOG(VERBOSE) << __func__ << ": Nearby per-session discovery manager: "
-                    << " skipping status update, no mojo mapping defined yet.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << ": Nearby per-session discovery manager: "
+        << " skipping status update, no mojo mapping defined yet.";
     return;
   }
 
@@ -147,9 +148,10 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
     ShareTarget share_target) {
-  NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
-                  << ": id=" << share_target.id
-                  << ", device_id=" << GetDeviceIdForLogs(share_target);
+  CD_LOG(VERBOSE, Feature::NS)
+      << "NearbyPerSessionDiscoveryManager::" << __func__
+      << ": id=" << share_target.id
+      << ", device_id=" << GetDeviceIdForLogs(share_target);
   // Update metrics.
   UpdateFurthestDiscoveryProgressIfNecessary(
       DiscoveryProgress::kDiscoveredShareTargetNothingSent);
@@ -174,10 +176,10 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
                            });
 
     if (it != discovered_share_targets_.end()) {
-      NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
-                      << ": Removing previously discovered share target with "
-                      << "identical device_id="
-                      << GetDeviceIdForLogs(share_target);
+      CD_LOG(VERBOSE, Feature::NS)
+          << "NearbyPerSessionDiscoveryManager::" << __func__
+          << ": Removing previously discovered share target with "
+          << "identical device_id=" << GetDeviceIdForLogs(share_target);
       OnShareTargetLost(it->second);
     }
   }
@@ -193,16 +195,18 @@ void NearbyPerSessionDiscoveryManager::AddDiscoveryObserver(
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
     ShareTarget share_target) {
-  NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
-                  << ": id=" << share_target.id
-                  << ", device_id=" << GetDeviceIdForLogs(share_target);
+  CD_LOG(VERBOSE, Feature::NS)
+      << "NearbyPerSessionDiscoveryManager::" << __func__
+      << ": id=" << share_target.id
+      << ", device_id=" << GetDeviceIdForLogs(share_target);
 
   // It is possible that we already removed a ShareTarget from the map when
   // deduping by ShareTarget device_id.
   if (!base::Contains(discovered_share_targets_, share_target.id)) {
-    NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
-                    << ": Share target id=" << share_target.id
-                    << " already removed. Taking no action.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << "NearbyPerSessionDiscoveryManager::" << __func__
+        << ": Share target id=" << share_target.id
+        << " already removed. Taking no action.";
     return;
   }
 
@@ -240,7 +244,8 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
   base::UmaHistogramEnumeration("Nearby.Share.Discovery.StartDiscovery",
                                 status);
   if (status != NearbySharingService::StatusCodes::kOk) {
-    NS_LOG(WARNING) << __func__ << ": Failed to register send surface";
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to register send surface";
     UpdateFurthestDiscoveryProgressIfNecessary(
         DiscoveryProgress::kFailedToStartDiscovery);
     share_target_listener_.reset();
@@ -277,7 +282,8 @@ void NearbyPerSessionDiscoveryManager::StopDiscovery(
     base::UmaHistogramEnumeration(
         "Nearby.Share.Discovery.UnregisterSendSurface", status);
     if (status != NearbySharingService::StatusCodes::kOk) {
-      NS_LOG(WARNING) << __func__ << ": Failed to unregister send surface";
+      CD_LOG(WARNING, Feature::NS)
+          << __func__ << ": Failed to unregister send surface";
     }
     registered_as_send_surface_ = false;
   }
@@ -297,8 +303,9 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   base::UmaHistogramBoolean("Nearby.Share.Discovery.LookUpSelectedShareTarget",
                             look_up_share_target_success);
   if (!look_up_share_target_success) {
-    NS_LOG(VERBOSE) << __func__ << ": Unknown share target selected: id="
-                    << share_target_id;
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": Unknown share target selected: id=" << share_target_id;
     UpdateFurthestDiscoveryProgressIfNecessary(
         DiscoveryProgress::kFailedToLookUpSelectedShareTarget);
     std::move(callback).Run(
@@ -336,7 +343,8 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Failed to start send to share target";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Failed to start send to share target";
   UpdateFurthestDiscoveryProgressIfNecessary(
       DiscoveryProgress::kFailedToStartSend);
   transfer_update_listener_.reset();

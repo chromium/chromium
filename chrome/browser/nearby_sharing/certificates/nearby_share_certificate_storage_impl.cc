@@ -19,8 +19,8 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -195,10 +195,11 @@ void NearbyShareCertificateStorageImpl::Initialize() {
         break;
       }
 
-      NS_LOG(VERBOSE) << __func__
-                      << ": Attempting to initialize public certificate "
-                         "database. Number of attempts: "
-                      << num_initialize_attempts_;
+      CD_LOG(VERBOSE, Feature::NS)
+          << __func__
+          << ": Attempting to initialize public certificate "
+             "database. Number of attempts: "
+          << num_initialize_attempts_;
       db_->Init(base::BindOnce(
           &NearbyShareCertificateStorageImpl::OnDatabaseInitialized,
           weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
@@ -210,9 +211,10 @@ void NearbyShareCertificateStorageImpl::Initialize() {
 }
 
 void NearbyShareCertificateStorageImpl::DestroyAndReinitialize() {
-  NS_LOG(ERROR) << __func__
-                << ": Public certificate database corrupt. Erasing and "
-                   "initializing new database.";
+  CD_LOG(ERROR, Feature::NS)
+      << __func__
+      << ": Public certificate database corrupt. Erasing and "
+         "initializing new database.";
   init_status_ = InitStatus::kUninitialized;
   db_->Destroy(base::BindOnce(
       &NearbyShareCertificateStorageImpl::OnDatabaseDestroyedReinitialize,
@@ -246,11 +248,11 @@ void NearbyShareCertificateStorageImpl::OnDatabaseInitialized(
 void NearbyShareCertificateStorageImpl::FinishInitialization(bool success) {
   init_status_ = success ? InitStatus::kInitialized : InitStatus::kFailed;
   if (success) {
-    NS_LOG(VERBOSE) << __func__
-                    << "Public certificate database initialization succeeded.";
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__ << "Public certificate database initialization succeeded.";
   } else {
-    NS_LOG(ERROR) << __func__
-                  << "Public certificate database initialization failed.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << "Public certificate database initialization failed.";
   }
   RecordInitializationSuccessRateMetric(success, num_initialize_attempts_);
 
@@ -266,8 +268,8 @@ void NearbyShareCertificateStorageImpl::FinishInitialization(bool success) {
 void NearbyShareCertificateStorageImpl::OnDatabaseDestroyedReinitialize(
     bool success) {
   if (!success) {
-    NS_LOG(ERROR) << __func__
-                  << ": Failed to destroy public certificate database.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << ": Failed to destroy public certificate database.";
     FinishInitialization(false);
     return;
   }
@@ -284,11 +286,13 @@ void NearbyShareCertificateStorageImpl::AddPublicCertificatesCallback(
     bool proceed) {
   RecordAddPublicCertificatesSuccessRateMetric(proceed);
   if (!proceed) {
-    NS_LOG(ERROR) << __func__ << ": Failed to add public certificates.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << ": Failed to add public certificates.";
     std::move(callback).Run(false);
     return;
   }
-  NS_LOG(VERBOSE) << __func__ << ": Successfully added public certificates.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Successfully added public certificates.";
 
   public_certificate_expirations_ =
       MergeExpirations(public_certificate_expirations_, *new_expirations);
@@ -302,13 +306,13 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificatesCallback(
     bool proceed) {
   RecordRemoveExpiredPublicCertificatesSuccessMetric(proceed);
   if (!proceed) {
-    NS_LOG(ERROR) << __func__
-                  << ": Failed to remove expired public certificates.";
+    CD_LOG(ERROR, Feature::NS)
+        << __func__ << ": Failed to remove expired public certificates.";
     std::move(callback).Run(false);
     return;
   }
-  NS_LOG(VERBOSE) << __func__
-                  << ": Expired public certificates successfully removed.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Expired public certificates successfully removed.";
 
   auto should_remove =
       [&](const std::pair<std::string, base::Time>& pair) -> bool {
@@ -337,7 +341,8 @@ void NearbyShareCertificateStorageImpl::GetPublicCertificates(
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Calling LoadEntries on database.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": Calling LoadEntries on database.";
   db_->LoadEntries(std::move(callback));
 }
 
@@ -403,7 +408,7 @@ void NearbyShareCertificateStorageImpl::AddPublicCertificates(
   }
   std::sort(new_expirations->begin(), new_expirations->end(), SortBySecond);
 
-  NS_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::NS)
       << __func__
       << ": Calling UpdateEntries on public certificate database with "
       << public_certificates.size() << " certificates.";
@@ -456,7 +461,7 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificates(
   auto ids_to_remove_set = std::make_unique<base::flat_set<std::string>>(
       ids_to_remove->begin(), ids_to_remove->end());
 
-  NS_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::NS)
       << __func__
       << ": Calling UpdateEntries on public certificate database to remove "
       << ids_to_remove->size() << " expired certificates.";

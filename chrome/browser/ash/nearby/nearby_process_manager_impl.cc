@@ -11,10 +11,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {
@@ -31,7 +31,7 @@ void OnSharingShutDownComplete(
         connections,
     mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence> presence,
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder) {
-  NS_LOG(INFO) << "Asynchronous process shutdown complete.";
+  CD_LOG(INFO, Feature::NS) << "Asynchronous process shutdown complete.";
   // Note: Let the parameters go out of scope, which will disconnect them.
 }
 
@@ -122,13 +122,14 @@ NearbyProcessManagerImpl::GetNearbyProcessReference(
 
   if (!sharing_ || !connections_ || !presence_ || !decoder_) {
     if (!AttemptToBindToUtilityProcess()) {
-      NS_LOG(WARNING) << "Could not connect to Nearby utility process; this "
-                      << "likely means that the attempt was during shutdown.";
+      CD_LOG(WARNING, Feature::NS)
+          << "Could not connect to Nearby utility process; this "
+          << "likely means that the attempt was during shutdown.";
       return nullptr;
     }
   }
 
-  NS_LOG(VERBOSE) << "New Nearby process reference requested.";
+  CD_LOG(VERBOSE, Feature::NS) << "New Nearby process reference requested.";
   auto reference_id = base::UnguessableToken::Create();
   id_to_process_stopped_callback_map_.emplace(
       reference_id, std::move(on_process_stopped_callback));
@@ -172,7 +173,7 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
     return false;
   }
 
-  NS_LOG(INFO) << "Starting up Nearby utility process.";
+  CD_LOG(INFO, Feature::NS) << "Starting up Nearby utility process.";
 
   // Bind to the Sharing interface, which launches the process.
   sharing_.Bind(sharing_binder_.Run());
@@ -239,7 +240,7 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
 }
 
 void NearbyProcessManagerImpl::OnSharingProcessCrash() {
-  NS_LOG(ERROR) << "The utility process has crashed.";
+  CD_LOG(ERROR, Feature::NS) << "The utility process has crashed.";
 
   NearbyProcessShutdownReason shutdown_reason =
       NearbyProcessShutdownReason::kCrash;
@@ -250,9 +251,10 @@ void NearbyProcessManagerImpl::OnSharingProcessCrash() {
 
 void NearbyProcessManagerImpl::OnMojoPipeDisconnect(
     NearbyProcessShutdownReason shutdown_reason) {
-  NS_LOG(ERROR) << "The browser process has detected that the utility process "
-                   "disconnected from a mojo pipe. ["
-                << shutdown_reason << "]";
+  CD_LOG(ERROR, Feature::NS)
+      << "The browser process has detected that the utility process "
+         "disconnected from a mojo pipe. ["
+      << shutdown_reason << "]";
 
   DoShutDownProcess(shutdown_reason);
   NotifyProcessStopped(shutdown_reason);
@@ -273,9 +275,10 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
     return;
   }
 
-  NS_LOG(VERBOSE) << "All Nearby references have been released; will shut down "
-                  << "process in " << kProcessCleanupTimeout << " unless a new "
-                  << "reference is obtained.";
+  CD_LOG(VERBOSE, Feature::NS)
+      << "All Nearby references have been released; will shut down "
+      << "process in " << kProcessCleanupTimeout << " unless a new "
+      << "reference is obtained.";
 
   // Stop the process, but wait |kProcessCleanupTimeout| before doing so. Adding
   // this additional timeout works around issues during Nearby shutdown
@@ -297,7 +300,7 @@ void NearbyProcessManagerImpl::DoShutDownProcess(
   // Ensure that we don't try to stop the process again.
   shutdown_debounce_timer_->Stop();
 
-  NS_LOG(INFO) << "Shutting down Nearby utility process.";
+  CD_LOG(INFO, Feature::NS) << "Shutting down Nearby utility process.";
 
   base::UmaHistogramEnumeration(
       "Nearby.Connections.UtilityProcessShutdownReason", shutdown_reason);
