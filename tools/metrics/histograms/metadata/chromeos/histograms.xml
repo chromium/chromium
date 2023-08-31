@@ -1312,6 +1312,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="CameraApp"/>
     <variant name="General"/>
     <variant name="GeneralCamera"/>
+    <variant name="GeneralWithLocaleForTest"/>
     <variant name="Performance"/>
     <variant name="Peripherals"/>
     <variant name="Stability"/>
