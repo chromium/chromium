@@ -4011,7 +4011,8 @@ const char kInterestFeedV2AutoplayDescription[] = "Enable autoplay on Feedv2.";
 
 const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
 const char kMediaPickerAdoptionStudyDescription[] =
-    "Controls how to launch the Android Media Picker";
+    "Controls how to launch the Android Media Picker (note: This flag is "
+    "ignored as of Android U)";
 
 const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
 const char kMessagesForAndroidAdsBlockedDescription[] =

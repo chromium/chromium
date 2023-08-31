@@ -1520,7 +1520,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         // scheduling purposes).
         intent.putExtra("forceShowBrowse", true);
 
-        if (preferAndroidMediaPickerViaPickImagePlus()) {
+        // Note: The showAndroidMediaPickerDirect is not only used for the Direct and DirectPlus
+        // flavors, but also as a fallback for Indirect. Only the Direct flavor should use the
+        // deprecated MIME-type code-path.
+        if (!preferAndroidMediaPickerViaPickImage()) {
             intent.setType("*/*");
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes.toArray(new String[0]));
         } else {
