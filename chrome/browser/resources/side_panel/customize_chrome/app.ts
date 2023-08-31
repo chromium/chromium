@@ -82,6 +82,10 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('extensionsCardEnabled'),
       },
+      wallpaperSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wallpaperSearchEnabled'),
+      },
     };
   }
 

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -132,6 +133,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeSidePanelExtensionsCard) &&
           features::IsChromeWebuiRefresh2023());
+
+  source->AddBoolean("wallpaperSearchEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kCustomizeChromeWallpaperSearch) &&
+                         base::FeatureList::IsEnabled(features::kMantaService));
 
   webui::SetupChromeRefresh2023(source);
 
