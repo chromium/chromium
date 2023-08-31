@@ -1484,6 +1484,10 @@ BASE_FEATURE(kAccessibilityPageZoom,
              "AccessibilityPageZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the OS-level font setting is adjusted for.
+const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
+    &kAccessibilityPageZoom, "AdjustForOSLevel", true};
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);

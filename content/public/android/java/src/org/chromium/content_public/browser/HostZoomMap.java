@@ -97,6 +97,15 @@ public class HostZoomMap {
     }
 
     /**
+     * Returns true when the field trial param to adjust zoom for OS-level font setting is
+     * true, false otherwise.
+     * @return bool True if zoom should be adjusted.
+     */
+    public static boolean shouldAdjustForOSLevel() {
+        return HostZoomMapImpl.shouldAdjustForOSLevel();
+    }
+
+    /**
      * Get the default zoom level for a given browser context handle (e.g. Profile).
      * @param context       BrowserContextHandle to get default for.
      * @return double       default zoom level.

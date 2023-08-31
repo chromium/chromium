@@ -235,7 +235,7 @@ public class PageZoomUtils {
         // The default (float) |fontScale| is 1, the default page zoom is 1.
         // If the user has a system font scale other than the default, always show the menu item.
         boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(getSystemFontScale(), 1f);
-        if (!isUsingDefaultSystemFontScale) {
+        if (!isUsingDefaultSystemFontScale && HostZoomMap.shouldAdjustForOSLevel()) {
             PageZoomUma.logAppMenuEnabledStateHistogram(
                     PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED);
             return true;

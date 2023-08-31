@@ -21,10 +21,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -75,6 +77,12 @@ public class PageZoomMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, true);
+        testValues.addFieldTrialParamOverride(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
+                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM, "true");
+        FeatureList.setTestValues(testValues);
 
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
 
