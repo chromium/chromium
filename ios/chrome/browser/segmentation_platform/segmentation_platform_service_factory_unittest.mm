@@ -57,10 +57,11 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
                                  const ClassificationResult& result) {
     ASSERT_EQ(result.status, PredictionStatus::kSucceeded);
     EXPECT_FALSE(result.ordered_labels.empty());
-    EXPECT_EQ(3u, result.ordered_labels.size());
+    EXPECT_EQ(4u, result.ordered_labels.size());
     EXPECT_EQ("MostVisitedTiles", result.ordered_labels[0]);
     EXPECT_EQ("Shortcuts", result.ordered_labels[1]);
     EXPECT_EQ("SafetyCheck", result.ordered_labels[2]);
+    EXPECT_EQ("TabResumption", result.ordered_labels[3]);
 
     std::move(closure).Run();
   }

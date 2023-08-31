@@ -182,6 +182,7 @@ const char kTabletProductivityUserModelLabelHigh[] = "High";
 const char kMostVisitedTiles[] = "MostVisitedTiles";
 const char kShortcuts[] = "Shortcuts";
 const char kSafetyCheck[] = "SafetyCheck";
+const char kTabResumption[] = "TabResumption";
 
 // Input Context keys for freshness for IOS modules.
 const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";
