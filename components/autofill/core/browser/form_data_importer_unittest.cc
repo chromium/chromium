@@ -822,7 +822,7 @@ TEST_P(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
   kDefaultGermanProfile.ClearFields({ADDRESS_HOME_STATE});
-  autofill_client_->SetVariationConfigCountryCode("DE");
+  autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
           GetDefaultProfileTypeValuePairsWithOverriddenCountry(""));
@@ -863,7 +863,7 @@ TEST_P(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
 
   // The complement country feature prefers the variation country code, so the
   // imported country will have country = "DE" assigned.
-  autofill_client_->SetVariationConfigCountryCode("DE");
+  autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
 
   // Country complemention happens before parsing the phone number. Thus, at the
   // time the number is parsed, we correctly apply the German rules.
@@ -3598,7 +3598,7 @@ TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
 
   // Now import a profile without a country. The country is thus be complemented
   // to the variation country "DE".
-  autofill_client_->SetVariationConfigCountryCode("DE");
+  autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   type_value_pairs = GetSplitDefaultProfileTypeValuePairs(/*part=*/2);
   EXPECT_FALSE(base::Contains(type_value_pairs, ADDRESS_HOME_COUNTRY,
                               [](auto& pair) { return pair.first; }));

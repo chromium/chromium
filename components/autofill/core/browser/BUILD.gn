@@ -117,6 +117,7 @@ static_library("browser") {
     "browser_autofill_manager.h",
     "contact_info_sync_util.cc",
     "contact_info_sync_util.h",
+    "country_type.h",
     "data_model/address.cc",
     "data_model/address.h",
     "data_model/autofill_data_model.cc",

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -77,7 +78,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  std::string GetVariationConfigCountryCode() const override;
+  GeoIpCountryCode GetVariationConfigCountryCode() const override;
   void ShowAutofillSettings(PopupType popup_type) override;
   void ShowUnmaskPrompt(
       const CreditCard& card,

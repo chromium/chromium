@@ -103,8 +103,8 @@ AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
   return nullptr;
 }
 
-std::string AutofillClient::GetVariationConfigCountryCode() const {
-  return std::string();
+GeoIpCountryCode AutofillClient::GetVariationConfigCountryCode() const {
+  return GeoIpCountryCode(std::string());
 }
 
 profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {

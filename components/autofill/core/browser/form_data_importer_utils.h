@@ -13,6 +13,7 @@
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -117,10 +118,11 @@ bool IsValidLearnableProfile(const AutofillProfile& profile,
 // - The country determined by the variation service stored in
 //   `variation_country_code`.
 // - The country code corresponding to `app_locale`.
-std::string GetPredictedCountryCode(const AutofillProfile& profile,
-                                    const std::string& variation_country_code,
-                                    const std::string& app_locale,
-                                    LogBuffer* import_log_buffer);
+std::string GetPredictedCountryCode(
+    const AutofillProfile& profile,
+    const GeoIpCountryCode& variation_country_code,
+    const std::string& app_locale,
+    LogBuffer* import_log_buffer);
 
 // Stores recently submitted profile fragments, which are merged against future
 // import candidates to construct a complete profile. This enables importing
@@ -128,7 +130,7 @@ std::string GetPredictedCountryCode(const AutofillProfile& profile,
 class MultiStepImportMerger {
  public:
   MultiStepImportMerger(const std::string& app_locale,
-                        const std::string& variation_country_code);
+                        const GeoIpCountryCode& variation_country_code);
   ~MultiStepImportMerger();
 
   // Removes updated multi-step candidates, merges `profile` with multi-step
@@ -192,7 +194,7 @@ class MultiStepImportMerger {
   // Needed to predict the country code of a merged import candidate, to
   // ultimately decide if the profile meets the minimum import requirements.
   std::string app_locale_;
-  std::string variation_country_code_;
+  GeoIpCountryCode variation_country_code_;
   AutofillProfileComparator comparator_;
 
   // Represents a submitted form, stored to be considered as a merge candidate

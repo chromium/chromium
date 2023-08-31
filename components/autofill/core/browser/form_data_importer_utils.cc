@@ -71,10 +71,11 @@ bool IsValidLearnableProfile(const AutofillProfile& profile,
   return all_requirements_satisfied;
 }
 
-std::string GetPredictedCountryCode(const AutofillProfile& profile,
-                                    const std::string& variation_country_code,
-                                    const std::string& app_locale,
-                                    LogBuffer* import_log_buffer) {
+std::string GetPredictedCountryCode(
+    const AutofillProfile& profile,
+    const GeoIpCountryCode& variation_country_code,
+    const std::string& app_locale,
+    LogBuffer* import_log_buffer) {
   // Try to acquire the country code form the filled form.
   std::string country_code =
       base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
@@ -85,8 +86,8 @@ std::string GetPredictedCountryCode(const AutofillProfile& profile,
   }
 
   // As a fallback, use the variation service state to get a country code.
-  if (country_code.empty() && !variation_country_code.empty()) {
-    country_code = variation_country_code;
+  if (country_code.empty() && !variation_country_code.value().empty()) {
+    country_code = variation_country_code.value();
     if (import_log_buffer) {
       *import_log_buffer
           << LogMessage::kImportAddressProfileFromFormCountrySource
@@ -109,7 +110,7 @@ std::string GetPredictedCountryCode(const AutofillProfile& profile,
 
 MultiStepImportMerger::MultiStepImportMerger(
     const std::string& app_locale,
-    const std::string& variation_country_code)
+    const GeoIpCountryCode& variation_country_code)
     : app_locale_(app_locale),
       variation_country_code_(variation_country_code),
       comparator_(app_locale_) {}

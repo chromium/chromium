@@ -86,11 +86,18 @@ TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
   us_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   AutofillProfile empty_profile;
   // Test prioritization: profile > variation service state > app locale
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, "DE", "de-AT", nullptr), "US");
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, "", "de-AT", nullptr), "US");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "DE", "de-AT", nullptr),
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode("DE"), "de-AT",
+                                    nullptr),
+            "US");
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode(""), "de-AT",
+                                    nullptr),
+            "US");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, GeoIpCountryCode("DE"),
+                                    "de-AT", nullptr),
             "DE");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "", "de-AT", nullptr), "AT");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, GeoIpCountryCode(""),
+                                    "de-AT", nullptr),
+            "AT");
 }
 
 // Each test describes a sequence of submitted forms, where 'a' and 'c' indicate

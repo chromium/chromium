@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
@@ -494,7 +495,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Retrieves the country code of the user from Chrome variation service.
   // If the variation service is not available, return an empty string.
-  virtual std::string GetVariationConfigCountryCode() const;
+  virtual GeoIpCountryCode GetVariationConfigCountryCode() const;
 
   // Returns the profile type of the session.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;

@@ -244,14 +244,16 @@ translate::TranslateDriver* ChromeAutofillClientIOS::GetTranslateDriver() {
   return nullptr;
 }
 
-std::string ChromeAutofillClientIOS::GetVariationConfigCountryCode() const {
+GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
+    const {
   variations::VariationsService* variation_service =
       GetApplicationContext()->GetVariationsService();
   // Retrieves the country code from variation service and converts it to upper
   // case.
-  return variation_service
-             ? base::ToUpperASCII(variation_service->GetLatestCountry())
-             : std::string();
+  return GeoIpCountryCode(
+      variation_service
+          ? base::ToUpperASCII(variation_service->GetLatestCountry())
+          : std::string());
 }
 
 void ChromeAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {

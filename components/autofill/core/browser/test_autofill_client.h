@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -232,7 +233,7 @@ class TestAutofillClientTemplate : public T {
     return &mock_translate_driver_;
   }
 
-  std::string GetVariationConfigCountryCode() const override {
+  GeoIpCountryCode GetVariationConfigCountryCode() const override {
     return variation_config_country_code_;
   }
 
@@ -571,7 +572,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void SetVariationConfigCountryCode(
-      const std::string& variation_config_country_code) {
+      const GeoIpCountryCode& variation_config_country_code) {
     variation_config_country_code_ = variation_config_country_code;
   }
 
@@ -726,7 +727,7 @@ class TestAutofillClientTemplate : public T {
 
   GURL form_origin_{"https://example.test"};
   ukm::SourceId source_id_ = -1;
-  std::string variation_config_country_code_;
+  GeoIpCountryCode variation_config_country_code_;
 
   security_state::SecurityLevel security_level_ =
       security_state::SecurityLevel::NONE;

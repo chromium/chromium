@@ -21,6 +21,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
@@ -131,7 +132,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  std::string GetVariationConfigCountryCode() const override;
+  GeoIpCountryCode GetVariationConfigCountryCode() const override;
   profile_metrics::BrowserProfileType GetProfileType() const override;
   FastCheckoutClient* GetFastCheckoutClient() override;
   std::unique_ptr<webauthn::InternalAuthenticator>
