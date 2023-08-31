@@ -789,7 +789,7 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   // in, the 1st(current) soft metrics are recorded. The initial soft
   // navigation metrics that have default values should not reported.
   if (current_soft_navigation_metrics->count == 0 ||
-      current_soft_navigation_metrics->count ==
+      current_soft_navigation_metrics->count >=
           new_soft_navigation_metrics.count) {
     return;
   }
