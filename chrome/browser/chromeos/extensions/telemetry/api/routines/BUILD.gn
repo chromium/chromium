@@ -35,6 +35,32 @@ source_set("routines") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_diagnostic_routine_control.cc",
+    "fake_diagnostic_routine_control.h",
+    "fake_diagnostic_routines_service.cc",
+    "fake_diagnostic_routines_service.h",
+  ]
+
+  deps = [ "//base/test:test_support" ]
+
+  public_deps = [
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "fake_diagnostic_routines_service_factory.cc",
+      "fake_diagnostic_routines_service_factory.h",
+    ]
+
+    public_deps += [ "//chrome/browser/ash/telemetry_extension/routines" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "diagnostic_routine_converters_unittest.cc" ]
