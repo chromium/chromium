@@ -56,6 +56,7 @@ void HandleSurfacePresentationCallback(
         0, 0, feedback.flags);
   }
   wl_client_flush(wl_resource_get_client(resource));
+  wl_resource_destroy(resource);
 }
 
 void presentation_destroy(wl_client* client, wl_resource* resource) {
