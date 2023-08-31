@@ -96,7 +96,7 @@ script_test("system_webview_wpt") {
   ]
 }
 
-script_test("webview_trichrome_wpt") {
+script_test("trichrome_webview_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
   args = [
     "--product",
@@ -118,7 +118,7 @@ script_test("webview_trichrome_wpt") {
 }
 
 if (android_64bit_target_cpu) {
-  script_test("webview_trichrome_wpt_64") {
+  script_test("trichrome_webview_wpt_64") {
     script = "//third_party/blink/tools/run_wpt_tests.py"
     args = [
       "--product",
