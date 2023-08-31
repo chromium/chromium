@@ -60,23 +60,6 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
     clang::SourceLocation loc = cast_expr->getSourceRange().getBegin();
     std::string file_path = GetFilename(source_manager, loc);
 
-    // Using raw_ptr<T> in a stdlib collection will cause a cast.
-    // e.g.
-    // https://source.chromium.org/chromium/chromium/src/+/main:components/feed/core/v2/xsurface_datastore.h;drc=a0ff03edcace35ec020edd235f4d9e9735fc9690;l=107
-    // |__bit/bit_cast.h| header is excluded to perform checking on
-    // |std::bit_cast<T>|.
-    if (file_path.find("buildtools/third_party/libc++") != std::string::npos &&
-        file_path.find("__bit/bit_cast.h") == std::string::npos) {
-      return;
-    }
-
-    // Exclude casts via "unsafe_raw_ptr_*_cast".
-    if (file_path.find(
-            "base/allocator/partition_allocator/pointers/raw_ptr_cast.h") !=
-        std::string::npos) {
-      return;
-    }
-
     clang::PrintingPolicy printing_policy(result.Context->getLangOpts());
     const std::string src_name =
         cast_expr->getSubExpr()->getType().getAsString(printing_policy);

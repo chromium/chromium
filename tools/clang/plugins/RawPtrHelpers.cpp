@@ -331,6 +331,11 @@ clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
                                   hasCastKind(clang::CK_LValueToRValueBitCast),
                                   hasCastKind(clang::CK_PointerToIntegral),
                                   hasCastKind(clang::CK_IntegralToPointer)));
+
+  // |__bit/bit_cast.h| header is excluded to perform checking on
+  // |std::bit_cast<T>|.
+  auto exclusions = anyOf(isSpellingInSystemHeader(), isInRawPtrCastHeader());
+
   // Implicit/explicit casting from/to |raw_ptr<T>| matches.
   // Both casting direction is unsafe.
   //   https://godbolt.org/z/zqKMzcKfo
@@ -339,7 +344,7 @@ clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
           allOf(anyOf(hasSourceExpression(hasType(src_type)),
                       implicitCastExpr(hasImplicitDestinationType(dst_type)),
                       explicitCastExpr(hasDestinationType(dst_type))),
-                cast_kind))
+                cast_kind, anyOf(isInStdBitCastHeader(), unless(exclusions))))
           .bind("castExpr");
   return cast_matcher;
 }

@@ -142,6 +142,20 @@ AST_MATCHER(clang::Decl, isBeginInThirdPartyLocation) {
   return filename.find("/third_party/") != std::string::npos;
 }
 
+AST_MATCHER(clang::Stmt, isInStdBitCastHeader) {
+  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
+                                     Node.getSourceRange().getBegin());
+  return filename.find("__bit/bit_cast.h") != std::string::npos;
+}
+
+AST_MATCHER(clang::Stmt, isInRawPtrCastHeader) {
+  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
+                                     Node.getSourceRange().getBegin());
+  return filename.find(
+             "base/allocator/partition_allocator/pointers/raw_ptr_cast.h") !=
+         std::string::npos;
+}
+
 AST_POLYMORPHIC_MATCHER(isInGeneratedLocation,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
