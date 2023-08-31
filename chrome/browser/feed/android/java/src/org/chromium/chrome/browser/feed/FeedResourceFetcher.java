@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.feed.FeedSurfaceRendererBridge.NetworkResponse;
+import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl.NetworkResponse;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher.Header;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher.Request;
@@ -65,11 +65,7 @@ public class FeedResourceFetcher implements ResourceFetcher {
         }
     }
 
-    private FeedSurfaceRendererBridge mBridge;
-
-    public FeedResourceFetcher(FeedSurfaceRendererBridge bridge) {
-        mBridge = bridge;
-    }
+    public FeedResourceFetcher() {}
 
     @Override
     public void fetch(Request request, ResponseCallback responseCallback) {
@@ -78,7 +74,8 @@ public class FeedResourceFetcher implements ResourceFetcher {
             headerNamesAndValues.add(header.name);
             headerNamesAndValues.add(header.value);
         }
-        mBridge.fetchResource(new GURL(request.uri), request.method,
+        FeedSurfaceScopeDependencyProviderImplJni.get().fetchResource(new GURL(request.uri),
+                request.method,
                 headerNamesAndValues.toArray(new String[headerNamesAndValues.size()]),
                 request.postData, (NetworkResponse response) -> {
                     responseCallback.onResponse(new FeedResponse(

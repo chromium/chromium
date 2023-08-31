@@ -52,13 +52,6 @@ class FeedSurfaceRendererBridge : public ::feed::SurfaceRenderer {
 
   void ManualRefresh(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& callback_obj);
-  void FetchResource(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_url,
-      const base::android::JavaParamRef<jstring>& j_method,
-      const base::android::JavaParamRef<jobjectArray>& j_header_name_and_values,
-      const base::android::JavaParamRef<jbyteArray>& j_post_data,
-      const base::android::JavaParamRef<jobject>& callback_obj);
 
   void SurfaceOpened(JNIEnv* env);
   void SurfaceClosed(JNIEnv* env);

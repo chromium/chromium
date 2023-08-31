@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -37,22 +36,6 @@ public class FeedSurfaceRendererBridge {
                 SingleWebFeedParameters webFeedParameters) {
             return new FeedSurfaceRendererBridge(
                     renderer, reliabilityLoggingBridge, streamKind, webFeedParameters);
-        }
-    }
-
-    public static class NetworkResponse {
-        public boolean success;
-        public int statusCode;
-        public String[] headerNameAndValues;
-        public @Nullable byte[] rawData;
-
-        @CalledByNative("NetworkResponse")
-        public NetworkResponse(boolean success, int statusCode, String[] headerNameAndValues,
-                @Nullable byte[] rawData) {
-            this.success = success;
-            this.statusCode = statusCode;
-            this.headerNameAndValues = headerNameAndValues;
-            this.rawData = rawData;
         }
     }
 
@@ -124,15 +107,6 @@ public class FeedSurfaceRendererBridge {
             return;
         }
         FeedSurfaceRendererBridgeJni.get().manualRefresh(mNativeSurfaceRenderer, callback);
-    }
-    void fetchResource(GURL url, String method, String[] headerNameAndValues, byte[] postData,
-            Callback<NetworkResponse> callback) {
-        // Cancel if destroyed.
-        if (mRenderer == null) {
-            return;
-        }
-        FeedSurfaceRendererBridgeJni.get().fetchResource(
-                mNativeSurfaceRenderer, url, method, headerNameAndValues, postData, callback);
     }
 
     void surfaceOpened() {
@@ -236,8 +210,6 @@ public class FeedSurfaceRendererBridge {
         void destroy(long nativeFeedSurfaceRendererBridge);
         void loadMore(long nativeFeedSurfaceRendererBridge, Callback<Boolean> callback);
         void manualRefresh(long nativeFeedSurfaceRendererBridge, Callback<Boolean> callback);
-        void fetchResource(long nativeFeedSurfaceRendererBridge, GURL url, String method,
-                String[] headerNameAndValues, byte[] postData, Callback<NetworkResponse> callback);
         int getSurfaceId(long nativeFeedSurfaceRendererBridge);
         void surfaceOpened(long nativeFeedSurfaceRendererBridge);
         void surfaceClosed(long nativeFeedSurfaceRendererBridge);

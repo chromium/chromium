@@ -149,4 +149,12 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
     default PersistentKeyValueCache getPersistentKeyValueCache() {
         return null;
     }
+
+    /**
+     * Returns an ResourceFetcher to fetch the data asynchronously. Null will be returned if it is
+     * unavailable.
+     */
+    default @Nullable ResourceFetcher getAsyncDataFetcher() {
+        return null;
+    }
 }

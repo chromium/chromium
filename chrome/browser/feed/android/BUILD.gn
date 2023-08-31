@@ -215,6 +215,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceRendererBridge.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProviderImpl.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
   ]
 }

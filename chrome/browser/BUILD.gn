@@ -3066,6 +3066,7 @@ static_library("browser") {
       "feed/android/feed_service_bridge.h",
       "feed/android/feed_surface_renderer_bridge.cc",
       "feed/android/feed_surface_renderer_bridge.h",
+      "feed/android/feed_surface_scope_dependency_provider_impl.cc",
       "feed/android/jni_translation.cc",
       "feed/android/jni_translation.h",
       "feed/android/refresh_task_scheduler_impl.cc",

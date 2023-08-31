@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.xsurface.feed;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 
@@ -226,12 +225,4 @@ public interface FeedActionsHandler {
 
     /** Triggers a manual refresh of the feed. */
     default void triggerManualRefresh() {}
-
-    /**
-     * Returns an ResourceFetcher to fetch the data asynchronously. Null will be returned if it is
-     * unavailable.
-     */
-    default @Nullable ResourceFetcher getAsyncDataFetcher() {
-        return null;
-    }
 }
