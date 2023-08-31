@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -52,6 +53,8 @@ import java.util.List;
 public class SigninFirstRunMediator
         implements AccountsChangeObserver, ProfileDataCache.Observer,
                    AccountPickerCoordinator.Listener, FreUMADialogCoordinator.Listener {
+    private static final String TAG = "SigninFRMediator";
+
     /**
      * Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only.
      * See {@code LoadPoint} in tools/metrics/histograms/enums.xml.
@@ -189,11 +192,15 @@ public class SigninFirstRunMediator
 
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
+        Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
         if (hasPolicies) {
             isSigninDisabledByPolicy =
                     IdentityServicesProvider.get()
                             .getSigninManager(mDelegate.getProfileSupplier().get())
                             .isSigninDisabledByPolicy();
+            Log.i(TAG,
+                    "#onInitialLoadCompleted() isSigninDisabledByPolicy:"
+                            + isSigninDisabledByPolicy);
             isMetricsReportingDisabledByPolicy =
                     !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
 
