@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
@@ -213,12 +212,12 @@ public class SyncPromoController {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
             return false;
         }
-        final @Nullable Account visibleAccount = getVisibleAccount();
+        final @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
         if (visibleAccount == null) {
             return true;
         }
         final Promise<AccountInfo> visibleAccountPromise =
-                AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.name);
+                AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.getEmail());
         return visibleAccountPromise.isFulfilled()
                 && visibleAccountPromise.getResult()
                            .getAccountCapabilities()
@@ -237,17 +236,16 @@ public class SyncPromoController {
     }
 
     // Find the visible account for sync promos
-    private static @Nullable Account getVisibleAccount() {
+    private static @Nullable CoreAccountInfo getVisibleAccount() {
         final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
         @Nullable
-        Account visibleAccount = CoreAccountInfo.getAndroidAccountFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        CoreAccountInfo visibleAccount = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
         if (visibleAccount == null) {
-            visibleAccount =
-                    AccountUtils.getDefaultAccountIfFulfilled(accountManagerFacade.getAccounts());
+            visibleAccount = AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
+                    accountManagerFacade.getCoreAccountInfos());
         }
         return visibleAccount;
     }
@@ -327,14 +325,14 @@ public class SyncPromoController {
                 Profile.getLastUsedRegularProfile());
         assert !identityManager.hasPrimaryAccount(ConsentLevel.SYNC) : "Sync is already enabled!";
 
-        final @Nullable Account visibleAccount = getVisibleAccount();
+        final @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
         // Set up the sync promo
         if (visibleAccount == null) {
             setupPromoView(view, /* profileData= */ null, listener);
             return;
         }
-        setupPromoView(
-                view, profileDataCache.getProfileDataOrDefault(visibleAccount.name), listener);
+        setupPromoView(view, profileDataCache.getProfileDataOrDefault(visibleAccount.getEmail()),
+                listener);
     }
 
     /**
