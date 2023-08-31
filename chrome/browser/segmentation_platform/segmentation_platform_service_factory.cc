@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include <memory>
 
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -40,6 +41,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/segmentation_platform/client_util/tab_data_collection_util.h"
+#endif
+
 namespace segmentation_platform {
 namespace {
 const char kSegmentationPlatformProfileObserverKey[] =
@@ -69,6 +74,27 @@ std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
   // Input delegates that are shared by multiple models.are added here.
 
   return input_delegate_holder;
+}
+
+void InitTabDataCollection(
+    SegmentationPlatformService* service,
+    sync_sessions::SessionSyncService* session_sync_service,
+    std::unique_ptr<TabFetcher> tab_fetcher) {
+  auto rank_dispatcher = std::make_unique<TabRankDispatcher>(
+      service, session_sync_service, std::move(tab_fetcher));
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformCollectTabRankData)) {
+    const char kSegmentationTabDataCollectionUtilUserDataKey[] =
+        "segmentation_tab_tab_data_collection_util";
+    auto tab_collection_util =
+        std::make_unique<TabDataCollectionUtil>(service, rank_dispatcher.get());
+    service->SetUserData(kSegmentationTabDataCollectionUtilUserDataKey,
+                         std::move(tab_collection_util));
+  }
+#endif
+  service->SetUserData(kSegmentationTabRankDispatcherUserDataKey,
+                       std::move(rank_dispatcher));
 }
 
 }  // namespace
@@ -163,10 +189,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
                            service, SyncServiceFactory::GetForProfile(profile),
                            profile->GetPrefs(), field_trial_register));
 
-  auto rank_dispatcher = std::make_unique<TabRankDispatcher>(
-      service, session_sync_service, std::move(tab_fetcher));
-  service->SetUserData(kSegmentationTabRankDispatcherUserDataKey,
-                       std::move(rank_dispatcher));
+  InitTabDataCollection(service, session_sync_service, std::move(tab_fetcher));
 
   return service;
 }

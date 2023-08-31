@@ -119,4 +119,9 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRanker,
 BASE_FEATURE(kSegmentationPlatformTimeDelaySampling,
              "SegmentationPlatformTimeDelaySampling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformCollectTabRankData,
+             "SegmentationPlatformCollectTabRankData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace segmentation_platform::features
