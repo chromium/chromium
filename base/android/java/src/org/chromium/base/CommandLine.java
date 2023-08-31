@@ -173,8 +173,8 @@ public abstract class CommandLine {
      */
     @VisibleForTesting
     static String[] tokenizeQuotedArguments(char[] buffer) {
-        // Just field trials can take up to 10K of command line.
-        if (buffer.length > 64 * 1024) {
+        // Just field trials can take over 60K of command line.
+        if (buffer.length > 96 * 1024) {
             // Check that our test runners are setting a reasonable number of flags.
             throw new RuntimeException("Flags file too big: " + buffer.length);
         }
