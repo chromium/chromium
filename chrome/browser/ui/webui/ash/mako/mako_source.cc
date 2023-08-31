@@ -72,6 +72,8 @@ std::string MakoSource::GetContentSecurityPolicy(
              "polymer-template-event-attribute-policy polymer-html-literal; ";
     case network::mojom::CSPDirectiveName::StyleSrc:
       return "style-src 'unsafe-inline'; ";
+    case network::mojom::CSPDirectiveName::ImgSrc:
+      return "img-src data:; ";
     default:
       return content::URLDataSource::GetContentSecurityPolicy(directive);
   }
