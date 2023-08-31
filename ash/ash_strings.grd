@@ -3463,12 +3463,6 @@ Turning on battery saver to increase your battery life.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATING" desc="Message for the network list when activating a network.">
         <ph name="NAME">$1<ex>YBH Cellular</ex></ph>: Activating...
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATING_WITH_NICK_NAME" desc="Message for the network list when activating a network.">
-        <ph name="NAME">$1<ex>YBH Cellular</ex></ph> · <ph name="SERVICE_PROVIDER">$2<ex>T-Mobile</ex></ph>: Activating...
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_LIST_ITEM_TITLE" desc="Label for a network shown in a list in settings and oobe displaying its name and subtitle.">
-        <ph name="NETWORK_NAME">$1<ex>My Verizon eSIM</ex></ph> · <ph name="SERVICE_PROVIDER">$2<ex>Verizon Wireless</ex></ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_NOT_CONNECTED" desc="Description in status area or network list when no network is connected.">
         No network
       </message>

@@ -469,10 +469,6 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
       cellular->sim_locked = sim_is_primary && cellular_device->IsSimLocked();
       if (sim_is_primary)
         cellular->sim_lock_type = cellular_device->sim_lock_type();
-      cellular->has_nick_name = network_name_util::HasNickName(
-          cellular_esim_profile_handler, network);
-      cellular->network_operator = network_name_util::GetServiceProvider(
-          cellular_esim_profile_handler, network);
       result->type_state =
           mojom::NetworkTypeStateProperties::NewCellular(std::move(cellular));
       break;
