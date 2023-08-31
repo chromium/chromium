@@ -39,6 +39,24 @@ chromium-metrics-reviews@google.com.
   <variant name=".Tab" summary="A port opened to a tab context."/>
 </variants>
 
+<variants name="ManifestLocationGroup">
+  <variant name="Component"
+      summary="component extension(s) (ManifestLocations kComponent and
+               kExternalComponent)"/>
+  <variant name="External"
+      summary="external extension(s) (ManifestLocations kExternalPref,
+               kExternalPrefDownload, and kExternalRegistry)"/>
+  <variant name="Internal"
+      summary="internal extension(s) (ManifestLocation::kInternal; likely
+               user-installed)"/>
+  <variant name="Policy"
+      summary="policy-installed extension(s) (ManifestLocations
+               kExternalPolicy and kExternalPolicyDownload)"/>
+  <variant name="Unpacked"
+      summary="unpacked and developer extension(s) (ManifestLocations
+               kCommandLine and kUnpacked)"/>
+</variants>
+
 <histogram name="ExtensionBlacklist.BlacklistInstalled"
     enum="ExtensionLocation" expires_after="2023-11-18">
   <owner>anunoy@chromium.org</owner>
@@ -3571,6 +3589,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.ManifestVersion2Count.{ManifestLocation}"
+    units="number of extensions" expires_after="2024-08-14">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of enabled manifest version 2 {ManifestLocation}. Emitted once on
+    profile startup for user profiles (profiles where users can install
+    extensions, specifically profiles that can have non-component extensions
+    installed).
+  </summary>
+  <token key="ManifestLocation" variants="ManifestLocationGroup"/>
+</histogram>
+
+<histogram name="Extensions.ManifestVersion3Count.{ManifestLocation}"
+    units="number of extensions" expires_after="2024-08-14">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of enabled manifest version 3 {ManifestLocation}. Emitted once on
+    profile startup for user profiles (profiles where users can install
+    extensions, specifically profiles that can have non-component extensions
+    installed).
+  </summary>
+  <token key="ManifestLocation" variants="ManifestLocationGroup"/>
+</histogram>
+
 <histogram name="Extensions.ManifestVersionByLocation.{ManifestLocation}"
     units="manifest version" expires_after="2024-08-14">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -3582,23 +3626,7 @@ chromium-metrics-reviews@google.com.
     extensions, specifically profiles that can have non-component extensions
     installed).
   </summary>
-  <token key="ManifestLocation">
-    <variant name="Component"
-        summary="component extension (ManifestLocations kComponent and
-                 kExternalComponent)"/>
-    <variant name="External"
-        summary="external extension (ManifestLocations, kExternalPref,
-                 kExternalPrefDownload, and kExternalRegistry)"/>
-    <variant name="Internal"
-        summary="internal extension (ManifestLocation::kInternal; likely
-                 user-installed)"/>
-    <variant name="Policy"
-        summary="policy-installed extension (ManifestLocations
-                 kExternalPolicy and kExternalPolicyDownload)"/>
-    <variant name="Unpacked"
-        summary="unpacked and developer extension (ManifestLocations
-                 kCommandLine and kUnpacked)"/>
-  </token>
+  <token key="ManifestLocation" variants="ManifestLocationGroup"/>
 </histogram>
 
 <histogram

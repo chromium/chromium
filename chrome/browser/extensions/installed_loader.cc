@@ -489,6 +489,17 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   int enabled_not_allowlisted_count = 0;
   int disabled_not_allowlisted_count = 0;
 
+  struct ManifestVersion2And3Counts {
+    int version_2_count = 0;
+    int version_3_count = 0;
+  };
+
+  ManifestVersion2And3Counts internal_manifest_version_counts;
+  ManifestVersion2And3Counts external_manifest_version_counts;
+  ManifestVersion2And3Counts policy_manifest_version_counts;
+  ManifestVersion2And3Counts component_manifest_version_counts;
+  ManifestVersion2And3Counts unpacked_manifest_version_counts;
+
   bool should_record_incremented_metrics = is_user_profile;
 
   const ExtensionSet& extensions = extension_registry_->enabled_extensions();
@@ -577,31 +588,37 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     // include unpacked or component locations.
     if (extension->is_extension() && is_user_profile) {
       const char* location_histogram_name = nullptr;
+      ManifestVersion2And3Counts* manifest_version_counts = nullptr;
       switch (extension->location()) {
         case mojom::ManifestLocation::kInternal:
           location_histogram_name =
               "Extensions.ManifestVersionByLocation.Internal";
+          manifest_version_counts = &internal_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kExternalPref:
         case mojom::ManifestLocation::kExternalPrefDownload:
         case mojom::ManifestLocation::kExternalRegistry:
           location_histogram_name =
               "Extensions.ManifestVersionByLocation.External";
+          manifest_version_counts = &external_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kComponent:
         case mojom::ManifestLocation::kExternalComponent:
           location_histogram_name =
               "Extensions.ManifestVersionByLocation.Component";
+          manifest_version_counts = &component_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kExternalPolicy:
         case mojom::ManifestLocation::kExternalPolicyDownload:
           location_histogram_name =
               "Extensions.ManifestVersionByLocation.Policy";
+          manifest_version_counts = &policy_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kCommandLine:
         case mojom::ManifestLocation::kUnpacked:
           location_histogram_name =
               "Extensions.ManifestVersionByLocation.Unpacked";
+          manifest_version_counts = &unpacked_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kInvalidLocation:
           NOTREACHED_NORETURN();
@@ -609,6 +626,11 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       base::UmaHistogramExactLinear(location_histogram_name,
                                     extension->manifest_version(),
                                     kMaxManifestVersion);
+      if (extension->manifest_version() == 2) {
+        manifest_version_counts->version_2_count++;
+      } else if (extension->manifest_version() == 3) {
+        manifest_version_counts->version_3_count++;
+      }
     }
 
     // From now on, don't count component extensions, since they are only
@@ -853,6 +875,37 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       // Record the number of not allowlisted disabled extensions.
       ++disabled_not_allowlisted_count;
     }
+  }
+
+  if (is_user_profile) {
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion2Count.Internal",
+        internal_manifest_version_counts.version_2_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion3Count.Internal",
+        internal_manifest_version_counts.version_3_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion2Count.External",
+        external_manifest_version_counts.version_2_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion3Count.External",
+        external_manifest_version_counts.version_3_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion2Count.Component",
+        component_manifest_version_counts.version_2_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion3Count.Component",
+        component_manifest_version_counts.version_3_count);
+    base::UmaHistogramCounts100("Extensions.ManifestVersion2Count.Policy",
+                                policy_manifest_version_counts.version_2_count);
+    base::UmaHistogramCounts100("Extensions.ManifestVersion3Count.Policy",
+                                policy_manifest_version_counts.version_3_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion2Count.Unpacked",
+        unpacked_manifest_version_counts.version_2_count);
+    base::UmaHistogramCounts100(
+        "Extensions.ManifestVersion3Count.Unpacked",
+        unpacked_manifest_version_counts.version_3_count);
   }
 
   base::UmaHistogramCounts100("Extensions.LoadApp",
