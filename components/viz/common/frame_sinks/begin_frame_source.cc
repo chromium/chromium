@@ -110,7 +110,7 @@ BeginFrameArgs
 BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
     uint64_t source_id,
     base::TimeTicks frame_time,
-    base::TimeTicks next_frame_time,
+    base::TimeTicks deadline,
     base::TimeDelta vsync_interval) {
   uint64_t sequence_number =
       next_sequence_number_ +
@@ -125,12 +125,12 @@ BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
     base::TimeDelta deadline_offset =
         dynamic_begin_frame_deadline_offset_source_->GetDeadlineOffset(
             vsync_interval);
-    next_frame_time -= deadline_offset;
+    deadline -= deadline_offset;
   }
-  next_expected_frame_time_ = next_frame_time;
+  next_expected_frame_time_ = deadline;
   next_sequence_number_ = sequence_number + 1;
   return BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id,
-                                sequence_number, frame_time, next_frame_time,
+                                sequence_number, frame_time, deadline,
                                 vsync_interval, BeginFrameArgs::NORMAL);
 }
 
@@ -302,7 +302,7 @@ void BackToBackBeginFrameSource::OnUpdateVSyncParameters(
 
 void BackToBackBeginFrameSource::SetMaxVrrInterval(
     const absl::optional<base::TimeDelta>& max_vrr_interval) {
-  DCHECK(!max_vrr_interval.has_value() || !max_vrr_interval->is_zero());
+  DCHECK(!max_vrr_interval.has_value() || max_vrr_interval->is_positive());
   max_vrr_interval_ = max_vrr_interval;
 }
 
@@ -351,9 +351,14 @@ void DelayBasedBeginFrameSource::OnUpdateVSyncParameters(
 
 BeginFrameArgs DelayBasedBeginFrameSource::CreateBeginFrameArgs(
     base::TimeTicks frame_time) {
-  base::TimeDelta interval = time_source_->Interval();
+  base::TimeDelta interval =
+      max_vrr_interval_.value_or(time_source_->Interval());
+  // Use `Next-` instead of `LastTickTime` because it is snapped to
+  // `last_timebase_`
+  base::TimeTicks deadline =
+      time_source_->NextTickTime() - time_source_->Interval() + interval;
   return begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, time_source_->NextTickTime(), interval);
+      source_id(), frame_time, deadline, interval);
 }
 
 void DelayBasedBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
@@ -372,10 +377,13 @@ void DelayBasedBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
   // sufficient time has passed since the last tick.
   base::TimeTicks last_or_missed_tick_time =
       time_source_->NextTickTime() - time_source_->Interval();
+  const base::TimeDelta double_tick_margin =
+      max_vrr_interval_.has_value()
+          ? base::TimeDelta()
+          : time_source_->Interval() / kDoubleTickDivisor;
   if (!last_begin_frame_args_.IsValid() ||
       last_or_missed_tick_time >
-          last_begin_frame_args_.frame_time +
-              last_begin_frame_args_.interval / kDoubleTickDivisor) {
+          last_begin_frame_args_.frame_time + double_tick_margin) {
     last_begin_frame_args_ = CreateBeginFrameArgs(last_or_missed_tick_time);
   }
   BeginFrameArgs missed_args = last_begin_frame_args_;
@@ -403,6 +411,12 @@ void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
       dynamic_begin_frame_deadline_offset_source);
 }
 
+void DelayBasedBeginFrameSource::SetMaxVrrInterval(
+    const absl::optional<base::TimeDelta>& max_vrr_interval) {
+  DCHECK(!max_vrr_interval.has_value() || max_vrr_interval->is_positive());
+  max_vrr_interval_ = max_vrr_interval;
+}
+
 void DelayBasedBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
@@ -425,9 +439,11 @@ void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
     BeginFrameObserver* obs,
     const BeginFrameArgs& args) {
   BeginFrameArgs last_args = obs->LastUsedBeginFrameArgs();
+  const base::TimeDelta double_tick_margin =
+      max_vrr_interval_.has_value() ? base::TimeDelta()
+                                    : args.interval / kDoubleTickDivisor;
   if (!last_args.IsValid() ||
-      (args.frame_time >
-       last_args.frame_time + args.interval / kDoubleTickDivisor)) {
+      (args.frame_time > last_args.frame_time + double_tick_margin)) {
     if (args.type == BeginFrameArgs::MISSED) {
       DCHECK(!last_args.frame_id.IsNextInSequenceTo(args.frame_id))
           << "missed " << args.ToString() << ", last " << last_args.ToString();

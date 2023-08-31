@@ -150,7 +150,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
 
     BeginFrameArgs GenerateBeginFrameArgs(uint64_t source_id,
                                           base::TimeTicks frame_time,
-                                          base::TimeTicks next_frame_time,
+                                          base::TimeTicks deadline,
                                           base::TimeDelta vsync_interval);
 
     void set_dynamic_begin_frame_deadline_offset_source(
@@ -335,8 +335,6 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   void OnTimerTick() override;
 
  private:
-  void SetActive(bool active);
-
   std::unique_ptr<DelayBasedTimeSource> time_source_;
   base::flat_set<BeginFrameObserver*> observers_;
   base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
@@ -373,7 +371,8 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                base::TimeDelta interval) override;
-  void SetMaxVrrInterval(const absl::optional<base::TimeDelta>&) override {}
+  void SetMaxVrrInterval(
+      const absl::optional<base::TimeDelta>& max_vrr_interval) override;
 
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
@@ -397,8 +396,8 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   std::unique_ptr<DelayBasedTimeSource> time_source_;
   base::flat_set<BeginFrameObserver*> observers_;
   base::TimeTicks last_timebase_;
+  absl::optional<base::TimeDelta> max_vrr_interval_ = absl::nullopt;
   BeginFrameArgs last_begin_frame_args_;
-
   BeginFrameArgsGenerator begin_frame_args_generator_;
 };
 

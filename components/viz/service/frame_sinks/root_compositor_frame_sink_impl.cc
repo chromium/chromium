@@ -147,10 +147,7 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
-    // TODO(b/221220344): Support dynamically choosing the BeginFrameSource per
-    // VRR state changes.
-    if (params->disable_frame_rate_limit ||
-        params->enable_variable_refresh_rate) {
+    if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
