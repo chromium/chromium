@@ -271,7 +271,10 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // In legacy code this was good for up to 1080p.
   // TODO(mcasas): Increase this by 4x to support 4K decoding, if needed.
-  constexpr size_t kInputBufferMaxSize = 1024 * 1024;
+  // Input buffer size is increased from 1024 * 1024 to accommodate bistreams
+  // with big data size (CAPCM1_Sand_E.h264, CAPCMNL1_Sand_E.h264).
+  // TODO(hnt): Investigate ways to reduce this size.
+  constexpr size_t kInputBufferMaxSize = 1024 * 1024 * 2;
   const auto v4l2_format = OUTPUT_queue_->SetFormat(
       profile_as_v4l2_fourcc, gfx::Size(), kInputBufferMaxSize);
   if (!v4l2_format) {
