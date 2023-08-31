@@ -97,8 +97,9 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
         private Observer mObserver;
 
-        // Mock time it takes for a lookup request to complete.
-        private static final long DEFAULT_CHECK_DELTA_MS = 10;
+        // Mock time it takes for a lookup request to complete. This value is verified on the native
+        // side.
+        private static final long DEFAULT_CHECK_DELTA_MICROSECONDS = 15;
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, UrlCheckDoneValues> sPresetValuesMap = new HashMap<>();
@@ -123,7 +124,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
             mObserver.onUrlCheckDone(callbackId, presetValues.mReturnedLookupResult,
                     presetValues.mReturnedThreatType, presetValues.mReturnedThreatAttributes,
-                    presetValues.mReturnedResponseStatus, DEFAULT_CHECK_DELTA_MS);
+                    presetValues.mReturnedResponseStatus, DEFAULT_CHECK_DELTA_MICROSECONDS);
         }
 
         public static void tearDown() {

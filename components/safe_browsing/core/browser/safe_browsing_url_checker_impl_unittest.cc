@@ -530,7 +530,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
  protected:
   void CheckHashRealTimeMetrics(
       absl::optional<bool> expected_local_match_result,
-      absl::optional<bool> expected_is_service_found) {
+      absl::optional<bool> expected_is_service_found,
+      bool expected_can_check_reputation) {
     if (!expected_local_match_result.has_value()) {
       histogram_tester_.ExpectTotalCount(
           /*name=*/"SafeBrowsing.HPRT.LocalMatch.Result", /*expected_count=*/0);
@@ -551,6 +552,10 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
           /*sample=*/expected_is_service_found.value(),
           /*expected_bucket_count=*/1);
     }
+    histogram_tester_.ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.CanGetReputationOfUrl",
+        /*sample=*/expected_can_check_reputation,
+        /*expected_bucket_count=*/1);
   }
   void CheckUrlRealTimeLocalMatchMetrics(
       absl::optional<bool> expected_local_match_result,
@@ -1534,6 +1539,36 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.HPRTExperiment.Redirects.WarningsResult", 1);
 }
 
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_InvalidUrl) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+
+  GURL url("http://localhost");
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                         /*delayed_callback=*/false);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_allowlist=*/false))
+      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+  task_environment_.RunUntilIdle();
+  CheckHashRealTimeMetrics(/*expected_local_match_result=*/absl::nullopt,
+                           /*expected_is_service_found=*/absl::nullopt,
+                           /*expected_can_check_reputation=*/false);
+}
+
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_HashRealTimeService_AllowlistMatchSafe) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
@@ -1563,7 +1598,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
-                           /*expected_is_service_found=*/absl::nullopt);
+                           /*expected_is_service_found=*/absl::nullopt,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1592,7 +1628,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/true,
-                           /*expected_is_service_found=*/absl::nullopt);
+                           /*expected_is_service_found=*/absl::nullopt,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
@@ -1624,7 +1661,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
+                           /*expected_is_service_found=*/true,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
@@ -1653,7 +1691,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
+                           /*expected_is_service_found=*/true,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1683,7 +1722,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/false);
+                           /*expected_is_service_found=*/false,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1714,7 +1754,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
   CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
+                           /*expected_is_service_found=*/true,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1771,6 +1812,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckHashRealTimeMetrics(/*expected_local_match_result=*/absl::nullopt,
+                           /*expected_is_service_found=*/absl::nullopt,
+                           /*expected_can_check_reputation=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_InvalidRequestDestination) {

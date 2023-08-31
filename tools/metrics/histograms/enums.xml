@@ -94068,6 +94068,45 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="NO_MATCH"/>
 </enum>
 
+<enum name="SafeBrowsingApiJavaValidationResult">
+  <int value="0" label="valid"/>
+  <int value="1" label="valid, but has unrecognized response status"/>
+  <int value="2" label="invalid due to unrecognized lookup result"/>
+  <int value="3" label="invalid due to unrecognized threat type"/>
+  <int value="4" label="invalid due to unrecognized threat attribute"/>
+</enum>
+
+<enum name="SafeBrowsingApiLookupResult">
+  <int value="0" label="success"/>
+  <int value="1" label="general failure"/>
+  <int value="2" label="API call timed out"/>
+  <int value="3" label="API unsupported (GMSCore outdated)"/>
+  <int value="4" label="API not available (API not supported on device)"/>
+</enum>
+
+<enum name="SafeBrowsingApiResponseStatus">
+  <int value="0" label="SUCCESS_WITH_LOCAL_BLOCKLIST"/>
+  <int value="1" label="SUCCESS_WITH_REAL_TIME"/>
+  <int value="2" label="SUCCESS_FALLBACK_REAL_TIME_TIMEOUT"/>
+  <int value="3" label="SUCCESS_FALLBACK_REAL_TIME_THROTTLED"/>
+  <int value="4" label="FAILURE_NETWORK_UNAVAILABLE"/>
+  <int value="5" label="FAILURE_BLOCK_LIST_UNAVAILABLE"/>
+</enum>
+
+<enum name="SafeBrowsingApiThreatAttribute">
+  <int value="1" label="CANARY"/>
+  <int value="2" label="FRAME_ONLY"/>
+</enum>
+
+<enum name="SafeBrowsingApiThreatType">
+  <int value="0" label="NO_THREAT"/>
+  <int value="3" label="UNWANTED_SOFTWARE"/>
+  <int value="4" label="POTENTIALLY_HARMFUL_APPLICATION"/>
+  <int value="5" label="SOCIAL_ENGINEERING"/>
+  <int value="13" label="SUBRESOURCE_FILTER"/>
+  <int value="15" label="BILLING"/>
+</enum>
+
 <enum name="SafeBrowsingAppOptIn">
   <int value="0" label="No opt-in preference in manifest"/>
   <int value="1" label="Explicit opt-in via manifest"/>

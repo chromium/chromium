@@ -40,6 +40,8 @@ enum class SafetyNetJavaThreatType {
 // while |SafeBrowsingJavaResponseStatus| is obtained directly from the API
 // response in a successful call. In other words, ResponseStatus is valid only
 // when LookupResult is SUCCESS.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SafeBrowsingApiLookupResult {
   SUCCESS = 0,
   // General failure bucket. This is set if none of the more granular failure
@@ -54,6 +56,8 @@ enum class SafeBrowsingApiLookupResult {
 };
 
 // Must match the definition in SafeBrowsing::ThreatType in SafeBrowsing API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SafeBrowsingJavaThreatType {
   NO_THREAT = 0,
   UNWANTED_SOFTWARE = 3,
@@ -65,6 +69,8 @@ enum class SafeBrowsingJavaThreatType {
 
 // Must match the definition in SafeBrowsing::ThreatAttribute in SafeBrowsing
 // API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SafeBrowsingJavaThreatAttribute { CANARY = 1, FRAME_ONLY = 2 };
 
 // Must match the definition in SafeBrowsing::Protocol in the SafeBrowsing
@@ -75,6 +81,8 @@ enum class SafeBrowsingJavaProtocol { LOCAL_BLOCK_LIST = 4, REAL_TIME = 5 };
 // in SafeBrowsing API. This enum is converted directly from the API response.
 // See the comment above |SafeBrowsingApiLookupResult| for the difference
 // between the two enums.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SafeBrowsingJavaResponseStatus {
   SUCCESS_WITH_LOCAL_BLOCKLIST = 0,
   SUCCESS_WITH_REAL_TIME = 1,
@@ -82,6 +90,19 @@ enum class SafeBrowsingJavaResponseStatus {
   SUCCESS_FALLBACK_REAL_TIME_THROTTLED = 3,
   FAILURE_NETWORK_UNAVAILABLE = 4,
   FAILURE_BLOCK_LIST_UNAVAILABLE = 5
+};
+
+// The result logged when validating the response from SafeBrowsing API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SafeBrowsingJavaValidationResult {
+  VALID = 0,
+  VALID_WITH_UNRECOGNIZED_RESPONSE_STATUS = 1,
+  INVALID_LOOKUP_RESULT = 2,
+  INVALID_THREAT_TYPE = 3,
+  INVALID_THREAT_ATTRIBUTE = 4,
+
+  kMaxValue = INVALID_THREAT_ATTRIBUTE
 };
 
 // Do not reorder or delete entries, and make sure changes here are reflected

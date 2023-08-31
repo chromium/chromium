@@ -10740,6 +10740,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SB2.RemoteCall.CanCheckUrl.{CheckType}"
+    enum="BooleanCanCheckUrl" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Count of how many URLs were actually checked by {CheckType} vs skipped via
+    RemoteSafeBrowsingDatabaseManager because the scheme is not supported by
+    Safe Browsing. Incremented each time a resource load is initiated. Different
+    check types are not directly comparable because hash real time checks have
+    applied pre-filtering before this histogram is logged while hash database
+    checks haven't.
+  </summary>
+  <token key="CheckType">
+    <variant name="HashDatabase" summary="hash database check"/>
+    <variant name="HashRealTime" summary="hash real time check"/>
+  </token>
+</histogram>
+
 <histogram name="SB2.RemoteCall.CheckDelta" units="microseconds"
     expires_after="2024-01-14">
   <owner>vakh@chromium.org</owner>

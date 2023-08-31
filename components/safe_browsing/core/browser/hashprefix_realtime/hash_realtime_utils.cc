@@ -30,10 +30,11 @@ bool HasGoogleChromeBranding() {
 
 bool CanCheckUrl(const GURL& url,
                  network::mojom::RequestDestination request_destination) {
-  // TODO(crbug.com/1444511): Add a histogram to see how many urls are filtered
-  // by CanGetReputationOfUrl.
+  bool can_check_reputation = CanGetReputationOfUrl(url);
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.CanGetReputationOfUrl",
+                            can_check_reputation);
   return request_destination == network::mojom::RequestDestination::kDocument &&
-         CanGetReputationOfUrl(url);
+         can_check_reputation;
 }
 
 bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {

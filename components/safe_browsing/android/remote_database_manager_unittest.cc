@@ -167,6 +167,12 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashDatabase) {
   histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CanCheckUrl",
                                        /*sample=*/true,
                                        /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SB2.RemoteCall.CanCheckUrl.HashDatabase",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount("SB2.RemoteCall.CanCheckUrl.HashRealTime",
+                                     /*expected_count=*/0);
 }
 
 TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
@@ -185,6 +191,12 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
   histogram_tester_.ExpectUniqueSample("SB2.RemoteCall.CanCheckUrl",
                                        /*sample=*/true,
                                        /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SB2.RemoteCall.CanCheckUrl.HashRealTime",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount("SB2.RemoteCall.CanCheckUrl.HashDatabase",
+                                     /*expected_count=*/0);
 }
 
 TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckDefault) {

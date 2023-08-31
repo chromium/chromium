@@ -953,6 +953,107 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.CheckDelta"
+    units="microseconds" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The microseconds between sending the SafeBrowsing API call and receiving the
+    response. The end time is fixed in java code and does not include any thread
+    hops or extra work. Note that this does include task queue time to respond
+    to the IPC (and that queue time is often non-trivial). This is logged each
+    time a response is received from SafeBrowsing API. This histogram is
+    comparable with SB2.RemoteCall.CheckDelta which measures a similar duration
+    for SafetyNet API calls.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.IsAvailable"
+    enum="BooleanAvailable" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the SafeBrowsing API is available. The API can be
+    unavailable if a non-recoverable error was encountered in a previous call.
+    This is logged when a SafeBrowsing API URL check starts.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult"
+    enum="SafeBrowsingApiJavaValidationResult" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result after validating the response from SafeBrowsing API. The
+    result can be invalid if there is a version mismatch bewteen Chrome and
+    GMSCore. This histogram is logged exactly once after a response is received
+    from SafeBrowsing API. If there are multiple invalid values, they will be
+    logged in the following order: lookup result, threat type, threat attribute
+    and response status.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.LookupResult"
+    enum="SafeBrowsingApiLookupResult" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the lookup result from SafeBrowsing API. In rare circumstance (e.g.
+    version mismatch), there may be out of range samples in this histogram.
+
+    This histogram may be skewed towards success or recoverable failure buckets,
+    because Chrome will not retry after a non-recoverable failure is
+    encountered. Check SafeBrowsing.GmsSafeBrowsingApi.IsAvailable to see how
+    often that happens.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus"
+    enum="SafeBrowsingApiResponseStatus" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the response status from SafeBrowsing API if the lookup result is
+    successful. In rare circumstance (e.g. version mismatch), there may be out
+    of range samples in this histogram.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ThreatAttribute"
+    enum="SafeBrowsingApiThreatAttribute" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each threat attribute from SafeBrowsing API if the lookup result is
+    successful. May be logged more than once in one single response when there
+    are multiple threat attributes. In rare circumstance (e.g. version
+    mismatch), there may be out of range samples in this histogram.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount"
+    units="entries" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the length of threat attributes from SafeBrowsing API if the lookup
+    result is successful.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.GmsSafeBrowsingApi.ThreatType"
+    enum="SafeBrowsingApiThreatType" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the threat type from SafeBrowsing API if the lookup result is
+    successful. In rare circumstance (e.g. version mismatch), there may be out
+    of range samples in this histogram.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HitReport.IsSubresource"
     enum="BooleanIsSubresource" expires_after="2024-01-07">
   <owner>xinghuilu@chromium.org</owner>
@@ -1059,6 +1160,17 @@ chromium-metrics-reviews@google.com.
     removed. It indicates that as a result of the cache, there would be no need
     to send a request to Safe Browsing servers. This is logged each time a
     lookup occurs, after the cache is searched.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.CanGetReputationOfUrl"
+    enum="BooleanCanCheckUrl" expires_after="2024-03-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether Safe Browsing can get the reputation of a URL when a
+    hash-prefix real-time check is needed. Logged when URL is loading and
+    hash-prefix real-time check is enabled.
   </summary>
 </histogram>
 

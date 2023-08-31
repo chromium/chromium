@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,6 +34,23 @@ namespace {
 // Android field trial for controlling types_to_check.
 const char kAndroidFieldExperiment[] = "SafeBrowsingAndroid";
 const char kAndroidTypesToCheckParam[] = "types_to_check";
+
+constexpr char kCanCheckUrlBaseHistogramName[] = "SB2.RemoteCall.CanCheckUrl";
+
+void LogCanCheckUrl(bool can_check_url, CheckBrowseUrlType check_type) {
+  base::UmaHistogramBoolean(kCanCheckUrlBaseHistogramName, can_check_url);
+  std::string metrics_suffix;
+  switch (check_type) {
+    case CheckBrowseUrlType::kHashDatabase:
+      metrics_suffix = ".HashDatabase";
+      break;
+    case CheckBrowseUrlType::kHashRealTime:
+      metrics_suffix = ".HashRealTime";
+      break;
+  }
+  base::UmaHistogramBoolean(kCanCheckUrlBaseHistogramName + metrics_suffix,
+                            can_check_url);
+}
 
 }  // namespace
 
@@ -209,8 +227,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   }
 
   bool can_check_url = CanCheckUrl(url);
-  // TODO(crbug.com/1444511): Break this histogram down by check_type.
-  UMA_HISTOGRAM_BOOLEAN("SB2.RemoteCall.CanCheckUrl", can_check_url);
+  LogCanCheckUrl(can_check_url, check_type);
   if (!can_check_url) {
     return true;  // Safe, continue right away.
   }
