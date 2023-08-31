@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -251,8 +250,7 @@ class DropdownItemViewInfoListBuilder {
      */
     @VisibleForTesting
     @NonNull
-    List<DropdownItemViewInfo> buildVerticalSuggestionsGroup(
-            @NonNull GroupsProto.GroupConfig groupDetails,
+    List<DropdownItemViewInfo> buildVerticalSuggestionsGroup(@NonNull GroupConfig groupDetails,
             @NonNull List<AutocompleteMatch> groupMatches, int firstVerticalPosition) {
         assert groupDetails != null;
         assert groupMatches != null;
@@ -280,6 +278,54 @@ class DropdownItemViewInfoListBuilder {
             result.add(new DropdownItemViewInfo(processor, model, groupDetails));
         }
 
+        return result;
+    }
+
+    /**
+     * Create a horizontal suggestions group ("section").
+     *
+     * The logic creates a horizontally arranged set of suggestions that belong to the same
+     * Suggestions Group ("section"). If the GroupConfig describing the group has a header text, it
+     * will be applied. Each suggestion presently must be handled by the same processor.
+     *
+     * Once built, all the matches reported by this call are appended to the target list of
+     * DropdownItemViewInfo objects, encompassing all suggestion groups.
+     *
+     * @param groupDetails the details describing this (vertical) suggestions group
+     * @param groupMatches the matches that belong to this suggestions group
+     * @param position the index on the target list
+     */
+    @VisibleForTesting
+    @NonNull
+    List<DropdownItemViewInfo> buildHorizontalSuggestionsGroup(@NonNull GroupConfig groupDetails,
+            @NonNull List<AutocompleteMatch> groupMatches, int position) {
+        assert groupDetails != null;
+        assert groupMatches != null;
+        assert groupMatches.size() > 0;
+
+        var result = new ArrayList<DropdownItemViewInfo>();
+
+        // Only add the Header Group when both ID and details are specified.
+        // Note that despite GroupsDetails map not holding <null> values,
+        // a group definition for specific ID may be unavailable, or the group
+        // header text may be empty.
+        if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
+            final PropertyModel model = mHeaderProcessor.createModel();
+            mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
+            result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
+        }
+
+        int numGroupMatches = groupMatches.size();
+        var processor = getProcessorForSuggestion(groupMatches.get(0), position);
+        var model = processor.createModel();
+
+        for (int index = 0; index < numGroupMatches; index++) {
+            var match = groupMatches.get(index);
+            assert processor.doesProcessSuggestion(match, position);
+            processor.populateModel(match, model, position);
+        }
+
+        result.add(new DropdownItemViewInfo(processor, model, groupDetails));
         return result;
     }
 
@@ -331,16 +377,21 @@ class DropdownItemViewInfoListBuilder {
             // dictated by GroupConfig.
             // The default instance holds safe values, applicable to non-Google DSE.
             var currentGroupConfig = autocompleteResult.getGroupsInfo().getGroupConfigsOrDefault(
-                    currentGroupId, GroupsProto.GroupConfig.getDefaultInstance());
+                    currentGroupId, GroupConfig.getDefaultInstance());
             if (currentGroupConfig.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
                 viewInfoList.addAll(buildVerticalSuggestionsGroup(
                         currentGroupConfig, currentGroupMatches, nextSuggestionLogicalIndex));
                 nextSuggestionLogicalIndex += currentGroupMatches.size();
+            } else if (currentGroupConfig.getRenderType() == GroupConfig.RenderType.HORIZONTAL) {
+                viewInfoList.addAll(buildHorizontalSuggestionsGroup(
+                        currentGroupConfig, currentGroupMatches, nextSuggestionLogicalIndex));
+                // Only one suggestion added.
+                nextSuggestionLogicalIndex++;
             } else {
                 assert false : "Unsupported group render type: "
                                + currentGroupConfig.getRenderType();
             }
-        };
+        }
 
         return viewInfoList;
     }

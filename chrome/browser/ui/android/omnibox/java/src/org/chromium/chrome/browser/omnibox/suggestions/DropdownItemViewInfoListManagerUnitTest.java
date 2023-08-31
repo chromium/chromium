@@ -573,8 +573,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
 
-        int suggestionListTopMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_list_active_top_small_margin);
         int groupTopSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
         int groupBottomSpacing = mContext.getResources().getDimensionPixelSize(
