@@ -242,6 +242,26 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   return true;
 }
 
+// ConsumeHue takes an angle as input (as angle in radians or in degrees, or as
+// plain number in degrees) and returns a plain number in degrees.
+static absl::optional<double> ConsumeHue(CSSParserTokenRange& range,
+                                         const CSSParserContext& context) {
+  CSSPrimitiveValue* value =
+      css_parsing_utils::ConsumeAngle(range, context, absl::nullopt);
+  double angle_value;
+  if (!value) {
+    value = css_parsing_utils::ConsumeNumber(
+        range, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!value) {
+      return absl::nullopt;
+    }
+    angle_value = value->GetDoubleValue();
+  } else {
+    angle_value = value->ComputeDegrees();
+  }
+  return angle_value;
+}
+
 bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
                                          const CSSParserContext& context,
                                          int i) {
@@ -264,19 +284,22 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
   }
 
   if (ColorChannelIsHue(color_space_, i)) {
-    temp = css_parsing_utils::ConsumeHue(args, context, absl::nullopt);
-    if (temp) {
-      channels_[i] = temp->GetDoubleValue();
+    if ((channels_[i] = ConsumeHue(args, context))) {
       channel_types_[i] = ChannelType::kNumber;
-      return true;
     } else if (is_relative_color_ &&
                (channels_[i] = ConsumeRelativeColorChannel(
                     args, context, channel_keyword_values_))) {
       channel_types_[i] = ChannelType::kRelative;
-      return true;
-    } else {
+    }
+
+    if (!channels_[i].has_value()) {
       return false;
     }
+
+    // Wrap hue to be in the range [0, 360].
+    channels_[i].value() =
+        fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
+    return true;
   }
 
   if ((temp = css_parsing_utils::ConsumeNumber(

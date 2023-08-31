@@ -1435,28 +1435,6 @@ CSSPrimitiveValue* ConsumeAngle(
   return ConsumeMathFunctionAngle(range, context);
 }
 
-// ConsumeHue takes an angle as input (as angle in radians or in degrees, or as
-// plain number in degrees) and returns a plain number in degrees.
-CSSPrimitiveValue* ConsumeHue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    absl::optional<WebFeature> unitless_zero_feature) {
-  CSSPrimitiveValue* value = ConsumeAngle(range, context, absl::nullopt);
-  double angle_value;
-  if (!value) {
-    value = ConsumeNumber(range, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (!value) {
-      return nullptr;
-    }
-    angle_value = value->GetDoubleValue();
-  } else {
-    angle_value = value->ComputeDegrees();
-  }
-  return CSSNumericLiteralValue::Create(
-      fmod(fmod(angle_value, 360.0) + 360.0, 360.0),
-      CSSPrimitiveValue::UnitType::kNumber);
-}
-
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                CSSPrimitiveValue::ValueRange value_range) {
