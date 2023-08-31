@@ -6209,6 +6209,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-pref-based-data-collection-consent-helper",
+    "owners": [ "mfacey", "mahmadi", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "omnibox-redo-current-match",
     "owners": [ "manukh", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120

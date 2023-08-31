@@ -2466,6 +2466,11 @@ const char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
 
+const char kOmniboxPrefBasedDataCollectionConsentHelperName[] =
+    "Pref Based Data Collection Consent Helper";
+const char kOmniboxPrefBasedDataCollectionConsentHelperDescription[] =
+    "Enables the pref based data collection consent helper";
+
 const char kOmniboxRichAutocompletionPromisingName[] =
     "Omnibox Rich Autocompletion Promising Combinations";
 const char kOmniboxRichAutocompletionPromisingDescription[] =

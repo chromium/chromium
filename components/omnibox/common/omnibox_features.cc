@@ -274,6 +274,12 @@ BASE_FEATURE(kDomainSuggestions,
              "OmniboxDomainSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature to determine if omnibox should use a pref based data collection
+// consent helper instead of a history sync based one.
+BASE_FEATURE(kPrefBasedDataCollectionConsentHelper,
+             "PrefBasedDataCollectionConsentHelper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).

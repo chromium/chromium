@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/history/core/browser/history_service.h"
@@ -14,6 +15,7 @@
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
@@ -47,9 +49,15 @@ AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
       url_consent_helper_(
-          unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedDataCollectionConsentHelper(
-                  SyncServiceFactory::GetForBrowserState(browser_state_))),
+          base::FeatureList::IsEnabled(
+              omnibox::kPrefBasedDataCollectionConsentHelper)
+              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
+                    NewAnonymizedDataCollectionConsentHelper(
+                        browser_state_->GetPrefs())
+              : unified_consent::UrlKeyedDataCollectionConsentHelper::
+                    NewPersonalizedDataCollectionConsentHelper(
+                        SyncServiceFactory::GetForBrowserState(
+                            browser_state_))),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()),
       tab_matcher_(browser_state_) {

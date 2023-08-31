@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -119,9 +120,15 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
     Profile* profile)
     : profile_(profile),
       scheme_classifier_(profile),
-      url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
-                              NewPersonalizedDataCollectionConsentHelper(
-                                  SyncServiceFactory::GetForProfile(profile_))),
+      url_consent_helper_(
+          base::FeatureList::IsEnabled(
+              omnibox::kPrefBasedDataCollectionConsentHelper)
+              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
+                    NewAnonymizedDataCollectionConsentHelper(
+                        profile_->GetPrefs())
+              : unified_consent::UrlKeyedDataCollectionConsentHelper::
+                    NewPersonalizedDataCollectionConsentHelper(
+                        SyncServiceFactory::GetForProfile(profile_))),
       tab_matcher_(GetTemplateURLService(), profile_),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(

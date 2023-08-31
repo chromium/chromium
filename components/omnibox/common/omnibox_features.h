@@ -75,6 +75,9 @@ BASE_DECLARE_FEATURE(kDocumentProviderNoSetting);
 BASE_DECLARE_FEATURE(kDocumentProviderNoSyncRequirement);
 BASE_DECLARE_FEATURE(kDomainSuggestions);
 
+// Consent helper types
+BASE_DECLARE_FEATURE(kPrefBasedDataCollectionConsentHelper);
+
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);
 BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
