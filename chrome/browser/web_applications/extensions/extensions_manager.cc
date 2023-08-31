@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +17,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 
@@ -28,6 +31,7 @@ class ExtensionInstallGateImpl : public extensions::InstallGate,
   explicit ExtensionInstallGateImpl(Profile* profile)
       : extension_service_(
             extensions::ExtensionSystem::Get(profile)->extension_service()) {
+    CHECK(extension_service_);
     extension_service_->RegisterInstallGate(
         extensions::ExtensionPrefs::DelayReason::DELAY_REASON_GC,
         static_cast<ExtensionInstallGateImpl*>(this));
@@ -71,14 +75,33 @@ ExtensionsManager::GetIsolatedStoragePaths() {
 }
 
 bool ExtensionsManager::ShouldGarbageCollectStoragePartitions() {
+  // `ExtensionPrefs` can be created lazily, so we don't need to wait on
+  // extension service.
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile_);
   return extension_prefs && extension_prefs->NeedsStorageGarbageCollection();
 }
 
+void ExtensionsManager::ResetStorageGarbageCollectPref(
+    base::OnceClosure callback) {
+  // `ExtensionPrefs` can be created lazily, so we don't need to wait on
+  // extension service.
+  extensions::ExtensionPrefs* extension_prefs =
+      extensions::ExtensionPrefs::Get(profile_);
+  if (extension_prefs) {
+    extension_prefs->pref_service()->SetBoolean(
+        extensions::pref_names::kStorageGarbageCollect, false);
+    extension_prefs->pref_service()->CommitPendingWrite(std::move(callback));
+  }
+}
+
 std::unique_ptr<ExtensionInstallGate>
 ExtensionsManager::RegisterGarbageCollectionInstallGate() {
   return std::make_unique<web_app::ExtensionInstallGateImpl>(profile_);
+}
+
+KeyedServiceBaseFactory* ExtensionsManager::GetExtensionSystemSharedFactory() {
+  return extensions::ExtensionSystemSharedFactory::GetInstance();
 }
 
 }  // namespace web_app

@@ -9,6 +9,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -199,9 +201,12 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
                        UninstalledAppsHaveStoragePartitionsCleanedUp) {
   base::ScopedAllowBlockingForTesting blocking_allow;
 
-  WaitForPrefValue(profile()->GetPrefs(),
-                   prefs::kShouldGarbageCollectStoragePartitions,
-                   base::Value(false));
+  base::RunLoop run_loop;
+  provider()
+      .extensions_manager()
+      .on_garbage_collect_storage_partitions_done_for_testing()
+      .Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   const GURL kIwa1Url(kIwa1UrlString);
   const GURL kIwa2Url(kIwa2UrlString);
