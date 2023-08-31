@@ -22,15 +22,13 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-
-const base::FilePath::CharType kWebSessionCacheDirectoryName[] =
-    FILE_PATH_LITERAL("Web_Sessions");
 
 namespace {
 
@@ -132,7 +130,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   if ((self = [super init])) {
     _browserState = browserState;
     _cacheDirectory =
-        browserState->GetStatePath().Append(kWebSessionCacheDirectoryName);
+        browserState->GetStatePath().Append(kLegacyWebSessionsDirname);
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});

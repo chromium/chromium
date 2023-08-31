@@ -14,6 +14,7 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
@@ -55,8 +56,8 @@ class WebSessionStateTabHelperTest : public PlatformTest {
 
     WebSessionStateTabHelper::CreateForWebState(web_state());
 
-    session_cache_directory_ = browser_state_.get()->GetStatePath().Append(
-        kWebSessionCacheDirectoryName);
+    session_cache_directory_ =
+        browser_state_.get()->GetStatePath().Append(kLegacyWebSessionsDirname);
   }
 
   base::FilePath SessionCachePathForWebState(const web::WebState* web_state) {

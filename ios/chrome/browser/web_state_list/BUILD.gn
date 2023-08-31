@@ -33,6 +33,7 @@ source_set("web_state_list") {
     "//components/favicon/core",
     "//components/favicon/ios",
     "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/sessions:session_constants",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/session",

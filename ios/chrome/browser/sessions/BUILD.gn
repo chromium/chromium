@@ -74,6 +74,7 @@ source_set("session_service") {
   ]
   deps = [
     ":serialisation",
+    ":session_constants",
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/web_state_list",
@@ -168,6 +169,14 @@ source_set("session_restoration_service_factory") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
+}
+
+source_set("session_constants") {
+  sources = [
+    "session_constants.h",
+    "session_constants.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("test_support") {

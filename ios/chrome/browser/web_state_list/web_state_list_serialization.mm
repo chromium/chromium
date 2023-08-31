@@ -14,6 +14,7 @@
 #import "base/check_op.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -25,14 +26,6 @@
 #import "net/base/mac/url_conversions.h"
 
 namespace {
-// Keys used to store information about the opener-opened relationship between
-// the WebStates stored in the WebStateList.
-NSString* const kOpenerIndexKey = @"OpenerIndex";
-NSString* const kOpenerNavigationIndexKey = @"OpenerNavigationIndex";
-
-// Key used to store information about the pinned state of the WebStates stored
-// in the WebStateList.
-NSString* const kPinnedStateKey = @"PinnedState";
 
 // Some WebState may have no back/forward history. This can happen for
 // multiple reason (one is when opening a new tab on a slow network session,
@@ -60,7 +53,8 @@ bool GetPinnedStateForWebState(web::WebState* web_state) {
   web::SerializableUserDataManager* user_data_manager =
       web::SerializableUserDataManager::FromWebState(web_state);
   NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
-      user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
+      user_data_manager->GetValueForSerializationKey(
+          kLegacyWebStateListPinnedStateKey));
   return [pinned_state boolValue];
 }
 
@@ -147,17 +141,21 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
     }
 
     if (opener_index != WebStateList::kInvalidIndex) {
-      user_data_manager->AddSerializableData(@(opener_index), kOpenerIndexKey);
-      user_data_manager->AddSerializableData(@(opener.navigation_index),
-                                             kOpenerNavigationIndexKey);
+      user_data_manager->AddSerializableData(@(opener_index),
+                                             kLegacyWebStateListOpenerIndexKey);
+      user_data_manager->AddSerializableData(
+          @(opener.navigation_index),
+          kLegacyWebStateListOpenerNavigationIndexKey);
     } else {
-      user_data_manager->AddSerializableData([NSNull null], kOpenerIndexKey);
       user_data_manager->AddSerializableData([NSNull null],
-                                             kOpenerNavigationIndexKey);
+                                             kLegacyWebStateListOpenerIndexKey);
+      user_data_manager->AddSerializableData(
+          [NSNull null], kLegacyWebStateListOpenerNavigationIndexKey);
     }
 
     bool pinned_state = web_state_list->IsWebStatePinnedAt(index);
-    user_data_manager->AddSerializableData(@(pinned_state), kPinnedStateKey);
+    user_data_manager->AddSerializableData(@(pinned_state),
+                                           kLegacyWebStateListPinnedStateKey);
 
     CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
     [serialized_session addObject:session_storage];
@@ -209,11 +207,12 @@ void DeserializeWebStateList(WebStateList* web_state_list,
         web::SerializableUserDataManager::FromWebState(web_state);
 
     NSNumber* boxed_opener_index = base::apple::ObjCCast<NSNumber>(
-        user_data_manager->GetValueForSerializationKey(kOpenerIndexKey));
+        user_data_manager->GetValueForSerializationKey(
+            kLegacyWebStateListOpenerIndexKey));
 
     NSNumber* boxed_opener_navigation_index = base::apple::ObjCCast<NSNumber>(
         user_data_manager->GetValueForSerializationKey(
-            kOpenerNavigationIndexKey));
+            kLegacyWebStateListOpenerNavigationIndexKey));
 
     if (!boxed_opener_index || !boxed_opener_navigation_index) {
       continue;
@@ -255,7 +254,8 @@ void DeserializeWebStateList(WebStateList* web_state_list,
           web::SerializableUserDataManager::FromWebState(web_state);
 
       NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
-          user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
+          user_data_manager->GetValueForSerializationKey(
+              kLegacyWebStateListPinnedStateKey));
       web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
     }
   }

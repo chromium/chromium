@@ -15,10 +15,6 @@ namespace web {
 class WebState;
 }
 
-// The name of the subdirectory used to store the on-disk cache of sessionState
-// data.
-extern const base::FilePath::CharType kWebSessionCacheDirectoryName[];
-
 // A browser state keyed service, providing an on-disk cache of WKWebView
 // sessionState data, modeled after the SnapshotCache.  Data is persisted to
 // disk in a background thread with the provided NSData to a file name based on

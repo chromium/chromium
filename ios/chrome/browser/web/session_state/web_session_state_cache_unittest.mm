@@ -14,6 +14,7 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -38,8 +39,8 @@ class WebSessionStateCacheTest : public PlatformTest {
     web::WebState::CreateParams createParams(chrome_browser_state_.get());
     web_state_ = web::WebState::Create(createParams);
 
-    session_cache_directory_ = chrome_browser_state_->GetStatePath().Append(
-        kWebSessionCacheDirectoryName);
+    session_cache_directory_ =
+        chrome_browser_state_->GetStatePath().Append(kLegacyWebSessionsDirname);
   }
 
   bool StorageExists() {
