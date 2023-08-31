@@ -140,8 +140,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Identifier of the last focused field.
   FieldRendererId _lastFocusedFieldIdentifier;
 
-  // Identifier of the last focused frame.
-  web::WebFrame* _lastFocusedFrame;
+  // Last focused frame.
+  raw_ptr<web::WebFrame> _lastFocusedFrame;
 
   // A refcounted object is stored here, because otherwise the driver can
   // be deleted with the frame, and the driver needs to be alive after the
@@ -295,7 +295,18 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
   web::WebFrame* webFrame = webFramesManager->GetFrameWithId(frameId);
-  if (!webFrame || webFrame->IsMainFrame()) {
+  if (!webFrame) {
+    return;
+  }
+
+  // Avoid keeping a pointer to a destroyed frame.
+  if (webFrame == _lastFocusedFrame) {
+    _lastFocusedFrame = nullptr;
+  }
+
+  // Main frame becomes unavailable, submission detection will happen after the
+  // the new main frame is loaded.
+  if (webFrame->IsMainFrame()) {
     return;
   }
 
