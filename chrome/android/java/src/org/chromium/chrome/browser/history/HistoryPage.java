@@ -43,7 +43,8 @@ public class HistoryPage extends BasicNativePage {
         assert uri.getHost().equals(UrlConstants.HISTORY_HOST);
 
         boolean showHistoryClustersImmediately =
-                uri.getPath().contains(HistoryClustersConstants.JOURNEYS_PATH);
+                uri.getPath().contains(HistoryClustersConstants.JOURNEYS_PATH)
+                || uri.getPath().contains(HistoryClustersConstants.GROUPS_PATH);
         String historyClustersQuery =
                 uri.getQueryParameter(HistoryClustersConstants.HISTORY_CLUSTERS_QUERY_KEY);
 

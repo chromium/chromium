@@ -399,6 +399,7 @@ public abstract class ChromeFeatureList {
             "RecoverFromNeverSaveAndroid_LAUNCHED";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES = "RelatedSearches";
+    public static final String RENAME_JOURNEYS = "RenameJourneys";
     public static final String RESTORE_TABS_ON_FRE = "RestoreTabsOnFRE";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS = "RequestDesktopSiteDefaults";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL =

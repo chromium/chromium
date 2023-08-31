@@ -23,14 +23,13 @@
   <message name="IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where Journeys are collected and shown to the user. See glossary entry for meaning of 'Journeys'." formatter_data="android_java">
     Journeys
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items organized into groups of pages are shown to the user.">
+  <message name="IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items organized into groups of pages are shown to the user." formatter_data="android_java">
     By group
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user."
-    formatter_data="android_java">
+  <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user." formatter_data="android_java">
     List
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
+  <message name="IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user." formatter_data="android_java">
     By date
   </message>
   <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS" desc="The header used for Journeys that are anchored by search terms. The header is just the search terms in locale-specific quotation marks.">

@@ -164,6 +164,7 @@ public class HistoryClustersMediatorTest {
     private Intent mIntent = new Intent();
     private HistoryClustersMediator mMediator;
     private boolean mIsSeparateActivity;
+    private boolean mRenameEnabled = true;
     private HistoryClustersDelegate mHistoryClustersDelegate;
     private SelectionDelegate<ClusterVisit> mSelectionDelegate = new SelectionDelegate<>();
     private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
@@ -254,6 +255,11 @@ public class HistoryClustersMediatorTest {
             @Override
             public void markVisitForRemoval(ClusterVisit clusterVisit) {
                 mVisitsForRemoval.add(clusterVisit);
+            }
+
+            @Override
+            public boolean isRenameEnabled() {
+                return mRenameEnabled;
             }
         };
 
@@ -482,10 +488,18 @@ public class HistoryClustersMediatorTest {
     }
 
     @Test
-    public void testOpenInFullPageTablet() {
+    public void testOpenInFullPageTablet_renameDisabled() {
+        mRenameEnabled = false;
         doReturn(2).when(mResources).getInteger(R.integer.min_screen_width_bucket);
         mMediator.openHistoryClustersUi("pandas");
         verify(mTab).loadUrl(argThat(hasSameUrl("chrome://history/journeys?q=pandas")));
+    }
+
+    @Test
+    public void testOpenInFullPageTablet() {
+        doReturn(2).when(mResources).getInteger(R.integer.min_screen_width_bucket);
+        mMediator.openHistoryClustersUi("pandas");
+        verify(mTab).loadUrl(argThat(hasSameUrl("chrome://history/2?q=pandas")));
     }
 
     @Test

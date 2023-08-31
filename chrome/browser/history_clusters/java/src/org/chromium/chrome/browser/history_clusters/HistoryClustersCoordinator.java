@@ -216,12 +216,18 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         mToolbar = (HistoryClustersToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.history_clusters_toolbar, mSelectionDelegate, R.string.menu_history,
                 R.id.normal_menu_group, R.id.selection_mode_menu_group, this, true);
-        mToolbar.initializeSearchView(
-                mMediator, R.string.history_clusters_search_your_journeys, R.id.search_menu_id);
+        int searchStringId = mDelegate.isRenameEnabled()
+                ? R.string.history_manager_search
+                : R.string.history_clusters_search_your_journeys;
+        mToolbar.initializeSearchView(mMediator, searchStringId, R.id.search_menu_id);
         mSelectableListLayout.configureWideDisplayStyle();
         mToolbar.setSearchEnabled(true);
         if (!mDelegate.isSeparateActivity()) {
             mToolbar.getMenu().removeItem(R.id.close_menu_id);
+        }
+
+        if (mDelegate.isRenameEnabled()) {
+            mToolbar.getMenu().removeItem(R.id.optout_menu_id);
         }
 
         mToolbar.setInfoMenuItem(R.id.info_menu_id);

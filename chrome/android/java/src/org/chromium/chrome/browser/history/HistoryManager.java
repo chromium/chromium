@@ -280,6 +280,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 public void onOptOut() {
                     onHistoryClustersOptOutChanged(false);
                 }
+
+                @Override
+                public boolean isRenameEnabled() {
+                    return ChromeFeatureList.isEnabled(ChromeFeatureList.RENAME_JOURNEYS);
+                }
             };
 
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
@@ -437,6 +442,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom)
                         -> updateTouchDelegate(
                                 compositeTouchDelegate, view, tabLayout, new AtomicReference<>()));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RENAME_JOURNEYS)) {
+            firstTab.view.getTab().setText(R.string.history_clusters_by_date_tab_label);
+            secondTab.view.getTab().setText(R.string.history_clusters_by_group_tab_label);
+        }
         return viewGroup;
     }
 

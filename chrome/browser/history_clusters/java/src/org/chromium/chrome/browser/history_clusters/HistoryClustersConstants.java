@@ -12,6 +12,11 @@ package org.chromium.chrome.browser.history_clusters;
 public class HistoryClustersConstants {
     /** Path portion of a URI that when matched signifies that the journeys UI should be shown. */
     public static final String JOURNEYS_PATH = "journeys";
+    /**
+     * Path portion of a URI that when matched signifies that the renamed-to-groups UI should be
+     * shown.
+     */
+    public static final String GROUPS_PATH = "2";
     /** Query parameter key of a URI that specifies the preset query for the Journeys UI. */
     public static final String HISTORY_CLUSTERS_QUERY_KEY = "q";
 

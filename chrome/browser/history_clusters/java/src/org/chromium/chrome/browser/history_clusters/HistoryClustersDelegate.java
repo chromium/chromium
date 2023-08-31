@@ -102,4 +102,9 @@ public interface HistoryClustersDelegate {
      * that it should remove the HistoryClusters UI.
      */
     default void onOptOut() {}
+
+    /** Whether the rename from "Journeys" to "Groups" is enabled. */
+    default boolean isRenameEnabled() {
+        return true;
+    }
 }

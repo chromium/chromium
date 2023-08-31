@@ -156,6 +156,11 @@ public class HistoryClustersCoordinatorTest {
         public void markVisitForRemoval(ClusterVisit clusterVisit) {
             mVisitsForRemoval.add(clusterVisit);
         }
+
+        @Override
+        public boolean isRenameEnabled() {
+            return mRenameEnabled;
+        }
     }
 
     @Rule
@@ -205,6 +210,7 @@ public class HistoryClustersCoordinatorTest {
             new ObservableSupplierImpl<>();
     private boolean mIsSeparateActivity = true;
     private boolean mHasOtherFormsOfBrowsingHistory = true;
+    private boolean mRenameEnabled = true;
 
     @Before
     public void setUp() {
@@ -255,10 +261,19 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
-    public void testOpenHistoryClustersUiTablet() {
+    public void testOpenHistoryClustersUiTablet_renameDisabled() {
+        mRenameEnabled = false;
         mHistoryClustersCoordinator.openHistoryClustersUi("pandas");
         verify(mTab).loadUrl(argThat(
                 HistoryClustersMediatorTest.hasSameUrl("chrome://history/journeys?q=pandas")));
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    public void testOpenHistoryClustersUiTablet() {
+        mHistoryClustersCoordinator.openHistoryClustersUi("pandas");
+        verify(mTab).loadUrl(
+                argThat(HistoryClustersMediatorTest.hasSameUrl("chrome://history/2?q=pandas")));
     }
 
     @Test
@@ -514,6 +529,31 @@ public class HistoryClustersCoordinatorTest {
         mHasOtherFormsOfBrowsingHistory = false;
         mShouldShowPrivacyDisclaimerSupplier.set(false);
         assertFalse(toolbar.getMenu().findItem(R.id.info_menu_id).isVisible());
+    }
+
+    @Test
+    public void testOptOutPresent_renameDisabled() {
+        mRenameEnabled = false;
+        mHistoryClustersCoordinator.getActivityContentView();
+        mHistoryClustersCoordinator.setInitialQuery(QueryState.forQueryless());
+        fulfillPromise(mPromise, mClusterResult);
+
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+        assertNotNull(toolbar.getMenu().findItem(R.id.optout_menu_id));
+    }
+
+    @Test
+    public void testRenameRemovesOptOut() {
+        mHistoryClustersCoordinator.getActivityContentView();
+        mHistoryClustersCoordinator.setInitialQuery(QueryState.forQueryless());
+        fulfillPromise(mPromise, mClusterResult);
+
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+        assertNull(toolbar.getMenu().findItem(R.id.optout_menu_id));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

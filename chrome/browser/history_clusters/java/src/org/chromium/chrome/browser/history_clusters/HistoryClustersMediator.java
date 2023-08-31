@@ -270,7 +270,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     new Uri.Builder()
                             .scheme(UrlConstants.CHROME_SCHEME)
                             .authority(UrlConstants.HISTORY_HOST)
-                            .path(HistoryClustersConstants.JOURNEYS_PATH)
+                            .path(mDelegate.isRenameEnabled()
+                                            ? HistoryClustersConstants.GROUPS_PATH
+                                            : HistoryClustersConstants.JOURNEYS_PATH)
                             .appendQueryParameter(
                                     HistoryClustersConstants.HISTORY_CLUSTERS_QUERY_KEY, query)
                             .build();
