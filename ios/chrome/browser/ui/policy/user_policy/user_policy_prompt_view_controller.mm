@@ -55,8 +55,6 @@ constexpr CGFloat kCustomSpacingAfterImageIOS15 = 1;
     self.customSpacingAfterImage = kCustomSpacingAfterImage;
   }
 
-  self.secondaryActionTextColor = kRedColor;
-
   [super viewDidLoad];
 }
 
