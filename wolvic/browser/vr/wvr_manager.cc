@@ -64,7 +64,7 @@ device::mojom::XRHandedness ToXRHandness(mozilla::gfx::ControllerHand hand) {
 }
 
 device::Gamepad ToGamepad(const mozilla::gfx::VRControllerState& controller) {
-  DCHECK_GT(controller.numButtons, 0);
+  DCHECK_GT(controller.numButtons, 0UL);
   DCHECK_LT(controller.numButtons, device::Gamepad::kButtonsLengthCap);
 
   // The xr-standard gamepad mapping is specified here
@@ -80,7 +80,7 @@ device::Gamepad ToGamepad(const mozilla::gfx::VRControllerState& controller) {
       [&controller](
           GamepadBuilder::ButtonData::Type type) -> GamepadBuilder::ButtonData {
     DCHECK_LT(controller.numAxes, device::Gamepad::kAxesLengthCap);
-    DCHECK_EQ(controller.numAxes, 4);
+    DCHECK_EQ(controller.numAxes, 4UL);
 
     bool isThumbstick = type == GamepadBuilder::ButtonData::Type::kThumbstick;
     DCHECK(type == GamepadBuilder::ButtonData::Type::kTouchpad || isThumbstick);
