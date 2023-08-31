@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
+#include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
@@ -134,8 +134,9 @@ struct RWBuffer::BufferHead {
 };
 
 size_t RWBuffer::ROIter::size() const {
-  if (!block_)
+  if (!block_) {
     return 0;
+  }
 
   return std::min(block_->capacity_, remaining_);
 }

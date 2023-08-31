@@ -29,8 +29,8 @@
  */
 
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
-#include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/skia/include/core/SkData.h"
 
