@@ -573,7 +573,9 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   }
 }
 
-void AutocompleteResult::SplitActionsToSuggestions() {
+void AutocompleteResult::SplitActionsToSuggestions(
+    const AutocompleteInput& input) {
+  size_t size_before = size();
   for (size_t i = 0; i < matches_.size(); i++) {
     for (size_t j = 0; j < matches_[i].actions.size(); j++) {
       if (matches_[i].actions[j]->ActionId() == OmniboxActionId::PEDAL) {
@@ -588,6 +590,16 @@ void AutocompleteResult::SplitActionsToSuggestions() {
         matches_[i].actions.erase(matches_[i].actions.begin() + j);
         j--;
       }
+    }
+  }
+  if (size() > size_before &&
+      OmniboxFieldTrial::kActionsUISimplificationTrimExtra.Get()) {
+    CompareWithDemoteByType<AutocompleteMatch> comparing_object(
+        input.current_page_classification());
+    const size_t limit =
+        CalculateNumMatches(input.IsZeroSuggest(), matches_, comparing_object);
+    if (size() > limit) {
+      matches_.resize(limit);
     }
   }
 }

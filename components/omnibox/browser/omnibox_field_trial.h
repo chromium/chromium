@@ -291,6 +291,11 @@ bool HUPSearchDatabase();
 
 // Returns true if the OmniboxActionsUISimplification feature is enabled.
 bool IsActionsUISimplificationEnabled();
+// Indicates whether to delete extra matches produced by splitting
+// actions out to become independent suggestions. Note, this will only
+// apply if `IsActionsUISimplificationEnabled` returns true and the
+// total number of matches exceeds the limit (i.e. there are extra matches).
+extern const base::FeatureParam<bool> kActionsUISimplificationTrimExtra;
 
 // Returns true if the fuzzy URL suggestions feature is enabled.
 bool IsFuzzyUrlSuggestionsEnabled();

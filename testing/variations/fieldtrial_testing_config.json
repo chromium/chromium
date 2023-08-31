@@ -10174,6 +10174,36 @@
             ]
         }
     ],
+    "OmniboxActionsUISimplification": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ActionsUISimplificationTrimExtra": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxActionsUISimplification"
+                    ]
+                },
+                {
+                    "name": "Enabled_TrimExtraFalse",
+                    "params": {
+                        "ActionsUISimplificationTrimExtra": "false"
+                    },
+                    "enable_features": [
+                        "OmniboxActionsUISimplification"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [

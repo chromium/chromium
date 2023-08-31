@@ -553,6 +553,12 @@ bool OmniboxFieldTrial::IsActionsUISimplificationEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification);
 }
 
+const base::FeatureParam<bool>
+    OmniboxFieldTrial::kActionsUISimplificationTrimExtra(
+        &omnibox::kOmniboxActionsUISimplification,
+        "ActionsUISimplificationTrimExtra",
+        true);
+
 bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
 }
