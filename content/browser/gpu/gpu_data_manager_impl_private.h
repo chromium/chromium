@@ -231,7 +231,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // Notify all observers whenever there is a GPU info update.
   void NotifyGpuInfoUpdate();
 
-  void RequestDxDiagNodeData();
+  void RequestDxDiagNodeData(bool delayed);
   void RequestGpuSupportedDx12Version(bool delayed);
   void RequestGpuSupportedVulkanVersion(bool delayed);
   void RequestDawnInfo(bool delayed, bool collect_metrics);
