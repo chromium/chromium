@@ -1052,19 +1052,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       viewController);
 }
 
-- (id<UIViewControllerAnimatedTransitioning>)
-               navigationController:
-                   (UINavigationController*)navigationController
-    animationControllerForOperation:(UINavigationControllerOperation)operation
-                 fromViewController:(UIViewController*)fromVC
-                   toViewController:(UIViewController*)toVC {
-  if (operation == UINavigationControllerOperationPop &&
-      [fromVC respondsToSelector:@selector(settingsWillBeDismissed)]) {
-    [fromVC performSelector:@selector(settingsWillBeDismissed)];
-  }
-  return nil;
-}
-
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be
