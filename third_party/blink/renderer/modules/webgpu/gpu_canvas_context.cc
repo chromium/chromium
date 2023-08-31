@@ -135,8 +135,10 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(
     return nullptr;
 
   // If there is a current texture, create a snapshot from it.
-  if (texture_) {
+  if (texture_ && !texture_->Destroyed()) {
     return SnapshotInternal(texture_->GetHandle(), swap_buffers_->Size());
+  } else if (swap_texture_) {
+    return SnapshotInternal(swap_texture_->GetHandle(), swap_buffers_->Size());
   }
 
   // If there is no current texture, we need to get the information of the last
@@ -778,7 +780,15 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       .depthOrArrayLayers = 1,
   };
 
-  if (alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque) {
+  bool isOpaque = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque;
+
+  // If either the texture is opaque or the texture format does not match the
+  // resource provider's format then CopyTextureForBrowser will be used, which
+  // performs a blit and can fix up the texture data during the copy.
+  if (isOpaque || copy_to_swap_texture_required_) {
+    WGPUAlphaMode srcAlphaMode =
+        isOpaque ? WGPUAlphaMode_Opaque : WGPUAlphaMode_Premultiplied;
+
     // Issue a copyTextureForBrowser call with internal usage turned on.
     // There is a special step for srcAlphaMode == WGPUAlphaMode_Opaque that
     // clears alpha channel to one.
@@ -796,12 +806,12 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
         break;
       default:
         // Unknown dst alpha type, default to equal to src alpha mode
-        dstAlphaMode = WGPUAlphaMode_Opaque;
+        dstAlphaMode = srcAlphaMode;
         break;
     }
     WGPUCopyTextureForBrowserOptions options = {
         .flipY = !resource_provider->IsOriginTopLeft(),
-        .srcAlphaMode = WGPUAlphaMode_Opaque,
+        .srcAlphaMode = srcAlphaMode,
         .dstAlphaMode = dstAlphaMode,
         .internalUsage = true,
     };
