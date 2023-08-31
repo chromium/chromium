@@ -641,11 +641,6 @@ class AutofillClient : public RiskDataLoader {
   // visible and has been closed.
   virtual bool CloseWebauthnDialog() = 0;
 
-  // Prompt the user to confirm the saving of a UPI ID.
-  virtual void ConfirmSaveUpiIdLocally(
-      const std::string& upi_id,
-      base::OnceCallback<void(bool user_decision)> callback) = 0;
-
   // Shows the dialog including all credit cards that are available to be used
   // as a virtual card. |candidates| must not be empty and has at least one
   // card. Runs |callback| when a card is selected.

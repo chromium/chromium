@@ -328,10 +328,6 @@ class TestAutofillClientTemplate : public T {
 
   bool CloseWebauthnDialog() override { return true; }
 
-  void ConfirmSaveUpiIdLocally(
-      const std::string& upi_id,
-      base::OnceCallback<void(bool accept)> callback) override {}
-
   void OfferVirtualCardOptions(
       const std::vector<CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override {}

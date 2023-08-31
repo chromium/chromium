@@ -2411,7 +2411,6 @@ if (!is_android) {
       "../browser/ui/autofill/edit_address_profile_dialog_controller_impl_browsertest.cc",
       "../browser/ui/autofill/payments/card_unmask_prompt_view_browsertest.cc",
       "../browser/ui/autofill/payments/save_card_bubble_controller_impl_browsertest.cc",
-      "../browser/ui/autofill/payments/save_upi_bubble_controller_impl_browsertest.cc",
       "../browser/ui/blocked_content/popup_opener_tab_helper_browsertest.cc",
       "../browser/ui/blocked_content/popup_tracker_browsertest.cc",
       "../browser/ui/blocked_content/safe_browsing_triggered_popup_blocker_browsertest.cc",

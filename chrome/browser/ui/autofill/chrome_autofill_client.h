@@ -192,9 +192,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       WebauthnDialogCallback verify_pending_dialog_callback) override;
   void UpdateWebauthnOfferDialogWithError() override;
   bool CloseWebauthnDialog() override;
-  void ConfirmSaveUpiIdLocally(
-      const std::string& upi_id,
-      base::OnceCallback<void(bool accept)> callback) override;
   void OfferVirtualCardOptions(
       const std::vector<CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override;

@@ -18,16 +18,7 @@ void UpiVpaSaveManager::OfferLocalSave(const std::string& upi_id) {
   if (!personal_data_manager_)
     return;
 
-  client_->ConfirmSaveUpiIdLocally(
-      upi_id, base::BindOnce(&UpiVpaSaveManager::OnUserDecidedOnLocalSave,
-                             weak_ptr_factory_.GetWeakPtr(), upi_id));
-}
-
-void UpiVpaSaveManager::OnUserDecidedOnLocalSave(const std::string& upi_id,
-                                                 bool accepted) {
-  // TODO(crbug.com/986289) Add metrics.
-  if (accepted)
-    personal_data_manager_->AddUpiId(upi_id);
+  personal_data_manager_->AddUpiId(upi_id);
 }
 
 }  // namespace autofill

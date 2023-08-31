@@ -24,7 +24,6 @@ class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
-class SaveUPIBubble;
 enum class IbanBubbleType;
 
 class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
@@ -58,9 +57,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) override;
-  SaveUPIBubble* ShowSaveUPIBubble(
-      content::WebContents* web_contents,
-      SaveUPIBubbleController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
       SaveUpdateAddressProfileBubbleController* controller,

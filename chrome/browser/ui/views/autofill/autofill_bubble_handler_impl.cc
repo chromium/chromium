@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
-#include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
-#include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
@@ -192,25 +190,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(
   bubble->ShowForReason(is_user_gesture
                             ? OfferNotificationBubbleViews::USER_GESTURE
                             : OfferNotificationBubbleViews::AUTOMATIC);
-  return bubble;
-}
-
-SaveUPIBubble* AutofillBubbleHandlerImpl::ShowSaveUPIBubble(
-    content::WebContents* web_contents,
-    SaveUPIBubbleController* controller) {
-  views::View* anchor_view =
-      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
-  SaveUPIOfferBubbleViews* bubble =
-      new SaveUPIOfferBubbleViews(anchor_view, web_contents, controller);
-
-  PageActionIconView* icon_view =
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kSaveCard);
-  DCHECK(icon_view);
-  bubble->SetHighlightedButton(icon_view);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show();
   return bubble;
 }
 

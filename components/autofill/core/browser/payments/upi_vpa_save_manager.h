@@ -26,8 +26,6 @@ class UpiVpaSaveManager {
   void OfferLocalSave(const std::string& upi_id);
 
  private:
-  void OnUserDecidedOnLocalSave(const std::string& upi_id, bool accepted);
-
   raw_ptr<AutofillClient> client_;
 
   // The personal data manager, used to save and load personal data to/from the

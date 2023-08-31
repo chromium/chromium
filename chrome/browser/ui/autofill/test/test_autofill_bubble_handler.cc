@@ -51,14 +51,6 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowOfferNotificationBubble(
   return offer_notification_bubble_view_.get();
 }
 
-SaveUPIBubble* TestAutofillBubbleHandler::ShowSaveUPIBubble(
-    content::WebContents* contents,
-    SaveUPIBubbleController* controller) {
-  if (!save_upi_bubble_)
-    save_upi_bubble_ = std::make_unique<TestSaveUPIBubble>();
-  return save_upi_bubble_.get();
-}
-
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
     content::WebContents* contents,
     SaveUpdateAddressProfileBubbleController* controller,

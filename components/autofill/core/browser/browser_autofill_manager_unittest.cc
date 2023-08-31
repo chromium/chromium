@@ -258,13 +258,6 @@ class MockAutofillClient : public TestAutofillClient {
               GetAutofillOptimizationGuide,
               (),
               (const override));
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  MOCK_METHOD(void,
-              ConfirmSaveUpiIdLocally,
-              (const std::string& upi_id,
-               base::OnceCallback<void(bool user_decision)> callback),
-              (override));
-#endif
   MOCK_METHOD(profile_metrics::BrowserProfileType,
               GetProfileType,
               (),
@@ -9330,69 +9323,6 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_THAT(histograms, Not(AnyOf(HasSubstr("Autofill.UserHappiness"),
                                     HasSubstr("Autocomplete.Events"),
                                     HasSubstr("Autofill.FormEvents.Address"))));
-}
-
-// Test that we import data when the field type is determined by the value and
-// without any heuristics on the attributes.
-TEST_F(BrowserAutofillManagerTest, ImportDataWhenValueDetected) {
-  const std::string test_upi_id_value = "user@indianbank";
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillSaveAndFillVPA);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  EXPECT_CALL(autofill_client_, ConfirmSaveUpiIdLocally(test_upi_id_value, _))
-      .WillOnce([](std::string upi_id,
-                   base::OnceCallback<void(bool user_decision)> callback) {
-        std::move(callback).Run(true);
-      });
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  FormData form;
-  form.url = GURL("https://wwww.foo.com");
-  form.fields = {CreateTestFormField("UPI ID:", "upi_id", "", "text")};
-
-  FormsSeen({form});
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes({{UPI_VPA}});
-  browser_autofill_manager_->SetExpectedObservedSubmission(true);
-  form.submission_event =
-      mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-
-  form.fields[0].value = base::UTF8ToUTF16(test_upi_id_value);
-  FormSubmitted(form);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // The feature is not implemented for mobile.
-  EXPECT_EQ(0, personal_data().num_times_save_upi_id_called());
-#else
-  EXPECT_EQ(1, personal_data().num_times_save_upi_id_called());
-#endif
-}
-
-// Test that we do not import UPI data when in incognito.
-TEST_F(BrowserAutofillManagerTest, DontImportUpiIdWhenIncognito) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillSaveAndFillVPA);
-  autofill_client_.set_is_off_the_record(true);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  EXPECT_CALL(autofill_client_, ConfirmSaveUpiIdLocally(_, _)).Times(0);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  FormData form;
-  form.url = GURL("https://wwww.foo.com");
-  form.fields = {CreateTestFormField("UPI ID:", "upi_id", "", "text")};
-
-  FormsSeen({form});
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes({{UPI_VPA}});
-  browser_autofill_manager_->SetExpectedObservedSubmission(true);
-  form.submission_event =
-      mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-
-  form.fields[0].value = u"user@indianbank";
-  FormSubmitted(form);
-
-  EXPECT_EQ(0, personal_data().num_times_save_upi_id_called());
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {

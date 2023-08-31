@@ -142,7 +142,6 @@
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog.h"
@@ -716,15 +715,6 @@ bool ChromeAutofillClient::CloseWebauthnDialog() {
     return controller->CloseDialog();
 
   return false;
-}
-
-void ChromeAutofillClient::ConfirmSaveUpiIdLocally(
-    const std::string& upi_id,
-    base::OnceCallback<void(bool accept)> callback) {
-  SaveUPIBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveUPIBubbleControllerImpl* controller =
-      SaveUPIBubbleControllerImpl::FromWebContents(web_contents());
-  controller->OfferUpiIdLocalSave(upi_id, std::move(callback));
 }
 
 void ChromeAutofillClient::OfferVirtualCardOptions(
