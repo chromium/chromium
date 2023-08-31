@@ -52,24 +52,25 @@ QuickSettingsHeader::QuickSettingsHeader(
 
   supervised_view_ = AddChildView(std::make_unique<SupervisedUserView>());
 
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::ACTIVE) {
+  const bool is_active_state =
+      Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::ACTIVE;
+  if (is_active_state) {
     if (Shell::Get()->system_tray_model()->update_model()->show_eol_notice()) {
       eol_notice_ =
           AddChildView(std::make_unique<EolNoticeQuickSettingsView>());
     }
+  }
 
-    // If the release track is not "stable" then show the channel indicator UI.
-    auto channel = Shell::Get()->shell_delegate()->GetChannel();
-    if (channel_indicator_utils::IsDisplayableChannel(channel) &&
-        !eol_notice_) {
-      channel_view_ =
-          AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
-              channel, Shell::Get()
-                           ->system_tray_model()
-                           ->client()
-                           ->IsUserFeedbackEnabled()));
-    }
+  // If the release track is not "stable" then show the channel indicator UI.
+  auto channel = Shell::Get()->shell_delegate()->GetChannel();
+  if (channel_indicator_utils::IsDisplayableChannel(channel) && !eol_notice_) {
+    channel_view_ =
+        AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
+            channel, is_active_state && Shell::Get()
+                                            ->system_tray_model()
+                                            ->client()
+                                            ->IsUserFeedbackEnabled()));
   }
 
   UpdateVisibilityAndLayout();
@@ -101,8 +102,9 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   gfx::Size size = two_columns ? kNarrowButtonSize : kWideButtonSize;
   enterprise_managed_view_->SetPreferredSize(size);
   supervised_view_->SetPreferredSize(size);
-  if (channel_view_)
+  if (channel_view_) {
     channel_view_->SetPreferredSize(size);
+  }
   if (eol_notice_) {
     eol_notice_->SetPreferredSize(size);
   }

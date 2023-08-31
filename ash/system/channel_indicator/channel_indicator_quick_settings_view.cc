@@ -168,6 +168,11 @@ class VersionButton : public views::LabelButton {
   VersionButton(version_info::Channel channel, bool allow_user_feedback)
       : LabelButton(
             base::BindRepeating([](const ui::Event& event) {
+              // Do nothing if it's shown on non-logged-in screen.
+              if (Shell::Get()->session_controller()->GetSessionState() !=
+                  session_manager::SessionState::ACTIVE) {
+                return;
+              }
               quick_settings_metrics_util::RecordQsButtonActivated(
                   QsButtonCatalogName::kVersionButton);
               Shell::Get()
@@ -192,13 +197,21 @@ class VersionButton : public views::LabelButton {
       SetImageLabelSpacing(kVersionButtonImageLabelSpacing);
       SetMinSize(gfx::Size(0, kVersionButtonHeight));
     }
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, GetVersionButtonInkDropCorners(allow_user_feedback));
     views::FocusRing::Get(this)->SetColorId(
         features::IsQsRevampEnabled()
             ? cros_tokens::kCrosSysFocusRing
             : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
+
+    // The button is not focusable and with no clickable effect if it's shown on
+    // non-logged-in screen.
+    if (Shell::Get()->session_controller()->GetSessionState() !=
+        session_manager::SessionState::ACTIVE) {
+      SetFocusBehavior(FocusBehavior::NEVER);
+      return;
+    }
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   }
   VersionButton(const VersionButton&) = delete;
   VersionButton& operator=(const VersionButton&) = delete;

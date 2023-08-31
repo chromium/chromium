@@ -104,26 +104,28 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
   raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
 };
 
-TEST_F(QuickSettingsHeaderTest, HiddenByDefaultBeforeLogin) {
+TEST_F(QuickSettingsHeaderTest, HiddenOnStable) {
+  test_shell_delegate_->set_channel(version_info::Channel::STABLE);
+
   CreateQuickSettingsHeader();
 
   EXPECT_FALSE(GetManagedButton()->GetVisible());
   EXPECT_FALSE(GetSupervisedButton()->GetVisible());
 
-  // By default, channel view is not created.
+  // Channel view is not created.
   EXPECT_FALSE(header_->channel_view_for_test());
 
   // Since no views are created, the header is hidden.
   EXPECT_FALSE(header_->GetVisible());
 }
 
-TEST_F(QuickSettingsHeaderTest, DoesNotShowChannelViewBeforeLogin) {
+TEST_F(QuickSettingsHeaderTest, ShowChannelViewBeforeLoginOnNonStable) {
   test_shell_delegate_->set_channel(version_info::Channel::BETA);
 
   CreateQuickSettingsHeader();
 
-  EXPECT_FALSE(header_->channel_view_for_test());
-  EXPECT_FALSE(header_->GetVisible());
+  EXPECT_TRUE(header_->channel_view_for_test());
+  EXPECT_TRUE(header_->GetVisible());
 }
 
 TEST_F(QuickSettingsHeaderTest, ShowsChannelViewAfterLogin) {
@@ -157,10 +159,15 @@ TEST_F(QuickSettingsHeaderTest, EolNoticeVisible) {
 }
 
 TEST_F(QuickSettingsHeaderTest, EolNoticeNotVisibleBeforeLogin) {
+  test_shell_delegate_->set_channel(version_info::Channel::BETA);
   Shell::Get()->system_tray_model()->SetShowEolNotice(true);
   CreateQuickSettingsHeader();
-  // Header is not shown.
-  EXPECT_FALSE(header_->GetVisible());
+
+  // Header is shown.
+  EXPECT_TRUE(header_->GetVisible());
+
+  // Channel view is created.
+  EXPECT_TRUE(header_->channel_view_for_test());
 
   // EOL notice is not visible.
   EXPECT_FALSE(header_->eol_notice_for_test());
