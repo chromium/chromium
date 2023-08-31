@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
+#include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -1332,6 +1333,23 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(StyleResolverState&,
   return position;
 }
 
+// static
+ComputedGridTemplateAreas* StyleBuilderConverter::ConvertGridTemplateAreas(
+    StyleResolverState&,
+    const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+
+  const auto& grid_template_areas_value =
+      To<cssvalue::CSSGridTemplateAreasValue>(value);
+  return MakeGarbageCollected<ComputedGridTemplateAreas>(
+      grid_template_areas_value.GridAreaMap(),
+      grid_template_areas_value.RowCount(),
+      grid_template_areas_value.ColumnCount());
+}
+
 GridTrackSize StyleBuilderConverter::ConvertGridTrackSize(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -1540,31 +1558,6 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // the syntax.
   DCHECK(track_list.RepeaterCount() ||
          computed_grid_track_list.IsSubgriddedAxis());
-}
-
-void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
-    const NamedGridAreaMap& named_grid_areas,
-    NamedGridLinesMap& named_grid_lines,
-    GridTrackSizingDirection direction) {
-  for (const auto& named_grid_area_entry : named_grid_areas) {
-    GridSpan area_span = direction == kForRows
-                             ? named_grid_area_entry.value.rows
-                             : named_grid_area_entry.value.columns;
-    {
-      NamedGridLinesMap::AddResult start_result = named_grid_lines.insert(
-          named_grid_area_entry.key + "-start", Vector<wtf_size_t>());
-      start_result.stored_value->value.push_back(area_span.StartLine());
-      std::sort(start_result.stored_value->value.begin(),
-                start_result.stored_value->value.end());
-    }
-    {
-      NamedGridLinesMap::AddResult end_result = named_grid_lines.insert(
-          named_grid_area_entry.key + "-end", Vector<wtf_size_t>());
-      end_result.stored_value->value.push_back(area_span.EndLine());
-      std::sort(end_result.stored_value->value.begin(),
-                end_result.stored_value->value.end());
-    }
-  }
 }
 
 StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(

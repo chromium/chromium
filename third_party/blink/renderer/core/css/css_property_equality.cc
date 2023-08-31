@@ -432,9 +432,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kGridRowStart:
       return a.GridRowStart() == b.GridRowStart();
     case CSSPropertyID::kGridTemplateAreas:
-      return a.NamedGridArea() == b.NamedGridArea() &&
-             a.NamedGridAreaRowCount() == b.NamedGridAreaRowCount() &&
-             a.NamedGridAreaColumnCount() == b.NamedGridAreaColumnCount();
+      return base::ValuesEquivalent(a.GridTemplateAreas(),
+                                    b.GridTemplateAreas());
     case CSSPropertyID::kGridTemplateColumns:
       return a.GridTemplateColumns() == b.GridTemplateColumns();
     case CSSPropertyID::kGridTemplateRows:

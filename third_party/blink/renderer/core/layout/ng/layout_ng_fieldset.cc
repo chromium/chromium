@@ -148,18 +148,10 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetGridRowEnd(StyleRef().GridRowEnd());
   child_style_builder.SetGridRowStart(StyleRef().GridRowStart());
 
-  // grid-template-columns, grid-template-rows
+  // grid-template-columns, grid-template-rows, grid-template-areas
   child_style_builder.SetGridTemplateColumns(StyleRef().GridTemplateColumns());
   child_style_builder.SetGridTemplateRows(StyleRef().GridTemplateRows());
-  child_style_builder.SetNamedGridArea(StyleRef().NamedGridArea());
-  child_style_builder.SetNamedGridAreaColumnCount(
-      StyleRef().NamedGridAreaColumnCount());
-  child_style_builder.SetNamedGridAreaRowCount(
-      StyleRef().NamedGridAreaRowCount());
-  child_style_builder.SetImplicitNamedGridColumnLines(
-      StyleRef().ImplicitNamedGridColumnLines());
-  child_style_builder.SetImplicitNamedGridRowLines(
-      StyleRef().ImplicitNamedGridRowLines());
+  child_style_builder.SetGridTemplateAreas(StyleRef().GridTemplateAreas());
 
   child_style_builder.SetRowGap(StyleRef().RowGap());
 

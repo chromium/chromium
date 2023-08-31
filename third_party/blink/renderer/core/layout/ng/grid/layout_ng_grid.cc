@@ -48,10 +48,7 @@ bool ExplicitGridDidResize(const ComputedStyle& new_style,
          old_ng_columns_track_list.AutoRepeatTrackCount() !=
              new_ng_columns_track_list.AutoRepeatTrackCount() ||
          old_ng_rows_track_list.AutoRepeatTrackCount() !=
-             new_ng_rows_track_list.AutoRepeatTrackCount() ||
-         old_style.NamedGridAreaColumnCount() !=
-             new_style.NamedGridAreaColumnCount() ||
-         old_style.NamedGridAreaRowCount() != new_style.NamedGridAreaRowCount();
+             new_ng_rows_track_list.AutoRepeatTrackCount();
 }
 
 bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
@@ -59,11 +56,7 @@ bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
   return new_style.GridTemplateRows().named_grid_lines !=
              old_style.GridTemplateRows().named_grid_lines ||
          new_style.GridTemplateColumns().named_grid_lines !=
-             old_style.GridTemplateColumns().named_grid_lines ||
-         new_style.ImplicitNamedGridRowLines() !=
-             old_style.ImplicitNamedGridRowLines() ||
-         new_style.ImplicitNamedGridColumnLines() !=
-             old_style.ImplicitNamedGridColumnLines();
+             old_style.GridTemplateColumns().named_grid_lines;
 }
 
 }  // namespace
@@ -92,6 +85,8 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
 
   if (ExplicitGridDidResize(new_style, *old_style) ||
       NamedGridLinesDefinitionDidChange(new_style, *old_style) ||
+      !base::ValuesEquivalent(new_style.GridTemplateAreas(),
+                              old_style->GridTemplateAreas()) ||
       (diff.NeedsLayout() &&
        (new_grid_columns_track_list.AutoRepeatTrackCount() ||
         new_grid_rows_track_list.AutoRepeatTrackCount()))) {

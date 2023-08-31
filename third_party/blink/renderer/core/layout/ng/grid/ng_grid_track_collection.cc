@@ -113,10 +113,12 @@ NGGridRangeBuilder::NGGridRangeBuilder(
   // In order to guarantee that such columns are included, if the last repeater
   // from the explicit grid ended before the end of the named grid area, add an
   // extra repeater to fulfill the named grid area's span.
-  const wtf_size_t named_grid_area_end_line =
-      start_offset_ + ((track_direction == kForColumns)
-                           ? grid_style.NamedGridAreaColumnCount()
-                           : grid_style.NamedGridAreaRowCount());
+  wtf_size_t named_grid_area_end_line = start_offset_;
+  if (const auto& grid_template_areas = grid_style.GridTemplateAreas()) {
+    named_grid_area_end_line += (track_direction == kForColumns)
+                                    ? grid_template_areas->column_count
+                                    : grid_template_areas->row_count;
+  }
 
   if (current_repeater_start_line < named_grid_area_end_line) {
     start_lines_.emplace_back(current_repeater_start_line);

@@ -181,6 +181,9 @@ class StyleBuilderConverter {
       const CSSValue&);
   static GridAutoFlow ConvertGridAutoFlow(StyleResolverState&, const CSSValue&);
   static GridPosition ConvertGridPosition(StyleResolverState&, const CSSValue&);
+  static ComputedGridTemplateAreas* ConvertGridTemplateAreas(
+      StyleResolverState&,
+      const CSSValue&);
   static GridTrackSize ConvertGridTrackSize(StyleResolverState&,
                                             const CSSValue&);
   static NGGridTrackList ConvertGridTrackSizeList(StyleResolverState&,
@@ -280,10 +283,6 @@ class StyleBuilderConverter {
   static void ConvertGridTrackList(const CSSValue&,
                                    ComputedGridTrackList&,
                                    StyleResolverState&);
-  static void CreateImplicitNamedGridLinesFromGridArea(
-      const NamedGridAreaMap&,
-      NamedGridLinesMap&,
-      GridTrackSizingDirection);
 
   static cc::ScrollSnapType ConvertSnapType(StyleResolverState&,
                                             const CSSValue&);

@@ -869,44 +869,6 @@
       default_value: "true",
       computed_style_custom_functions: ["setter"],
     },
-    {
-      name: "ImplicitNamedGridColumnLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "ImplicitNamedGridRowLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "NamedGridArea",
-      field_template: "external",
-      type_name: "NamedGridAreaMap",
-      field_group: "*->grid",
-      default_value: "NamedGridAreaMap()",
-      include_paths: ["third_party/blink/renderer/core/style/grid_area.h"],
-    },
-    {
-      name: "NamedGridAreaRowCount",
-      field_template: "primitive",
-      type_name: "wtf_size_t",
-      field_group: "*->grid",
-      default_value: "0",
-    },
-    {
-      name: "NamedGridAreaColumnCount",
-      field_template: "primitive",
-      type_name: "wtf_size_t",
-      field_group: "*->grid",
-      default_value: "0",
-    },
     // We only create and store ComputedStyle objects for elements in
     // display:none subtrees if we need it for e.g. getComputedStyle. This flag
     // is true for such ComputedStyle objects.

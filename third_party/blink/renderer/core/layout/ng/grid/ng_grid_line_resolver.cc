@@ -39,11 +39,17 @@ NGGridLineResolver::NGGridLineResolver(
       subgridded_columns_merged_explicit_grid_line_names_(
           grid_style.GridTemplateColumns().named_grid_lines),
       subgridded_rows_merged_explicit_grid_line_names_(
-          grid_style.GridTemplateRows().named_grid_lines),
-      subgridded_columns_merged_implicit_grid_line_names_(
-          grid_style.ImplicitNamedGridColumnLines()),
-      subgridded_rows_merged_implicit_grid_line_names_(
-          grid_style.ImplicitNamedGridRowLines()) {
+          grid_style.GridTemplateRows().named_grid_lines) {
+  if (const auto& grid_template_areas = grid_style.GridTemplateAreas()) {
+    subgridded_columns_merged_implicit_grid_line_names_ =
+        grid_template_areas->implicit_named_grid_column_lines;
+    subgridded_rows_merged_implicit_grid_line_names_ =
+        grid_template_areas->implicit_named_grid_row_lines;
+  } else {
+    subgridded_columns_merged_implicit_grid_line_names_.emplace();
+    subgridded_rows_merged_implicit_grid_line_names_.emplace();
+  }
+
   if (subgrid_area.columns.IsTranslatedDefinite())
     subgridded_column_span_size_ = subgrid_area.SpanSize(kForColumns);
   if (subgrid_area.rows.IsTranslatedDefinite())
@@ -490,24 +496,28 @@ wtf_size_t NGGridLineResolver::ExplicitGridColumnCount() const {
   if (subgridded_column_span_size_ != kNotFound)
     return subgridded_column_span_size_;
 
-  return std::min<wtf_size_t>(
-      std::max(style_->GridTemplateColumns()
-                       .track_list.TrackCountWithoutAutoRepeat() +
-                   AutoRepeatTrackCount(kForColumns),
-               style_->NamedGridAreaColumnCount()),
-      kGridMaxTracks);
+  wtf_size_t column_count =
+      style_->GridTemplateColumns().track_list.TrackCountWithoutAutoRepeat() +
+      AutoRepeatTrackCount(kForColumns);
+  if (const auto& grid_template_areas = style_->GridTemplateAreas()) {
+    column_count = std::max(column_count, grid_template_areas->column_count);
+  }
+
+  return std::min<wtf_size_t>(column_count, kGridMaxTracks);
 }
 
 wtf_size_t NGGridLineResolver::ExplicitGridRowCount() const {
   if (subgridded_row_span_size_ != kNotFound)
     return subgridded_row_span_size_;
 
-  return std::min<wtf_size_t>(
-      std::max(
-          style_->GridTemplateRows().track_list.TrackCountWithoutAutoRepeat() +
-              AutoRepeatTrackCount(kForRows),
-          style_->NamedGridAreaRowCount()),
-      kGridMaxTracks);
+  wtf_size_t row_count =
+      style_->GridTemplateRows().track_list.TrackCountWithoutAutoRepeat() +
+      AutoRepeatTrackCount(kForRows);
+  if (const auto& grid_template_areas = style_->GridTemplateAreas()) {
+    row_count = std::max(row_count, grid_template_areas->row_count);
+  }
+
+  return std::min<wtf_size_t>(row_count, kGridMaxTracks);
 }
 
 wtf_size_t NGGridLineResolver::ExplicitGridTrackCount(
@@ -596,14 +606,18 @@ const NamedGridLinesMap& NGGridLineResolver::ImplicitNamedLinesMap(
       (track_direction == kForColumns)
           ? subgridded_columns_merged_implicit_grid_line_names_
           : subgridded_rows_merged_implicit_grid_line_names_;
+  if (subgrid_merged_implicit_grid_line_names) {
+    return *subgrid_merged_implicit_grid_line_names;
+  }
 
-  const auto& implicit_lines_map_from_style =
-      (track_direction == kForColumns) ? style_->ImplicitNamedGridColumnLines()
-                                       : style_->ImplicitNamedGridRowLines();
+  if (const auto& grid_template_areas = style_->GridTemplateAreas()) {
+    return (track_direction == kForColumns)
+               ? grid_template_areas->implicit_named_grid_column_lines
+               : grid_template_areas->implicit_named_grid_row_lines;
+  }
 
-  return subgrid_merged_implicit_grid_line_names
-             ? *subgrid_merged_implicit_grid_line_names
-             : implicit_lines_map_from_style;
+  DEFINE_STATIC_LOCAL(const NamedGridLinesMap, empty, ());
+  return empty;
 }
 
 const NamedGridLinesMap& NGGridLineResolver::ExplicitNamedLinesMap(
