@@ -14,6 +14,7 @@
 #include "third_party/libavif/src/include/avif/avif.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -57,7 +58,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // (ftyp) that supports the brand 'avif' or 'avis'.
   static bool MatchesAVIFSignature(const FastSharedBufferReader& fast_reader);
 
-  gfx::ColorSpace GetColorSpaceForTesting() const;
+  gfx::ColorTransform* GetColorTransformForTesting();
 
  private:
   // If the AVIF image has a clean aperture ('clap') property, what kind of
@@ -102,6 +103,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // depth, and YUV format matches those reported by the container. The decoded
   // frame is available in decoded_image_.
   avifResult DecodeImage(wtf_size_t index);
+
+  // Updates or creates |color_transform_| for YUV-to-RGB conversion.
+  void UpdateColorTransform(const gfx::ColorSpace& frame_cs, int bit_depth);
 
   // Crops |decoded_image_|.
   void CropDecodedImage();
@@ -160,6 +164,8 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
       nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};
   AvifIOData avif_io_data_;
+
+  std::unique_ptr<gfx::ColorTransform> color_transform_;
 
   const AnimationOption animation_option_;
 
