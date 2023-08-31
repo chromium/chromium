@@ -214,8 +214,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
     @Override
     @CallSuper
-    public void onUrlFocusChange(boolean hasFocus) {
-        mActionChipsProcessor.onUrlFocusChange(hasFocus);
+    public void onOmniboxSessionStateChange(boolean activated) {
+        mActionChipsProcessor.onOmniboxSessionStateChange(activated);
     }
 
     @Override

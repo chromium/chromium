@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -108,6 +109,7 @@ import java.util.List;
 @Config(shadows = {LocationBarMediatorTest.ShadowUrlUtilities.class,
                 LocationBarMediatorTest.ShadowGeolocationHeader.class,
                 LocationBarMediatorTest.ObjectAnimatorShadow.class})
+@EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT})
 @DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class LocationBarMediatorTest {
@@ -1180,7 +1182,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testNotifyNtpExitedWithHardwareKeyboardConnected() {
+    public void testClearUrlBarCursorWithoutFocusAnimations() {
         // Assume that the URL bar is focused without animations on the NTP.
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
@@ -1188,6 +1190,29 @@ public class LocationBarMediatorTest {
         mMediator.clearUrlBarCursorWithoutFocusAnimations();
         // Verify that the omnibox focus is cleared on an exit from the NTP.
         verify(mUrlCoordinator).clearFocus();
+    }
+
+    @Test
+    public void testOnTouchAfterFocus_triggerUrlFocusChange() {
+        doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        mMediator.addUrlFocusChangeListener(mUrlCoordinator);
+        mMediator.onUrlFocusChange(true);
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+        mMediator.onTouchAfterFocus();
+        verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
+    }
+
+    @Test
+    public void testOnTouchAfterFocus_notHandled() {
+        doReturn("", "hello").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        // URL bar is not focused without animations.
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(false);
+        mMediator.onTouchAfterFocus();
+
+        // URL bar text is not empty.
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+        mMediator.onTouchAfterFocus();
+        verify(mUrlCoordinator, never()).onUrlFocusChange(true);
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

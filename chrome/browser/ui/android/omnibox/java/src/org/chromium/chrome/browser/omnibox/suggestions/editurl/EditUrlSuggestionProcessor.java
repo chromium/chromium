@@ -127,9 +127,9 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        super.onUrlFocusChange(hasFocus);
-        if (hasFocus) return;
+    public void onOmniboxSessionStateChange(boolean activated) {
+        super.onOmniboxSessionStateChange(activated);
+        if (activated) return;
         mHasClearedOmniboxForFocus = false;
     }
 

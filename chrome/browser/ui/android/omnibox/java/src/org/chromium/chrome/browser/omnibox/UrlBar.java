@@ -117,7 +117,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private CharSequence mVisibleTextPrefixHint;
 
     // Used as a hint to indicate the text may contain an ellipsize span.  This will be true if an
-    // ellispize span was applied the last time the text changed.  A true value here does not
+    // ellipsize span was applied the last time the text changed. A true value here does not
     // guarantee that the text does contain the span currently as newly set text may have cleared
     // this (and it the value will only be recalculated after the text has been changed).
     private boolean mDidEllipsizeTextHint;
@@ -177,6 +177,11 @@ public abstract class UrlBar extends AutocompleteEditText {
          * Called to notify that UrlBar has been focused by touch.
          */
         void onFocusByTouch();
+
+        /**
+         * Called to notify that UrlBar has been touched after focus.
+         */
+        void onTouchAfterFocus();
     }
 
     /** Provides updates about the URL text changes. */
@@ -389,9 +394,15 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mFocused && event.getActionMasked() == MotionEvent.ACTION_UP
-                && mUrlBarDelegate != null) {
-            mUrlBarDelegate.onFocusByTouch();
+        if (event.getActionMasked() == MotionEvent.ACTION_UP && mUrlBarDelegate != null) {
+            if (!mFocused) {
+                mUrlBarDelegate.onFocusByTouch();
+            } else {
+                // If the URL bar is already focused, give it an opportunity to handle a tap for a
+                // special case requiring to trigger focus animations when a hardware keyboard is
+                // connected. See the implementation(s) of this method for details.
+                mUrlBarDelegate.onTouchAfterFocus();
+            }
         }
         return super.onTouchEvent(event);
     }

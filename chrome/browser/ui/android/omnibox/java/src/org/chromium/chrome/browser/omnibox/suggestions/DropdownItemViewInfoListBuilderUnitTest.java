@@ -280,14 +280,14 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     }
 
     @Test
-    public void builder_propagatesFocusChangeEvents() {
-        mBuilder.onUrlFocusChange(true);
-        verify(mMockHeaderProcessor, times(1)).onUrlFocusChange(eq(true));
-        verify(mMockSuggestionProcessor, times(1)).onUrlFocusChange(eq(true));
+    public void builder_propagatesOmniboxSessionStateChangeEvents() {
+        mBuilder.onOmniboxSessionStateChange(true);
+        verify(mMockHeaderProcessor, times(1)).onOmniboxSessionStateChange(eq(true));
+        verify(mMockSuggestionProcessor, times(1)).onOmniboxSessionStateChange(eq(true));
 
-        mBuilder.onUrlFocusChange(false);
-        verify(mMockHeaderProcessor, times(1)).onUrlFocusChange(eq(false));
-        verify(mMockSuggestionProcessor, times(1)).onUrlFocusChange(eq(false));
+        mBuilder.onOmniboxSessionStateChange(false);
+        verify(mMockHeaderProcessor, times(1)).onOmniboxSessionStateChange(eq(false));
+        verify(mMockSuggestionProcessor, times(1)).onOmniboxSessionStateChange(eq(false));
 
         verifyNoMoreInteractions(mMockHeaderProcessor);
         verifyNoMoreInteractions(mMockSuggestionProcessor);

@@ -109,7 +109,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private boolean mShouldCacheSuggestions;
     private boolean mClearFocusAfterNavigation;
     private boolean mClearFocusAfterNavigationAsynchronously;
-    private boolean mUrlHasFocus;
+    // When set, indicates an active omnibox session.
+    private boolean mIsActive;
     // When set, specifies the system time of the most recent suggestion list request.
     private Long mLastSuggestionRequestTime;
     // When set, specifies the time when the suggestion list was shown the first time.
@@ -314,19 +315,26 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         runPendingAutocompleteRequests();
     }
 
-    /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
-    void onUrlFocusChange(boolean hasFocus) {
-        mUrlHasFocus = hasFocus;
+    /**
+     * Take necessary action to update the autocomplete system state and record metrics when the
+     * omnibox session state changes.
+     * @param activated Whether the autocomplete session should be activated when the omnibox
+     *         session state changes, {@code true} if this will be activated, {@code false}
+     *         otherwise.
+     */
+    void onOmniboxSessionStateChange(boolean activated) {
+        if (mIsActive == activated) return;
+        mIsActive = activated;
 
-        // Propagate the information about focus change to all the processors first.
+        // Propagate the information about omnibox session state change to all the processors first.
         // Processors need this for accounting purposes.
-        // The focus change information should be passed before Processors receive first
+        // The change information should be passed before Processors receive first
         // batch of suggestions, that is:
         // - before any call to startZeroSuggest() (when first suggestions are populated), and
         // - before stopAutocomplete() (when current suggestions are erased).
-        mDropdownViewInfoListBuilder.onUrlFocusChange(hasFocus);
+        mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(activated);
 
-        if (hasFocus) {
+        if (activated) {
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
@@ -761,7 +769,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                     && !newSuggestions.isEmpty()) {
                 defaultMatchIsSearch = newSuggestions.get(0).isSearchSuggestion();
             }
-            if (mUrlHasFocus) {
+            if (mIsActive) {
                 mDelegate.onSuggestionsChanged(inlineAutocompleteText, defaultMatchIsSearch);
             }
         }

@@ -40,9 +40,9 @@ public class ActionChipsProcessor {
         mVisibleActions = new ArrayMap<>();
     }
 
-    public void onUrlFocusChange(boolean hasFocus) {
+    public void onOmniboxSessionStateChange(boolean activated) {
         // Note: do not record any histograms if we did not show Actions.
-        if (hasFocus || mVisibleActions.isEmpty()) {
+        if (activated || mVisibleActions.isEmpty()) {
             return;
         }
 

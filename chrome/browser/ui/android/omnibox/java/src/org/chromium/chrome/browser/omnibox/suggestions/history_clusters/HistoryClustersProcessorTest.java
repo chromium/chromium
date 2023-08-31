@@ -102,12 +102,12 @@ public class HistoryClustersProcessorTest {
 
         HistogramWatcher noRecordsWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords("Omnibox.ResumeJourneyShown").build();
-        mProcessor.onUrlFocusChange(true);
+        mProcessor.onOmniboxSessionStateChange(true);
         noRecordsWatcher.assertExpected();
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Omnibox.ResumeJourneyShown", 2);
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
         watcher.assertExpected();
     }
 

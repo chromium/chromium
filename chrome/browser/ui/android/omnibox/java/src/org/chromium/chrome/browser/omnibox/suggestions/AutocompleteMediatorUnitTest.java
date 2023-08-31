@@ -184,7 +184,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(HEADER_MIN_HEIGHT).when(mMockHeaderProcessor).getMinimumViewHeight();
         doReturn(OmniboxSuggestionUiType.HEADER).when(mMockHeaderProcessor).getViewTypeId();
 
-        mSuggestionsList = buildDummySuggestionsList(10, "Suggestion");
+        mSuggestionsList = buildSampleSuggestionsList(10, "Suggestion");
         mAutocompleteResult = AutocompleteResult.fromCache(mSuggestionsList, null);
         doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
         setUpLocationBarDataProvider(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), "New Tab Page",
@@ -197,7 +197,7 @@ public class AutocompleteMediatorUnitTest {
      *
      * @return List of suggestions.
      */
-    private List<AutocompleteMatch> buildDummySuggestionsList(int count, String prefix) {
+    private List<AutocompleteMatch> buildSampleSuggestionsList(int count, String prefix) {
         List<AutocompleteMatch> list = new ArrayList<>();
         for (int index = 0; index < count; ++index) {
             list.add(AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -218,7 +218,7 @@ public class AutocompleteMediatorUnitTest {
      * @param prefix Name prefix for each group.
      * @return Map of group headers (populated in random order).
      */
-    private SparseArray<String> buildDummyGroupHeaders(int count, int baseKey, String prefix) {
+    private SparseArray<String> buildSampleGroupHeaders(int count, int baseKey, String prefix) {
         SparseArray<String> headers = new SparseArray<>(count);
         for (int index = 0; index < count; index++) {
             headers.put(baseKey + index, prefix + " " + (index + 1));
@@ -338,7 +338,7 @@ public class AutocompleteMediatorUnitTest {
         // resulting list of suggestions taller than the space in dropdown view), so make sure
         // the list sizes are same.
         List<AutocompleteMatch> newList =
-                buildDummySuggestionsList(mSuggestionsList.size(), "SuggestionB");
+                buildSampleSuggestionsList(mSuggestionsList.size(), "SuggestionB");
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(newList, null), "", true);
     }
@@ -433,7 +433,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onUrlFocusChange_onlyOneZeroSuggestRequestIsInvoked() {
+    public void onOmniboxSessionStateChange_onlyOneZeroSuggestRequestIsInvoked() {
         mMediator.setAutocompleteProfile(mProfile);
 
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
@@ -447,22 +447,24 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Simulate URL being focus changes.
-        mMediator.onUrlFocusChange(true);
-        mMediator.onUrlFocusChange(false);
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.onOmniboxSessionStateChange(false);
+        mMediator.onOmniboxSessionStateChange(true);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
-        // Simulate native being inititalized. Make sure we only ever issue one request.
+        // Simulate native being initialized. Make sure we only ever issue one request, even if
+        // there are multiple requests to activate the autocomplete session.
         mMediator.onNativeInitialized();
         ShadowLooper.runUiThreadTasks();
+        mMediator.onOmniboxSessionStateChange(true);
         verify(mAutocompleteController, times(1))
                 .startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test
     @SmallTest
-    public void onUrlFocusChange_preventsZeroSuggestRequestOnFocusLost() {
+    public void onOmniboxSessionStateChange_preventsZeroSuggestRequestOnDeactivation() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
@@ -474,8 +476,8 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Simulate URL being focus changes.
-        mMediator.onUrlFocusChange(true);
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(true);
+        mMediator.onOmniboxSessionStateChange(false);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
@@ -487,7 +489,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onUrlFocusChange_textChangeCancelsOustandingZeroSuggestRequest() {
+    public void onOmniboxSessionStateChange_textChangeCancelsOutstandingZeroSuggestRequest() {
         mMediator.setAutocompleteProfile(mProfile);
 
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
@@ -501,7 +503,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("A");
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         mMediator.onTextChanged("A");
         mMediator.onTextChanged("");
         mMediator.onTextChanged("A");
@@ -521,7 +523,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onUrlFocusChange_textChangeCancelsIntermediateZeroSuggestRequests() {
+    public void onOmniboxSessionStateChange_textChangeCancelsIntermediateZeroSuggestRequests() {
         mMediator.setAutocompleteProfile(mProfile);
 
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
@@ -554,7 +556,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete", true);
         verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
@@ -571,7 +573,7 @@ public class AutocompleteMediatorUnitTest {
     public void onSuggestionClicked_doesNotOpenInNewTab() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
 
         mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
@@ -625,7 +627,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onUrlFocusChange_triggersZeroSuggest_nativeInitialized() {
+    public void onOmniboxSessionStateChange_triggersZeroSuggest_nativeInitialized() {
         mMediator.setAutocompleteProfile(mProfile);
 
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
@@ -639,7 +641,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn(url.getSpec());
 
         mMediator.onNativeInitialized();
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController)
                 .startZeroSuggest(url.getSpec(), url, pageClassification, title);
@@ -647,7 +649,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onUrlFocusChange_triggersZeroSuggest_nativeNotInitialized() {
+    public void onOmniboxSessionStateChange_triggersZeroSuggest_nativeNotInitialized() {
         mMediator.setAutocompleteProfile(mProfile);
 
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
@@ -661,7 +663,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Signal focus prior to initializing native; confirm that zero suggest is not triggered.
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
@@ -677,13 +679,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
 
         mMediator.onNativeInitialized();
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
         mMediator.onTextChanged("n");
         Assert.assertEquals(
                 mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_USER_INPUT);
 
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
         Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
     }
 
@@ -824,7 +826,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -859,7 +861,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -869,7 +871,7 @@ public class AutocompleteMediatorUnitTest {
         verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
 
         // Cancel the interaction.
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         // Report last results. Observe no final report.
         verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
@@ -890,12 +892,12 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
         // Cancel the interaction.
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         // Report first results. Observe no report (no focus).
         mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
@@ -921,7 +923,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -946,7 +948,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
         mMediator.onNativeInitialized();
 
-        mMediator.onUrlFocusChange(true);
+        mMediator.onOmniboxSessionStateChange(true);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
@@ -1014,6 +1016,8 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
+        // Simulate omnibox session start.
+        mMediator.onOmniboxSessionStateChange(true);
 
         // Simulate a suggestion being touched down.
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
@@ -1028,7 +1032,7 @@ public class AutocompleteMediatorUnitTest {
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         histogramWatcher.assertExpected();
     }
@@ -1052,6 +1056,8 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
+        // Simulate omnibox session start.
+        mMediator.onOmniboxSessionStateChange(true);
 
         // Simulate a suggestion being touched down.
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
@@ -1066,7 +1072,7 @@ public class AutocompleteMediatorUnitTest {
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         histogramWatcher.assertExpected();
     }
@@ -1088,6 +1094,8 @@ public class AutocompleteMediatorUnitTest {
         when(mLocationBarDataProvider.hasTab()).thenReturn(false);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
+        // Simulate omnibox session start.
+        mMediator.onOmniboxSessionStateChange(true);
 
         // This will simulate the touch down trigger not starting a prefetch.
         when(mAutocompleteController.onSuggestionTouchDown(any(), anyInt(), any()))
@@ -1106,7 +1114,7 @@ public class AutocompleteMediatorUnitTest {
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         histogramWatcher.assertExpected();
     }
@@ -1131,6 +1139,8 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(true);
         setSuggestionNativeObjectRef();
         mMediator.onNativeInitialized();
+        // Simulate omnibox session start.
+        mMediator.onOmniboxSessionStateChange(true);
 
         // Triggeer one touch down event the maximum allowed. The extra event should not be sent to
         // native.
@@ -1146,14 +1156,16 @@ public class AutocompleteMediatorUnitTest {
                 .onSuggestionTouchDown(any(), anyInt(), any());
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         // Since the state is reset, new prefetches are allowed.
+        // Simulate a new omnibox session start.
+        mMediator.onOmniboxSessionStateChange(true);
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0);
         verify(mAutocompleteController,
                 times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
                 .onSuggestionTouchDown(any(), anyInt(), any());
-        mMediator.onUrlFocusChange(false);
+        mMediator.onOmniboxSessionStateChange(false);
 
         histogramWatcher.assertExpected();
     }

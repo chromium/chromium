@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStructure;
 import android.view.inputmethod.EditorInfo;
@@ -20,6 +22,7 @@ import androidx.core.view.inputmethod.EditorInfoCompat;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -32,6 +35,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 
 import java.util.Collections;
 
@@ -42,6 +46,7 @@ import java.util.Collections;
 @Config(qualifiers = "w100dp-h50dp")
 public class UrlBarUnitTest {
     private UrlBar mUrlBar;
+    public @Rule TestRule mFeaturesProcessorRule = new JUnitProcessor();
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock UrlBarDelegate mUrlBarDelegate;
     private @Mock ViewStructure mViewStructure;
@@ -196,5 +201,12 @@ public class UrlBarUnitTest {
         assertEquals(mLongDomain, text);
 
         mUrlBar.onFocusChanged(false, 0, null);
+    }
+
+    @Test
+    public void testOnTouchEvent_handleTouchAfterFocus() {
+        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+        verify(mUrlBarDelegate).onTouchAfterFocus();
     }
 }

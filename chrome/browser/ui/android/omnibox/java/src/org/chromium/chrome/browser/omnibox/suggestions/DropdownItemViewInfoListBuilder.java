@@ -186,16 +186,16 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
-     * Respond to URL bar focus change.
+     * Respond to omnibox session state change.
      *
-     * @param hasFocus Indicates whether URL bar is now focused.
+     * @param activated Indicates whether omnibox session is activated.
      */
-    void onUrlFocusChange(boolean hasFocus) {
-        if (!hasFocus && mImageSupplier != null) mImageSupplier.resetCache();
+    void onOmniboxSessionStateChange(boolean activated) {
+        if (!activated && mImageSupplier != null) mImageSupplier.resetCache();
 
-        mHeaderProcessor.onUrlFocusChange(hasFocus);
+        mHeaderProcessor.onOmniboxSessionStateChange(activated);
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
-            mPriorityOrderedSuggestionProcessors.get(index).onUrlFocusChange(hasFocus);
+            mPriorityOrderedSuggestionProcessors.get(index).onOmniboxSessionStateChange(activated);
         }
     }
 

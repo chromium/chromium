@@ -54,9 +54,9 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     }
 
     @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        super.onUrlFocusChange(hasFocus);
-        if (!hasFocus) {
+    public void onOmniboxSessionStateChange(boolean activated) {
+        super.onOmniboxSessionStateChange(activated);
+        if (!activated) {
             OmniboxMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
         }
     }

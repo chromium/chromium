@@ -37,6 +37,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -922,7 +923,6 @@ class LocationBarMediator
 
     /* package */ void forceOnTextChanged() {
         String textWithoutAutocomplete = mUrlCoordinator.getTextWithoutAutocomplete();
-        String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete);
     }
 
@@ -1403,6 +1403,31 @@ class LocationBarMediator
     @Override
     public void onFocusByTouch() {
         recordOmniboxFocusReason(OmniboxFocusReason.OMNIBOX_TAP);
+    }
+
+    @Override
+    public void onTouchAfterFocus() {
+        // The goal of this special logic is to support the following use case:
+        // On opening the NTP, the URL bar gains focus with a blinking cursor and without showing
+        // the zero-prefix dropdown when a hardware keyboard is connected. Subsequently, if the user
+        // taps on the omnibox without typing any text into it, the zero-prefix dropdown will be
+        // shown.
+        //
+        // A touch event will be handled after the omnibox is already focused only when the
+        // following criteria are satisfied:
+        // 1. |mUrlFocusedWithoutAnimations| is true, which means that the omnibox is focused on the
+        // NTP without any focus animations while a hardware keyboard is connected.
+        // 2. The omnibox does not contain any text. It is possible that the user has typed text
+        // into the omnibox after it gains focus due to hardware keyboard availability and a
+        // subsequent tap will hide the suggestions dropdown shown for the typed text, while keeping
+        // the scrim on the web contents, which is not desirable.
+        if (!mUrlFocusedWithoutAnimations || mUrlCoordinator == null
+                || !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)) {
+            return;
+        }
+        handleUrlFocusAnimation(true);
+        recordOmniboxFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD);
     }
 
     // BackPressHandler implementation.

@@ -268,7 +268,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
         mUrlHasFocus = hasFocus;
-        mMediator.onUrlFocusChange(hasFocus);
+        mMediator.onOmniboxSessionStateChange(hasFocus);
     }
 
     @Override

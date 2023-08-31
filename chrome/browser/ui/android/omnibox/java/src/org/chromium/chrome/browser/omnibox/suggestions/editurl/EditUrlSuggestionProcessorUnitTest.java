@@ -144,12 +144,12 @@ public final class EditUrlSuggestionProcessorUnitTest {
         doReturn(TAB_TITLE).when(mTab).getTitle();
         doReturn(true).when(mTab).isInitialized();
 
-        mProcessor.onUrlFocusChange(true);
+        mProcessor.onOmniboxSessionStateChange(true);
     }
 
     @After
     public void tearDown() {
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
         ((ClipboardImpl) Clipboard.getInstance())
                 .overrideClipboardManagerForTesting(mOldClipboardManager);
     }

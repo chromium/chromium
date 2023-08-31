@@ -1086,6 +1086,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void onFocusByTouch() {}
 
+        @Override
+        public void onTouchAfterFocus() {}
+
         // LocationBarDataProvider.Observer implementation
         // Using the default empty onIncognitoStateChanged.
         // Using the default empty onNtpStartedLoading.
