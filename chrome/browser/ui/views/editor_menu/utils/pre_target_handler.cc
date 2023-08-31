@@ -67,13 +67,6 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
   auto location = to_dispatch->target()->GetScreenLocation(*to_dispatch);
   bool contains_location = view_->GetBoundsInScreen().Contains(location);
 
-  // Click outside the Editor Menu will dismiss the widget and the context menu.
-  if (card_type_ == CardType::kEditorMenu &&
-      event->type() == ui::ET_MOUSE_PRESSED && !contains_location) {
-    view_->GetWidget()->Close();
-    return;
-  }
-
   // `ET_MOUSE_MOVED` events outside the top-view's bounds are also dispatched
   // to clear any set hover-state.
   bool dispatch_event = (contains_location ||
