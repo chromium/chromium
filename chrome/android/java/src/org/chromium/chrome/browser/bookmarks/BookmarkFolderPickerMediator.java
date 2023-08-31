@@ -166,6 +166,9 @@ class BookmarkFolderPickerMediator {
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
                 (v) -> { populateFoldersForParentId(bookmarkId); });
+        // Intentionally ignore long clicks to prevent selection.
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER, (v) -> { return true; });
 
         return new ListItem(FOLDER_ROW, propertyModel);
     }

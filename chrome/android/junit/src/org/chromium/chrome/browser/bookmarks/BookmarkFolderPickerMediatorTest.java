@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -237,11 +238,25 @@ public class BookmarkFolderPickerMediatorTest {
 
     @Test
     public void testMove() {
-        mMediator.populateFoldersForParentId(mUserFolderId2);
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+        assertEquals(2, mModelList.size());
+
+        PropertyModel model = mModelList.get(0).model;
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER));
+
+        assertEquals(mMobileFolderItem.getTitle(),
+                mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+        // First simlulate a long click to verify it does nothing.
+        model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER).onLongClick(null);
+        assertEquals(mMobileFolderItem.getTitle(),
+                mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+
+        model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER).onClick(null);
         mModel.get(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER).onClick(null);
         verify(mFinishRunnable).run();
-        verify(mBookmarkModel).moveBookmarks(Arrays.asList(mUserBookmarkId), mUserFolderId2);
-        assertEquals(mUserFolderId2, BookmarkUtils.getLastUsedParent(mActivity, mBookmarkModel));
+        verify(mBookmarkModel).moveBookmarks(Arrays.asList(mUserBookmarkId), mUserFolderId);
+        assertEquals(mUserFolderId, BookmarkUtils.getLastUsedParent(mActivity, mBookmarkModel));
     }
 
     @Test

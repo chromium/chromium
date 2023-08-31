@@ -54,11 +54,12 @@ public class ImprovedBookmarkRowProperties {
             LIST_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> POPUP_LISTENER =
             new WritableObjectPropertyKey<>();
-    // Selection state can change from BookmarkManagerMediator as well as SelectableItemViewBase.
+    // Whether the row is currently selected.
     // This means that the model won't necessarily always be up-to-date. Using skipEquality to
     // push events to the view even if the property is the same.
     public static final WritableObjectPropertyKey<Boolean> SELECTED =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+    // Not if the row is currently selected, but whether another row in the same list is selected.
     public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
@@ -66,8 +67,8 @@ public class ImprovedBookmarkRowProperties {
 
     public static final WritableObjectPropertyKey<View.OnClickListener> ROW_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<View.OnLongClickListener> ROW_LONGCLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.OnLongClickListener>
+            ROW_LONG_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
     public static final WritableIntPropertyKey END_IMAGE_VISIBILITY = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey END_IMAGE_RES = new WritableIntPropertyKey();
@@ -81,7 +82,7 @@ public class ImprovedBookmarkRowProperties {
             DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
             START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
             POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
-            ROW_LONGCLICK_LISTENER, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR,
+            ROW_LONG_CLICK_LISTENER, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR,
             END_IMAGE_VISIBILITY, END_IMAGE_RES};
     public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
