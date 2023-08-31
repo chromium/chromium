@@ -2059,6 +2059,33 @@ TEST_F(IntegrationTestMsi, Upgrade) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          AppUpdateExpectation(
+              "INSTALLER_RESULT=2 "  // `InstallerResult::kMsiError`
+              "INSTALLER_ERROR=1603",
+              kMsiAppId, base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
+              /*is_install=*/true,
+              /*should_update=*/false, false, "", crx_path,
+              /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
+              1603, /*EVENT_INSTALL_COMPLETE=*/2),
+      });
+
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kMsiAppId));
+
+  // TODO(crbug.com/1477448): the app should not be registered if the app
+  // install encounters an error. Reenable this after this issue is fixed.
+  // ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 

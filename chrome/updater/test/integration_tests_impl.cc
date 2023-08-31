@@ -322,7 +322,11 @@ AppUpdateExpectation::AppUpdateExpectation(
     bool should_update,
     bool allow_rollback,
     const std::string& target_version_prefix,
-    const base::FilePath& crx_relative_path)
+    const base::FilePath& crx_relative_path,
+    bool always_serve_crx,
+    const UpdateService::ErrorCategory error_category,
+    const int error_code,
+    const int event_type)
     : args(args),
       app_id(app_id),
       from_version(from_version),
@@ -331,7 +335,11 @@ AppUpdateExpectation::AppUpdateExpectation(
       should_update(should_update),
       allow_rollback(allow_rollback),
       target_version_prefix(target_version_prefix),
-      crx_relative_path(crx_relative_path) {}
+      crx_relative_path(crx_relative_path),
+      always_serve_crx(always_serve_crx),
+      error_category(error_category),
+      error_code(error_code),
+      event_type(event_type) {}
 AppUpdateExpectation::AppUpdateExpectation(const AppUpdateExpectation&) =
     default;
 AppUpdateExpectation::~AppUpdateExpectation() = default;
@@ -523,14 +531,16 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                           GetUpdateResponse(app_responses));
 
   for (const AppUpdateExpectation& app : apps) {
-    if (app.should_update) {
-      // Download requests for apps that update
+    if (app.should_update || app.always_serve_crx) {
+      // Download requests for apps that install/update
       const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
       ASSERT_TRUE(base::PathExists(crx_path));
       std::string crx_bytes;
       base::ReadFileToString(crx_path, &crx_bytes);
       test_server->ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+    }
 
+    if (app.should_update) {
       // Followed by event ping.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),
@@ -550,11 +560,13 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
           {request::GetPathMatcher(test_server->update_path()),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
-               R"(.*"errorcat":4,"errorcode":2,)"
-               R"("eventresult":0,"eventtype":3,)"
+               R"(.*"errorcat":%d,"errorcode":%d,)"
+               R"("eventresult":0,"eventtype":%d,)"
                R"("nextversion":"%s","previousversion":"%s".*)"
                R"("version":"%s".*)",
-               app.app_id.c_str(), app.to_version.GetString().c_str(),
+               app.app_id.c_str(), static_cast<int>(app.error_category),
+               app.error_code, app.event_type,
+               app.to_version.GetString().c_str(),
                app.from_version.GetString().c_str(),
                app.from_version.GetString().c_str())})},
           ")]}'\n");

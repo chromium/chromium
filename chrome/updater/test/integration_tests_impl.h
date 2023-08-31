@@ -50,7 +50,13 @@ struct AppUpdateExpectation {
                        bool should_update,
                        bool allow_rollback,
                        const std::string& target_version_prefix,
-                       const base::FilePath& crx_relative_path);
+                       const base::FilePath& crx_relative_path,
+                       bool always_serve_crx = false,
+                       const UpdateService::ErrorCategory error_category =
+                           UpdateService::ErrorCategory::kService,
+                       const int error_code = static_cast<int>(
+                           UpdateService::Result::kUpdateCanceled),
+                       const int event_type = /*EVENT_UPDATE_COMPLETE=*/3);
   AppUpdateExpectation(const AppUpdateExpectation&);
   ~AppUpdateExpectation();
 
@@ -63,6 +69,10 @@ struct AppUpdateExpectation {
   const bool allow_rollback;
   const std::string target_version_prefix;
   const base::FilePath crx_relative_path;
+  const bool always_serve_crx;
+  const UpdateService::ErrorCategory error_category;
+  const int error_code;
+  const int event_type;
 };
 
 // Returns the path to the updater installer program (in the build output

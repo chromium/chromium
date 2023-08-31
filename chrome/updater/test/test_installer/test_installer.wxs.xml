@@ -22,6 +22,9 @@
       <!-- Use the ProductCode as the ComponentId since we want the latter to
            change for each version change in support of major upgrades. -->
       <Component Id='ProductClients' Guid='$(var.MsiProductId)' Win64='no'>
+        <Condition>
+            <![CDATA[NOT INSTALLER_RESULT OR (INSTALLER_RESULT = 0)]]>
+        </Condition>
         <RegistryKey Root='$(var.HKRoot)' Key='SOFTWARE\$(var.CompanyName)\Update\Clients\$(var.ProductGuid)'>
           <RegistryValue KeyPath='yes' Type='string' Name='pv' Value='$(var.ProductVersion)' />
         </RegistryKey>
