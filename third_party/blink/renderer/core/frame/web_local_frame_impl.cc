@@ -3238,7 +3238,7 @@ void WebLocalFrameImpl::SetLCPPHint(
   }
 
   if (!hint) {
-    lcpp->set_lcp_element_locators({});
+    lcpp->Reset();
     return;
   }
 
@@ -3257,6 +3257,12 @@ void WebLocalFrameImpl::SetLCPPHint(
     }
   }
   lcpp->set_lcp_element_locators(std::move(lcp_element_locators));
+
+  HashSet<KURL> lcp_influencer_scripts;
+  for (auto& url : hint->lcp_influencer_scripts) {
+    lcp_influencer_scripts.insert(KURL(url));
+  }
+  lcpp->set_lcp_influencer_scripts(std::move(lcp_influencer_scripts));
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

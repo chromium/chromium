@@ -49,7 +49,8 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr& hint =
       navigation_handle->GetLCPPNavigationHint();
-  if (hint && !hint->lcp_element_locators.empty()) {
+  if (hint && (!hint->lcp_element_locators.empty() ||
+               !hint->lcp_influencer_scripts.empty())) {
     is_lcpp_hinted_navigation_ = true;
   }
 

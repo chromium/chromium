@@ -45,6 +45,17 @@ class CORE_EXPORT LCPCriticalPathPredictor final
     return lcp_element_locators_;
   }
 
+  void set_lcp_influencer_scripts(HashSet<KURL> scripts);
+
+  const HashSet<KURL>& lcp_influencer_scripts() {
+    return lcp_influencer_scripts_;
+  }
+
+  void Reset() {
+    lcp_element_locators_.clear();
+    lcp_influencer_scripts_.clear();
+  }
+
   // Member functions invoked in LCPP hint production path (write path):
 
   void OnLargestContentfulPaintUpdated(Element* lcp_element);
@@ -63,6 +74,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   // LCPP hints for consumption (read path):
 
   Vector<ElementLocator> lcp_element_locators_;
+  HashSet<KURL> lcp_influencer_scripts_;
 };
 
 }  // namespace blink

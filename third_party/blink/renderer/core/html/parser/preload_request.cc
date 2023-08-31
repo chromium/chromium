@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
@@ -180,6 +181,14 @@ Resource* PreloadRequest::Start(Document* document) {
     // We intentionally ignore the returned value, because we don't resend
     // the async request to the blocked script here.
     MaybeDisallowFetchForDocWrittenScript(params, *document);
+
+    if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+      if (LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP()) {
+        if (lcpp->lcp_influencer_scripts().Contains(url)) {
+          is_potentially_lcp_element_ = true;
+        }
+      }
+    }
   }
   params.SetRenderBlockingBehavior(render_blocking_behavior_);
 

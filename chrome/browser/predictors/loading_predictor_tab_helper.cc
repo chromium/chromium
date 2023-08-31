@@ -162,9 +162,11 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
         predictor.resource_prefetch_predictor()->PredictLcpElementLocators(
             navigation_handle.GetURL());
     if (!lcp_element_locators.empty()) {
+      // TODO(crbug.com/1419756):: Plumb lcp_influencer_scripts from
+      // resource_prefetch_predictor.
       navigation_handle.SetLCPPNavigationHint(
           blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
-              std::move(lcp_element_locators)));
+              std::move(lcp_element_locators), {}));
     }
   }
 }

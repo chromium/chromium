@@ -26,12 +26,17 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
 LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
 
 bool LCPCriticalPathPredictor::HasAnyHintData() const {
-  return !lcp_element_locators_.empty();
+  return !lcp_element_locators_.empty() || !lcp_influencer_scripts_.empty();
 }
 
 void LCPCriticalPathPredictor::set_lcp_element_locators(
     Vector<ElementLocator> locators) {
   lcp_element_locators_ = std::move(locators);
+}
+
+void LCPCriticalPathPredictor::set_lcp_influencer_scripts(
+    HashSet<KURL> scripts) {
+  lcp_influencer_scripts_ = std::move(scripts);
 }
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(

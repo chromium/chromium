@@ -21,6 +21,7 @@ if (window.location.search != "?start") {
   bytes.data = new Uint8Array(await resp.arrayBuffer());
 
   hint.lcpElementLocators = [bytes];
+  hint.lcpInfluencerScripts = []; // both fields are non-nullable.
 
   const web_test_control_host_remote = new NonAssociatedWebTestControlHostRemote();
   web_test_control_host_remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');

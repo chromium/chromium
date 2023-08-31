@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
+import "url/mojom/url.mojom";
 
 // Interface for LCP Critical Path Predictor from the renderer process.
 interface LCPCriticalPathPredictorHost {
@@ -20,4 +21,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
   // Each ElementLocator is serialized in proto3 binary format.
   // See third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.proto
   array<mojo_base.mojom.ByteString> lcp_element_locators;
+
+  // Script URLs that influence LCP, learned from past loads.
+  array<url.mojom.Url> lcp_influencer_scripts;
 };
