@@ -36,6 +36,8 @@ if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
 _BUNDLETOOL_JAR_PATH =
     "//third_party/android_build_tools/bundletool/bundletool.jar"
 
+_JAVAP_PATH = "//third_party/jdk/current/bin/javap"
+
 # Creates a dist directory for a native executable.
 #
 # Running a native executable on a device requires all the shared library
@@ -122,9 +124,155 @@ template("create_native_executable_dist") {
 }
 
 if (enable_java_templates) {
-  # TODO(crbug.com/1456762) - remove this, move the generate_jni targets into
-  # //third_party/jni_zero, and migirate all usages of it.
-  import("//third_party/jni_zero/jni_zero.gni")
+  if (is_android) {
+    import("//build/config/android/internal_rules.gni")
+  }
+
+  # JNI target implementation. See generate_jni or generate_jar_jni for usage.
+  template("_generate_jni_impl") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (current_toolchain != default_toolchain && target_os == "android") {
+      # Rather than regenerating .h files in secondary toolchains, re-use the
+      # ones from the primary toolchain by depending on it and adding the
+      # root gen directory to the include paths.
+      # https://crbug.com/1369398
+      group(target_name) {
+        not_needed(invoker, "*")
+        public_deps = [ ":$target_name($default_toolchain)" ]
+        public_configs =
+            [ "//build/config/android:jni_include_dir($default_toolchain)" ]
+      }
+    } else {
+      action_with_pydeps(target_name) {
+        _subdir = rebase_path(target_gen_dir, root_gen_dir)
+        _jni_output_dir = "$jni_headers_dir/$_subdir/$target_name"
+        if (defined(invoker.jni_generator_include)) {
+          _jni_generator_include = invoker.jni_generator_include
+          _jni_generator_include_deps = []
+        } else {
+          _jni_generator_include =
+              "//base/android/jni_generator/jni_generator_helper.h"
+          _jni_generator_include_deps = [
+            # Using //base/android/jni_generator/jni_generator_helper.h introduces
+            # a dependency on buildflags targets indirectly through
+            # base/android/jni_android.h, which is part of the //base target.
+            # This can't depend directly on //base without causing a dependency
+            # cycle, though.
+            "//base:debugging_buildflags",
+            "//base:logging_buildflags",
+            "//build:chromeos_buildflags",
+          ]
+        }
+
+        # The sources aren't compiled so don't check their dependencies.
+        check_includes = false
+        script = "//third_party/jni_zero/jni_zero.py"
+        forward_variables_from(invoker,
+                               [
+                                 "deps",
+                                 "metadata",
+                                 "public_deps",
+                               ])
+        if (!defined(public_deps)) {
+          public_deps = []
+        }
+        public_deps += _jni_generator_include_deps
+
+        public_configs = [ "//build/config/android:jni_include_dir" ]
+        if (defined(visibility)) {
+          # Allow dependency on ourselves from secondary toolchain.
+          visibility += [ ":$target_name" ]
+        }
+
+        inputs = []
+        outputs = []
+        args = []
+        if (defined(invoker.classes)) {
+          args += [ "from-jar" ]
+        } else {
+          args += [ "from-source" ]
+        }
+        args += [
+          "--output-dir",
+          rebase_path(_jni_output_dir, root_build_dir),
+          "--extra-include",
+          rebase_path(_jni_generator_include, _jni_output_dir),
+        ]
+
+        if (defined(invoker.classes)) {
+          if (is_robolectric) {
+            not_needed(invoker, [ "jar_file" ])
+          } else {
+            if (defined(invoker.jar_file)) {
+              _jar_file = invoker.jar_file
+            } else {
+              _jar_file = android_sdk_jar
+            }
+            inputs += [
+              _jar_file,
+              _JAVAP_PATH,
+            ]
+            args += [
+              "--jar-file",
+              rebase_path(_jar_file, root_build_dir),
+              "--javap",
+              rebase_path(_JAVAP_PATH, root_build_dir),
+            ]
+          }
+          _input_args = invoker.classes
+          _input_names = invoker.classes
+          if (defined(invoker.unchecked_exceptions) &&
+              invoker.unchecked_exceptions) {
+            args += [ "--unchecked-exceptions" ]
+          }
+        } else {
+          assert(defined(invoker.sources))
+          _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+          args += [
+            "--srcjar-path",
+            rebase_path(_srcjar_output, root_build_dir),
+          ]
+          outputs += [ _srcjar_output ]
+          inputs += invoker.sources
+          _input_args = rebase_path(invoker.sources, root_build_dir)
+          _input_names = invoker.sources
+          if (use_hashed_jni_names) {
+            args += [ "--use-proxy-hash" ]
+          }
+
+          if (defined(invoker.enable_jni_multiplexing) &&
+              invoker.enable_jni_multiplexing) {
+            args += [ "--enable-jni-multiplexing" ]
+          }
+          if (defined(invoker.namespace)) {
+            args += [ "--namespace=${invoker.namespace}" ]
+          }
+        }
+        if (defined(invoker.split_name)) {
+          args += [ "--split-name=${invoker.split_name}" ]
+        }
+
+        foreach(_name, _input_names) {
+          _name = get_path_info(_name, "name") + "_jni.h"
+          outputs += [ "$_jni_output_dir/$_name" ]
+
+          # Avoid passing GN lists because not all webrtc embedders use //build.
+          args += [
+            "--output-name",
+            _name,
+          ]
+        }
+
+        foreach(_input, _input_args) {
+          args += [ "--input-file=$_input" ]
+        }
+
+        if (enable_profiling) {
+          args += [ "--enable_profiling" ]
+        }
+      }
+    }
+  }
 
   # Declare a jni target
   #
@@ -149,7 +297,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("generate_jni") {
-    generate_jni_impl(target_name) {
+    _generate_jni_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       metadata = {
@@ -184,7 +332,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("generate_jar_jni") {
-    generate_jni_impl(target_name) {
+    _generate_jni_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
@@ -193,8 +341,6 @@ if (enable_java_templates) {
 
 # non-robolectric things
 if (enable_java_templates && is_android) {
-  import("//build/config/android/internal_rules.gni")
-
   # Declare a target for c-preprocessor-generated java files
   #
   # NOTE: For generating Java conterparts to enums prefer using the java_cpp_enum
