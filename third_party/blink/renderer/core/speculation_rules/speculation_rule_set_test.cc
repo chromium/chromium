@@ -2943,7 +2943,7 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
   auto* script_without_selector_matches = InsertSpeculationRules(document, R"(
     {"prefetch": [{"source": "document", "where": {"href_matches": "/foo"}}]}
   )");
-  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
+  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
 
   auto* script_with_irrelevant_selector_matches =
       InsertSpeculationRules(document, R"(
@@ -2952,7 +2952,7 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
       "where": {"selector_matches": "#irrelevant a"}
     }]}
   )");
-  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
+  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
 
   auto* script_with_selector_matches = InsertSpeculationRules(document, R"(
     {"prefetch": [{
@@ -2960,22 +2960,22 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
       "where": {"selector_matches": "#important-section a"}
     }]}
   )");
-  EXPECT_TRUE(important_section->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(important_section->NeedsStyleInvalidation());
 
   page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
-  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
+  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
 
   // Test removing SpeculationRuleSets, removing a ruleset should also cause
   // invalidations.
   script_with_selector_matches->remove();
-  EXPECT_TRUE(important_section->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(important_section->NeedsStyleInvalidation());
   page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
 
   script_without_selector_matches->remove();
-  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
+  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
 
   script_with_irrelevant_selector_matches->remove();
-  ASSERT_FALSE(important_section->ChildNeedsStyleRecalc());
+  ASSERT_FALSE(important_section->NeedsStyleInvalidation());
 }
 
 TEST_F(DocumentRulesTest, BasicStyleInvalidation) {
@@ -3167,22 +3167,17 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_1) {
       "where": {"selector_matches": "#important-section a"}
     }]}
   )";
-  // Insert a speculation ruleset with "selector_matches". This will not require
-  // a style update, as adding the ruleset itself will not cause any
-  // invalidations (there are no existing elements that match the selector in
-  // the new ruleset).
-  PropagateRulesToStubSpeculationHost(
+  ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() {
         InsertSpeculationRules(document,
                                speculation_script_with_selector_matches);
       },
-      IncludesStyleUpdate{false});
-  ASSERT_FALSE(document.NeedsLayoutTreeUpdate());
+      IncludesStyleUpdate{false}));
+  ASSERT_TRUE(document.NeedsLayoutTreeUpdate());
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
   EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/fizz.html")));
 
-  // Add two new links. We should not update speculation candidates until we run
-  // UpdateStyle.
   ASSERT_TRUE(NoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
       [&]() {
@@ -3191,7 +3186,6 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_1) {
       },
       IncludesStyleUpdate{false}));
   ASSERT_TRUE(document.NeedsLayoutTreeUpdate());
-  // Runs UpdateStyle; new speculation candidates should be sent.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
   EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/fizz.html"),
                                   KURL("https://foo.com/fizz.html")));
