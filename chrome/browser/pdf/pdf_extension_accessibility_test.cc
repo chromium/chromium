@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include "build/build_config.h"
 
 #include <map>
 #include <string>
@@ -321,8 +322,16 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 }
 
+// TODO(crbug.com/1477644): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PdfAccessibilityContextMenuAction \
+  DISABLED_PdfAccessibilityContextMenuAction
+#else
+#define MAYBE_PdfAccessibilityContextMenuAction \
+  PdfAccessibilityContextMenuAction
+#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       PdfAccessibilityContextMenuAction) {
+                       MAYBE_PdfAccessibilityContextMenuAction) {
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
   const char kExepectedPDFSelection[] =
