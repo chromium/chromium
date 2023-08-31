@@ -6695,5 +6695,54 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   }
 }
 
+TEST_F(PrefetchServiceNewLimitsTest, RemoveCandidateForFailedPrefetch) {
+  const GURL url = GURL("https://example.com/one");
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/1));
+
+  auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->url = url;
+  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate->referrer = blink::mojom::Referrer::New();
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  ASSERT_TRUE(prefetch_document_manager);
+
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url)).Times(1);
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      mock_destruction_callback.Get());
+
+  // Send canadidate to PrefetchDocumentManager.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  // Prefetch for |url| should have started.
+  VerifyCommonRequestState(url);
+  // Send error response for prefetch of |url|
+  MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  // Remove |candidate|.
+  candidates.clear();
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchFailedNetError)});
+}
+
 }  // namespace
 }  // namespace content

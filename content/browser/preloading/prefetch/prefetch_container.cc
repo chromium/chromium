@@ -181,6 +181,16 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
     return;
   }
 
+  if (old_prefetch_status &&
+      new_prefetch_status == PrefetchStatus::kPrefetchEvicted) {
+    // Skip this update if the triggering outcome has already been updated to
+    // kFailure.
+    if (TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
+        PreloadingTriggeringOutcome::kFailure) {
+      return;
+    }
+  }
+
   if (attempt) {
     switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
