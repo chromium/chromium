@@ -108,9 +108,7 @@ export class SettingsBluetoothPageElement extends
       return false;
     }
 
-    return this.systemProperties_.systemState ===
-        BluetoothSystemState.kEnabled ||
-        this.systemProperties_.systemState === BluetoothSystemState.kEnabling;
+    return this.systemProperties_.systemState === BluetoothSystemState.kEnabled;
   }
 }
 

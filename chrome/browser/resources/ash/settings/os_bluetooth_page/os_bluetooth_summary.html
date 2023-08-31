@@ -43,7 +43,7 @@
     </cr-toggle>
   </div>
 
-  <template is="dom-if" if="[[isBluetoothToggleOn_]]" restamp>
+  <template is="dom-if" if="[[shouldShowPairNewDevice_(systemProperties.*)]]" restamp>
     <div id="pairNewDevice" class="settings-box no-padding" actionable
         on-click="onPairNewDeviceBtnClick_">
       <div id="pairNewDeviceLabel" class="middle settings-box-text"

@@ -270,6 +270,14 @@ export class SettingsBluetoothSummaryElement extends
 
     this.browserProxy_.showBluetoothRevampHatsSurvey();
   }
+
+  private shouldShowPairNewDevice_(): boolean {
+    if (!this.systemProperties) {
+      return false;
+    }
+
+    return this.systemProperties.systemState === BluetoothSystemState.kEnabled;
+  }
 }
 
 declare global {
