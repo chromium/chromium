@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
@@ -19,6 +20,24 @@ import org.chromium.chrome.R;
 
     /** The title of the bottom sheet UI. */
     /*package*/ final TextView mDialogTitle;
+
+    /** The text that describes what a virtual card does. */
+    /*package*/ final TextView mVirtualCardDescription;
+
+    /** The icon for the card. */
+    /*package*/ final ImageView mIssuerIcon;
+
+    /** The label for the card. */
+    /*package*/ final TextView mCardLabel;
+
+    /** The description for the card. */
+    /*package*/ final TextView mCardDescription;
+
+    /** Legal messages from Google Pay. */
+    /*package*/ final TextView mGoogleLegalMessage;
+
+    /** Legal messages from the issuer bank. */
+    /*package*/ final TextView mIssuerLegalMessage;
 
     /** The button that accepts the enrollment prompt. */
     /*package*/ final Button mAcceptButton;
@@ -35,6 +54,12 @@ import org.chromium.chrome.R;
         mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
+        mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);
+        mIssuerIcon = mContentView.findViewById(R.id.issuer_icon);
+        mCardLabel = mContentView.findViewById(R.id.card_label);
+        mCardDescription = mContentView.findViewById(R.id.card_description);
+        mGoogleLegalMessage = mContentView.findViewById(R.id.google_legal_message);
+        mIssuerLegalMessage = mContentView.findViewById(R.id.issuer_legal_message);
         mAcceptButton = mContentView.findViewById(R.id.accept_button);
         mCancelButton = mContentView.findViewById(R.id.cancel_button);
     }

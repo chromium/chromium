@@ -26,13 +26,18 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.LinkedList;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,6 +62,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
     @Before
     public void setUp() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
+        FeatureList.setTestValues(testValues);
+
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
@@ -73,7 +83,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
     private void requestShowContent(WebContents webContents) {
         mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, webContents,
-                "Message text", "Accept button label", "Cancel button label");
+                "Message text", "Description text. Learn more", "Learn more", /*issuerIcon=*/null,
+                "Card label", "card description",
+                /*googleLegaleMessages=*/new LinkedList<LegalMessageLine>(),
+                /*issuerLegalMessages=*/new LinkedList<LegalMessageLine>(), "Accept button label",
+                "Cancel button label");
     }
 
     @Test

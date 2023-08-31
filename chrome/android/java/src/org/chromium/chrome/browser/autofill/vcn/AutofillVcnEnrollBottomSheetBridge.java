@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.LinkedList;
 
 /** Bridge for the virtual card enrollment bottom sheet. */
 @JNINamespace("autofill")
@@ -25,7 +30,10 @@ import org.chromium.ui.base.WindowAndroid;
     @CalledByNative
     @VisibleForTesting
     /*package*/ boolean requestShowContent(long nativeAutofillVcnEnrollBottomSheetBridge,
-            WebContents webContents, String messageText, String acceptButtonLabel,
+            WebContents webContents, String messageText, String descriptionText,
+            String learnMoreLinkText, Bitmap issuerIcon, String cardLabel, String cardDescription,
+            LinkedList<LegalMessageLine> googleLegalMessages,
+            LinkedList<LegalMessageLine> issuerLegalMessages, String acceptButtonLabel,
             String cancelButtonLabel) {
         if (webContents == null || webContents.isDestroyed()) return false;
 
@@ -36,8 +44,9 @@ import org.chromium.ui.base.WindowAndroid;
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
         mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(window.getContext().get(),
-                messageText, acceptButtonLabel, cancelButtonLabel, this::onAccept, this::onCancel,
-                this::onDismiss);
+                messageText, descriptionText, learnMoreLinkText, issuerIcon, cardLabel,
+                cardDescription, googleLegalMessages, issuerLegalMessages, acceptButtonLabel,
+                cancelButtonLabel, this::onAccept, this::onCancel, this::onDismiss);
 
         return mCoordinator.requestShowContent(window);
     }

@@ -655,12 +655,14 @@
   </if>
 
   <!-- virtual cards related strings - start -->
+  <if expr="not is_ios">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX" desc="Notifies users that the type of card they are enrolling in is a virtual card.">
+      Virtual card
+    </message>
+  </if>
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card enroll bubble on Desktop. This bubble prompts users if they would like to enroll in a virtual card.">
       Add virtual card
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX" desc="Notifies users that the type of card they are enrolling in is a virtual card.">
-      Virtual card
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CONTENT_TITLE" desc="The title shown in the Autofill virtual card selection dialog. This dialog offers available virtual credit cards for users to choose to fill the form with. [ICU Syntax]">
       {NUM_CARDS, plural,

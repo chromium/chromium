@@ -27,6 +27,22 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:orientation="vertical">
 
+            <!-- Google Pay logo -->
+            <org.chromium.ui.widget.ChromeImageView
+                android:importantForAccessibility="no"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:src="@drawable/google_pay" />
+
+            <!-- Virtual card enrollment illustration image -->
+            <org.chromium.ui.widget.ChromeImageView
+                android:importantForAccessibility="no"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:src="@drawable/virtual_card_enrollment_illustration" />
+
             <!-- "Make it more secure with a virtual card next time?" dialog title -->
             <androidx.appcompat.widget.DialogTitle
                 android:id="@+id/dialog_title"
@@ -34,6 +50,67 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <!-- "A virtual card hides your actual card to help protect..." label -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/virtual_card_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                style="@style/TextAppearance.TextMedium.Secondary" />
+
+            <!-- Card information container -->
+            <RelativeLayout
+                android:id="@+id/card_container"
+                android:background="@drawable/card_container_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Card issuer icon -->
+                <org.chromium.ui.widget.ChromeImageView
+                    android:id="@+id/issuer_icon"
+                    android:importantForAccessibility="no"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content" />
+
+                <!-- Card name label, e.g., "Amex **** 1234" -->
+                <TextView
+                    android:id="@+id/card_label"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@id/issuer_icon"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textAlignment="center"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+
+                <!-- "Virtual card" label -->
+                <TextView
+                    android:id="@+id/card_description"
+                    android:layout_below="@id/card_label"
+                    android:layout_toEndOf="@id/issuer_icon"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textAlignment="center"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
+            </RelativeLayout>
+
+            <!-- "To provide this service, Google may share account..." label -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/google_legal_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                style="@style/TextAppearance.TextSmall.Secondary" />
+
+            <!-- "By continuing, you agree to the Issuer's Terms..." label -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/issuer_legal_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                style="@style/TextAppearance.TextSmall.Secondary" />
 
             <!-- "Yes" button -->
             <org.chromium.ui.widget.ButtonCompat

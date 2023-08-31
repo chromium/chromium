@@ -9,9 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/AutofillVcnEnrollBottomSheetBridge_jni.h"
+#include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 namespace autofill {
 
@@ -47,6 +51,17 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
       env, java_bridge_, reinterpret_cast<jlong>(this), java_web_contents,
       ConvertUTF16ToJavaString(env, delegate_->GetMessageText()),
+      ConvertUTF16ToJavaString(env, delegate_->GetDescriptionText()),
+      ConvertUTF16ToJavaString(env, delegate_->GetLearnMoreLinkText()),
+      gfx::ConvertToJavaBitmap(*delegate_->GetIssuerIcon()->bitmap()),
+      ConvertUTF16ToJavaString(env, delegate_->GetCardLabel()),
+      ConvertUTF16ToJavaString(
+          env,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX)),
+      LegalMessageLineAndroid::ConvertToJavaLinkedList(
+          delegate_->GetGoogleLegalMessage()),
+      LegalMessageLineAndroid::ConvertToJavaLinkedList(
+          delegate_->GetIssuerLegalMessage()),
       ConvertUTF16ToJavaString(
           env, delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK)),
       ConvertUTF16ToJavaString(
