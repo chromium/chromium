@@ -61,6 +61,25 @@ source_set("test_support") {
   }
 }
 
+source_set("routine_manager") {
+  sources = [
+    "diagnostic_routine_manager.cc",
+    "diagnostic_routine_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
+    "//content/public/browser",
+  ]
+
+  public_deps = [
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "diagnostic_routine_converters_unittest.cc" ]
