@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -259,14 +260,11 @@ ChromeAutofillClient::GetPlusAddressService() {
 void ChromeAutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     plus_addresses::PlusAddressCallback callback) {
-  // TODO(crbug.com/1467623): orchestrate UI here rather than (effectively)
-  // filling immediately.
-  plus_addresses::PlusAddressService* plus_address_service =
-      GetPlusAddressService();
-  if (plus_address_service) {
-    plus_address_service->OfferPlusAddressCreation(main_frame_origin,
-                                                   std::move(callback));
-  }
+  // The controller is owned by `web_contents()` (via `WebContentsUserData`).
+  plus_addresses::PlusAddressCreationController* controller =
+      plus_addresses::PlusAddressCreationController::GetOrCreate(
+          web_contents());
+  controller->OfferCreation(main_frame_origin, std::move(callback));
 }
 
 MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {
