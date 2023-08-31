@@ -20,6 +20,7 @@ owners:
 - titouan@chromium.org
 - clamy@chromium.org
 - mkwst@chromium.org
+- phao@chromium.org
 schema:
   items:
     type: string
