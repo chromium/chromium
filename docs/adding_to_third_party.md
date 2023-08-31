@@ -212,12 +212,19 @@ automated systems. But, adding CPEs decreases the chances of us missing
 vulnerabilities, so they should always be added if possible.
 
 The CPE is a common format shared across the industry; you can look up the CPE
-for your package [here](https://nvd.nist.gov/products/cpe/search). Please use
-CPE format 2.2. When searching for a CPE, you may find that there is not yet
-a CPE for the specific upstream version you're using. This is normal, as CPEs
-are typically allocated only when a vulnerability is found. You should follow
-the version number convention such that, when that does occur in future, we'll
-be notified. If no CPE is available, please specify "unknown".
+for your package [here](https://nvd.nist.gov/products/cpe/search).
+* Use CPE format 2.3 (preferred) or CPE format 2.2 (supported).
+* If the CPE uses the 2.3 URI binding or 2.2 format (i.e. starts with "cpe:/"),
+and no version is explicitly specified within the `CPEPrefix`, the `Version`
+in the `README.chromium` file will be appended to the `CPEPrefix`, if available.
+  * Note: if the `Version` field is set to a git hash value, version matching
+  for vulnerabilities will fail.
+
+When searching for a CPE, you may find that there is not yet a CPE for the
+specific upstream version you're using. This is normal, as CPEs are typically
+allocated only when a vulnerability is found. You should follow the version
+number convention such that, when that does occur in future, we'll be notified.
+If no CPE is available, please specify "unknown".
 
 If you're using a patched or modified version which is halfway between two
 public versions, please "round downwards" to the lower of the public versions
