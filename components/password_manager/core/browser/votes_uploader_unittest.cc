@@ -657,7 +657,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
 TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 }
 
 TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
@@ -700,7 +700,7 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 }
 
 // Tests that a negeative vote is sent if the username candidate field
@@ -733,7 +733,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Upload on the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -787,7 +787,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Upload on the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -841,7 +841,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Upload on the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -893,7 +893,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Upload on the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -944,7 +944,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Expect upload for the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -984,7 +984,7 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature), _,
                                  _, _, _, _, /*observer=*/IsNull()))
       .Times(0);
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Expect upload for the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData
@@ -1013,7 +1013,7 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
   votes_uploader.set_suggested_username(u"");
   votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
 
-  votes_uploader.MaybeSendSingleUsernameVote();
+  votes_uploader.MaybeSendSingleUsernameVotes();
 
   // Expect upload on the password form for the fallback classifier.
   autofill::AutofillUploadContents::SingleUsernameData

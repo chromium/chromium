@@ -148,14 +148,17 @@ class VotesUploader {
       autofill::FieldRendererId username_element_renderer_id,
       autofill::FormStructure* form_structure);
 
-  // Sends single a username vote if |single_username_vote_data_| is set.
-  // If |single_username_vote_data| is set, the vote sent is either
-  // SINGLE_USERNAME (if the user saved the credential with the username
-  // captured from |single_username_vote_data|) or NOT_USERNAME (if the user
-  // modified the username).
+  // Sends single username vote if |single_username_vote_data_| or
+  // |forgot_password_vote_data_| is set.
+  // The vote sent is either SINGLE_USERNAME (if the user saved the credential
+  // with the username cached in |single_username_vote_data|), or
+  // SINGLE_USERNAME_FORGOT_PASSWORD (if the user saved the credential
+  // with the username cached in |forgot_password_vote_data|), or NOT_USERNAME
+  // (if the saved username contradicts cached potential usernames).
+  // No-op on Android.
   // TODO (crbug.com/959776): Have a single point in code that calls this
   // method.
-  void MaybeSendSingleUsernameVote();
+  void MaybeSendSingleUsernameVotes();
 
   // Calculate whether the username value was edited in a prompt based on
   // suggested and saved username values and whether it confirms or
@@ -256,6 +259,7 @@ class VotesUploader {
   // with the save prompt (i.e. whether the suggested value was actually saved).
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
+      const SingleUsernameVoteData& single_username,
       autofill::ServerFieldTypeSet* available_field_types,
       autofill::FormSignature form_signature);
 
@@ -274,6 +278,12 @@ class VotesUploader {
   autofill::AutofillUploadContents::SingleUsernamePromptEdit
   CalculateUsernamePromptEdit(const std::u16string& saved_username,
                               const std::u16string& potential_username);
+
+  // Attempts to send a vote for a single username form. Returns true if the
+  // vote is sent.
+  bool MaybeSendSingleUsernameVote(
+      const SingleUsernameVoteData& single_username,
+      const FormPredictions& predictions);
 
   // The client which implements embedder-specific PasswordManager operations.
   raw_ptr<PasswordManagerClient> client_ = nullptr;

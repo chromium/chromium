@@ -844,7 +844,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
   metrics_recorder_->SetSubmissionIndicatorEvent(
       parsed_submitted_form.submission_event);
   // TODO(crbug.com/959776): Get rid of this method, by passing
-  // |pending_credentials_| directly to MaybeSendSingleUsernameVote.
+  // |pending_credentials_| directly to MaybeSendSingleUsernameVotes.
   votes_uploader_->CalculateUsernamePromptEditState(
       /*saved_username=*/pending_credentials_.username_value);
 
@@ -882,7 +882,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
         *observed_form, parsed_submitted_form, &pending_credentials_);
   }
   if (IsPasswordUpdate()) {
-    votes_uploader_->MaybeSendSingleUsernameVote();
+    votes_uploader_->MaybeSendSingleUsernameVotes();
     votes_uploader_->UploadPasswordVote(
         parsed_submitted_form, parsed_submitted_form, autofill::NEW_PASSWORD,
         base::NumberToString(
