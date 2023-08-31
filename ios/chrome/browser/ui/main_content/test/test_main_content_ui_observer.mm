@@ -7,26 +7,17 @@
 @implementation TestMainContentUIObserver
 @synthesize broadcaster = _broadcaster;
 @synthesize yOffset = _yOffset;
-@synthesize dragging = _dragging;
 
 - (void)setBroadcaster:(ChromeBroadcaster*)broadcaster {
   [_broadcaster removeObserver:self
                    forSelector:@selector(broadcastContentScrollOffset:)];
-  [_broadcaster removeObserver:self
-                   forSelector:@selector(broadcastScrollViewIsDragging:)];
   _broadcaster = broadcaster;
   [_broadcaster addObserver:self
                 forSelector:@selector(broadcastContentScrollOffset:)];
-  [_broadcaster addObserver:self
-                forSelector:@selector(broadcastScrollViewIsDragging:)];
 }
 
 - (void)broadcastContentScrollOffset:(CGFloat)offset {
   _yOffset = offset;
-}
-
-- (void)broadcastScrollViewIsDragging:(BOOL)dragging {
-  _dragging = dragging;
 }
 
 @end

@@ -420,6 +420,7 @@ void FullscreenModel::OnScrollViewIsZoomingBroadcasted(bool zooming) {
 }
 
 void FullscreenModel::OnScrollViewIsDraggingBroadcasted(bool dragging) {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   SetScrollViewIsDragging(dragging);
 }
 

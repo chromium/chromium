@@ -100,6 +100,10 @@ TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsScrolling) {
 // Tests that `-broadcastScrollViewIsDragging:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsDragging) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kSmoothScrollingDefault);
+
   ASSERT_FALSE(observer().scroll_view_dragging());
   [bridge() broadcastScrollViewIsDragging:YES];
   EXPECT_TRUE(observer().scroll_view_dragging());

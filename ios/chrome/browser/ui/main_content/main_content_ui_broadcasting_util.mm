@@ -27,13 +27,13 @@ void StartBroadcastingMainContentUI(id<MainContentUI> main_content,
     [broadcaster broadcastValue:@"scrolling"
                        ofObject:main_content.mainContentUIState
                        selector:@selector(broadcastScrollViewIsScrolling:)];
+    [broadcaster broadcastValue:@"dragging"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastScrollViewIsDragging:)];
   }
   [broadcaster broadcastValue:@"zooming"
                      ofObject:main_content.mainContentUIState
                      selector:@selector(broadcastScrollViewIsZooming:)];
-  [broadcaster broadcastValue:@"dragging"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastScrollViewIsDragging:)];
 }
 
 void StopBroadcastingMainContentUI(ChromeBroadcaster* broadcaster) {
@@ -47,9 +47,9 @@ void StopBroadcastingMainContentUI(ChromeBroadcaster* broadcaster) {
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [broadcaster
         stopBroadcastingForSelector:@selector(broadcastScrollViewIsScrolling:)];
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastScrollViewIsDragging:)];
   }
   [broadcaster
       stopBroadcastingForSelector:@selector(broadcastScrollViewIsZooming:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastScrollViewIsDragging:)];
 }

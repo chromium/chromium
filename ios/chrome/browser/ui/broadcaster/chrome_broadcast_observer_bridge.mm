@@ -46,6 +46,7 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewIsDragging:(BOOL)dragging {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewIsDraggingBroadcasted(dragging);
 }
 
