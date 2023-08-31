@@ -215,15 +215,14 @@ public class SyncSettingsUtils {
      * Return a short summary of the current sync status.
      */
     public static String getSyncStatusSummary(Context context) {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
-                    ConsentLevel.SYNC)) {
-            // There is no account with sync consent available.
+        SyncService syncService =
+                SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        if (syncService == null) {
             return context.getString(R.string.sync_off);
         }
 
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        if (syncService == null) {
+        if (!syncService.hasSyncConsent()) {
+            // There is no account with sync consent available.
             return context.getString(R.string.sync_off);
         }
 
@@ -304,17 +303,11 @@ public class SyncSettingsUtils {
      * Returns an icon that represents the current sync state.
      */
     public static @Nullable Drawable getSyncStatusIcon(Context context) {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
-                    ConsentLevel.SYNC)) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
-        }
-
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        if (syncService == null || syncService.getSelectedTypes().isEmpty()) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
-        }
-        if (syncService.isSyncDisabledByEnterprisePolicy()) {
+        SyncService syncService =
+                SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        if (syncService == null || !syncService.hasSyncConsent()
+                || syncService.getSelectedTypes().isEmpty()
+                || syncService.isSyncDisabledByEnterprisePolicy()) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
