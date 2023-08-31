@@ -149,6 +149,9 @@ BASE_DECLARE_FEATURE(kFeedDynamicColors);
 // Feature that enables UI update for Follow.
 BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
 
+// Feature that enables sports card in the feed.
+BASE_DECLARE_FEATURE(kFeedSportsCard);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

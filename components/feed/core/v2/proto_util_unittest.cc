@@ -231,6 +231,21 @@ TEST(ProtoUtilTest, StampEnabled) {
               Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
 }
 
+TEST(ProtoUtilTest, SportsCardEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedSportsCard}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(
+          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+          /*request_metadata=*/{},
+          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
+          /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::SPORTS_IN_GAME_UPDATE));
+}
+
 // ReadLater is enabled by default everywhere with the exception of iOS which
 // has a build-flag to enable it.
 #if !BUILDFLAG(IS_IOS)

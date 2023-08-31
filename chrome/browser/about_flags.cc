@@ -5326,6 +5326,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"feed-dynamic-colors", flag_descriptions::kFeedDynamicColorsName,
      flag_descriptions::kFeedDynamicColorsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedDynamicColors)},
+    {"feed-sports-card", flag_descriptions::kFeedSportsCardName,
+     flag_descriptions::kFeedSportsCardDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kFeedSportsCard)},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)

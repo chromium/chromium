@@ -2318,6 +2318,9 @@ extern const char kFeedLoadingPlaceholderDescription[];
 extern const char kFeedSignedOutViewDemotionName[];
 extern const char kFeedSignedOutViewDemotionDescription[];
 
+extern const char kFeedSportsCardName[];
+extern const char kFeedSportsCardDescription[];
+
 extern const char kFeedStampName[];
 extern const char kFeedStampDescription[];
 

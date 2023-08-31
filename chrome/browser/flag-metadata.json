@@ -4404,6 +4404,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "feed-sports-card",
+    "owners": ["//components/feed/OWNERS", "jianli@chromium.org"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "feed-v2-hearts",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 115

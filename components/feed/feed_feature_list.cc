@@ -177,4 +177,8 @@ BASE_FEATURE(kFeedFollowUiUpdate,
              "FeedFollowUiUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedSportsCard,
+             "FeedSportsCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace feed

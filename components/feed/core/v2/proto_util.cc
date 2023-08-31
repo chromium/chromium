@@ -185,6 +185,10 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::SYNTHETIC_CAPABILITIES);
   }
 
+  if (base::FeatureList::IsEnabled(kFeedSportsCard)) {
+    feed_request.add_client_capability(Capability::SPORTS_IN_GAME_UPDATE);
+  }
+
   switch (request_metadata.tab_group_enabled_state) {
     case TabGroupEnabledState::kNone:
       feed_request.add_client_capability(Capability::OPEN_IN_TAB);

@@ -64272,6 +64272,7 @@ from previous Chrome versions.
       label="ColorProviderRedirectionForThemeProvider:disabled"/>
   <int value="-163146178" label="NtpRealboxIsTall:disabled"/>
   <int value="-162928621" label="ForceStartupSigninPromo:disabled"/>
+  <int value="-162294119" label="FeedSportsCard:disabled"/>
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>
   <int value="-161284423" label="DesktopSharePreview:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
@@ -64806,6 +64807,7 @@ from previous Chrome versions.
   <int value="105046382" label="ParallelDownloading:disabled"/>
   <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
+  <int value="106174755" label="FeedSportsCard:enabled"/>
   <int value="106235373" label="LauncherSystemInfoAnswerCards:enabled"/>
   <int value="106596969" label="HideIncognitoMediaMetadata:disabled"/>
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
