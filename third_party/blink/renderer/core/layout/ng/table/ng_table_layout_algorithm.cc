@@ -1206,7 +1206,11 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const NGLayoutResult* child_result;
     absl::optional<LayoutUnit> offset_before_repeated_header;
     LayoutUnit child_inline_offset;
-    LayoutUnit child_block_end_margin;  // Captions allow margins.
+
+    // Captions allow margins.
+    LayoutUnit child_block_start_margin;
+    LayoutUnit child_block_end_margin;
+
     absl::optional<TableBoxExtent> new_table_box_extent;
     bool is_repeated_section = false;
     bool has_overlapping_repeated_header = false;
@@ -1244,12 +1248,12 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       NGBoxStrut margins = ComputeCaptionMargins(
           ConstraintSpace(), child, container_builder_.InlineSize(),
           child_break_token);
-      child_block_offset += margins.block_start;
+      child_block_start_margin = margins.block_start;
       child_block_end_margin = margins.block_end;
 
-      NGConstraintSpace child_space =
-          CreateCaptionConstraintSpace(ConstraintSpace(), Style(), child,
-                                       available_size, child_block_offset);
+      NGConstraintSpace child_space = CreateCaptionConstraintSpace(
+          ConstraintSpace(), Style(), child, available_size,
+          child_block_offset + child_block_start_margin);
       CaptionResult caption = LayoutCaption(
           ConstraintSpace(), Style(), container_builder_.InlineSize(),
           child_space, child, margins, child_break_token, early_break_in_child);
@@ -1379,8 +1383,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     if (ConstraintSpace().HasBlockFragmentation() &&
         (!child_break_token || !is_repeated_section)) {
       LayoutUnit fragmentainer_block_offset =
-          ConstraintSpace().FragmentainerOffset() + child_block_offset -
-          repeated_header_block_size;
+          ConstraintSpace().FragmentainerOffset() + child_block_start_margin +
+          child_block_offset - repeated_header_block_size;
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), child, *child_result, fragmentainer_block_offset,
           has_container_separation, &container_builder_);
@@ -1408,6 +1412,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         last_baseline = child_block_offset + *section_last_baseline;
     }
 
+    child_block_offset += child_block_start_margin;
     container_builder_.AddResult(
         *child_result, LogicalOffset(child_inline_offset, child_block_offset));
     child_block_offset += fragment.BlockSize() + child_block_end_margin;
