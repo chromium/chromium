@@ -31,10 +31,10 @@ class RTCEncodedAudioFrameDelegate
       rtc::ArrayView<const unsigned int> contributing_sources,
       absl::optional<uint16_t> sequence_number);
 
-  uint32_t Timestamp() const;
+  uint32_t RtpTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
-  void SetTimestamp(uint32_t timestamp, ExceptionState& exception_state);
+  void SetRtpTimestamp(uint32_t timestamp, ExceptionState& exception_state);
   absl::optional<uint32_t> Ssrc() const;
   absl::optional<uint8_t> PayloadType() const;
   absl::optional<uint16_t> SequenceNumber() const;

@@ -44040,6 +44040,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4642" label="VirtualKeyboardOverlayPolicy"/>
   <int value="4643" label="ScrollSnapNestedSnapAreas"/>
   <int value="4644" label="ScrollSnapCoveringSnapArea"/>
+  <int value="4645" label="V8RTCEncodedAudioFrame_SetMetadata_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -40,6 +40,8 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   absl::optional<uint16_t> sequenceNumber() const;
   DOMArrayBuffer* data() const;
   RTCEncodedAudioFrameMetadata* getMetadata() const;
+  void setMetadata(RTCEncodedAudioFrameMetadata* metadata,
+                   ExceptionState& exception_state);
   void setData(DOMArrayBuffer*);
   void setTimestamp(uint32_t timestamp, ExceptionState& exception_state);
   String toString() const;

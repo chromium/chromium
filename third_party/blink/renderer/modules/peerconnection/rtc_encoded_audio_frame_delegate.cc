@@ -23,7 +23,7 @@ RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
   contributing_sources_.assign(contributing_sources);
 }
 
-uint32_t RTCEncodedAudioFrameDelegate::Timestamp() const {
+uint32_t RTCEncodedAudioFrameDelegate::RtpTimestamp() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
@@ -56,7 +56,7 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   }
 }
 
-void RTCEncodedAudioFrameDelegate::SetTimestamp(
+void RTCEncodedAudioFrameDelegate::SetRtpTimestamp(
     uint32_t timestamp,
     ExceptionState& exception_state) {
   base::AutoLock lock(lock_);

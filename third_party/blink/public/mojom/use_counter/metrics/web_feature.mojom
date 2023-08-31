@@ -3982,6 +3982,7 @@ enum WebFeature {
   kVirtualKeyboardOverlayPolicy = 4642,
   kScrollSnapNestedSnapAreas = 4643,
   kScrollSnapCoveringSnapArea = 4644,
+  kV8RTCEncodedAudioFrame_SetMetadata_Method = 4645,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
