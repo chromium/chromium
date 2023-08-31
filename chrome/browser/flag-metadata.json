@@ -1523,6 +1523,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "customize-chrome-wallpaper-search",
+    "owners": [ "huiyingst", "pauladedeji", "rtatum", "tiborg" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "cws-info-fast-check",
     "owners": [
       "anunoy"

@@ -180,6 +180,11 @@ const char kCustomizeChromeSidePanelExtensionsCardDescription[] =
     "If enabled, shows an extension card within the Customize Chrome Side "
     "Panel for access to the Chrome Web Store extensions.";
 
+const char kCustomizeChromeWallpaperSearchName[] =
+    "Customize Chrome Wallpaper Search";
+const char kCustomizeChromeWallpaperSearchDescription[] =
+    "Enables wallpaper search in Customize Chrome Side Panel.";
+
 const char kDeprecateUnloadName[] = "Deprecate the unload event";
 const char kDeprecateUnloadDescription[] =
     "Controls the default for Permissions-Policy unload. If enabled, unload "

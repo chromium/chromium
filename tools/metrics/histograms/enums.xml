@@ -61925,6 +61925,7 @@ from previous Chrome versions.
   <int value="-1318914924" label="OverflowIconsForMediaControls:enabled"/>
   <int value="-1317768255" label="PermissionStorageAccessAPI:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
+  <int value="-1315631616" label="CustomizeChromeWallpaperSearch:disabled"/>
   <int value="-1315360754" label="WindowLayoutMenu:disabled"/>
   <int value="-1314823250"
       label="OsSettingsDeprecateSyncMetricsToggle:disabled"/>
@@ -68546,6 +68547,7 @@ from previous Chrome versions.
   <int value="1988679118" label="DesktopPWAsSubApps:disabled"/>
   <int value="1988810119" label="AutofillDropdownLayout:enabled"/>
   <int value="1989051182" label="view-passwords:enabled"/>
+  <int value="1989739884" label="CustomizeChromeWallpaperSearch:enabled"/>
   <int value="1989877708" label="PostScriptPrinting:enabled"/>
   <int value="1990528959" label="SchemefulSameSite:disabled"/>
   <int value="1990562608"
