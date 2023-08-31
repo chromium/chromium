@@ -33,6 +33,8 @@ source_set("scanning") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/quick_pair",
     "//chromeos/ash/services/quick_pair/public/cpp",
+    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging:logging",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
   ]

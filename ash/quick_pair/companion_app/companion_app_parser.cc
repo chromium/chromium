@@ -5,13 +5,13 @@
 #include "ash/quick_pair/companion_app/companion_app_parser.h"
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "components/cross_device/logging/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -75,7 +75,8 @@ absl::optional<std::string> CompanionAppParser::GetCompanionAppExtra(
       intent_as_string, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() < 2 || parts.front() != kIntentPrefix ||
       parts.back() != kEndSuffix) {
-    QP_LOG(WARNING) << "Failed to split intent " << intent_as_string << ".";
+    CD_LOG(WARNING, Feature::FP)
+        << "Failed to split intent " << intent_as_string << ".";
     return absl::nullopt;
   }
 
@@ -86,7 +87,8 @@ absl::optional<std::string> CompanionAppParser::GetCompanionAppExtra(
         // Intent should not have empty param. The empty param would appear in
         // intent string as ';;'. In the last case it would cause error in
         // Android framework. Such intents must not appear in the system.
-        QP_LOG(WARNING) << "Found empty param in " << intent_as_string << ".";
+        CD_LOG(WARNING, Feature::FP)
+            << "Found empty param in " << intent_as_string << ".";
         return absl::nullopt;
       }
       continue;

@@ -8,13 +8,13 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 
@@ -101,8 +101,9 @@ void FastPairScannerImpl::StartScanning() {
 
   RecordBluetoothLowEnergyScanFilterResult(/*success=*/filter != nullptr);
   if (!filter) {
-    QP_LOG(ERROR) << "Bluetooth Low Energy Scan Session failed to start due to "
-                     "failure to create filter.";
+    CD_LOG(ERROR, Feature::FP)
+        << "Bluetooth Low Energy Scan Session failed to start due to "
+           "failure to create filter.";
     return;
   }
 
@@ -146,9 +147,10 @@ void FastPairScannerImpl::OnSessionStarted(
       /*success=*/!error_code.has_value());
 
   if (error_code) {
-    QP_LOG(ERROR) << "Bluetooth Low Energy Scan Session failed to start with "
-                     "the following error: "
-                  << error_code.value();
+    CD_LOG(ERROR, Feature::FP)
+        << "Bluetooth Low Energy Scan Session failed to start with "
+           "the following error: "
+        << error_code.value();
     return;
   }
 }
@@ -167,14 +169,14 @@ void FastPairScannerImpl::OnDeviceFound(
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
 
   if (!service_data) {
-    QP_LOG(WARNING) << "No Fast Pair service data found on device";
+    CD_LOG(WARNING, Feature::FP) << "No Fast Pair service data found on device";
     return;
   }
 
   if (base::Contains(device_address_advertisement_data_map_,
                      device->GetAddress())) {
-    QP_LOG(INFO) << __func__
-                 << ": Ignoring found device because it was already found.";
+    CD_LOG(INFO, Feature::FP)
+        << __func__ << ": Ignoring found device because it was already found.";
     return;
   }
 
@@ -182,9 +184,10 @@ void FastPairScannerImpl::OnDeviceFound(
       FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
 
   if (handshake) {
-    QP_LOG(INFO) << __func__
-                 << ": We have an active handshake for this device, which "
-                    "means we never 'lost' it. We ignore this event.";
+    CD_LOG(INFO, Feature::FP)
+        << __func__
+        << ": We have an active handshake for this device, which "
+           "means we never 'lost' it. We ignore this event.";
     return;
   }
 
@@ -226,7 +229,7 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
     return;
   }
 
-  QP_LOG(INFO) << __func__ << ": Notifying device found.";
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Notifying device found.";
   device_address_advertisement_data_map_[device_address].insert(*service_data);
   NotifyDeviceFound(device);
 }
@@ -249,8 +252,8 @@ void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
     device::BluetoothDevice* classic_device = adapter_->GetDevice(it->second);
 
     if (classic_device && classic_device->IsPaired()) {
-      QP_LOG(INFO) << __func__
-                   << ": Skipping notify for already paired device.";
+      CD_LOG(INFO, Feature::FP)
+          << __func__ << ": Skipping notify for already paired device.";
       return;
     }
   }
@@ -270,7 +273,7 @@ void FastPairScannerImpl::OnDeviceLost(
 }
 
 void FastPairScannerImpl::OnDevicePaired(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": device: " << device;
+  CD_LOG(INFO, Feature::FP) << __func__ << ": device: " << device;
   if (device->classic_address()) {
     ble_address_to_classic_[device->ble_address()] =
         device->classic_address().value();

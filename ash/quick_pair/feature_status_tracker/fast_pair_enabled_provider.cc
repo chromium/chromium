@@ -5,11 +5,11 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_enabled_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/feature_status_tracker/base_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace ash {
 namespace quick_pair {
@@ -58,7 +58,7 @@ FastPairEnabledProvider::FastPairEnabledProvider(
 FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
-  QP_LOG(INFO)
+  CD_LOG(INFO, Feature::FP)
       << __func__
       << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
       << " Policy Pref:" << fast_pair_pref_enabled_provider_->is_enabled()

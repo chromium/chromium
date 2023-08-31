@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
@@ -35,6 +34,7 @@
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -194,16 +194,16 @@ bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
 }
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": " << device;
 
   if (IsDeviceCurrentlyShowingNotification(device)) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Extending notification for re-discovered device="
-                    << device_currently_showing_notification_;
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": Extending notification for re-discovered device="
+        << device_currently_showing_notification_;
     ui_broker_->ExtendNotification();
     return;
   } else if (device_currently_showing_notification_) {
-    QP_LOG(VERBOSE)
+    CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": Already showing a notification for a different device="
         << device_currently_showing_notification_;
@@ -217,7 +217,7 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   // this means we expect the Mediator’s `OnDeviceFound` event to be triggered
   // frequently for the same device.
   if (IsDeviceBlockedForDiscoveryNotifications(device)) {
-    QP_LOG(VERBOSE)
+    CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": device is currently blocked for discovery notifications";
     return;
@@ -251,7 +251,7 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 }
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": " << device;
 
   // Don't modify the delegate's list when flag is disabled.
   if (!features::IsFastPairDevicesBluetoothSettingsEnabled() ||
@@ -265,7 +265,7 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
 }
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": " << device;
 
   // SFUL metrics will cause a crash if Fast Pair is disabled when we
   // retroactive pair, so prevent a notification from popping up.
@@ -294,7 +294,7 @@ void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
 }
 
 void Mediator::SetFastPairState(bool is_enabled) {
-  QP_LOG(VERBOSE) << __func__ << ": " << is_enabled;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": " << is_enabled;
 
   if (is_enabled) {
     scanner_broker_->StartScanning(Protocol::kFastPairInitial);
@@ -308,7 +308,8 @@ void Mediator::SetFastPairState(bool is_enabled) {
 }
 
 void Mediator::CancelPairing() {
-  QP_LOG(VERBOSE) << __func__ << ": Clearing handshakes and pairiers.";
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Clearing handshakes and pairiers.";
   // |pairer_broker_| and its children objects depend on the handshake
   // instance. Shut them down before destroying the handshakes.
   pairer_broker_->StopPairing();
@@ -325,7 +326,7 @@ void Mediator::CancelPairing() {
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Device=" << device;
   ui_broker_->RemoveNotifications();
   scanner_broker_->OnDevicePaired(device);
 
@@ -361,8 +362,8 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,
                              PairFailure failure) {
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device
-                  << ",Failure=" << failure;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Device=" << device << ",Failure=" << failure;
   ui_broker_->ShowPairingFailed(device);
 
   // Don't modify the delegate's list when flag is disabled.
@@ -379,12 +380,12 @@ void Mediator::OnPairFailure(scoped_refptr<Device> device,
 void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
                                  absl::optional<AccountKeyFailure> error) {
   if (error.has_value()) {
-    QP_LOG(VERBOSE) << __func__ << ": Device=" << device
-                    << ",Error=" << error.value();
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": Device=" << device << ",Error=" << error.value();
     return;
   }
 
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Device=" << device;
   if (device->protocol() == Protocol::kFastPairRetroactive) {
     ui_broker_->ShowAssociateAccount(std::move(device));
   }
@@ -438,7 +439,8 @@ void Mediator::RemoveFromDiscoveryBlockList(scoped_refptr<Device> device) {
 
 void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
                                  DiscoveryAction action) {
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
     case DiscoveryAction::kPairToDevice: {
@@ -489,7 +491,8 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
 
 void Mediator::OnPairingFailureAction(scoped_refptr<Device> device,
                                       PairingFailedAction action) {
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Device=" << device << ", Action=" << action;
   device_currently_showing_notification_ = nullptr;
 }
 
@@ -497,7 +500,8 @@ void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
                                     CompanionAppAction action) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
     case CompanionAppAction::kDownloadAndLaunchApp:
@@ -517,7 +521,8 @@ void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
 
 void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
                                         AssociateAccountAction action) {
-  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
     case AssociateAccountAction::kAssociateAccount:
@@ -575,7 +580,8 @@ void Mediator::OnAdapterStateChanged() {
   // disable Fast Pair when the adapter is disabling.
   if (adapter_state ==
       bluetooth_config::mojom::BluetoothSystemState::kDisabling) {
-    QP_LOG(VERBOSE) << __func__ << ": Adapter disabling, disabling Fast Pair.";
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": Adapter disabling, disabling Fast Pair.";
     SetFastPairState(false);
     // In addition to stopping scanning, we cancel pairing here to prevent a
     // crash that occurs mid-pair when Bluetooth is disabling.
@@ -592,10 +598,10 @@ void Mediator::OnAdapterStateChanged() {
 void Mediator::OnHasAtLeastOneDiscoverySessionChanged(
     bool has_at_least_one_discovery_session) {
   has_at_least_one_discovery_session_ = has_at_least_one_discovery_session;
-  QP_LOG(VERBOSE) << __func__
-                  << ": Discovery session status changed, we"
-                     " have at least one discovery session: "
-                  << has_at_least_one_discovery_session_;
+  CD_LOG(VERBOSE, Feature::FP) << __func__
+                               << ": Discovery session status changed, we"
+                                  " have at least one discovery session: "
+                               << has_at_least_one_discovery_session_;
 
   // If we have a discovery session via the Settings pairing dialog, stop
   // Fast Pair scanning. Else, start/stop scanning according to the feature

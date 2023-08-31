@@ -35,6 +35,7 @@ static_library("feature_status_tracker") {
     "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//base",
+    "//components/cross_device/logging:logging",
     "//components/prefs",
     "//device/bluetooth",
     "//google_apis",

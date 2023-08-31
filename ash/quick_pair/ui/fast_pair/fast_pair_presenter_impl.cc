@@ -12,7 +12,6 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
@@ -28,6 +27,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -131,8 +131,8 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
   if (!identity_manager ||
       !ShouldShowUserEmail(
           Shell::Get()->session_controller()->login_status())) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": in guest mode, showing guest notification";
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": in guest mode, showing guest notification";
     ShowGuestDiscoveryNotification(device, callback, device_metadata);
     return;
   }
@@ -160,7 +160,7 @@ void FastPairPresenterImpl::OnCheckOptInStatus(
     DiscoveryCallback callback,
     DeviceMetadata* device_metadata,
     nearby::fastpair::OptInStatus status) {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
 
   if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
     ShowGuestDiscoveryNotification(device, callback, device_metadata);
@@ -324,8 +324,9 @@ void FastPairPresenterImpl::OnNavigateToSettings(
     Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
     RecordNavigateToSettingsResult(/*success=*/true);
   } else {
-    QP_LOG(WARNING) << "Cannot open Bluetooth Settings since it's not possible "
-                       "to opening WebUI settings";
+    CD_LOG(WARNING, Feature::FP)
+        << "Cannot open Bluetooth Settings since it's not possible "
+           "to opening WebUI settings";
     RecordNavigateToSettingsResult(/*success=*/false);
   }
 
@@ -370,7 +371,7 @@ void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
     AssociateAccountCallback callback,
     DeviceMetadata* device_metadata,
     bool has_retryable_error) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": " << device;
   if (!device_metadata) {
     return;
   }
@@ -380,9 +381,10 @@ void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
   signin::IdentityManager* identity_manager =
       QuickPairBrowserDelegate::Get()->GetIdentityManager();
   if (!identity_manager) {
-    QP_LOG(ERROR) << __func__
-                  << ": IdentityManager is not available for Associate Account "
-                     "notification.";
+    CD_LOG(ERROR, Feature::FP)
+        << __func__
+        << ": IdentityManager is not available for Associate Account "
+           "notification.";
     return;
   }
 

@@ -7,11 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/unauthenticated_http_fetcher.h"
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
+#include "components/cross_device/logging/logging.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -68,7 +68,7 @@ void DeviceMetadataFetcher::LookupDeviceId(int id,
                                            GetObservedDeviceCallback callback) {
   const char* mode;
   if (features::IsFastPairDebugMetadataEnabled()) {
-    QP_LOG(INFO) << __func__ << ": Fetching DEBUG_MODE metadata.";
+    CD_LOG(INFO, Feature::FP) << __func__ << ": Fetching DEBUG_MODE metadata.";
     mode = kDebugMode;
   } else {
     mode = kReleaseMode;
@@ -92,11 +92,12 @@ void DeviceMetadataFetcher::OnFetchComplete(
     GetObservedDeviceCallback callback,
     std::unique_ptr<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
-  QP_LOG(VERBOSE) << __func__ << ": HTTP result: "
-                  << (http_result ? http_result->ToString() : "[null]");
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": HTTP result: "
+      << (http_result ? http_result->ToString() : "[null]");
 
   if (!http_result) {
-    QP_LOG(WARNING) << __func__ << "Unable to make request.";
+    CD_LOG(WARNING, Feature::FP) << __func__ << "Unable to make request.";
     std::move(callback).Run(absl::nullopt, /*has_retryable_error=*/true);
     return;
   }
@@ -104,7 +105,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
   RecordDeviceMetadataFetchResult(*http_result);
 
   if (!response_body) {
-    QP_LOG(WARNING) << "No response.";
+    CD_LOG(WARNING, Feature::FP) << "No response.";
     // Only suggest retrying when the actual request failed, otherwise there is
     // no matching metadata for the given model_id.
     std::move(callback).Run(absl::nullopt,
@@ -114,7 +115,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
 
   nearby::fastpair::GetObservedDeviceResponse device_metadata;
   if (!device_metadata.ParseFromString(*response_body)) {
-    QP_LOG(WARNING) << "Failed to parse.";
+    CD_LOG(WARNING, Feature::FP) << "Failed to parse.";
     std::move(callback).Run(absl::nullopt, /*has_retryable_error=*/true);
     return;
   }

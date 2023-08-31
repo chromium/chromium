@@ -8,13 +8,13 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
@@ -117,14 +117,16 @@ const device::BluetoothDevice* QuickPairMetricsLogger::GetBluetoothDevice(
   // more stable than the BLE address.
   if (device->classic_address()) {
     bt_device = adapter_->GetDevice(device->classic_address().value());
-    QP_LOG(VERBOSE) << __func__ << ": Structured Classic device found: "
-                    << (bt_device ? "yes" : "no");
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": Structured Classic device found: " << (bt_device ? "yes" : "no");
   }
 
   if (!bt_device) {
     bt_device = adapter_->GetDevice(device->ble_address());
-    QP_LOG(VERBOSE) << __func__ << ": Structured LE device found: "
-                    << (bt_device ? "yes" : "no");
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": Structured LE device found: " << (bt_device ? "yes" : "no");
   }
 
   return bt_device;

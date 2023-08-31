@@ -5,12 +5,12 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
@@ -1590,7 +1590,7 @@ void RecordStructuredDiscoveryNotificationShown(
     return;
   }
 
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;
@@ -1598,8 +1598,8 @@ void RecordStructuredDiscoveryNotificationShown(
   int version = ConvertFastPairVersionToInt(device.version());
   int rssi = GetRSSI(bt_device);
   int tx_power = GetTxPower(bt_device);
-  QP_LOG(VERBOSE) << __func__ << ": RSSI: " << rssi
-                  << ", TxPower: " << tx_power;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": RSSI: " << rssi << ", TxPower: " << tx_power;
   metrics::structured::events::v2::fast_pair::DiscoveryNotificationShown()
       .SetProtocol(static_cast<int>(device.protocol()))
       .SetModelId(model_id)
@@ -1615,7 +1615,7 @@ void RecordStructuredPairingStarted(const Device& device,
     return;
   }
 
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;
@@ -1623,8 +1623,8 @@ void RecordStructuredPairingStarted(const Device& device,
   int version = ConvertFastPairVersionToInt(device.version());
   int rssi = GetRSSI(bt_device);
   int tx_power = GetTxPower(bt_device);
-  QP_LOG(VERBOSE) << __func__ << ": RSSI: " << rssi
-                  << ", TxPower: " << tx_power;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": RSSI: " << rssi << ", TxPower: " << tx_power;
   metrics::structured::events::v2::fast_pair::PairingStart()
       .SetProtocol(static_cast<int>(device.protocol()))
       .SetModelId(model_id)
@@ -1640,7 +1640,7 @@ void RecordStructuredPairingComplete(const Device& device,
     return;
   }
 
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;
@@ -1648,8 +1648,8 @@ void RecordStructuredPairingComplete(const Device& device,
   int version = ConvertFastPairVersionToInt(device.version());
   int rssi = GetRSSI(bt_device);
   int tx_power = GetTxPower(bt_device);
-  QP_LOG(VERBOSE) << __func__ << ": RSSI: " << rssi
-                  << ", TxPower: " << tx_power;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": RSSI: " << rssi << ", TxPower: " << tx_power;
   metrics::structured::events::v2::fast_pair::PairingComplete()
       .SetProtocol(static_cast<int>(device.protocol()))
       .SetModelId(model_id)
@@ -1664,7 +1664,7 @@ void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
     return;
   }
 
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;

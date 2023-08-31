@@ -9,11 +9,11 @@
 #include <cstring>
 #include <iterator>
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "components/cross_device/logging/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -65,9 +65,9 @@ namespace fast_pair_encryption {
 absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
     const std::string& decoded_public_anti_spoofing) {
   if (decoded_public_anti_spoofing.size() != kPublicKeyByteSize) {
-    QP_LOG(WARNING) << "Expected " << kPublicKeyByteSize
-                    << " byte value for anti-spoofing key. Got:"
-                    << decoded_public_anti_spoofing.size();
+    CD_LOG(WARNING, Feature::FP) << "Expected " << kPublicKeyByteSize
+                                 << " byte value for anti-spoofing key. Got:"
+                                 << decoded_public_anti_spoofing.size();
     return absl::nullopt;
   }
 
@@ -78,7 +78,7 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
       EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
 
   if (!EC_KEY_generate_key(ec_key.get())) {
-    QP_LOG(WARNING) << __func__ << ": Failed to generate ec key";
+    CD_LOG(WARNING, Feature::FP) << __func__ << ": Failed to generate ec key";
     return absl::nullopt;
   }
 
@@ -92,9 +92,10 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
       uncompressed_private_key.size(), nullptr);
 
   if (point_bytes_written != uncompressed_private_key.size()) {
-    QP_LOG(WARNING) << __func__
-                    << ": EC_POINT_point2oct failed to convert public key to "
-                       "uncompressed x9.62 format.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": EC_POINT_point2oct failed to convert public key to "
+           "uncompressed x9.62 format.";
     return absl::nullopt;
   }
 
@@ -103,7 +104,7 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
                                           decoded_public_anti_spoofing);
 
   if (!public_anti_spoofing_point) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Failed to convert Public Anti-Spoofing key to EC_POINT";
     return absl::nullopt;
@@ -115,7 +116,7 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
                        public_anti_spoofing_point.get(), ec_key.get(), &KDF);
 
   if (computed_key_size != kPrivateKeyByteSize) {
-    QP_LOG(WARNING) << __func__ << ": ECDH_compute_key failed.";
+    CD_LOG(WARNING, Feature::FP) << __func__ << ": ECDH_compute_key failed.";
     return absl::nullopt;
   }
 

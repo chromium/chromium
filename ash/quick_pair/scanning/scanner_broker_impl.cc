@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner_impl.h"
@@ -19,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace {
@@ -60,7 +60,7 @@ void ScannerBrokerImpl::OnGetAdapter(
   if (start_scanning_on_adapter_callbacks_.empty())
     return;
 
-  QP_LOG(VERBOSE) << __func__ << ": Running saved callbacks.";
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Running saved callbacks.";
 
   for (auto& callback : start_scanning_on_adapter_callbacks_)
     std::move(callback).Run();
@@ -78,11 +78,11 @@ void ScannerBrokerImpl::RemoveObserver(Observer* observer) {
 
 void ScannerBrokerImpl::StartScanning(Protocol protocol) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  QP_LOG(VERBOSE) << __func__ << ": protocol=" << protocol;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": protocol=" << protocol;
 
   if (!adapter_) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": No adapter yet, saving callback for later.";
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": No adapter yet, saving callback for later.";
 
     start_scanning_on_adapter_callbacks_.push_back(
         base::BindOnce(&ScannerBrokerImpl::StartScanning,
@@ -100,7 +100,7 @@ void ScannerBrokerImpl::StartScanning(Protocol protocol) {
 }
 
 void ScannerBrokerImpl::StopScanning(Protocol protocol) {
-  QP_LOG(VERBOSE) << __func__ << ": protocol=" << protocol;
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": protocol=" << protocol;
 
   switch (protocol) {
     case Protocol::kFastPairInitial:
@@ -116,7 +116,7 @@ void ScannerBrokerImpl::StartFastPairScanning() {
   DCHECK(!fast_pair_not_discoverable_scanner_);
   DCHECK(adapter_);
 
-  QP_LOG(VERBOSE) << "Starting Fast Pair Scanning.";
+  CD_LOG(VERBOSE, Feature::FP) << "Starting Fast Pair Scanning.";
 
   fast_pair_scanner_ = base::MakeRefCounted<FastPairScannerImpl>();
 
@@ -132,8 +132,8 @@ void ScannerBrokerImpl::StartFastPairScanning() {
   // scanner, but observe login events in case that we get logged in later on.
   if (!ShouldNotDiscoverableScanningBeEnabled(
           Shell::Get()->session_controller()->login_status())) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": No logged in user to enable not discoverable scanner";
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": No logged in user to enable not discoverable scanner";
 
     // Observe log in events in the case the login was delayed if we aren't
     // observing already.
@@ -159,8 +159,8 @@ void ScannerBrokerImpl::OnLoginStatusChanged(LoginStatus login_status) {
     return;
   }
 
-  QP_LOG(VERBOSE) << __func__
-                  << ": Logged in user, instantiate not discoverable scanner";
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Logged in user, instantiate not discoverable scanner";
 
   fast_pair_not_discoverable_scanner_ =
       FastPairNotDiscoverableScannerImpl::Factory::Create(
@@ -176,11 +176,12 @@ void ScannerBrokerImpl::StopFastPairScanning() {
   fast_pair_not_discoverable_scanner_.reset();
   fast_pair_scanner_.reset();
   shell_observation_.Reset();
-  QP_LOG(VERBOSE) << "Stopping Fast Pair Scanning.";
+  CD_LOG(VERBOSE, Feature::FP) << "Stopping Fast Pair Scanning.";
 }
 
 void ScannerBrokerImpl::NotifyDeviceFound(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id();
+  CD_LOG(INFO, Feature::FP)
+      << __func__ << ": device.metadata_id=" << device->metadata_id();
 
   for (auto& observer : observers_) {
     observer.OnDeviceFound(device);
@@ -188,7 +189,8 @@ void ScannerBrokerImpl::NotifyDeviceFound(scoped_refptr<Device> device) {
 }
 
 void ScannerBrokerImpl::NotifyDeviceLost(scoped_refptr<Device> device) {
-  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id();
+  CD_LOG(INFO, Feature::FP)
+      << __func__ << ": device.metadata_id=" << device->metadata_id();
 
   for (auto& observer : observers_) {
     observer.OnDeviceLost(device);

@@ -5,13 +5,13 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_impl_new.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
@@ -39,8 +39,8 @@ void FastPairHandshakeImplNew::SetUpHandshake(
   on_failure_callback_ = std::move(on_failure_callback);
 
   if (!bluetooth_device) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Lost device before starting GATT connection.";
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": Lost device before starting GATT connection.";
     std::move(on_failure_callback_).Run(PairFailure::kPairingDeviceLost);
     return;
   }
@@ -67,16 +67,16 @@ void FastPairHandshakeImplNew::Reset() {
 void FastPairHandshakeImplNew::OnGattClientInitializedCallback(
     absl::optional<PairFailure> failure) {
   if (failure) {
-    QP_LOG(WARNING) << __func__
-                    << ": Failed to init gatt client with failure = "
-                    << failure.value();
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Failed to init gatt client with failure = " << failure.value();
     std::move(on_failure_callback_).Run(failure.value());
     RecordHandshakeResult(/*success=*/false);
     RecordHandshakeFailureReason(HandshakeFailureReason::kFailedGattInit);
     return;
   }
 
-  QP_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::FP)
       << __func__
       << ": Fast Pair GATT service client initialization successful.";
   RecordHandshakeStep(FastPairHandshakeSteps::kGattInitalized, *device_);
@@ -93,8 +93,8 @@ void FastPairHandshakeImplNew::OnDataEncryptorCreateAsync(
   RecordDataEncryptorCreateResult(/*success=*/success);
 
   if (!fast_pair_data_encryptor) {
-    QP_LOG(WARNING) << __func__
-                    << ": Fast Pair Data Encryptor failed to be created.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Fast Pair Data Encryptor failed to be created.";
     std::move(on_failure_callback_).Run(PairFailure::kDataEncryptorRetrieval);
     RecordHandshakeResult(/*success=*/false);
     RecordHandshakeFailureReason(
@@ -103,7 +103,8 @@ void FastPairHandshakeImplNew::OnDataEncryptorCreateAsync(
   }
 
   fast_pair_data_encryptor_ = std::move(fast_pair_data_encryptor);
-  QP_LOG(INFO) << __func__ << ": beginning key-based pairing protocol";
+  CD_LOG(INFO, Feature::FP)
+      << __func__ << ": beginning key-based pairing protocol";
   RecordTotalDataEncryptorCreateTime(base::TimeTicks::Now() -
                                      encryptor_create_start_time);
 
@@ -125,7 +126,7 @@ void FastPairHandshakeImplNew::OnKeybasedPairingWriteResponse(
   RecordWriteKeyBasedCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Failed during key-based pairing protocol due to failure: "
         << failure.value();
@@ -136,7 +137,7 @@ void FastPairHandshakeImplNew::OnKeybasedPairingWriteResponse(
     return;
   }
 
-  QP_LOG(VERBOSE) << __func__ << ": Successfully wrote response.";
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Successfully wrote response.";
   RecordHandshakeStep(FastPairHandshakeSteps::kKeyBasedPairingResponseReceived,
                       *device_);
 
@@ -151,7 +152,8 @@ void FastPairHandshakeImplNew::OnParseKeybasedPairingDecryptedResponse(
     base::TimeTicks decrypt_start_time,
     const absl::optional<DecryptedResponse>& response) {
   if (!response) {
-    QP_LOG(WARNING) << __func__ << ": Missing decrypted response from parse.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Missing decrypted response from parse.";
     std::move(on_failure_callback_)
         .Run(PairFailure::kKeybasedPairingResponseDecryptFailure);
     RecordKeyBasedCharacteristicDecryptResult(/*success=*/false);
@@ -162,8 +164,8 @@ void FastPairHandshakeImplNew::OnParseKeybasedPairingDecryptedResponse(
   }
 
   if (response->message_type != FastPairMessageType::kKeyBasedPairingResponse) {
-    QP_LOG(WARNING) << __func__
-                    << ": Incorrect message type from decrypted response.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Incorrect message type from decrypted response.";
     std::move(on_failure_callback_)
         .Run(PairFailure::kIncorrectKeyBasedPairingResponseType);
     RecordKeyBasedCharacteristicDecryptResult(/*success=*/false);

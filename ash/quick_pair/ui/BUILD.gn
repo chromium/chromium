@@ -32,6 +32,7 @@ source_set("ui") {
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
+    "//components/cross_device/logging:logging",
     "//third_party/protobuf:protobuf_lite",
     "//ui/base",
     "//ui/gfx",

@@ -17,7 +17,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-#include "ash/quick_pair/common/logging.h"
+#include "components/cross_device/logging/logging.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -131,8 +131,8 @@ class NotificationDelegate : public message_center::NotificationDelegate {
     // dismisses the notification to prevent the timer firing and removing
     // notifications that might come up later.
     if (expire_notification_timer_) {
-      QP_LOG(VERBOSE) << __func__
-                      << ": stopping expiration timer on notification close";
+      CD_LOG(VERBOSE, Feature::FP)
+          << __func__ << ": stopping expiration timer on notification close";
       expire_notification_timer_->Stop();
     }
 
@@ -207,8 +207,8 @@ void FastPairNotificationController::ExtendNotification() {
   // point if the notification is for the same device, which means we reset the
   // timeout.
   if (expire_notification_timer_.IsRunning()) {
-    QP_LOG(INFO) << __func__
-                 << " extending notification for re-discovered device";
+    CD_LOG(INFO, Feature::FP)
+        << __func__ << " extending notification for re-discovered device";
     expire_notification_timer_.Reset();
   }
 }
