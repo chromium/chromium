@@ -35,9 +35,9 @@
 namespace ash {
 namespace {
 
-constexpr int kSeeAllIconSize = 24;
-constexpr int kFooterVerticalSpacing = 7;
 constexpr int kFooterStartSpacing = 6;
+constexpr int kFooterVerticalSpacing = 7;
+constexpr int kSeeAllIconLabelSpacing = 6;
 
 class SeeAllButton : public views::LabelButton {
  public:
@@ -48,10 +48,11 @@ class SeeAllButton : public views::LabelButton {
     SetCallback(std::move(on_see_all_pressed));
     SetID(base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                                 cros_tokens::kCrosSysOnSurface,
-                                                 kSeeAllIconSize));
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                       cros_tokens::kCrosSysOnSurface));
+    SetImageLabelSpacing(kSeeAllIconLabelSpacing);
     SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
