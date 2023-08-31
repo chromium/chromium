@@ -951,6 +951,61 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       CompareAriaInvalidTextRange) {
+  // This test is needed since there was a bug with this scenario, and it
+  // differs from others since the "aria-invalid" attribute causes the tree to
+  // be different, with an extra generic container that we do not have in the
+  // case without aria-invalid="spelling".
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <div contentEditable="true">x <span aria-invalid="spelling">He</span></div>
+      </html>
+  )HTML"));
+
+  BrowserAccessibility* static_text_node_1 =
+      FindNode(ax::mojom::Role::kStaticText, "He");
+  ASSERT_NE(nullptr, static_text_node_1);
+  BrowserAccessibility* static_text_node_2 =
+      FindNode(ax::mojom::Role::kStaticText, "x ");
+  ASSERT_NE(nullptr, static_text_node_2);
+
+  ComPtr<ITextRangeProvider> text_range_provider_1;
+  GetTextRangeProviderFromTextNode(*static_text_node_1, &text_range_provider_1);
+
+  // We are moving the endpoints to replicate a bug where the text ranges looked
+  // like:
+  // 1. H<e>
+  // 2. x <>
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider_1, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 1,
+      /*expected_text*/ L"e",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider_1, TextPatternRangeEndpoint_End, TextUnit_Character,
+      /*count*/ -1,
+      /*expected_text*/ L"",
+      /*expected_count*/ -1);
+  ASSERT_NE(nullptr, text_range_provider_1.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_1, L"");
+
+  ComPtr<ITextRangeProvider> text_range_provider_2;
+  GetTextRangeProviderFromTextNode(*static_text_node_2, &text_range_provider_2);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider_2, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 2,
+      /*expected_text*/ L"",
+      /*expected_count*/ 2);
+  ASSERT_NE(nullptr, text_range_provider_2.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_2, L"");
+
+  BOOL are_same;
+  text_range_provider_1->Compare(text_range_provider_2.Get(), &are_same);
+  EXPECT_FALSE(are_same);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        TextInputWithNewline) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>

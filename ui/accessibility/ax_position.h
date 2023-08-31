@@ -4694,7 +4694,6 @@ class AXPosition {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         return false;
       case AXEmbeddedObjectBehavior::kExposeCharacterForHypertext:
-      case AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent:
         // We expose an "object replacement character" for all nodes except:
         // A) Textual nodes, such as static text, inline text boxes and line
         // breaks, and B) Nodes that are invisible to platform APIs.
@@ -4724,6 +4723,9 @@ class AXPosition {
         // `AXPosition::IsInUnignoredEmptyObject()`.
         return !IsNullPosition() && !GetAnchor()->IsIgnored() &&
                !GetAnchor()->IsText() && !GetAnchor()->IsChildOfLeaf();
+      case AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent:
+        return !IsNullPosition() && !GetAnchor()->IsIgnored() &&
+               GetAnchor()->IsLeaf() && IsInUnignoredEmptyObject();
     }
   }
 
