@@ -1149,6 +1149,7 @@ policies:
   1148: MicrosoftOneDriveMount
   1149: ExtensionOAuthRedirectUrls
   1150: CreatePasskeysInICloudKeychain
+  1151: QuickOfficeForceFileDownloadEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

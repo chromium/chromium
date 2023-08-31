@@ -480,6 +480,7 @@
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
+#include "chrome/browser/chromeos/quickoffice/quickoffice_prefs.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -6557,13 +6558,19 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
   // QuickOffice file interception is deprecated. If QuickOffice would
   // have intercepted this file and this feature is disabled, download
   // it instead.
-  if (base::FeatureList::IsEnabled(features::kQuickOfficeForceFileDownload) &&
-      browser_context) {
-    std::string extension_id =
-        PluginUtils::GetExtensionIdForMimeType(browser_context, mime_type);
+  if (browser_context) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    bool force_download = profile->GetPrefs()->GetBoolean(
+        quickoffice::kQuickOfficeForceFileDownloadEnabled);
 
-    if (extension_misc::IsQuickOfficeExtension(extension_id)) {
-      return true;
+    if (base::FeatureList::IsEnabled(features::kQuickOfficeForceFileDownload) &&
+        force_download) {
+      std::string extension_id =
+          PluginUtils::GetExtensionIdForMimeType(browser_context, mime_type);
+
+      if (extension_misc::IsQuickOfficeExtension(extension_id)) {
+        return true;
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

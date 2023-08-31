@@ -159,6 +159,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_rules_manager_impl.h",
     "policy/dlp/dlp_scoped_file_access_delegate.cc",
     "policy/dlp/dlp_scoped_file_access_delegate.h",
+    "quickoffice/quickoffice_prefs.cc",
+    "quickoffice/quickoffice_prefs.h",
     "reporting/metric_default_utils.cc",
     "reporting/metric_default_utils.h",
     "reporting/metric_reporting_manager_delegate_base.cc",
