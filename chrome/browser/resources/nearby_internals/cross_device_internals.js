@@ -401,7 +401,8 @@ Polymer({
     this.push('logList_', log);
     if ((log.text.match(this.currentFilter) ||
          log.file.match(this.currentFilter)) &&
-        log.severity >= this.currentSeverity) {
+        log.severity >= this.currentSeverity &&
+        this.currentLogTypes.includes(log.feature)) {
       this.push('filteredLogList_', log);
     }
   },
@@ -438,6 +439,11 @@ Polymer({
         'currentLogTypes',
         this.$.logType.currentLogTypes,
     );
+
+    this.set(
+        'filteredLogList_',
+        this.filteredLogList_.filter(
+            (log) => this.currentLogTypes.includes(log.feature)));
 
     this.currentFilter = this.$.logSearch.value;
     this.set(

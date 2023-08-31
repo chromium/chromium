@@ -386,6 +386,7 @@ static_library("ui") {
   # browser, then we can clean up these dependencies.
   public_deps = [
     "//chrome/browser/headless",
+    "//components/cross_device/logging",
     "//components/dom_distiller/core",
     "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",

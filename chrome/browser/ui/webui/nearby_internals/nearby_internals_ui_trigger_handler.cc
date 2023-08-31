@@ -11,12 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -319,7 +319,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -337,7 +337,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -355,7 +355,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -371,7 +371,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -389,7 +389,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -407,7 +407,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface(
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -473,15 +473,15 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
   std::string share_target_id = args[1].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
-    NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
-                  << " for SendText.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Invalid ShareTarget ID " << share_target_id << " for SendText.";
     return;
   }
 
@@ -502,15 +502,15 @@ void NearbyInternalsUiTriggerHandler::Accept(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
   std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
-    NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
-                  << " for Accept.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Invalid ShareTarget ID " << share_target_id << " for Accept.";
     return;
   }
 
@@ -524,15 +524,15 @@ void NearbyInternalsUiTriggerHandler::Open(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
   std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
-    NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
-                  << " for Open.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Invalid ShareTarget ID " << share_target_id << " for Open.";
     return;
   }
 
@@ -545,15 +545,15 @@ void NearbyInternalsUiTriggerHandler::Reject(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
   std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
-    NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
-                  << " for Reject.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Invalid ShareTarget ID " << share_target_id << " for Reject.";
     return;
   }
 
@@ -567,15 +567,15 @@ void NearbyInternalsUiTriggerHandler::Cancel(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
   std::string share_target_id = args[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
-    NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
-                  << " for Cancel.";
+    CD_LOG(ERROR, Feature::NS)
+        << "Invalid ShareTarget ID " << share_target_id << " for Cancel.";
     return;
   }
 
@@ -589,7 +589,7 @@ void NearbyInternalsUiTriggerHandler::GetState(const base::Value::List& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
@@ -607,14 +607,15 @@ void NearbyInternalsUiTriggerHandler::ShowReceivedNotification(
   NearbySharingService* service =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service) {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
     return;
   }
 
   NearbyNotificationManager* manager = service->GetNotificationManager();
 
   if (!manager) {
-    NS_LOG(ERROR) << "No NearbyNotificationManager instance to call.";
+    CD_LOG(ERROR, Feature::NS)
+        << "No NearbyNotificationManager instance to call.";
     return;
   }
 

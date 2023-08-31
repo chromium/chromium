@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 
 namespace {
@@ -140,8 +140,8 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": NearbyPresenceService was retrieved successfully";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter(
         ash::nearby::presence::NearbyPresenceService::IdentityType::kPublic,
         /*actions=*/{});
@@ -163,8 +163,8 @@ void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": NearbyPresenceService was retrieved successfully";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": NearbyPresenceService was retrieved successfully";
     service->UpdateCredentials();
   }
 }
@@ -175,8 +175,8 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": NearbyPresenceService was retrieved successfully";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": NearbyPresenceService was retrieved successfully";
     auto* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
 
     // Reset the state that indicates that first time registration was
@@ -200,8 +200,8 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
   if (status ==
       ash::nearby::presence::NearbyPresenceService::StatusCode::kAbslOk) {
     scan_session_ = std::move(scan_session);
-    NS_LOG(VERBOSE) << __func__
-                    << ": ScanSession remote successfully returned and bound.";
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": ScanSession remote successfully returned and bound.";
   } else {
     // TODO(b/276307539): Pass error status back to WebUI.
     return;
@@ -210,7 +210,7 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
 
 void NearbyInternalsPresenceHandler::
     OnNearbyPresenceCredentialManagerInitialized() {
-  NS_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::NP) << __func__;
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
@@ -242,7 +242,7 @@ void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
 void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
     const base::Value::List& args) {
   // TODO(b/276642472): Add connect functionality.
-  NS_LOG(VERBOSE) << __func__
-                  << ": Connection attempt for device with endpoint id: "
-                  << args[0].GetString();
+  CD_LOG(VERBOSE, Feature::NP)
+      << __func__ << ": Connection attempt for device with endpoint id: "
+      << args[0].GetString();
 }

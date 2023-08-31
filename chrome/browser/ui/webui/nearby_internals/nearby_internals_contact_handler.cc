@@ -10,10 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/logging/proto_to_dictionary_conversion.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -105,7 +105,7 @@ void NearbyInternalsContactHandler::OnJavascriptAllowed() {
   if (service_) {
     observation_.Observe(service_->GetContactManager());
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
@@ -125,7 +125,7 @@ void NearbyInternalsContactHandler::HandleDownloadContacts(
   if (service_) {
     service_->GetContactManager()->DownloadContacts();
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 

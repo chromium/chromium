@@ -68,6 +68,7 @@ source_set("configs") {
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/system_extensions_internals_ui",
       "//chrome/browser/ash",
+      "//components/cross_device/logging",
     ]
 
     if (!is_official_build) {
