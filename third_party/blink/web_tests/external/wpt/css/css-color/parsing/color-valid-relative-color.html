@@ -679,39 +679,19 @@
         fuzzy_test_valid_color(`color(from color(${colorSpace} 7 -20.5 100 / none) ${colorSpace} x y z / alpha)`,               `color(${resultColorSpace} 7 -20.5 100 / 0)`);
     }
 
-    // Spec Examples
-
-    // Example 11.
+    // Spec Examples: https://www.w3.org/TR/css-color-5/#relative-colors
     fuzzy_test_valid_color(`rgb(from var(--bg-color) r g b / 80%)`);
-
-    // Example 12.
     fuzzy_test_valid_color(`lch(from var(--color) calc(l / 2) c h)`);
-
-    // Example 13.
     fuzzy_test_valid_color(`rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))`);
     fuzzy_test_valid_color(`lch(from var(--color) l 0 h)`);
-
-    // Example 14.
     fuzzy_test_valid_color(`rgb(from indianred 255 g b)`, `rgb(255, 92, 92)`);
-
-    // Example 15.
-    fuzzy_test_valid_color(`hsl(from var(--accent) calc(h + 180deg) s l)`);
-
-    // Example 16.
+    fuzzy_test_valid_color(`hsl(from var(--accent) calc(h + 180) s l)`);
     fuzzy_test_valid_color(`lab(from var(--mycolor) l a b / 100%)`);
     fuzzy_test_valid_color(`lab(from var(--mycolor) l a b / calc(alpha * 0.8))`);
-    fuzzy_test_valid_color(`lab(from var(--mycolor) l a b / calc(alpha - 20%))`);
-
-    // Example 17.
     fuzzy_test_valid_color(`lab(from var(--mycolor) l 0 0)`);
-
-    // Example 18. This particular test does a lot of math so a wider epsilon is needed.
+    // This particular test does a lot of math so a wider epsilon is needed.
     fuzzy_test_valid_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80 54 63.68)`, 0.02 /* epsilon */);
-
-    // Example 19.
-    fuzzy_test_valid_color(`LCH(from var(--accent) l c calc(h + 180deg))`);
-
-    // Example 20.
+    fuzzy_test_valid_color(`LCH(from var(--accent) l c calc(h + 180))`);
     fuzzy_test_valid_color(`lch(from var(--mycolor) l 0 h)`);
     fuzzy_test_valid_color(`var(--mygray)`);
     fuzzy_test_valid_color(`lch(from var(--mygray) l 30 h)`);
