@@ -357,9 +357,10 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardContent) {
   VerifyClipboardURLExists(kRecognizedURL2);
 }
 
+// TODO(crbug.com/1462734): This test is flaky.
 // Checks that if the user suppresses content, no image will be returned,
 // and if the image changes, the new image will be returned again.
-TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardImage) {
+TEST_F(ClipboardRecentContentIOSTest, DISABLED_SuppressedPasteboardImage) {
   SetPasteboardImage(TestUIImage());
 
   // Test that recent pasteboard data is provided.
@@ -388,9 +389,11 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardImage) {
   VerifyClipboardTypeExists(ClipboardContentType::Image, true);
 }
 
+// TODO(crbug.com/1462734): This test is flaky.
 // Checks that if user copies something other than a string we don't cache the
 // string in pasteboard.
-TEST_F(ClipboardRecentContentIOSTest, AddingNonStringRemovesCachedString) {
+TEST_F(ClipboardRecentContentIOSTest,
+       DISABLED_AddingNonStringRemovesCachedString) {
   SetPasteboardContent(kRecognizedURL);
 
   // Test that recent pasteboard data is provided as url.
