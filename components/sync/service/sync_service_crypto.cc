@@ -765,6 +765,13 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
 
 void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
     bool is_recoverability_degraded) {
+  // |engine| could have been reset.
+  if (!state_.engine) {
+    DCHECK_EQ(state_.required_user_action,
+              RequiredUserAction::kUnknownDuringInitialization);
+    return;
+  }
+
   // The passphrase type could have changed.
   if (GetPassphraseType() != PassphraseType::kTrustedVaultPassphrase) {
     DCHECK_NE(state_.required_user_action,

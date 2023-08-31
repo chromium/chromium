@@ -63,14 +63,18 @@ FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
 FakeTrustedVaultClient::FakeTrustedVaultClient() = default;
 FakeTrustedVaultClient::~FakeTrustedVaultClient() = default;
 
-bool FakeTrustedVaultClient::CompleteFetchKeysRequest() {
+bool FakeTrustedVaultClient::CompleteAllPendingRequests() {
   if (pending_responses_.empty()) {
     return false;
   }
-
-  base::OnceClosure cb = std::move(pending_responses_.front());
-  pending_responses_.pop_front();
-  std::move(cb).Run();
+  // Response callbacks may add new requests, ensure that only those added
+  // before this call are completed.
+  size_t original_request_count = pending_responses_.size();
+  for (size_t i = 0; i < original_request_count; ++i) {
+    std::move(pending_responses_[i]).Run();
+  }
+  pending_responses_.erase(pending_responses_.begin(),
+                           pending_responses_.begin() + original_request_count);
   return true;
 }
 
@@ -171,7 +175,8 @@ void FakeTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
   ++get_is_recoverablity_degraded_call_count_;
-  std::move(callback).Run(is_recoverability_degraded_);
+  pending_responses_.push_back(
+      base::BindOnce(std::move(callback), is_recoverability_degraded_));
 }
 
 void FakeTrustedVaultClient::AddTrustedRecoveryMethod(

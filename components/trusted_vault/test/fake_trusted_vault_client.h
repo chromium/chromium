@@ -71,8 +71,9 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   std::vector<std::vector<uint8_t>> GetStoredKeys(
       const std::string& gaia_id) const;
 
-  // Mimics the completion of the next (FIFO) FetchKeys() request.
-  bool CompleteFetchKeysRequest();
+  // Mimics the completion of all FetchKeys() and GetIsRecoverabilityDegraded()
+  // requests.
+  bool CompleteAllPendingRequests();
 
   void SetIsRecoverabilityDegraded(bool is_recoverability_degraded);
 
@@ -114,7 +115,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   int keys_marked_as_stale_count_ = 0;
   int get_is_recoverablity_degraded_call_count_ = 0;
   int server_request_count_ = 0;
-  std::list<base::OnceClosure> pending_responses_;
+  std::vector<base::OnceClosure> pending_responses_;
   bool is_recoverability_degraded_ = false;
 };
 
