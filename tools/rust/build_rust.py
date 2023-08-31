@@ -722,6 +722,14 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
 
+        # NOTE(b/276962533): We patch in riscv64-linux-android support
+        # (https://github.com/rust-lang/rust/commit/0081d64e4b8413219ddec5d1).
+        # TODO(crbug.com/1472655): Remove this cherrypicking after the
+        # cherrypicked commit is included in the checkout.
+        RunCommand(
+            ('git', '-C', RUST_SRC_DIR, 'cherry-pick',
+             '0081d64e4b8413219ddec5d1013d522edbf132',))
+
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
             cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
