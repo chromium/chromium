@@ -149,6 +149,7 @@ public class BookmarkImageFetcher {
                     }
                 });
 
+        // This call may invoke the callback immediately if the url is cached.
         mPageImageServiceQueue.getSalientImageUrl(
                 item.getUrl(), mCallbackController.makeCancelable((imageUrl) -> {
                     if (imageUrl == null) {

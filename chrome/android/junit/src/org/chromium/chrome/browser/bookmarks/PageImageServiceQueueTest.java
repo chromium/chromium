@@ -55,7 +55,7 @@ public class PageImageServiceQueueTest {
                 .when(mBookmarkModel)
                 .getImageUrlForBookmark(any(), any());
 
-        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel);
+        mPageImageServiceQueue = new PageImageServiceQueue(mBookmarkModel, /*maxFetchRequests*/ 1);
     }
 
     @Test
@@ -66,21 +66,32 @@ public class PageImageServiceQueueTest {
                          urlCallbacks.add(callback);
                      }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
 
-        // Add requests up to the limit.
-        for (int i = 0; i < PageImageServiceQueue.MAX_FETCH_REQUESTS; i++) {
-            mPageImageServiceQueue.getSalientImageUrl(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), mBookmarkUrlCallback);
-        }
+        // Our limit is 1 for testing.
+        mPageImageServiceQueue.getSalientImageUrl(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), mBookmarkUrlCallback);
 
         // Then add one more.
         mPageImageServiceQueue.getSalientImageUrl(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), mQueuedBookmarkUrlCallback);
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), mQueuedBookmarkUrlCallback);
 
-        verify(mBookmarkModel, times(PageImageServiceQueue.MAX_FETCH_REQUESTS))
-                .getImageUrlForBookmark(any(), any());
+        verify(mBookmarkModel, times(1)).getImageUrlForBookmark(any(), any());
         // Run the 1st callback and verify that the queued one is executed.
         urlCallbacks.get(0).onResult(null); // value here doesn't matter.
-        verify(mBookmarkModel, times(PageImageServiceQueue.MAX_FETCH_REQUESTS + 1))
-                .getImageUrlForBookmark(any(), any());
+        verify(mBookmarkModel, times(2)).getImageUrlForBookmark(any(), any());
+    }
+
+    @Test
+    public void testCachedRequest() {
+        mPageImageServiceQueue.getSalientImageUrl(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), mBookmarkUrlCallback);
+
+        // The result from URL_1 should be in the queue
+        mPageImageServiceQueue.getSalientImageUrl(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), mQueuedBookmarkUrlCallback);
+
+        verify(mBookmarkUrlCallback).onResult(any());
+        verify(mQueuedBookmarkUrlCallback).onResult(any());
+        // The value should have been cached and bookmark model only queried for the 1st request.
+        verify(mBookmarkModel, times(1)).getImageUrlForBookmark(any(), any());
     }
 }

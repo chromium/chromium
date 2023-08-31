@@ -161,13 +161,11 @@ public class BookmarkManagerCoordinator
         Resources res = context.getResources();
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        BookmarkImageFetcher bookmarkImageFetcher = new BookmarkImageFetcher(context,
-                mBookmarkModel,
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()),
-                largeIconBridge, BookmarkUtils.getRoundedIconGenerator(context, displayPref),
-                BookmarkUtils.getImageIconSize(res, displayPref),
-                BookmarkUtils.getFaviconDisplaySize(res, displayPref));
+        BookmarkImageFetcher bookmarkImageFetcher =
+                new BookmarkImageFetcher(context, mBookmarkModel, mImageFetcher, largeIconBridge,
+                        BookmarkUtils.getRoundedIconGenerator(context, displayPref),
+                        BookmarkUtils.getImageIconSize(res, displayPref),
+                        BookmarkUtils.getFaviconDisplaySize(res, displayPref));
 
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -69,8 +70,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         Resources res = getResources();
         Profile profile = Profile.getLastUsedRegularProfile();
         mBookmarkImageFetcher = new BookmarkImageFetcher(this, mBookmarkModel,
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool()),
                 new LargeIconBridge(profile),
                 BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
                 BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
