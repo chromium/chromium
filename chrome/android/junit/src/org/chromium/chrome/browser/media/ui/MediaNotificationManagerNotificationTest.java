@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import android.app.Notification;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -34,10 +33,7 @@ import org.chromium.services.media_session.MediaPosition;
  * NotificationManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        // Remove this after updating to a version of Robolectric that supports
-        // notification channel creation. crbug.com/774315
-        sdk = Build.VERSION_CODES.N_MR1, shadows = MediaNotificationTestShadowResources.class)
+@Config(manifest = Config.NONE, shadows = MediaNotificationTestShadowResources.class)
 public class MediaNotificationManagerNotificationTest extends MediaNotificationTestBase {
     @Test
     public void updateNotificationBuilderDisplaysCorrectMetadata_EmptyArtistAndAlbum() {

@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 
 import android.content.Intent;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +28,7 @@ import java.util.Set;
  * change or the tab navigates.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        // Remove this after updating to a version of Robolectric that supports
-        // notification channel creation. crbug.com/774315
-        sdk = Build.VERSION_CODES.N_MR1, shadows = {MediaNotificationTestShadowResources.class})
+@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationActionsUpdatedTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
     private static final int THROTTLE_MILLIS =
