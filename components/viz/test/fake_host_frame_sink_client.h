@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_TEST_FAKE_HOST_FRAME_SINK_CLIENT_H_
 
 #include "base/time/time.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/host_frame_sink_client.h"
 
@@ -28,7 +29,7 @@ class FakeHostFrameSinkClient : public HostFrameSinkClient {
   uint32_t last_frame_token_seen() const { return last_frame_token_seen_; }
 
  private:
-  uint32_t last_frame_token_seen_ = 0u;
+  uint32_t last_frame_token_seen_ = kInvalidOrLocalFrameToken;
 };
 
 }  // namespace viz

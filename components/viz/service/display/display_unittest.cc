@@ -3432,7 +3432,8 @@ TEST_P(OnBeginFrameAcksDisplayTest, CompositorFrameWithPresentationToken) {
   display_->Resize(display_size);
   const gfx::Size sub_surface_size(32, 32);
 
-  uint32_t frame_token_1 = 0, frame_token_2 = 0;
+  uint32_t frame_token_1 = kInvalidOrLocalFrameToken;
+  uint32_t frame_token_2 = kInvalidOrLocalFrameToken;
   {
     CompositorFrame frame =
         CompositorFrameBuilder()

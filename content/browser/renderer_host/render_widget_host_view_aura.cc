@@ -572,6 +572,14 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   DCHECK(host_->is_hidden());
   DCHECK_NE(visibility_, Visibility::VISIBLE);
 
+  auto* wth = window()->GetHost();
+  if (wth && allocate_local_surface_id_on_next_show_) {
+    wth->window()->AllocateLocalSurfaceId();
+    wth->compositor()->SetLocalSurfaceIdFromParent(
+        wth->window()->GetLocalSurfaceId());
+  }
+  allocate_local_surface_id_on_next_show_ = false;
+
   visibility_ = Visibility::VISIBLE;
 
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
@@ -593,8 +601,9 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   if (root) {
     aura::client::CursorClient* cursor_client =
         aura::client::GetCursorClient(root);
-    if (cursor_client)
+    if (cursor_client) {
       NotifyRendererOfCursorVisibilityState(cursor_client->IsCursorVisible());
+    }
   }
 
   // If the frame for the renderer is already available, then the

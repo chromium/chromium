@@ -679,6 +679,8 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
   manager_.CreateRootCompositorFrameSink(
       root_data.BuildParams(kFrameSinkIdRoot));
 
+  GetRootCompositorFrameSinkImpl()->Resize(gfx::Size(20, 20));
+
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
@@ -698,6 +700,8 @@ TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
   RootCompositorFrameSinkData root_data;
   manager_.CreateRootCompositorFrameSink(
       root_data.BuildParams(kFrameSinkIdRoot));
+
+  GetRootCompositorFrameSinkImpl()->Resize(gfx::Size(20, 20));
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
@@ -721,6 +725,8 @@ TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   RootCompositorFrameSinkData root_data;
   manager_.CreateRootCompositorFrameSink(
       root_data.BuildParams(kFrameSinkIdRoot));
+
+  GetRootCompositorFrameSinkImpl()->Resize(gfx::Size(20, 20));
 
   ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();

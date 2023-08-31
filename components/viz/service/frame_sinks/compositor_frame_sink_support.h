@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -191,6 +192,15 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // doesn't have to exist at the time of calling.
   void EvictSurface(const LocalSurfaceId& id);
 
+  void GarbageCollectSurfaces() { surface_manager_->GarbageCollectSurfaces(); }
+
+  // Submits a compositor frame not from the client but from viz itself. For
+  // example, this is used to submit empty compositor frames to unref
+  // resources on root surface eviction.
+  void SubmitCompositorFrameLocally(const SurfaceId& surface_id,
+                                    CompositorFrame frame,
+                                    const RendererSettings& settings);
+
   // Attempts to submit a new CompositorFrame to |local_surface_id| and returns
   // whether the frame was accepted or the reason why it was rejected. If
   // |local_surface_id| hasn't been submitted before then a new Surface will be
@@ -352,9 +362,17 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // This has a HitTestAggregator if and only if |is_root_| is true.
   std::unique_ptr<HitTestAggregator> hit_test_aggregator_;
 
-  // Counts the number of CompositorFrames that have been submitted and have not
+  struct FrameData {
+    // True if this frame was submitted from viz itself. This happens during
+    // root surface eviction when an empty compositor frame is submitted to
+    // deref existing resources.
+    bool local_frame;
+  };
+
+  // Keeps track of CompositorFrames that have been submitted and have not
   // yet received an ACK from their Surface.
-  int ack_pending_from_surface_count_ = 0;
+  base::circular_deque<FrameData> pending_frames_;
+
   // Counts the number of ACKs that have been received from a Surface and have
   // not yet been sent to the CompositorFrameSinkClient.
   int ack_queued_for_client_count_ = 0;
@@ -362,7 +380,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // When `true` we have received frames from a client using its own
   // BeginFrameSource. While dealing with frames from multiple sources we cannot
-  // rely on `ack_pending_from_surface_count_` to throttle frame production.
+  // rely on checking the number of pending frames in `pending_frames_` to
+  // throttle frame production.
   //
   // TODO(crbug.com/1396081): Track acks, presentation feedback, and resources
   // being returned, on a per BeginFrameSource basis. For

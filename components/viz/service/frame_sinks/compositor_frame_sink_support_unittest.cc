@@ -319,9 +319,8 @@ class OnBeginFrameAcksCompositorFrameSinkSupportTest
 
   bool BeginFrameAcksEnabled() const { return GetParam(); }
 
-  int ack_pending_from_surface_count(
-      const CompositorFrameSinkSupport* support) const {
-    return support->ack_pending_from_surface_count_;
+  int num_pending_frames(const CompositorFrameSinkSupport* support) const {
+    return support->pending_frames_.size();
   }
 
  private:
@@ -593,7 +592,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, ResourceLifetime) {
 
   // This test relied on CompositorFrameSinkSupport::ReturnResources to not send
   // as long as there has been no DidReceiveCompositorFrameAck. Such that
-  // `ack_pending_from_surface_count_` is always greater than 1.
+  // the number of pending frames is always greater than 1.
   //
   // With features::kOnBeginFrameAcks we now return the resources during
   // OnBeginFrame, however that is throttled while we await any ack.
@@ -740,7 +739,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, AddDuringEviction) {
     testing::Mock::VerifyAndClearExpectations(&mock_client);
   }
 
-  EXPECT_EQ(1, ack_pending_from_surface_count(support.get()));
+  EXPECT_EQ(1, num_pending_frames(support.get()));
 }
 
 // Verifies that only monotonically increasing LocalSurfaceIds are accepted.

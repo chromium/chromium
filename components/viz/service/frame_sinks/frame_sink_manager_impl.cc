@@ -343,12 +343,18 @@ void FrameSinkManagerImpl::EvictSurfaces(
     auto it = support_map_.find(surface_id.frame_sink_id());
     if (it == support_map_.end())
       continue;
-    it->second->EvictSurface(surface_id.local_surface_id());
-    if (!it->second->is_root())
-      continue;
-    auto root_it = root_sink_map_.find(surface_id.frame_sink_id());
-    if (root_it != root_sink_map_.end())
-      root_it->second->DidEvictSurface(surface_id);
+
+    bool should_evict = true;
+    if (it->second->is_root()) {
+      auto root_it = root_sink_map_.find(surface_id.frame_sink_id());
+      if (root_it != root_sink_map_.end()) {
+        should_evict = root_it->second->WillEvictSurface(surface_id);
+      }
+    }
+
+    if (should_evict) {
+      it->second->EvictSurface(surface_id.local_surface_id());
+    }
   }
 
   // Trigger garbage collection immediately, otherwise the surface may not be

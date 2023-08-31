@@ -63,7 +63,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 
   ~RootCompositorFrameSinkImpl() override;
 
-  void DidEvictSurface(const SurfaceId& surface_id);
+  // Returns true iff it is okay to evict the root surface immediately.
+  bool WillEvictSurface(const SurfaceId& surface_id);
 
   const SurfaceId& CurrentSurfaceId() const;
 
@@ -202,6 +203,11 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   base::TimeDelta display_frame_interval_ = BeginFrameArgs::DefaultInterval();
   base::TimeDelta preferred_frame_interval_ =
       FrameRateDecider::UnspecifiedFrameInterval();
+
+  // If we evict the root surface, we want to push an empty compositor frame to
+  // it first to unref its resources. This requires a draw and swap to complete
+  // to actually unref.
+  LocalSurfaceId to_evict_on_next_draw_and_swap_ = LocalSurfaceId();
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

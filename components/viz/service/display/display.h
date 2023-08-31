@@ -187,6 +187,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       mojom::CompositorFrameSinkType* type) override;
 
   bool has_scheduler() const { return !!scheduler_; }
+  bool visible() const { return visible_; }
+  const RendererSettings& settings() const { return settings_; }
   DirectRenderer* renderer_for_testing() const { return renderer_.get(); }
 
   bool resize_based_on_root_surface() const {

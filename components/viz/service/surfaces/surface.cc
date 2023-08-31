@@ -75,7 +75,7 @@ void Surface::PresentationHelper::DidPresent(
     base::TimeTicks draw_start_timestamp,
     const gfx::SwapTimings& swap_timings,
     const gfx::PresentationFeedback& feedback) {
-  if (surface_client_ && frame_token_) {
+  if (surface_client_ && frame_token_ != kInvalidOrLocalFrameToken) {
     surface_client_->OnSurfacePresented(frame_token_, draw_start_timestamp,
                                         swap_timings, feedback);
   }

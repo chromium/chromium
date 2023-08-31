@@ -35,6 +35,11 @@
 
 namespace viz {
 
+// A frame token value of 0 indicates an invalid or local frame token. A
+// local frame token is used inside viz when it creates its own CompositorFrame
+// for a surface.
+inline constexpr uint32_t kInvalidOrLocalFrameToken = 0;
+
 // Compares two frame tokens, handling cases where the token wraps around the
 // 32-bit max value.
 inline bool FrameTokenGT(uint32_t token1, uint32_t token2) {
@@ -46,15 +51,16 @@ inline bool FrameTokenGT(uint32_t token1, uint32_t token2) {
 class VIZ_COMMON_EXPORT FrameTokenGenerator {
  public:
   inline uint32_t operator++() {
-    if (++frame_token_ == 0)
+    if (++frame_token_ == kInvalidOrLocalFrameToken) {
       ++frame_token_;
+    }
     return frame_token_;
   }
 
   inline uint32_t operator*() const { return frame_token_; }
 
  private:
-  uint32_t frame_token_ = 0;
+  uint32_t frame_token_ = kInvalidOrLocalFrameToken;
 };
 
 class VIZ_COMMON_EXPORT CompositorFrameMetadata {
@@ -137,7 +143,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // after the 32-bit max value.
   // TODO(crbug.com/850386): A custom type would be better to avoid incorrect
   // comparisons.
-  uint32_t frame_token = 0;
+  uint32_t frame_token = kInvalidOrLocalFrameToken;
 
   // Once the display compositor processes a frame with
   // |send_frame_token_to_embedder| flag turned on, the |frame_token| for the
