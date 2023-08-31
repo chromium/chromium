@@ -72,6 +72,7 @@ _CONFIG = [
             'base::DefaultTickClock',
             'base::ElapsedTimer',
             'base::EnumSet',
+            'base::HashInts',
             'base::JobDelegate',
             'base::JobHandle',
             'base::PostJob',

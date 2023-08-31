@@ -198,6 +198,8 @@ blink_core_sources_paint = [
   "timing/image_paint_timing_detector.h",
   "timing/largest_contentful_paint_calculator.cc",
   "timing/largest_contentful_paint_calculator.h",
+  "timing/media_record_id.cc",
+  "timing/media_record_id.h",
   "timing/paint_timing.cc",
   "timing/paint_timing_detector.cc",
   "timing/paint_timing_detector.h",

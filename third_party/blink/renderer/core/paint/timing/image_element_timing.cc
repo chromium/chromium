@@ -68,7 +68,7 @@ void ImageElementTiming::NotifyImageFinished(
     return;
 
   const auto& insertion_result = images_notified_.insert(
-      std::make_pair(&layout_object, cached_image), ImageInfo());
+      MediaRecordId::GenerateHash(&layout_object, cached_image), ImageInfo());
   if (insertion_result.is_new_entry)
     insertion_result.stored_value->value.load_time_ = base::TimeTicks::Now();
 }
@@ -97,8 +97,8 @@ void ImageElementTiming::NotifyImagePainted(
   if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
     return;
 
-  auto it =
-      images_notified_.find(std::make_pair(&layout_object, &cached_image));
+  auto it = images_notified_.find(
+      MediaRecordId::GenerateHash(&layout_object, &cached_image));
   // It is possible that the pair is not in |images_notified_|. See
   // https://crbug.com/1027948
   if (it != images_notified_.end() && !it->value.is_painted_) {
@@ -218,7 +218,8 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
 
   ImageInfo& info =
       images_notified_
-          .insert(std::make_pair(layout_object, cached_image), ImageInfo())
+          .insert(MediaRecordId::GenerateHash(layout_object, cached_image),
+                  ImageInfo())
           .stored_value->value;
   if (!info.is_painted_) {
     info.is_painted_ = true;
@@ -246,7 +247,7 @@ void ImageElementTiming::ReportImagePaintPresentationTime(
 
 void ImageElementTiming::NotifyImageRemoved(const LayoutObject* layout_object,
                                             const ImageResourceContent* image) {
-  images_notified_.erase(std::make_pair(layout_object, image));
+  images_notified_.erase(MediaRecordId::GenerateHash(layout_object, image));
 }
 
 void ImageElementTiming::Trace(Visitor* visitor) const {
