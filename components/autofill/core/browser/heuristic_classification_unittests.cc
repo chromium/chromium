@@ -113,6 +113,7 @@
 //    }
 //  }
 
+#include <sstream>
 #include <string_view>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -426,6 +427,42 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   return AssertionSuccess();
 }
 
+// Creates a textual description of the statistics. This is good for a quick
+// view in the delta for an EXPECT_EQ().
+[[nodiscard]] std::string SummarizeStatistics(
+    const base::Value::Dict& json_file) {
+  std::ostringstream result;
+
+  const base::Value::Dict* stats = json_file.FindDict("stats");
+  if (!stats) {
+    return std::string();
+  }
+
+  auto summarize_sub_section = [](const std::string& caption,
+                                  const base::Value::Dict& dict) {
+    std::ostringstream result;
+    result << caption << ": Fraction maches " << std::fixed
+           << std::setprecision(2)
+           << (*dict.FindDouble("fraction_machtes") * 100.0) << "%, "
+           << "Matches: " << *dict.FindInt("matches") << ", "
+           << "Mismatches: " << *dict.FindInt("mismatches") << std::endl;
+    return result.str();
+  };
+
+  if (const auto* high_level_stats = stats->FindDict("high_level_stats");
+      high_level_stats) {
+    result << summarize_sub_section("Summary", *high_level_stats);
+  }
+  if (const auto* per_type_stats = stats->FindDict("per_type_stats");
+      per_type_stats) {
+    for (const auto it : *per_type_stats) {
+      result << summarize_sub_section(it.first, it.second.GetDict());
+    }
+  }
+
+  return result.str();
+}
+
 class HeuristicClassificationTests
     : public testing::Test,
       public testing::WithParamInterface<base::FilePath> {
@@ -477,6 +514,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::Value::Dict* json_file = opt_json_file->GetIfDict();
   ASSERT_TRUE(json_file);
 
+  std::string old_stats = SummarizeStatistics(*json_file);
+
   base::Value::Dict* config = json_file->FindDict("config");
   ASSERT_TRUE(config);
 
@@ -515,6 +554,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   // Update statistics
   json_file->Set("stats", result_analyzer.GetResult());
 
+  std::string new_stats = SummarizeStatistics(*json_file);
+
   // Serialize the result.
   absl::optional<std::string> output_json_text =
       base::WriteJsonWithOptions(*opt_json_file, base::OPTIONS_PRETTY_PRINT);
@@ -530,6 +571,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
     LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
     EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
   }
+
+  EXPECT_EQ(old_stats, new_stats);
 
   // Too large inputs crash the test.
   if (input_json_text.size() < 20000) {
