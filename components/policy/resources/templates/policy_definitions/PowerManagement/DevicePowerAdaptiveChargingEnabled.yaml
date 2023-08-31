@@ -11,6 +11,7 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+  can_be_recommended: true
 items:
 - caption: Enable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google
     ChromeOS</ex></ph>
