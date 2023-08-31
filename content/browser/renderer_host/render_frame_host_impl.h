@@ -2860,9 +2860,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Call |HandleAXEvents()| for tests.
   void HandleAXEventsForTests(
       const ui::AXTreeID& tree_id,
-      blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-      int32_t reset_token) {
-    HandleAXEvents(tree_id, std::move(updates_and_events), reset_token);
+      blink::mojom::AXUpdatesAndEventsPtr updates_and_events) {
+    HandleAXEvents(tree_id, std::move(updates_and_events),
+                   *accessibility_reset_token_);
   }
 
   // BucketContext:
@@ -3319,10 +3319,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   friend class RenderAccessibilityHost;
   void HandleAXEvents(const ui::AXTreeID& tree_id,
                       blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
-                      int32_t reset_token);
+                      uint32_t reset_token);
   void HandleAXLocationChanges(
       const ui::AXTreeID& tree_id,
-      std::vector<blink::mojom::LocationChangesPtr> changes);
+      std::vector<blink::mojom::LocationChangesPtr> changes,
+      uint32_t reset_token);
 
   // mojom::DomAutomationControllerHost:
   void DomOperationResponse(const std::string& json_string) override;
@@ -4394,10 +4395,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The object managing the accessibility tree for this frame.
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
 
-  // This is nonzero if we sent an accessibility reset to the renderer and
-  // we're waiting for an IPC containing this reset token (sequentially
-  // assigned) and a complete replacement accessibility tree.
-  int accessibility_reset_token_ = 0;
+  // This is the value of the reset token expected for accessibility messages.
+  // Any message with a different reset token will be dropped.
+  // absl::nullopt means that accessibility has never been turned on for
+  // this renderer (delegate_->GetAccessibilityMode().is_mode_off()).
+  absl::optional<uint32_t> accessibility_reset_token_;
 
   // A count of the number of times we received an unexpected fatal
   // accessibility error and needed to reset accessibility, so we don't keep

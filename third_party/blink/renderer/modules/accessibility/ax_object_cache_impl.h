@@ -496,7 +496,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // since the last query. Sends the resulting vector over mojo to the browser
   // process. Clears the vector so that the next time it's
   // called, it will only retrieve objects that have changed since now.
-  void SerializeLocationChanges() override;
+  void SerializeLocationChanges(uint32_t reset_token) override;
 
   // Searches the accessibility tree for plugin's root object and returns it.
   // Returns an empty WebAXObject if no root object is present.

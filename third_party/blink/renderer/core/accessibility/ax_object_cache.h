@@ -222,7 +222,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Returns true if there are any pending updates that need processing.
   virtual bool IsDirty() = 0;
 
-  virtual void SerializeLocationChanges() = 0;
+  virtual void SerializeLocationChanges(uint32_t reset_token) = 0;
 
   virtual AXObject* GetPluginRoot() = 0;
 

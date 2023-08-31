@@ -1245,8 +1245,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+// TODO(crbug.com/1476956) Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
-                       ClickAXNodeGeneratedFromCSSContent) {
+                       DISABLED_ClickAXNodeGeneratedFromCSSContent) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
         <style>
         a::before{

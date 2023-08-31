@@ -4443,7 +4443,7 @@ AXObject* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
   return active_aria_modal_dialog_;
 }
 
-void AXObjectCacheImpl::SerializeLocationChanges() {
+void AXObjectCacheImpl::SerializeLocationChanges(uint32_t reset_token) {
   if (changed_bounds_ids_.empty())
     return;
   Vector<mojom::blink::LocationChangesPtr> changes;
@@ -4470,7 +4470,7 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
   changed_bounds_ids_.clear();
   if (!changes.empty()) {
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
-        std::move(changes));
+        std::move(changes), reset_token);
   }
 }
 

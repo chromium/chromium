@@ -113,7 +113,11 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                int request_id,
                blink::mojom::RenderAccessibility::HitTestCallback callback);
   void PerformAction(const ui::AXActionData& data);
-  void Reset(int32_t reset_token);
+  void Reset(uint32_t reset_token);
+
+  // Called when accessibility mode changes so that any obsolete accessibility
+  // bundles for the old mode can be ignored.
+  void set_reset_token(uint32_t reset_token);
 
   // Called when an accessibility notification occurs in Blink.
   void HandleAXEvent(const ui::AXEvent& event);
@@ -282,9 +286,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   PluginAXTreeSource* plugin_tree_source_;
 
-  // Nonzero if the browser requested we reset the accessibility state.
-  // We need to return this token in the next IPC.
-  int reset_token_;
+  // Token to return this token in the next IPC, so that RenderFrameHostImpl
+  // can discard stale data, when the token does not match the expected token.
+  absl::optional<uint32_t> reset_token_;
 
   // Whether or not we've injected a stylesheet in this document
   // (only when debugging flags are enabled, never under normal circumstances).
