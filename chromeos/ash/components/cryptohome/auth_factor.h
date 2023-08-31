@@ -130,6 +130,11 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) SmartCardMetadata {
   std::string public_key_spki_der;
 };
 
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    CryptohomeRecoveryMetadata {
+  std::string mediator_pub_key;
+};
+
 // AuthFactor definition.
 // If it is obtainted from `cryptohome` it will contain factor-specific status,
 // otherwise it would only contain identity and metadata.
@@ -139,6 +144,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
   AuthFactor(AuthFactorRef ref,
              AuthFactorCommonMetadata metadata,
              SmartCardMetadata smartcard_metadata);
+  AuthFactor(AuthFactorRef ref,
+             AuthFactorCommonMetadata metadata,
+             CryptohomeRecoveryMetadata recovery_metadata);
   AuthFactor(AuthFactorRef ref,
              AuthFactorCommonMetadata metadata,
              PinStatus status);
@@ -159,12 +167,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
   // Fails if type does not match:
   const PinStatus& GetPinStatus() const;
   const SmartCardMetadata& GetSmartCardMetadata() const;
+  const CryptohomeRecoveryMetadata& GetCryptohomeRecoveryMetadata() const;
 
  private:
   AuthFactorRef ref_;
   AuthFactorCommonMetadata common_metadata_;
   absl::variant<absl::monostate, PinStatus> factor_status_;
-  absl::variant<absl::monostate, SmartCardMetadata> factor_metadata_;
+  absl::variant<absl::monostate, SmartCardMetadata, CryptohomeRecoveryMetadata>
+      factor_metadata_;
 };
 
 }  // namespace cryptohome

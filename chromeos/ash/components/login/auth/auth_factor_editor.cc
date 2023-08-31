@@ -343,8 +343,11 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 
   cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kRecovery,
                                 KeyLabel{kCryptohomeRecoveryKeyLabel}};
+  cryptohome::CryptohomeRecoveryMetadata recovery_metadata{
+      GetRecoveryHsmPublicKey()};
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(recovery_metadata));
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
@@ -377,8 +380,11 @@ void AuthFactorEditor::RotateRecoveryFactor(
 
   cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kRecovery,
                                 KeyLabel{kCryptohomeRecoveryKeyLabel}};
+  cryptohome::CryptohomeRecoveryMetadata recovery_metadata{
+      GetRecoveryHsmPublicKey()};
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(recovery_metadata));
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{

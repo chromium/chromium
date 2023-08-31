@@ -139,7 +139,8 @@ void SerializeAuthFactor(const AuthFactor& factor,
       out_proto->mutable_pin_metadata();
       break;
     case AuthFactorType::kRecovery:
-      out_proto->mutable_cryptohome_recovery_metadata();
+      out_proto->mutable_cryptohome_recovery_metadata()->set_mediator_pub_key(
+          factor.GetCryptohomeRecoveryMetadata().mediator_pub_key);
       break;
     case AuthFactorType::kKiosk:
       out_proto->mutable_kiosk_metadata();
@@ -258,8 +259,16 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
   switch (type) {
     case AuthFactorType::kPassword:
       return AuthFactor(std::move(ref), std::move(common_metadata));
-    case AuthFactorType::kRecovery:
-      return AuthFactor(std::move(ref), std::move(common_metadata));
+    case AuthFactorType::kRecovery: {
+      if (!proto.has_cryptohome_recovery_metadata()) {
+        return AuthFactor(std::move(ref), std::move(common_metadata));
+      }
+      CryptohomeRecoveryMetadata recovery_metadata;
+      recovery_metadata.mediator_pub_key =
+          proto.cryptohome_recovery_metadata().mediator_pub_key();
+      return AuthFactor(std::move(ref), std::move(common_metadata),
+                        std::move(recovery_metadata));
+    }
     case AuthFactorType::kKiosk:
       return AuthFactor(std::move(ref), std::move(common_metadata));
     case AuthFactorType::kPin: {

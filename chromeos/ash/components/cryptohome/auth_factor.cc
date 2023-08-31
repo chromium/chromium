@@ -82,6 +82,15 @@ AuthFactor::AuthFactor(AuthFactorRef ref,
   CHECK_EQ(ref_.type(), AuthFactorType::kSmartCard);
 }
 
+AuthFactor::AuthFactor(AuthFactorRef ref,
+                       AuthFactorCommonMetadata metadata,
+                       CryptohomeRecoveryMetadata factor_metadata)
+    : ref_(std::move(ref)),
+      common_metadata_(std::move(metadata)),
+      factor_metadata_(std::move(factor_metadata)) {
+  CHECK_EQ(ref_.type(), AuthFactorType::kRecovery);
+}
+
 AuthFactor::AuthFactor(AuthFactor&&) noexcept = default;
 AuthFactor& AuthFactor::operator=(AuthFactor&&) noexcept = default;
 AuthFactor::AuthFactor(const AuthFactor&) = default;
@@ -107,6 +116,11 @@ const PinStatus& AuthFactor::GetPinStatus() const {
 
 const SmartCardMetadata& AuthFactor::GetSmartCardMetadata() const {
   return absl::get<SmartCardMetadata>(factor_metadata_);
+}
+
+const CryptohomeRecoveryMetadata& AuthFactor::GetCryptohomeRecoveryMetadata()
+    const {
+  return absl::get<CryptohomeRecoveryMetadata>(factor_metadata_);
 }
 
 }  // namespace cryptohome
