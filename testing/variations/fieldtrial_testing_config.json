@@ -11920,9 +11920,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230621",
+                    "name": "Enabled_20230831",
                     "params": {
-                        "discard_tab_treatment_opacity": "0.5",
+                        "discard_tab_treatment_opacity": "0.8",
                         "discard_tab_treatment_option": "2",
                         "expanded_high_efficiency_chip_discarded_duration": "6h",
                         "expanded_high_efficiency_chip_frequency": "1d",
