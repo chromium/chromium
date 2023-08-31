@@ -80,6 +80,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _original_environ: Optional[collections.abc.Mapping] = None
   _use_webgpu_power_preference: Optional[str] = None
   _use_webgpu_compat_mode = False
+  _use_dxc = False
   _os_name: Optional[str] = None
 
   _build_dir: Optional[str] = None
@@ -232,6 +233,12 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         action='store_true',
         default=False,
         help=('Passes compatibility=true to the tests via URL parameters'))
+    parser.add_option(
+        '--use-dxc',
+        action='store_true',
+        default=False,
+        help=(
+            'On Windows, pass --enable-dawn-features=use_dxc to the browser.'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -250,13 +257,24 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     See the parent class' method documentation for additional information.
     """
     browser_args = super().GenerateBrowserArgs(additional_args)
-    browser_args.extend([
-        '--enable-dawn-features=allow_unsafe_apis',
-    ])
+
+    enable_dawn_features = ['allow_unsafe_apis']
+    disable_dawn_features = []
+
     if sys.platform == 'win32':
-      browser_args.extend([
-          '--disable-dawn-features=use_dxc',
-      ])
+      if cls._use_dxc:
+        enable_dawn_features.append('use_dxc')
+      else:
+        disable_dawn_features.append('use_dxc')
+
+    if enable_dawn_features:
+      browser_args.append('--enable-dawn-features=%s' %
+                          ','.join(enable_dawn_features))
+
+    if disable_dawn_features:
+      browser_args.append('--disable-dawn-features=%s' %
+                          ','.join(disable_dawn_features))
+
     browser_args.extend(cba.ENABLE_WEBGPU_FOR_TESTING)
     if cls._use_webgpu_adapter:
       browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
@@ -301,6 +319,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
     cls._use_webgpu_compat_mode = options.use_webgpu_compat_mode
+    cls._use_dxc = options.use_dxc
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -589,6 +608,15 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-compat')
     else:
       tags.append('webgpu-not-compat')
+
+    if sys.platform == 'win32':
+      if cls._use_dxc:
+        tags.append('webgpu-dxc-enabled')
+      else:
+        tags.append('webgpu-dxc-disabled')
+    else:
+      tags.append('webgpu-dxc-default')
+
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID
 

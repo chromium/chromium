@@ -214,6 +214,8 @@ TAG_HEADER = """\
 # tags: [ webgpu-adapter-default webgpu-adapter-swiftshader ]
 # WebGPU Compat Mode
 # tags: [ webgpu-compat webgpu-not-compat ]
+# WebGPU DXC
+# tags: [ webgpu-dxc-enabled webgpu-dxc-disabled webgpu-dxc-default ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
