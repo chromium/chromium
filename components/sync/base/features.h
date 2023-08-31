@@ -199,6 +199,12 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "SyncResponseDelayForBatchUploadLocalDataWithDummyDataForTesting",
         base::Seconds(1)};
 
+#if BUILDFLAG(IS_ANDROID)
+// Feature flag for enabling the restoration of synced placeholder tabs missing
+// on the local session, which typically happens only on Android only.
+BASE_DECLARE_FEATURE(kRestoreSyncedPlaceholderTabs);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

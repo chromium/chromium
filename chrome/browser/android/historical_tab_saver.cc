@@ -182,9 +182,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
   }
   if (web_contents_state->state_version != -1) {
     auto native_contents = WebContentsState::RestoreContentsFromByteBuffer(
-        web_contents_state->byte_buffer_data,
-        web_contents_state->byte_buffer_size, web_contents_state->state_version,
-        /*initially_hidden=*/true, /*no_renderer=*/true);
+        web_contents_state, /*initially_hidden=*/true, /*no_renderer=*/true);
     if (native_contents) {
       return std::make_unique<ScopedWebContents>(std::move(native_contents));
     }
@@ -203,15 +201,6 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
       content::WebContents::Create(params));
 }
 
-WebContentsStateByteBuffer::WebContentsStateByteBuffer() = default;
-WebContentsStateByteBuffer::WebContentsStateByteBuffer(void* data,
-                                                       int size,
-                                                       int saved_state_version)
-    : byte_buffer_data(data),
-      byte_buffer_size(size),
-      state_version(saved_state_version) {}
-WebContentsStateByteBuffer::~WebContentsStateByteBuffer() = default;
-
 // static
 static std::vector<WebContentsStateByteBuffer>
 AllTabsWebContentsStateByteBuffer(
@@ -222,15 +211,13 @@ AllTabsWebContentsStateByteBuffer(
   base::android::JavaIntArrayToIntVector(env, jsaved_state_versions,
                                          &saved_state_versions);
   int jbyte_buffers_count = env->GetArrayLength(jbyte_buffers);
-  std::vector<WebContentsStateByteBuffer> web_contents_states(
-      jbyte_buffers_count);
+  std::vector<WebContentsStateByteBuffer> web_contents_states;
+  web_contents_states.reserve(jbyte_buffers_count);
 
   for (int i = 0; i < jbyte_buffers_count; ++i) {
-    web_contents_states[i] = WebContentsStateByteBuffer(
-        env->GetDirectBufferAddress(
-            env->GetObjectArrayElement(jbyte_buffers, i)),
-        env->GetDirectBufferCapacity(
-            env->GetObjectArrayElement(jbyte_buffers, i)),
+    web_contents_states.emplace_back(
+        ScopedJavaLocalRef<jobject>(
+            env, env->GetObjectArrayElement(jbyte_buffers, i)),
         saved_state_versions[i]);
   }
   return web_contents_states;
@@ -244,11 +231,8 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
     const JavaParamRef<jobject>& jtab_android,
     const JavaParamRef<jobject>& state,
     jint saved_state_version) {
-  void* data = env->GetDirectBufferAddress(state);
-  int size = env->GetDirectBufferCapacity(state);
-
-  WebContentsStateByteBuffer web_contents_state =
-      WebContentsStateByteBuffer(data, size, (int)saved_state_version);
+  WebContentsStateByteBuffer web_contents_state = WebContentsStateByteBuffer(
+      ScopedJavaLocalRef<jobject>(state), (int)saved_state_version);
   CreateHistoricalTab(TabAndroid::GetNativeTab(env, jtab_android),
                       std::move(web_contents_state));
 }

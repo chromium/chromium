@@ -1151,6 +1151,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.PlaceholderTabResyncResult"
+    enum="SyncPlaceholderTabResyncResult" expires_after="2024-01-01">
+  <owner>bjfong@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the result of whether the placeholder tab had its local session
+    found, had its data resynced successfully, or remained unsynced. Recorded
+    once for each placeholder tab during session restore.
+  </summary>
+</histogram>
+
 <histogram name="Sync.PostedClientToServerMessage"
     enum="SyncClientToServerMessageContents" expires_after="2024-01-07">
   <owner>mastiz@chromium.org</owner>

@@ -17,6 +17,39 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// A struct to store the WebContentsState passed down from the JNI to be
+// potentially used in restoring a frozen tab, as a byte buffer.
+struct WebContentsStateByteBuffer {
+  // `web_contents_byte_buffer_result` ScopedJavaLocalRef that holds the jobject
+  // for a web contents state byte buffer.
+  // `saved_state_version` Saved state version of the WebContentsState.
+  WebContentsStateByteBuffer(base::android::ScopedJavaLocalRef<jobject>
+                                 web_contents_byte_buffer_result,
+                             int saved_state_version);
+
+  WebContentsStateByteBuffer(const WebContentsStateByteBuffer&) = delete;
+  WebContentsStateByteBuffer& operator=(const WebContentsStateByteBuffer&) =
+      delete;
+
+  WebContentsStateByteBuffer& operator=(
+      WebContentsStateByteBuffer&& other) noexcept;
+  WebContentsStateByteBuffer(WebContentsStateByteBuffer&& other) noexcept;
+
+  ~WebContentsStateByteBuffer();
+
+  // This struct and its parameters are only meant for use in storing web
+  // contents parsed from the JNI createHistoricalTab and syncedTabDelegate
+  // family of function calls, and transferring the data to the
+  // RestoreContentsFromByteBuffer function as needed. Outside of this scope,
+  // this struct is not meant to be used for any other purposes. Please do not
+  // attempt to use this struct anywhere else except for in the provided
+  // callstack/use case.
+  raw_ptr<void> byte_buffer_data;
+  int byte_buffer_size;
+  int state_version;
+  base::android::ScopedJavaGlobalRef<jobject> byte_buffer_result;
+};
+
 // Stores state for a WebContents, including its navigation history.
 class WebContentsState {
  public:
@@ -59,9 +92,7 @@ class WebContentsState {
 
   // Restores a WebContents from the passed in state using native parameters.
   static std::unique_ptr<content::WebContents> RestoreContentsFromByteBuffer(
-      void* data,
-      int size,
-      int saved_state_version,
+      const WebContentsStateByteBuffer* byte_buffer,
       bool initially_hidden,
       bool no_renderer);
 
@@ -75,6 +106,14 @@ class WebContentsState {
       jint referrer_policy,
       const base::android::JavaParamRef<jobject>& initiator_origin,
       jboolean is_off_the_record);
+
+ private:
+  static std::unique_ptr<content::WebContents>
+  RestoreContentsFromByteBufferImpl(void* data,
+                                    int size,
+                                    int saved_state_version,
+                                    bool initially_hidden,
+                                    bool no_renderer);
 };
 
 #endif  // CHROME_BROWSER_TAB_WEB_CONTENTS_STATE_H_

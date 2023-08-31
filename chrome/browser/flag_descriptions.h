@@ -1071,6 +1071,9 @@ extern const char kCrasSplitAlsaUsbInternalDescription[];
 extern const char kRestoreTabsOnFREName[];
 extern const char kRestoreTabsOnFREDescription[];
 
+extern const char kRestoreSyncedPlaceholderTabsName[];
+extern const char kRestoreSyncedPlaceholderTabsDescription[];
+
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 

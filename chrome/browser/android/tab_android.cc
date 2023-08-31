@@ -156,6 +156,23 @@ scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
   return content_layer_;
 }
 
+std::unique_ptr<WebContentsStateByteBuffer>
+TabAndroid::GetWebContentsByteBuffer() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> state =
+      Java_TabImpl_getWebContentsStateByteBuffer(env, weak_java_tab_.get(env));
+  int version = Java_TabImpl_getWebContentsStateSavedStateVersion(
+      env, weak_java_tab_.get(env));
+
+  // If the web contents is null (denoted by saved_state_version being -1),
+  // return a nullptr.
+  if (version == -1) {
+    return nullptr;
+  }
+
+  return std::make_unique<WebContentsStateByteBuffer>(state, version);
+}
+
 int TabAndroid::GetAndroidId() const {
   return tab_id_;
 }

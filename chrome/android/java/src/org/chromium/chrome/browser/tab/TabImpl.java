@@ -76,6 +76,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.nio.ByteBuffer;
+
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
  * This class is not intended to be extended.
@@ -1393,6 +1395,27 @@ public class TabImpl implements Tab {
             tabsPtrArray[i] = ((TabImpl) tabsArray[i]).getNativePtr();
         }
         return tabsPtrArray;
+    }
+
+    @CalledByNative
+    private ByteBuffer getWebContentsStateByteBuffer() {
+        WebContentsState webContentsState =
+                CriticalPersistedTabData.from(this).getWebContentsState();
+
+        // Return a temp byte buffer if the state is null.
+        if (webContentsState == null) {
+            byte[] bytes = new byte[0];
+            return ByteBuffer.wrap(bytes);
+        }
+        return webContentsState.buffer();
+    }
+
+    @CalledByNative
+    private int getWebContentsStateSavedStateVersion() {
+        WebContentsState webContentsState =
+                CriticalPersistedTabData.from(this).getWebContentsState();
+        // Return an invalid saved state version if the state is null.
+        return webContentsState == null ? -1 : webContentsState.version();
     }
 
     /**

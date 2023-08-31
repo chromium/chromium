@@ -63039,6 +63039,7 @@ from previous Chrome versions.
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
   <int value="-763640405" label="WebXRARModule:enabled"/>
   <int value="-763219650" label="OmniboxDefaultBrowserPedal:enabled"/>
+  <int value="-762787417" label="RestoreSyncedPlaceholderTabs:enabled"/>
   <int value="-762785269"
       label="EnableBackForwardCacheForScreenReader:disabled"/>
   <int value="-762738927" label="LogJsConsoleMessages:enabled"/>
@@ -63964,6 +63965,7 @@ from previous Chrome versions.
   <int value="-298243336" label="ChromeOSAmbientModeNewUrl:disabled"/>
   <int value="-297716805"
       label="CrossOriginMediaPlaybackRequiresUserGesture:disabled"/>
+  <int value="-297370583" label="RestoreSyncedPlaceholderTabs:disabled"/>
   <int value="-296762162" label="ExoOrdinalMotion:enabled"/>
   <int value="-296493265" label="ProjectorAppDebug:enabled"/>
   <int value="-296208832" label="ServiceWorkerStaticRouter:disabled"/>
@@ -103848,6 +103850,12 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Notes field is set only in the backup"/>
   <int value="3"
       label="Notes field is set only in the backup but not decryptable"/>
+</enum>
+
+<enum name="SyncPlaceholderTabResyncResult">
+  <int value="0" label="PLACEHOLDER_TAB_FOUND"/>
+  <int value="1" label="PLACEHOLDER_TAB_RESYNCED"/>
+  <int value="2" label="PLACEHOLDER_TAB_NOT_SYNCED"/>
 </enum>
 
 <enum name="SyncPositioningScheme">

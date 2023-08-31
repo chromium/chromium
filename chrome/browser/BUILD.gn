@@ -3300,6 +3300,8 @@ static_library("browser") {
       "sync/glue/synced_window_delegate_android.h",
       "sync/glue/synced_window_delegates_getter_android.cc",
       "sync/glue/synced_window_delegates_getter_android.h",
+      "sync/glue/web_contents_state_synced_tab_delegate.cc",
+      "sync/glue/web_contents_state_synced_tab_delegate.h",
       "tab/web_contents_state.cc",
       "tab/web_contents_state.h",
       "trusted_vault/trusted_vault_client_android.cc",

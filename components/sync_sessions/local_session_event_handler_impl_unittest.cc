@@ -8,9 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -819,6 +822,42 @@ TEST_F(LocalSessionEventHandlerImplTest, ShouldRemoveAllTabsOnEmptyWindow) {
   EXPECT_THAT(session_tracker_.LookupSession(kSessionTag),
               MatchesSyncedSession(kSessionTag, {}));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(LocalSessionEventHandlerImplTest, LoadPlaceholderTabFromDisk) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(syncer::kRestoreSyncedPlaceholderTabs);
+
+  // Mimic the user opening a tab that is initially a placeholder tab.
+  TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
+  PlaceholderTabDelegate placeholder_tab(
+      SessionID::FromSerializedValue(kTabId1));
+  auto snapshot = std::make_unique<TestSyncedTabDelegate>(
+      SessionID::FromSerializedValue(kWindowId1),
+      SessionID::FromSerializedValue(kTabId1), base::DoNothing());
+  snapshot->Navigate(kFoo1);
+  placeholder_tab.SetPlaceholderTabSyncedTabDelegate(std::move(snapshot));
+  window->OverrideTabAt(0, &placeholder_tab);
+
+  // Add expectations for the invocations that are expected when the loading
+  // completes.
+  auto mock_batch = std::make_unique<StrictMock<MockWriteBatch>>();
+  EXPECT_CALL(
+      *mock_batch,
+      Put(Pointee(MatchesHeader(kSessionTag, {kWindowId1}, {kTabId1}))));
+  // Expect that the tab originating as a placeholder tab was included in
+  // the write batch for resync.
+  EXPECT_CALL(*mock_batch, Put(Pointee(MatchesTab(kSessionTag, kWindowId1,
+                                                  kTabId1, /*tab_node_id=*/0,
+                                                  /*urls=*/{kFoo1}))));
+  EXPECT_CALL(*mock_batch, Commit());
+
+  EXPECT_CALL(mock_delegate_, CreateLocalSessionWriteBatch())
+      .WillOnce(Return(ByMove(std::move(mock_batch))));
+
+  InitHandler();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace sync_sessions

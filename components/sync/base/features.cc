@@ -180,4 +180,10 @@ BASE_FEATURE(kSyncEnableBatchUploadLocalDataWithDummyDataForTesting,
              "SyncEnableBatchUploadLocalDataWithDummyDataForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kRestoreSyncedPlaceholderTabs,
+             "RestoreSyncedPlaceholderTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer

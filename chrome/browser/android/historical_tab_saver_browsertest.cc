@@ -54,15 +54,14 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                                                      GetActiveWebContents());
 
   WebContentsStateByteBuffer web_contents_state =
-      WebContentsStateByteBuffer(env->GetDirectBufferAddress(result.obj()),
-                                 env->GetDirectBufferCapacity(result.obj()), 2);
+      WebContentsStateByteBuffer(result, 2);
 
   EXPECT_NE(web_contents_state.byte_buffer_data, nullptr);
   EXPECT_GT(web_contents_state.byte_buffer_size, 0);
 
+  WebContentsStateByteBuffer* web_contents_state_ptr = &web_contents_state;
   auto native_contents = WebContentsState::RestoreContentsFromByteBuffer(
-      web_contents_state.byte_buffer_data, web_contents_state.byte_buffer_size,
-      web_contents_state.state_version, true, false);
+      web_contents_state_ptr, true, false);
 
   ASSERT_TRUE(native_contents);
 }
@@ -71,8 +70,19 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                        NullDataWebContentsByteBufferCrashCheck) {
 #if DCHECK_IS_ON()
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  Navigate();
+  base::android::ScopedJavaLocalRef<jobject> result =
+      WebContentsState::GetContentsStateAsByteBuffer(env,
+                                                     GetActiveWebContents());
+
+  WebContentsStateByteBuffer web_contents_state =
+      WebContentsStateByteBuffer(result, 2);
+  WebContentsStateByteBuffer* web_contents_state_ptr = &web_contents_state;
+
   ASSERT_DCHECK_DEATH_WITH(WebContentsState::RestoreContentsFromByteBuffer(
-                               nullptr, 1, 2, true, false),
+                               web_contents_state_ptr, true, false),
                            "Check failed: data != nullptr (0x0 vs. nullptr)");
 #endif
 }
@@ -89,13 +99,12 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                                                      GetActiveWebContents());
 
   WebContentsStateByteBuffer web_contents_state =
-      WebContentsStateByteBuffer(env->GetDirectBufferAddress(result.obj()),
-                                 env->GetDirectBufferCapacity(result.obj()), 2);
+      WebContentsStateByteBuffer(result, 2);
+  WebContentsStateByteBuffer* web_contents_state_ptr = &web_contents_state;
 
-  ASSERT_DCHECK_DEATH_WITH(
-      WebContentsState::RestoreContentsFromByteBuffer(
-          web_contents_state.byte_buffer_data, 0, 2, true, false),
-      "Check failed: size > 0 (0 vs. 0)");
+  ASSERT_DCHECK_DEATH_WITH(WebContentsState::RestoreContentsFromByteBuffer(
+                               web_contents_state_ptr, true, false),
+                           "Check failed: size > 0 (0 vs. 0)");
 #endif
 }
 

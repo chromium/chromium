@@ -1907,6 +1907,12 @@ const char kRestoreTabsOnFREName[] = "Restore tabs on FRE";
 const char kRestoreTabsOnFREDescription[] =
     "Enable promo sheet to indicate tabs from synced devices can be restored";
 
+const char kRestoreSyncedPlaceholderTabsName[] =
+    "Restore synced placeholder tabs";
+const char kRestoreSyncedPlaceholderTabsDescription[] =
+    "When enabled, any placeholder tabs missing from the local session will be "
+    "restored.";
+
 const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";

@@ -15,13 +15,12 @@ AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
     std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
         tab_group_visual_data,
-    std::vector<historical_tab_saver::WebContentsStateByteBuffer>&&
-        web_contents_state)
+    std::vector<WebContentsStateByteBuffer>&& web_contents_state)
     : AndroidLiveTabContext(tab_model),
       closed_tabs_(closed_tabs),
       tab_id_to_tab_group_(tab_id_to_tab_group),
       tab_group_visual_data_(tab_group_visual_data),
-      web_contents_state_(web_contents_state) {}
+      web_contents_state_(std::move(web_contents_state)) {}
 
 AndroidLiveTabContextCloseWrapper::~AndroidLiveTabContextCloseWrapper() =
     default;

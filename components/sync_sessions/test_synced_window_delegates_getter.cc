@@ -4,8 +4,6 @@
 
 #include "components/sync_sessions/test_synced_window_delegates_getter.h"
 
-#include <utility>
-
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -173,6 +171,12 @@ int64_t TestSyncedTabDelegate::GetRootTaskIdForNavigationId(int nav_id) const {
   return -1;
 }
 
+std::unique_ptr<SyncedTabDelegate>
+TestSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+  NOTREACHED();
+  return nullptr;
+}
+
 PlaceholderTabDelegate::PlaceholderTabDelegate(SessionID tab_id)
     : tab_id_(tab_id) {}
 
@@ -184,6 +188,17 @@ SessionID PlaceholderTabDelegate::GetSessionId() const {
 
 bool PlaceholderTabDelegate::IsPlaceholderTab() const {
   return true;
+}
+
+void PlaceholderTabDelegate::SetPlaceholderTabSyncedTabDelegate(
+    std::unique_ptr<SyncedTabDelegate> delegate) {
+  placeholder_tab_synced_tab_delegate_ = std::move(delegate);
+}
+
+std::unique_ptr<SyncedTabDelegate>
+PlaceholderTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+  CHECK(placeholder_tab_synced_tab_delegate_);
+  return std::move(placeholder_tab_synced_tab_delegate_);
 }
 
 SessionID PlaceholderTabDelegate::GetWindowId() const {

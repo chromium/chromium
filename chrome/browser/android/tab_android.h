@@ -173,6 +173,11 @@ class TabAndroid : public base::SupportsUserData {
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
+  // This should never return null, unless it is called in a state where no
+  // tabs exist (such as on FRE), which should never happen. If it is called
+  // then, a nullptr will be returned and must be handled accordingly.
+  std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer();
+
  private:
   JavaObjectWeakGlobalRef weak_java_tab_;
 

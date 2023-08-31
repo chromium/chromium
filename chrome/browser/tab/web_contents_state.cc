@@ -38,6 +38,22 @@ using base::android::ScopedJavaLocalRef;
 using content::NavigationController;
 using content::WebContents;
 
+WebContentsStateByteBuffer::WebContentsStateByteBuffer(
+    base::android::ScopedJavaLocalRef<jobject> web_contents_byte_buffer_result,
+    int saved_state_version)
+    : state_version(saved_state_version) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  byte_buffer_result.Reset(web_contents_byte_buffer_result);
+  byte_buffer_data = env->GetDirectBufferAddress(byte_buffer_result.obj());
+  byte_buffer_size = env->GetDirectBufferCapacity(byte_buffer_result.obj());
+}
+WebContentsStateByteBuffer::~WebContentsStateByteBuffer() = default;
+
+WebContentsStateByteBuffer& WebContentsStateByteBuffer::operator=(
+    WebContentsStateByteBuffer&& other) noexcept = default;
+WebContentsStateByteBuffer::WebContentsStateByteBuffer(
+    WebContentsStateByteBuffer&& other) noexcept = default;
+
 namespace {
 
 ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, jint size) {
@@ -461,7 +477,7 @@ ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     return ScopedJavaLocalRef<jobject>();
 
   WebContents* web_contents =
-      WebContentsState::RestoreContentsFromByteBuffer(
+      WebContentsState::RestoreContentsFromByteBufferImpl(
           data, size, saved_state_version, initially_hidden, no_renderer)
           .release();
 
@@ -472,11 +488,20 @@ ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
 }
 
 std::unique_ptr<WebContents> WebContentsState::RestoreContentsFromByteBuffer(
-    void* data,
-    int size,
-    int saved_state_version,
+    const WebContentsStateByteBuffer* byte_buffer,
     bool initially_hidden,
     bool no_renderer) {
+  return WebContentsState::RestoreContentsFromByteBufferImpl(
+      byte_buffer->byte_buffer_data, byte_buffer->byte_buffer_size,
+      byte_buffer->state_version, initially_hidden, no_renderer);
+}
+
+std::unique_ptr<WebContents>
+WebContentsState::RestoreContentsFromByteBufferImpl(void* data,
+                                                    int size,
+                                                    int saved_state_version,
+                                                    bool initially_hidden,
+                                                    bool no_renderer) {
   DCHECK_NE(data, nullptr);
   DCHECK_GT(size, 0);
 

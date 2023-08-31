@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -61,6 +62,13 @@ class SyncedTabDelegate {
   // restored as a placeholder. In that case, the previous synced data from that
   // tab should be preserved.
   virtual bool IsPlaceholderTab() const = 0;
+
+  // Reads placeholder tab data from the associated web contents as a snapshot.
+  // Must be called only if IsPlaceholderTab() returns true. It returns a
+  // callback that will determine if a WebContentsStateSyncedTabDelegate should
+  // have its sync data reassociated with its tab.
+  virtual std::unique_ptr<SyncedTabDelegate>
+  CreatePlaceholderTabSyncedTabDelegate() = 0;
 
   // Task IDs represent navigations and relationships between navigations. -1
   // indicates the Task ID is unknown. A Navigation ID is a Unique ID and

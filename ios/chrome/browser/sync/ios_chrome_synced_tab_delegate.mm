@@ -234,6 +234,14 @@ int64_t IOSChromeSyncedTabDelegate::GetRootTaskIdForNavigationId(
   return record ? record->root_task_id() : -1;
 }
 
+std::unique_ptr<sync_sessions::SyncedTabDelegate>
+IOSChromeSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+  NOTREACHED()
+      << "CreatePlaceholderTabSyncedTabDelegate is not supported for the "
+         "iOS platform.";
+  return nullptr;
+}
+
 bool IOSChromeSyncedTabDelegate::GetSessionStorageIfNeeded() const {
   // Never use the session storage when placeholder tabs support is enabled.
   // In fact, using the session storage is a workaround to missing placeholder
