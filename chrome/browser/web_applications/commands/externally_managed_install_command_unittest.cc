@@ -168,7 +168,7 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
 
  private:
   base::flat_map<AppId, BitmapData> app_to_icons_data_;
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
 };
 
 TEST_F(ExternallyManagedInstallCommandTest, Success) {

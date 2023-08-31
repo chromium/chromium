@@ -118,7 +118,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
 
  protected:
   raw_ptr<FakeWebContentsManager, DisableDanglingPtrDetection>
-      fake_web_contents_manager_;
+      fake_web_contents_manager_ = nullptr;
   base::AutoReset<bool> bypass_dependencies_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   base::AutoReset<bool> bypass_offline_manifest_requirement_;

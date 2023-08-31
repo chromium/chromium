@@ -62,11 +62,11 @@ class InstallPlaceholderCommandTest : public WebAppTest {
   TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
 
  private:
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
 #if BUILDFLAG(IS_WIN)
   // This prevents creating shortcuts in the startup dir.
   base::ScopedPathOverride override_start_dir_{base::DIR_USER_STARTUP};
 #endif  // BUILDFLAG(IS_WIN)
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
 };
 
 TEST_F(InstallPlaceholderCommandTest, InstallPlaceholder) {

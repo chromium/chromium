@@ -129,8 +129,9 @@ class RunOnOsLoginCommandTest
   WebAppProvider* provider() { return provider_; }
 
  private:
-  raw_ptr<FakeOsIntegrationManager, DanglingUntriaged> os_integration_manager_;
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeOsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
+      nullptr;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

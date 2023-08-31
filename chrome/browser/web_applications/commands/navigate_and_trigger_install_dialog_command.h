@@ -92,10 +92,10 @@ class NavigateAndTriggerInstallDialogCommand
   base::WeakPtr<WebAppUiManager> ui_manager_;
   const std::unique_ptr<WebAppUrlLoader> url_loader_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   AppId app_id_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   base::Value::List error_log_;
 
   base::WeakPtrFactory<NavigateAndTriggerInstallDialogCommand> weak_factory_{
