@@ -947,7 +947,8 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
-      u"Street Name House Number Premise APT 10 Floor 2",
+      u"Street Name between streets House Number Premise APT 10 Floor 2 "
+      u"Landmark",
       VerificationStatus::kUserVerified);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_NAME, u"Street Name", VerificationStatus::kFormatted);
@@ -988,12 +989,12 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kUserVerified);
   ASSERT_EQ(home_profile.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Street Name");
   home_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
+      ADDRESS_HOME_LANDMARK, u"Landmark", VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_OVERFLOW,
                                                 u"Andar 1, Apto. 12",
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
-                                                u"Marcos y Oliva",
+                                                u"between streets",
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca", VerificationStatus::kObserved);
@@ -1472,7 +1473,7 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   profile.SetRawInfo(ADDRESS_HOME_OVERFLOW, u"Andar 1, Apto. 12");
-  profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark");
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);

@@ -1239,6 +1239,12 @@ TEST(AutofillProfileTest, Compare) {
 // For each structured profile tokens, test the comparison operator for both the
 // value and the status.
 TEST(AutofillProfileTest, Compare_StructuredTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {autofill::features::kAutofillEnableSupportForLandmark,
+       autofill::features::kAutofillEnableSupportForBetweenStreets,
+       autofill::features::kAutofillEnableSupportForAdminLevel2},
+      {});
   // Those types do store a verification status.
   ServerFieldTypeSet structured_types{
       NAME_FULL,
@@ -1363,6 +1369,8 @@ TEST(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 }
 
 TEST(AutofillProfileTest, SetRawInfoWorksForLandmark) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableSupportForLandmark);
   AutofillProfile profile;
 
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
@@ -1370,6 +1378,8 @@ TEST(AutofillProfileTest, SetRawInfoWorksForLandmark) {
 }
 
 TEST(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableSupportForBetweenStreets);
   AutofillProfile profile;
 
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");

@@ -55,6 +55,20 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+class AutofillStructuredAddress : public testing::Test {
+ public:
+  AutofillStructuredAddress() {
+    features_.InitWithFeatures(
+        {features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
   AddressNode address(nullptr);
   const AddressComponentTestValues test_value = {
@@ -155,7 +169,7 @@ using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 
 namespace {
 
-TEST(AutofillStructuredAddress, ParseStreetAddress) {
+TEST_F(AutofillStructuredAddress, ParseStreetAddress) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.street_address = "Erika-Mann-Str. 33",
        .street_name = "Erika-Mann-Str.",
@@ -236,7 +250,7 @@ TEST(AutofillStructuredAddress, ParseStreetAddress) {
     TestAddressLineParsing(test_case);
 }
 
-TEST(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
+TEST_F(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.street_address = "Implerstr. 73a\nObergeschoss 2 Wohnung 3",
        .street_name = "Implerstr.",
@@ -264,7 +278,7 @@ TEST(AutofillStructuredAddress, ParseMultiLineStreetAddress) {
     TestAddressLineParsing(test_case);
 }
 
-TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
+TEST_F(AutofillStructuredAddress, TestStreetAddressFormatting) {
   AddressNode address;
 
   std::vector<AddressLineParsingTestCase> test_cases = {
@@ -345,7 +359,7 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
 }
 
 // Test setting the first address line.
-TEST(AutofillStructuredAddress, TestSettingsAddressLine1) {
+TEST_F(AutofillStructuredAddress, TestSettingsAddressLine1) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_LINE1,
@@ -366,7 +380,7 @@ TEST(AutofillStructuredAddress, TestSettingsAddressLine1) {
 }
 
 // Test settings all three address lines.
-TEST(AutofillStructuredAddress, TestSettingsAddressLines) {
+TEST_F(AutofillStructuredAddress, TestSettingsAddressLines) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_LINE1,
@@ -399,7 +413,7 @@ TEST(AutofillStructuredAddress, TestSettingsAddressLines) {
 }
 
 // Test setting the home street address and retrieving the address lines.
-TEST(AutofillStructuredAddress, TestGettingAddressLines) {
+TEST_F(AutofillStructuredAddress, TestGettingAddressLines) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -426,7 +440,8 @@ TEST(AutofillStructuredAddress, TestGettingAddressLines) {
 }
 
 // Test setting the home street address and retrieving the address lines.
-TEST(AutofillStructuredAddress, TestGettingAddressLines_JoinedAdditionalLines) {
+TEST_F(AutofillStructuredAddress,
+       TestGettingAddressLines_JoinedAdditionalLines) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -454,7 +469,7 @@ TEST(AutofillStructuredAddress, TestGettingAddressLines_JoinedAdditionalLines) {
 
 // Tests that a structured address gets successfully migrated and subsequently
 // completed.
-TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
+TEST_F(AutofillStructuredAddress, TestMigrationAndFinalization) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -465,12 +480,6 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kNoStatus},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_LANDMARK,
-       .value = "Red tree",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_BETWEEN_STREETS,
-       .value = "Rosario y Alfonso",
        .status = VerificationStatus::kNoStatus}};
 
   SetTestValues(&address, test_values, /*finalize=*/false);
@@ -488,12 +497,6 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
-       .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_LANDMARK,
-       .value = "Red tree",
-       .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_BETWEEN_STREETS,
-       .value = "Rosario y Alfonso",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
        .value = "",
@@ -518,14 +521,8 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
        .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_LANDMARK,
-       .value = "Red tree",
-       .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_BETWEEN_STREETS,
-       .value = "Rosario y Alfonso",
-       .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
-       .value = "123 Street name CA US Rosario y Alfonso Red tree",
+       .value = "123 Street name CA US",
        .status = VerificationStatus::kFormatted},
       {.type = ADDRESS_HOME_CITY,
        .value = "",
@@ -543,7 +540,8 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
 
 // Tests that the migration does not happen of the root node
 // (ADDRESS_HOME_ADDRESS) already has a verification status.
-TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
+TEST_F(AutofillStructuredAddress,
+       TestMigrationAndFinalization_AlreadyMigrated) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -570,8 +568,8 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
 }
 
 // Tests that a valid address structure is not wiped.
-TEST(AutofillStructuredAddress,
-     TestWipingAnInvalidSubstructure_ValidStructure) {
+TEST_F(AutofillStructuredAddress,
+       TestWipingAnInvalidSubstructure_ValidStructure) {
   AddressNode address;
   AddressComponentTestValues address_with_valid_structure = {
       // This structure is valid because all structured components are contained
@@ -594,8 +592,8 @@ TEST(AutofillStructuredAddress,
 }
 
 // Tests that an invalid address structure is wiped.
-TEST(AutofillStructuredAddress,
-     TestWipingAnInvalidSubstructure_InValidStructure) {
+TEST_F(AutofillStructuredAddress,
+       TestWipingAnInvalidSubstructure_InValidStructure) {
   AddressNode address;
   AddressComponentTestValues address_with_valid_structure = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -631,7 +629,7 @@ TEST(AutofillStructuredAddress,
 
 // Test that the correct common country between structured addresses is
 // computed.
-TEST(AutofillStructuredAddress, TestGetCommonCountry) {
+TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
   CountryCodeNode country1(nullptr);
   CountryCodeNode country2(nullptr);
 
@@ -656,7 +654,7 @@ TEST(AutofillStructuredAddress, TestGetCommonCountry) {
 }
 
 // Tests retrieving a value for comparison for a field type.
-TEST(AutofillStructuredAddress, TestGetValueForComparisonForType) {
+TEST_F(AutofillStructuredAddress, TestGetValueForComparisonForType) {
   CountryCodeNode country_code(nullptr);
   country_code.SetValue(u"US", VerificationStatus::kObserved);
   StreetAddressNode street_address(&country_code);

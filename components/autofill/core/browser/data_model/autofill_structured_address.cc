@@ -33,6 +33,21 @@ std::u16string AddressComponentWithRewriter::GetValueForComparison(
                              /*keep_white_space=*/true);
 }
 
+FeatureGuardedAddressComponent::FeatureGuardedAddressComponent(
+    raw_ptr<const base::Feature> feature,
+    ServerFieldType storage_type,
+    AddressComponent* parent,
+    unsigned int merge_mode)
+    : AddressComponent(storage_type, parent, merge_mode), feature_(feature) {}
+
+void FeatureGuardedAddressComponent::SetValue(std::u16string value,
+                                              VerificationStatus status) {
+  if (!base::FeatureList::IsEnabled(*feature_)) {
+    return;
+  }
+  AddressComponent::SetValue(value, status);
+}
+
 StreetNameNode::StreetNameNode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_STREET_NAME, parent, MergeMode::kDefault) {}
 
@@ -344,23 +359,29 @@ SortingCodeNode::SortingCodeNode(AddressComponent* parent)
 SortingCodeNode::~SortingCodeNode() = default;
 
 LandmarkNode::LandmarkNode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_LANDMARK,
-                       parent,
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForLandmark,
+          ADDRESS_HOME_LANDMARK,
+          parent,
+          MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 LandmarkNode::~LandmarkNode() = default;
 
 BetweenStreetsNode::BetweenStreetsNode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS,
-                       parent,
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForBetweenStreets,
+          ADDRESS_HOME_BETWEEN_STREETS,
+          parent,
+          MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 BetweenStreetsNode::~BetweenStreetsNode() = default;
 
 AdminLevel2Node::AdminLevel2Node(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_ADMIN_LEVEL2,
-                       parent,
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForAdminLevel2,
+          ADDRESS_HOME_ADMIN_LEVEL2,
+          parent,
+          MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AdminLevel2Node::~AdminLevel2Node() = default;
 

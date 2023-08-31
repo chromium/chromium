@@ -66,10 +66,11 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"US",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
-                                           u"123 Fake St. Dep Premise\n"
-                                           u"Apt. 10 Floor 2",
-                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      u"123 Fake St. Dep Premise Marcos y Oliva\n"
+      u"Apt. 10 Floor 2 Red tree",
+      VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SORTING_CODE, u"CEDEX",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -95,10 +96,10 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_FLOOR, u"2",
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
-                                           VerificationStatus::kObserved);
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
                                            u"Marcos y Oliva",
-                                           VerificationStatus::kObserved);
+                                           VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
 
@@ -181,8 +182,8 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_address_country(), "US",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_street_address(),
-           "123 Fake St. Dep Premise\n"
-           "Apt. 10 Floor 2",
+           "123 Fake St. Dep Premise Marcos y Oliva\n"
+           "Apt. 10 Floor 2 Red tree",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_sorting_code(), "CEDEX",
            ContactInfoSpecifics::OBSERVED);
@@ -206,9 +207,9 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_address_floor(), "2",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_landmark(), "Red tree",
-           ContactInfoSpecifics::OBSERVED);
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_between_streets(), "Marcos y Oliva",
-           ContactInfoSpecifics::OBSERVED);
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_admin_level_2(), "Oxaca",
            ContactInfoSpecifics::OBSERVED);
   // All of the following types don't store verification statuses in

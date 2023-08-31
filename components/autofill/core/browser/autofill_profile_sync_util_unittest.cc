@@ -69,15 +69,17 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfo(EMAIL_ADDRESS, u"user@example.com");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1.800.555.1234");
   profile.SetRawInfo(COMPANY_NAME, u"Google, Inc.");
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
-                                           u"123 Fake St. Dep Premise\n"
-                                           u"Apt. 10 Floor 2",
-                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      u"123 Fake St. Dep Premise Marcos y Oliva\n"
+      u"Apt. 10 Floor 2 Red tree",
+      VerificationStatus::kObserved);
 
   // Set testing values and statuses for the address.
-  EXPECT_EQ(u"123 Fake St. Dep Premise",
+  EXPECT_EQ(u"123 Fake St. Dep Premise Marcos y Oliva",
             profile.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(u"Apt. 10 Floor 2", profile.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(u"Apt. 10 Floor 2 Red tree",
+            profile.GetRawInfo(ADDRESS_HOME_LINE2));
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Mountain View",
                                            VerificationStatus::kObserved);
@@ -92,11 +94,11 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
-                                           VerificationStatus::kObserved);
+                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
                                            u"Marcos y Oliva",
-                                           VerificationStatus::kObserved);
+                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
@@ -204,11 +206,11 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   // Set values and statuses for the address.
   // Address lines are derived from the home street address and do not have an
   // independent status.
-  specifics.set_address_home_line1("123 Fake St. Dep Premise");
-  specifics.set_address_home_line2("Apt. 10 Floor 2");
+  specifics.set_address_home_line1("123 Fake St. Dep Premise Marcos y Oliva");
+  specifics.set_address_home_line2("Apt. 10 Floor 2 Red tree");
   specifics.set_address_home_street_address(
-      "123 Fake St. Dep Premise\n"
-      "Apt. 10 Floor 2");
+      "123 Fake St. Dep Premise Marcos y Oliva\n"
+      "Apt. 10 Floor 2 Red tree");
   specifics.set_address_home_street_address_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -259,11 +261,11 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 
   specifics.set_address_home_landmark("Red tree");
   specifics.set_address_home_landmark_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.set_address_home_between_streets("Marcos y Oliva");
   specifics.set_address_home_between_streets_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.set_address_home_admin_level_2("Oxaca");
   specifics.set_address_home_admin_level_2_status(
