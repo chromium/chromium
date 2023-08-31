@@ -3594,7 +3594,7 @@
     },
     {
       name: "SvgCrossOriginAttribute",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgMapLocalToAncestorFix",
