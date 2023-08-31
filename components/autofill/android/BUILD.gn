@@ -176,6 +176,7 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
+    "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
   srcjar_deps = [
     ":autofill_core_browser_java_enums",
@@ -188,6 +189,7 @@ generate_jni("main_autofill_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
+    "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
   deps = [ "//base:jni_java" ]
 }

@@ -64,15 +64,16 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
+import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -141,7 +142,7 @@ public class AddressEditorTest {
     @Mock
     private EditorDialogView mEditorDialog;
     @Mock
-    private PersonalDataManager mPersonalDataManager;
+    private SubKeyRequester mSubKeyRequester;
     @Mock
     private Callback<AutofillAddress> mDoneCallback;
     @Mock
@@ -180,7 +181,7 @@ public class AddressEditorTest {
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
 
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+        SubKeyRequesterFactory.setInstanceForTesting(mSubKeyRequester);
 
         setUpSupportedCountries(mSupportedCountries);
 
@@ -329,7 +330,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -348,7 +349,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -396,7 +397,7 @@ public class AddressEditorTest {
                     new String[] {"California", "New York", "Texas"});
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -434,7 +435,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -454,7 +455,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
@@ -479,7 +480,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -530,7 +531,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
         mAddressEditor.setEditorDialog(mEditorDialog);
@@ -560,7 +561,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -599,7 +600,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -639,7 +640,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -657,7 +658,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -686,7 +687,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -711,7 +712,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
@@ -733,7 +734,7 @@ public class AddressEditorTest {
             mAddressEditor.onSubKeysReceived(null, null);
             return null;
         })
-                .when(mPersonalDataManager)
+                .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false);

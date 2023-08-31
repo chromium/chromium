@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.text.format.DateUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -56,21 +55,6 @@ public class PersonalDataManager {
          * Called when the data is changed.
          */
         void onPersonalDataChanged();
-    }
-
-    /**
-     * Callback for subKeys request.
-     */
-    public interface GetSubKeysRequestDelegate {
-        /**
-         * Called when the subkeys are received sucessfully.
-         * Here the subkeys are admin areas.
-         *
-         * @param subKeysCodes The subkeys' codes.
-         * @param subKeysNames The subkeys' names.
-         */
-        @CalledByNative("GetSubKeysRequestDelegate")
-        void onSubKeysReceived(String[] subKeysCodes, String[] subKeysNames);
     }
 
     /**
@@ -364,8 +348,6 @@ public class PersonalDataManager {
         }
         return sManager;
     }
-
-    private static int sRequestTimeoutSeconds = 5;
 
     private final long mPersonalDataManagerAndroid;
     private final List<PersonalDataManagerObserver> mDataObservers =
@@ -720,39 +702,6 @@ public class PersonalDataManager {
     }
 
     /**
-     * Starts loading the sub-key request rules for the specified {@code regionCode}.
-     *
-     * @param regionCode The code of the region for which to load the rules.
-     */
-    public void loadRulesForSubKeys(String regionCode) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().loadRulesForSubKeys(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, regionCode);
-    }
-
-    /**
-     * Starts requesting the subkeys for the specified {@code regionCode}, if the rules
-     * associated with the {@code regionCode} are done loading. Otherwise sets up the callback to
-     * start loading the subkeys when the rules are loaded. The received subkeys will be sent
-     * to the {@code delegate}. If the subkeys are not received in the specified
-     * {@code sRequestTimeoutSeconds}, the {@code delegate} will be notified.
-     *
-     * @param regionCode The code of the region for which to load the subkeys.
-     * @param delegate The object requesting the subkeys.
-     */
-    public void getRegionSubKeys(String regionCode, GetSubKeysRequestDelegate delegate) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().startRegionSubKeysRequest(mPersonalDataManagerAndroid,
-                PersonalDataManager.this, regionCode, sRequestTimeoutSeconds, delegate);
-    }
-
-    /** Cancels the pending subkeys request. */
-    public void cancelPendingGetSubKeys() {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().cancelPendingGetSubKeys(mPersonalDataManagerAndroid);
-    }
-
-    /**
      * Checks whether the Autofill PersonalDataManager has profiles.
      *
      * @return True If there are profiles.
@@ -877,21 +826,8 @@ public class PersonalDataManager {
         return PersonalDataManagerJni.get().isAutofillCreditCardManaged();
     }
 
-    public static void setRequestTimeoutForTesting(int timeout) {
-        var oldValue = sRequestTimeoutSeconds;
-        sRequestTimeoutSeconds = timeout;
-        ResettersForTesting.register(() -> sRequestTimeoutSeconds = oldValue);
-    }
-
     public void setSyncServiceForTesting() {
         PersonalDataManagerJni.get().setSyncServiceForTesting(mPersonalDataManagerAndroid);
-    }
-
-    /**
-     * @return The sub-key request timeout in milliseconds.
-     */
-    public static long getRequestTimeoutMS() {
-        return DateUtils.SECOND_IN_MILLIS * sRequestTimeoutSeconds;
     }
 
     private static PrefService getPrefService() {
@@ -1044,11 +980,6 @@ public class PersonalDataManager {
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         void clearUnmaskedCache(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
-        void loadRulesForSubKeys(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                String regionCode);
-        void startRegionSubKeysRequest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, String regionCode, int timeoutSeconds,
-                GetSubKeysRequestDelegate delegate);
         boolean hasProfiles(long nativePersonalDataManagerAndroid);
         boolean hasCreditCards(long nativePersonalDataManagerAndroid);
         boolean isFidoAuthenticationAvailable(long nativePersonalDataManagerAndroid);
@@ -1056,7 +987,6 @@ public class PersonalDataManager {
         boolean isAutofillProfileManaged();
         boolean isAutofillCreditCardManaged();
         String toCountryCode(String countryName);
-        void cancelPendingGetSubKeys(long nativePersonalDataManagerAndroid);
         void setSyncServiceForTesting(long nativePersonalDataManagerAndroid);
     }
 }

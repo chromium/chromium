@@ -8,7 +8,10 @@ android_library("test_java") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.autofill"
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/autofill/PersonalDataManagerTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/autofill/PersonalDataManagerTest.java",
+    "android/java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterIntegrationTest.java",
+  ]
 
   deps = [
     ":test_support_java",

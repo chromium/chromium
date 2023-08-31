@@ -10,7 +10,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/geo/subkey_requester.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
@@ -312,13 +311,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj);
 
-  // Starts loading the rules for the specified |region_code| for the further
-  // subkey request.
-  void LoadRulesForSubKeys(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jstring>& region_code);
-
   // Checks whether the Autofill PersonalDataManager has profiles.
   jboolean HasProfiles(JNIEnv* env);
 
@@ -327,19 +319,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Checks whether FIDO authentication is available.
   jboolean IsFidoAuthenticationAvailable(JNIEnv* env);
-
-  // Gets the subkeys for the region with |jregion_code| code, if the
-  // |jregion_code| rules have finished loading. Otherwise, sets up a task to
-  // get the subkeys, when the rules are loaded.
-  void StartRegionSubKeysRequest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jstring>& jregion_code,
-      jint jtimeout_seconds,
-      const base::android::JavaParamRef<jobject>& jdelegate);
-
-  // Cancels the pending subkey request task.
-  void CancelPendingGetSubKeys(JNIEnv* env);
 
   void SetSyncServiceForTesting(JNIEnv* env);
 
@@ -386,9 +365,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Pointer to the PersonalDataManager for the main profile.
   raw_ptr<PersonalDataManager> personal_data_manager_;
-
-  // Used for subkey request.
-  SubKeyRequester subkey_requester_;
 };
 
 }  // namespace autofill

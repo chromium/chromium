@@ -42,8 +42,8 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysRequestDelegate;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
+import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.SubKeyRequester;
+import org.chromium.components.autofill.SubKeyRequester.GetSubKeysRequestDelegate;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -296,7 +298,7 @@ public class AddressEditor
         // This makes sure that onSubKeysReceived returns early if it's
         // ever called when Done has already occurred.
         mAdminAreasLoaded = true;
-        PersonalDataManager.getInstance().cancelPendingGetSubKeys();
+        SubKeyRequesterFactory.getInstance().cancelPendingGetSubKeys();
 
         // Commit changes to the address and send modified address to the caller.
         commitChanges(mProfile);
@@ -313,7 +315,7 @@ public class AddressEditor
         // This makes sure that onSubKeysReceived returns early if it's
         // ever called when Cancel has already occurred.
         mAdminAreasLoaded = true;
-        PersonalDataManager.getInstance().cancelPendingGetSubKeys();
+        SubKeyRequesterFactory.getInstance().cancelPendingGetSubKeys();
 
         // Send unchanged address to the caller.
         mCancelCallback.onResult(mAddressNew ? null : mAddress);
@@ -442,14 +444,14 @@ public class AddressEditor
         // For tests, the time-out is set to 0. In this case, we should not
         // fetch the admin-areas, and show a text-field instead.
         // This is to have the tests independent of the network status.
-        if (PersonalDataManager.getRequestTimeoutMS() == 0) {
+        if (SubKeyRequester.getRequestTimeoutMS() == 0) {
             onSubKeysReceived(null, null);
             return;
         }
 
         // In each rule, admin area keys are saved under sub-keys of country.
-        PersonalDataManager.getInstance().loadRulesForSubKeys(countryCode);
-        PersonalDataManager.getInstance().getRegionSubKeys(countryCode, this);
+        SubKeyRequesterFactory.getInstance().loadRulesForSubKeys(countryCode);
+        SubKeyRequesterFactory.getInstance().getRegionSubKeys(countryCode, this);
     }
 
     /**
