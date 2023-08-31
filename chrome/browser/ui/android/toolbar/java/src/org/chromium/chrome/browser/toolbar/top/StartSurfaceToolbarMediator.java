@@ -249,7 +249,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
      * search box are not shown and the real search box is focused.
      * @return Whether the real search box is focused.
      */
-    private boolean isRealSearchBoxFocused() {
+    boolean isRealSearchBoxFocused() {
         return isOnHomepage() && !mPropertyModel.get(IS_VISIBLE);
     }
 

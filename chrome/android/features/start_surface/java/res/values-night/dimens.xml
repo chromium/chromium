@@ -8,6 +8,7 @@ found in the LICENSE file.
   <!-- Surface Polish -->
   <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_0</dimen>
   <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_1</dimen>
+  <dimen name="home_surface_search_box_background_neutral_color_elevation">@dimen/default_elevation_5</dimen>
 
   <!-- Single Tab module on phones -->
   <dimen name="favicon_background_color_elevation">@dimen/default_elevation_2</dimen>

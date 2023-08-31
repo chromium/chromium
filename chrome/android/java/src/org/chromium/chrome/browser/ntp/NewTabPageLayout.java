@@ -147,6 +147,7 @@ public class NewTabPageLayout extends LinearLayout {
     private Boolean mIsHalfMvtLandscape;
     private Boolean mIsHalfMvtPortrait;
     private boolean mIsSurfacePolishEnabled;
+    private boolean mIsSurfacePolishOmniboxColorEnabled;
 
     /**
      * Constructor for inflating from XML.
@@ -198,7 +199,7 @@ public class NewTabPageLayout extends LinearLayout {
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isSurfacePolishEnabled) {
+            boolean isSurfacePolishEnabled, boolean isSurfacePolishOmniboxColorEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -209,6 +210,7 @@ public class NewTabPageLayout extends LinearLayout {
         mWindowAndroid = windowAndroid;
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
+        mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
@@ -272,9 +274,23 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     /**
-     * Sets up the search box background tint.
+     * Sets up the search box background or background tint.
      */
     private void initializeSearchBoxBackground() {
+        if (mIsSurfacePolishOmniboxColorEnabled) {
+            findViewById(R.id.search_box)
+                    .setBackground(AppCompatResources.getDrawable(
+                            mContext, R.drawable.home_surface_search_box_background_colorful));
+            return;
+        }
+
+        if (mIsSurfacePolishEnabled) {
+            findViewById(R.id.search_box)
+                    .setBackground(AppCompatResources.getDrawable(
+                            mContext, R.drawable.home_surface_search_box_background_neutral));
+            return;
+        }
+
         final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
                 ? R.dimen.default_elevation_4
                 : R.dimen.toolbar_text_box_elevation;

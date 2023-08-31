@@ -650,9 +650,10 @@ public abstract class ToolbarLayout
      * @param isShowingStartSurfaceHomepage Whether start surface homepage is showing.
      * @param isShowingStartSurfaceTabSwitcher Whether the StartSurface-controlled TabSwitcher is
      *         showing.
+     * @param isRealSearchBoxFocused Whether the real search box is focused.
      */
     void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurfaceHomepage,
-            boolean isShowingStartSurfaceTabSwitcher) {}
+            boolean isShowingStartSurfaceTabSwitcher, boolean isRealSearchBoxFocused) {}
 
     /**
      * Force to hide toolbar shadow.

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -62,11 +63,17 @@ public class TasksView extends CoordinatorLayoutForPointer {
             CookieControlsEnforcement.NO_ENFORCEMENT;
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
+    private final boolean mIsSurfacePolishEnabled;
+    private final boolean mIsSurfacePolishOmniboxColorEnabled;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mIsSurfacePolishOmniboxColorEnabled = mIsSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
     }
 
     public void initialize(ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -181,8 +188,19 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     void setIncognitoMode(boolean isIncognito) {
         mSearchBoxCoordinator.setIncognitoMode(isIncognito);
-        Drawable searchBackground = AppCompatResources.getDrawable(mContext,
-                isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box);
+        Drawable searchBackground;
+        if (isIncognito) {
+            searchBackground = AppCompatResources.getDrawable(
+                    mContext, R.drawable.fake_search_box_bg_incognito);
+        } else if (mIsSurfacePolishOmniboxColorEnabled) {
+            searchBackground = AppCompatResources.getDrawable(
+                    mContext, R.drawable.home_surface_search_box_background_colorful);
+        } else if (mIsSurfacePolishEnabled) {
+            searchBackground = AppCompatResources.getDrawable(
+                    mContext, R.drawable.home_surface_search_box_background_neutral);
+        } else {
+            searchBackground = AppCompatResources.getDrawable(mContext, R.drawable.ntp_search_box);
+        }
         if (searchBackground instanceof LayerDrawable) {
             Drawable shapeDrawable = ((LayerDrawable) searchBackground)
                                              .findDrawableByLayerId(R.id.fake_search_box_bg_shape);

@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -68,14 +70,17 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.NtpSearchBoxDrawable;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
@@ -107,6 +112,8 @@ public class ToolbarPhoneTest {
     GradientDrawable mLocationbarBackgroundDrawable;
     @Mock
     OptionalButtonCoordinator mOptionalButtonCoordinator;
+    @Mock
+    NtpSearchBoxDrawable mNtpSearchBoxDrawable;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -734,6 +741,44 @@ public class ToolbarPhoneTest {
             // Optional button should be drawn.
             verify(mOptionalButtonCoordinator, atLeastOnce()).getViewForDrawing();
         });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testLocationBarBackgroundChangedWithStartSurfaceState() {
+        // Test updating the location bar background when entering the search page from the Start
+        // Surface.
+        assertEquals(false, mToolbar.isLocationBarShownInNTP());
+        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
+        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mToolbar.onStartSurfaceStateChanged(false, false, false, true); });
+        assertEquals(mLocationbarBackgroundDrawable,
+                mToolbar.getActiveLocationBarBackgroundForTesting());
+
+        // Test updating the location bar background when entering the New Tab Page from the Start
+        // Surface.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        mToolbar.setNtpSearchBoxBackgroundForTesting(mNtpSearchBoxDrawable);
+        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mToolbar.onStartSurfaceStateChanged(false, false, false, false); });
+        assertEquals(mNtpSearchBoxDrawable, mToolbar.getActiveLocationBarBackgroundForTesting());
+
+        // Test updating the location bar background when entering the New Tab Page from the Start
+        // Surface when NtpSearchBoxDrawable hasn't been constructed.
+        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        mToolbar.setNtpSearchBoxBackgroundForTesting(null);
+        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mToolbar.onStartSurfaceStateChanged(false, false, false, false); });
+        assertTrue(mToolbar.getActiveLocationBarBackgroundForTesting() != null);
+        assertTrue(mToolbar.getActiveLocationBarBackgroundForTesting()
+                           instanceof NtpSearchBoxDrawable);
     }
 
     private static class TestControlsVisibilityDelegate

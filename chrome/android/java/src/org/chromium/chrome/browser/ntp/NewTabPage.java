@@ -176,6 +176,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsSurfacePolishEnabled;
+    private final boolean mIsSurfacePolishOmniboxColorEnabled;
+    private final boolean mIsInNightMode;
 
     @Nullable
     private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -373,6 +375,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mSettingsLauncher = settingsLauncher;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
+        mIsInNightMode = isInNightMode;
 
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
@@ -387,6 +390,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mIsSurfacePolishOmniboxColorEnabled = mIsSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
         if (mIsSurfacePolishEnabled) {
             mBackgroundColor = ChromeColors.getSurfaceColor(
                     mContext, R.dimen.home_surface_background_color_elevation);
@@ -490,7 +495,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid,
-                mIsNtpAsHomeSurfaceEnabled, mIsSurfacePolishEnabled);
+                mIsNtpAsHomeSurfaceEnabled, mIsSurfacePolishEnabled,
+                mIsSurfacePolishOmniboxColorEnabled);
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.
@@ -938,9 +944,29 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Override
     public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
         if (isLocationBarShownInNTP()) {
-            return isLocationBarScrolledToTopInNtp()
-                    ? ChromeColors.getSurfaceColor(mContext, R.dimen.toolbar_text_box_elevation)
-                    : ChromeColors.getPrimaryBackgroundColor(mContext, false);
+            if (!mIsSurfacePolishEnabled) {
+                return isLocationBarScrolledToTopInNtp()
+                        ? ChromeColors.getSurfaceColor(mContext, R.dimen.toolbar_text_box_elevation)
+                        : ChromeColors.getPrimaryBackgroundColor(mContext, false);
+            }
+
+            if (!isLocationBarScrolledToTopInNtp()) {
+                return ChromeColors.getSurfaceColor(
+                        mContext, R.dimen.home_surface_background_color_elevation);
+            }
+
+            if (mIsSurfacePolishOmniboxColorEnabled) {
+                if (mIsInNightMode) {
+                    return mContext.getColor(R.color.color_primary_with_alpha_20);
+                } else {
+                    return SemanticColorUtils.getColorPrimaryContainer(mContext);
+                }
+            }
+
+            // When only enable the Surface Polish flag and the location bar has been scrolled
+            // to top.
+            return ChromeColors.getSurfaceColor(
+                    mContext, R.dimen.home_surface_search_box_background_neutral_color_elevation);
         }
         return defaultColor;
     }

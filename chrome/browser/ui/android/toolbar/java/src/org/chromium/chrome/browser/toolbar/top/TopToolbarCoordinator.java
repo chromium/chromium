@@ -746,7 +746,8 @@ public class TopToolbarCoordinator implements Toolbar {
         boolean showToolbar = mStartSurfaceToolbarCoordinator.shouldShowRealSearchBox()
                 || (isShowingStartSurfaceTabSwitcher() && !mStartSurfaceToolbarVisible);
         mToolbarLayout.onStartSurfaceStateChanged(showToolbar,
-                mStartSurfaceToolbarCoordinator.isOnHomepage(), isShowingStartSurfaceTabSwitcher());
+                mStartSurfaceToolbarCoordinator.isOnHomepage(), isShowingStartSurfaceTabSwitcher(),
+                mStartSurfaceToolbarCoordinator.isRealSearchBoxFocused());
     }
 
     private boolean isShowingStartSurfaceTabSwitcher() {
