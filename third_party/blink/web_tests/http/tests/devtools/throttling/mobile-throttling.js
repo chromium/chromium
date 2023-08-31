@@ -12,7 +12,6 @@ import * as Network from 'devtools/panels/network/network.js';
   await TestRunner.showPanel("timeline");
   await TestRunner.loadLegacyModule('emulation');
   await TestRunner.loadLegacyModule('mobile_throttling');
-  await TestRunner.loadLegacyModule('network');
   await UI.viewManager.showView("network.config");
 
   var deviceModeView = new Emulation.DeviceModeView();
