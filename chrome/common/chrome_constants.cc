@@ -6,7 +6,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/common/chrome_version.h"
 
 #define FPL FILE_PATH_LITERAL

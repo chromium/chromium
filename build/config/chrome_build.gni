@@ -33,13 +33,11 @@ declare_args() {
   }
 }
 
-assert(
-    !is_chrome_for_testing || !is_chrome_branded,
-    "`is_chrome_for_testing = true` is incompatible with `is_chrome_branded = true`")
+assert(!is_chrome_for_testing || !is_chrome_branded,
+       "`is_chrome_for_testing` is incompatible with `is_chrome_branded`")
 
-assert(
-    is_chrome_for_testing || !is_chrome_for_testing_branded,
-    "`is_chrome_for_testing_branded = true` requires `is_chrome_for_testing = true`")
+assert(is_chrome_for_testing || !is_chrome_for_testing_branded,
+       "`is_chrome_for_testing_branded` requires `is_chrome_for_testing`")
 
 declare_args() {
   # Refers to the subdirectory for branding in various places including

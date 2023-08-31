@@ -24,7 +24,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/shortcut.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"

@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/startup/infobar_utils.h"
 
 #include "base/command_line.h"
+#include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

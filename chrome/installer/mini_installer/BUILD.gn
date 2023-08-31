@@ -59,10 +59,7 @@ source_set("lib") {
     "write_to_disk.h",
   ]
 
-  deps = [
-    "//build:branding_buildflags",
-    "//chrome/browser/chrome_for_testing:buildflags",
-  ]
+  deps = [ "//build:branding_buildflags" ]
 
   # Initialization may insert unexpected memset calls.
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]

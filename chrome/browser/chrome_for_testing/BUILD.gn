@@ -10,26 +10,6 @@ if (is_linux) {
   import("//build/linux/strip_binary.gni")
 }
 
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-
-  if (is_chrome_for_testing) {
-    flags = [ "CHROME_FOR_TESTING=1" ]
-  } else {
-    flags = [ "CHROME_FOR_TESTING=0" ]
-  }
-
-  # Note:
-  # - `GOOGLE_CHROME_FOR_TESTING_BRANDING` and `GOOGLE_CHROME_BRANDING` are
-  #   mutually exclusive.
-  # - `GOOGLE_CHROME_FOR_TESTING_BRANDING` and `CHROMIUM_BRANDING` are not.
-  if (is_chrome_for_testing_branded) {
-    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=1" ]
-  } else {
-    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=0" ]
-  }
-}
-
 if (is_linux && is_chrome_for_testing) {
   group("strip_linux_files") {
     deps = [

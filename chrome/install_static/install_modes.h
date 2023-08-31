@@ -31,7 +31,6 @@
 #include <string>
 
 #include "build/branding_buildflags.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_constants.h"
 
 // Include the brand-specific values. Each of these must define:

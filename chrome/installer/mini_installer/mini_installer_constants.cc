@@ -5,7 +5,6 @@
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
 
 #include "build/branding_buildflags.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 
 namespace mini_installer {
 

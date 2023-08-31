@@ -11,7 +11,6 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

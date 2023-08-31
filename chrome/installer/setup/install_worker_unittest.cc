@@ -16,7 +16,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"

@@ -20,7 +20,7 @@
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
+#include "build/branding_buildflags.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

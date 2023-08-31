@@ -12,7 +12,6 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_details.h"
