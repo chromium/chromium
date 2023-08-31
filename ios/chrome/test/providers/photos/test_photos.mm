@@ -4,41 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
-#import "base/cancelable_callback.h"
-#import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/photos/photos_service.h"
-
-class TestPhotosService final : public PhotosService {
- public:
-  TestPhotosService() = default;
-  ~TestPhotosService() final = default;
-
-  bool IsAvailable() const final {
-    return !cancelable_upload_completion_.callback();
-  }
-
-  void UploadImage(NSString* image_name,
-                   NSData* image_data,
-                   id<SystemIdentity> identity,
-                   UploadProgressCallback progress_callback,
-                   UploadCompletionCallback completion_callback) final {
-    UploadResult result;
-    result.successful = true;
-    cancelable_upload_completion_.Reset(
-        base::BindOnce(std::move(completion_callback), result));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, cancelable_upload_completion_.callback());
-  }
-
-  void CancelUpload() final {
-    if (!cancelable_upload_completion_.IsCancelled()) {
-      cancelable_upload_completion_.Cancel();
-    }
-  }
-
- private:
-  base::CancelableOnceClosure cancelable_upload_completion_;
-};
+#import "ios/chrome/test/providers/photos/test_photos_service.h"
 
 namespace ios {
 namespace provider {
