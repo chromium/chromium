@@ -83,11 +83,25 @@ struct MEDIA_EXPORT Vp9Metadata final {
 
   // The temporal index for this frame.
   uint8_t temporal_idx = 0;
-  // The spatial index for this frame.
+  // The spatial index for this frame. This is based on the index which always
+  // start with zero. In other words, the |spatial_idx| is in the range of [0,
+  // |end_active_spatial_layer_index| - |begin_active_spatial_layer_index|).
   uint8_t spatial_idx = 0;
   // The resolutions of active spatial layers, filled if and only if keyframe or
-  // the number of active spatial layers is changed.
+  // the number of active spatial layers is changed. This contains only the
+  // resolutions of the active spatial layers. Therefore, every gfx::Size is not
+  // gfx::Size(0, 0).
   std::vector<gfx::Size> spatial_layer_resolutions;
+  // The active spatial layer indices in the spatial layers configured in
+  // Initialize(). This is filled if and only if |spatial_layer_resolutions| is
+  // filled. |spatial_layer_resolutions.size()| is always the same as
+  // |end_active_spatial_layer_index| - |begin_active_spatial_layer_index|.
+  // The GPU process ensures they are less than three, or
+  // VP9SVCLayers::kMaxSpatialLayers. But when we send the struct over mojom, we
+  // don't ensure them in the traits. So the receiver in blink also checks these
+  // validity in the renderer process.
+  uint8_t begin_active_spatial_layer_index = 0;
+  uint8_t end_active_spatial_layer_index = 0;
 
   // The differences between the picture id of this frame and picture ids
   // of reference frames, only be filled for non key frames.

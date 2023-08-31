@@ -7,6 +7,7 @@
 #include <bitset>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vp9_picture.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -191,9 +192,9 @@ VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers)
   active_spatial_layer_resolutions_ = spatial_layer_resolutions_;
   begin_active_layer_ = 0;
   end_active_layer_ = active_spatial_layer_resolutions_.size();
-  DCHECK_LE(num_temporal_layers_, kMaxSupportedTemporalLayers);
-  DCHECK(!spatial_layer_resolutions_.empty());
-  DCHECK_LE(spatial_layer_resolutions_.size(), kMaxSpatialLayers);
+  CHECK_LE(num_temporal_layers_, kMaxSupportedTemporalLayers);
+  CHECK(!spatial_layer_resolutions_.empty());
+  CHECK_LE(spatial_layer_resolutions_.size(), kMaxSpatialLayers);
 }
 
 VP9SVCLayers::~VP9SVCLayers() = default;
@@ -453,6 +454,13 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
   // changed, keyframe is requested.
   if (frame_num_ == 0 && spatial_idx_ == 0) {
     metadata->spatial_layer_resolutions = active_spatial_layer_resolutions_;
+    // |begin_active_layer_| and |end_active_layer_| are less than
+    // |spatial_layer_resolutions_.size()|, which is
+    // VP9SVCLayers::kMaxSpatialLayers at most.
+    metadata->begin_active_spatial_layer_index =
+        base::checked_cast<uint8_t>(begin_active_layer_);
+    metadata->end_active_spatial_layer_index =
+        base::checked_cast<uint8_t>(end_active_layer_);
     return;
   }
 

@@ -267,6 +267,10 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
   out_metadata->end_of_picture = data.end_of_picture();
   out_metadata->temporal_idx = data.temporal_idx();
   out_metadata->spatial_idx = data.spatial_idx();
+  out_metadata->begin_active_spatial_layer_index =
+      data.begin_active_spatial_layer_index();
+  out_metadata->end_active_spatial_layer_index =
+      data.end_active_spatial_layer_index();
   return data.ReadSpatialLayerResolutions(
              &out_metadata->spatial_layer_resolutions) &&
          data.ReadPDiffs(&out_metadata->p_diffs);

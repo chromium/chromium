@@ -307,6 +307,13 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
       const media::Vp9Metadata& vp9) {
     return vp9.spatial_layer_resolutions;
   }
+  static uint8_t begin_active_spatial_layer_index(
+      const media::Vp9Metadata& vp9) {
+    return vp9.begin_active_spatial_layer_index;
+  }
+  static uint8_t end_active_spatial_layer_index(const media::Vp9Metadata& vp9) {
+    return vp9.end_active_spatial_layer_index;
+  }
   static const std::vector<uint8_t>& p_diffs(const media::Vp9Metadata& vp9) {
     return vp9.p_diffs;
   }

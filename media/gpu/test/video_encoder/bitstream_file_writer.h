@@ -57,9 +57,7 @@ class BitstreamFileWriter : public BitstreamProcessor {
   const absl::optional<size_t> temporal_layer_index_to_write_;
   const std::vector<gfx::Size> spatial_layer_resolutions_;
 
-  // The conversion table from the current spatial index to the spatial index of
-  // the initial spatial layers. Constructed in ConstructSpatialIndices().
-  std::vector<uint8_t> original_spatial_indices_;
+  uint8_t begin_active_spatial_layer_index_ = 0;
 
   // The number of buffers currently queued for writing.
   size_t num_buffers_writing_ GUARDED_BY(writer_lock_);

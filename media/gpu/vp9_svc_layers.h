@@ -63,6 +63,8 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
   }
 
  private:
+  friend class VP9SVCLayersTest;
+
   // Useful functions to construct refresh flag and detect reference frames
   // from the flag.
   void FillVp9MetadataForEncoding(
@@ -84,10 +86,6 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
   // Resolutions for all spatial layers and active spatial layers.
   std::vector<gfx::Size> spatial_layer_resolutions_;
   std::vector<gfx::Size> active_spatial_layer_resolutions_;
-
-  // Stores the active layer range, only used to judge whether active range has
-  // changed in |MaybeUpdateActiveLayer|, then
-  // |active_spatial_layer_resolutions_| needs update.
   size_t begin_active_layer_;
   size_t end_active_layer_;
 

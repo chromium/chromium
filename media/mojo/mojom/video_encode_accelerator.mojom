@@ -277,6 +277,8 @@ struct Vp9Metadata {
   uint8 temporal_idx;
   uint8 spatial_idx;
   array<gfx.mojom.Size> spatial_layer_resolutions;
+  uint8 begin_active_spatial_layer_index;
+  uint8 end_active_spatial_layer_index;
   array<uint8> p_diffs;
 };
 

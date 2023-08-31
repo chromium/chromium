@@ -71,6 +71,13 @@ class VP9SVCLayersTest
                           size_t num_spatial_layers,
                           const Vp9Metadata& metadata);
 
+  void VerifyActiveLayer(const VP9SVCLayers& svc_layers,
+                         size_t expected_begin,
+                         size_t expected_end) {
+    EXPECT_EQ(svc_layers.begin_active_layer_, expected_begin);
+    EXPECT_EQ(svc_layers.end_active_layer_, expected_end);
+  }
+
  private:
   std::vector<uint8_t> temporal_indices_[VP9SVCLayers::kMaxSpatialLayers];
   uint8_t spatial_index_;
@@ -207,6 +214,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   DCHECK_LT(kNumSpatialLayers, VideoBitrateAllocation::kMaxSpatialLayers);
   DCHECK_LT(kNumTemporalLayers, VideoBitrateAllocation::kMaxTemporalLayers);
   EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+  VerifyActiveLayer(svc_layers, 0, 3);
 
   // Set unsupported temporal layer bitrate to 0.
   for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
@@ -218,6 +226,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   // MaybeUpdateActiveLayer() returns false because the given allocation has
   // non-zero bitrate at higher spatial layers than |kNumSpatialLayers|.
   EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+  VerifyActiveLayer(svc_layers, 0, 3);
 
   // Set unsupported spatial layer bitrate to 0.
   for (size_t sid = kNumSpatialLayers;
@@ -232,10 +241,13 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_EQ(svc_layers.active_spatial_layer_resolutions(),
             kSpatialLayerResolutions);
   EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
+  VerifyActiveLayer(svc_layers, 0, 3);
 
   // Set lower temporal layer bitrate to zero, e.g. {0, 2, 3}.
   allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 0u);
   EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+  VerifyActiveLayer(svc_layers, 0, 3);
+
   allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 1u);
 
   // Set the bitrate of top temporal layer in SL2 to 0, e.g. {1, 2, 0}.
@@ -243,6 +255,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   // means the number of temporal layers are different among spatial layers.
   allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/2, 0u);
   EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+  VerifyActiveLayer(svc_layers, 0, 3);
   allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/2, 3u);
 
   // Deactivate SL0 and SL1 and verify the new bitrate allocation.
@@ -255,6 +268,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
   EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
               ::testing::ElementsAre(kSpatialLayerResolutions[2]));
+  VerifyActiveLayer(svc_layers, 2, 3);
   EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
   for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
@@ -276,6 +290,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
               ::testing::ElementsAre(kSpatialLayerResolutions[0],
                                      kSpatialLayerResolutions[1]));
+  VerifyActiveLayer(svc_layers, 0, 2);
   EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
   for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
@@ -292,6 +307,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
   EXPECT_EQ(svc_layers.active_spatial_layer_resolutions(),
             kSpatialLayerResolutions);
+  VerifyActiveLayer(svc_layers, 0, 3);
   EXPECT_EQ(svc_layers.num_temporal_layers(), kNumTemporalLayers);
 
   // L3T3 -> L1T1 by deactivating SL1 and SL2.
@@ -300,6 +316,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
   EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
               ::testing::ElementsAre(kSpatialLayerResolutions[0]));
+  VerifyActiveLayer(svc_layers, 0, 1);
   EXPECT_EQ(svc_layers.num_temporal_layers(), 1u);
   for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
@@ -322,6 +339,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_THAT(svc_layers.active_spatial_layer_resolutions(),
               ::testing::ElementsAre(kSpatialLayerResolutions[1],
                                      kSpatialLayerResolutions[2]));
+  VerifyActiveLayer(svc_layers, 1, 3);
   EXPECT_EQ(svc_layers.num_temporal_layers(), 3u);
   for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
@@ -344,6 +362,7 @@ TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
   EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
   EXPECT_EQ(svc_layers.active_spatial_layer_resolutions(),
             kSpatialLayerResolutions);
+  VerifyActiveLayer(svc_layers, 0, 3);
   EXPECT_EQ(svc_layers.num_temporal_layers(), 2u);
   for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
     for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
