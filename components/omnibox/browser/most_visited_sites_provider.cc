@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +19,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -87,7 +87,37 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kMostVisitedTilesHorizontalRenderGroup)) {
+    auto* const url_service = client->GetTemplateURLService();
+    auto* const dse = url_service->GetDefaultSearchProvider();
+    int relevance = 100;
+    for (const auto& tile : container) {
+      // TODO(crbug/1474087): pass this information from History layer via
+      // history::MostVisitedURL.
+      bool is_search =
+          url_service->IsSearchResultsPageFromDefaultSearchProvider(tile.url);
+      auto match =
+          BuildMatch(provider, client, tile.title, tile.url, relevance,
+                     is_search ? AutocompleteMatchType::TILE_REPEATABLE_QUERY
+                               : AutocompleteMatchType::TILE_MOST_VISITED_SITE);
+      if (is_search) {
+        match.keyword = dse->keyword();
+        std::u16string query = tile.title;
+
+        if (dse->url_ref().SupportsReplacement(
+                url_service->search_terms_data())) {
+          dse->ExtractSearchTermsFromURL(
+              tile.url, url_service->search_terms_data(), &query);
+        }
+        match.fill_into_edit = query;
+        match.contents = query;
+        match.suggest_type = omnibox::TYPE_QUERY;
+      }
+      matches.emplace_back(std::move(match));
+      --relevance;
+    }
+  } else if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
         provider, client, std::u16string(), GURL::EmptyGURL(),
         kMostVisitedTilesRelevance, AutocompleteMatchType::TILE_NAVSUGGEST);
@@ -252,7 +282,9 @@ void MostVisitedSitesProvider::BlockURL(const GURL& site_url) {
 }
 
 void MostVisitedSitesProvider::DeleteMatch(const AutocompleteMatch& match) {
-  DCHECK_EQ(match.type, AutocompleteMatchType::NAVSUGGEST);
+  DCHECK(match.type == AutocompleteMatchType::NAVSUGGEST ||
+         match.type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
+         match.type == AutocompleteMatchType::TILE_REPEATABLE_QUERY);
 
   BlockURL(match.destination_url);
   for (auto i = matches_.begin(); i != matches_.end(); ++i) {
@@ -262,6 +294,7 @@ void MostVisitedSitesProvider::DeleteMatch(const AutocompleteMatch& match) {
     }
   }
 }
+
 void MostVisitedSitesProvider::DeleteMatchElement(
     const AutocompleteMatch& source_match,
     size_t element_index) {

@@ -86,6 +86,12 @@ struct AutocompleteMatchType {
                                        // cannot be opened or acted upon.
     STARTER_PACK                = 33,  // A URL suggestion that a starter pack
                                        // keyword mode chip attaches to.
+    TILE_MOST_VISITED_SITE      = 34,  // Most Visited Site, shown in a
+                                       // Horizontal Render Group.
+                                       // Different from TILE_NAVSUGGEST which
+                                       // is an aggregate type by itself.
+    TILE_REPEATABLE_QUERY       = 35,  // Organic Repeatable Query, shown in a
+                                       // Horizontal Render Group.
     NUM_TYPES,
   };
   // clang-format on

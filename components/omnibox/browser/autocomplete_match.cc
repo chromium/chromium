@@ -514,6 +514,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case Type::TAB_SEARCH_DEPRECATED:
     case Type::TILE_NAVSUGGEST:
+    case Type::TILE_MOST_VISITED_SITE:
     case Type::OPEN_TAB:
       return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
                                       : omnibox::kPageIcon;
@@ -541,6 +542,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CLIPBOARD_TEXT:
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
+    case Type::TILE_REPEATABLE_QUERY:
       return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
                                       : vector_icons::kSearchIcon;
 
@@ -810,6 +812,7 @@ bool AutocompleteMatch::IsSpecializedSearchType(Type type) {
          type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
          type == AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED ||
          type == AutocompleteMatchType::TILE_SUGGESTION ||
+         type == AutocompleteMatchType::TILE_REPEATABLE_QUERY ||
          type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
 }
 
@@ -829,13 +832,17 @@ bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
          type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
          type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+         type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
+         type == AutocompleteMatchType::TILE_REPEATABLE_QUERY ||
          type == AutocompleteMatchType::TILE_SUGGESTION;
 }
 
 // static
 omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
   if (type == AutocompleteMatchType::TILE_NAVSUGGEST ||
-      type == AutocompleteMatchType::TILE_SUGGESTION) {
+      type == AutocompleteMatchType::TILE_SUGGESTION ||
+      type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
+      type == AutocompleteMatchType::TILE_REPEATABLE_QUERY) {
     return omnibox::GROUP_MOBILE_MOST_VISITED;
   }
 
@@ -1208,6 +1215,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
       return OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED;
     case AutocompleteMatchType::SEARCH_HISTORY:
+    case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
       return OmniboxEventProto::Suggestion::SEARCH_HISTORY;
     case AutocompleteMatchType::SEARCH_SUGGEST:
       return OmniboxEventProto::Suggestion::SEARCH_SUGGEST;
@@ -1240,6 +1248,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
     case AutocompleteMatchType::TILE_SUGGESTION:
       return OmniboxEventProto::Suggestion::TILE_SUGGESTION;
     case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
       return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::OPEN_TAB:
       return OmniboxEventProto::Suggestion::OPEN_TAB;

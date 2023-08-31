@@ -66,6 +66,8 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
     case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
+    case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
       NOTREACHED();
       return OmniboxSuggestionIconType::kDefaultFavicon;
   }
