@@ -470,6 +470,11 @@ const struct QuicErrorMapping {
     // Error code related to backend health-check.
     {quic::QUIC_SERVER_UNHEALTHY, "quic.quic_server_unhealthy"},
 
+    // Error code related to handshake failure due to packets buffered for too
+    // long.
+    {quic::QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG,
+     "quic.quic_handshake_failed_packets_buffered_too_long"},
+
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 
