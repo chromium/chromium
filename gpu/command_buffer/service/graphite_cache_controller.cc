@@ -34,16 +34,27 @@ GraphiteCacheController::~GraphiteCacheController() {
 
 void GraphiteCacheController::ScheduleCleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Cleanup resources which are not used in 5 seconds.
+  constexpr std::chrono::seconds kNotUseTime{5};
+  if (context_) {
+    context_->performDeferredCleanup(kNotUseTime);
+  }
+  if (recorder_) {
+    recorder_->performDeferredCleanup(kNotUseTime);
+  }
+  // Reset the timer, so PerformCleanup() will be called until ScheduleCleanup()
+  // is not called for 5 seconds.
   timer_->Reset();
 }
 
 void GraphiteCacheController::PerformCleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Cleanup all unused resources.
   if (context_) {
-    // TODO(crbug.com/1472451): cleanup resources in context_;
+    context_->freeGpuResources();
   }
   if (recorder_) {
-    // TODO(crbug.com/1472451): cleanup resources in recorder_
+    recorder_->freeGpuResources();
   }
 }
 
