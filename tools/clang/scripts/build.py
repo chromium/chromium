@@ -712,6 +712,10 @@ def main():
   parser.add_argument('--with-goma',
                       action='store_true',
                       help='Use goma to build the stage 1 compiler')
+  parser.add_argument('--without-zstd',
+                      dest='with_zstd',
+                      action='store_false',
+                      help='Disable zstd in the build')
 
   args = parser.parse_args()
 
@@ -843,6 +847,7 @@ def main():
       '-DLLVM_ENABLE_CURL=OFF',
       # Build libclang.a as well as libclang.so
       '-DLIBCLANG_BUILD_STATIC=ON',
+      '-DLLVM_ENABLE_ZSTD=%s' % ('ON' if args.with_zstd else 'OFF'),
   ]
 
   if sys.platform == 'darwin':
@@ -931,11 +936,12 @@ def main():
   cflags += libxml_cflags
   cxxflags += libxml_cflags
 
-  # Statically link zstd to make lld support zstd compression for debug info.
-  zstd_cmake_args, zstd_cflags = BuildZStd()
-  base_cmake_args += zstd_cmake_args
-  cflags += zstd_cflags
-  cxxflags += zstd_cflags
+  if args.with_zstd:
+    # Statically link zstd to make lld support zstd compression for debug info.
+    zstd_cmake_args, zstd_cflags = BuildZStd()
+    base_cmake_args += zstd_cmake_args
+    cflags += zstd_cflags
+    cxxflags += zstd_cflags
 
   if args.bootstrap:
     print('Building bootstrap compiler')
@@ -1494,7 +1500,8 @@ def main():
   if not args.build_mac_arm:
     VerifyVersionOfBuiltClangMatchesVERSION()
     VerifyZlibSupport()
-  VerifyZStdSupport()
+  if args.with_zstd:
+    VerifyZStdSupport()
 
   # Run tests.
   if (not args.build_mac_arm and
