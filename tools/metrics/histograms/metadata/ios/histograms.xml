@@ -490,20 +490,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IOS.CRWWKNavigationStatesRemoveOldPending" enum="Boolean"
-    expires_after="2023-09-17">
-  <owner>justincohen@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Workaround for a WKWebView bug where WKNavigations can leak, leaving a
-    permanent pending URL, thus breaking the omnibox. While it is possible for
-    navigations to finish out-of-order, it's an edge case that should be handled
-    gracefully, as last committed will appear in the omnibox instead of the
-    pending URL. This metric records whether there are old navigations to clean
-    up each time a navigation finishes. See crbug.com/1010765 for details.
-  </summary>
-</histogram>
-
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2023-12-01">
   <owner>sebsg@chromium.org</owner>

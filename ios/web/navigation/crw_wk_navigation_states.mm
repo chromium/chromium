@@ -165,9 +165,6 @@
     for (id recordKey in navigationsToRemove) {
       [_records removeObjectForKey:recordKey];
     }
-
-    UMA_HISTOGRAM_BOOLEAN("IOS.CRWWKNavigationStatesRemoveOldPending",
-                          navigationsToRemove.count > 0);
   }
 
   [_records setObject:record forKey:key];
