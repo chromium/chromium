@@ -463,13 +463,13 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
   const bool is_fullscreen =
       (frame()->IsFullscreen() || IsMaximized()) && !restored;
   if (!is_fullscreen) {
-    // Restored windows have a smaller top resize handle than the system
-    // default. When maximized, the OS sizes the window such that the border
-    // extends beyond the screen edges. In that case, we must return the default
-    // value.
-    constexpr int kTopResizeFrameArea = 5;
     if (browser_view()->GetTabStripVisible()) {
-      return features::IsChromeRefresh2023() ? 0 : kTopResizeFrameArea;
+      // Restored windows have a smaller top resize handle than the system
+      // default. When maximized, the OS sizes the window such that the border
+      // extends beyond the screen edges. In that case, we must return the
+      // default value.
+      const int kTopResizeFrameArea = features::IsChromeRefresh2023() ? 1 : 5;
+      return kTopResizeFrameArea;
     }
 
     // There is no top border in tablet mode when the window is "restored"
