@@ -803,6 +803,13 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
 
   if (BeginFrameAcksEnabled()) {
     EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(0);
+    EXPECT_CALL(support_client_, OnBeginFrame(_, _, _, _))
+        .WillRepeatedly([=](const BeginFrameArgs& args,
+                            const FrameTimingDetailsMap& timing_details,
+                            bool frame_ack, std::vector<ReturnedResource> got) {
+          EXPECT_EQ(0u, got.size());
+        });
+    SendNextBeginFrame();
   } else {
     std::vector<ReturnedResource> returned_resources;
     ResourceId id = resource.ToReturnedResource().id;

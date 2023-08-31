@@ -83,7 +83,7 @@ bool BeginFrameArgsAreEquivalent(const BeginFrameArgs& first,
 }
 
 std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
-  return info.param ? "BeginFrameAcks" : "CompositoFrameAcks";
+  return info.param ? "BeginFrameAcks" : "CompositorFrameAcks";
 }
 
 }  // namespace
@@ -1253,9 +1253,24 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
 
+  // The ACK from the last submitted frame arrives. If BeginFrameAcks is enabled
+  // this results in the client immediately receiving a MISSED begin-frame.
+  support_->SendCompositorFrameAck();
+  if (BeginFrameAcksEnabled()) {
+    received_args = GetLastUsedBeginFrameArgs(support_.get());
+    EXPECT_TRUE(BeginFrameArgsAreEquivalent(args, received_args));
+    EXPECT_EQ(received_args.type, BeginFrameArgs::MISSED);
+
+    // Issue a new BeginFrame. This time, the client should not receive it since
+    // it has stopped asking for begin-frames.
+    args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 3);
+    begin_frame_source_.TestOnBeginFrame(args);
+    received_args = GetLastUsedBeginFrameArgs(support_.get());
+    EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
+  }
+
   // The presentation-feedback from the last submitted frame arrives. This
   // results in the client immediately receiving a MISSED begin-frame.
-  support_->SendCompositorFrameAck();
   SendPresentationFeedback(support_.get(), token);
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_TRUE(BeginFrameArgsAreEquivalent(args, received_args));
@@ -1264,7 +1279,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   // Issue another begin-frame. This time, the client should not receive it
   // anymore since it has stopped asking for begin-frames, and it has already
   // received the last presentation-feedback.
-  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 3);
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 3, 4);
   begin_frame_source_.TestOnBeginFrame(args);
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));

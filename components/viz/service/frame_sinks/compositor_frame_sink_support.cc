@@ -855,6 +855,7 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
       (!base::FeatureList::IsEnabled(features::kOnBeginFrameAllowLateAcks) ||
        !ack_pending_during_on_begin_frame_)) {
     ack_queued_for_client_count_++;
+    UpdateNeedsBeginFramesInternal();
     return;
   }
 
@@ -1028,13 +1029,15 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
 
   // We require a begin frame if there's a callback pending, or if the client
   // requested it, or if the client needs to get some frame timing details, or
-  // if there are resources to return.
+  // if the client is waiting for a frame ack, or if there are resources to
+  // return.
   needs_begin_frame_ =
       (client_needs_begin_frame_ || !frame_timing_details_.empty() ||
        !pending_surfaces_.empty() ||
        (compositor_frame_callback_ && !callback_received_begin_frame_) ||
        (ShouldMergeBeginFrameWithAcks() &&
-        !surface_returned_resources_.empty()));
+        (!surface_returned_resources_.empty() ||
+         ack_queued_for_client_count_)));
 
   if (bundle_id_.has_value()) {
     // When bundled with other sinks, observation of BeginFrame notifications is
@@ -1227,6 +1230,12 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   // then the client needs to receive the begin-frame.
   if (!frame_timing_details_.empty() && !should_throttle_as_requested) {
     return RecordShouldSendBeginFrame("SendFrameTiming", true);
+  }
+
+  // If the client is waiting for an ack from a previously submitted frame, then
+  // the client needs to receive the begin-frame.
+  if (ack_queued_for_client_count_ && !should_throttle_as_requested) {
+    return RecordShouldSendBeginFrame("SendFrameAck", true);
   }
 
   if (!client_needs_begin_frame_) {
