@@ -220,6 +220,7 @@ class AccountSelectionViewBinder {
         TextView textView = view.findViewById(R.id.idp_signin);
         textView.setText(String.format(
                 context.getString(R.string.idp_signin_status_mismatch_dialog_body, idpForDisplay)));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -350,6 +351,7 @@ class AccountSelectionViewBinder {
                     model.get(HeaderProperties.IDP_FOR_DISPLAY),
                     model.get(HeaderProperties.RP_CONTEXT));
             headerTitleText.setText(title);
+            headerTitleText.setMovementMethod(LinkMovementMethod.getInstance());
 
             // Make instructions for closing the bottom sheet part of the header's content
             // description. This is needed because the bottom sheet's content description (which

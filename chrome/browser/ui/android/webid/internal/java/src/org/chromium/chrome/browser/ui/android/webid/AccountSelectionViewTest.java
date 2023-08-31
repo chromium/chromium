@@ -131,7 +131,7 @@ public class AccountSelectionViewTest {
         assertEquals("Incorrect title",
                 mResources.getString(R.string.account_selection_sheet_title_explicit_signin,
                         "example.org", "idp.org"),
-                title.getText());
+                title.getText().toString());
         assertEquals("Incorrect subtitle", "", subtitle.getText());
     }
 
@@ -152,7 +152,7 @@ public class AccountSelectionViewTest {
         assertEquals("Incorrect title",
                 mResources.getString(R.string.account_selection_sheet_title_explicit_signin,
                         "iframe-example.org", "idp.org"),
-                title.getText());
+                title.getText().toString());
         assertEquals("Incorrect subtitle",
                 mResources.getString(
                         R.string.account_selection_sheet_subtitle_explicit, "example.org"),
@@ -173,7 +173,7 @@ public class AccountSelectionViewTest {
         TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
 
         assertEquals("Incorrect title", mResources.getString(R.string.verify_sheet_title),
-                title.getText());
+                title.getText().toString());
         assertEquals("Incorrect subtitle", "", subtitle.getText());
     }
 
@@ -191,7 +191,8 @@ public class AccountSelectionViewTest {
         TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
 
         assertEquals("Incorrect title",
-                mResources.getString(R.string.verify_sheet_title_auto_reauthn), title.getText());
+                mResources.getString(R.string.verify_sheet_title_auto_reauthn),
+                title.getText().toString());
         assertEquals("Incorrect subtitle", "", subtitle.getText());
     }
 
@@ -305,7 +306,7 @@ public class AccountSelectionViewTest {
 
             assertEquals("Incorrect title",
                     mResources.getString(rpContext.mTitleId, "example.org", "idp.org"),
-                    title.getText());
+                    title.getText().toString());
             assertEquals("Incorrect subtitle", "", subtitle.getText());
         }
     }
@@ -327,7 +328,7 @@ public class AccountSelectionViewTest {
 
             assertEquals("Incorrect title",
                     mResources.getString(rpContext.mTitleId, "iframe-example.org", "idp.org"),
-                    title.getText());
+                    title.getText().toString());
             assertEquals("Incorrect subtitle",
                     mResources.getString(
                             R.string.account_selection_sheet_subtitle_explicit, "example.org"),
@@ -346,8 +347,8 @@ public class AccountSelectionViewTest {
                 R.string.idp_signin_status_mismatch_dialog_body, idpEtldPlusOne);
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
-        assertEquals(
-                "Incorrect IDP sign in mismatch body dialog text", expectedText, consent.getText());
+        assertEquals("Incorrect IDP sign in mismatch body dialog text", expectedText,
+                consent.getText().toString());
 
         mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(null, null));
         ButtonCompat continueButton =
