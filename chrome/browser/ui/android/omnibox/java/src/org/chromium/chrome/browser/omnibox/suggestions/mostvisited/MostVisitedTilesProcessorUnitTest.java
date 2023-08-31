@@ -54,6 +54,7 @@ import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -114,7 +115,9 @@ public final class MostVisitedTilesProcessorUnitTest {
     private List<ListItem> populateTilePropertiesForTiles(
             int placement, AutocompleteMatch.SuggestTile... tiles) {
         mProcessor.onNativeInitialized();
-        mMatch = new AutocompleteMatchBuilder().setSuggestTiles(Arrays.asList(tiles)).build();
+        mMatch = new AutocompleteMatchBuilder(OmniboxSuggestionType.TILE_NAVSUGGEST)
+                         .setSuggestTiles(Arrays.asList(tiles))
+                         .build();
         mProcessor.populateModel(mMatch, mPropertyModel, placement);
 
         return mPropertyModel.get(BaseCarouselSuggestionViewProperties.TILES);

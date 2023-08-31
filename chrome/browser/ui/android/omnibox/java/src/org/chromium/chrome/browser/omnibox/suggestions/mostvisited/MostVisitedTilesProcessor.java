@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,8 +64,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int matchIndex) {
-        return suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST;
+    public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
+        return match.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST;
     }
 
     @Override
@@ -74,7 +75,9 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public PropertyModel createModel() {
-        return new PropertyModel(BaseCarouselSuggestionViewProperties.ALL_KEYS);
+        return new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
+                .build();
     }
 
     @Override
@@ -91,81 +94,96 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int matchIndex) {
-        super.populateModel(suggestion, model, matchIndex);
+    public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
+        super.populateModel(match, model, matchIndex);
 
-        final List<AutocompleteMatch.SuggestTile> tiles = suggestion.getSuggestTiles();
-        final int tilesCount = tiles.size();
-        final List<ListItem> tileList = new ArrayList<>(tilesCount);
+        // Note: we should never show most visited tiles in incognito mode. Catch this early
+        // if we ever do.
+        assert model.get(SuggestionCommonProperties.COLOR_SCHEME) != BrandedColorScheme.INCOGNITO;
+
+        if (match.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
+            updateModelFromTileNavsuggest(match, model, matchIndex);
+        } else {
+            assert false : "Unsupported AutocompleteMatch type: " + match.getType();
+        }
+    }
+
+    private void updateModelFromTileNavsuggest(
+            AutocompleteMatch match, PropertyModel model, int matchIndex) {
+        List<AutocompleteMatch.SuggestTile> tiles = match.getSuggestTiles();
+        int tilesCount = tiles.size();
+        List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
 
         for (int elementIndex = 0; elementIndex < tilesCount; elementIndex++) {
-            final PropertyModel tileModel = new PropertyModel(TileViewProperties.ALL_KEYS);
             final SuggestTile tile = tiles.get(elementIndex);
             // Use website host text when the website title is empty (for example: gmail.com).
-            final String title = TextUtils.isEmpty(tile.title) ? tile.url.getHost() : tile.title;
-            final GURL url = tile.url;
-            final boolean isSearch = tile.isSearch && mEnableOrganicRepeatableQueries;
-            final int itemIndex = elementIndex;
-
-            tileModel.set(TileViewProperties.TITLE, title);
-            tileModel.set(TileViewProperties.TITLE_LINES, 1);
-            tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
-                    () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
-            tileModel.set(TileViewProperties.ON_CLICK, v -> {
-                OmniboxMetrics.recordSuggestTileTypeUsed(itemIndex, isSearch);
-                mSuggestionHost.onSuggestionClicked(suggestion, matchIndex, url);
-            });
-
-            final int elementIndexForDeletion = elementIndex;
-            tileModel.set(TileViewProperties.ON_LONG_CLICK, v -> {
-                mSuggestionHost.onDeleteMatchElement(suggestion, title, elementIndexForDeletion);
-                return true;
-            });
-
-            tileModel.set(TileViewProperties.ICON_TINT,
-                    ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
-            if (isSearch) {
-                // Note: we should never show most visited tiles in incognito mode. Catch this early
-                // if we ever do.
-                assert model.get(SuggestionCommonProperties.COLOR_SCHEME)
-                        != BrandedColorScheme.INCOGNITO;
-                tileModel.set(TileViewProperties.ICON,
-                        OmniboxResourceProvider.getDrawable(
-                                mContext, R.drawable.ic_suggestion_magnifier));
-                tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                        OmniboxResourceProvider.getString(mContext,
-                                R.string.accessibility_omnibox_most_visited_tile_search, title));
-            } else {
-                tileModel.set(TileViewProperties.ICON,
-                        OmniboxResourceProvider.getDrawable(mContext, R.drawable.ic_globe_24dp));
-                tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                        OmniboxResourceProvider.getString(mContext,
-                                R.string.accessibility_omnibox_most_visited_tile_navigate, title,
-                                url.getHost()));
-
-                tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
-                        mContext.getResources().getDimensionPixelSize(
-                                R.dimen.omnibox_small_icon_rounding_radius));
-                if (mImageSupplier != null) {
-                    mImageSupplier.fetchFavicon(url, icon -> {
-                        if (icon == null) {
-                            mImageSupplier.generateFavicon(url, fallback -> {
-                                tileModel.set(
-                                        TileViewProperties.ICON, new BitmapDrawable(fallback));
-                                tileModel.set(TileViewProperties.ICON_TINT, null);
-                            });
-                            return;
-                        }
-                        tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
-                        tileModel.set(TileViewProperties.ICON_TINT, null);
+            String title = TextUtils.isEmpty(tile.title) ? tile.url.getHost() : tile.title;
+            GURL url = tile.url;
+            boolean isSearch = tile.isSearch && mEnableOrganicRepeatableQueries;
+            final int index = elementIndex;
+            // clang-format off
+            PropertyModel tileModel = createTile(title, url, isSearch,
+                    v -> {
+                        OmniboxMetrics.recordSuggestTileTypeUsed(index, isSearch);
+                        mSuggestionHost.onSuggestionClicked(match, matchIndex, url);
+                    },
+                    v -> {
+                        mSuggestionHost.onDeleteMatchElement(match, title, index);
+                        return true;
                     });
-                }
-            }
+            // clang-format on
 
             tileList.add(new ListItem(
                     BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));
         }
+    }
 
-        model.set(BaseCarouselSuggestionViewProperties.TILES, tileList);
+    private PropertyModel createTile(String title, GURL url, boolean isSearch,
+            View.OnClickListener onClick, View.OnLongClickListener onLongClick) {
+        final PropertyModel tileModel = new PropertyModel(TileViewProperties.ALL_KEYS);
+
+        tileModel.set(TileViewProperties.TITLE, title);
+        tileModel.set(TileViewProperties.TITLE_LINES, 1);
+        tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
+                () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
+        tileModel.set(TileViewProperties.ON_CLICK, onClick);
+        tileModel.set(TileViewProperties.ON_LONG_CLICK, onLongClick);
+
+        tileModel.set(TileViewProperties.ICON_TINT,
+                ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
+        if (isSearch) {
+            tileModel.set(TileViewProperties.ICON,
+                    OmniboxResourceProvider.getDrawable(
+                            mContext, R.drawable.ic_suggestion_magnifier));
+            tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
+                    OmniboxResourceProvider.getString(mContext,
+                            R.string.accessibility_omnibox_most_visited_tile_search, title));
+        } else {
+            tileModel.set(TileViewProperties.ICON,
+                    OmniboxResourceProvider.getDrawable(mContext, R.drawable.ic_globe_24dp));
+            tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
+                    OmniboxResourceProvider.getString(mContext,
+                            R.string.accessibility_omnibox_most_visited_tile_navigate, title,
+                            url.getHost()));
+
+            tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
+                    mContext.getResources().getDimensionPixelSize(
+                            R.dimen.omnibox_small_icon_rounding_radius));
+            if (mImageSupplier != null) {
+                mImageSupplier.fetchFavicon(url, icon -> {
+                    if (icon == null) {
+                        mImageSupplier.generateFavicon(url, fallback -> {
+                            tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallback));
+                            tileModel.set(TileViewProperties.ICON_TINT, null);
+                        });
+                        return;
+                    }
+                    tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
+                    tileModel.set(TileViewProperties.ICON_TINT, null);
+                });
+            }
+        }
+
+        return tileModel;
     }
 }
