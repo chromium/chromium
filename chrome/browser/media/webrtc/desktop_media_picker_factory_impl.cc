@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
+#include "chrome/browser/media/webrtc/desktop_capturer_wrapper.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 #include "content/public/browser/desktop_capture.h"
@@ -69,8 +70,12 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         // If screen capture is not supported on the platform, then we should
         // not attempt to create an instance of NativeDesktopMediaList. Doing so
         // will hit a DCHECK.
-        std::unique_ptr<webrtc::DesktopCapturer> capturer =
+        std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer =
             content::desktop_capture::CreateScreenCapturer();
+        auto capturer = desktop_capturer
+                            ? std::make_unique<DesktopCapturerWrapper>(
+                                  std::move(desktop_capturer))
+                            : nullptr;
         if (!capturer)
           continue;
 
@@ -92,8 +97,12 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         // If window capture is not supported on the platform, then we should
         // not attempt to create an instance of NativeDesktopMediaList. Doing so
         // will hit a DCHECK.
-        std::unique_ptr<webrtc::DesktopCapturer> capturer =
+        std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer =
             content::desktop_capture::CreateWindowCapturer();
+        auto capturer = desktop_capturer
+                            ? std::make_unique<DesktopCapturerWrapper>(
+                                  std::move(desktop_capturer))
+                            : nullptr;
         if (!capturer)
           continue;
         // If the capturer is not going to enumerate current process windows

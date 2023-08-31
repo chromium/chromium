@@ -11,14 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
+#include "chrome/browser/media/webrtc/thumbnail_capturer.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/gfx/image/image.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-}
-namespace webrtc {
-class DesktopCapturer;
 }
 
 // Implementation of DesktopMediaList that shows native screens and
@@ -27,10 +25,10 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
  public:
   // |capturer| must exist.
   NativeDesktopMediaList(DesktopMediaList::Type type,
-                         std::unique_ptr<webrtc::DesktopCapturer> capturer);
+                         std::unique_ptr<ThumbnailCapturer> capturer);
 
   NativeDesktopMediaList(DesktopMediaList::Type type,
-                         std::unique_ptr<webrtc::DesktopCapturer> capturer,
+                         std::unique_ptr<ThumbnailCapturer> capturer,
                          bool add_current_process_windows);
 
   NativeDesktopMediaList(const NativeDesktopMediaList&) = delete;

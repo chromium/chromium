@@ -153,13 +153,13 @@ BASE_FEATURE(kWindowCaptureMacV2,
 }  // namespace
 
 class NativeDesktopMediaList::Worker
-    : public webrtc::DesktopCapturer::Callback,
+    : public ThumbnailCapturer::Consumer,
       public webrtc::DelegatedSourceListController::Observer {
  public:
   Worker(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
          base::WeakPtr<NativeDesktopMediaList> media_list,
          DesktopMediaList::Type type,
-         std::unique_ptr<webrtc::DesktopCapturer> capturer,
+         std::unique_ptr<ThumbnailCapturer> capturer,
          bool add_current_process_windows);
 
   Worker(const Worker&) = delete;
@@ -204,9 +204,13 @@ class NativeDesktopMediaList::Worker
 
   void RefreshNextThumbnail();
 
-  // webrtc::DesktopCapturer::Callback interface.
+  // ThumbnailCapturer::Consumer interface.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
+  void OnRecurrentCaptureResult(ThumbnailCapturer::Result result,
+                                std::unique_ptr<webrtc::DesktopFrame> frame,
+                                ThumbnailCapturer::SourceId source_id) override;
+  void OnSourceListUpdated() override;
 
   // webrtc::DelegatedSourceListController::Observer interface.
   void OnSelection() override;
@@ -219,7 +223,7 @@ class NativeDesktopMediaList::Worker
   base::WeakPtr<NativeDesktopMediaList> media_list_;
 
   DesktopMediaList::Type type_;
-  std::unique_ptr<webrtc::DesktopCapturer> capturer_;
+  std::unique_ptr<ThumbnailCapturer> capturer_;
   const bool add_current_process_windows_;
 
   bool delegated_source_list_has_selection_ = false;
@@ -238,7 +242,7 @@ NativeDesktopMediaList::Worker::Worker(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<NativeDesktopMediaList> media_list,
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    std::unique_ptr<ThumbnailCapturer> capturer,
     bool add_current_process_windows)
     : task_runner_(task_runner),
       media_list_(media_list),
@@ -491,6 +495,19 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
                                 weak_factory_.GetWeakPtr()));
 }
 
+void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
+    ThumbnailCapturer::Result result,
+    std::unique_ptr<webrtc::DesktopFrame> frame,
+    ThumbnailCapturer::SourceId source_id) {
+  // TODO(https://crbug.com/1471931): To be implemented in a follow-up CL.
+  NOTREACHED_NORETURN();
+}
+
+void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
+  // TODO(https://crbug.com/1471931): To be implemented in a follow-up CL.
+  NOTREACHED_NORETURN();
+}
+
 void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
   DCHECK(capturer_->GetDelegatedSourceListController());
   if (!delegated_source_list_has_selection_)
@@ -550,14 +567,14 @@ void NativeDesktopMediaList::Worker::OnError() {
 
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer)
+    std::unique_ptr<ThumbnailCapturer> capturer)
     : NativeDesktopMediaList(type,
                              std::move(capturer),
                              /*add_current_process_windows=*/false) {}
 
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    std::unique_ptr<ThumbnailCapturer> capturer,
     bool add_current_process_windows)
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultNativeDesktopMediaListUpdatePeriod)),
