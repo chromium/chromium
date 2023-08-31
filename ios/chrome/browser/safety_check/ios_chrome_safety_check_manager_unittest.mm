@@ -44,9 +44,6 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
 
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
-    registry->RegisterIntegerPref(
-        prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-        -1);
 
     local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* local_registry = local_pref_service_->registry();
@@ -65,6 +62,9 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
         prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
         NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
         PrefRegistry::LOSSY_PREF);
+    local_registry->RegisterIntegerPref(
+        prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+        -1);
 
     TestChromeBrowserState::Builder builder;
 
@@ -79,7 +79,8 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
                 web::BrowserState, password_manager::TestPasswordStore>));
 
     browser_state_ = builder.Build();
-    TestingApplicationContext::GetGlobal()->SetLocalState(pref_service_.get());
+    TestingApplicationContext::GetGlobal()->SetLocalState(
+        local_pref_service_.get());
 
     password_check_manager_ =
         IOSChromePasswordCheckManagerFactory::GetForBrowserState(
