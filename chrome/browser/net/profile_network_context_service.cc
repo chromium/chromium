@@ -1118,7 +1118,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   IpProtectionAuthTokenProvider* ip_protection_auth_token_getter =
       IpProtectionAuthTokenProvider::Get(profile_);
   if (ip_protection_auth_token_getter) {
-    ip_protection_auth_token_getter->SetReceiver(
+    ip_protection_auth_token_getter->AddReceiver(
         network_context_params->ip_protection_auth_token_getter
             .InitWithNewPipeAndPassReceiver());
   }

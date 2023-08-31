@@ -17,7 +17,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -85,13 +85,16 @@ class IpProtectionAuthTokenProvider
 
   static IpProtectionAuthTokenProvider* Get(Profile* profile);
 
-  void SetReceiver(
+  void AddReceiver(
       mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
           pending_receiver);
 
-  mojo::Receiver<network::mojom::IpProtectionAuthTokenGetter>&
-  receiver_for_testing() {
-    return receiver_;
+  mojo::ReceiverSet<network::mojom::IpProtectionAuthTokenGetter>&
+  receivers_for_testing() {
+    return receivers_;
+  }
+  mojo::ReceiverId receiver_id_for_testing() {
+    return receiver_id_for_testing_;
   }
 
   // Base time deltas for calculating `try_again_after`.
@@ -106,19 +109,26 @@ class IpProtectionAuthTokenProvider
 
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.
-  void RequestOAuthToken();
-  void OnRequestOAuthTokenCompleted(GoogleServiceAuthError error,
-                                    signin::AccessTokenInfo access_token_info);
+  void RequestOAuthToken(uint32_t batch_size,
+                         TryGetAuthTokensCallback callback);
+  void OnRequestOAuthTokenCompleted(
+      std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+          oauth_token_fetcher,
+      base::TimeTicks oauth_token_fetch_start_time,
+      uint32_t batch_size,
+      TryGetAuthTokensCallback callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
 
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.
-  void FetchBlindSignedToken(signin::AccessTokenInfo access_token_info);
+  void FetchBlindSignedToken(signin::AccessTokenInfo access_token_info,
+                             uint32_t batch_size,
+                             TryGetAuthTokensCallback callback);
   void OnFetchBlindSignedTokenCompleted(
+      base::TimeTicks bsa_get_tokens_start_time,
+      TryGetAuthTokensCallback callback,
       absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
-
-  // Reset `receiver_` and any other member variables that are associated with
-  // handling messages received via the bound message pipe.
-  void ResetReceiverAndAssociatedState();
 
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
@@ -129,6 +139,7 @@ class IpProtectionAuthTokenProvider
   void TryGetAuthTokensComplete(
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
           bsa_tokens,
+      TryGetAuthTokensCallback callback,
       IpProtectionTryGetAuthTokensResult result);
 
   // Calculates the backoff time for the given result, based on
@@ -148,32 +159,32 @@ class IpProtectionAuthTokenProvider
   // this is the same pointer as `blind_sign_auth_`.
   raw_ptr<quiche::BlindSignAuthInterface> bsa_ = nullptr;
 
-  // Used by `RequestOAuthToken()`.
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-      access_token_fetcher_;
-
-  // The batch size of the current request.
-  uint32_t batch_size_ = 0;
+  // Whether `Shutdown()` has been called.
+  bool is_shutting_down_ = false;
 
   // The result of the last call to `TryGetAuthTokens()`, and the
-  // backoff applied to `try_again_after`.
+  // backoff applied to `try_again_after`. These will be updated by calls from
+  // any receiver (so, from either the main profile or an associated incognito
+  // mode profile).
   IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
       IpProtectionTryGetAuthTokensResult::kSuccess;
   absl::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
-  // The callback for the executing `TryGetAuthTokens()` call.
-  TryGetAuthTokensCallback try_get_auth_tokens_callback_;
+  // The `mojo::Receiver` objects corresponding to the `mojo::PendingRemote`
+  // objects that get passed to the per-profile NetworkContexts in the network
+  // service for requesting blind-signed auth tokens. At any given time there
+  // should only be two receivers, one for the main profile and another one if
+  // an associated incognito window is opened. If one of the corresponding
+  // Network Contexts restarts, the corresponding receiver will automatically be
+  // removed and a new one bound as part of the Network Context initialization
+  // flow.
+  mojo::ReceiverSet<network::mojom::IpProtectionAuthTokenGetter> receivers_;
+  // The `mojo::ReceiverId` of the most recently added `mojo::Receiver`, for
+  // testing.
+  mojo::ReceiverId receiver_id_for_testing_;
 
-  // Time that the current operation began, for measurement.
-  base::TimeTicks start_time_;
-
-  // Whether `Shutdown()` has been called.
-  bool is_shutting_down_ = false;
-
-  // The `mojo::Receiver` object corresponding to the `mojo::PendingRemote` that
-  // gets passed to the per-profile NetworkContexts in the network service for
-  // requesting blind-signed auth tokens.
-  mojo::Receiver<network::mojom::IpProtectionAuthTokenGetter> receiver_{this};
+  // This must be the last member in this class.
+  base::WeakPtrFactory<IpProtectionAuthTokenProvider> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_

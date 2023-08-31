@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/features.h"
@@ -46,11 +47,15 @@ class IpProtectionAuthTokenGetterInterceptor
                                          std::string token,
                                          base::Time expiration)
       : getter_(getter),
+        receiver_id_(getter_->receiver_id_for_testing()),
         token_(std::move(token)),
-        expiration_(expiration),
-        swapped_impl_(getter->receiver_for_testing(), this) {}
+        expiration_(expiration) {
+    getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, this);
+  }
 
-  ~IpProtectionAuthTokenGetterInterceptor() override = default;
+  ~IpProtectionAuthTokenGetterInterceptor() override {
+    getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, getter_);
+  }
 
   network::mojom::IpProtectionAuthTokenGetter* GetForwardingInterface()
       override {
@@ -68,11 +73,13 @@ class IpProtectionAuthTokenGetterInterceptor
 
  private:
   raw_ptr<IpProtectionAuthTokenProvider> getter_;
+  // `getter_->receiver_id_for_testing()` will return the `mojo::ReceiverId` of
+  // the most recently added receiver, so save this value off to ensure that on
+  // destruction we restore the implementation for the correct receiver (for
+  // cases where we have multiple receivers and use more than one interceptor).
+  mojo::ReceiverId receiver_id_;
   std::string token_;
   base::Time expiration_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::Receiver<network::mojom::IpProtectionAuthTokenGetter>>
-      swapped_impl_;
 };
 }  // namespace
 
@@ -103,6 +110,7 @@ class IpProtectionAuthTokenProviderBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    IpProtectionAuthTokenProvider::Get(browser()->profile())->Shutdown();
     identity_test_environment_adaptor_.reset();
   }
 
@@ -150,4 +158,72 @@ IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
   ASSERT_TRUE(result);
   EXPECT_EQ(result->token, token);
   EXPECT_EQ(result->expiration, expiration);
+
+  // Now create a new incognito mode profile (with a different associated
+  // network context) and see whether we can request tokens from that.
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  network::mojom::NetworkContext* incognito_network_context =
+      incognito_browser->profile()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  ASSERT_NE(network_context, incognito_network_context);
+
+  // We need a new interceptor that will intercept messages corresponding to the
+  // incognito mode network context's `mojo::Receiver()`.
+  auto incognito_auth_token_getter_interceptor_ =
+      std::make_unique<IpProtectionAuthTokenGetterInterceptor>(getter, token,
+                                                               expiration);
+
+  // Verify that we can get tokens from the incognito mode profile.
+  future.Clear();
+  incognito_network_context->VerifyIpProtectionAuthTokenGetterForTesting(
+      future.GetCallback());
+  const network::mojom::BlindSignedAuthTokenPtr& incognito_result =
+      future.Get();
+  ASSERT_TRUE(incognito_result);
+  EXPECT_EQ(incognito_result->token, token);
+  EXPECT_EQ(incognito_result->expiration, expiration);
+
+  // Ensure that we can still get tokens from the main profile.
+  future.Clear();
+  network_context->VerifyIpProtectionAuthTokenGetterForTesting(
+      future.GetCallback());
+  const network::mojom::BlindSignedAuthTokenPtr& second_attempt_result =
+      future.Get();
+  ASSERT_TRUE(second_attempt_result);
+  EXPECT_EQ(second_attempt_result->token, token);
+  EXPECT_EQ(second_attempt_result->expiration, expiration);
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
+                       ExpectedReceiverSetStateAfterNetworkServiceCrash) {
+  IpProtectionAuthTokenProvider* getter =
+      IpProtectionAuthTokenProvider::Get(browser()->profile());
+  ASSERT_TRUE(getter);
+  ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
+
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
+
+  // If the network service isn't out-of-process then we can't crash it.
+  if (!content::IsOutOfProcessNetworkService()) {
+    return;
+  }
+
+  // Crash the Network Service process and ensure that the error notifications
+  // get propagated. When the network contexts are recreated, they will both
+  // attempt to get tokens and we should ensure that nothing crashes as a
+  // result.
+  SimulateNetworkServiceCrash();
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+  incognito_browser->profile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+  // Ensure that any lingering receivers have had time to be removed.
+  getter->receivers_for_testing().FlushForTesting();
+
+  ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
 }

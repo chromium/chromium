@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
+#include <memory>
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ip_protection/blind_sign_http_impl.h"
@@ -34,26 +35,22 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokens(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
 
-  if (try_get_auth_tokens_callback_) {
-    mojo::ReportBadMessage(
-        "Concurrent calls to TryGetAuthTokens are not allowed");
-    return;
-  }
   // The `batch_size` is cast to an `int` for use by BlindSignAuth, so check for
   // overflow here.
   if (batch_size == 0 || batch_size > INT_MAX) {
     mojo::ReportBadMessage("Invalid batch_size");
     return;
   }
-  try_get_auth_tokens_callback_ = std::move(callback);
-  batch_size_ = batch_size;
-  RequestOAuthToken();
+  RequestOAuthToken(batch_size, std::move(callback));
 }
 
-void IpProtectionAuthTokenProvider::RequestOAuthToken() {
+void IpProtectionAuthTokenProvider::RequestOAuthToken(
+    uint32_t batch_size,
+    TryGetAuthTokensCallback callback) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     TryGetAuthTokensComplete(
-        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
+        absl::nullopt, std::move(callback),
+        IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
     return;
   }
 
@@ -68,30 +65,35 @@ void IpProtectionAuthTokenProvider::RequestOAuthToken() {
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable;
 
   // Create the OAuth token fetcher and call `OnRequestOAuthTokenCompleted()`
-  // when complete. base::Unretained() is safe since `this` owns
-  // `access_token_fetcher_`
-  start_time_ = base::TimeTicks::Now();
-  access_token_fetcher_ =
+  // when complete. The callback will own the
+  // `signin::PrimaryAccountAccessTokenFetcher()` object to ensure it stays
+  // alive long enough for the callback to occur, and we will pass a weak
+  // pointer to ensure that the callback won't be called if this object gets
+  // destroyed.
+  auto oauth_token_fetch_start_time = base::TimeTicks::Now();
+  auto oauth_token_fetcher =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           /*consumer_name=*/"IpProtectionService", identity_manager_, scopes,
-          base::BindOnce(
-              &IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted,
-              base::Unretained(this)),
           mode, signin::ConsentLevel::kSignin);
+  auto* oauth_token_fetcher_ptr = oauth_token_fetcher.get();
+  oauth_token_fetcher_ptr->Start(base::BindOnce(
+      &IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(oauth_token_fetcher),
+      oauth_token_fetch_start_time, batch_size, std::move(callback)));
 }
 
 void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
+    std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+        oauth_token_fetcher,
+    base::TimeTicks oauth_token_fetch_start_time,
+    uint32_t batch_size,
+    TryGetAuthTokensCallback callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // If this method is called we can safely assume that `is_shutting_down_` is
-  // false because the object owned by `access_token_fetcher_` will be destroyed
-  // by a `Shutdown()` call (assuming `access_token_fetcher_` points to an
-  // object when `Shutdown()` is called), and that object is the only thing
-  // that calls this method.
-  CHECK(!is_shutting_down_);
-
-  access_token_fetcher_.reset();
+  if (is_shutting_down_) {
+    return;
+  }
 
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
   // the request is guaranteed to fail.
@@ -99,28 +101,35 @@ void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
     VLOG(2) << "IPATP::OnRequestOAuthTokenCompleted got an error: "
             << static_cast<int>(error.state());
     TryGetAuthTokensComplete(
-        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedOAuthToken);
+        absl::nullopt, std::move(callback),
+        IpProtectionTryGetAuthTokensResult::kFailedOAuthToken);
     return;
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
   base::UmaHistogramTimes("NetworkService.IpProtection.OAuthTokenFetchTime",
-                          current_time - start_time_);
-  FetchBlindSignedToken(access_token_info);
+                          current_time - oauth_token_fetch_start_time);
+  FetchBlindSignedToken(access_token_info, batch_size, std::move(callback));
 }
 
 void IpProtectionAuthTokenProvider::FetchBlindSignedToken(
-    signin::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info,
+    uint32_t batch_size,
+    TryGetAuthTokensCallback callback) {
   DCHECK(bsa_);
-  start_time_ = base::TimeTicks::Now();
+  auto bsa_get_tokens_start_time = base::TimeTicks::Now();
   bsa_->GetTokens(
-      access_token_info.token, batch_size_,
-      [this](absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
-        OnFetchBlindSignedTokenCompleted(tokens);
+      access_token_info.token, batch_size,
+      [this, bsa_get_tokens_start_time, callback = std::move(callback)](
+          absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) mutable {
+        OnFetchBlindSignedTokenCompleted(bsa_get_tokens_start_time,
+                                         std::move(callback), tokens);
       });
 }
 
 void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
+    base::TimeTicks bsa_get_tokens_start_time,
+    TryGetAuthTokensCallback callback,
     absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
@@ -145,20 +154,21 @@ void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
     }
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted got an error: "
             << static_cast<int>(result);
-    TryGetAuthTokensComplete(absl::nullopt, result);
+    TryGetAuthTokensComplete(absl::nullopt, std::move(callback), result);
     return;
   }
 
   if (tokens.value().size() == 0) {
     VLOG(2) << "IPATP::OnFetchBlindSignedTokenCompleted called with no tokens";
     TryGetAuthTokensComplete(
-        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+        absl::nullopt, std::move(callback),
+        IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
     return;
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
   base::UmaHistogramTimes("NetworkService.IpProtection.TokenBatchRequestTime",
-                          current_time - start_time_);
+                          current_time - bsa_get_tokens_start_time);
 
   std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
   std::transform(tokens->begin(), tokens->end(), std::back_inserter(bsa_tokens),
@@ -170,12 +180,14 @@ void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
                  });
 
   TryGetAuthTokensComplete(absl::make_optional(std::move(bsa_tokens)),
+                           std::move(callback),
                            IpProtectionTryGetAuthTokensResult::kSuccess);
 }
 
 void IpProtectionAuthTokenProvider::TryGetAuthTokensComplete(
     absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
         bsa_tokens,
+    TryGetAuthTokensCallback callback,
     IpProtectionTryGetAuthTokensResult result) {
   base::UmaHistogramEnumeration(
       "NetworkService.IpProtection.TryGetAuthTokensResult", result);
@@ -186,8 +198,7 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokensComplete(
     try_again_after = base::Time::Now() + *backoff;
   }
   DCHECK(bsa_tokens.has_value() || try_again_after.has_value());
-  std::move(try_get_auth_tokens_callback_)
-      .Run(std::move(bsa_tokens), try_again_after);
+  std::move(callback).Run(std::move(bsa_tokens), try_again_after);
 }
 
 absl::optional<base::TimeDelta> IpProtectionAuthTokenProvider::CalculateBackoff(
@@ -226,6 +237,23 @@ absl::optional<base::TimeDelta> IpProtectionAuthTokenProvider::CalculateBackoff(
       break;
   }
 
+  // Note that we calculate the backoff assuming that we've waited for
+  // `last_try_get_auth_tokens_backoff_` time already, but this may not be the
+  // case when:
+  //  - Concurrent calls to `TryGetAuthTokens` from two network contexts are
+  //  made and both fail in the same way
+  //
+  //  - A new incognito window is opened (the new network context won't know to
+  //  backoff until after the first request)
+  //
+  //  - The network service restarts (the new network context(s) won't know to
+  //  backoff until after the first request(s))
+  //
+  // We can't do much about the first case, but for the others we could track
+  // the cooldown time here and not request tokens again until afterward.
+  //
+  // TODO(https://crbug.com/1476891): Track the backoff time in the browser
+  // process and don't make new requests if we are in a cooldown period.
   if (exponential) {
     if (last_try_get_auth_tokens_backoff_ &&
         last_try_get_auth_tokens_result_ == result) {
@@ -239,21 +267,12 @@ absl::optional<base::TimeDelta> IpProtectionAuthTokenProvider::CalculateBackoff(
   return backoff;
 }
 
-void IpProtectionAuthTokenProvider::ResetReceiverAndAssociatedState() {
-  receiver_.reset();
-  // Reset any pending callbacks as well since this class only expects to have
-  // one pending call to `TryGetAuthTokens()` at any given time, and that call
-  // is associated with the receiver that the message came in on.
-  access_token_fetcher_.reset();
-  try_get_auth_tokens_callback_.Reset();
-}
-
 void IpProtectionAuthTokenProvider::Shutdown() {
   is_shutting_down_ = true;
   // If we are shutting down, we can't process messages anymore because we rely
   // on having `identity_manager_` to get the OAuth token. Thus, just reset the
-  // receiver and all of its associated state.
-  ResetReceiverAndAssociatedState();
+  // receiver set.
+  receivers_.Clear();
   identity_manager_ = nullptr;
 }
 
@@ -263,18 +282,18 @@ IpProtectionAuthTokenProvider* IpProtectionAuthTokenProvider::Get(
   return IpProtectionAuthTokenProviderFactory::GetForProfile(profile);
 }
 
-void IpProtectionAuthTokenProvider::SetReceiver(
+void IpProtectionAuthTokenProvider::AddReceiver(
     mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
         pending_receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;
   }
-  if (receiver_.is_bound()) {
-    // TODO(https://crbug.com/1473734): We experimentally determined that this
-    // case is possible, so we should have a test that ensures this handling
-    // is correct.
-    ResetReceiverAndAssociatedState();
-  }
-  receiver_.Bind(std::move(pending_receiver));
+  receiver_id_for_testing_ = receivers_.Add(this, std::move(pending_receiver));
+
+  // We only expect two concurrent receivers, one corresponding to the main
+  // profile network context and one for an associated incognito mode profile
+  // (if an incognito window is open). However, if the network service crashes
+  // and is restarted, there might be lingering receivers that are bound until
+  // they are eventually cleaned up.
 }

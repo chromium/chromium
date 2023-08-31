@@ -72,8 +72,6 @@ void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
                                   const std::string& authorization_header,
                                   const std::string& body,
                                   quiche::BlindSignHttpCallback callback) {
-  callback_ = std::move(callback);
-
   GURL::Replacements replacements;
   switch (request_type) {
     case quiche::BlindSignHttpRequestType::kGetInitialData:
@@ -88,8 +86,7 @@ void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
 
   GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);
   if (!request_url.is_valid()) {
-    std::move(callback_)(
-        absl::InternalError("Invalid IP Protection Token URL"));
+    std::move(callback)(absl::InternalError("Invalid IP Protection Token URL"));
     return;
   }
 
@@ -105,33 +102,36 @@ void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kIpProtectionContentType);
 
-  url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), kIpProtectionTrafficAnnotation);
-  url_loader_->AttachStringForUpload(body);
-  url_loader_->DownloadToString(
+  std::unique_ptr<network::SimpleURLLoader> url_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kIpProtectionTrafficAnnotation);
+  url_loader->AttachStringForUpload(body);
+  auto* url_loader_ptr = url_loader.get();
+  url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&BlindSignHttpImpl::OnRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
+                     std::move(callback)),
       kIpProtectionRequestMaxBodySize);
 }
 
 void BlindSignHttpImpl::OnRequestCompleted(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    quiche::BlindSignHttpCallback callback,
     std::unique_ptr<std::string> response) {
   int response_code = 0;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
+    response_code = url_loader->ResponseInfo()->headers->response_code();
   }
-
-  url_loader_.reset();
 
   // Short-circuit non-200 HTTP responses to an OK response with that code.
   if (response_code != 200 && response_code != 0) {
-    std::move(callback_)(quiche::BlindSignHttpResponse(response_code, ""));
+    std::move(callback)(quiche::BlindSignHttpResponse(response_code, ""));
     return;
   }
 
   if (!response) {
-    std::move(callback_)(
+    std::move(callback)(
         absl::InternalError("Failed Request to Authentication Server"));
     return;
   }
@@ -139,5 +139,5 @@ void BlindSignHttpImpl::OnRequestCompleted(
   quiche::BlindSignHttpResponse bsa_response(response_code,
                                              std::move(*response));
 
-  std::move(callback_)(std::move(bsa_response));
+  std::move(callback)(std::move(bsa_response));
 }

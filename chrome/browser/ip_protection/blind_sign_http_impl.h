@@ -28,10 +28,10 @@ class BlindSignHttpImpl : public quiche::BlindSignHttpInterface {
                  quiche::BlindSignHttpCallback callback) override;
 
  private:
-  void OnRequestCompleted(std::unique_ptr<std::string> response);
+  void OnRequestCompleted(std::unique_ptr<network::SimpleURLLoader> url_loader,
+                          quiche::BlindSignHttpCallback callback,
+                          std::unique_ptr<std::string> response);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  quiche::BlindSignHttpCallback callback_;
 
   const GURL ip_protection_server_url_;
   const std::string ip_protection_server_get_initial_data_path_;
