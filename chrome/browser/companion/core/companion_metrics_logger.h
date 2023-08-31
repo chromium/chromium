@@ -110,7 +110,10 @@ enum class PromoEvent {
   kExpsShown = 7,
   kExpsAccepted = 8,
   kExpsRejected = 9,
-  kMaxValue = kExpsRejected,
+  kPcoShown = 10,
+  kPcoAccepted = 11,
+  kPcoRejected = 12,
+  kMaxValue = kPcoRejected,
 };
 
 // Utility to log UKM and UMA metrics for events happening on the companion

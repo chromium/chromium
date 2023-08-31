@@ -117,6 +117,17 @@ PromoEvent ToPromoEventEnum(PromoType promo_type, PromoAction promo_action) {
       return PromoEvent::kExpsRejected;
     }
   }
+  if (promo_type == PromoType::kPco) {
+    if (promo_action == PromoAction::kShown) {
+      return PromoEvent::kPcoShown;
+    }
+    if (promo_action == PromoAction::kAccepted) {
+      return PromoEvent::kPcoAccepted;
+    }
+    if (promo_action == PromoAction::kRejected) {
+      return PromoEvent::kPcoRejected;
+    }
+  }
   return PromoEvent::kUnknown;
 }
 

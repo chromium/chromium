@@ -9,7 +9,7 @@
 
 namespace companion {
 
-bool IsUserPermittedToSharePageInfoWithCompanion(PrefService* pref_service) {
+bool IsUserPermittedToSharePageURLWithCompanion(PrefService* pref_service) {
   if (switches::ShouldOverrideCheckingUserPermissionsForCompanion()) {
     return true;
   }
@@ -18,6 +18,11 @@ bool IsUserPermittedToSharePageInfoWithCompanion(PrefService* pref_service) {
       unified_consent::UrlKeyedDataCollectionConsentHelper::
           NewAnonymizedDataCollectionConsentHelper(pref_service);
   return helper->IsEnabled();
+}
+
+bool IsUserPermittedToSharePageInfoWithCompanion(PrefService* pref_service) {
+  return IsUserPermittedToSharePageURLWithCompanion(pref_service);
+  // TODO(crbug.com/1476887): Take PCO into account.
 }
 
 }  // namespace companion

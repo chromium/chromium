@@ -68,6 +68,7 @@ CompanionPageHandler::CompanionPageHandler(
                               GetProfile()->GetPrefs())) {
   identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(GetProfile()));
+  // TODO(crbug.com/1476887): Observe PCO similarly.
   consent_helper_observation_.Observe(consent_helper_.get());
   if (base::FeatureList::IsEnabled(
           visual_search::features::kVisualSearchSuggestions)) {
@@ -300,8 +301,6 @@ bool CompanionPageHandler::OnSearchTextQuery() {
     return false;
   }
 
-  // Only notify the companion UI the page changed if we can share
-  // information about the page by user consent.
   GURL page_url;
   if (IsUserPermittedToSharePageInfoWithCompanion(GetProfile()->GetPrefs())) {
     page_url = web_contents()->GetVisibleURL();

@@ -12,7 +12,7 @@ package companion.proto;
 // Keep this file in sync with
 // google3/lens/web/standalone/companion/proto/companion_url_params.proto
 
-// Next ID: 6
+// Next ID: 8
 message PromoState {
   // Number of times the user has denied various promo requests in past.
   int32 signin_promo_denial_count = 1;
@@ -20,19 +20,21 @@ message PromoState {
   int32 exps_promo_denial_count = 3;
   int32 exps_promo_shown_count = 4;
   bool should_show_region_search_iph = 5;
+  int32 pco_promo_denial_count = 6;
+  int32 pco_promo_shown_count = 7;
 }
 
 // This proto file is shared between Chrome and Server side and used to pack the
 // URL query params for the companion URL request.
-// Next ID: 13
+// Next ID: 14
 message CompanionUrlParams {
   reserved 4, 5;
 
   // URL of the main contents. Empty, if MSBB is off.
   string page_url = 1;
 
-  // Whether make searches and browsing better has been enabled in the settings.
-  bool has_msbb_enabled = 2;
+  // Whether make searches and browsing better is enabled in the settings.
+  bool is_msbb_enabled = 2;
 
   // State for driving promo related decisions.
   PromoState promo_state = 3;
@@ -57,4 +59,7 @@ message CompanionUrlParams {
 
   // Whether the hard refresh protocol message is supported on Chrome.
   optional bool is_hard_refresh_supported = 12;
+
+  // Whether page content opt-in is enabled in the settings.
+  bool is_pco_enabled = 13;
 }

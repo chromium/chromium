@@ -18263,6 +18263,9 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Exps.Shown"/>
   <int value="8" label="Exps.Accepted"/>
   <int value="9" label="Exps.Rejected"/>
+  <int value="10" label="Pco.Shown"/>
+  <int value="11" label="Pco.Accepted"/>
+  <int value="12" label="Pco.Rejected"/>
 </enum>
 
 <enum name="Companion.UiEvent">

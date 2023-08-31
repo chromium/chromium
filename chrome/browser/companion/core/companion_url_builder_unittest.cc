@@ -87,7 +87,8 @@ class CompanionUrlBuilderTest : public testing::Test {
       EXPECT_EQ(proto.page_url(), std::string());
     }
 
-    EXPECT_TRUE(proto.has_msbb_enabled());
+    EXPECT_TRUE(proto.is_msbb_enabled());
+    EXPECT_FALSE(proto.is_pco_enabled());
   }
   // Deserialize the query param into proto::CompanionUrlParams.
   proto::CompanionUrlParams DeserializeCompanionRequest(
@@ -136,7 +137,8 @@ TEST_F(CompanionUrlBuilderTest, SignIn) {
   EXPECT_EQ(proto.page_url(), std::string());
   EXPECT_FALSE(proto.is_sign_in_allowed());
   EXPECT_FALSE(proto.is_signed_in());
-  EXPECT_FALSE(proto.has_msbb_enabled());
+  EXPECT_FALSE(proto.is_msbb_enabled());
+  EXPECT_FALSE(proto.is_pco_enabled());
 
   // Allowed to sign-in, but not signed in, no msbb.
   SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/true,
@@ -148,7 +150,8 @@ TEST_F(CompanionUrlBuilderTest, SignIn) {
   EXPECT_EQ(proto.page_url(), std::string());
   EXPECT_TRUE(proto.is_sign_in_allowed());
   EXPECT_FALSE(proto.is_signed_in());
-  EXPECT_FALSE(proto.has_msbb_enabled());
+  EXPECT_FALSE(proto.is_msbb_enabled());
+  EXPECT_FALSE(proto.is_pco_enabled());
 }
 
 TEST_F(CompanionUrlBuilderTest, MsbbOff) {
@@ -184,7 +187,8 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   EXPECT_EQ(proto.page_url(), std::string());
   EXPECT_TRUE(proto.is_signed_in());
   EXPECT_TRUE(proto.is_sign_in_allowed());
-  EXPECT_FALSE(proto.has_msbb_enabled());
+  EXPECT_FALSE(proto.is_msbb_enabled());
+  EXPECT_FALSE(proto.is_pco_enabled());
   EXPECT_TRUE(proto.is_upload_dialog_supported());
   EXPECT_TRUE(proto.is_hard_refresh_supported());
 }
@@ -192,7 +196,9 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_CALL(signin_delegate_, IsSignedIn())
       .WillRepeatedly(testing::Return(true));
-  pref_service_.SetUserPref(kExpsPromoShownCountPref, base::Value(2));
+  pref_service_.SetUserPref(kExpsPromoShownCountPref, base::Value(3));
+  pref_service_.SetUserPref(kPcoPromoShownCountPref, base::Value(2));
+  pref_service_.SetUserPref(kPcoPromoDeclinedCountPref, base::Value(1));
 
   GURL page_url(kValidUrl);
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
@@ -219,7 +225,8 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
 
   // Verify fields inside protobuf.
   EXPECT_EQ(proto.page_url(), page_url.spec());
-  EXPECT_TRUE(proto.has_msbb_enabled());
+  EXPECT_TRUE(proto.is_msbb_enabled());
+  EXPECT_FALSE(proto.is_pco_enabled());
   EXPECT_TRUE(proto.is_signed_in());
   EXPECT_TRUE(proto.is_entrypoint_pinned_by_default());
   EXPECT_TRUE(proto.links_open_in_new_tab());
@@ -232,7 +239,9 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(1, proto.promo_state().signin_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().exps_promo_denial_count());
-  EXPECT_EQ(2, proto.promo_state().exps_promo_shown_count());
+  EXPECT_EQ(3, proto.promo_state().exps_promo_shown_count());
+  EXPECT_EQ(2, proto.promo_state().pco_promo_shown_count());
+  EXPECT_EQ(1, proto.promo_state().pco_promo_denial_count());
   EXPECT_TRUE(proto.promo_state().should_show_region_search_iph());
 }
 

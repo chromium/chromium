@@ -74,9 +74,8 @@ GURL CompanionUrlBuilder::AppendCompanionParamsToURL(
       kOriginQueryParameterValue);
 
   // TODO(b/274714162): Remove URL param.
-  bool is_msbb_enabled =
-      IsUserPermittedToSharePageInfoWithCompanion(pref_service_);
-  if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
+  if (IsUserPermittedToSharePageInfoWithCompanion(pref_service_) &&
+      IsValidPageURLForCompanion(page_url)) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kUrlQueryParameterKey, page_url.spec());
   }
@@ -92,13 +91,15 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
     const GURL& page_url) {
   // Fill the protobuf with the required query params.
   companion::proto::CompanionUrlParams url_params;
-  bool is_msbb_enabled =
-      IsUserPermittedToSharePageInfoWithCompanion(pref_service_);
-  if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
+  if (IsUserPermittedToSharePageInfoWithCompanion(pref_service_) &&
+      IsValidPageURLForCompanion(page_url)) {
     url_params.set_page_url(page_url.spec());
   }
 
-  url_params.set_has_msbb_enabled(is_msbb_enabled);
+  url_params.set_is_msbb_enabled(
+      IsUserPermittedToSharePageURLWithCompanion(pref_service_));
+  // TODO(crbug.com/1476887): Set PCO pref value similarly.
+  url_params.set_is_pco_enabled(false);
   url_params.set_is_sign_in_allowed(signin_delegate_->AllowedSignin());
   url_params.set_is_signed_in(signin_delegate_->IsSignedIn());
   url_params.set_links_open_in_new_tab(
@@ -128,6 +129,10 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
       pref_service_->GetInteger(kExpsPromoDeclinedCountPref));
   promo_state->set_exps_promo_shown_count(
       pref_service_->GetInteger(kExpsPromoShownCountPref));
+  promo_state->set_pco_promo_shown_count(
+      pref_service_->GetInteger(kPcoPromoShownCountPref));
+  promo_state->set_pco_promo_denial_count(
+      pref_service_->GetInteger(kPcoPromoDeclinedCountPref));
 
   // Set region search IPH state.
   promo_state->set_should_show_region_search_iph(

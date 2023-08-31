@@ -390,6 +390,11 @@ TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
   TestPromoEvent(PromoType::kExps, PromoAction::kRejected,
                  PromoEvent::kExpsRejected);
   TestPromoEvent(PromoType::kExps, PromoAction::kShown, PromoEvent::kExpsShown);
+  TestPromoEvent(PromoType::kPco, PromoAction::kAccepted,
+                 PromoEvent::kPcoAccepted);
+  TestPromoEvent(PromoType::kPco, PromoAction::kRejected,
+                 PromoEvent::kPcoRejected);
+  TestPromoEvent(PromoType::kPco, PromoAction::kShown, PromoEvent::kPcoShown);
 }
 
 TEST_F(CompanionMetricsLoggerTest, PHShown) {

@@ -10,6 +10,10 @@ class PrefService;
 namespace companion {
 
 // Returns true if the user, i.e., the local, current profile, is permitted to
+// share the the page URL with the remote Companion server.
+bool IsUserPermittedToSharePageURLWithCompanion(PrefService* pref_service);
+
+// Returns true if the user, i.e., the local, current profile, is permitted to
 // share the information about the page with the remote Companion server.
 bool IsUserPermittedToSharePageInfoWithCompanion(PrefService* pref_service);
 
