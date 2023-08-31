@@ -53,9 +53,6 @@ class WindowDimmer;
 // beneath the layer of the bar widget. This layer is used to paint a dimming
 // shield of the areas that won't be captured, and another bright region showing
 // the one that will be.
-//
-// TODO(hewer): Update the order of the functions and member variables to match
-// `BaseCaptureModeSession` in a follow-up CL.
 class ASH_EXPORT CaptureModeSession
     : public BaseCaptureModeSession,
       public ui::LayerDelegate,
@@ -92,39 +89,16 @@ class ASH_EXPORT CaptureModeSession
     return &capture_toast_controller_;
   }
 
-  // BaseCaptureModeSession:
-  aura::Window* GetSelectedWindow() const override;
-
-  void SetPreSelectedWindow(aura::Window* pre_selected_window) override;
-
   // Called when a user toggles the capture source or capture type to announce
   // an accessibility alert. If `trigger_now` is true, it will announce
   // immediately; otherwise, it will trigger another alert asynchronously with
   // the alert.
   void A11yAlertCaptureSource(bool trigger_now);
 
-  // TODO(hewer): Move this to private in a follow-up CL.
-  // Called when switching a capture type from another capture type.
-  void A11yAlertCaptureType();
-
-  void OnCaptureSourceChanged(CaptureModeSource new_source) override;
-  void OnCaptureTypeChanged(CaptureModeType new_type) override;
-  void OnRecordingTypeChanged() override;
-  void OnAudioRecordingModeChanged() override;
-  void OnDemoToolsSettingsChanged() override;
-
-  void OnWaitingForDlpConfirmationStarted() override;
-
-  void OnWaitingForDlpConfirmationEnded(bool reshow_uis) override;
-
   // Called when the settings menu is toggled. If `by_key_event` is true, it
   // means that the settings menu is being opened or closed as a result of a key
   // event (e.g. pressing the space bar) on the settings button.
   void SetSettingsMenuShown(bool shown, bool by_key_event = false);
-
-  void ReportSessionHistograms() override;
-
-  void StartCountDown(base::OnceClosure countdown_finished_callback) override;
 
   // Opens the dialog that lets users pick the folder to which they want the
   // captured files to be saved.
@@ -137,13 +111,58 @@ class ASH_EXPORT CaptureModeSession
   // anchored to a pre-selected window.
   bool IsBarAnchoredToWindow() const;
 
-  void OnCaptureFolderMayHaveChanged() override;
+  // Updates the current cursor depending on current |location_in_screen| and
+  // current capture type and source. |is_touch| is used when calculating fine
+  // tune position in region capture mode. We'll have a larger hit test region
+  // for the touch events than the mouse events.
+  void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
 
-  void OnDefaultCaptureFolderSelectionChanged() override;
+  // Highlights the give |window| for keyboard navigation
+  // events (tabbing through windows in capture window mode).
+  void HighlightWindowForTab(aura::Window* window);
 
-  bool CalculateCameraPreviewTargetVisibility() const override;
+  // Called when the settings view has been updated, its bounds may need to be
+  // updated correspondingly.
+  void MaybeUpdateSettingsBounds();
 
+  // Called when opacity of capture UIs (capture bar, capture label) may need to
+  // be updated. For example, when camera preview is created, destroyed,
+  // reparented, display metrics change or located events enter / exit / move
+  // on capture UI.
+  void MaybeUpdateCaptureUisOpacity(
+      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
+
+  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
+  // the `current_root_`, potentially moving the bar to a new display if
+  // `current_root_` is different`.
+  void RefreshBarWidgetBounds();
+
+  // BaseCaptureModeSession:
   views::Widget* GetCaptureModeBarWidget() override;
+  aura::Window* GetSelectedWindow() const override;
+  void SetPreSelectedWindow(aura::Window* pre_selected_window) override;
+  void OnCaptureSourceChanged(CaptureModeSource new_source) override;
+  void OnCaptureTypeChanged(CaptureModeType new_type) override;
+  void OnRecordingTypeChanged() override;
+  void OnAudioRecordingModeChanged() override;
+  void OnDemoToolsSettingsChanged() override;
+  void OnWaitingForDlpConfirmationStarted() override;
+  void OnWaitingForDlpConfirmationEnded(bool reshow_uis) override;
+  void ReportSessionHistograms() override;
+  void StartCountDown(base::OnceClosure countdown_finished_callback) override;
+  void OnCaptureFolderMayHaveChanged() override;
+  void OnDefaultCaptureFolderSelectionChanged() override;
+  bool CalculateCameraPreviewTargetVisibility() const override;
+  void OnCameraPreviewDragStarted() override;
+  void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
+                                bool is_touch) override;
+  void OnCameraPreviewBoundsOrVisibilityChanged(
+      bool capture_surface_became_too_small,
+      bool did_bounds_or_visibility_change) override;
+  void OnCameraPreviewDestroyed() override;
+  void MaybeDismissUserNudgeForever() override;
+  void MaybeChangeRoot(aura::Window* new_root) override;
+  std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -171,48 +190,6 @@ class ASH_EXPORT CaptureModeSession
   void OnSelectionWindowAdded() override;
   void OnSelectionWindowClosed() override;
 
-  // Updates the current cursor depending on current |location_in_screen| and
-  // current capture type and source. |is_touch| is used when calculating fine
-  // tune position in region capture mode. We'll have a larger hit test region
-  // for the touch events than the mouse events.
-  void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
-
-  // Highlights the give |window| for keyboard navigation
-  // events (tabbing through windows in capture window mode).
-  void HighlightWindowForTab(aura::Window* window);
-
-  // Called when the settings view has been updated, its bounds may need to be
-  // updated correspondingly.
-  void MaybeUpdateSettingsBounds();
-
-  // Called when opacity of capture UIs (capture bar, capture label) may need to
-  // be updated. For example, when camera preview is created, destroyed,
-  // reparented, display metrics change or located events enter / exit / move
-  // on capture UI.
-  void MaybeUpdateCaptureUisOpacity(
-      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
-
-  void OnCameraPreviewDragStarted() override;
-  void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
-                                bool is_touch) override;
-
-  void OnCameraPreviewBoundsOrVisibilityChanged(
-      bool capture_surface_became_too_small,
-      bool did_bounds_or_visibility_change) override;
-
-  void OnCameraPreviewDestroyed() override;
-
-  void MaybeDismissUserNudgeForever() override;
-
-  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
-  // the `current_root_`, potentially moving the bar to a new display if
-  // `current_root_` is different`.
-  void RefreshBarWidgetBounds();
-
-  void MaybeChangeRoot(aura::Window* new_root) override;
-
-  std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
-
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
@@ -230,6 +207,9 @@ class ASH_EXPORT CaptureModeSession
     // the capture label animates into a countdown label.
     kCountdownStart,
   };
+
+  // Called when switching a capture type from another capture type.
+  void A11yAlertCaptureType();
 
   // Returns a list of all the currently available widgets that are owned by
   // this session.
