@@ -41,7 +41,7 @@ void ShoppingBookmarkModelObserver::OnWillChangeBookmarkNode(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
   // Since the node is about to change, map its current known URL.
-  node_to_url_map_[node->id()] = node->url();
+  node_to_url_map_[node->uuid()] = node->url();
 
   // Specifically track changes to parent and title for the shopping collection.
   if (IsShoppingCollectionBookmarkFolder(node)) {
@@ -60,7 +60,7 @@ void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
     shopping_collection_name_before_change_.reset();
   }
 
-  if (node_to_url_map_[node->id()] != node->url()) {
+  if (node_to_url_map_[node->uuid()] != node->url()) {
     // If the URL did change, clear the power bookmark shopping meta and
     // unsubscribe if needed.
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -91,7 +91,7 @@ void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
     }
   }
 
-  node_to_url_map_.erase(node->id());
+  node_to_url_map_.erase(node->uuid());
 }
 
 void ShoppingBookmarkModelObserver::BookmarkNodeAdded(

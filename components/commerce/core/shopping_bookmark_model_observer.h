@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 
@@ -76,9 +77,9 @@ class ShoppingBookmarkModelObserver
 
   raw_ptr<SubscriptionsManager> subscriptions_manager_;
 
-  // A map of bookmark ID to its current URL. This is used to detect incoming
+  // A map of bookmark Uuid to its current URL. This is used to detect incoming
   // changes to the URL since there isn't an explicit event for it.
-  std::map<int64_t, GURL> node_to_url_map_;
+  std::map<base::Uuid, GURL> node_to_url_map_;
 
   // Track the title of the shopping collection if we get a signal that the node
   // will change.
