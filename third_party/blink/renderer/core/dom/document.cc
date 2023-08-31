@@ -2448,6 +2448,9 @@ void Document::UpdateStyleAndLayoutForNode(const Node* node,
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kLayout);
+
+  // For all nodes we must have up-to-date style and have performed layout to do
+  // any location-based calculation.
   UpdateStyleAndLayout(reason);
 }
 
@@ -2742,16 +2745,7 @@ const ComputedStyle* Document::StyleForPage(uint32_t page_index,
 void Document::EnsurePaintLocationDataValidForNode(
     const Node* node,
     DocumentUpdateReason reason) {
-  DCHECK(node);
-  if (!node->InActiveDocument())
-    return;
-
-  DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-      node, DisplayLockContext::ForcedPhase::kLayout);
-
-  // For all nodes we must have up-to-date style and have performed layout to do
-  // any location-based calculation.
-  UpdateStyleAndLayout(reason);
+  UpdateStyleAndLayoutForNode(node, reason);
 }
 
 void Document::GetPageDescription(uint32_t page_index,
