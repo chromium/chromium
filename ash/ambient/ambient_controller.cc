@@ -183,6 +183,7 @@ base::FilePath GetCacheRootPath() {
 class AmbientWidgetDelegate : public views::WidgetDelegate {
  public:
   AmbientWidgetDelegate() {
+    SetCanFullscreen(true);
     SetCanMaximize(true);
     SetOwnedByWidget(true);
   }

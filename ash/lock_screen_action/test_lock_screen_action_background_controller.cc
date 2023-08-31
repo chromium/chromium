@@ -45,6 +45,7 @@ bool TestLockScreenActionBackgroundController::ShowBackground() {
     params.delegate = new views::WidgetDelegate();
     params.delegate->SetCanActivate(false);
     params.delegate->SetCanMaximize(true);
+    params.delegate->SetCanFullscreen(true);
     params.delegate->SetCanResize(true);
     params.delegate->SetOwnedByWidget(true);
     params.delegate->SetFocusTraversesOut(true);

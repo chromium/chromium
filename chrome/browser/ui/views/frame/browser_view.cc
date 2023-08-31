@@ -856,10 +856,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     SetShowTitle(true);
     SetCanMinimize(false);
     SetCanMaximize(false);
+    SetCanFullscreen(false);
     SetCanResize(true);
   } else {
     SetCanResize(browser_->create_params().can_resize);
     SetCanMaximize(browser_->create_params().can_maximize);
+    SetCanFullscreen(browser_->create_params().can_fullscreen);
     SetCanMinimize(true);
   }
 

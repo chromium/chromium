@@ -29,6 +29,7 @@ class OSFeedbackAppDelegate : public ash::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   bool ShouldCaptureNavigations() const override;
+  bool ShouldAllowFullscreen() const override;
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowResize() const override;
   bool ShouldShowInLauncher() const override;

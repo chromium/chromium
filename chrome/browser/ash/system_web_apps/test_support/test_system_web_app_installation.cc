@@ -155,6 +155,9 @@ bool UnittestingSystemAppDelegate::ShouldAllowResize() const {
 bool UnittestingSystemAppDelegate::ShouldAllowMaximize() const {
   return is_maximizable_;
 }
+bool UnittestingSystemAppDelegate::ShouldAllowFullscreen() const {
+  return is_fullscreenable_;
+}
 bool UnittestingSystemAppDelegate::ShouldHaveTabStrip() const {
   return has_tab_strip_;
 }

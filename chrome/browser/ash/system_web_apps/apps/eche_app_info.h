@@ -25,6 +25,7 @@ class EcheSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldShowInSearch() const override;
   bool ShouldAllowResize() const override;
   bool ShouldAllowMaximize() const override;
+  bool ShouldAllowFullscreen() const override;
   bool ShouldHaveReloadButtonInMinimalUi() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;

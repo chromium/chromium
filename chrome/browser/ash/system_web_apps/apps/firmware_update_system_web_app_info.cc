@@ -90,6 +90,10 @@ FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
 }
 
+bool FirmwareUpdateSystemAppDelegate::ShouldAllowFullscreen() const {
+  return false;
+}
+
 bool FirmwareUpdateSystemAppDelegate::ShouldAllowMaximize() const {
   return false;
 }

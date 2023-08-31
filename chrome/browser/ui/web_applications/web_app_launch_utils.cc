@@ -418,6 +418,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                                     bool omit_from_session_restore,
                                     bool can_resize,
                                     bool can_maximize,
+                                    bool can_fullscreen,
                                     const gfx::Rect initial_bounds) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   Browser::CreateParams browser_params =
@@ -435,6 +436,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
   browser_params.omit_from_session_restore = omit_from_session_restore;
   browser_params.can_resize = can_resize;
   browser_params.can_maximize = can_maximize;
+  browser_params.can_fullscreen = can_fullscreen;
   Browser* browser = Browser::Create(browser_params);
   MaybeAddPinnedHomeTab(browser, app_id);
   return browser;

@@ -1277,24 +1277,20 @@ TEST_F(WindowStateTest, CanFullscreen) {
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
 
-  int behaviour = window->GetProperty(aura::client::kResizeBehaviorKey);
+  // Allow everything to test for cross interactions with other flags.
+  int behavior = ~aura::client::kResizeBehaviorCanFullscreen;
 
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      behaviour | aura::client::kResizeBehaviorCanFullscreen);
+                      behavior | aura::client::kResizeBehaviorCanFullscreen);
   EXPECT_TRUE(window_state->CanFullscreen());
   ToggleFullScreen(window_state, nullptr);
   EXPECT_TRUE(window_state->IsFullscreen());
   ToggleFullScreen(window_state, nullptr);
   EXPECT_FALSE(window_state->IsFullscreen());
 
-  // TODO(ffred): remove this once we separate can maximize and can fullscreen
-  // concepts.
-  window->SetProperty(
-      aura::client::kResizeBehaviorKey,
-      behaviour & ~(aura::client::kResizeBehaviorCanMaximize |
-                    aura::client::kResizeBehaviorCanFullscreen));
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      behavior & ~aura::client::kResizeBehaviorCanFullscreen);
   EXPECT_FALSE(window_state->CanFullscreen());
-  EXPECT_FALSE(window_state->CanMaximize());
   ToggleFullScreen(window_state, nullptr);
   EXPECT_FALSE(window_state->IsFullscreen());
 }

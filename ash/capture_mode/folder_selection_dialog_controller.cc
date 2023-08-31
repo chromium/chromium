@@ -135,6 +135,7 @@ void FolderSelectionDialogController::OnTransientChildAdded(
   widget_delegate->SetCanResize(false);
   widget_delegate->SetCanMinimize(false);
   widget_delegate->SetCanMaximize(false);
+  widget_delegate->SetCanFullscreen(false);
 
   delegate_->OnSelectionWindowAdded();
 

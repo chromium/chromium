@@ -74,6 +74,10 @@ bool SystemWebAppDelegate::ShouldAllowMaximize() const {
   return true;
 }
 
+bool SystemWebAppDelegate::ShouldAllowFullscreen() const {
+  return true;
+}
+
 bool SystemWebAppDelegate::ShouldHaveTabStrip() const {
   return false;
 }

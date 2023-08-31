@@ -20,6 +20,7 @@ namespace {
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
   TestWidgetDelegate() {
+    SetCanFullscreen(true);
     SetCanMaximize(true);
     SetCanMinimize(true);
     SetCanResize(true);

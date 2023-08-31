@@ -336,6 +336,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
 
   SetCanMinimize(can_minimize_);
   SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));
+  SetCanFullscreen(ash::desks_util::IsDeskContainerId(container_));
   SetCanResize(true);
   SetShowTitle(false);
 }
@@ -915,6 +916,7 @@ void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
 
   SetCanMinimize(can_minimize_);
   SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));
+  SetCanFullscreen(ash::desks_util::IsDeskContainerId(container_));
   SetCanResize(true);
   SetShowTitle(false);
 }
@@ -1977,6 +1979,8 @@ void ShellSurfaceBase::OnPostWidgetCommit() {
 void ShellSurfaceBase::SetContainerInternal(int container) {
   container_ = container;
   WidgetDelegate::SetCanMaximize(
+      !parent_ && ash::desks_util::IsDeskContainerId(container_));
+  WidgetDelegate::SetCanFullscreen(
       !parent_ && ash::desks_util::IsDeskContainerId(container_));
   if (widget_)
     widget_->OnSizeConstraintsChanged();

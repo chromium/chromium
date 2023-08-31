@@ -79,6 +79,7 @@ void GlanceablesController::CreateUi() {
   // Allow maximize so the glanceable container's FillLayoutManager can fill the
   // screen with the widget. This is required even for fullscreen widgets.
   params.delegate->SetCanMaximize(true);
+  params.delegate->SetCanFullscreen(true);
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "GlanceablesWidget";
   params.show_state = ui::SHOW_STATE_FULLSCREEN;

@@ -54,7 +54,8 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   if (!browser) {
     browser = web_app::CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
-        kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize());
+        kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize(),
+        ShouldAllowFullscreen());
     started_new_navigation = true;
   }
 

@@ -29,7 +29,10 @@ SavedState* saved_state = nullptr;
 }  // namespace
 
 ToplevelWindow::CreateParams::CreateParams()
-    : can_resize(false), can_maximize(false), use_saved_placement(true) {}
+    : can_resize(false),
+      can_maximize(false),
+      can_fullscreen(false),
+      use_saved_placement(true) {}
 
 // static
 views::Widget* ToplevelWindow::CreateToplevelWindow(
@@ -51,6 +54,7 @@ void ToplevelWindow::ClearSavedStateForTest() {
 
 ToplevelWindow::ToplevelWindow(const CreateParams& params)
     : use_saved_placement_(params.use_saved_placement) {
+  SetCanFullscreen(params.can_fullscreen);
   SetCanMaximize(params.can_maximize);
   SetCanMinimize(params.can_maximize);
   SetCanResize(params.can_resize);

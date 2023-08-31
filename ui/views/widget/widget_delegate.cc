@@ -389,12 +389,6 @@ void WidgetDelegate::SetCanFullscreen(bool can_fullscreen) {
 
 void WidgetDelegate::SetCanMaximize(bool can_maximize) {
   bool old_can_maximize = std::exchange(params_.can_maximize, can_maximize);
-  // TODO(b/256551737): Remove this. CanMaximize currently means that a window
-  // is also able to go into fullscreen. We'd like to split the logic, but
-  // this could introduce some defects. Retaining current behaviour at the
-  // moment, then change it in another CL, so that it'll be easier to rollback
-  // in case there is a regression.
-  params_.can_fullscreen = true;
   if (GetWidget() && params_.can_maximize != old_can_maximize)
     GetWidget()->OnSizeConstraintsChanged();
 }
@@ -489,6 +483,7 @@ void WidgetDelegate::SetCenterTitle(bool center_title) {
 #endif
 
 void WidgetDelegate::SetHasWindowSizeControls(bool has_controls) {
+  SetCanFullscreen(has_controls);
   SetCanMaximize(has_controls);
   SetCanMinimize(has_controls);
   SetCanResize(has_controls);

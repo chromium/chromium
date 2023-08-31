@@ -71,6 +71,10 @@ bool EcheSystemAppDelegate::ShouldAllowMaximize() const {
   return false;
 }
 
+bool EcheSystemAppDelegate::ShouldAllowFullscreen() const {
+  return false;
+}
+
 bool EcheSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
   return false;
 }

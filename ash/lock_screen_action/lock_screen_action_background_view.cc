@@ -71,6 +71,7 @@ class LockScreenActionBackgroundView::NoteBackground : public views::View {
 
 LockScreenActionBackgroundView::LockScreenActionBackgroundView() {
   SetCanMaximize(true);
+  SetCanFullscreen(true);
 
   auto layout_manager = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);

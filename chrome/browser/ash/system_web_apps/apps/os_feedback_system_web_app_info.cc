@@ -92,6 +92,11 @@ bool OSFeedbackAppDelegate::ShouldAllowScriptsToCloseWindows() const {
 bool OSFeedbackAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
+
+bool OSFeedbackAppDelegate::ShouldAllowFullscreen() const {
+  return false;
+}
+
 bool OSFeedbackAppDelegate::ShouldAllowMaximize() const {
   return false;
 }

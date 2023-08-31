@@ -77,6 +77,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                                     bool omit_from_session_restore = false,
                                     bool can_resize = true,
                                     bool can_maximize = true,
+                                    bool can_fullscreen = true,
                                     gfx::Rect initial_bounds = gfx::Rect());
 
 content::WebContents* NavigateWebApplicationWindow(

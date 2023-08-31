@@ -320,6 +320,10 @@ class Browser : public TabStripModelObserver,
     // maximizable.
     bool can_maximize = true;
 
+    // Only applied when not in forced app mode. True if the browser can enter
+    // fullscreen.
+    bool can_fullscreen = true;
+
     // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
     absl::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 

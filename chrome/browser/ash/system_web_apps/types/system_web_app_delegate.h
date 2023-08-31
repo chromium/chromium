@@ -146,6 +146,9 @@ class SystemWebAppDelegate {
   // If false, the surface of app will can be non-maximizable.
   virtual bool ShouldAllowMaximize() const;
 
+  // If false, the surface of the app can not enter fullscreen.
+  virtual bool ShouldAllowFullscreen() const;
+
   // If true, the App's window will have a tab-strip.
   virtual bool ShouldHaveTabStrip() const;
 
