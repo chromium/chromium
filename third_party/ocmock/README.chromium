@@ -1,7 +1,7 @@
 Name: ocmock
 URL: https://github.com/erikdoe/ocmock
-Version: 3.1.5
-Revision: f03b3cc126edc8d6a2d4466d227fb41a1b2c2a14
+Version: 3.9.1
+Revision: afd2c6924e8a36cb872bc475248b978f743c6050
 License: Apache Version 2.0
 License File: License.txt
 Security Critical: no
@@ -17,27 +17,4 @@ This is only a partial inclusion of the OCMock tree. This only includes
 /Source/OCMock because the tests and other files are not necessary for Chromium.
 The License.txt and Changes.txt file are also present from /Source.
 
-Chromium can no longer sync to the tip-of-tree because upstream OCMock requires
-OS X 10.11.
-
 Chromium adds gtest_support.h/.mm and ocmock_extensions.h/.mm.
-
-Chromium patches in 3e193f3c2d4ea4ada63df54c8ce98e7ea4cf768f to use OCMock with
-libc++'s string for return types having vtables.
-
-Chromium patches in c32abcaba428921d8ac12ac98b272ecf8241f9bb and
-33aeea46b0912d9f57ff0ee2763f2667ac099acc to allow the use of .andReturn(...)
-because our version of clang does not support __builtin_types_compatible_p.
-As we are building with Objective-C++, we need to add 'extern "C"' in
-OCMFunctions.h to have C linkage.
-
-Chromium patches in a fix for crbug.com/731129 to assume that unnamed types
-are equal to named ones (see bug for example of types). This is probably due
-to differences between the type embedded by Chromium version of clang and by
-the introspection used by Xcode 9 SDK.
-
-Chromium patches in https://github.com/erikdoe/ocmock/pull/343 to fix the
-comparison of structure representation as strings (again).
-
-Chromium patches in a fix for iOS15 ptrath failures in OCMArg to cache all
-OCMPassByRefSetters rather than checking with object_getClass.

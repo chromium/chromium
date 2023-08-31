@@ -391,7 +391,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMClassMock([ForegroundTabAnimationView class]);
 
     if (animated) {
-      OCMExpect([mock_animation_view_class alloc]);
+      OCMExpect([mock_animation_view_class alloc]).andReturn(nil);
     } else {
       [[mock_animation_view_class reject] alloc];
     }

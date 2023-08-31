@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2005-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,14 +14,13 @@
  *  under the License.
  */
 
-#import <OCMock/OCMockObject.h>
+#import "OCMockObject.h"
 
-@interface OCProtocolMockObject : OCMockObject 
+@interface OCProtocolMockObject : OCMockObject
 {
-	Protocol	*mockedProtocol;
+    Protocol *mockedProtocol;
 }
 
 - (id)initWithProtocol:(Protocol *)aProtocol;
 
 @end
-

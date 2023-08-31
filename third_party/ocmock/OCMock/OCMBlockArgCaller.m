@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
+ *  Copyright (c) 2015-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,36 +14,39 @@
  *  under the License.
  */
 
-#import "OCMPassByRefSetter.h"
+#import "OCMBlockArgCaller.h"
+#import "NSInvocation+OCMAdditions.h"
 
 
-@implementation OCMPassByRefSetter
+@implementation OCMBlockArgCaller
 
-- (id)initWithValue:(id)aValue
+- (instancetype)initWithBlockArguments:(NSArray *)someArgs
 {
-    if((self = [super init]))
+    self = [super init];
+    if(self)
     {
-        value = [aValue retain];
+        arguments = [someArgs copy];
     }
-
     return self;
 }
 
 - (void)dealloc
 {
-    [value release];
+    [arguments release];
     [super dealloc];
 }
 
-- (void)handleArgument:(id)arg
+- (id)copyWithZone:(NSZone *)zone
 {
-    void *pointerValue = [arg pointerValue];
-    if(pointerValue != NULL)
+    return [self retain];
+}
+
+- (void)handleArgument:(id)aBlock
+{
+    if(aBlock)
     {
-        if([value isKindOfClass:[NSValue class]])
-            [(NSValue *)value getValue:pointerValue];
-        else
-            *(id *)pointerValue = value;
+        NSInvocation *inv = [NSInvocation invocationForBlock:aBlock withArguments:arguments];
+        [inv invokeWithTarget:aBlock];
     }
 }
 

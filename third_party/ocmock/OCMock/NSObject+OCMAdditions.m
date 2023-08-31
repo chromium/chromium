@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,20 +14,18 @@
  *  under the License.
  */
 
-#import "NSObject+OCMAdditions.h"
-#import "NSMethodSignature+OCMAdditions.h"
+#import <objc/message.h>
 #import <objc/runtime.h>
+#import "NSMethodSignature+OCMAdditions.h"
+#import "NSObject+OCMAdditions.h"
 
 @implementation NSObject(OCMAdditions)
 
 + (IMP)instanceMethodForwarderForSelector:(SEL)aSelector
 {
-    // use sel_registerName() and not @selector to avoid warning
-    SEL selectorWithNoImplementation = sel_registerName("methodWhichMustNotExist::::");
-
 #ifndef __arm64__
     static NSMutableDictionary *_OCMReturnTypeCache;
-    
+
     if(_OCMReturnTypeCache == nil)
         _OCMReturnTypeCache = [[NSMutableDictionary alloc] init];
 
@@ -48,12 +46,11 @@
     }
 
     if(needsStructureReturn)
-        return class_getMethodImplementation_stret([NSObject class], selectorWithNoImplementation);
+      return _objc_msgForward_stret;
 #endif
-    
-    return class_getMethodImplementation([NSObject class], selectorWithNoImplementation);
-}
 
+  return _objc_msgForward;
+}
 
 + (void)enumerateMethodsInClass:(Class)aClass usingBlock:(void (^)(Class cls, SEL sel))aBlock
 {

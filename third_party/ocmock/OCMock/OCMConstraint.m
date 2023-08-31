@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2007-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2007-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,140 +14,138 @@
  *  under the License.
  */
 
-#import <OCMock/OCMConstraint.h>
+#import <limits.h>
+#import "OCMConstraint.h"
 
 
 @implementation OCMConstraint
 
 + (instancetype)constraint
 {
-	return [[[self alloc] init] autorelease];
+    return [[[self alloc] init] autorelease];
 }
 
 - (BOOL)evaluate:(id)value
 {
-	return NO;
+    return NO;
 }
 
-- (id)copyWithZone:(struct _NSZone *)zone
+- (id)copyWithZone:(struct _NSZone *)zone __unused
 {
     return [self retain];
 }
 
 + (instancetype)constraintWithSelector:(SEL)aSelector onObject:(id)anObject
 {
-	OCMInvocationConstraint *constraint = [OCMInvocationConstraint constraint];
-	NSMethodSignature *signature = [anObject methodSignatureForSelector:aSelector]; 
-	if(signature == nil)
-		[NSException raise:NSInvalidArgumentException format:@"Unkown selector %@ used in constraint.", NSStringFromSelector(aSelector)];
-	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-	[invocation setTarget:anObject];
-	[invocation setSelector:aSelector];
-	constraint->invocation = invocation;
-	return constraint;
+    OCMInvocationConstraint *constraint = [OCMInvocationConstraint constraint];
+    NSMethodSignature *signature = [anObject methodSignatureForSelector:aSelector];
+    if(signature == nil)
+        [NSException raise:NSInvalidArgumentException
+                    format:@"Unknown selector %@ used in constraint.", NSStringFromSelector(aSelector)];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    [invocation setTarget:anObject];
+    [invocation setSelector:aSelector];
+    constraint->invocation = invocation;
+    return constraint;
 }
 
 + (instancetype)constraintWithSelector:(SEL)aSelector onObject:(id)anObject withValue:(id)aValue
 {
-	OCMInvocationConstraint *constraint = [self constraintWithSelector:aSelector onObject:anObject];
-	if([[constraint->invocation methodSignature] numberOfArguments] < 4)
-		[NSException raise:NSInvalidArgumentException format:@"Constraint with value requires selector with two arguments."];
-	[constraint->invocation setArgument:&aValue atIndex:3];
-	return constraint;
+    OCMInvocationConstraint *constraint = (OCMInvocationConstraint *)[self constraintWithSelector:aSelector onObject:anObject];
+    if([[constraint->invocation methodSignature] numberOfArguments] < 4)
+        [NSException raise:NSInvalidArgumentException format:@"Constraint with value requires selector with two arguments."];
+    [constraint->invocation setArgument:&aValue atIndex:3];
+    return constraint;
 }
 
 
 @end
 
 
-
-#pragma mark  -
+#pragma mark -
 
 @implementation OCMAnyConstraint
 
 - (BOOL)evaluate:(id)value
 {
-	return YES;
+    return YES;
 }
 
 @end
 
 
-
-#pragma mark  -
+#pragma mark -
 
 @implementation OCMIsNilConstraint
 
 - (BOOL)evaluate:(id)value
 {
-	return value == nil;
+    return value == nil;
 }
 
 @end
 
 
-
-#pragma mark  -
+#pragma mark -
 
 @implementation OCMIsNotNilConstraint
 
 - (BOOL)evaluate:(id)value
 {
-	return value != nil;
+    return value != nil;
 }
 
 @end
 
 
-
-#pragma mark  -
+#pragma mark -
 
 @implementation OCMIsNotEqualConstraint
 
 - (BOOL)evaluate:(id)value
 {
-	return ![value isEqual:testValue];
+    return ![value isEqual:testValue];
 }
 
 @end
 
 
-
-#pragma mark  -
+#pragma mark -
 
 @implementation OCMInvocationConstraint
 
 - (BOOL)evaluate:(id)value
 {
-	[invocation setArgument:&value atIndex:2]; // should test if constraint takes arg
-	[invocation invoke];
-	BOOL returnValue;
-	[invocation getReturnValue:&returnValue];
-	return returnValue;
+    [invocation setArgument:&value atIndex:2]; // should test if constraint takes arg
+    [invocation invoke];
+    BOOL returnValue;
+    [invocation getReturnValue:&returnValue];
+    return returnValue;
 }
 
 @end
 
-#pragma mark  -
+#pragma mark -
 
 @implementation OCMBlockConstraint
 
 - (instancetype)initWithConstraintBlock:(BOOL (^)(id))aBlock
 {
-    if ((self = [super init]))
+    if((self = [super init]))
     {
         block = [aBlock copy];
     }
-	
-	return self;
+
+    return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [block release];
     [super dealloc];
 }
 
-- (BOOL)evaluate:(id)value 
+- (BOOL)evaluate:(id)value
 {
     return block ? block(value) : NO;
 }

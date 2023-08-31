@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2021 Erik Doernenburg and contributors
+ *  Copyright (c) 2015-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,15 +14,15 @@
  *  under the License.
  */
 
-#import <Foundation/Foundation.h>
+#import "OCMArgAction.h"
 
 
-#if defined(__cplusplus)
-#define OCMOCK_EXTERN extern "C"
-#else
-#define OCMOCK_EXTERN extern
-#endif
+@implementation OCMArgAction
+
+- (void)handleArgument:(id)argument
+{
+
+}
 
 
-OCMOCK_EXTERN BOOL OCMIsObjectType(const char *objCType);
-OCMOCK_EXTERN BOOL OCMIsSubclassOfMockClass(Class cls);
+@end

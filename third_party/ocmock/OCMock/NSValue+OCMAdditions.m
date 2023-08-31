@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2014-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -15,31 +15,10 @@
  */
 
 #import "NSValue+OCMAdditions.h"
+#import "OCMFunctionsPrivate.h"
 
 
 @implementation NSValue(OCMAdditions)
-
-static CFNumberType OCMNumberTypeForObjCType(const char *objcType)
-{
-    switch (objcType[0])
-    {
-        case 'c': return kCFNumberCharType;
-        case 'C': return kCFNumberCharType;
-        case 'B': return kCFNumberCharType;
-        case 's': return kCFNumberShortType;
-        case 'S': return kCFNumberShortType;
-        case 'i': return kCFNumberIntType;
-        case 'I': return kCFNumberIntType;
-        case 'l': return kCFNumberLongType;
-        case 'L': return kCFNumberLongType;
-        case 'q': return kCFNumberLongLongType;
-        case 'Q': return kCFNumberLongLongType;
-        case 'f': return kCFNumberFloatType;
-        case 'd': return kCFNumberDoubleType;
-        default:  return 0;
-    }
-}
-
 
 static NSNumber *OCMNumberForValue(NSValue *value)
 {

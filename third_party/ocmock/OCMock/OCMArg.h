@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMArg : NSObject 
+@interface OCMArg : NSObject
 
 // constraining arguments
 
@@ -36,6 +36,10 @@
 
 + (id *)setTo:(id)value;
 + (void *)setToValue:(NSValue *)value;
++ (id)invokeBlock;
++ (id)invokeBlockWithArgs:(id)first, ... NS_REQUIRES_NIL_TERMINATION;
+
++ (id)defaultValue;
 
 // internal use only
 
@@ -45,9 +49,5 @@
 
 #define OCMOCK_ANY [OCMArg any]
 
-#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-  #define OCMOCK_VALUE(variable) \
+#define OCMOCK_VALUE(variable) \
     ({ __typeof__(variable) __v = (variable); [NSValue value:&__v withObjCType:@encode(__typeof__(__v))]; })
-#else
-  #define OCMOCK_VALUE(variable) [NSValue value:&variable withObjCType:@encode(__typeof__(variable))]
-#endif

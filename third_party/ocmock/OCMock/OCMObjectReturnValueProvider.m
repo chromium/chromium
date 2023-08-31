@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2021 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,15 +14,22 @@
  *  under the License.
  */
 
-#import <Foundation/Foundation.h>
+#import "OCMObjectReturnValueProvider.h"
 
 
-#if defined(__cplusplus)
-#define OCMOCK_EXTERN extern "C"
-#else
-#define OCMOCK_EXTERN extern
-#endif
+@implementation OCMObjectReturnValueProvider
 
+- (instancetype)initWithValue:(id)aValue
+{
+    if((self = [super initWithValue:aValue]))
+        [returnValue retain];
+    return self;
+}
 
-OCMOCK_EXTERN BOOL OCMIsObjectType(const char *objCType);
-OCMOCK_EXTERN BOOL OCMIsSubclassOfMockClass(Class cls);
+- (void)dealloc
+{
+    [returnValue release];
+    [super dealloc];
+}
+
+@end

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,12 +14,130 @@
  *  under the License.
  */
 
-#import "NSMethodSignature+OCMAdditions.h"
-#import "OCMFunctions.h"
 #import <objc/runtime.h>
+#import "NSMethodSignature+OCMAdditions.h"
+#import "OCMFunctionsPrivate.h"
 
 
 @implementation NSMethodSignature(OCMAdditions)
+
+#pragma mark Signatures for dynamic properties
+
++ (NSMethodSignature *)signatureForDynamicPropertyAccessedWithSelector:(SEL)selector inClass:(Class)aClass
+{
+    BOOL isGetter = YES;
+    objc_property_t property = [self propertyMatchingSelector:selector inClass:aClass isGetter:&isGetter];
+    if(property == NULL)
+        return nil;
+
+    const char *propertyAttributesString = property_getAttributes(property);
+    NSArray *propertyAttributes = [[NSString stringWithCString:propertyAttributesString
+                                                      encoding:NSASCIIStringEncoding] componentsSeparatedByString:@","];
+    NSString *typeStr = nil;
+    BOOL isDynamic = NO;
+    for(NSString *attribute in propertyAttributes)
+    {
+        if([attribute isEqualToString:@"D"])
+            isDynamic = YES;
+        else if([attribute hasPrefix:@"T"])
+            typeStr = [attribute substringFromIndex:1];
+    }
+
+    if(!isDynamic)
+        return nil;
+
+    NSRange r = [typeStr rangeOfString:@"\""]; // incomplete workaround to deal with structs
+    if(r.location != NSNotFound)
+        typeStr = [typeStr substringToIndex:r.location];
+
+    NSString *sigStringFormat = isGetter ? @"%@@:" : @"v@:%@";
+    const char *sigCString = [[NSString stringWithFormat:sigStringFormat, typeStr] cStringUsingEncoding:NSASCIIStringEncoding];
+    return [NSMethodSignature signatureWithObjCTypes:sigCString];
+}
+
+
++ (objc_property_t)propertyMatchingSelector:(SEL)selector inClass:(Class)aClass isGetter:(BOOL *)isGetterPtr
+{
+    NSString *propertyName = NSStringFromSelector(selector);
+
+    // first try selector as is aassuming it's a getter
+    objc_property_t property = class_getProperty(aClass, [propertyName cStringUsingEncoding:NSASCIIStringEncoding]);
+    if(property != NULL)
+    {
+        *isGetterPtr = YES;
+        return property;
+    }
+
+    // try setter next if selector starts with "set"
+    if([propertyName hasPrefix:@"set"])
+    {
+        propertyName = [propertyName substringFromIndex:@"set".length];
+        propertyName = [propertyName stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[[propertyName substringToIndex:1] lowercaseString]];
+        if([propertyName hasSuffix:@":"])
+            propertyName = [propertyName substringToIndex:[propertyName length] - 1];
+
+        property = class_getProperty(aClass, [propertyName cStringUsingEncoding:NSASCIIStringEncoding]);
+        if(property != NULL)
+        {
+            *isGetterPtr = NO;
+            return property;
+        }
+    }
+
+    // search through properties with custom getter/setter that corresponds to selector
+    unsigned int propertiesCount = 0;
+    objc_property_t *allProperties = class_copyPropertyList(aClass, &propertiesCount);
+    for(unsigned int i = 0; i < propertiesCount; i++)
+    {
+        NSArray *propertyAttributes = [[NSString stringWithCString:property_getAttributes(allProperties[i])
+                                                          encoding:NSASCIIStringEncoding] componentsSeparatedByString:@","];
+        for(NSString *attribute in propertyAttributes)
+        {
+            if(([attribute hasPrefix:@"G"] || [attribute hasPrefix:@"S"]) &&
+                [[attribute substringFromIndex:1] isEqualToString:propertyName])
+            {
+                *isGetterPtr = ![attribute hasPrefix:@"S"];
+                property = allProperties[i];
+                i = propertiesCount;
+                break;
+            }
+        }
+    }
+    free(allProperties);
+
+    return property;
+}
+
+
+#pragma mark Signatures for blocks
+
++ (NSMethodSignature *)signatureForBlock:(id)block
+{
+    /* For a more complete implementation of parsing the block data structure see:
+     *
+     * https://github.com/ebf/CTObjectiveCRuntimeAdditions/tree/master/CTObjectiveCRuntimeAdditions/CTObjectiveCRuntimeAdditions
+     */
+
+    struct OCMBlockDef *blockRef = (__bridge struct OCMBlockDef *)block;
+
+    if(!(blockRef->flags & OCMBlockDescriptionFlagsHasSignature))
+        return nil;
+
+    void *signatureLocation = blockRef->descriptor;
+    signatureLocation += sizeof(unsigned long int);
+    signatureLocation += sizeof(unsigned long int);
+    if(blockRef->flags & OCMBlockDescriptionFlagsHasCopyDispose)
+    {
+        signatureLocation += sizeof(void (*)(void *dst, void *src));
+        signatureLocation += sizeof(void (*)(void *src));
+    }
+
+    const char *signature = (*(const char **)signatureLocation);
+    return [NSMethodSignature signatureWithObjCTypes:signature];
+}
+
+
+#pragma mark Extended attributes
 
 - (BOOL)usesSpecialStructureReturn
 {
@@ -44,14 +162,16 @@
     return range.length > 0;
 }
 
+
 - (NSString *)fullTypeString
 {
     NSMutableString *typeString = [NSMutableString string];
     [typeString appendFormat:@"%s", [self methodReturnType]];
-    for (NSUInteger i=0; i<[self numberOfArguments]; i++)
+    for(NSUInteger i = 0; i < [self numberOfArguments]; i++)
         [typeString appendFormat:@"%s", [self getArgumentTypeAtIndex:i]];
     return typeString;
 }
+
 
 - (const char *)fullObjCTypes
 {

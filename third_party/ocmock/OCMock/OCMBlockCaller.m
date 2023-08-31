@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2010-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -19,25 +19,25 @@
 
 @implementation OCMBlockCaller
 
--(id)initWithCallBlock:(void (^)(NSInvocation *))theBlock 
+- (id)initWithCallBlock:(void (^)(NSInvocation *))theBlock
 {
-    if ((self = [super init]))
+    if((self = [super init]))
     {
         block = [theBlock copy];
     }
-    
-	return self;
+
+    return self;
 }
 
--(void)dealloc 
+- (void)dealloc
 {
-	[block release];
-	[super dealloc];
+    [block release];
+    [super dealloc];
 }
 
 - (void)handleInvocation:(NSInvocation *)anInvocation
 {
-    if (block != nil)
+    if(block != nil)
     {
         block(anInvocation);
     }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -19,11 +19,12 @@
 @class OCMLocation;
 
 
-@interface OCObserverMockObject : NSObject 
+__deprecated_msg("Please use XCTNSNotificationExpectation instead.")
+    @interface OCObserverMockObject : NSObject
 {
-	BOOL		    expectationOrderMatters;
-	NSMutableArray  *recorders;
-    NSMutableArray  *centers;
+    BOOL            expectationOrderMatters;
+    NSMutableArray *recorders;
+    NSMutableArray *centers;
 }
 
 - (void)setExpectationOrderMatters:(BOOL)flag;
@@ -38,6 +39,6 @@
 // internal use
 
 - (void)autoRemoveFromCenter:(NSNotificationCenter *)aCenter;
-- (void)notificationWithName:(NSString *)name object:(id)sender;
+- (NSNotification *)notificationWithName:(NSString *)name object:(id)sender;
 
 @end

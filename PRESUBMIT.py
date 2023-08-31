@@ -407,6 +407,9 @@ _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
        'Please use |SysNSStringToUTF8| instead.',
       ),
       True,
+      excluded_paths = (
+        '^third_party/ocmock/OCMock/',
+      ),
     ),
     BanRule(
       r'__unsafe_unretained',

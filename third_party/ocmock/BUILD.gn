@@ -8,17 +8,6 @@ config("ocmock_config") {
   include_dirs = [ "//third_party/ocmock" ]
 }
 
-config("ocmock_warnings") {
-  # NSInvocation+OCMAdditions.m has some `- (void) foo; {...`
-  cflags = [
-    "-Wno-semicolon-before-method-body",
-    "-Wno-undeclared-selector",
-
-    # https://github.com/erikdoe/ocmock/issues/369
-    "-Wno-incompatible-pointer-types",
-  ]
-}
-
 source_set("ocmock") {
   testonly = true
 
@@ -46,6 +35,10 @@ source_set("ocmock") {
     "OCMock/OCClassMockObject.m",
     "OCMock/OCMArg.h",
     "OCMock/OCMArg.m",
+    "OCMock/OCMArgAction.h",
+    "OCMock/OCMArgAction.m",
+    "OCMock/OCMBlockArgCaller.h",
+    "OCMock/OCMBlockArgCaller.m",
     "OCMock/OCMBlockCaller.h",
     "OCMock/OCMBlockCaller.m",
     "OCMock/OCMBoxedReturnValueProvider.h",
@@ -58,6 +51,7 @@ source_set("ocmock") {
     "OCMock/OCMExpectationRecorder.m",
     "OCMock/OCMFunctions.h",
     "OCMock/OCMFunctions.m",
+    "OCMock/OCMFunctionsPrivate.h",
     "OCMock/OCMIndirectReturnValueProvider.h",
     "OCMock/OCMIndirectReturnValueProvider.m",
     "OCMock/OCMInvocationExpectation.h",
@@ -70,12 +64,18 @@ source_set("ocmock") {
     "OCMock/OCMLocation.m",
     "OCMock/OCMMacroState.h",
     "OCMock/OCMMacroState.m",
+    "OCMock/OCMNonRetainingObjectReturnValueProvider.h",
+    "OCMock/OCMNonRetainingObjectReturnValueProvider.m",
     "OCMock/OCMNotificationPoster.h",
     "OCMock/OCMNotificationPoster.m",
+    "OCMock/OCMObjectReturnValueProvider.h",
+    "OCMock/OCMObjectReturnValueProvider.m",
     "OCMock/OCMObserverRecorder.h",
     "OCMock/OCMObserverRecorder.m",
     "OCMock/OCMPassByRefSetter.h",
     "OCMock/OCMPassByRefSetter.m",
+    "OCMock/OCMQuantifier.h",
+    "OCMock/OCMQuantifier.m",
     "OCMock/OCMRealObjectForwarder.h",
     "OCMock/OCMRealObjectForwarder.m",
     "OCMock/OCMRecorder.h",
@@ -87,6 +87,7 @@ source_set("ocmock") {
     "OCMock/OCMVerifier.h",
     "OCMock/OCMVerifier.m",
     "OCMock/OCMock.h",
+    "OCMock/OCMockMacros.h",
     "OCMock/OCMockObject.h",
     "OCMock/OCMockObject.m",
     "OCMock/OCObserverMockObject.h",
@@ -101,9 +102,9 @@ source_set("ocmock") {
   public_configs = [ ":ocmock_config" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    ":ocmock_warnings",
     "//build/config/compiler:no_chromium_code",
   ]
+  defines = [ "OCM_DISABLE_XCTEST_FEATURES" ]
 
   # Do not compile with ARC because OCMock code is not compatible with being
   # compiled with ARC.

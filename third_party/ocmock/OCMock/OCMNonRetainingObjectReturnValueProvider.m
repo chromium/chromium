@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
+ *  Copyright (c) 2019-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -14,39 +14,26 @@
  *  under the License.
  */
 
-#import "OCMIndirectReturnValueProvider.h"
+#import "NSInvocation+OCMAdditions.h"
+#import "OCMNonRetainingObjectReturnValueProvider.h"
+#import "OCMFunctions.h"
 
 
-@implementation OCMIndirectReturnValueProvider
+@implementation OCMNonRetainingObjectReturnValueProvider
 
-- (id)initWithProvider:(id)aProvider andSelector:(SEL)aSelector
+- (instancetype)initWithValue:(id)aValue
 {
     if((self = [super init]))
-    {
-        provider = [aProvider retain];
-        selector = aSelector;
-    }
-
+        returnValue = aValue;
     return self;
-}
-
-- (void)dealloc
-{
-    [provider release];
-    [super dealloc];
 }
 
 - (void)handleInvocation:(NSInvocation *)anInvocation
 {
-    id originalTarget = [anInvocation target];
-    SEL originalSelector = [anInvocation selector];
-
-    [anInvocation setTarget:provider];
-    [anInvocation setSelector:selector];
-    [anInvocation invoke];
-
-    [anInvocation setTarget:originalTarget];
-    [anInvocation setSelector:originalSelector];
+    if(!OCMIsObjectType([[anInvocation methodSignature] methodReturnType]))
+    {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Expected invocation with object return type. Did you mean to use andReturnValue: instead?" userInfo:nil];
+    }
+    [anInvocation setReturnValue:&returnValue];
 }
-
 @end
