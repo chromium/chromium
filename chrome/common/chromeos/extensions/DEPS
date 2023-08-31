@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/constants/ash_features.h",
   "+chromeos/constants/chromeos_features.h",
   "+components/web_package/signed_web_bundles/signed_web_bundle_id.h",
 ]

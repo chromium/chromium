@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
 #include "chrome/common/url_constants.h"
@@ -15,12 +16,26 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace chromeos {
 
 namespace {
 
+constexpr char kDevExtensionId[] = "jmalcmbicpnakfkncbgbcmlmgpfkhdca";
+
 using extensions::PermissionsParser;
 using extensions::mojom::APIPermissionID;
+
+bool IsDevExtensionEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
   const base::Value::Dict* externally_connectable_dict =
@@ -75,6 +90,11 @@ ChromeOSSystemExtensionHandler::~ChromeOSSystemExtensionHandler() = default;
 
 bool ChromeOSSystemExtensionHandler::Parse(extensions::Extension* extension,
                                            std::u16string* error) {
+  if (extension->id() == kDevExtensionId && !IsDevExtensionEnabled()) {
+    *error = base::ASCIIToUTF16(kInvalidChromeOSSystemExtensionId);
+    return false;
+  }
+
   if (!extension->manifest()->FindDictPath(
           extensions::manifest_keys::kChromeOSSystemExtension)) {
     *error = base::ASCIIToUTF16(kInvalidChromeOSSystemExtensionDeclaration);

@@ -5,12 +5,17 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 namespace {
@@ -27,10 +32,8 @@ class ExtensionManifestChromeOSSystemExtensionTest
   void SetUp() override {
     ChromeManifestTest::SetUp();
 
-    if (GetParam().is_iwa_enabled) {
-      feature_list_.InitAndEnableFeature(
-          features::kIWAForTelemetryExtensionAPI);
-    }
+    feature_list_.InitWithFeatureState(features::kIWAForTelemetryExtensionAPI,
+                                       GetParam().is_iwa_enabled);
   }
 
  private:
@@ -39,9 +42,15 @@ class ExtensionManifestChromeOSSystemExtensionTest
 
 TEST_P(ExtensionManifestChromeOSSystemExtensionTest,
        InvalidChromeOSSystemExtension) {
-  LoadAndExpectWarning(
-      "chromeos_system_extension_invalid.json",
-      "'chromeos_system_extension' is not allowed for specified extension ID.");
+  LoadAndExpectWarning("chromeos_system_extension_invalid.json",
+                       kInvalidChromeOSSystemExtensionId);
+}
+
+TEST_P(ExtensionManifestChromeOSSystemExtensionTest,
+       ChromeOSSystemExtensionDevIsDisabled) {
+  // This is handled by manifest handler, so it is error, not warning.
+  LoadAndExpectError("chromeos_system_extension_google_dev.json",
+                     kInvalidChromeOSSystemExtensionId);
 }
 
 TEST_P(ExtensionManifestChromeOSSystemExtensionTest,
@@ -159,6 +168,23 @@ INSTANTIATE_TEST_SUITE_P(
             .external_connectable_error_message =
                 chromeos::kInvalidExternallyConnectableDeclarationWithIWA,
         }));
+
+using ExtensionManifestChromeOSSystemExtensionDevTest = ChromeManifestTest;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ExtensionManifestChromeOSSystemExtensionDevTest,
+       ChromeOSSystemExtensionDevIsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates({
+      {features::kIWAForTelemetryExtensionAPI, true},
+      {ash::features::kShimlessRMA3pDiagnosticsDevMode, true},
+  });
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess("chromeos_system_extension_google_dev.json"));
+  EXPECT_TRUE(extension->is_chromeos_system_extension());
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace chromeos

@@ -39,7 +39,7 @@ const char kTelemetryExtensionIwaIdOverrideForTesting[] =
 namespace {
 
 using ChromeOSSystemExtensionInfoMap =
-    base::fixed_flat_map<std::string, ChromeOSSystemExtensionInfo, 3>;
+    base::fixed_flat_map<std::string, ChromeOSSystemExtensionInfo, 4>;
 
 ChromeOSSystemExtensionInfoMap ConstructMap() {
   ChromeOSSystemExtensionInfoMap map =
@@ -61,6 +61,15 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
                /*manufacturers=*/{"ASUS"},
                /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
                /*iwa_id=*/absl::nullopt,
+           }},
+          {/*extension_id=*/"jmalcmbicpnakfkncbgbcmlmgpfkhdca",
+           {
+               /*manufacturers=*/{"Google", "HP", "ASUS"},
+               /*pwa_origin=*/"*://googlechromelabs.github.io/*",
+               /*iwa_id=*/
+               web_package::SignedWebBundleId::Create(
+                   "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic")
+                   .value(),
            }},
       });
 
