@@ -1546,6 +1546,10 @@ BASE_FEATURE(kAccessibilityPageZoom,
              "AccessibilityPageZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the OS-level font setting is adjusted for.
+const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
+    &kAccessibilityPageZoom, "AdjustForOSLevel", true};
+
 // Disables use of performance improvements for experimental testing/dev.
 BASE_FEATURE(kAccessibilityPerformanceTesting,
              "AccessibilityPerformanceTesting",
