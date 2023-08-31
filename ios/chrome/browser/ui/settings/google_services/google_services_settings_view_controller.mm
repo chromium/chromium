@@ -76,7 +76,7 @@
     self.bubbleViewController = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(
-                IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED_BY_PARENT)];
+                IDS_IOS_SUPERVISED_USER_UNAVAILABLE_SETTING_MESSAGE)];
   } else if (isForcedSigninEnabled) {
     self.bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
         initWithMessage:l10n_util::GetNSString(

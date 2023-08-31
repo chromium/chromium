@@ -3073,6 +3073,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Managed by your organization.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_SUPERVISED_USER_UNAVAILABLE_SETTING_MESSAGE" desc="Text displayed to inform that the setting is not available for supervised user.">
+        This setting is unavailable.
+      </message>
       <message name="IDS_IOS_PARENT_MANAGED_SETTING" desc="Text displayed to inform the user that the browser is managed by their parent. [iOS only]">
         Your account is managed by your parent.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
