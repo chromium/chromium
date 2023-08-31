@@ -90,10 +90,6 @@ OsSettingsSections::OsSettingsSections(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
 
-  AddSection(
-      mojom::Section::kLanguagesAndInput,
-      std::make_unique<LanguagesSection>(profile, search_tag_registry, prefs));
-
   AddSection(mojom::Section::kFiles,
              std::make_unique<FilesSection>(profile, search_tag_registry));
 
@@ -119,11 +115,15 @@ OsSettingsSections::OsSettingsSections(
 
   if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
     AddSection(mojom::Section::kSystemPreferences,
-               std::make_unique<SystemPreferencesSection>(profile,
-                                                          search_tag_registry));
+               std::make_unique<SystemPreferencesSection>(
+                   profile, search_tag_registry, prefs));
   } else {
     AddSection(mojom::Section::kDateAndTime,
                std::make_unique<DateTimeSection>(profile, search_tag_registry));
+
+    AddSection(mojom::Section::kLanguagesAndInput,
+               std::make_unique<LanguagesSection>(profile, search_tag_registry,
+                                                  prefs));
 
     AddSection(mojom::Section::kReset,
                std::make_unique<ResetSection>(profile, search_tag_registry));

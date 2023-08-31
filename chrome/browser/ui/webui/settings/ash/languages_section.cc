@@ -41,6 +41,7 @@ using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
 using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::kLanguagesSubpagePath;
 using ::chromeos::settings::mojom::kSmartInputsSubpagePath;
+using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -606,7 +607,9 @@ int LanguagesSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section LanguagesSection::GetSection() const {
-  return mojom::Section::kLanguagesAndInput;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kSystemPreferences
+             : mojom::Section::kLanguagesAndInput;
 }
 
 mojom::SearchResultIcon LanguagesSection::GetSectionIcon() const {
@@ -614,7 +617,9 @@ mojom::SearchResultIcon LanguagesSection::GetSectionIcon() const {
 }
 
 const char* LanguagesSection::GetSectionPath() const {
-  return mojom::kLanguagesAndInputSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kSystemPreferencesSectionPath
+             : mojom::kLanguagesAndInputSectionPath;
 }
 
 bool LanguagesSection::LogMetric(mojom::Setting setting,
