@@ -1697,6 +1697,12 @@
       'Win10 Tests x64 (dbg)',
     ],
   },
+  'chromeos_integration_tests JACUZZI_PUBLIC_LKGM': {
+    # TODO(svenzheng): Re-enable after crrev.com/c/4833732.
+    'remove_from':[
+      'lacros-arm-generic-rel-skylab',
+    ],
+  },
   'components_browsertests': {
     'modifications': {
       'Linux TSan Tests': {
