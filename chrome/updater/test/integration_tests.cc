@@ -2077,13 +2077,14 @@ TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
               1603, /*EVENT_INSTALL_COMPLETE=*/2),
       });
 
-  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kMsiAppId));
-
-  // TODO(crbug.com/1477448): the app should not be registered if the app
-  // install encounters an error. Reenable this after this issue is fixed.
-  // ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
+  // The updater should uninstall itself automatically since the app failed to
+  // install, and there are now no apps to manage.
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
+
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kMsiAppId));
+  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
+
+  ASSERT_TRUE(WaitForUpdaterExit());
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -157,9 +157,12 @@ UpdateService::ErrorCategory ToErrorCategory(
 update_client::UpdateClient::CrxStateChangeCallback
 MakeUpdateClientCrxStateChangeCallback(
     scoped_refptr<update_client::Configurator> config,
+    scoped_refptr<PersistedData> persisted_data,
+    const bool new_install,
     UpdateService::StateChangeCallback callback) {
   return base::BindRepeating(
       [](scoped_refptr<update_client::Configurator> config,
+         scoped_refptr<PersistedData> persisted_data, const bool new_install,
          UpdateService::StateChangeCallback callback,
          update_client::CrxUpdateItem crx_update_item) {
         UpdateService::UpdateState update_state;
@@ -177,6 +180,20 @@ MakeUpdateClientCrxStateChangeCallback(
         // TODO(crbug.com/1352307): Investigate if it is desirable to read the
         // result from the installer result API here when update completes.
 
+        // If a new install encounters an error, the AppId registered in
+        // `UpdateServiceImpl::Install` needs to be removed here. Otherwise the
+        // updater may remain installed even if there are no other apps to
+        // manage, and try to update the app even though the app was not
+        // installed.
+        if (new_install &&
+            (update_state.state ==
+                 UpdateService::UpdateState::State::kUpdateError ||
+             update_state.state ==
+                 UpdateService::UpdateState::State::kNoUpdate)) {
+          persisted_data->RemoveApp(update_state.app_id);
+          config->GetPrefService()->CommitPendingWrite();
+        }
+
         // Commit the prefs values written by |update_client| when the
         // update has completed, such as `pv` and `fingerprint`.
         if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
@@ -185,7 +202,7 @@ MakeUpdateClientCrxStateChangeCallback(
 
         callback.Run(update_state);
       },
-      config, callback);
+      config, persisted_data, new_install, callback);
 }
 
 std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
@@ -535,8 +552,12 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
   if (!base::EqualsCaseInsensitiveASCII(registration.app_id, kUpdaterAppId)) {
     persisted_data_->SetHadApps();
   }
-  if (!persisted_data_->GetProductVersion(registration.app_id).IsValid()) {
-    // Only overwrite the registration if there's no current registration.
+
+  const bool new_install =
+      !persisted_data_->GetProductVersion(registration.app_id).IsValid();
+  if (new_install) {
+    // Pre-register the app if there is no registration for it. This app
+    // registration is removed later if the app install encounters an error.
     persisted_data_->RegisterApp(registration);
   }
 
@@ -552,7 +573,8 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
               {std::make_pair(registration.app_id, install_data_index)}),
           priority,
           /*update_blocked=*/false, PolicySameVersionUpdate::kAllowed),
-      MakeUpdateClientCrxStateChangeCallback(config_, state_update),
+      MakeUpdateClientCrxStateChangeCallback(config_, persisted_data_,
+                                             new_install, state_update),
       MakeUpdateClientCallback(std::move(callback))
           .Then(base::BindOnce(
               [](scoped_refptr<UpdateServiceImpl> self,
@@ -759,7 +781,9 @@ void UpdateServiceImpl::OnShouldBlockCheckForUpdateForMeteredNetwork(
           base::BindOnce(&GetComponents, config_, persisted_data_,
                          AppClientInstallData(), AppInstallDataIndex(),
                          priority, update_blocked, policy_same_version_update),
-          MakeUpdateClientCrxStateChangeCallback(config_, state_update),
+          MakeUpdateClientCrxStateChangeCallback(config_, persisted_data_,
+                                                 /*new_install=*/false,
+                                                 state_update),
           priority == Priority::kForeground,
           MakeUpdateClientCallback(std::move(callback))));
 }
@@ -781,7 +805,9 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
           base::BindOnce(&GetComponents, config_, persisted_data_,
                          app_client_install_data, app_install_data_index,
                          priority, update_blocked, policy_same_version_update),
-          MakeUpdateClientCrxStateChangeCallback(config_, state_update),
+          MakeUpdateClientCrxStateChangeCallback(config_, persisted_data_,
+                                                 /*new_install=*/false,
+                                                 state_update),
           priority == Priority::kForeground,
           MakeUpdateClientCallback(std::move(callback))));
 }
