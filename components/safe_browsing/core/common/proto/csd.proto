@@ -1068,6 +1068,9 @@ message ReferrerChainEntry {
     // navigation is the result of the user copy and paste the address from the
     // browser into the address bar.
     COPY_PASTE_USER_INITIATED = 4;
+
+    // Navigation is initiated by a click on a Push Notification.
+    NOTIFICATION_INITIATED = 5;
   }
 
   message ServerRedirect {

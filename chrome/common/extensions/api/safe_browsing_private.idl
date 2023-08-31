@@ -41,7 +41,10 @@ namespace safeBrowsingPrivate {
     // Navigation is initiated by the browser process and it is believed the
     // navigation is the result of the user copy and paste the address from the
     // browser into the address bar.
-    COPY_PASTE_USER_INITIATED
+    COPY_PASTE_USER_INITIATED,
+
+    // Navigation is initiated by a click on a Push Notification.
+    NOTIFICATION_INITIATED
   };
 
   dictionary PolicySpecifiedPasswordReuse {
