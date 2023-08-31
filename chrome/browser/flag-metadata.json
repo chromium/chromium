@@ -3608,11 +3608,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-storage-pressure-event",
-    "owners": [ "ayui", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-suggestions-with-substring-match",
     "owners": [ "autofill-squad-muc@google.com" ],
     "expiry_milestone": 102
