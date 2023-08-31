@@ -316,7 +316,7 @@ tied to a shill service. Note that when setting properties, existing properties
 are not cleared, and removals must be done explicitly.
 * Create a shill service and associate it to a shill profile
 * Remove or change the association between a shill service and shill profile(s)
-  
+
 Further, the `NetworkConfigurationHandler` class also provides an observer
 interface,
 [` NetworkConfigurationObserver`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/network/network_configuration_observer.h;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4;)
@@ -473,7 +473,73 @@ succeed. The steps for preparing an eSIM network are:
 3. Request installed profiles from Hermes
 4. Enable the relevant profile
 5. Uninhibit cellular scans
-6. Wait until the associated [`NetworkState`](#Network-State) becomes connectable
+6. Wait until the associated [`NetworkState`](#network-state) becomes connectable
 7. Wait until Shill automatically connects if the SIM slot is switched
+
+## Apply Networking Policies
+
+Chrome uses [ONC](https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md)
+to represent and apply network policy. These ONC includes configurations which
+can be used to configure a new network (i.e.: WiFi or eSIM) or update an
+existing network, and also global policies which will affect all networks in a
+certain way on ChromeOS devices, and whether a network was configured via ONC
+will be reflected in the
+[`OncSource`](https://osscs.corp.google.com/chromium/chromium/src/+/main:third_party/cros_system_api/dbus/shill/dbus-constants.h;l=175;drc=c13d041e8414a890e2f24863a121c639d33237c2)
+property in the corresponding Shill service configuration.
+
+The [`ManagedNetworkConfigurationHandler`](#managednetworkconfigurationhandler)
+class is the entry point for policy application. This class provides a
+[`SetPolicy()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/managed_network_configuration_handler.h;l=145-154;drc=5e476d249f1b36460280115db38fdc37b1c37128)
+API that manages the complexity around both queuing and performing policy
+applications. This class internally delegates much of the policy application
+logic to [`PolicyApplicator`](#policyapplicator).
+
+### `PolicyApplicator`
+
+[`PolicyApplicator`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+is responsible for network policy application. The policy application process is
+started via the
+[`Run()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.cc;l=123;drc=acd0e1034f101c2ef8bafa49186bcb84e550dc27;bpv=1;bpt=1)
+API. This API fetches all existing entries from the provided Shill profile in
+parallel through
+[`GetProfilePropertiesCallback`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.cc;l=133;drc=eee0ccfe31638a5a0a0b62eab20120021b945071)
+and compares each profile entry with the policies currently being applied in
+[`GetEntryCallback`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.cc;l=175;drc=eee0ccfe31638a5a0a0b62eab20120021b945071).
+The applicator tries to find the matching network configuration by first
+comparing the GUID. If no Shill configuration could be found with a matching
+GUID, this API will then try to match using additional network properties,
+e.g. the ICCID of a cellular network, using the
+[`FindMatchingPolicy`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.cc;l=53;drc=eee0ccfe31638a5a0a0b62eab20120021b945071)
+to ascertain if the policy matches. The following are the main cases handled in
+the `GetEntryCallback`:
+* If no existing profile entries match with the policy being applied,
+[`ApplyRemainingPolicies`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.cc;drc=acd0e1034f101c2ef8bafa49186bcb84e550dc27;l=426)
+is invoked to apply missing policies. For cellular, it delegates the
+application of the new policies in
+[`CellularPolicyHandler`](#cellularpolicyhandler).
+* If the policy being applied matches an existing profile entry, the applicator
+proceeds to enforce the new policy through
+[`ApplyNewPolicy`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_applicator.cc;l=291;drc=eee0ccfe31638a5a0a0b62eab20120021b945071).
+* If there's an existing profile entry indicating the service is managed but no
+matching policy is discovered, it will delete the entry from the profile.
+* Finally, it will apply the global policy on all unmanaged profile entries.
+
+### `CellularPolicyHandler`
+
+[`CellularPolicyHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/cellular_policy_handler.h;drc=e8286e2f4c1e24abdc6a0633073b4973f240a450)
+encapsulates the logic for installing eSIM profiles configured by policy.
+Installation requests are added to a queue, and each request will be retried a
+fixed number of times with a retry delay between each attempt. When installing
+policy eSIM profiles, the activation code is constructed from either SM-DP+
+address or SM-DS address in the policy configuration.
+
+### `PolicyCertificateProvider`
+
+[`PolicyCertificateProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/policy_certificate_provider.h;l=25;drc=5b6979c43621893d550e829e4e68ef13980a2415)
+is an interface which makes server and authority certificates available from
+enterprise policy. Clients of this interface can register as observers to
+receive update when:
+* The list of policy-set server and authority certificates changes.
+* The PolicyCertificateProvider is being destroyed.
 
 TODO: Finish README
