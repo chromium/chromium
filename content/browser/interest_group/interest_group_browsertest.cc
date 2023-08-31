@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -26,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -43,6 +45,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
+#include "content/browser/interest_group/additional_bids_test_util.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
@@ -129,6 +132,26 @@ const char kFeedPromise[] = R"(
     });
   }
 )";
+
+const char kBase64PublicKey1[] = "x9GNFldc5zosYCL7ROTIWrVB7vk07vgRAPf68H/6MG8=";
+
+const uint8_t kPrivateKey1[] = {
+    0x44, 0x0a, 0xb0, 0x1f, 0xec, 0x87, 0x57, 0xce, 0x42, 0x17, 0x91,
+    0xa3, 0x67, 0xa4, 0x3f, 0x2b, 0xf6, 0x2c, 0xf5, 0xe3, 0x0a, 0x88,
+    0x4e, 0x22, 0x94, 0xf0, 0x59, 0x01, 0x1d, 0x53, 0x2b, 0xa0, 0xc7,
+    0xd1, 0x8d, 0x16, 0x57, 0x5c, 0xe7, 0x3a, 0x2c, 0x60, 0x22, 0xfb,
+    0x44, 0xe4, 0xc8, 0x5a, 0xb5, 0x41, 0xee, 0xf9, 0x34, 0xee, 0xf8,
+    0x11, 0x00, 0xf7, 0xfa, 0xf0, 0x7f, 0xfa, 0x30, 0x6f};
+
+const char kBase64PublicKey2[] = "pjSy2WcByYsZ/Aqomo88tiqtFOpPpRd+4wTtjQ2vZhE=";
+
+const uint8_t kPrivateKey2[] = {
+    0x6b, 0x42, 0xed, 0x42, 0x2e, 0x8d, 0x01, 0xf7, 0x6a, 0xc5, 0xc6,
+    0x26, 0x4a, 0xeb, 0xfb, 0xe5, 0xbc, 0x31, 0xd2, 0x49, 0x19, 0x92,
+    0x63, 0x5e, 0x95, 0x1c, 0x99, 0x7f, 0xf2, 0xd2, 0x77, 0x87, 0xa6,
+    0x34, 0xb2, 0xd9, 0x67, 0x01, 0xc9, 0x8b, 0x19, 0xfc, 0x0a, 0xa8,
+    0x9a, 0x8f, 0x3c, 0xb6, 0x2a, 0xad, 0x14, 0xea, 0x4f, 0xa5, 0x17,
+    0x7e, 0xe3, 0x04, 0xed, 0x8d, 0x0d, 0xaf, 0x66, 0x11};
 
 std::string base64Decode(base::StringPiece input) {
   std::string bytes;
@@ -584,6 +607,50 @@ std::unique_ptr<net::test_server::HttpResponse> HandleWellKnownRequest(
   return response;
 }
 
+std::unique_ptr<net::test_server::HttpResponse> HandleAdditionalBids(
+    const net::test_server::HttpRequest& request) {
+  if (!base::StartsWith(request.relative_url, "/additionalBidsHandler?")) {
+    return nullptr;
+  }
+  std::vector<std::string> pieces =
+      base::SplitString(request.GetURL().query_piece(), "&",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (pieces.size() < 2u) {
+    return nullptr;
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_content_type("application/json");
+  response->set_content("{}");
+
+  const std::string& nonce = pieces[0];
+  const std::string& fault_str = pieces[1];
+  SignedAdditionalBidFault fault = SignedAdditionalBidFault::kNone;
+  if (fault_str == "invalid-signed-base-64") {
+    fault = SignedAdditionalBidFault::kInvalidSignedBase64;
+  } else if (fault_str == "invalid-signed-json") {
+    fault = SignedAdditionalBidFault::kInvalidSignedJson;
+  } else if (fault_str == "invalid-signed-struct") {
+    fault = SignedAdditionalBidFault::kInvalidSignedBidStructure;
+  } else {
+    DCHECK_EQ(fault_str, "none");
+  }
+
+  for (size_t i = 2; i < pieces.size(); ++i) {
+    std::string bid;
+    bool ok = base::Base64Decode(pieces[i], &bid,
+                                 base::Base64DecodePolicy::kForgiving);
+    CHECK(ok);
+    response->AddCustomHeader(
+        "Ad-Auction-Additional-Bid",
+        GenerateSignedAdditionalBidHeader(
+            fault, nonce, bid, {kPrivateKey1, kPrivateKey2},
+            {kBase64PublicKey1, kBase64PublicKey2}));
+  }
+
+  return response;
+}
+
 class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
@@ -613,6 +680,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&HandleWellKnownRequest));
+    https_server_->RegisterRequestHandler(
+        base::BindRepeating(&HandleAdditionalBids));
     https_server_->AddDefaultHandlers(GetTestDataFilePath());
     https_server_->RegisterRequestMonitor(base::BindRepeating(
         &InterestGroupBrowserTest::OnHttpsTestServerRequestMonitor,
@@ -1047,18 +1116,18 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return EvalJs(execution_target ? *execution_target : shell(),
                   base::StringPrintf(
                       R"(
-// Helper for setting up additional bids. seller and nonce will be needed once
-// we switch to header-based approach.
-function provideAdditionalBids(seller, nonce, bidStringList) {
-  let additionalBids = []
+// Helper for setting up additional bids.
+// It returns a promise that resolves when a network request that receives the
+// additional bids as a header is received. additionalBids in an AuctionConfig
+// can be set to the returned value.
+function provideAdditionalBids(seller, nonce, bidStringList,
+                               injectFault = "none") {
+  let url = seller + "/additionalBidsHandler?" + nonce + "&" + injectFault;
   for (bidString of bidStringList) {
-    let bidObj = {
-      bid: bidString,
-      signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
-    };
-    additionalBids.push(bidObj);
+    url += "&" + btoa(bidString);
   }
-  return additionalBids;
+
+  return fetch(url, {adAuctionHeaders: true});
 }
 
 (async function() {
@@ -5264,21 +5333,25 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAdditionalBidsTopLevel) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  std::string auction_nonce = CreateAuctionNonceAndWait();
 
-  EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Auctions "
-      "may only specify 'additionalBids' if they do not have  "
-      "'componentAuctions'.",
-      RunAuctionAndWait(R"({
+  const char kConfigTemplate[] = R"({
       seller: 'https://test.com',
       decisionLogicURL: 'https://test.com',
       additionalBids: [],
+      auctionNonce: $1,
       componentAuctions: [{
           seller: 'https://test.com',
           decisionLogicURL: 'https://test.com',
           interestGroupBuyers: ['https://test.com']
       }]
-  })"));
+  })";
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Auctions "
+      "may only specify 'additionalBids' if they do not have  "
+      "'componentAuctions'.",
+      RunAuctionAndWait(JsReplace(kConfigTemplate, auction_nonce)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -5407,7 +5480,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignalsHeaderAdSlot: new Promise((resolve, reject) => {
         setTimeout(() => { reject('boo'); }, 10) }),
       interestGroupBuyers: []
@@ -5436,7 +5509,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
-      decisionLogicUrl: $2,
+      decisionLogicURL: $2,
       directFromSellerSignalsHeaderAdSlot: "notFound",
       interestGroupBuyers: []
   })";
@@ -6159,114 +6232,115 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionInvalidAdditionalBids) {
+                       RunAdAuctionInvalidAdditionalBidsNoNonce) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
-      "'NavigatorAuction': The provided value is not of type "
-      "'AuctionAdditionalBidConfig'.");
-
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicURL: $2,
       additionalBids: Promise.resolve([1, 2, 3]),
       interestGroupBuyers: [$1]
-  })",
-                                        test_origin, decision_url)));
-  EXPECT_TRUE(console_observer.Wait());
+  })";
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "additionalBids specified for AuctionAdConfig with seller '%s' "
+                "which does not have an auctionNonce.",
+                test_origin.Serialize().c_str()),
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionInvalidAdditionalBids2) {
+                       RunAdAuctionInvalidSignedAdditionalBidsBase64) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  std::string auction_nonce = CreateAuctionNonceAndWait();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
-      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
-      "'NavigatorAuction': 'additionalBids.signatures[0].key' for "
-      "AuctionAdConfig with seller 'https://a.test:*' must be 32 bytes long.");
+      "*Worklet error: Ignoring signed additional bid on auction with seller "
+      "'https://a.test:*' due to invalid base64.*");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicURL: $2,
-      additionalBids: Promise.resolve([{
-        bid: "",
-        signatures: [{key: new Uint8Array(), signature: new Uint8Array()}]
-      }]),
-      interestGroupBuyers: [$1]
-  })",
-                                        test_origin, decision_url)));
+      additionalBids: provideAdditionalBids($1, $3, ["{}"],
+                                            "invalid-signed-base-64"),
+      interestGroupBuyers: [$1],
+      auctionNonce: $3
+  })";
+
+  EXPECT_EQ(nullptr,
+            RunAuctionAndWait(JsReplace(kAuctionConfigTemplate, test_origin,
+                                        decision_url, auction_nonce)));
+
   EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionInvalidAdditionalBids3) {
+                       RunAdAuctionInvalidSignedAdditionalBidsJson) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  std::string auction_nonce = CreateAuctionNonceAndWait();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
-      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
-      "'NavigatorAuction': 'additionalBids.signatures[0].signature' for "
-      "AuctionAdConfig with seller 'https://a.test:*' must be 64 bytes long.");
+      "*Worklet error: Unable to parse signed additional bid as JSON*");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicURL: $2,
-      additionalBids: Promise.resolve([{
-        bid: "",
-        signatures: [{key: new Uint8Array(32), signature: new Uint8Array()}]
-      }, {
-        bid: "",
-        signatures: [{key: new Uint8Array(), signature: new Uint8Array(64)}]
-      }]),
-      interestGroupBuyers: [$1]
-  })",
-                                        test_origin, decision_url)));
+      additionalBids: provideAdditionalBids($1, $3, ["{}"],
+                                            "invalid-signed-json"),
+      interestGroupBuyers: [$1],
+      auctionNonce: $3
+  })";
+
+  EXPECT_EQ(nullptr,
+            RunAuctionAndWait(JsReplace(kAuctionConfigTemplate, test_origin,
+                                        decision_url, auction_nonce)));
+
   EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionInvalidAdditionalBids4) {
+                       RunAdAuctionInvalidSignedAdditionalBidsStructure) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL decision_url =
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  std::string auction_nonce = CreateAuctionNonceAndWait();
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
-  // TODO(http://crbug.com/1464874, https://crbug.com/1475652): It would be
-  // better to enforce this in the renderer.
   console_observer.SetPattern(
-      "Worklet error: Ignoring additionalBids on auction with seller "
-      "'https://a.test:*' since it doesn't have an auctionNonce.");
+      "*Worklet error: Unable to decode signed additional bid: Signed "
+      "additional bid missing string 'bid' field.*");
 
-  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
+  const char kAuctionConfigTemplate[] = R"({
       seller: $1,
       decisionLogicURL: $2,
-      additionalBids: Promise.resolve([{
-        bid: "",
-        signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
-      }]),
-      interestGroupBuyers: [$1]
-  })",
-                                                 test_origin, decision_url)));
+      additionalBids: provideAdditionalBids($1, $3, ["{}"],
+                                            "invalid-signed-struct"),
+      interestGroupBuyers: [$1],
+      auctionNonce: $3
+  })";
+
+  EXPECT_EQ(nullptr,
+            RunAuctionAndWait(JsReplace(kAuctionConfigTemplate, test_origin,
+                                        decision_url, auction_nonce)));
+
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -10460,7 +10534,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
     perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
     sellerCurrency: 'EUR',
-    additionalBids: [],
   });
 })())",
                       seller_origin, seller_script_url,
@@ -10860,7 +10933,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
       perBuyerPrioritySignals: {[componentBuyer]: {bar: 1}, '*': {BaZ: -2}},
       perBuyerCurrencies: maybePromise({[componentBuyer]: 'USD'}),
       sellerCurrency: 'CAD',
-      additionalBids: [],
     }],
   });
 })())",
@@ -16290,8 +16362,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       url::Origin::Create(additional_bid_logic_url));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "*Unable to parse additionalBids[...].bid as JSON*");
+  console_observer.SetPattern("*Unable to parse additional bid as JSON*");
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
   EXPECT_TRUE(console_observer.Wait());
   WaitForUrl(https_server_->GetURL("a.test", "/echoall?report_seller"));

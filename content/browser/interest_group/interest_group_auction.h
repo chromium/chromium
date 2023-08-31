@@ -531,21 +531,21 @@ class CONTENT_EXPORT InterestGroupAuction
   void NotifyComponentConfigPromisesResolved(uint32_t pos);
 
   // Called by AuctionRunner when the promise providing the additional_bids
-  // array has been resolved, if one exists.
-  void NotifyAdditionalBidsConfig(
-      std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-          additional_bids);
+  // array has been resolved, if one exists. Unlike other similar methods,
+  // `auction_page_data` may be null.
+  void NotifyAdditionalBidsConfig(AdAuctionPageData* auction_page_data);
 
-  // Called by AuctionRunner when the value of `additional_bids` for component
-  // auction with position `pos` in the original configuration has been
-  // resolved.
+  // Called by AuctionRunner when the promise for `additional_bids` for
+  // component auction with position `pos` in the original configuration has
+  // been resolved.
   //
   // Assumes that `pos` has already been range-checked, and that this is
   // a parent auction.
+  //
+  // Unlike other similar methods, `auction_page_data` may be null.
   void NotifyComponentAdditionalBidsConfig(
       uint32_t pos,
-      std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-          additional_bids);
+      AdAuctionPageData* auction_page_data);
 
   // Called by AuctionRunner when the promise providing the
   // `direct_from_seller_signals_header_ad_slot` string has been resolved, if
@@ -859,7 +859,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // True if the auction may have additional bids participating.
   bool MayHaveAdditionalBids() const {
     return config_->expects_additional_bids ||
-           !encoded_additional_bids_.empty() ||
+           !encoded_signed_additional_bids_.empty() ||
            !bid_states_for_additional_bids_.empty();
   }
 
@@ -871,10 +871,15 @@ class CONTENT_EXPORT InterestGroupAuction
   // are ready.
   void ScoreQueuedBidsIfReady();
 
-  // If we're in the bidding and scoring phase, and `encoded_additional_bids_`
-  // has been filled in, starts of the process of converting these into actual
-  // bids, keeping track of it via `num_scoring_dependencies_`.
+  // If we're in the bidding and scoring phase, and
+  // `encoded_signed_additional_bids_` has been filled in, starts of the process
+  // of converting these into actual bids, keeping track of it via
+  // `num_scoring_dependencies_`.
   void DecodeAdditionalBidsIfReady();
+
+  // Processes a singled signed additional bid.
+  void HandleDecodedSignedAdditionalBid(
+      data_decoder::DataDecoder::ValueOrError result);
 
   // Processes payload of a single additionalBids entry.
   void HandleDecodedAdditionalBid(
@@ -1110,10 +1115,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // Configuration of this auction.
   raw_ptr<const blink::AuctionConfig, AcrossTasksDanglingUntriaged> config_;
 
-  // Supposed additional bids provided by the renderer; not decoded or checked
-  // yet.
-  std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-      encoded_additional_bids_;
+  // Base64-encoded signed additional bid entries.
+  std::vector<std::string> encoded_signed_additional_bids_;
 
   // This needs pointer stability for the BidState*.
   std::vector<std::unique_ptr<BidState>> bid_states_for_additional_bids_;

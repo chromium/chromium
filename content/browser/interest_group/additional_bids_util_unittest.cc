@@ -10,6 +10,9 @@
 #include <limits>
 #include <string>
 
+#include "base/base64.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
@@ -28,8 +31,45 @@ using testing::UnorderedElementsAre;
 namespace content {
 namespace {
 
+// In case one wants to generate some keys for test use, the following may be
+// useful:
+// template <int N>
+// std::string SerializeKey(uint8_t key[N]) {
+//   std::string out;
+//   for (int row = 0; row < (N / 8); ++row) {
+//     for (int col = 0; col < 8; ++col) {
+//       base::StrAppend(
+//           &out, {base::StringPrintf("0x%02x",
+//                                     static_cast<unsigned>(
+//                                         key[row * 8 + col])),
+//                  ", "});
+//     }
+//     base::StrAppend(&out, {"\n"});
+//   }
+//   return out;
+// }
+//
+// TEST_F(AdditionalBidsUtilTest, GenerateKeyPair) {
+//   crypto::EnsureOpenSSLInit();
+//
+//   uint8_t public_key[32];
+//   uint8_t private_key[64];
+//   ED25519_keypair(public_key, private_key);
+//   std::cout << "public_key:\n";
+//   std::cout << SerializeKey<32>(public_key) << "\n";
+//   std::cout << base::Base64Encode(
+//       base::make_span(public_key, sizeof(public_key)));
+//   std::cout << "\n\n";
+//
+//   std::cout << "private_key:\n";
+//   std::cout << SerializeKey<64>(private_key) << "\n";
+//   std::cout << base::Base64Encode(
+//       base::make_span(private_key, sizeof(private_key)));
+//   std::cout << "\n\n";
+// }
+
 // Some test data for key/signature fields. These are just random sequences
-// of bytes of the right length.
+// of bytes of the right length, not proper cryptographic ones.
 const uint8_t kKey1[] =
     "\xF5\x30\x88\xE9\x9B\xC7\xB0\x2A\x8C\xBE\x11\x8D\xD3\xEC\xEF\xEB\xB5\x71"
     "\xDF\xF9\x7D\x67\xEF\xFF\x9A\xAD\xE1\x63\x86\xAD\x57\x5E";
@@ -58,7 +98,7 @@ const char kSig2Base64[] =
     "kSz0go9iax9KNBuMTLjWoUHQvcxnus8I5DIJXZcGCUH66hKOSQVz4qRXe6U7AK4jr2HpX6Q5vQ"
     "ebt0kxUt1p3Q==";
 
-const char kPretendBid[] = "Hi, I am a base64-encoded JSON bid.";
+const char kPretendBid[] = "Hi, I am a JSON bid.";
 
 class AdditionalBidsUtilTest : public testing::Test {
  protected:
@@ -1020,7 +1060,7 @@ TEST_F(AdditionalBidsUtilTest, VerifySignature) {
   } key_pairs[kKeys];
 
   SignedAdditionalBid data;
-  data.additional_bid_json = "Greetings. I am a base-64 encoded JSON!";
+  data.additional_bid_json = "Greetings. I am JSON!";
   for (int i = 0; i < kKeys; ++i) {
     ED25519_keypair(key_pairs[i].public_key, key_pairs[i].private_key);
 

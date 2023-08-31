@@ -362,9 +362,7 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
 }
 
 void AuctionRunner::ResolvedAdditionalBids(
-    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-    std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-        additional_bids) {
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kFledgeNegativeTargeting)) {
     mojo::ReportBadMessage(
@@ -390,11 +388,12 @@ void AuctionRunner::ResolvedAdditionalBids(
 
   config->expects_additional_bids = false;
 
+  AdAuctionPageData* page_data = get_page_data_callback_.Run();
   if (auction_id->is_main_auction()) {
-    auction_.NotifyAdditionalBidsConfig(std::move(additional_bids));
+    auction_.NotifyAdditionalBidsConfig(page_data);
   } else {
     auction_.NotifyComponentAdditionalBidsConfig(
-        auction_id->get_component_auction(), std::move(additional_bids));
+        auction_id->get_component_auction(), page_data);
   }
 
   NotifyPromiseResolved(auction_id.get(), config);

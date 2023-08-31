@@ -19,11 +19,6 @@ dictionary AuctionAdditionalBidSignature {
   Uint8Array signature;
 };
 
-dictionary AuctionAdditionalBidConfig {
-  required USVString bid;
-  required sequence<AuctionAdditionalBidSignature> signatures;
-};
-
 dictionary AuctionAdConfig {
   required USVString seller;
 
@@ -70,7 +65,7 @@ dictionary AuctionAdConfig {
   AuctionAdInterestGroupSize requestedSize;
 
   [RuntimeEnabled=FledgeNegativeTargeting]
-  Promise<sequence<AuctionAdditionalBidConfig>> additionalBids;
+  Promise<undefined> additionalBids;
 
   [RuntimeEnabled=FledgeNegativeTargeting]
   USVString auctionNonce;

@@ -36,6 +36,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/interest_group/additional_bids_test_util.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_result.h"
@@ -109,6 +110,27 @@ const uint8_t kTestPublicKey[] = {
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
 };
+
+// ED25519 key pairs used to test additional bids.
+const char kBase64PublicKey1[] = "x9GNFldc5zosYCL7ROTIWrVB7vk07vgRAPf68H/6MG8=";
+
+const uint8_t kPrivateKey1[] = {
+    0x44, 0x0a, 0xb0, 0x1f, 0xec, 0x87, 0x57, 0xce, 0x42, 0x17, 0x91,
+    0xa3, 0x67, 0xa4, 0x3f, 0x2b, 0xf6, 0x2c, 0xf5, 0xe3, 0x0a, 0x88,
+    0x4e, 0x22, 0x94, 0xf0, 0x59, 0x01, 0x1d, 0x53, 0x2b, 0xa0, 0xc7,
+    0xd1, 0x8d, 0x16, 0x57, 0x5c, 0xe7, 0x3a, 0x2c, 0x60, 0x22, 0xfb,
+    0x44, 0xe4, 0xc8, 0x5a, 0xb5, 0x41, 0xee, 0xf9, 0x34, 0xee, 0xf8,
+    0x11, 0x00, 0xf7, 0xfa, 0xf0, 0x7f, 0xfa, 0x30, 0x6f};
+
+const char kBase64PublicKey2[] = "pjSy2WcByYsZ/Aqomo88tiqtFOpPpRd+4wTtjQ2vZhE=";
+
+const uint8_t kPrivateKey2[] = {
+    0x6b, 0x42, 0xed, 0x42, 0x2e, 0x8d, 0x01, 0xf7, 0x6a, 0xc5, 0xc6,
+    0x26, 0x4a, 0xeb, 0xfb, 0xe5, 0xbc, 0x31, 0xd2, 0x49, 0x19, 0x92,
+    0x63, 0x5e, 0x95, 0x1c, 0x99, 0x7f, 0xf2, 0xd2, 0x77, 0x87, 0xa6,
+    0x34, 0xb2, 0xd9, 0x67, 0x01, 0xc9, 0x8b, 0x19, 0xfc, 0x0a, 0xa8,
+    0x9a, 0x8f, 0x3c, 0xb6, 0x2a, 0xad, 0x14, 0xea, 0x4f, 0xa5, 0x17,
+    0x7e, 0xe3, 0x04, 0xed, 0x8d, 0x0d, 0xaf, 0x66, 0x11};
 
 std::string kBidder1Name{"Ad Platform"};
 const std::string kBidder1NameAlt{"Ad Platform Alt"};
@@ -7084,11 +7106,14 @@ TEST_F(AuctionRunnerTest, PromiseSignals4) {
                   "Uncaught Error: unexpectedly perBuyerSignals is null."))));
 }
 
-// An auction that passes empty additionalBids via a promise.
+// An auction that passes empty additionalBids via a promise (in that headers
+// are never observed carrying them).
 TEST_F(AuctionRunnerTest, PromiseSignalsAdditionalBids) {
   base::test::ScopedFeatureList additional_bids_on;
   additional_bids_on.InitAndEnableFeature(
       blink::features::kFledgeNegativeTargeting);
+  auction_nonce_ =
+      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
   pass_promise_for_additional_bids_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -7121,7 +7146,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsAdditionalBids) {
 
   // Feed in empty additionalBids.
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   auction_run_loop_->Run();
 
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
@@ -7710,7 +7735,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
 
   // Feed in additionalBids with wrong component ID.
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0), {});
+      blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0));
   auction_run_loop_->RunUntilIdle();
   EXPECT_EQ("Invalid auction ID in ResolvedAdditionalBids", TakeBadMessage());
 }
@@ -7723,6 +7748,9 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
       {blink::features::kFledgeNegativeTargeting,
        blink::features::kBiddingAndScoringDebugReportingAPI},
       {});
+
+  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -7796,14 +7824,17 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
       kBidder1.Serialize().c_str(), kSeller.Serialize().c_str(),
       auction_nonce_->AsLowercaseString().c_str(), kSeller.Serialize().c_str());
 
-  std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr> additional_bids;
-  additional_bids.push_back(blink::mojom::AuctionAdConfigAdditionalBid::New(
-      bid_json,
-      std::vector<blink::mojom::AuctionAdConfigAdditionalBidSignaturePtr>()));
+  std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
+  additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
+      GenerateSignedAdditionalBidHeaderPayloadPortion(
+          SignedAdditionalBidFault::kNone, bid_json,
+          {kPrivateKey1, kPrivateKey2},
+          {kBase64PublicKey1, kBase64PublicKey2}));
+  ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
+      kSeller, additional_bids_for_nonce);
 
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-      std::move(additional_bids));
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   auction_run_loop_->Run();
 
   EXPECT_FALSE(result_.manually_aborted);
@@ -7958,6 +7989,9 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
         run_loop2.Quit();
       }));
   run_loop2.Run();
+
+  // Clear this before the page expires to avoid the dangling ptr error.
+  ad_auction_page_data_ = nullptr;
 }
 
 // An auction where the winning additional bid claims to be from an IG the user
@@ -7968,6 +8002,9 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
       {blink::features::kFledgeNegativeTargeting,
        blink::features::kBiddingAndScoringDebugReportingAPI},
       {});
+
+  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -8042,14 +8079,17 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
       kBidder1.Serialize().c_str(), kSeller.Serialize().c_str(),
       auction_nonce_->AsLowercaseString().c_str(), kSeller.Serialize().c_str());
 
-  std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr> additional_bids;
-  additional_bids.push_back(blink::mojom::AuctionAdConfigAdditionalBid::New(
-      bid_json,
-      std::vector<blink::mojom::AuctionAdConfigAdditionalBidSignaturePtr>()));
+  std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
+  additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
+      GenerateSignedAdditionalBidHeaderPayloadPortion(
+          SignedAdditionalBidFault::kNone, bid_json,
+          {kPrivateKey1, kPrivateKey2},
+          {kBase64PublicKey1, kBase64PublicKey2}));
+  ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
+      kSeller, additional_bids_for_nonce);
 
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-      std::move(additional_bids));
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   auction_run_loop_->Run();
 
   EXPECT_FALSE(result_.manually_aborted);
@@ -8191,6 +8231,9 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
         run_loop2.Quit();
       }));
   run_loop2.Run();
+
+  // Clear this before the page expires to avoid the dangling ptr error.
+  ad_auction_page_data_ = nullptr;
 }
 
 class AuctionRunnerDfssAdSlotTest : public AuctionRunnerTest {
@@ -9072,6 +9115,8 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
   // Have two kind of promises so we don't just finish after first
   // additionalBids update
   use_promise_for_per_buyer_signals_ = true;
+  auction_nonce_ =
+      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
   pass_promise_for_additional_bids_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -9105,9 +9150,9 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
   // Feed in additional bids twice.
   blink::AuctionConfig::BuyerCurrencies buyer_currencies;
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAdditionalBids updating non-promise", TakeBadMessage());
 }
@@ -9149,7 +9194,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
   abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), {});
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAdditionalBids with FledgeNegativeTargeting off",
             TakeBadMessage());

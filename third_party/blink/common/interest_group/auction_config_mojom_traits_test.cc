@@ -683,6 +683,17 @@ TEST(AuctionConfigMojomTraitsTest, ServerResponseConfig) {
   }
 }
 
+// Can't have `expects_additional_bids` without a nonce.
+TEST(AuctionConfigMojomTraitsTest, AdditionalBidsNoNonce) {
+  AuctionConfig auction_config = CreateFullConfig();
+  ASSERT_TRUE(auction_config.expects_additional_bids);
+  auction_config.non_shared_params.auction_nonce.reset();
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+
+  auction_config.expects_additional_bids = false;
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+}
+
 class AuctionConfigMojomTraitsDirectFromSellerSignalsTest
     : public ::testing::TestWithParam<std::tuple<const char*, const char*>> {
  public:

@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64url.h"
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
@@ -2492,29 +2492,39 @@ void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
 }
 
 void InterestGroupAuction::NotifyAdditionalBidsConfig(
-    std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-        additional_bids) {
-  encoded_additional_bids_ = std::move(additional_bids);
+    AdAuctionPageData* auction_page_data) {
+  // An auction with additional bids can't have child auctions.
+  DCHECK_EQ(config_->non_shared_params.component_auctions.size(), 0u);
 
-  // Note that there is no need to do anything to advance the auction, since
-  // that should happen in NotifyConfigPromisesResolved() once everything is
-  // ready.
+  // Enforced by mojo traits and checks on ResolvedAdditionalBids().
+  CHECK(config_->non_shared_params.auction_nonce.has_value());
+
+  if (!auction_page_data) {
+    return;
+  }
+
+  encoded_signed_additional_bids_ =
+      auction_page_data->TakeAuctionAdditionalBidsForOriginAndNonce(
+          config_->seller,
+          config_->non_shared_params.auction_nonce->AsLowercaseString());
 }
 
 void InterestGroupAuction::NotifyComponentAdditionalBidsConfig(
     uint32_t pos,
-    std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
-        additional_bids) {
+    AdAuctionPageData* auction_page_data) {
   DCHECK(!parent_);  // Should not be called on a component.
-  auto it = component_auctions_.find(pos);
+  // And should have component auctions configured if we got thus far
+  // (though none may have ended up passing the permissions check).
+  DCHECK_GT(config_->non_shared_params.component_auctions.size(), 0u);
 
+  auto it = component_auctions_.find(pos);
   if (it == component_auctions_.end()) {
     // Empty component auctions shouldn't be dropped, but component
     // auctions may still be dropped if they fail permissions checks.
     return;
   }
 
-  it->second->NotifyAdditionalBidsConfig(std::move(additional_bids));
+  it->second->NotifyAdditionalBidsConfig(auction_page_data);
 }
 
 void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
@@ -3489,35 +3499,58 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
 }
 
 void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
-  if (encoded_additional_bids_.empty()) {
-    return;
-  }
-  // TODO(http://crbug.com/1464874): verify the signature, and check IG key?
-
-  if (!config_->non_shared_params.auction_nonce.has_value()) {
-    errors_.push_back(
-        base::StrCat({"Ignoring additionalBids on auction with seller '",
-                      config_->seller.Serialize(),
-                      "' since it doesn't have an auctionNonce."}));
+  if (encoded_signed_additional_bids_.empty()) {
     return;
   }
 
-  for (const auto& encoded_bid : encoded_additional_bids_) {
+  for (const auto& encoded_signed_bid : encoded_signed_additional_bids_) {
+    std::string signed_additional_bid_data;
+    if (!base::Base64Decode(encoded_signed_bid, &signed_additional_bid_data)) {
+      errors_.push_back(base::StrCat(
+          {"Ignoring signed additional bid on auction with seller '",
+           config_->seller.Serialize(), "' due to invalid base64."}));
+      continue;
+    }
     ++num_scoring_dependencies_;
     data_decoder::DataDecoder::ParseJsonIsolated(
-        encoded_bid->bid,
-        base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
+        signed_additional_bid_data,
+        base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  encoded_additional_bids_.clear();
+  encoded_signed_additional_bids_.clear();
+}
+
+void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value()) {
+    errors_.push_back("Unable to parse signed additional bid as JSON: " +
+                      result.error());
+    OnScoringDependencyDone();
+    return;
+  }
+
+  auto maybe_signed_additional_bid =
+      DecodeSignedAdditionalBid(std::move(result).value());
+  if (!maybe_signed_additional_bid.has_value()) {
+    errors_.push_back("Unable to decode signed additional bid: " +
+                      maybe_signed_additional_bid.error());
+    OnScoringDependencyDone();
+    return;
+  }
+
+  // TODO(http://crbug.com/1464874): verify the signature, and check IG key?
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      maybe_signed_additional_bid->additional_bid_json,
+      base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InterestGroupAuction::HandleDecodedAdditionalBid(
     data_decoder::DataDecoder::ValueOrError result) {
-  DCHECK(config_->non_shared_params.auction_nonce.has_value());
 
   if (!result.has_value()) {
-    errors_.push_back("Unable to parse additionalBids[...].bid as JSON:" +
+    errors_.push_back("Unable to parse additional bid as JSON: " +
                       result.error());
     OnScoringDependencyDone();
     return;
