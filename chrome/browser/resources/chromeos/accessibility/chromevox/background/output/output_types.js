@@ -226,3 +226,11 @@ export const OutputFormatType = {
   BRAILLE: 'braille',
   SPEAK: 'speak',
 };
+
+/** @enum {string} */
+export const OutputNavigationType = {
+  END_OF: 'endOf',
+  ENTER: 'enter',
+  LEAVE: 'leave',
+  START_OF: 'startOf',
+};

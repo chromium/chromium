@@ -788,7 +788,7 @@ export class Output {
       formatLog,
       type,
       ancestors: info.leaveAncestors,
-      formatName: 'leave',
+      navigationType: outputTypes.OutputNavigationType.LEAVE,
       exclude: [...info.enterAncestors, node],
     });
     this.ancestryHelper_({
@@ -798,7 +798,7 @@ export class Output {
       formatLog,
       type,
       ancestors: info.enterAncestors,
-      formatName: 'enter',
+      navigationType: outputTypes.OutputNavigationType.ENTER,
       excludePreviousAncestors: true,
     });
 
@@ -815,7 +815,7 @@ export class Output {
         formatLog,
         type,
         ancestors: info.startAncestors,
-        formatName: 'startOf',
+        navigationType: outputTypes.OutputNavigationType.START_OF,
         excludePreviousAncestors: true,
       });
     }
@@ -828,7 +828,7 @@ export class Output {
         formatLog,
         type,
         ancestors: info.endAncestors,
-        formatName: 'endOf',
+        navigationType: outputTypes.OutputNavigationType.END_OF,
         exclude: [...info.startAncestors].concat(node),
       });
     }
@@ -842,14 +842,15 @@ export class Output {
    * buff: !Array<Spannable>,
    * formatLog: !OutputFormatLogger,
    * ancestors: !Array<!AutomationNode>,
-   * formatName: string,
+   * navigationType: !outputTypes.OutputNavigationType,
    * exclude: (!Array<!AutomationNode>|undefined),
    * excludePreviousAncestors: (boolean|undefined)
    * }} args
    * @private
    */
   ancestryHelper_(args) {
-    let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
+    let {node, prevNode, buff, formatLog, type, ancestors, navigationType} =
+        args;
 
     const excludeRoles =
         args.exclude ? new Set(args.exclude.map(node => node.role)) : new Set();
@@ -868,7 +869,8 @@ export class Output {
 
       const parentRole = roleInfo.inherits || CustomRole.NO_ROLE;
       const rule = new AncestryOutputRule(
-          type, formatNode.role, parentRole, formatName, this.formatAsBraille);
+          type, formatNode.role, parentRole, navigationType,
+          this.formatAsBraille);
       if (!rule.defined) {
         continue;
       }

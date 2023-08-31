@@ -7,7 +7,7 @@
  */
 import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
 
-import {OutputCustomEvent, OutputEventType, OutputFormatType} from './output_types.js';
+import {OutputCustomEvent, OutputEventType, OutputFormatType, OutputNavigationType} from './output_types.js';
 
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
@@ -28,9 +28,9 @@ export class OutputRule {
     this.event_ = this.getEvent_(event);
     /** @protected {!ChromeVoxRole} */
     this.role_ = CustomRole.DEFAULT;
-    /** @protected {string|undefined} */
+    /** @protected {!OutputNavigationType|undefined} */
     this.navigation_;
-    /** @protected {string|undefined} */
+    /** @protected {!OutputFormatType|undefined} */
     this.output_;
   }
 
@@ -59,7 +59,7 @@ export class OutputRule {
   /**
    * @param {ChromeVoxRole|undefined} role
    * @param {ChromeVoxRole|undefined} parentRole
-   * @param {string|undefined} formatName
+   * @param {!OutputFormatType|!OutputNavigationType|undefined} formatName
    * @return {boolean} true if the role was set, false otherwise.
    */
   populateRole(role, parentRole, formatName) {
@@ -82,7 +82,7 @@ export class OutputRule {
     this.role_ = role;
   }
 
-  /** @param {string|undefined} output */
+  /** @param {!OutputFormatType|undefined} output */
   set output(output) {
     this.output_ = output;
   }
@@ -95,11 +95,11 @@ export class OutputRule {
   get role() {
     return this.role_;
   }
-  /** @return {string|undefined} */
+  /** @return {!OutputNavigationType|undefined} */
   get navigation() {
     return this.navigation_;
   }
-  /** @return {string|undefined} */
+  /** @return {!OutputFormatType|undefined} */
   get output() {
     return this.output_;
   }
@@ -108,7 +108,7 @@ export class OutputRule {
 
   /**
    * @param {ChromeVoxRole|undefined} role
-   * @param {string|undefined} format
+   * @param {!OutputFormatType|!OutputNavigationType|undefined} format
    * @return {boolean} Whether there is a rule for this role/format combo.
    * @private
    */
@@ -123,29 +123,27 @@ export class AncestryOutputRule extends OutputRule {
    * @param {!OutputEventType} eventType
    * @param {ChromeVoxRole|undefined} nodeRole
    * @param {ChromeVoxRole|undefined} parentRole
-   * @param {string|undefined} formatName
+   * @param {!OutputNavigationType|undefined} navigationType
    * @param {boolean} tryBraille
    */
-  constructor(eventType, nodeRole, parentRole, formatName, tryBraille) {
+  constructor(eventType, nodeRole, parentRole, navigationType, tryBraille) {
     super(eventType);
-    /** @private {string|undefined} */
-    this.formatName_ = formatName;
-
-    this.populateRole(nodeRole, parentRole, formatName);
-    this.populateNavigation(formatName);
+    this.populateRole(nodeRole, parentRole, navigationType);
+    this.populateNavigation(navigationType);
     this.populateOutput(tryBraille);
   }
 
-  /** @param {string|undefined} formatName */
-  populateNavigation(formatName) {
-    if (formatName && OutputRule.RULES[this.event_][this.role_][formatName]) {
-      this.navigation_ = formatName;
+  /** @param {!OutputNavigationType|undefined} navigationType */
+  populateNavigation(navigationType) {
+    if (navigationType &&
+        OutputRule.RULES[this.event_][this.role_][navigationType]) {
+      this.navigation_ = navigationType;
     }
   }
 
   /** @param {boolean} tryBraille */
   populateOutput(tryBraille) {
-    const rule = OutputRule.RULES[this.event_][this.role_][this.formatName_];
+    const rule = OutputRule.RULES[this.event_][this.role_][this.navigation_];
     if (rule && rule.speak) {
       this.output_ = OutputFormatType.SPEAK;
     }
@@ -156,12 +154,12 @@ export class AncestryOutputRule extends OutputRule {
 
   /** @return {boolean} */
   get defined() {
-    return Boolean(OutputRule.RULES[this.event_][this.role_][this.formatName_]);
+    return Boolean(OutputRule.RULES[this.event_][this.role_][this.navigation_]);
   }
 
   /** @return {string} */
   get enterFormat() {
-    const rule = OutputRule.RULES[this.event_][this.role_][this.formatName_];
+    const rule = OutputRule.RULES[this.event_][this.role_][this.navigation_];
     if (this.output_) {
       return rule[this.output_];
     }
