@@ -1014,9 +1014,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   search_resumption_module::StartSuggestServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
-    SearchEngineChoiceServiceFactory::GetInstance();
-  }
+  SearchEngineChoiceServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   SearchPermissionsService::Factory::GetInstance();
