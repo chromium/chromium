@@ -65,10 +65,92 @@
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+
+  DCHECK(!browser_state->IsOffTheRecord());
+
+  // Always create the GCMProfileService instance such that we can listen to
+  // the profile notifications and purge the GCM store when the profile is
+  // being signed out.
+  IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
+
+  // TODO(crbug.com/171406): Change AboutSigninInternalsFactory to load on
+  // startup once bug has been fixed.
+  ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
+
+  syncer::SyncServiceImpl::InitParams init_params;
+  // On non-iOS platforms, there are some "uninteresting" types of profiles such
+  // as guest or system profiles. There's no such thing on iOS.
+  init_params.is_regular_profile_for_uma = true;
+  init_params.identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state);
+  init_params.sync_client =
+      std::make_unique<IOSChromeSyncClient>(browser_state);
+  init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
+  init_params.network_connection_tracker =
+      GetApplicationContext()->GetNetworkConnectionTracker();
+  init_params.channel = ::GetChannel();
+  init_params.debug_identifier = browser_state->GetDebugName();
+
+  auto sync_service =
+      std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
+  sync_service->Initialize();
+
+  // TODO(crbug.com/1400663): Remove the workaround below once
+  // PrivacySandboxSettingsFactory correctly declares its KeyedServices
+  // dependencies.
+  if (history::IsSyncSegmentsDataEnabled()) {
+    history::HistoryService* history_service =
+        ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+            browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+
+    syncer::DeviceInfoSyncService* device_info_sync_service =
+        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+
+    if (history_service && device_info_sync_service) {
+      PrefService* local_state = GetApplicationContext()->GetLocalState();
+      CHECK(local_state);
+
+      int display_count = local_state->GetInteger(
+          prefs::kIosSyncSegmentsNewTabPageDisplayCount);
+
+      int display_limit = history::kMaxNumNewTabPageDisplays.Get();
+
+      history_service->SetCanAddForeignVisitsToSegmentsOnBackend(display_count <
+                                                                 display_limit);
+
+      history_service->SetDeviceInfoServices(
+          device_info_sync_service->GetDeviceInfoTracker(),
+          device_info_sync_service->GetLocalDeviceInfoProvider());
+    }
+  }
+
+  // Allow sync_preferences/ components to use SyncService.
+  sync_preferences::PrefServiceSyncable* pref_service =
+      browser_state->GetSyncablePrefs();
+  pref_service->OnSyncServiceInitialized(sync_service.get());
+
+  SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state)
+      ->OnSyncServiceInitialized(sync_service.get());
+
+  return sync_service;
+}
+
+}  // namespace
+
 // static
 SyncServiceFactory* SyncServiceFactory::GetInstance() {
   static base::NoDestructor<SyncServiceFactory> instance;
   return instance.get();
+}
+
+// static
+SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildSyncService);
 }
 
 // static
@@ -144,74 +226,5 @@ SyncServiceFactory::~SyncServiceFactory() {}
 
 std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-
-  DCHECK(!browser_state->IsOffTheRecord());
-
-  // Always create the GCMProfileService instance such that we can listen to
-  // the profile notifications and purge the GCM store when the profile is
-  // being signed out.
-  IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
-
-  // TODO(crbug.com/171406): Change AboutSigninInternalsFactory to load on
-  // startup once bug has been fixed.
-  ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
-
-  syncer::SyncServiceImpl::InitParams init_params;
-  // On non-iOS platforms, there are some "uninteresting" types of profiles such
-  // as guest or system profiles. There's no such thing on iOS.
-  init_params.is_regular_profile_for_uma = true;
-  init_params.identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
-  init_params.sync_client =
-      std::make_unique<IOSChromeSyncClient>(browser_state);
-  init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
-  init_params.network_connection_tracker =
-      GetApplicationContext()->GetNetworkConnectionTracker();
-  init_params.channel = ::GetChannel();
-  init_params.debug_identifier = browser_state->GetDebugName();
-
-  auto sync_service =
-      std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
-  sync_service->Initialize();
-
-  // TODO(crbug.com/1400663): Remove the workaround below once
-  // PrivacySandboxSettingsFactory correctly declares its KeyedServices
-  // dependencies.
-  if (history::IsSyncSegmentsDataEnabled()) {
-    history::HistoryService* history_service =
-        ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-            browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-
-    syncer::DeviceInfoSyncService* device_info_sync_service =
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
-
-    if (history_service && device_info_sync_service) {
-      PrefService* local_state = GetApplicationContext()->GetLocalState();
-      CHECK(local_state);
-
-      int display_count = local_state->GetInteger(
-          prefs::kIosSyncSegmentsNewTabPageDisplayCount);
-
-      int display_limit = history::kMaxNumNewTabPageDisplays.Get();
-
-      history_service->SetCanAddForeignVisitsToSegmentsOnBackend(display_count <
-                                                                 display_limit);
-
-      history_service->SetDeviceInfoServices(
-          device_info_sync_service->GetDeviceInfoTracker(),
-          device_info_sync_service->GetLocalDeviceInfoProvider());
-    }
-  }
-
-  // Allow sync_preferences/ components to use SyncService.
-  sync_preferences::PrefServiceSyncable* pref_service =
-      browser_state->GetSyncablePrefs();
-  pref_service->OnSyncServiceInitialized(sync_service.get());
-
-  SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state)
-      ->OnSyncServiceInitialized(sync_service.get());
-
-  return sync_service;
+  return BuildSyncService(context);
 }

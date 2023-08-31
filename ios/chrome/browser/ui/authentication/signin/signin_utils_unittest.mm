@@ -15,7 +15,10 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/pref_names.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -29,6 +32,7 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -48,6 +52,8 @@ class SigninUtilsTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              SyncServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -91,7 +97,7 @@ class SigninUtilsTest : public PlatformTest {
 };
 
 // Should show the sign-in upgrade for the first time, after FRE.
-TEST_F(SigninUtilsTest, TestWillDisplay) {
+TEST_F(SigninUtilsTest, TestWillNotDisplay) {
   fake_system_identity_manager()->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
@@ -262,6 +268,64 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
 
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
+}
+
+// Should show if the user is signed-in without history opt-in.
+TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
+                                     gaiaID:@"foo1ID"
+                                       name:@"Fake Foo 1"];
+  fake_system_identity_manager()->AddIdentity(identity);
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(
+          chrome_browser_state_.get());
+  authentication_service->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  const base::Version version_1_0("1.0");
+  const base::Version version_3_0("3.0");
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
+      chrome_browser_state_.get(), version_3_0));
+}
+
+// Should not show if the user is signed-in with history opt-in.
+TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
+                                     gaiaID:@"foo1ID"
+                                       name:@"Fake Foo 1"];
+  fake_system_identity_manager()->AddIdentity(identity);
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(
+          chrome_browser_state_.get());
+  authentication_service->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
+  syncer::SyncUserSettings* sync_user_settings =
+      sync_service->GetUserSettings();
+  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kHistory,
+                                      true);
+  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
+
+  const base::Version version_1_0("1.0");
+  const base::Version version_3_0("3.0");
+  signin::RecordUpgradePromoSigninStarted(account_manager_service_,
+                                          version_1_0);
+  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
+      chrome_browser_state_.get(), version_3_0));
 }
 
 // signin::GetPrimaryIdentitySigninState for a signed-out user should

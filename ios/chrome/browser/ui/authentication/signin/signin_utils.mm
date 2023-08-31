@@ -23,8 +23,10 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "net/base/network_change_notifier.h"
@@ -119,13 +121,27 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  // Do not show the SSO promo if the user is already signed-in.
-  signin::ConsentLevel upgradeLevel =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  if (auth_service->HasPrimaryIdentity(upgradeLevel)) {
+  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForBrowserState(browser_state);
+    HistorySyncSkipReason skip_reason =
+        [HistorySyncCoordinator getHistorySyncOptInSkipReason:sync_service
+                                        authenticationService:auth_service];
+    switch (skip_reason) {
+      case HistorySyncSkipReason::kNone:
+        // Need to show the upgrade promo, to show the history sync opt-in.
+        break;
+      case HistorySyncSkipReason::kNotSignedIn:
+        NOTREACHED_NORETURN();
+      case HistorySyncSkipReason::kAlreadyOptedIn:
+      case HistorySyncSkipReason::kSyncForbiddenByPolicies:
+        return false;
+    }
   }
 
   // Don't show the promo if there are no identities. This should be tested
