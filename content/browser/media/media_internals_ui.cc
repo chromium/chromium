@@ -30,6 +30,9 @@ void CreateAndAddMediaInternalsHTMLSource(BrowserContext* browser_context) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 }
 
 }  // namespace

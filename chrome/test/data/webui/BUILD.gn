@@ -432,6 +432,9 @@ ts_library("build_ts") {
     # from tsconfig_base.json.
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
+    "media_internals/integration_test.js",
+    "media_internals/manager_test.js",
+    "media_internals/player_info_test.js",
     "media/media_engagement_test.js",
     "media/media_history_test.js",
   ]
