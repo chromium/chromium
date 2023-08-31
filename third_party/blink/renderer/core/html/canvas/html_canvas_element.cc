@@ -1029,10 +1029,10 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
         UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
         return;
       }
-      if (canvas2d_bridge_->ResourceProvider()) {
+      if (ResourceProvider()) {
         UMA_HISTOGRAM_ENUMERATION(
             "Blink.Canvas.VectorPrintFallbackReason",
-            canvas2d_bridge_->ResourceProvider()->printing_fallback_reason());
+            ResourceProvider()->printing_fallback_reason());
         UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
       }
     }

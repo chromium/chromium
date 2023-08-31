@@ -268,7 +268,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
     logger_ = std::move(logger);
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
-  CanvasResourceProvider* ResourceProvider() const;
   void FlushRecording(CanvasResourceProvider::FlushReason);
 
   cc::PaintRecord* getLastRecord() {
@@ -292,6 +291,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   bool IsHidden() { return is_hidden_; }
   bool CheckResourceProviderValid();
+  CanvasResourceProvider* ResourceProvider() const;
   void ResetResourceProvider();
 
   void SkipQueuedDrawCommands();

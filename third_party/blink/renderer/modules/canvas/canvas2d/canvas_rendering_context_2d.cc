@@ -378,13 +378,9 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (UNLIKELY(isContextLost()))
     return nullptr;
   if (LIKELY(canvas()->GetOrCreateCanvas2DLayerBridge())) {
-    if (LIKELY(!layer_count_) &&
-        LIKELY(canvas()->GetCanvas2DLayerBridge()->ResourceProvider())) {
+    if (LIKELY(!layer_count_) && LIKELY(Host()->ResourceProvider())) {
       // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-      canvas()
-          ->GetCanvas2DLayerBridge()
-          ->ResourceProvider()
-          ->FlushIfRecordingLimitExceeded();
+      Host()->ResourceProvider()->FlushIfRecordingLimitExceeded();
     }
     return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
   }
@@ -392,10 +388,9 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
 }
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
-  if (UNLIKELY(isContextLost() || !canvas() ||
-               !canvas()->GetCanvas2DLayerBridge() ||
-               !canvas()->GetCanvas2DLayerBridge()->ResourceProvider()))
+  if (UNLIKELY(isContextLost() || !Host() || !Host()->ResourceProvider())) {
     return nullptr;
+  }
   return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
 }
 
@@ -406,18 +401,14 @@ void CanvasRenderingContext2D::WillDraw(
   // Always draw everything during printing.
   if (!layer_count_) {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    canvas()
-        ->GetCanvas2DLayerBridge()
-        ->ResourceProvider()
-        ->FlushIfRecordingLimitExceeded();
+    Host()->ResourceProvider()->FlushIfRecordingLimitExceeded();
   }
 }
 
 void CanvasRenderingContext2D::FlushCanvas(
     CanvasResourceProvider::FlushReason reason) {
-  if (canvas() && canvas()->GetCanvas2DLayerBridge() &&
-      canvas()->GetCanvas2DLayerBridge()->ResourceProvider()) {
-    canvas()->GetCanvas2DLayerBridge()->ResourceProvider()->FlushCanvas(reason);
+  if (Host() && Host()->ResourceProvider()) {
+    Host()->ResourceProvider()->FlushCanvas(reason);
   }
 }
 
