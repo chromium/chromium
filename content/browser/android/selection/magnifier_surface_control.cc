@@ -103,6 +103,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
       frame_sink_id_(AllocateFrameSinkId()),
       surface_size_(width, height + top_shadow_height + bottom_shadow_height),
       root_layer_(cc::slim::Layer::Create()),
+      rounded_corner_layer_(cc::slim::SolidColorLayer::Create()),
       zoom_layer_(cc::slim::Layer::Create()),
       surface_layer_(cc::slim::SurfaceLayer::Create()) {
   local_surface_id_allocator_.GenerateId();
@@ -172,11 +173,11 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
     root_layer_->AddChild(std::move(bottom_shadow));
   }
 
-  auto rounded_corner_layer = cc::slim::Layer::Create();
-  rounded_corner_layer->SetPosition(gfx::PointF(0, top_shadow_height));
-  rounded_corner_layer->SetBounds(gfx::Size(width, height));
-  rounded_corner_layer->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
-  root_layer_->AddChild(rounded_corner_layer);
+  rounded_corner_layer_->SetIsDrawable(true);
+  rounded_corner_layer_->SetPosition(gfx::PointF(0, top_shadow_height));
+  rounded_corner_layer_->SetBounds(gfx::Size(width, height));
+  rounded_corner_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
+  root_layer_->AddChild(rounded_corner_layer_);
 
   zoom_layer_->SetBounds(gfx::Size(width, height));
   zoom_layer_->SetTransformOrigin(
@@ -184,7 +185,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
   zoom_layer_->SetTransform(gfx::Transform::MakeScale(zoom));
 
   layer_tree_->SetRoot(root_layer_);
-  rounded_corner_layer->AddChild(zoom_layer_);
+  rounded_corner_layer_->AddChild(zoom_layer_);
   zoom_layer_->AddChild(surface_layer_);
 
   GetHostFrameSinkManager()->RegisterFrameSinkId(
@@ -219,6 +220,10 @@ void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env,
     return;
   }
 
+  absl::optional<SkColor> background_color = rwhva->GetBackgroundColor();
+  rounded_corner_layer_->SetBackgroundColor(
+      background_color ? SkColor4f::FromColor(background_color.value())
+                       : SkColors::kWhite);
   surface_layer_->SetBounds(surface_layer->bounds());
   surface_layer_->SetOldestAcceptableFallback(
       surface_layer->oldest_acceptable_fallback().value_or(viz::SurfaceId()));
