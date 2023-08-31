@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_LIST_ITEM_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/views/view.h"
+#include "ui/views/controls/button/button.h"
 
 namespace arc::input_overlay {
 
@@ -21,7 +21,7 @@ class NameTag;
 // | |Name tag|        |keys| |
 // ----------------------------
 
-class ActionViewListItem : public views::View {
+class ActionViewListItem : public views::Button {
  public:
   ActionViewListItem(DisplayOverlayController* controller, Action* action);
   ActionViewListItem(const ActionViewListItem&) = delete;
@@ -37,6 +37,8 @@ class ActionViewListItem : public views::View {
   friend class EditLabelTest;
 
   void Init();
+
+  void ShowButtonOptionsMenu();
 
   raw_ptr<DisplayOverlayController> controller_;
   raw_ptr<Action, DanglingUntriaged> action_;

@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_widget.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -43,6 +46,18 @@ class EditingListTest : public OverlayViewTestBase {
   void PressAddButton() {
     DCHECK(editing_list_);
     editing_list_->OnAddButtonPressed();
+  }
+
+  void LeftClickAtActionViewListItem(int index) {
+    if (!editing_list_ || index < 0) {
+      return;
+    }
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    if (index >= static_cast<int>(scroll_content->children().size())) {
+      return;
+    }
+    LeftClickOn(scroll_content->children()[index]);
   }
 
   void PressLeftMouseAtEditingList() {
@@ -104,16 +119,27 @@ class EditingListTest : public OverlayViewTestBase {
     editing_list_->OnGestureEvent(&scroll_end);
   }
 
+  bool ButtonOptionsMenuExists() {
+    return !!controller_->button_options_widget_;
+  }
+
+  Action* GetButtonOptionsAction() {
+    return static_cast<ButtonOptionsMenu*>(
+               controller_->button_options_widget_->GetContentsView())
+        ->action();
+  }
+
   gfx::Point GetEditingListOrigin() { return editing_list_->origin(); }
 };
 
-TEST_F(EditingListTest, TestEditingListAddNewAction) {
+TEST_F(EditingListTest, TestAddNewAction) {
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
                {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
                /*expect_ids=*/{0, 1, 2});
   EXPECT_EQ(3u, GetActionListItemsSize());
   EXPECT_EQ(3u, GetActionViewSize());
   EXPECT_EQ(3u, GetTouchInjectorActionSize());
+  EXPECT_FALSE(ButtonOptionsMenuExists());
   // Add a new action by pressing add button.
   PressAddButton();
   CheckActions(
@@ -123,9 +149,22 @@ TEST_F(EditingListTest, TestEditingListAddNewAction) {
   EXPECT_EQ(4u, GetActionListItemsSize());
   EXPECT_EQ(4u, GetActionViewSize());
   EXPECT_EQ(4u, GetTouchInjectorActionSize());
+  EXPECT_TRUE(ButtonOptionsMenuExists());
 }
 
-TEST_F(EditingListTest, TestEditingListReposition) {
+TEST_F(EditingListTest, TestPressAtActionViewListItem) {
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  // Test action view list press.
+  PressAddButton();
+  auto* action_1 = GetButtonOptionsAction();
+  LeftClickAtActionViewListItem(/*index=*/0);
+  auto* action_2 = GetButtonOptionsAction();
+  EXPECT_NE(action_1, action_2);
+}
+
+TEST_F(EditingListTest, TestReposition) {
   // Drag move by mouse.
   auto updated_pos = GetEditingListOrigin();
   PressLeftMouseAtEditingList();

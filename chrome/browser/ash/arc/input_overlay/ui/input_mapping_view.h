@@ -37,6 +37,9 @@ class InputMappingView : public views::View, public TouchInjectorObserver {
   // - Focus from top to bottom.
   void SortChildren();
 
+  // Adds the action without opening the ButtonOptionsMenu.
+  void OnActionAddedInternal(Action& action);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

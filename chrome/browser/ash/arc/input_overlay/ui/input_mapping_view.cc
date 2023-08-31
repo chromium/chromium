@@ -123,6 +123,16 @@ void InputMappingView::SortChildren() {
   }
 }
 
+void InputMappingView::OnActionAddedInternal(Action& action) {
+  // No add function for pre-beta version.
+  DCHECK(IsBeta());
+
+  auto view = action.CreateView(controller_);
+  if (view) {
+    AddChildView(std::move(view))->SetDisplayMode(current_display_mode_);
+  }
+}
+
 void InputMappingView::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED) {
     ProcessPressedEvent(*event);
@@ -140,10 +150,10 @@ void InputMappingView::OnActionAdded(Action& action) {
   // No add function for pre-beta version.
   DCHECK(IsBeta());
 
-  auto view = action.CreateView(controller_);
-  if (view) {
-    AddChildView(std::move(view))->SetDisplayMode(current_display_mode_);
-  }
+  OnActionAddedInternal(action);
+  // A new button options menu corresponding to the action is
+  // added when the action is first added.
+  controller_->AddButtonOptionsMenuWidget(&action);
 }
 
 void InputMappingView::OnActionRemoved(const Action& action) {
@@ -163,7 +173,7 @@ void InputMappingView::OnActionTypeChanged(Action* action, Action* new_action) {
   // No action type change function for pre-beta version.
   DCHECK(IsBeta());
   OnActionRemoved(*action);
-  OnActionAdded(*new_action);
+  OnActionAddedInternal(*new_action);
 }
 
 void InputMappingView::OnActionInputBindingUpdated(const Action& action) {

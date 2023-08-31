@@ -148,6 +148,7 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class DisplayOverlayControllerTest;
   friend class DisplayOverlayControllerAlphaTest;
   friend class EditingList;
+  friend class EditingListTest;
   friend class EditLabelTest;
   friend class EducationalView;
   friend class GameControlsTestBase;
