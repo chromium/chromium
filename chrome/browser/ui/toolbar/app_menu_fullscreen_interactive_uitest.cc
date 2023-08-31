@@ -102,6 +102,10 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
                 return false;
               }
 
+      // In immersive fullscreen on macOS, some of the UI lives in a
+      // separate OS-managed window, so the browser window is not the
+      // exact size of the screen.
+#if !BUILDFLAG(IS_MAC)
               if (is_fullscreen) {
                 do {
                   auto display =
@@ -121,6 +125,7 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
                   ViewBoundsChangeWaiter(browser_view).Wait();
                 } while (true);
               }
+#endif  // !BUILDFLAG(IS_MAC)
 
               return true;
             },
