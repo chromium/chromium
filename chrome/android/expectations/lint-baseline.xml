@@ -4595,17 +4595,6 @@
 
     <issue
         id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableStartCompat` instead of `android:drawableStart`"
-        errorLine1="        android:drawableStart=&quot;@drawable/ic_error&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
-            line="25"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
         errorLine1="                    android:drawableTop=&quot;@drawable/edit_icon&quot;"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">

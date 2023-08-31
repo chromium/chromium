@@ -95,41 +95,36 @@ public class QrCodeDialogTest {
 
         CustomQrCodeDialog qrCodeDialog = new CustomQrCodeDialog();
         ArrayList<QrCodeDialogTab> tabs = new ArrayList<>();
-        View firstTabView = Mockito.mock(View.class);
-        View secondTabView = Mockito.mock(View.class);
-        tabs.add(new CustomQrCodeDialogTab(firstTabView, true));
-        tabs.add(new CustomQrCodeDialogTab(secondTabView, false));
+        View tab = Mockito.mock(View.class);
+        tabs.add(new CustomQrCodeDialogTab(tab, false));
         qrCodeDialog.setTabs(tabs);
 
         View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
         ViewPager viewPager = dialog.findViewById(org.chromium.chrome.R.id.qrcode_view_pager);
         TabLayout tabLayout = dialog.findViewById(org.chromium.chrome.R.id.tab_layout);
 
-        assertEquals("Only the enabled tab view should be in the viewPager.", 1,
+        assertEquals("Tab is disabled and should not be in adapter.", 0,
                 viewPager.getAdapter().getCount());
         assertEquals(
-                "Only the enabled tab should be in the tabLayout.", 1, tabLayout.getTabCount());
+                "Tab is disabled and should not be in tab layout.", 0, tabLayout.getTabCount());
     }
 
     @Test
     @MediumTest
-    public void testGetDialogView_allTabsEnabled() {
+    public void testGetDialogView() {
         mActivityTestRule.launchActivity(null);
 
         CustomQrCodeDialog qrCodeDialog = new CustomQrCodeDialog();
         ArrayList<QrCodeDialogTab> tabs = new ArrayList<>();
-        View firstTabView = Mockito.mock(View.class);
-        View secondTabView = Mockito.mock(View.class);
-        tabs.add(new CustomQrCodeDialogTab(firstTabView, true));
-        tabs.add(new CustomQrCodeDialogTab(secondTabView, true));
+        View tab = Mockito.mock(View.class);
+        tabs.add(new CustomQrCodeDialogTab(tab, true));
         qrCodeDialog.setTabs(tabs);
 
         View dialog = qrCodeDialog.getDialogView(mActivityTestRule.getActivity());
         ViewPager viewPager = dialog.findViewById(org.chromium.chrome.R.id.qrcode_view_pager);
         TabLayout tabLayout = dialog.findViewById(org.chromium.chrome.R.id.tab_layout);
 
-        assertEquals(
-                "All tab views should be in the viewPager.", 2, viewPager.getAdapter().getCount());
-        assertEquals("All tabs should be in the tabLayout.", 2, tabLayout.getTabCount());
+        assertEquals("Tab views should be in the viewPager.", 1, viewPager.getAdapter().getCount());
+        assertEquals("Tabs should be in the tabLayout.", 1, tabLayout.getTabCount());
     }
 }

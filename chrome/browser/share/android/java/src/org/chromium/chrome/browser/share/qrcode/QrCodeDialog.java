@@ -18,7 +18,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.ui.base.WindowAndroid;
@@ -34,6 +33,7 @@ public class QrCodeDialog extends DialogFragment {
     public static String URL_KEY = "url_key";
 
     private WindowAndroid mWindowAndroid;
+    // TODO(crbug/1477441): Remove list of Tabs.
     protected ArrayList<QrCodeDialogTab> mTabs;
     private TabLayoutPageListener mTabLayoutPageListener;
 
@@ -108,6 +108,7 @@ public class QrCodeDialog extends DialogFragment {
         ChromeImageButton closeButton = dialogView.findViewById(R.id.close_button);
         closeButton.setOnClickListener(v -> dismiss());
         TabLayout tabLayout = dialogView.findViewById(R.id.tab_layout);
+        assert tabLayout.getTabCount() == mTabs.size();
 
         // Setup page adapter and tab layout.
         ArrayList<View> pages = new ArrayList<View>();
@@ -136,11 +137,8 @@ public class QrCodeDialog extends DialogFragment {
 
         QrCodeShareCoordinator shareCoordinator = new QrCodeShareCoordinator(
                 context, this::dismiss, getArguments().getString(URL_KEY), mWindowAndroid);
-        QrCodeScanCoordinator scanCoordinator =
-                new QrCodeScanCoordinator(context, this::dismiss, mWindowAndroid);
 
         mTabs = new ArrayList<>();
         mTabs.add(shareCoordinator);
-        mTabs.add(scanCoordinator);
     }
 }

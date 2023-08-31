@@ -5323,10 +5323,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Share
       </message>
 
-      <message name="IDS_QR_CODE_SCAN_TAB_LABEL" desc="Scan tab label for QR Code sharing activity.">
-        Scan
-      </message>
-
       <message name="IDS_QR_CODE_SHARE_DESCRIPTION" desc="Text on QR Code sharing tab describing how to use the QR Code.">
         To share with people nearby, let them scan this QR Code
       </message>
@@ -5434,44 +5430,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         GIF Copied
       </message>
 
-      <message name="IDS_QR_CODE_CAMERA_FRAMING_RECT_DESCRIPTION" desc="Text under the framing rectangle in QR Code camera preview.">
-        Position QR Code/barcode in this frame.
-      </message>
-
-      <message name="IDS_QR_CODE_PERMISSION_DESCRIPTION" desc="Text on QR Code sharing tab indicating that permissions need to be given.">
-        To scan a QR Code, let Chrome use your camera
-      </message>
-
-      <message name="IDS_QR_CODE_OPEN_SETTINGS_DESCRIPTION" desc="Text on QR Code sharing tab indicating that user needs to open settings to give camera permission.">
-        To scan a QR Code, change your settings so that Chrome can use your camera
-      </message>
-
-      <message name="IDS_QR_CODE_PERMISSION_CONTINUE_LABEL" desc="Text on button on QR Code sharing tab triggering camera permission dialog.">
-        Continue
-      </message>
-
-      <message name="IDS_QR_CODE_NO_CAMERA_ERROR" desc="Error text shown when no camera is found.">
-        To scan a QR Code, use a device with a camera.
-      </message>
-
-      <message name="IDS_QR_CODE_DISABLED_CAMERA_ERROR" desc="Error text shown when the camera is disabled by the device policy manager.">
-        The organization that manages your device has turned off your camera.
-      </message>
-
-      <message name="IDS_QR_CODE_IN_USE_CAMERA_ERROR" desc="Error text shown when the camera is in use by other apps.">
-        Can't open your camera. Restart your device and try again.
-      </message>
-
-      <message name="IDS_QR_CODE_HARDWARE_CAMERA_ERROR" desc="Error text shown when the camera cannot start due to a hardware error.">
-        Can't open your camera. Something went wrong.
-      </message>
-
       <message name="IDS_QR_CODE_OPEN_SETTINGS_LABEL" desc="Text on button on QR Code sharing tab triggering Android settings.">
         Open Settings
-      </message>
-
-      <message name="IDS_QR_CODE_NOT_A_URL_LABEL" desc="Text on toast on QR Code scanning tab indicating that the QR Code does not correspond to a URL and can not be opened.">
-        This QR Code is not a URL: <ph name="QrCodeValue">%1$s<ex>QR Code Text</ex></ph>
       </message>
 
       <message name="IDS_QR_CODE_FILENAME_PREFIX" desc="File name prefix for downloaded qrcode that is followed by timestamp.">

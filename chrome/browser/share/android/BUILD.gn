@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-ldrtl/text_icon.xml",
-    "java/res/drawable/camera_img.xml",
     "java/res/drawable/delete_icon.xml",
     "java/res/drawable/edit_icon.xml",
     "java/res/drawable/generic_file.xml",
@@ -21,15 +20,9 @@ android_resources("java_resources") {
     "java/res/drawable/share_icon.xml",
     "java/res/drawable/text_icon.xml",
     "java/res/drawable/webnote.xml",
-    "java/res/layout/qrcode_camera_error_layout.xml",
     "java/res/layout/qrcode_dialog.xml",
-    "java/res/layout/qrcode_open_settings_layout.xml",
-    "java/res/layout/qrcode_permission_layout.xml",
     "java/res/layout/qrcode_share_layout.xml",
     "java/res/layout/screenshot_share_sheet.xml",
-    "java/res/values-night/colors.xml",
-    "java/res/values-sw600dp/dimens.xml",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 }
