@@ -19,11 +19,6 @@ class IdentityManager;
 
 namespace plus_addresses {
 
-// Represents a psuedo-profile-like object for use on a given facet.
-struct PlusProfile {
-  std::string address;
-};
-
 typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
@@ -66,8 +61,8 @@ class PlusAddressService : public KeyedService {
   std::u16string GetCreateSuggestionLabel();
 
  private:
-  // The user's existing set of plus addresses, scoped to facets.
-  std::unordered_map<std::string, PlusProfile> plus_profiles_;
+  // The user's existing set of plus addresses, scoped to sites.
+  std::unordered_map<std::string, std::string> plus_address_by_site_;
 
   // Used to drive the `IsPlusAddress` function, and derived from the values of
   // `plus_profiles`.
