@@ -49,6 +49,10 @@ class CORE_EXPORT CSSLengthResolver {
 
   virtual WritingMode GetWritingMode() const = 0;
 
+  // Invoked to notify the resolver that there is an anchor reference in a
+  // calc() expression. Used to track the use of tree-scoped references.
+  virtual void ReferenceAnchor() const = 0;
+
   float Zoom() const { return zoom_; }
   void SetZoom(float zoom) {
     DCHECK(std::isfinite(zoom));

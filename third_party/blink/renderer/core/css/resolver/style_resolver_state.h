@@ -253,6 +253,9 @@ class CORE_EXPORT StyleResolverState {
     }
   }
 
+  void SetHasTreeScopedReference() { has_tree_scoped_reference_ = true; }
+  bool HasTreeScopedReference() const { return has_tree_scoped_reference_; }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 
@@ -338,6 +341,9 @@ class CORE_EXPORT StyleResolverState {
   // True if we are currently resolving a position fallback style by applying
   // rules in a `@try` block.
   bool is_resolving_position_fallback_style_ = false;
+
+  // True if the resolved ComputedStyle depends on tree-scoped references.
+  bool has_tree_scoped_reference_ = false;
 };
 
 }  // namespace blink

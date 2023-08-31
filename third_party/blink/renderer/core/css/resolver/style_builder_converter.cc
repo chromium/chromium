@@ -1864,8 +1864,9 @@ ScopedCSSName* StyleBuilderConverter::ConvertNormalOrCustomIdent(
 }
 
 ScopedCSSName* StyleBuilderConverter::ConvertCustomIdent(
-    StyleResolverState&,
+    StyleResolverState& state,
     const CSSValue& value) {
+  state.SetHasTreeScopedReference();
   const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
   return MakeGarbageCollected<ScopedCSSName>(custom_ident.Value(),
                                              custom_ident.GetTreeScope());

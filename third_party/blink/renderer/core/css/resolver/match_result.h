@@ -193,10 +193,6 @@ class CORE_EXPORT MatchResult {
   // objects were added.
   void Reset();
 
-  const HeapVector<Member<const TreeScope>, 4>& GetTreeScopes() const {
-    return tree_scopes_;
-  }
-
   const TreeScope* CurrentTreeScope() const {
     if (tree_scopes_.empty()) {
       return nullptr;

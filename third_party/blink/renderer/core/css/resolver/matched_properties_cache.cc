@@ -41,14 +41,8 @@ namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
   const MatchedPropertiesVector& properties = result.GetMatchedProperties();
-  unsigned hash = StringHasher::HashMemory(
+  return StringHasher::HashMemory(
       properties.data(), sizeof(MatchedProperties) * properties.size());
-  auto& tree_scopes = result.GetTreeScopes();
-  WTF::AddIntToHash(hash,
-                    StringHasher::HashMemory(
-                        tree_scopes.data(),
-                        sizeof(Member<const TreeScope>) * tree_scopes.size()));
-  return hash;
 }
 
 CachedMatchedProperties::CachedMatchedProperties(
@@ -289,6 +283,20 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // Without a flat tree parent, StyleBuilder::ApplyProperty will not
   // SetChildHasExplicitInheritance on the parent style.
   if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance()) {
+    return false;
+  }
+
+  // Matched properties can be equal for style resolves from elements in
+  // different TreeScopes if StyleSheetContents is shared between stylesheets in
+  // different trees. In those cases ScopedCSSNames need to be constructed with
+  // the correct TreeScope and cannot be cached.
+  //
+  // We used to include TreeScope pointer hashes in the MPC key, but that
+  // didn't allow for MPC cache hits across instances of the same web component.
+  // That also caused an ever-growing cache because the TreeScopes were not
+  // handled in RemoveCachedMatchedPropertiesWithDeadEntries().
+  // See: https://crbug,com/1473836
+  if (state.HasTreeScopedReference()) {
     return false;
   }
 

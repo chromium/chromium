@@ -447,4 +447,8 @@ CSSToLengthConversionData::PreCachedContainerSizesCopy() const {
   return container_sizes_.PreCachedCopy();
 }
 
+void CSSToLengthConversionData::ReferenceAnchor() const {
+  SetFlag(Flag::kAnchorRelative);
+}
+
 }  // namespace blink

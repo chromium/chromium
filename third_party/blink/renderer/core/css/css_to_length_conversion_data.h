@@ -256,6 +256,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kDynamicViewport = 1u << 5,
     // cq*
     kContainerRelative = 1u << 6,
+    // calc() includes tree scoped reference to an anchor
+    kAnchorRelative = 1u << 7,
+    // Adjust the Flags type above if adding more bits below.
   };
 
   CSSToLengthConversionData() : CSSLengthResolver(1 /* zoom */) {}
@@ -308,6 +311,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   double ContainerWidth() const override;
   double ContainerHeight() const override;
   WritingMode GetWritingMode() const override;
+  void ReferenceAnchor() const override;
 
   void SetFontSizes(const FontSizes& font_sizes) { font_sizes_ = font_sizes; }
   void SetLineHeightSize(const LineHeightSize& line_height_size) {

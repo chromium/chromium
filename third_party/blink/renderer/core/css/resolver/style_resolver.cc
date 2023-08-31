@@ -382,6 +382,9 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
     builder.SetDependsOnSizeContainerQueries(true);
     builder.SetHasContainerRelativeUnits();
   }
+  if (flags & static_cast<Flags>(Flag::kAnchorRelative)) {
+    state.SetHasTreeScopedReference();
+  }
 }
 
 }  // namespace
