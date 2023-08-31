@@ -20,6 +20,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
@@ -55,13 +56,14 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -70,6 +72,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using set_up_list_prefs::SetUpListItemState;
+using startup_metric_utils::FirstRunSentinelCreationResult;
 
 @protocol ContentSuggestionsMediatorDispatcher <BrowserCoordinatorCommands,
                                                 SnackbarCommands>
@@ -82,7 +85,7 @@ using set_up_list_prefs::SetUpListItemState;
 // Testing Suite for ContentSuggestionsMediator
 class ContentSuggestionsMediatorTest : public PlatformTest {
  public:
-  ContentSuggestionsMediatorTest() {
+  void SetUp() override {
     // Need to initialize features before constructing
     // SegmentationPlatformServiceFactory.
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -117,11 +120,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     chrome_browser_state_ = test_cbs_builder.Build();
 
     // Necessary set up for kIOSSetUpList.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    FirstRun::RemoveSentinel();
-    base::File::Error fileError;
-    FirstRun::CreateSentinel(&fileError);
-    FirstRun::LoadSentinelInfo();
+    local_state_.Get()->ClearPref(set_up_list_prefs::kDisabled);
+    ClearDefaultBrowserPromoData();
+    WriteFirstRunSentinel();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -137,7 +138,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     dispatcher_ =
         OCMProtocolMock(@protocol(ContentSuggestionsMediatorDispatcher));
     consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
-    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.Get());
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
@@ -183,7 +183,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.webState = fake_web_state_.get();
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
-        initWithLocalState:chrome_browser_state_.get()->GetPrefs()];
+        initWithLocalState:local_state_.Get()];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
 
     promos_manager_ = std::make_unique<MockPromosManager>();
@@ -203,6 +203,24 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   ~ContentSuggestionsMediatorTest() override { [mediator_ disconnect]; }
 
  protected:
+  // Clears and re-writes the FirstRun sentinel file, in order to allow Set Up
+  // List to display.
+  void WriteFirstRunSentinel() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    FirstRun::RemoveSentinel();
+    base::File::Error file_error = base::File::FILE_OK;
+    FirstRunSentinelCreationResult sentinel_created =
+        FirstRun::CreateSentinel(&file_error);
+    ASSERT_EQ(sentinel_created, FirstRunSentinelCreationResult::kSuccess)
+        << "Error creating FirstRun sentinel: "
+        << base::File::ErrorToString(file_error);
+    FirstRun::LoadSentinelInfo();
+    FirstRun::ClearStateForTesting();
+    EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(local_state_.Get()));
+    EXPECT_FALSE(FirstRun::IsChromeFirstRun());
+    EXPECT_TRUE(set_up_list_utils::IsSetUpListActive(local_state_.Get()));
+  }
+
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     NewTabPageTabHelper::CreateForWebState(test_web_state.get());

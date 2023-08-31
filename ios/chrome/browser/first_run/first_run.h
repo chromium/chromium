@@ -30,6 +30,12 @@ class FirstRun {
   FirstRun(const FirstRun&) = delete;
   FirstRun& operator=(const FirstRun&) = delete;
 
+  // Clears the stored state so that a call to `IsChromeFirstRun()` will reload
+  // the state. Any changes to the sentinel file need to be made prior to
+  // calling this method, as this method does not remove or modify the sentinel.
+  // To be used only for testing.
+  static void ClearStateForTesting();
+
   // Returns true if this is the first time chrome is run for this user.
   static bool IsChromeFirstRun();
 

@@ -122,3 +122,8 @@ void FirstRun::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(GetPingDelayPrefName(), 0);
 }
+
+// static
+void FirstRun::ClearStateForTesting() {
+  first_run_ = FIRST_RUN_UNKNOWN;
+}

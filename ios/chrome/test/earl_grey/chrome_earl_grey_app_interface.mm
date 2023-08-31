@@ -1479,12 +1479,16 @@ int watchRunNumber = 0;
   base::File::Error fileError;
   FirstRun::CreateSentinel(&fileError);
   FirstRun::LoadSentinelInfo();
+  FirstRun::ClearStateForTesting();
+  FirstRun::IsChromeFirstRun();
 }
 
 + (void)removeFirstRunSentinel {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (FirstRun::RemoveSentinel()) {
     FirstRun::LoadSentinelInfo();
+    FirstRun::ClearStateForTesting();
+    FirstRun::IsChromeFirstRun();
   }
 }
 
