@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -104,7 +105,11 @@ HttpRequestHeaders::HttpRequestHeaders() = default;
 HttpRequestHeaders::HttpRequestHeaders(const HttpRequestHeaders& other) =
     default;
 HttpRequestHeaders::HttpRequestHeaders(HttpRequestHeaders&& other) = default;
-HttpRequestHeaders::~HttpRequestHeaders() = default;
+HttpRequestHeaders::~HttpRequestHeaders() {
+  // TODO(https://crbug.com/1477132): Remove this histogram in M119.
+  UMA_HISTOGRAM_EXACT_LINEAR("Net.HttpRequestHeaders.HeaderCount",
+                             headers_.size(), 101);
+}
 
 HttpRequestHeaders& HttpRequestHeaders::operator=(
     const HttpRequestHeaders& other) = default;
