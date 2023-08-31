@@ -117,6 +117,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     kCompleted,
   };
 
+  enum class RaceNetworkRequestMode { kDefault, kForced, kSkipped };
+
   void DidPrepareFetchEvent(scoped_refptr<ServiceWorkerVersion> version,
                             EmbeddedWorkerStatus initial_worker_status);
   void DidDispatchFetchEvent(
@@ -214,6 +216,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   void TransitionToStatus(Status new_status);
 
+  // Dispatch preloading request based on the condition and feature enablement
+  // status, and set dispatched_preload_type.
+  void MaybeDispatchPreload(
+      RaceNetworkRequestMode race_network_request_mode,
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
   bool MaybeStartRaceNetworkRequest(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       scoped_refptr<ServiceWorkerVersion> version);
@@ -231,6 +240,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   bool MaybeStartAutoPreload(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       scoped_refptr<ServiceWorkerVersion> version);
+
+  bool MaybeStartNavigationPreload(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 

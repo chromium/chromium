@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -256,11 +257,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   scoped_refptr<ServiceWorkerContextWrapper> context = core->wrapper();
   DCHECK(context);
 
-  enum RaceNetworkRequestMode {
-    kDefault,
-    kForced,
-    kSkipped
-  } race_network_request_mode = kDefault;
+  RaceNetworkRequestMode race_network_request_mode =
+      RaceNetworkRequestMode::kDefault;
   // Check if registered static route rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
@@ -310,10 +308,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   std::move(fallback_callback_), active_worker));
           return;
         case blink::ServiceWorkerRouterSource::SourceType::kRace:
-          race_network_request_mode = kForced;
+          race_network_request_mode = RaceNetworkRequestMode::kForced;
           break;
         case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
-          race_network_request_mode = kSkipped;
+          race_network_request_mode = RaceNetworkRequestMode::kSkipped;
           break;
         case blink::ServiceWorkerRouterSource::SourceType::kCache:
           NOTIMPLEMENTED();
@@ -335,29 +333,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       /*is_offline_capability_check=*/false);
 
   if (container_host_->IsContainerForWindowClient()) {
-    // The RaceNetworkRequest mode doesn't support Navigation Preload. If
-    // RaceNetworkRequest is triggered, Navigation Preload never happens.
-    if (race_network_request_mode == kForced) {
-      if (StartRaceNetworkRequest(context, active_worker)) {
-        SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
-      }
-    } else if (race_network_request_mode != kSkipped &&
-               MaybeStartRaceNetworkRequest(context, active_worker)) {
-      SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
-    } else if (MaybeStartAutoPreload(context, active_worker)) {
-      // When the AutoPreload is triggered, set the commit responsibility
-      // because the response is always committed by the fetch handler
-      // regardless of the race result, except for the case when the fetch
-      // handler result is fallback. The fallback case is handled after
-      // receiving the fetch handler result.
-      SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-      SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
-      active_worker->set_fetch_handler_bypass_option(
-          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload);
-    } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
-                   resource_request_, context, frame_tree_node_id_)) {
-      SetDispatchedPreloadType(DispatchedPreloadType::kNavigationPreload);
-    }
+    MaybeDispatchPreload(race_network_request_mode, context, active_worker);
   }
 
   // Record worker start time here as |fetch_dispatcher_| will start a service
@@ -367,6 +343,48 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   fetch_dispatcher_->Run();
 }
 
+void ServiceWorkerMainResourceLoader::MaybeDispatchPreload(
+    RaceNetworkRequestMode race_network_request_mode,
+    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  switch (race_network_request_mode) {
+    case RaceNetworkRequestMode::kForced:
+      if (StartRaceNetworkRequest(context_wrapper, version)) {
+        return;
+      }
+      break;
+    case RaceNetworkRequestMode::kDefault:
+      if (MaybeStartRaceNetworkRequest(context_wrapper, version)) {
+        return;
+      }
+      break;
+    case RaceNetworkRequestMode::kSkipped:
+      break;
+  }
+
+  bool respect_navigation_preload = base::GetFieldTrialParamByFeatureAsBool(
+      kServiceWorkerAutoPreload, "respect_navigation_preload",
+      /*default_value=*/true);
+
+  if (respect_navigation_preload) {
+    // Prioritize NavigationPreload than AutoPreload if the
+    // respect_navigation_preload feature param is true.
+    if (MaybeStartNavigationPreload(context_wrapper)) {
+      return;
+    }
+    if (MaybeStartAutoPreload(context_wrapper, version)) {
+      return;
+    }
+  } else {
+    if (MaybeStartAutoPreload(context_wrapper, version)) {
+      return;
+    }
+    if (MaybeStartNavigationPreload(context_wrapper)) {
+      return;
+    }
+  }
+}
+
 bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     scoped_refptr<ServiceWorkerVersion> version) {
@@ -374,7 +392,20 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
-  return StartRaceNetworkRequest(context, version);
+  bool result = StartRaceNetworkRequest(context, version);
+  if (result) {
+    SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
+    // When the AutoPreload is triggered, set the commit responsibility
+    // because the response is always committed by the fetch handler
+    // regardless of the race result, except for the case when the fetch
+    // handler result is fallback. The fallback case is handled after
+    // receiving the fetch handler result.
+    SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
+    version->set_fetch_handler_bypass_option(
+        blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload);
+  }
+
+  return result;
 }
 
 bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
@@ -395,7 +426,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
     return false;
   }
 
-  bool status = StartRaceNetworkRequest(context, version);
+  bool result = StartRaceNetworkRequest(context, version);
   if (is_enabled_by_origin_trial) {
     version->CountFeature(
         blink::mojom::WebFeature::
@@ -405,7 +436,12 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
         blink::mojom::WebFeature::
             kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
   }
-  return status;
+
+  if (result) {
+    SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
+  }
+
+  return result;
 }
 
 bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
@@ -474,6 +510,17 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
               NetworkTrafficAnnotationTag()));
 
   return true;
+}
+
+bool ServiceWorkerMainResourceLoader::MaybeStartNavigationPreload(
+    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper) {
+  if (fetch_dispatcher_->MaybeStartNavigationPreload(
+          resource_request_, context_wrapper, frame_tree_node_id_)) {
+    SetDispatchedPreloadType(DispatchedPreloadType::kNavigationPreload);
+    return true;
+  }
+
+  return false;
 }
 
 void ServiceWorkerMainResourceLoader::CommitResponseHeaders(
