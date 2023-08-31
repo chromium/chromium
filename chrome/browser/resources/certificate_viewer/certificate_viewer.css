@@ -60,6 +60,11 @@ h3 {
   white-space: pre-wrap;
 }
 
+.hashvalue {
+  display: table-cell;
+  overflow-wrap: anywhere;
+}
+
 /* Used so that 100% width within tabpanel will correspond to usable space. */
 div[slot='panel'] {
   height: 100%;

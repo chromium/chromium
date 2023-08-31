@@ -39,15 +39,11 @@ TEST_P(X509CertificateModel, InvalidCert) {
           base::span<const uint8_t>({'b', 'a', 'd', '\n'})),
       GetParam());
 
-  EXPECT_EQ(
-      "1D 7A 36 3C E1 24 30 88 1E C5 6C 9C F1 40 9C 49\nC4 91 04 36 18 E5 98 "
-      "C3 56 E2 95 90 40 87 2F 5A",
-      model.HashCertSHA256WithSeparators());
-  EXPECT_EQ("E9 B3 96 D2 DD DF FD B3 73 BF 2C 6A D0 73 69 6A\nA2 5B 4F 68",
-            model.HashCertSHA1WithSeparators());
+  EXPECT_EQ("1d7a363ce12430881ec56c9cf1409c49c491043618e598c356e2959040872f5a",
+            model.HashCertSHA256());
   if (GetParam().empty()) {
     EXPECT_EQ(
-        "1D7A363CE12430881EC56C9CF1409C49C491043618E598C356E2959040872F5A",
+        "1d7a363ce12430881ec56c9cf1409c49c491043618e598c356e2959040872f5a",
         model.GetTitle());
   } else {
     EXPECT_EQ(GetParam(), model.GetTitle());
@@ -61,14 +57,12 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   ASSERT_TRUE(cert);
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(cert->cert_buffer()), GetParam());
-  EXPECT_EQ(
-      "F6 41 C3 6C FE F4 9B C0 71 35 9E CF 88 EE D9 31\n7B 73 8B 59 89 41 6A "
-      "D4 01 72 0C 0A 4E 2E 63 52",
-      model.HashCertSHA256WithSeparators());
-  EXPECT_EQ("40 50 62 E5 BE FD E4 AF 97 E9 38 2A F1 6C C8 7C\n8F B7 C4 E2",
-            model.HashCertSHA1WithSeparators());
+  EXPECT_EQ("f641c36cfef49bc071359ecf88eed9317b738b5989416ad401720c0a4e2e6352",
+            model.HashCertSHA256());
   ASSERT_TRUE(model.is_valid());
 
+  EXPECT_EQ("23a55ce68ea1b20623de09e93fdf3bb03287ac737b27335b4307fe9ec4855c34",
+            model.HashSpkiSHA256());
   EXPECT_EQ("3", model.GetVersion());
   EXPECT_EQ("2F:DF:BC:F6:AE:91:52:6D:0F:9A:A3:DF:40:34:3E:9A",
             model.GetSerialNumberHexified());

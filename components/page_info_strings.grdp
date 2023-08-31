@@ -634,13 +634,13 @@
     Expires On
   </message>
   <message name="IDS_CERT_INFO_FINGERPRINTS_GROUP" desc="The label of the group showing the certificate fingerprints in the general page of the certificate info dialog">
-    Fingerprints
+    SHA-256 Fingerprints
   </message>
-  <message name="IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL" desc="The label of the SHA-256 Fingerprint field in the general page of the certificate info dialog">
-    SHA-256 Fingerprint
+  <message name="IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL" desc="The label of the SHA-256 Certificate Fingerprint field in the general page of the certificate info dialog">
+    Certificate
   </message>
-  <message name="IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL" desc="The label of the SHA-1 Fingerprint field in the general page of the certificate info dialog">
-    SHA-1 Fingerprint
+  <message name="IDS_CERT_INFO_SHA256_SPKI_FINGERPRINT_LABEL" desc="The label of the SHA-256 SPKI Fingerprint field in the general page of the certificate info dialog">
+    Public Key
   </message>
 
   <message name="IDS_CERT_DETAILS_EXTENSIONS" desc="The label of the Extensions element in the details page of the certificate info dialog.">

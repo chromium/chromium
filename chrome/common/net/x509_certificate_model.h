@@ -42,14 +42,8 @@ class X509CertificateModel {
   // These methods are always safe to call even if |cert_data| could not be
   // parsed.
 
-  // Returns hex SHA256 hash of the certificate data.
+  // Returns lower case hex SHA256 hash of the certificate data.
   std::string HashCertSHA256() const;
-  // Returns space-separated and line wrapped hex SHA256 hash of the
-  // certificate data.
-  std::string HashCertSHA256WithSeparators() const;
-  // Returns space-separated and line wrapped hex SHA1 hash of the certificate
-  // data.
-  std::string HashCertSHA1WithSeparators() const;
 
   // Get something that can be used as a title for the certificate, using the
   // following priority:
@@ -66,6 +60,9 @@ class X509CertificateModel {
 
   // ---------------------------------------------------------------------------
   // The rest of the methods should only be called if |is_valid()| returns true.
+
+  // Returns lower case hex SHA256 hash of the SPKI.
+  std::string HashSpkiSHA256() const;
 
   std::string GetVersion() const;
   std::string GetSerialNumberHexified() const;

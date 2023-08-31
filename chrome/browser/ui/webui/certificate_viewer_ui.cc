@@ -41,7 +41,7 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
       {"expiresOn", IDS_CERT_INFO_EXPIRES_ON_LABEL},
       {"fingerprints", IDS_CERT_INFO_FINGERPRINTS_GROUP},
       {"sha256", IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL},
-      {"sha1", IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL},
+      {"spki", IDS_CERT_INFO_SHA256_SPKI_FINGERPRINT_LABEL},
       {"hierarchy", IDS_CERT_DETAILS_CERTIFICATE_HIERARCHY_LABEL},
       {"certFields", IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL},
       {"certFieldVal", IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL},

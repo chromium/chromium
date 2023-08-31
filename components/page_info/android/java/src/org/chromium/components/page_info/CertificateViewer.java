@@ -138,13 +138,13 @@ public class CertificateViewer implements OnItemSelectedListener {
             }
             Certificate cert =
                     mCertificateFactory.generateCertificate(new ByteArrayInputStream(derData));
-            addCertificateDetails(cert, getDigest(derData, "SHA-256"), getDigest(derData, "SHA-1"));
+            addCertificateDetails(cert, getDigest(derData, "SHA-256"));
         } catch (CertificateException e) {
             Log.e("CertViewer", "Error parsing certificate" + e.toString());
         }
     }
 
-    private void addCertificateDetails(Certificate cert, byte[] sha256Digest, byte[] sha1Digest) {
+    private void addCertificateDetails(Certificate cert, byte[] sha256Digest) {
         LinearLayout certificateView = new LinearLayout(mContext);
         mViews.add(certificateView);
         certificateView.setOrientation(LinearLayout.VERTICAL);
@@ -182,8 +182,8 @@ public class CertificateViewer implements OnItemSelectedListener {
         addSectionTitle(certificateView, CertificateViewerJni.get().getCertFingerprintsText());
         addItem(certificateView, CertificateViewerJni.get().getCertSHA256FingerprintText(),
                 formatBytes(sha256Digest, ' '));
-        addItem(certificateView, CertificateViewerJni.get().getCertSHA1FingerprintText(),
-                formatBytes(sha1Digest, ' '));
+        addItem(certificateView, CertificateViewerJni.get().getCertSHA256SPKIFingerprintText(),
+                formatBytes(getDigest(x509.getPublicKey().getEncoded(), "SHA-256"), ' '));
 
         List<String> subjectAltNames = getSubjectAlternativeNames(x509);
         if (!subjectAltNames.isEmpty()) {
@@ -295,7 +295,7 @@ public class CertificateViewer implements OnItemSelectedListener {
         String getCertExpiresOnText();
         String getCertFingerprintsText();
         String getCertSHA256FingerprintText();
-        String getCertSHA1FingerprintText();
+        String getCertSHA256SPKIFingerprintText();
         String getCertExtensionText();
         String getCertSANText();
     }

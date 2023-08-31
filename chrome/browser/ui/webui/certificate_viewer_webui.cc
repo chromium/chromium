@@ -304,11 +304,12 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
     }
     cert_info.SetByDottedPath("general.issue-date", issued_str);
     cert_info.SetByDottedPath("general.expiry-date", expires_str);
+    cert_info.SetByDottedPath("general.spki", model.HashSpkiSHA256());
   }
 
-  cert_info.SetByDottedPath("general.sha256",
-                            model.HashCertSHA256WithSeparators());
-  cert_info.SetByDottedPath("general.sha1", model.HashCertSHA1WithSeparators());
+  // We always have a cert hash. We don't always have a SPKI hash, if the cert
+  // is not valid.
+  cert_info.SetByDottedPath("general.sha256", model.HashCertSHA256());
 
   // Certificate hierarchy is constructed from bottom up.
   base::Value::List children;
@@ -476,16 +477,19 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
                    .Payload(model.ProcessRawBitsSignatureWrap())
                    .Build());
   }
-
-  contents_builder.Child(
-      CertNodeBuilder(IDS_CERT_INFO_FINGERPRINTS_GROUP)
-          .Child(CertNodeBuilder(IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL)
-                     .Payload(model.HashCertSHA256WithSeparators())
-                     .Build())
-          .Child(CertNodeBuilder(IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL)
-                     .Payload(model.HashCertSHA1WithSeparators())
-                     .Build())
+  CertNodeBuilder fingerprint_builder =
+      CertNodeBuilder(IDS_CERT_INFO_FINGERPRINTS_GROUP);
+  fingerprint_builder.Child(
+      CertNodeBuilder(IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL)
+          .Payload(model.HashCertSHA256())
           .Build());
+  if (model.is_valid()) {
+    fingerprint_builder.Child(
+        CertNodeBuilder(IDS_CERT_INFO_SHA256_SPKI_FINGERPRINT_LABEL)
+            .Payload(model.HashSpkiSHA256())
+            .Build());
+  }
+  contents_builder.Child(fingerprint_builder.Build());
 
   base::Value::List root_list;
   root_list.Append(CertNodeBuilder(model.GetTitle())
