@@ -32,6 +32,7 @@ class SyncObserverBridge : public syncer::SyncServiceObserver {
   // syncer::SyncServiceObserver implementation:
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   __weak id<SyncObserverModelBridge> delegate_ = nil;
