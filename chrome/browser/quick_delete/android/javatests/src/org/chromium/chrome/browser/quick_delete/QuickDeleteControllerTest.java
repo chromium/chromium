@@ -41,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -191,6 +192,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1477790")
     public void testSnackbarShown_WhenClickingDelete_AllTimeSelected() {
         openQuickDeleteDialog();
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
