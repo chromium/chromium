@@ -32,7 +32,7 @@ class BorealisInstallerUIConfig
 
 // The WebUI for chrome://borealis-installer
 class BorealisInstallerUI
-    : public ui::MojoWebUIController,
+    : public ui::MojoWebDialogUI,
       public ash::borealis_installer::mojom::PageHandlerFactory {
  public:
   explicit BorealisInstallerUI(content::WebUI* web_ui);
@@ -54,10 +54,13 @@ class BorealisInstallerUI
       mojo::PendingRemote<ash::borealis_installer::mojom::Page> pending_page,
       mojo::PendingReceiver<ash::borealis_installer::mojom::PageHandler>
           pending_page_handler) override;
+  void OnPageClosed();
 
   std::unique_ptr<BorealisInstallerPageHandler> page_handler_;
   mojo::Receiver<ash::borealis_installer::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+  bool page_closed_;
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

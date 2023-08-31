@@ -13,8 +13,28 @@ interface PageHandlerFactory {
 };
 
 // Lives in the renderer process. The browser uses this to send installation.
-interface PageHandler {};
+interface PageHandler {
+  // Start installation.
+  Install();
+  // Shut down the VM.
+  ShutDown();
+  // Launch Borealis.
+  Launch();
+  // This is called when the web page is "closed", and the dialog (or whatever)
+  // hosting it should also be closed. This can happen as a result of
+  // Page::RequestClose() being called, or it can happen spontaneously (e.g.
+  // user clicking cancel on the page or installation finished).
+  OnPageClosed();
+};
 
 // Lives in the renderer process. The browser uses this to sends installation
 // updates to the web page in the render.
-interface Page {};
+interface Page {
+  // Called to update the install percentage.
+  OnProgressUpdate(double progress_fraction, string label);
+  // Called when installation finishes.
+  OnInstallFinished();
+  // Restarts the installation if an error occurs. Triggered from an error
+  // dialog.
+  RestartInstallation();
+};
