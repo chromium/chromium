@@ -40,10 +40,16 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateInstance) {
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()));
 }
 
-// Tests that regular and off-the-record BrowserState uses the same
-// service instance.
-TEST_F(SessionRestorationServiceFactoryTest, InstanceIsShared) {
-  EXPECT_EQ(
+// Tests that the factory correctly instantiate a new service for off-the-record
+// BrowserState.
+TEST_F(SessionRestorationServiceFactoryTest, CreateOffTheRecordInstance) {
+  EXPECT_TRUE(SessionRestorationServiceFactory::GetForBrowserState(
+      otr_browser_state()));
+}
+
+// Tests that regular and off-the-record BrowserState uses distinct instances.
+TEST_F(SessionRestorationServiceFactoryTest, InstancesAreDistinct) {
+  EXPECT_NE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()),
       SessionRestorationServiceFactory::GetForBrowserState(
           otr_browser_state()));

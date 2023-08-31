@@ -38,8 +38,5 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
 
 web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  // The service is responsible for both saving the session for both regular
-  // and off-the-record BrowserState (this allow scheduling all the I/O ops
-  // on the same sequence).
-  return GetBrowserStateRedirectedInIncognito(context);
+  return GetBrowserStateOwnInstanceInIncognito(context);
 }
