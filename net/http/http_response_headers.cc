@@ -622,11 +622,7 @@ bool HttpResponseHeaders::HasHeader(base::StringPiece name) const {
   return FindHeader(0, name) != std::string::npos;
 }
 
-HttpResponseHeaders::~HttpResponseHeaders() {
-  // TODO(https://crbug.com/1470137): Remove this histogram in M118.
-  UMA_HISTOGRAM_EXACT_LINEAR("Net.HttpResponseHeaders.HeaderCount",
-                             parsed_.size(), 101);
-}
+HttpResponseHeaders::~HttpResponseHeaders() = default;
 
 // Note: this implementation implicitly assumes that line_end points at a valid
 // sentinel character (such as '\0').
