@@ -34,7 +34,7 @@ export const keyCodeToModifier: {[keyCode: number]: number} = {
 export const unidentifiedKeyCodeToKey: {[keyCode: number]: string} = {
   159: 'MicrophoneMuteToggle',
   237: 'EmojiPicker',
-  238: 'ToggleDictation',
+  238: 'EnableOrToggleDictation',
   239: 'ViewAllApps',
 };
 
