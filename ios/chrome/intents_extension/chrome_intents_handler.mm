@@ -13,6 +13,7 @@
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
+#import "ios/chrome/common/intents/PlayDinoGameIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 
@@ -24,7 +25,8 @@
                                     OpenRecentTabsIntentHandling,
                                     OpenTabGridIntentHandling,
                                     SearchWithVoiceIntentHandling,
-                                    OpenNewTabIntentHandling>
+                                    OpenNewTabIntentHandling,
+                                    PlayDinoGameIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -203,6 +205,20 @@
 
   OpenNewTabIntentResponse* response = [[OpenNewTabIntentResponse alloc]
       initWithCode:OpenNewTabIntentResponseCodeContinueInApp
+      userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - PlayDinoGameIntentHandling
+
+- (void)handlePlayDinoGame:(PlayDinoGameIntent*)intent
+                completion:(void (^)(PlayDinoGameIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([PlayDinoGameIntent class])];
+
+  PlayDinoGameIntentResponse* response = [[PlayDinoGameIntentResponse alloc]
+      initWithCode:PlayDinoGameIntentResponseCodeContinueInApp
       userActivity:activity];
 
   completion(response);

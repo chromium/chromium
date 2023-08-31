@@ -12,6 +12,7 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 
+const char kChromeDinoGameURL[] = "chrome://dino/";
 const char kChromeUIChromeURLsURL[] = "chrome://chrome-urls/";
 const char kChromeUICookiesSettingsURL[] = "chrome://settings/coookies";
 const char kChromeUICreditsURL[] = "chrome://credits/";

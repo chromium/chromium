@@ -16,5 +16,6 @@ intent_definition("intents") {
     "OpenTabGridIntent",
     "SearchWithVoiceIntent",
     "OpenNewTabIntent",
+    "PlayDinoGameIntent",
   ]
 }

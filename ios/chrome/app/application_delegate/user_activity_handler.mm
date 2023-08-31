@@ -67,6 +67,7 @@ NSString* const kSiriOpenRecentTabs = @"OpenRecentTabsIntent";
 NSString* const kSiriOpenTabGrid = @"OpenTabGridIntent";
 NSString* const kSiriVoiceSearch = @"SearchWithVoiceIntent";
 NSString* const kSiriOpenNewTab = @"OpenNewTabIntent";
+NSString* const kSiriPlayDinoGame = @"PlayDinoGameIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -329,6 +330,9 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     [connectionInformation
         setStartupParameters:
             [self startupParametersForOpeningNewTabWithAction:NO_ACTION]];
+  } else if ([userActivity.activityType isEqualToString:kSiriPlayDinoGame]) {
+    webpageURL =
+        [NSURL URLWithString:base::SysUTF8ToNSString(kChromeDinoGameURL)];
   } else {
     // Do nothing for unknown activity type.
     return NO;
