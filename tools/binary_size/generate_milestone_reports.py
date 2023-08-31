@@ -34,8 +34,10 @@ import tempfile
 
 _DIR_SOURCE_ROOT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
-_GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
-                       'gsutil.py')
+_GSUTIL = shutil.which('gsutil')
+if _GSUTIL is None:
+  sys.stderr.write('Missing gsutil on PATH.\n')
+  sys.exit(1)
 
 _PUSH_URL = 'gs://chrome-supersize/milestones/'
 
