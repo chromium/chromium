@@ -4245,6 +4245,8 @@ crbug.com/1468875 http/tests/devtools/search/sources-search-scope-many-projects.
 crbug.com/1468875 http/tests/devtools/sources/debugger-ui/show-generator-location.js [ Failure Pass ]
 crbug.com/1468875 http/tests/devtools/sources/debugger-ui/show-function-definition.js [ Failure Pass ]
 crbug.com/1468875 http/tests/devtools/search/search-in-resource.js [ Failure Pass ]
+crbug.com/1468875 http/tests/devtools/search/search-in-script.js [ Failure Pass ]
+crbug.com/1468875 http/tests/devtools/search/search-in-static.js [ Failure Pass ]
 
 # Sheriff 2019-10-18
 crbug.com/1015975 media/video-currentTime.html [ Failure Pass ]
