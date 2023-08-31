@@ -17,6 +17,10 @@ import './strings.m.js';
 import './invalidations.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+// <if expr="chromeos_ash">
+import {$} from 'chrome://resources/js/util_ts.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+// </if>
 
 // Allow platform specific CSS rules.
 //
@@ -29,3 +33,36 @@ document.documentElement.setAttribute('os', 'win');
 const tabBox = document.querySelector('cr-tab-box');
 assert(tabBox);
 tabBox.hidden = false;
+
+// <if expr="chromeos_ash">
+// Updates the os-link-container so that it lets the user open
+// os://sync-internals window if Lacros is enabled.
+function updateOsLink() {
+  sendWithPromise('isLacrosEnabled').then(function(isLacrosEnabled: boolean) {
+    const osLinkContainer = $('os-link-container');
+    if (osLinkContainer) {
+      osLinkContainer.hidden = !isLacrosEnabled;
+    }
+  });
+
+  const osLinkHref = $('os-link-href');
+  if (osLinkHref) {
+    const handleClick = function(event: MouseEvent) {
+      event.preventDefault();
+
+      // Note: make sure this name matches the C++ constant
+      // `kOpenLacrosSyncInternals`.
+      chrome.send('openLacrosSyncInternals');
+    };
+
+    osLinkHref.onclick = handleClick as EventListener;
+    osLinkHref.onauxclick = function(event: MouseEvent) {
+      // Make middle-clicks have the same effects as Ctrl+clicks
+      if (event.button === 1) {
+        handleClick(event);
+      }
+    } as EventListener;
+  }
+}
+updateOsLink();
+// </if>
