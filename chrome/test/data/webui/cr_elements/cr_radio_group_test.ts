@@ -2,30 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-// clang-format on
 
 suite('cr-radio-group', () => {
   let radioGroup: CrRadioGroupElement;
 
   setup(() => {
     document.body.innerHTML = getTrustedHTML`
-        <cr-radio-group>
-          <cr-radio-button name="1"></cr-radio-button>
-          <cr-radio-button name="2"><input></input></cr-radio-button>
-          <cr-radio-button name="3"><a></a></cr-radio-button>
-        </cr-radio-group>`;
+       <div id="parent">
+          <cr-radio-group>
+            <cr-radio-button name="1"></cr-radio-button>
+            <cr-radio-button name="2"><input></input></cr-radio-button>
+            <cr-radio-button name="3"><a></a></cr-radio-button>
+          </cr-radio-group>
+        </div>`;
     radioGroup = document.body.querySelector('cr-radio-group')!;
     flush();
   });
@@ -95,6 +94,26 @@ suite('cr-radio-group', () => {
     const whenFired = eventToPromise('selected-changed', radioGroup);
     radioGroup.selected = '1';
     return whenFired;
+  });
+
+  test('key events don\'t propagate to parents', async () => {
+    const parent = document.body.querySelector<HTMLElement>('#parent');
+    assertTrue(!!parent);
+
+    // When the key was handled, the event should not propagate. Not using
+    // eventToPromise on purpose, as Mocha fails to capture the error if it
+    // happens in a Promise that is not awaited.
+    const listener = () => {
+      assertNotReached('Event should not have bubbled to parent.');
+    };
+    parent.addEventListener('keydown', listener, {once: true});
+    checkPressed(['ArrowRight'], '1', '2');
+    parent.removeEventListener('keydown', listener);
+
+    // When the key was not handled, the event should propagate.
+    const whenBackspace = eventToPromise('keydown', parent);
+    checkPressed(['Backspace'], '1', '1');
+    await whenBackspace;
   });
 
   test('key events when initially nothing checked', () => {

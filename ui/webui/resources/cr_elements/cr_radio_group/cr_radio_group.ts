@@ -175,6 +175,7 @@ export class CrRadioGroupElement extends PolymerElement {
     const name = `${radio.name}`;
     if (this.selected !== name) {
       event.preventDefault();
+      event.stopPropagation();
       this.selected = name;
       radio.focus();
     }

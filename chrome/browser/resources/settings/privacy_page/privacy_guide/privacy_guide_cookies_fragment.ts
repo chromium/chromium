@@ -108,18 +108,6 @@ export class PrivacyGuideCookiesFragmentElement extends
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.ChangeCookiesBlock3P');
   }
-
-  private onRadioGroupKeyDown_(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'ArrowLeft':
-      case 'ArrowRight':
-        // This event got consumed by the radio group to change the radio button
-        // selection. Do not propagate further, to not cause a privacy guide
-        // navigation.
-        event.stopPropagation();
-        break;
-    }
-  }
 }
 
 declare global {

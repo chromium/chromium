@@ -128,18 +128,6 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
         'Settings.PrivacyGuide.ChangeSafeBrowsingStandard');
   }
 
-  private onRadioGroupKeyDown_(event: KeyboardEvent) {
-    switch (event.key) {
-      case 'ArrowLeft':
-      case 'ArrowRight':
-        // This event got consumed by the radio group to change the radio button
-        // selection. Do not propagate further, to not cause a privacy guide
-        // navigation.
-        event.stopPropagation();
-        break;
-    }
-  }
-
   private getSafeBrowsingEnhancedSubLabel_(): string {
     return this.i18n(
         this.enableFriendlierSafeBrowsingSettings_ ?
