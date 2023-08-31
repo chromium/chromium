@@ -1,12 +1,13 @@
 caption: Allow legacy TLS/DTLS downgrade in WebRTC
 default: false
+deprecated: true
 desc: |-
   If enabled, WebRTC peer connections can downgrade to obsolete
         versions of the TLS/DTLS (DTLS 1.0, TLS 1.0 and TLS 1.1) protocols.
         When this policy is disabled or not set, these TLS/DTLS versions are
         disabled.
 
-        This policy is temporary and will be removed in a future version
+        This policy is deprecated and is planned to be removed in version M121
         of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 example_value: false
 features:
@@ -24,6 +25,7 @@ owners:
 - guidou@chromium.org
 schema:
   type: boolean
+# TODO(crbug.com/1132854): cleanup policy after M120
 supported_on:
 - chrome.*:87-
 - chrome_os:87-
