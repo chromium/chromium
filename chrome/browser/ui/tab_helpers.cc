@@ -51,6 +51,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -202,8 +203,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/page_info/about_this_site_service_factory.h"
-#include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #endif
@@ -324,17 +323,17 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // --- Section 1: Common tab helpers ---
+  if (page_info::IsAboutThisSiteAsyncFetchingEnabled()
 #if defined(TOOLKIT_VIEWS)
-  if (page_info::IsPersistentSidePanelEntryFeatureEnabled()) {
-    auto* optimization_guide_decider =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    auto* about_this_site_service =
-        AboutThisSiteServiceFactory::GetForProfile(profile);
-    if (optimization_guide_decider && about_this_site_service)
-      AboutThisSiteTabHelper::CreateForWebContents(
-          web_contents, optimization_guide_decider, about_this_site_service);
-  }
+      || page_info::IsPersistentSidePanelEntryFeatureEnabled()
 #endif
+  ) {
+    if (auto* optimization_guide_decider =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      AboutThisSiteTabHelper::CreateForWebContents(web_contents,
+                                                   optimization_guide_decider);
+    }
+  }
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   if (breadcrumbs::IsEnabled())
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);

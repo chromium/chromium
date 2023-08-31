@@ -39,7 +39,8 @@ AboutThisSiteService::AboutThisSiteService(
 
 absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url,
-    ukm::SourceId source_id) const {
+    ukm::SourceId source_id,
+    const TabHelper* tab_helper) const {
   if (!search::DefaultSearchProviderIsGoogle(template_url_service_)) {
     RecordAboutThisSiteInteraction(
         AboutThisSiteInteraction::kNotShownNonGoogleDSE);
@@ -58,11 +59,17 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
         AboutThisSiteInteraction::kNotShownOptimizationGuideNotAllowed);
     return absl::nullopt;
   }
-
-  optimization_guide::OptimizationMetadata metadata;
-  auto decision = client_->CanApplyOptimization(url, &metadata);
-  absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata =
-      metadata.ParsedMetadata<proto::AboutThisSiteMetadata>();
+  absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata;
+  optimization_guide::OptimizationGuideDecision decision;
+  if (tab_helper) {
+    std::tie(decision, about_this_site_metadata) =
+        tab_helper->GetAboutThisSiteMetadata();
+  } else {
+    optimization_guide::OptimizationMetadata metadata;
+    decision = client_->CanApplyOptimization(url, &metadata);
+    about_this_site_metadata =
+        metadata.ParsedMetadata<proto::AboutThisSiteMetadata>();
+  }
 
   AboutThisSiteStatus status =
       decision == OptimizationGuideDecision::kUnknown

@@ -16,6 +16,15 @@ bool IsAboutThisSiteFeatureEnabled() {
       g_browser_process->GetApplicationLocale());
 }
 
+bool IsAboutThisSiteAsyncFetchingEnabled() {
+  return IsAboutThisSiteFeatureEnabled() &&
+         base::FeatureList::IsEnabled(kAboutThisSiteAsyncFetching);
+}
+
+BASE_FEATURE(kAboutThisSiteAsyncFetching,
+             "AboutThisSiteAsyncFetching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 bool IsPersistentSidePanelEntryFeatureEnabled() {
   return IsAboutThisSiteFeatureEnabled() &&

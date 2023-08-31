@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -116,7 +117,8 @@ ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
-        site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
+        site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+        AboutThisSiteTabHelper::FromWebContents(web_contents_));
   }
 
   return absl::nullopt;

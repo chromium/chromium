@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines:search_engines",
     "//services/metrics/public/cpp:metrics_cpp",

@@ -12,6 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -44,6 +45,16 @@ class AboutThisSiteService : public KeyedService {
     virtual ~Client() = default;
   };
 
+  using DecisionAndMetadata =
+      std::pair<optimization_guide::OptimizationGuideDecision,
+                absl::optional<page_info::proto::AboutThisSiteMetadata>>;
+
+  class TabHelper {
+   public:
+    virtual DecisionAndMetadata GetAboutThisSiteMetadata() const = 0;
+    virtual ~TabHelper() = default;
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Keep in sync with AboutThisSiteInteraction in enums.xml
@@ -73,7 +84,8 @@ class AboutThisSiteService : public KeyedService {
   // Returns "About this site" information for the website with |url|.
   absl::optional<proto::SiteInfo> GetAboutThisSiteInfo(
       const GURL& url,
-      ukm::SourceId source_id) const;
+      ukm::SourceId source_id,
+      const TabHelper* tab_helper) const;
 
   static GURL CreateMoreAboutUrlForNavigation(const GURL& url);
   static void OnAboutThisSiteRowClicked(bool with_description);

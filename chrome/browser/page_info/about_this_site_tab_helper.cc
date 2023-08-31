@@ -4,16 +4,13 @@
 
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 
-#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "build/buildflag.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_info/page_info_features.h"
-#include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,26 +20,34 @@
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
+#endif
+
 using page_info::about_this_site_validation::AboutThisSiteStatus;
 using page_info::about_this_site_validation::ValidateMetadata;
 using page_info::proto::AboutThisSiteMetadata;
 
 AboutThisSiteTabHelper::AboutThisSiteTabHelper(
     content::WebContents* web_contents,
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    page_info::AboutThisSiteService* about_this_site_service)
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<AboutThisSiteTabHelper>(*web_contents),
-      optimization_guide_decider_(optimization_guide_decider),
-      about_this_site_service_(about_this_site_service) {
+      optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(optimization_guide_decider_);
-  DCHECK(about_this_site_service_);
 }
 
 AboutThisSiteTabHelper::~AboutThisSiteTabHelper() = default;
 
+page_info::AboutThisSiteService::DecisionAndMetadata
+AboutThisSiteTabHelper::GetAboutThisSiteMetadata() const {
+  return {decision_, about_this_site_metadata_};
+}
+
 void AboutThisSiteTabHelper::PrimaryPageChanged(content::Page& page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  decision_ = optimization_guide::OptimizationGuideDecision::kUnknown;
+  about_this_site_metadata_.reset();
 
   const GURL& url = page.GetMainDocument().GetLastCommittedURL();
   const bool should_consult_optimization_guide =
@@ -63,23 +68,27 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   if (web_contents()->GetLastCommittedURL() != main_frame_url)
     return;
 
+  decision_ = decision;
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return;
   }
+  about_this_site_metadata_ = metadata.ParsedMetadata<AboutThisSiteMetadata>();
 
-  absl::optional<AboutThisSiteMetadata> about_this_site_metadata =
-      metadata.ParsedMetadata<AboutThisSiteMetadata>();
+#if defined(TOOLKIT_VIEWS)
+  if (page_info::IsPersistentSidePanelEntryFeatureEnabled()) {
+    auto status = ValidateMetadata(about_this_site_metadata_);
 
-  auto status = ValidateMetadata(about_this_site_metadata);
+    base::UmaHistogramEnumeration("Privacy.AboutThisSite.PageLoadValidation",
+                                  status);
+    if (status != AboutThisSiteStatus::kValid) {
+      return;
+    }
 
-  base::UmaHistogramEnumeration("Privacy.AboutThisSite.PageLoadValidation",
-                                status);
-  if (status != AboutThisSiteStatus::kValid)
-    return;
-
-  RegisterAboutThisSiteSidePanel(
-      web_contents(),
-      GURL(about_this_site_metadata->site_info().more_about().url()));
+    RegisterAboutThisSiteSidePanel(
+        web_contents(),
+        GURL(about_this_site_metadata_->site_info().more_about().url()));
+  }
+#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);

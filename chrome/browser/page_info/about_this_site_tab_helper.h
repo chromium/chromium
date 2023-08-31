@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/page_info/core/about_this_site_service.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -15,15 +17,12 @@ class OptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
-namespace page_info {
-class AboutThisSiteService;
-}  // namespace page_info
-
 // This WebContentsObserver fetches AboutThisSite hints from OptimizationGuide
 // and registers a SidePanel entry.
 class AboutThisSiteTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<AboutThisSiteTabHelper> {
+      public content::WebContentsUserData<AboutThisSiteTabHelper>,
+      public page_info::AboutThisSiteService::TabHelper {
  public:
   ~AboutThisSiteTabHelper() override;
   AboutThisSiteTabHelper(const AboutThisSiteTabHelper&) = delete;
@@ -32,11 +31,14 @@ class AboutThisSiteTabHelper
   // content::WebContentsObserver implementation
   void PrimaryPageChanged(content::Page& page) override;
 
+  // Get the AboutThisSiteMetadata for this page if available.
+  page_info::AboutThisSiteService::DecisionAndMetadata
+  GetAboutThisSiteMetadata() const override;
+
  private:
   explicit AboutThisSiteTabHelper(
       content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      page_info::AboutThisSiteService* about_this_site_service);
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   friend class content::WebContentsUserData<AboutThisSiteTabHelper>;
 
   void OnOptimizationGuideDecision(
@@ -44,9 +46,12 @@ class AboutThisSiteTabHelper
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
+  optimization_guide::OptimizationGuideDecision decision_;
+  absl::optional<page_info::proto::AboutThisSiteMetadata>
+      about_this_site_metadata_;
+
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
-  raw_ptr<page_info::AboutThisSiteService> about_this_site_service_ = nullptr;
 
   base::WeakPtrFactory<AboutThisSiteTabHelper> weak_ptr_factory_{this};
 
