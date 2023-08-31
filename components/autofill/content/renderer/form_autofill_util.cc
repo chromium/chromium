@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -2826,7 +2827,7 @@ void TraverseDomForFourDigitCombinations(
       return;
     }
     std::string node_text = node.NodeValue().Utf8();
-    re2::StringPiece input(node_text);
+    std::string_view input(node_text);
     std::string match;
     while (matches.size() < kMaxFourDigitCombinationMatches &&
            re2::RE2::FindAndConsume(&input, kFourDigitRegex, &match)) {

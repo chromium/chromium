@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -69,7 +70,7 @@ Patterns::Patterns()
 
 base::LazyInstance<Patterns>::Leaky g_patterns = LAZY_INSTANCE_INITIALIZER;
 
-bool ConsumePrefix(re2::StringPiece* str, re2::StringPiece prefix) {
+bool ConsumePrefix(std::string_view* str, std::string_view prefix) {
   if (!str->starts_with(prefix)) {
     return false;
   }
@@ -107,7 +108,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   // name-value pairs (one for name, one for value).
   static const size_t args_size_ = 2u;
 
-  re2::StringPiece source_;
+  std::string_view source_;
   bool source_set_;
   bool source_malformed_;
 
@@ -217,8 +218,7 @@ class FormDataParserMultipart : public FormDataParser {
   };
 
   // Tests whether |input| has a prefix matching |pattern|.
-  static bool StartsWithPattern(const re2::StringPiece& input,
-                                const RE2& pattern);
+  static bool StartsWithPattern(std::string_view input, const RE2& pattern);
 
   // If |source_| starts with a header, seeks |source_| beyond the header. If
   // the header is Content-Disposition, extracts |name| from "name=" and
@@ -276,7 +276,7 @@ class FormDataParserMultipart : public FormDataParser {
 
   // The parsed message can be split into multiple sources which we read
   // sequentially.
-  re2::StringPiece source_;
+  std::string_view source_;
 
   // Caching the pointer to g_patterns.Get().
   raw_ptr<const Patterns> patterns_;
@@ -409,7 +409,7 @@ bool FormDataParserUrlEncoded::SetSource(base::StringPiece source) {
 }
 
 // static
-bool FormDataParserMultipart::StartsWithPattern(const re2::StringPiece& input,
+bool FormDataParserMultipart::StartsWithPattern(std::string_view input,
                                                 const RE2& pattern) {
   return pattern.Match(input, 0, input.size(), RE2::ANCHOR_START, nullptr, 0);
 }
@@ -427,7 +427,7 @@ bool FormDataParserMultipart::AllDataReadOK() {
 }
 
 bool FormDataParserMultipart::FinishReadingPart(base::StringPiece* data) {
-  re2::StringPiece orig = source_;
+  std::string_view orig = source_;
   while (!source_.starts_with(dash_boundary_separator_)) {
     if (!RE2::Consume(&source_, crlf_free_pattern()) ||
         !ConsumePrefix(&source_, kCRLF)) {
@@ -567,12 +567,12 @@ bool FormDataParserMultipart::TryReadHeader(base::StringPiece* name,
   // (*) After this point we must return true, because we consumed one header.
 
   // Subtract 2 for the trailing "\r\n".
-  re2::StringPiece header(header_start, source_.data() - header_start - 2);
+  std::string_view header(header_start, source_.data() - header_start - 2);
 
   if (!StartsWithPattern(header, content_disposition_pattern()))
     return true;  // Skip headers that don't describe the content-disposition.
 
-  re2::StringPiece groups[2];
+  std::string_view groups[2];
 
   if (!name_pattern().Match(header,
                             kContentDispositionLength, header.size(),

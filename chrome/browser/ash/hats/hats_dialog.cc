@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/hats/hats_dialog.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -77,7 +79,7 @@ bool HatsDialog::ParseAnswer(const std::string& input,
                              int* question,
                              std::vector<int>* scores) {
   std::string question_num_string;
-  re2::StringPiece all_scores_string;
+  std::string_view all_scores_string;
   if (!RE2::FullMatch(input, kClientQuestionAnsweredRegex, &question_num_string,
                       &all_scores_string))
     return false;

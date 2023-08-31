@@ -814,7 +814,7 @@ void PerfCollector::SaveCPUFrequencies(
 
 // static.
 bool PerfCollector::LacrosChannelAndVersion(
-    re2::StringPiece lacros_path,
+    std::string_view lacros_path,
     metrics::SystemProfileProto_Channel& lacros_channel,
     std::string& lacros_version) {
   std::string channel;

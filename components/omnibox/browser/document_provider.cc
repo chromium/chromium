@@ -8,6 +8,7 @@
 
 #include <map>
 #include <numeric>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -381,7 +382,7 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
       "(?:(#[0-9a-zA-Z$\\-\\_\\.\\+\\!\\*\'\\,;:@&=/\\?]+)?)"  // Fragment
       ")");
 
-  std::vector<re2::StringPiece> matched_doc_ids(
+  std::vector<std::string_view> matched_doc_ids(
       docs_url_pattern_.NumberOfCapturingGroups() + 1);
   // ANCHOR_START deviates from google3 which uses UNANCHORED. Using
   // ANCHOR_START prevents incorrectly matching with non-drive URLs but which
@@ -393,7 +394,7 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
     return std::string();
   }
   for (const auto& doc_id_group : docs_url_pattern_.NamedCapturingGroups()) {
-    re2::StringPiece identified_doc_id = matched_doc_ids[doc_id_group.second];
+    std::string_view identified_doc_id = matched_doc_ids[doc_id_group.second];
     if (!identified_doc_id.empty()) {
       return std::string(identified_doc_id);
     }

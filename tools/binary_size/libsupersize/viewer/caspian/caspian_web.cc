@@ -12,6 +12,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "third_party/jsoncpp/source/include/json/json.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -32,7 +33,7 @@ class FilterBuffer {
 
   size_t remaining() { return kFilterBufferSize - (cursor_ - data_); }
   void Reset() { cursor_ = data_; }
-  re2::StringPiece Get() { return re2::StringPiece(data_, cursor_ - data_); }
+  std::string_view Get() { return std::string_view(data_, cursor_ - data_); }
 
   void Append(char c) {
     if (remaining() > 0) {

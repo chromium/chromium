@@ -19,7 +19,7 @@ namespace {
 // reporting collection of types.
 const char kUmaHistogramName[] = "ChromeOS.CWP.CollectProcessTypes";
 
-void SkipLine(re2::StringPiece* contents) {
+void SkipLine(std::string_view* contents) {
   static const LazyRE2 kSkipLine = {R"(.+\n?)"};
   RE2::Consume(contents, *kSkipLine);
 }
@@ -60,7 +60,7 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
 }
 
 std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
-    re2::StringPiece contents,
+    std::string_view contents,
     std::vector<uint32_t>& lacros_pids,
     std::string& lacros_path) {
   static const LazyRE2 kLineMatcher = {
@@ -81,7 +81,7 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
   bool is_truncated = false;
   while (!contents.empty()) {
     uint32_t pid = 0;
-    re2::StringPiece cmd_line;
+    std::string_view cmd_line;
     if (!RE2::Consume(&contents, *kLineMatcher, &pid, &cmd_line)) {
       SkipLine(&contents);
       is_truncated = true;
@@ -93,13 +93,13 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
       continue;
     }
 
-    re2::StringPiece cmd;
+    std::string_view cmd;
     if (!RE2::Consume(&cmd_line, *kChromeExePathMatcher, &cmd)) {
       continue;
     }
 
     // Use a second match to record any Lacros PID.
-    re2::StringPiece lacros_cmd;
+    std::string_view lacros_cmd;
     if (RE2::Consume(&cmd, *kLacrosExePathMatcher, &lacros_cmd)) {
       lacros_pids.emplace_back(pid);
       if (lacros_path.empty()) {
@@ -142,7 +142,7 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
 }
 
 std::map<uint32_t, Thread> ProcessTypeCollector::ParseThreadTypes(
-    re2::StringPiece contents) {
+    std::string_view contents) {
   static const LazyRE2 kLineMatcher = {
       R"(\s*(\d+))"    // PID
       R"(\s+(\d+))"    // TID
@@ -156,7 +156,7 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ParseThreadTypes(
   bool is_truncated = false;
   while (!contents.empty()) {
     uint32_t pid = 0, tid = 0;
-    re2::StringPiece comm_cmd;
+    std::string_view comm_cmd;
     if (!RE2::Consume(&contents, *kLineMatcher, &pid, &tid, &comm_cmd)) {
       SkipLine(&contents);
       is_truncated = true;

@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -597,7 +598,7 @@ void Program::UpdateBaseInstanceUniformLocation() {
 
 std::string Program::ProcessLogInfo(const std::string& log) {
   std::string output;
-  re2::StringPiece input(log);
+  std::string_view input(log);
   std::string prior_log;
   std::string hashed_name;
   while (RE2::Consume(&input,

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -199,7 +200,7 @@ std::vector<std::string> GetAllPartialMatches(const std::string& value,
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
   if (!regex || !regex->ok())
     return {};
-  re2::StringPiece input(value);
+  std::string_view input(value);
   std::string match;
   std::vector<std::string> matches;
   while (re2::RE2::FindAndConsume(&input, *regex, &match)) {

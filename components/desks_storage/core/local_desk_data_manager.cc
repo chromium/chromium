@@ -29,9 +29,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/re2/src/re2/stringpiece.h"
-#include "url/gurl.h"
 
 namespace desks_storage {
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -282,24 +283,24 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 // This function can be used to determine if this was the case by evaluating
 // the skipped piece. It returns true, if the matched address was erroneous
 // and should be skipped instead.
-bool ShouldSkipIPAddress(const re2::StringPiece& skipped) {
+bool ShouldSkipIPAddress(std::string_view skipped) {
   // MomdemManager can dump out firmware revision fields that can also
   // confuse the IPv4 matcher e.g. "Revision: 81600.0000.00.29.19.16_DO"
   // so ignore the replacement if the skipped piece looks like
   // "Revision: .*<ipv4>". Note however that if this field contains
   // values delimited by multiple spaces, any matches after the first
   // will lose the context and be redacted.
-  static const re2::StringPiece rev("Revision: ");
-  static const re2::StringPiece space(" ");
+  static const std::string_view rev("Revision: ");
+  static const std::string_view space(" ");
   const auto pos = skipped.rfind(rev);
-  if (pos != re2::StringPiece::npos &&
-      skipped.find(space, pos + rev.length()) == re2::StringPiece::npos) {
+  if (pos != std::string_view::npos &&
+      skipped.find(space, pos + rev.length()) == std::string_view::npos) {
     return true;
   }
 
   // USB paths can be confused with IPv4 Addresses because they can look
   // similar: n-n.n.n.n . Ignore replacement if previous char is `-`
-  static const re2::StringPiece dash("-");
+  static const std::string_view dash("-");
   return skipped.ends_with(dash);
 }
 
@@ -488,12 +489,12 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
 // only contains "c".
 // Example: input = "aaabbbc", pattern = "(z+)" leads to input = "aaabbbc",
 // the args values are not modified and skipped_input is not modified.
-bool FindAndConsumeAndGetSkippedN(re2::StringPiece* input,
+bool FindAndConsumeAndGetSkippedN(std::string_view* input,
                                   const re2::RE2& pattern,
-                                  re2::StringPiece* skipped_input,
-                                  re2::StringPiece* args[],
+                                  std::string_view* skipped_input,
+                                  std::string_view* args[],
                                   int argc) {
-  re2::StringPiece old_input = *input;
+  std::string_view old_input = *input;
 
   CHECK_GE(argc, 1);
   re2::RE2::Arg a0(argc > 0 ? args[0] : nullptr);
@@ -512,18 +513,18 @@ bool FindAndConsumeAndGetSkippedN(re2::StringPiece* input,
   return result;
 }
 
-// All |match_groups| need to be of type re2::StringPiece*.
+// All |match_groups| need to be of type std::string_view*.
 template <typename... Arg>
-bool FindAndConsumeAndGetSkipped(re2::StringPiece* input,
+bool FindAndConsumeAndGetSkipped(std::string_view* input,
                                  const re2::RE2& pattern,
-                                 re2::StringPiece* skipped_input,
+                                 std::string_view* skipped_input,
                                  Arg*... match_groups) {
-  re2::StringPiece* args[] = {match_groups...};
+  std::string_view* args[] = {match_groups...};
   return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args,
                                       std::size(args));
 }
 
-bool HasRepeatedChar(re2::StringPiece text, char c) {
+bool HasRepeatedChar(std::string_view text, char c) {
   return std::adjacent_find(text.begin(), text.end(), [c](char c1, char c2) {
            return (c1 == c) && (c2 == c);
          }) != text.end();
@@ -682,8 +683,8 @@ std::string RedactionTool::RedactMACAddresses(
   result.reserve(input.size());
 
   // Keep consuming, building up a result string as we go.
-  re2::StringPiece text(input);
-  re2::StringPiece skipped, oui, nic;
+  std::string_view text(input);
+  std::string_view skipped, oui, nic;
   static const char kMacSeparatorChars[] = "-_";
   while (FindAndConsumeAndGetSkipped(&text, *mac_re, &skipped, &oui, &nic)) {
     // Look up the MAC address in the hash. Force the separator to be a colon
@@ -731,8 +732,8 @@ std::string RedactionTool::RedactHashes(
   result.reserve(input.size());
 
   // Keep consuming, building up a result string as we go.
-  re2::StringPiece text(input);
-  re2::StringPiece skipped, pre_whitespace, hash_prefix, hash_suffix;
+  std::string_view text(input);
+  std::string_view skipped, pre_whitespace, hash_prefix, hash_suffix;
   while (FindAndConsumeAndGetSkipped(&text, *hash_re, &skipped, &pre_whitespace,
                                      &hash_prefix, &hash_suffix)) {
     result.append(skipped);
@@ -797,12 +798,12 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
                 R"(/data/(data|app|user_de/\d+)/[^/\n]+)(/[^\n\s]+))");
 
   // Keep consuming, building up a result string as we go.
-  re2::StringPiece text(input);
-  re2::StringPiece skipped;
-  re2::StringPiece path_prefix;   // path before app_specific;
-  re2::StringPiece pre_data;      // (path=|exe=|/home/root/<hash>/android-data)
-  re2::StringPiece post_data;     // (data|app|user_de/\d+)
-  re2::StringPiece app_specific;  // (/[^\n\s]+)
+  std::string_view text(input);
+  std::string_view skipped;
+  std::string_view path_prefix;   // path before app_specific;
+  std::string_view pre_data;      // (path=|exe=|/home/root/<hash>/android-data)
+  std::string_view post_data;     // (data|app|user_de/\d+)
+  std::string_view app_specific;  // (/[^\n\s]+)
   while (FindAndConsumeAndGetSkipped(&text, *path_re, &skipped, &path_prefix,
                                      &pre_data, &post_data, &app_specific)) {
     // We can record these parts as-is.
@@ -862,10 +863,10 @@ std::string RedactionTool::RedactCreditCardNumbers(
                                 // after the potential match should either be a
                                 // newline or 2-3 non digits.
 
-  re2::StringPiece text(input);
-  re2::StringPiece skipped;
-  re2::StringPiece sequence;
-  re2::StringPiece post_sequence;
+  std::string_view text(input);
+  std::string_view skipped;
+  std::string_view sequence;
+  std::string_view post_sequence;
 
   while (FindAndConsumeAndGetSkipped(&text, *cc_re, &skipped, &sequence,
                                      &post_sequence)) {
@@ -876,7 +877,7 @@ std::string RedactionTool::RedactCreditCardNumbers(
     // Timestamps in ms have a surprisingly high number of false positives.
     // Also log entries but those usually only match if there are several spaces
     // tying unrelated numbers together.
-    if (post_sequence.find("ms") != re2::StringPiece::npos) {
+    if (post_sequence.find("ms") != std::string_view::npos) {
       metrics_recorder_->RecordCreditCardRedactionHistogram(
           CreditCardDetection::kTimestamp);
       result.append(sequence);
@@ -947,11 +948,11 @@ std::string RedactionTool::RedactIbans(
       "S[AEIKMN]|T[NR]|UA|VG|XK)(?:\\d{2})[ -]?(?:[ \\-A-Z0-9]){11,30})"
       "([^a-zA-Z0-9_\\-\\+=/])");
 
-  re2::StringPiece text(input);
-  re2::StringPiece skipped;
-  re2::StringPiece pre_separating_char;
-  re2::StringPiece iban;
-  re2::StringPiece post_separating_char;
+  std::string_view text(input);
+  std::string_view skipped;
+  std::string_view pre_separating_char;
+  std::string_view iban;
+  std::string_view post_separating_char;
   while (FindAndConsumeAndGetSkipped(&text, *iban_re, &skipped,
                                      &pre_separating_char, &iban,
                                      &post_separating_char)) {
@@ -1086,9 +1087,9 @@ std::string RedactionTool::RedactCustomPatternWithContext(
   result.reserve(input.size());
 
   // Keep consuming, building up a result string as we go.
-  re2::StringPiece text(input);
-  re2::StringPiece skipped;
-  re2::StringPiece pre_matched_id, matched_id, post_matched_id;
+  std::string_view text(input);
+  std::string_view skipped;
+  std::string_view pre_matched_id, matched_id, post_matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &pre_matched_id,
                                      &matched_id, &post_matched_id)) {
     std::string matched_id_as_string(matched_id);
@@ -1119,10 +1120,10 @@ std::string RedactionTool::RedactCustomPatternWithContext(
 
 // This takes a |url| argument and returns true if the URL is exempt from
 // redaction, returns false otherwise.
-bool IsUrlExempt(re2::StringPiece url,
+bool IsUrlExempt(std::string_view url,
                  const char* const* first_party_extension_ids) {
   // We do not exempt anything with a query parameter.
-  if (url.find("?") != re2::StringPiece::npos) {
+  if (url.find("?") != std::string_view::npos) {
     return false;
   }
 
@@ -1163,7 +1164,7 @@ bool IsUrlExempt(re2::StringPiece url,
 
   int i = 0;
   const char* test_id = first_party_extension_ids[i];
-  const re2::StringPiece url_sub =
+  const std::string_view url_sub =
       url.substr(sizeof("chrome-extension://") - 1);
   while (test_id) {
     if (url_sub.starts_with(test_id)) {
@@ -1188,9 +1189,9 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
   result.reserve(input.size());
 
   // Keep consuming, building up a result string as we go.
-  re2::StringPiece text(input);
-  re2::StringPiece skipped;
-  re2::StringPiece matched_id;
+  std::string_view text(input);
+  std::string_view skipped;
+  std::string_view matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &matched_id)) {
     result.append(skipped);
 

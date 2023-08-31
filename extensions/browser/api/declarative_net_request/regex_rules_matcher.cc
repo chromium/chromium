@@ -34,10 +34,6 @@ bool IsExtraHeadersMatcherInternal(
                         &flat::RegexRule::action_type);
 }
 
-re2::StringPiece ToRE2StringPiece(const ::flatbuffers::String& str) {
-  return re2::StringPiece(str.c_str(), str.size());
-}
-
 // Helper to check if the |rule| metadata matches the given request |params|.
 bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
                                   const RequestParams& params) {
@@ -204,7 +200,7 @@ void RegexRulesMatcher::InitializeMatcher() {
     // regexes and modify FilteredRE2 to take a regex object directly.
     int re2_id;
     re2::RE2::ErrorCode error_code = filtered_re2_.Add(
-        ToRE2StringPiece(*rule->url_pattern()),
+        rule->url_pattern()->string_view(),
         CreateRE2Options(is_case_sensitive, require_capturing), &re2_id);
 
     // Ideally there shouldn't be any error, since we had already validated the
@@ -323,7 +319,7 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
   std::string redirect_str = params.url->spec();
   bool success =
       RE2::Replace(&redirect_str, *info.regex,
-                   ToRE2StringPiece(*info.regex_rule->regex_substitution()));
+                   info.regex_rule->regex_substitution()->string_view());
   if (!success) {
     // This should generally not happen since we had already checked for a
     // match and during indexing, had verified that the substitution pattern
