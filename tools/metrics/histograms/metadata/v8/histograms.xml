@@ -1930,18 +1930,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmModuleCodeSizeBaselineMiB" units="MB"
-    expires_after="2023-10-08">
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    The amount of generated code in MiB for one WebAssembly module. Recorded
-    when baseline compilation finished.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmModuleCodeSizeMiB" units="MB"
     expires_after="2024-02-04">
   <owner>ecmziegler@chromium.org</owner>
