@@ -3305,7 +3305,7 @@
         "meteorlake"
       ],
       "features": [
-        "force_rgb10a2_overlay_support_flags"
+        "force_rgb10a2_overlay_support"
       ]
     },
     {
