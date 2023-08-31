@@ -60,6 +60,11 @@ constexpr char kHistogramSessionLengthOffscreenTab[] =
 constexpr char kHistogramSessionLengthTab[] =
     "MediaRouter.CastStreaming.Session.Length.Tab";
 
+constexpr char kHistogramAudioExceededPlayoutDelayPacketsPercentage[] =
+    "CastStreaming.Sender.Audio.ExceededPlayoutDelayPacketsPercentage";
+constexpr char kHistogramVideoExceededPlayoutDelayPacketsPercentage[] =
+    "CastStreaming.Sender.Video.ExceededPlayoutDelayPacketsPercentage";
+
 class MockMirroringServiceHostFactory
     : public mirroring::MirroringServiceHostFactory {
  public:
@@ -787,6 +792,74 @@ TEST_F(MirroringActivityTest, TargetPlayoutDelayFeatureFlagParam) {
   ASSERT_TRUE(session_params_->target_playout_delay.has_value());
   EXPECT_EQ(session_params_->target_playout_delay.value().InMilliseconds(),
             300);
+}
+
+TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
+  base::HistogramTester uma_recorder;
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "200";
+  feature_list.InitAndEnableFeatureWithParameters(
+      media_router::kCastMirroringPlayoutDelay, feature_params);
+
+  static constexpr char kJsonStats[] = R"({
+    "audio": {
+      "NETWORK_LATENCY_MS_HISTO": [
+        {"<20": 50.0},
+        {"20-39": 150.0},
+        {"200-219": 200.0},
+        {"300-319": 200.0},
+        {">=800": 400.0}
+      ]
+    },
+    "video": {
+      "NETWORK_LATENCY_MS_HISTO": [
+        {"0-19": 100.0},
+        {"200-219": 700.0},
+        {"300-319": 200.0}
+      ]
+    }
+    })";
+  absl::optional<base::Value> stats = base::JSONReader::Read(kJsonStats);
+  ASSERT_TRUE(stats.has_value());
+
+  MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
+  MakeActivity(source, kFrameTreeNodeId, CastDiscoveryType::kMdns, true);
+
+  activity_->DidStart();
+
+  EXPECT_CALL(*mirroring_service_, GetMirroringStats(_))
+      .WillRepeatedly(
+          [&stats](base::OnceCallback<void(const base::Value)> callback) {
+            std::move(callback).Run(stats->Clone());
+          });
+
+  EXPECT_CALL(*debugger_object_, OnMirroringStats)
+      .WillOnce(testing::Invoke([&stats](const base::Value json_stats_cb) {
+        ASSERT_TRUE(json_stats_cb.is_dict());
+        EXPECT_EQ(stats, json_stats_cb.GetDict());
+      }));
+
+  // A call to fetch mirroring stats should have been posted at this point. Fast
+  // forward past the delay of this posted task.
+  task_environment_.FastForwardBy(media::cast::kRtcpReportInterval);
+  RunUntilIdle();
+
+  activity_.reset();
+
+  // Audio network latency histo has 300-319 and >=800 buckets where the min
+  // latency is above 200ms (target playout delay set by feature flag), sum of
+  // packets in these 2 buckets is 200 + 400 = 600, sum of all packets is 1000,
+  // so percent is 60%.
+  EXPECT_EQ(uma_recorder.GetTotalSum(
+                kHistogramAudioExceededPlayoutDelayPacketsPercentage),
+            60);
+  // Video network latency histo has 300-319 bucket where the min latency is
+  // above 200ms (target playout delay set by feature flag), sum of all packets
+  // is 1000, so percent is 20%.
+  EXPECT_EQ(uma_recorder.GetTotalSum(
+                kHistogramVideoExceededPlayoutDelayPacketsPercentage),
+            20);
 }
 
 }  // namespace media_router

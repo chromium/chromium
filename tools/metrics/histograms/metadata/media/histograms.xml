@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Video"/>
 </variants>
 
+<variants name="CastStreamingSenderAudioVideo">
+  <variant name="Audio"/>
+  <variant name="Video"/>
+</variants>
+
 <variants name="DbOperation">
   <variant name="Clear" summary="Remove all keys from the DB"/>
   <variant name="Initialize" summary="Initialize the DB."/>
@@ -137,6 +142,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which video codec was negotiated during a mirroring session.
   </summary>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.ExceededPlayoutDelayPacketsPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records number of packets that exceeded the playout delay as a percentage of
+    all packets. Histogram is recorded at the end of the mirroring session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
 </histogram>
 
 <histogram name="CastStreaming.Sender.{CastStreamingSender}.FrameDropped"

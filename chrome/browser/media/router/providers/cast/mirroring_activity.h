@@ -190,6 +190,9 @@ class MirroringActivity : public CastActivity,
   // mirroring stats from the session.
   mojo::Remote<mojom::Debugger> debugger_;
 
+  // Most recent fetched mirroring stats.
+  base::Value::Dict most_recent_mirroring_stats_;
+
   mojo::Receiver<mirroring::mojom::SessionObserver> observer_receiver_{this};
 
   // To handle Cast messages from the mirroring service to the mirroring
