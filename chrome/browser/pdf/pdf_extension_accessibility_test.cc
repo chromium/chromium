@@ -184,8 +184,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibility) {
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
+// Flaky, see crbug.com/1477773
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PdfAccessibilityEnableLater DISABLED_PdfAccessibilityEnableLater
+#else
+#define MAYBE_PdfAccessibilityEnableLater PdfAccessibilityEnableLater
+#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       PdfAccessibilityEnableLater) {
+                       MAYBE_PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -274,8 +280,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(found);
 }
 
+// Flaky, see crbug.com/1477773
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PdfAccessibilitySelection DISABLED_PdfAccessibilitySelection
+#else
+#define MAYBE_PdfAccessibilitySelection PdfAccessibilitySelection
+#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       PdfAccessibilitySelection) {
+                       MAYBE_PdfAccessibilitySelection) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest);
@@ -387,8 +399,16 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   EXPECT_EQ(kExepectedPDFSelection, selected_text);
 }
 
+// Flaky, see crbug.com/1477773
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf \
+  DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf
+#else
+#define MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf \
+  RecordHasAccessibleTextToUmaWithAccessiblePdf
+#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+                       MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_view);
