@@ -115,11 +115,11 @@ const questionThunderboltDisplays = '[Thunderbolt] If you are having trouble ' +
 const questionAudioApp = '[Audio] When the issue occurred, which specific ' +
     'app were you using?';
 
-const questionAudioDevice = '[Audio] What audio device are you using? Are ' +
-    'you using any external audio devices? If so, please provide more ' +
-    'details about how your audio devices are connected to your chromebook, ' +
-    'ex: via Bluetooth, USB dock or just the built-in speaker and mic. ' +
-    'Please provide the brand and model name if any external devices are used';
+const questionAudioDevice = '[Audio] What audio devices are you using? Are ' +
+  'you using the built-in speaker and mic? If not, please provide more ' +
+  'details about the brand and model name of your audio devices and how ' +
+  'they are connected to your Chromebook?';
+
 
 const questionAudioMeet = '[Audio] If it’s a Meet issue, please provide the ' +
     'affected Meeting Id.';
