@@ -190,6 +190,9 @@
 # TODO(crbug.com/1467854): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
+# TODO(crbug.com/1477792): This test is flaky.
+-All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink0
+
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
 -BackForwardCacheBrowserTest.CCNSAndWebSocketBothRecorded
