@@ -234,24 +234,25 @@ bool IsPinnableGDocMimeType(const std::string& mime_type) {
   return base::Contains(kPinnableGDocMimeTypes, mime_type);
 }
 
-int64_t ComputeDriveFsContentCacheSize(
-    const base::FilePath& content_cache_path) {
-  int64_t running_size = 0;
-  base::FileEnumerator file_iter(content_cache_path,
-                                 /*recursive=*/true,
-                                 base::FileEnumerator::FILES);
-  while (!file_iter.Next().empty()) {
-    const base::FileEnumerator::FileInfo& file_info = file_iter.GetInfo();
+int64_t ComputeDriveFsContentCacheSize(const base::FilePath& path) {
+  int64_t blocks = 0;
 
-    // Ignore the `chunks.db*` files when calculating the size of the content
-    // cache.
-    if (base::StartsWith(file_info.GetName().value(), "chunks.db")) {
+  using base::FileEnumerator;
+  FileEnumerator it(path, true, FileEnumerator::FILES);
+  while (!it.Next().empty()) {
+    const FileEnumerator::FileInfo& info = it.GetInfo();
+
+    // Skip the `chunks.db*` files.
+    if (base::StartsWith(info.GetName().value(), "chunks.db")) {
       continue;
     }
-    running_size += file_info.GetSize();
+
+    blocks += info.stat().st_blocks;
   }
-  LOG(ERROR) << "ComputeDriveFsContentCacheSize: " << running_size;
-  return running_size;
+
+  const int64_t size = blocks << 9;
+  VLOG(1) << "DriveFs cache: " << (size >> 20) << " M";
+  return size;
 }
 
 }  // namespace drive::util

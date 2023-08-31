@@ -140,13 +140,14 @@ class GoogleDriveHandlerTest
             base::CreateDirectory(service->GetDriveFsContentCachePath()));
       }
     }
-    std::string foo_contents = base::RandBytesAsString(file_size_in_bytes);
     const base::FilePath file_path =
         service->GetDriveFsContentCachePath().Append("foo.txt");
     {
-      // Create a file of 32 bytes in the content_cache directory.
+      // Create a file of `file_size_in_bytes` bytes in the content_cache
+      // directory.
       base::ScopedAllowBlockingForTesting allow_blocking;
-      EXPECT_TRUE(base::WriteFile(file_path, foo_contents));
+      EXPECT_TRUE(base::WriteFile(file_path,
+                                  base::RandBytesAsString(file_size_in_bytes)));
     }
 
     return file_path;
@@ -211,12 +212,10 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   fake_search_query_.SetSearchResults({});
   ash::FakeSpacedClient::Get()->set_free_disk_space(int64_t(3) << 30);
 
-  constexpr int file_size_in_bytes = 32;
-  CreateFileInContentCache(file_size_in_bytes);
+  CreateFileInContentCache(32);
 
   auto google_drive_settings = OpenGoogleDriveSettings();
-  google_drive_settings.AssertBulkPinningPinnedSize(
-      FormatBytesToString(file_size_in_bytes));
+  google_drive_settings.AssertBulkPinningPinnedSize(FormatBytesToString(4096));
 }
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
