@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 
 @implementation RegularGridMediator {
   // The saved session window just before close all tabs is called.

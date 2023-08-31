@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
+#import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 
 #import <stdint.h>
 
@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"

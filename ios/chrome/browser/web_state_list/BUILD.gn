@@ -21,22 +21,14 @@ source_set("web_state_list") {
     "web_state_dependency_installer_bridge.mm",
     "web_state_list_favicon_driver_observer.h",
     "web_state_list_favicon_driver_observer.mm",
-    "web_state_list_order_controller.h",
-    "web_state_list_order_controller.mm",
-    "web_state_list_removing_indexes.h",
-    "web_state_list_removing_indexes.mm",
-    "web_state_list_serialization.h",
-    "web_state_list_serialization.mm",
   ]
   deps = [
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
-    "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/sessions:session_constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
-    "//ios/web/public/session",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -86,7 +78,6 @@ source_set("unit_tests") {
     "web_state_dependency_installation_observer_unittest.mm",
     "web_state_dependency_installer_bridge_unittest.mm",
     "web_state_list_favicon_driver_observer_unittest.mm",
-    "web_state_list_order_controller_unittest.mm",
     "web_state_list_removing_indexes_unittest.mm",
     "web_state_list_serialization_unittest.mm",
   ]

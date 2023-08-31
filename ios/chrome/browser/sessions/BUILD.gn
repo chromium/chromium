@@ -17,7 +17,6 @@ source_set("sessions") {
   deps = [
     ":serialisation",
     "//base",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/tab_groups",
     "//ios/chrome/browser/shared/model/application_context",
@@ -26,11 +25,6 @@ source_set("sessions") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs",
-    "//ios/web",
-    "//ios/web/public/security",
-    "//ios/web/public/session",
-    "//net",
-    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -49,6 +43,7 @@ source_set("restoration_agent") {
     ":restoration_observer",
     ":serialisation",
     ":session_service",
+    "//base",
     "//components/favicon/ios",
     "//components/previous_session_info",
     "//ios/chrome/browser/shared/model/browser",
@@ -58,9 +53,10 @@ source_set("restoration_agent") {
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web:page_placeholder",
     "//ios/chrome/browser/web/session_state",
-    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
-    "//ios/web/public/security",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
     "//ios/web/public/session",
   ]
 }
@@ -77,8 +73,6 @@ source_set("session_service") {
     ":session_constants",
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/web/public",
     "//ios/web/public/session",
   ]
 }
@@ -93,13 +87,19 @@ source_set("serialisation") {
     "session_util.mm",
     "session_window_ios.h",
     "session_window_ios.mm",
+    "web_state_list_serialization.h",
+    "web_state_list_serialization.mm",
   ]
   deps = [
+    ":session_constants",
     "//base",
     "//components/sessions",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/web",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
     "//ios/web/public/session",
+    "//net",
   ]
 }
 
@@ -153,6 +153,7 @@ source_set("session_restoration_service_impl") {
     "//components/sessions:session_id",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
+    "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ios/web/public/ui",
@@ -166,6 +167,7 @@ source_set("session_restoration_service_factory") {
   ]
   deps = [
     ":session_restoration_service_impl",
+    "//base",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
@@ -186,7 +188,6 @@ source_set("test_support") {
     "test_session_service.mm",
   ]
   deps = [
-    ":serialisation",
     ":session_service",
     "//base",
   ]
@@ -198,7 +199,10 @@ source_set("fake") {
     "fake_tab_restore_service.h",
     "fake_tab_restore_service.mm",
   ]
-  deps = [ "//components/sessions" ]
+  deps = [
+    "//base",
+    "//components/sessions",
+  ]
 }
 
 source_set("unit_tests") {
@@ -213,7 +217,6 @@ source_set("unit_tests") {
     "session_window_ios_unittest.mm",
   ]
   deps = [
-    ":resources_unit_tests",
     ":restoration_agent",
     ":restoration_observer",
     ":serialisation",
@@ -224,25 +227,28 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/sessions:session_id",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs:features",
-    "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/chrome/test:test_support",
-    "//ios/web",
     "//ios/web/common:features",
+    "//ios/web/public/navigation",
     "//ios/web/public/session",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/public/thread",
+    "//ios/web/public/ui",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

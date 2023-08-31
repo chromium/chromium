@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 
 @interface SessionWindowIOSFactory ()
 // Returns YES if the current session can be saved.

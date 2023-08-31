@@ -12,9 +12,9 @@
 #import "base/containers/adapters.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 

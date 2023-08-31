@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_SERIALIZATION_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_SERIALIZATION_H_
+#ifndef IOS_CHROME_BROWSER_SESSIONS_WEB_STATE_LIST_SERIALIZATION_H_
+#define IOS_CHROME_BROWSER_SESSIONS_WEB_STATE_LIST_SERIALIZATION_H_
 
 #import <Foundation/Foundation.h>
 
@@ -43,4 +43,4 @@ void DeserializeWebStateList(WebStateList* web_state_list,
                              bool enable_pinned_web_states,
                              const WebStateFactory& web_state_factory);
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_SERIALIZATION_H_
+#endif  // IOS_CHROME_BROWSER_SESSIONS_WEB_STATE_LIST_SERIALIZATION_H_
