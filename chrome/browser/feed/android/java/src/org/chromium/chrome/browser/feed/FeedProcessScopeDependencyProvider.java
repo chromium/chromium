@@ -18,6 +18,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.xsurface.ColorProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.version_info.VersionConstants;
@@ -204,6 +205,14 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public boolean enableAppFlowDebugging() {
         return sEnableAppFlowDebugging;
+    }
+
+    @Override
+    public ColorProvider getColorProvider() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_DYNAMIC_COLORS)) {
+            return new ColorProviderImpl(mContext);
+        }
+        return null;
     }
 
     @VisibleForTesting
