@@ -4115,7 +4115,28 @@
         {}
        ]
       ]
-     }
+     },
+     "mod-length-degrees-crash.html": [
+      "91d4c65bbb90fc0b1dd150d2399eb04368b23771",
+      [
+       null,
+       {}
+      ]
+     ],
+     "rem-length-degrees-crash.html": [
+      "c62a2e769d3049c8316b9e243c72451486c1376b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "round-length-degrees-crash.html": [
+      "9250c399c5f2e3180aa8953b8db69f7b07b03ea2",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "css-variables": {
      "long-variable-reference-crash.html": [
@@ -253329,19 +253350,6 @@
         {}
        ]
       ],
-      "part-pseudo.html": [
-       "a409271762fb41a3c4d4243e1759aa5f8cd3c54b",
-       [
-        null,
-        [
-         [
-          "/css/selectors/invalidation/part-pseudo-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "sheet-going-away-002.html": [
        "189abbe0808a613eaab0e918fe82a4982fbcfa63",
        [
@@ -279746,16 +279754,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "9051c87b5c17bc0bfb439761ba4fe8d07961eed0",
-     []
-    ],
-    "mtime.json": [
-     "bb3227376d4dc3cd62c13009fa23f26bf14cc197",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -366295,10 +366293,6 @@
       ],
       "nth-last-child-when-sibling-changes-ref.html": [
        "627ebc074bf4306cd2d40e5462e35ee1fc036dd7",
-       []
-      ],
-      "part-pseudo-ref.html": [
-       "aeb724778a78e17b7144c4b7618d49d17ee1e54b",
        []
       ],
       "sheet-going-away-002-ref.html": [
@@ -501938,7 +501932,7 @@
       ]
      ],
      "round-mod-rem-invalid.html": [
-      "c0857cc52623bba775ba222eead3795ec20f8c92",
+      "01268091908f8366472ae5a6bfea040859e663c8",
       [
        null,
        {}
@@ -507764,6 +507758,15 @@
      ],
      "user-invalid.html": [
       "f20d9970715c308945cd670fc5e4eefd6f3fde05",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "user-valid-user-invalid-invalidation.html": [
+      "bca20fc99c3053491fe6e54d28c88cf1b294633a",
       [
        null,
        {
