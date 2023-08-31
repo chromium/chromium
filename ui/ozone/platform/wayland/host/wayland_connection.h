@@ -422,6 +422,11 @@ class WaylandConnection {
                         wp_presentation* presentation,
                         uint32_t clk_id);
 
+  void HandleGlobal(wl_registry* registry,
+                    uint32_t name,
+                    const char* interface,
+                    uint32_t version);
+
   base::flat_map<std::string, wl::GlobalObjectFactory> global_object_factories_;
 
   uint32_t compositor_version_ = 0;
