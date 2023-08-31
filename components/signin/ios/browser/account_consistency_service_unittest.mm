@@ -174,8 +174,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
     signin_client_.reset(
         new TestSigninClient(&prefs_, &test_url_loader_factory_));
     identity_test_env_.reset(new signin::IdentityTestEnvironment(
-        /*test_url_loader_factory=*/nullptr, &prefs_,
-        signin::AccountConsistencyMethod::kDisabled, signin_client_.get()));
+        /*test_url_loader_factory=*/nullptr, &prefs_, signin_client_.get()));
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);

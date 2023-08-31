@@ -29,8 +29,7 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
         safe_browsing::AdvancedProtectionStatusManagerFactory::
             GetDefaultFactoryForTesting());
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
   }

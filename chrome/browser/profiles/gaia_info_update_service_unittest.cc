@@ -62,21 +62,19 @@ AccountInfo GetValidAccountInfo(std::string email,
 const char kChromiumOrgDomain[] = "chromium.org";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-class GAIAInfoUpdateServiceTestBase : public testing::Test {
+class GAIAInfoUpdateServiceTest : public testing::Test {
  protected:
-  explicit GAIAInfoUpdateServiceTestBase(
-      signin::AccountConsistencyMethod account_consistency)
+  GAIAInfoUpdateServiceTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()),
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            /*pref_service=*/nullptr,
-                           account_consistency,
                            /*test_signin_client=*/nullptr) {}
 
-  GAIAInfoUpdateServiceTestBase(const GAIAInfoUpdateServiceTestBase&) = delete;
-  GAIAInfoUpdateServiceTestBase& operator=(
-      const GAIAInfoUpdateServiceTestBase&) = delete;
+  GAIAInfoUpdateServiceTest(const GAIAInfoUpdateServiceTest&) = delete;
+  GAIAInfoUpdateServiceTest& operator=(const GAIAInfoUpdateServiceTest&) =
+      delete;
 
-  ~GAIAInfoUpdateServiceTestBase() override = default;
+  ~GAIAInfoUpdateServiceTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -129,20 +127,6 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
 };
-
-class GAIAInfoUpdateServiceTest : public GAIAInfoUpdateServiceTestBase {
- public:
-  GAIAInfoUpdateServiceTest(const GAIAInfoUpdateServiceTest&) = delete;
-  GAIAInfoUpdateServiceTest& operator=(const GAIAInfoUpdateServiceTest&) =
-      delete;
-
- protected:
-  GAIAInfoUpdateServiceTest()
-      : GAIAInfoUpdateServiceTestBase(
-            signin::AccountConsistencyMethod::kDisabled) {}
-  ~GAIAInfoUpdateServiceTest() override = default;
-};
-
 }  // namespace
 
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
@@ -179,22 +163,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-namespace {
-class GAIAInfoUpdateServiceDiceTest : public GAIAInfoUpdateServiceTestBase {
- public:
-  GAIAInfoUpdateServiceDiceTest(const GAIAInfoUpdateServiceDiceTest&) = delete;
-  GAIAInfoUpdateServiceDiceTest& operator=(
-      const GAIAInfoUpdateServiceDiceTest&) = delete;
-
- protected:
-  GAIAInfoUpdateServiceDiceTest()
-      : GAIAInfoUpdateServiceTestBase(signin::AccountConsistencyMethod::kDice) {
-  }
-  ~GAIAInfoUpdateServiceDiceTest() override = default;
-};
-}  // namespace
-
-TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
+TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
   base::RunLoop().RunUntilIdle();

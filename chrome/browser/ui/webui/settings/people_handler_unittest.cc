@@ -1284,8 +1284,7 @@ TEST(PeopleHandlerMainProfile, Signout) {
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(
-              builder, signin::AccountConsistencyMethod::kMirror);
+          CreateProfileForIdentityTestEnvironment(builder);
 
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
@@ -1319,8 +1318,7 @@ TEST(PeopleHandlerMainProfile, DeleteProfileCrashes) {
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(
-              builder, signin::AccountConsistencyMethod::kMirror);
+          CreateProfileForIdentityTestEnvironment(builder);
 
   PeopleHandler handler(profile.get());
   base::Value::List args;
@@ -1337,8 +1335,7 @@ TEST(PeopleHandlerSecondaryProfile, SignoutWhenSyncing) {
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(
-              builder, signin::AccountConsistencyMethod::kMirror);
+          CreateProfileForIdentityTestEnvironment(builder);
 
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
@@ -1368,8 +1365,7 @@ TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(
-              builder, signin::AccountConsistencyMethod::kMirror);
+          CreateProfileForIdentityTestEnvironment(builder);
 
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
@@ -1400,8 +1396,7 @@ TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
 
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment(
-              builder, signin::AccountConsistencyMethod::kMirror);
+          CreateProfileForIdentityTestEnvironment(builder);
 
   auto identity_test_env_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
@@ -1510,8 +1505,7 @@ class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {
  private:
   TestingProfile::TestingFactories GetTestingFactories() override {
     return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories(
-            signin::AccountConsistencyMethod::kDice);
+        GetIdentityTestEnvironmentFactories();
   }
 
   void TearDown() override {

@@ -64,7 +64,6 @@ class ChildAccountServiceTest : public ::testing::Test {
         std::make_unique<signin::IdentityTestEnvironment>(
             // By passing nullptr we use the default Url loader factory.
             /*test_url_loader_factory=*/nullptr, &syncable_pref_service_,
-            signin::AccountConsistencyMethod::kDisabled,
             test_signin_client_.get());
 
     kids_chrome_management_client_ =

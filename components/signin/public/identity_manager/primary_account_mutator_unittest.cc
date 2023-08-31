@@ -13,7 +13,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -118,13 +117,10 @@ class ClearPrimaryAccountTestObserver
 //     deleted. See ConsentLevel::kSync documentation for details.
 void RunRevokeConsentTest(
     RevokeConsentAction action,
-    signin::AccountConsistencyMethod account_consistency_method,
     RemoveAccountExpectation account_expectation,
     AuthExpectation auth_expection = AuthExpectation::kAuthNormal) {
   base::test::TaskEnvironment task_environment;
-  signin::IdentityTestEnvironment environment(
-      /*test_url_loader_factory=*/nullptr, /*pref_service=*/nullptr,
-      account_consistency_method);
+  signin::IdentityTestEnvironment environment;
 
   signin::IdentityManager* identity_manager = environment.identity_manager();
   signin::PrimaryAccountMutator* primary_account_mutator =
@@ -238,21 +234,6 @@ void RunRevokeConsentTest(
   }
 }
 
-void RunRevokeSyncConsentTest(
-    signin::AccountConsistencyMethod account_consistency_method,
-    RemoveAccountExpectation account_expectation) {
-  RunRevokeConsentTest(RevokeConsentAction::kRevokeSyncConsent,
-                       account_consistency_method, account_expectation,
-                       AuthExpectation::kAuthNormal);
-}
-
-void RunClearPrimaryAccountTest(
-    signin::AccountConsistencyMethod account_consistency_method) {
-  RunRevokeConsentTest(
-      RevokeConsentAction::kClearPrimaryAccount, account_consistency_method,
-      RemoveAccountExpectation::kRemoveAll, AuthExpectation::kAuthNormal);
-}
-
 class MockIdentityManagerObserver : public signin::IdentityManager::Observer {
  public:
   explicit MockIdentityManagerObserver(
@@ -274,12 +255,9 @@ class MockIdentityManagerObserver : public signin::IdentityManager::Observer {
       observation{this};
 };
 
-void RunClearPrimaryAccountTestForSigninOnly(
-    signin::AccountConsistencyMethod account_consistency_method) {
+void RunClearPrimaryAccountTestForSigninOnly() {
   base::test::TaskEnvironment task_environment;
-  signin::IdentityTestEnvironment environment(
-      /*test_url_loader_factory=*/nullptr, /*pref_service=*/nullptr,
-      account_consistency_method);
+  signin::IdentityTestEnvironment environment;
 
   signin::IdentityManager* identity_manager = environment.identity_manager();
   signin::PrimaryAccountMutator* primary_account_mutator =
@@ -668,45 +646,21 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
 }
 
 // Test that ClearPrimaryAccount() clears the primary account, revokes the
-// sync consent and removes all accounts, independently of the account
-// consistency method.
+// sync consent and removes all accounts.
 TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount) {
-  const signin::AccountConsistencyMethod kTestedAccountConsistencyMethods[] = {
-      signin::AccountConsistencyMethod::kDisabled,
-      signin::AccountConsistencyMethod::kMirror,
-      signin::AccountConsistencyMethod::kDice,
-  };
-  for (signin::AccountConsistencyMethod account_consistency_method :
-       kTestedAccountConsistencyMethods) {
-    RunClearPrimaryAccountTest(account_consistency_method);
-  }
+  RunRevokeConsentTest(RevokeConsentAction::kClearPrimaryAccount,
+                       RemoveAccountExpectation::kRemoveAll,
+                       AuthExpectation::kAuthNormal);
 }
 
-// Test that revoking sync consent when Mirror account consistency is enabled
-// clears the primary account (except for lacros and Android, where users are
-// allowed to revoke sync consent).
-TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-                           RemoveAccountExpectation::kKeepAll);
+// Test that revoking the sync consent does not clear the primary account.
+TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent) {
+  RunRevokeConsentTest(RevokeConsentAction::kRevokeSyncConsent,
+                       RemoveAccountExpectation::kKeepAll,
+                       AuthExpectation::kAuthNormal);
 }
 
-// Test that revoking the sync consent when DICE account consistency is
-// enabled does not clear the primary account.
-TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDice,
-                           RemoveAccountExpectation::kKeepAll);
+TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_SigninOnly) {
+  RunClearPrimaryAccountTestForSigninOnly();
 }
-
-TEST_F(PrimaryAccountMutatorTest,
-       ClearPrimaryAccount_SigninOnly_MirrorConsistency) {
-  RunClearPrimaryAccountTestForSigninOnly(
-      signin::AccountConsistencyMethod::kMirror);
-}
-
-TEST_F(PrimaryAccountMutatorTest,
-       ClearPrimaryAccount_SigninOnly_DiceConsistency) {
-  RunClearPrimaryAccountTestForSigninOnly(
-      signin::AccountConsistencyMethod::kDice);
-}
-
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

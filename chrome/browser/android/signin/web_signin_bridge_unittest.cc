@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/signin/core/browser/account_reconcilor.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
@@ -65,10 +64,7 @@ class WebSigninBridgeTest : public ::testing::Test {
  public:
   WebSigninBridgeTest()
       : signin_client_(&prefs_),
-        identity_test_env_(nullptr,
-                           &prefs_,
-                           signin::AccountConsistencyMethod::kDisabled,
-                           &signin_client_) {
+        identity_test_env_(nullptr, &prefs_, &signin_client_) {
     account_reconcilor_ = std::make_unique<StubAccountReconcilor>(
         identity_test_env_.identity_manager(), &signin_client_);
   }

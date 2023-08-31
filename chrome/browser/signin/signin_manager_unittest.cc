@@ -73,7 +73,6 @@ class SigninManagerTest : public testing::Test,
       : client_(&prefs_),
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            /*pref_service=*/&prefs_,
-                           signin::AccountConsistencyMethod::kDice,
                            &client_),
         observer_(identity_test_env_.identity_manager()) {
     RecreateSigninManager();

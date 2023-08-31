@@ -47,8 +47,7 @@ class HttpsFirstModeSettingsTrackerTest : public testing::Test {
         HttpsFirstModeServiceFactory::GetInstance(),
         HttpsFirstModeServiceFactory::GetDefaultFactoryForTesting());
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
   }
 
   TestingProfile* profile() { return profile_.get(); }

@@ -75,8 +75,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     getter_ = std::make_unique<KAnonymityTrustTokenGetter>(

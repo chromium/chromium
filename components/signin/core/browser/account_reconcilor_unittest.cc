@@ -407,7 +407,6 @@ AccountReconcilorTest::AccountReconcilorTest()
       test_signin_client_(&pref_service_, &test_url_loader_factory_),
       identity_test_env_(/*test_url_loader_factory=*/nullptr,
                          &pref_service_,
-                         account_consistency_,
                          &test_signin_client_) {
   signin::SetListAccountsResponseHttpNotFound(&test_url_loader_factory_);
 

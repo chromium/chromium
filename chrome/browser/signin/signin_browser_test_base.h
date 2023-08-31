@@ -118,18 +118,8 @@ class SigninBrowserTestBaseT : public T {
 
   virtual void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) {
-    signin::AccountConsistencyMethod account_consistency_method =
-#if BUILDFLAG(ENABLE_MIRROR)
-        signin::AccountConsistencyMethod::kMirror;
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-        signin::AccountConsistencyMethod::kDice;
-#else
-        signin::AccountConsistencyMethod::kDisabled;
-#endif
-
     IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-            context, account_consistency_method);
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
     ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                      &test_url_loader_factory_));

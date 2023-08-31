@@ -209,8 +209,7 @@ class SigninHelperLacrosTest : public testing::Test {
   TestSigninClient signin_client_{&prefs_, &test_url_loader_factory_};
 
   signin::IdentityTestEnvironment identity_test_env_{
-      /*test_url_loader_factory=*/nullptr, &prefs_,
-      signin::AccountConsistencyMethod::kDisabled, &signin_client_};
+      /*test_url_loader_factory=*/nullptr, &prefs_, &signin_client_};
 
   TestAccountReconcilor reconcilor_{identity_test_env_.identity_manager(),
                                     &signin_client_, &mock_facade_};

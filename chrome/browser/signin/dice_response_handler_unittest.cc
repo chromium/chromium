@@ -153,7 +153,6 @@ class DiceResponseHandlerTest : public testing::Test,
         signin_client_(&pref_service_),
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &pref_service_,
-                           signin::AccountConsistencyMethod::kDice,
                            &signin_client_),
         signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,

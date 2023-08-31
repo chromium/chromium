@@ -78,7 +78,6 @@ class AccountsCookieMutatorTest
         test_signin_client_(&prefs_),
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &prefs_,
-                           AccountConsistencyMethod::kDisabled,
                            &test_signin_client_) {}
 
   AccountsCookieMutatorTest(const AccountsCookieMutatorTest&) = delete;

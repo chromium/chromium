@@ -16,6 +16,5 @@ IdentityTestEnvironmentBrowserStateAdaptor::BuildIdentityManagerForTests(
       ChromeBrowserState::FromBrowserState(context);
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       SigninClientFactory::GetForBrowserState(browser_state),
-      browser_state->GetPrefs(), browser_state->GetStatePath(),
-      signin::AccountConsistencyMethod::kDisabled);
+      browser_state->GetPrefs(), browser_state->GetStatePath());
 }

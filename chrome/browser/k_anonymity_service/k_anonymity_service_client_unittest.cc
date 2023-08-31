@@ -49,8 +49,7 @@ class KAnonymityServiceClientTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
   }
 
   void InitializeIdentity(bool signed_on) {
@@ -519,8 +518,7 @@ class KAnonymityServiceClientJoinQueryTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
     profile_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
         network_context_receiver_.BindNewPipeAndPassRemote());
   }

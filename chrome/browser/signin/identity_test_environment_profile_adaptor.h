@@ -35,18 +35,13 @@ class IdentityTestEnvironmentProfileAdaptor {
   // IdentityTestEnvironment requires.
   // See the above variant for comments on common parameters.
   static std::unique_ptr<TestingProfile>
-  CreateProfileForIdentityTestEnvironment(
-      TestingProfile::Builder& builder,
-      signin::AccountConsistencyMethod account_consistency =
-          signin::AccountConsistencyMethod::kDisabled);
+  CreateProfileForIdentityTestEnvironment(TestingProfile::Builder& builder);
 
   // Sets the testing factories that signin::IdentityTestEnvironment
   // requires explicitly on a Profile that is passed to it.
   // See the above variant for comments on common parameters.
   static void SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-      content::BrowserContext* browser_context,
-      signin::AccountConsistencyMethod account_consistency =
-          signin::AccountConsistencyMethod::kDisabled);
+      content::BrowserContext* browser_context);
 
   // Appends the set of testing factories that signin::IdentityTestEnvironment
   // requires to |factories_to_append_to|, which should be the set of testing
@@ -63,9 +58,7 @@ class IdentityTestEnvironmentProfileAdaptor {
   // Returns the set of testing factories that signin::IdentityTestEnvironment
   // requires, which can be useful to configure profiles for services that do
   // not require any other testing factory than the ones specified in here.
-  static TestingProfile::TestingFactories GetIdentityTestEnvironmentFactories(
-      signin::AccountConsistencyMethod account_consistency =
-          signin::AccountConsistencyMethod::kDisabled);
+  static TestingProfile::TestingFactories GetIdentityTestEnvironmentFactories();
 
   // Constructs an adaptor that associates an IdentityTestEnvironment instance
   // with |profile| via the relevant backing objects. Note that
@@ -94,7 +87,6 @@ class IdentityTestEnvironmentProfileAdaptor {
   // Testing factory that creates an IdentityManager
   // with a FakeProfileOAuth2TokenService.
   static std::unique_ptr<KeyedService> BuildIdentityManagerForTests(
-      signin::AccountConsistencyMethod account_consistency,
       content::BrowserContext* context);
 
   signin::IdentityTestEnvironment identity_test_env_;

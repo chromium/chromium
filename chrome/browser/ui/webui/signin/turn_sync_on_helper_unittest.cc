@@ -51,7 +51,6 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -508,18 +507,7 @@ class TurnSyncOnHelperTest : public testing::Test {
     profile_builder.SetPolicyService(std::make_unique<FakePolicyService>());
 
     return IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            profile_builder,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-            // Use |signin::AccountConsistencyMethod::kDice| to ensure that
-            // profiles are treated as they would when DICE is enabled and
-            // profiles are cleared when sync is revoked only is there is a
-            // refresh token error.
-            signin::AccountConsistencyMethod::kDice
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-            signin::AccountConsistencyMethod::kMirror
-#endif
-        );
+        CreateProfileForIdentityTestEnvironment(profile_builder);
   }
 
   virtual void AddTestingProfileFactories(
