@@ -416,6 +416,7 @@ void FullscreenModel::OnScrollViewIsScrollingBroadcasted(bool scrolling) {
 }
 
 void FullscreenModel::OnScrollViewIsZoomingBroadcasted(bool zooming) {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   SetScrollViewIsZooming(zooming);
 }
 

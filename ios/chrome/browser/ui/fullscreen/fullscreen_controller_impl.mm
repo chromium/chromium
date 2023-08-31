@@ -51,9 +51,9 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
                   forSelector:@selector(broadcastScrollViewIsScrolling:)];
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastScrollViewIsDragging:)];
+    [broadcaster_ addObserver:bridge_
+                  forSelector:@selector(broadcastScrollViewIsZooming:)];
   }
-  [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastScrollViewIsZooming:)];
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
   [broadcaster_ addObserver:bridge_
@@ -81,9 +81,9 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
                      forSelector:@selector(broadcastScrollViewIsScrolling:)];
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastScrollViewIsDragging:)];
+    [broadcaster_ removeObserver:bridge_
+                     forSelector:@selector(broadcastScrollViewIsZooming:)];
   }
-  [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastScrollViewIsZooming:)];
   [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
   [broadcaster_ removeObserver:bridge_

@@ -88,4 +88,19 @@
   }
 }
 
+- (void)webViewScrollViewWillBeginZooming:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsZooming(true);
+  }
+}
+
+- (void)webViewScrollViewDidEndZooming:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                               atScale:(CGFloat)scale {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsZooming(false);
+  }
+}
+
 @end

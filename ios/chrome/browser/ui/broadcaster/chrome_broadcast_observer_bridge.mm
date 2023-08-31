@@ -42,6 +42,7 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewIsZooming:(BOOL)zooming {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewIsZoomingBroadcasted(zooming);
 }
 
