@@ -75,6 +75,10 @@ BASE_FEATURE(kOneTapForMaps,
              "EnableOneTapForMaps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseAnnotationsForLanguageDetection,
+             "UseAnnotationsForLanguageDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kScrollViewProxyScrollEnabledWorkaround,
              "ScrollViewProxyScrollEnabledWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);

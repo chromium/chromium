@@ -72,6 +72,10 @@ extern const char kOneTapForMapsConsentModeDisabledParam[];
 // Feature flag to enable One tap experience for Maps.
 BASE_DECLARE_FEATURE(kOneTapForMaps);
 
+// Feature flag that enables using web::AnnotationsTextManager for fetching web
+// page text for language detection.
+BASE_DECLARE_FEATURE(kUseAnnotationsForLanguageDetection);
+
 // When enabled, CRWWebViewScrollViewProxy's `scrollEnabled` state is not
 // restored if the new instance already has the same `scrollEnabled` state as
 // the old one.
