@@ -415,8 +415,6 @@ void RecordMicroArchitectureStats() {
   base::UmaHistogramEnumeration("Platform.IntelMaxMicroArchitecture", arch,
                                 base::CPU::MAX_INTEL_MICRO_ARCHITECTURE);
 #endif  // defined(ARCH_CPU_X86_FAMILY)
-  base::UmaHistogramSparse("Platform.LogicalCpuCount",
-                           base::SysInfo::NumberOfProcessors());
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -801,18 +799,8 @@ void AsynchronousTouchEventStateRecorder::OnDeviceListsComplete() {
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
-void RecordPinnedToTaskbarProcessError(bool error) {
-  base::UmaHistogramBoolean("Windows.IsPinnedToTaskbar.ProcessError", error);
-}
-
-void OnShellHandlerConnectionError() {
-  RecordPinnedToTaskbarProcessError(true);
-}
-
 // Record the UMA histogram when a response is received.
 void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
-  RecordPinnedToTaskbarProcessError(false);
-
   // Used for histograms; do not reorder.
   enum Result { NOT_PINNED = 0, PINNED = 1, FAILURE = 2, NUM_RESULTS };
 
@@ -849,7 +837,6 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
 // startup.
 void RecordIsPinnedToTaskbarHistogram() {
   shell_integration::win::GetIsPinnedToTaskbarState(
-      base::BindOnce(&OnShellHandlerConnectionError),
       base::BindOnce(&OnIsPinnedToTaskbarResult));
 }
 

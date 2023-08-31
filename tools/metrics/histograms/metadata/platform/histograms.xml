@@ -1088,15 +1088,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Platform.LogicalCpuCount" units="units"
-    expires_after="2022-08-21">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>chromeos-performance@google.com</owner>
-  <summary>
-    Number of logical processors. This includes Hyperthreaded cores.
-  </summary>
-</histogram>
-
 <histogram name="Platform.LotIdEnum" enum="Exynos5250LotIdEnum"
     expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

@@ -438,38 +438,30 @@ class IsPinnedToTaskbarHelper {
   IsPinnedToTaskbarHelper(const IsPinnedToTaskbarHelper&) = delete;
   IsPinnedToTaskbarHelper& operator=(const IsPinnedToTaskbarHelper&) = delete;
 
-  static void GetState(ErrorCallback error_callback,
-                       ResultCallback result_callback);
+  static void GetState(ResultCallback result_callback);
 
  private:
-  IsPinnedToTaskbarHelper(ErrorCallback error_callback,
-                          ResultCallback result_callback);
+  IsPinnedToTaskbarHelper(ResultCallback result_callback);
 
   void OnConnectionError();
   void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar);
 
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
 
-  ErrorCallback error_callback_;
   ResultCallback result_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // static
-void IsPinnedToTaskbarHelper::GetState(ErrorCallback error_callback,
-                                       ResultCallback result_callback) {
+void IsPinnedToTaskbarHelper::GetState(ResultCallback result_callback) {
   // Self-deleting when the ShellHandler completes.
-  new IsPinnedToTaskbarHelper(std::move(error_callback),
-                              std::move(result_callback));
+  new IsPinnedToTaskbarHelper(std::move(result_callback));
 }
 
-IsPinnedToTaskbarHelper::IsPinnedToTaskbarHelper(ErrorCallback error_callback,
-                                                 ResultCallback result_callback)
+IsPinnedToTaskbarHelper::IsPinnedToTaskbarHelper(ResultCallback result_callback)
     : remote_util_win_(LaunchUtilWinServiceInstance()),
-      error_callback_(std::move(error_callback)),
       result_callback_(std::move(result_callback)) {
-  DCHECK(error_callback_);
   DCHECK(result_callback_);
 
   // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
@@ -483,7 +475,6 @@ IsPinnedToTaskbarHelper::IsPinnedToTaskbarHelper(ErrorCallback error_callback,
 
 void IsPinnedToTaskbarHelper::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(error_callback_).Run();
   delete this;
 }
 
@@ -893,10 +884,8 @@ void MigrateTaskbarPinsCallback(const base::FilePath& taskbar_path,
   }
 }
 
-void GetIsPinnedToTaskbarState(ConnectionErrorCallback on_error_callback,
-                               IsPinnedToTaskbarCallback result_callback) {
-  IsPinnedToTaskbarHelper::GetState(std::move(on_error_callback),
-                                    std::move(result_callback));
+void GetIsPinnedToTaskbarState(IsPinnedToTaskbarCallback result_callback) {
+  IsPinnedToTaskbarHelper::GetState(std::move(result_callback));
 }
 
 int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
