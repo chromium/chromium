@@ -51,3 +51,6 @@ per-file private_network_access*=lyf@chromium.org
 
 # WebTransport
 per-file web_transport*=file://net/OWNERS
+
+# IP Protection
+per-file ip_protection*=file://chrome/browser/ip_protection/OWNERS
