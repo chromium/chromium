@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
@@ -20,15 +23,27 @@ public interface BookmarkQueryHandler {
      * @param parentId The id of the parent.
      * @return The list of bookmarks to shown.
      */
-    List<BookmarkListEntry> buildBookmarkListForParent(BookmarkId parentId);
+    default List<BookmarkListEntry> buildBookmarkListForParent(@NonNull BookmarkId parentId) {
+        return buildBookmarkListForParent(parentId, /*powerFilter*/ null);
+    }
+
+    /**
+     * Builds entries for a given parent folder.
+     * @param parentId The id of the parent.
+     * @param powerFilter The filter to be applied to the {@link parentId} subtree. When a filter is
+     *         present, all matching descendants must be returned,
+     * @return The list of bookmarks to shown.
+     */
+    List<BookmarkListEntry> buildBookmarkListForParent(
+            @NonNull BookmarkId parentId, @Nullable Set<PowerBookmarkType> powerFilter);
 
     /**
      * Builds entries for a search query.
      *
      * @param query The search string, empty means match everything.
-     * @param powerFilter Unless empty, return only bookmarks with matching power.
+     * @param powerFilter Unless empty, return only bookmarks with matching power. Can be null.
      * @return The list of bookmarks to shown.
      */
     List<BookmarkListEntry> buildBookmarkListForSearch(
-            String query, Set<PowerBookmarkType> powerFilter);
+            @NonNull String query, @Nullable Set<PowerBookmarkType> powerFilter);
 }

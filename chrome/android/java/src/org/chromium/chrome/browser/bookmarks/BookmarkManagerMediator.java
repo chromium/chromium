@@ -63,7 +63,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -182,8 +182,7 @@ class BookmarkManagerMediator
             clearHighlight();
 
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                    && TextUtils.isEmpty(getCurrentSearchText())
-                    && getCurrentSearchPowerFilter().isEmpty()) {
+                    && TextUtils.isEmpty(getCurrentSearchText()) && mCurrentPowerFilter.isEmpty()) {
                 onEndSearch();
             } else {
                 refresh();
@@ -223,7 +222,8 @@ class BookmarkManagerMediator
 
             mDragReorderableRecyclerViewAdapter.enableDrag();
 
-            setBookmarks(mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
+            setBookmarks(mBookmarkQueryHandler.buildBookmarkListForParent(
+                    getCurrentFolderId(), mCurrentPowerFilter));
             updateEmptyViewText();
 
             // Unclear if the search box still has focus or not, and what caused us to switch here.
@@ -352,6 +352,7 @@ class BookmarkManagerMediator
     private final ShoppingService mShoppingService;
     private final SnackbarManager mSnackbarManager;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
+    private final Set<PowerBookmarkType> mCurrentPowerFilter = new HashSet<>();
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -848,7 +849,7 @@ class BookmarkManagerMediator
             String searchText = getCurrentSearchText();
             if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(searchText)) {
                 setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(
-                        searchText.trim(), getCurrentSearchPowerFilter()));
+                        searchText.trim(), mCurrentPowerFilter));
             }
         }
 
@@ -1387,7 +1388,7 @@ class BookmarkManagerMediator
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             setSearchTextAndUpdateButtonVisibility(searchText);
         }
-        onSearchChange(searchText, getCurrentSearchPowerFilter());
+        onSearchChange(searchText, mCurrentPowerFilter);
     }
 
     private void onClearSearchTextRunnable() {
@@ -1414,12 +1415,15 @@ class BookmarkManagerMediator
     }
 
     private void onShoppingFilterToggle(boolean isFiltering) {
-        final @NonNull Set<PowerBookmarkType> powerFilter = isFiltering
-                ? Collections.singleton(PowerBookmarkType.SHOPPING)
-                : Collections.emptySet();
+        if (isFiltering) {
+            mCurrentPowerFilter.add(PowerBookmarkType.SHOPPING);
+        } else {
+            mCurrentPowerFilter.remove(PowerBookmarkType.SHOPPING);
+        }
+
         getSearchBoxPropertyModel().set(
                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, isFiltering);
-        onSearchChange(getCurrentSearchText(), powerFilter);
+        refresh();
     }
 
     private void onSearchChange(
@@ -1429,18 +1433,12 @@ class BookmarkManagerMediator
             onEndSearch();
         } else {
             searchText = searchText == null ? "" : searchText;
-            setState(BookmarkUiState.createSearchState(searchText, powerFilter));
+            setState(BookmarkUiState.createSearchState(searchText));
         }
     }
 
     private @Nullable String getCurrentSearchText() {
         return mStateStack.isEmpty() ? "" : mStateStack.peek().mSearchText;
-    }
-
-    private @NonNull Set<PowerBookmarkType> getCurrentSearchPowerFilter() {
-        return getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                ? getCurrentUiState().mSearchPowerFilter
-                : Collections.emptySet();
     }
 
     private @Nullable BookmarkUiState getCurrentUiState() {
@@ -1500,7 +1498,8 @@ class BookmarkManagerMediator
                 && !Objects.equals(mBookmarkModel.getReadingListFolder(), getCurrentFolderId());
         searchBoxPropertyModel.set(
                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, filterVisible);
-        if (!filterVisible && getCurrentSearchPowerFilter().contains(PowerBookmarkType.SHOPPING)) {
+        Set<PowerBookmarkType> powerFilter = mCurrentPowerFilter;
+        if (!filterVisible && powerFilter.contains(PowerBookmarkType.SHOPPING)) {
             onShoppingFilterToggle(false);
         }
     }

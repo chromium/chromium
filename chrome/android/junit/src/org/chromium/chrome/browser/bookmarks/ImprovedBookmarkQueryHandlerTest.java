@@ -161,6 +161,37 @@ public class ImprovedBookmarkQueryHandlerTest {
     }
 
     @Test
+    public void testBuildBookmarkListForParent_withShoppingFilter() {
+        ShoppingSpecifics trackedShoppingSpecifics =
+                ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
+        PowerBookmarkMeta shoppingMetaTracked =
+                PowerBookmarkMeta.newBuilder()
+                        .setShoppingSpecifics(trackedShoppingSpecifics)
+                        .build();
+        doReturn(true)
+                .when(mShoppingService)
+                .isSubscribedFromCache(
+                        PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
+                                trackedShoppingSpecifics));
+        doReturn(shoppingMetaTracked).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_A);
+        PowerBookmarkMeta shoppingMetaNotTracked =
+                PowerBookmarkMeta.newBuilder()
+                        .setShoppingSpecifics(
+                                ShoppingSpecifics.newBuilder().setProductClusterId(2).build())
+                        .build();
+        doReturn(shoppingMetaNotTracked)
+                .when(mBookmarkModel)
+                .getPowerBookmarkMeta(URL_BOOKMARK_ID_B);
+        PowerBookmarkMeta metaNoShopping = PowerBookmarkMeta.newBuilder().build();
+        doReturn(metaNoShopping).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_C);
+        doReturn(null).when(mBookmarkModel).getPowerBookmarkMeta(URL_BOOKMARK_ID_D);
+
+        List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(
+                MOBILE_BOOKMARK_ID, Collections.singleton(PowerBookmarkType.SHOPPING));
+        verifyBookmarkIds(Collections.singletonList(URL_BOOKMARK_ID_A), result);
+    }
+
+    @Test
     public void testSearch() {
         doReturn(BookmarkRowSortOrder.ALPHABETICAL)
                 .when(mBookmarkUiPrefs)
@@ -173,7 +204,7 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .searchBookmarks(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
 
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForSearch("Url", Collections.emptySet());
+                mHandler.buildBookmarkListForSearch("Url", /*powerFilter*/ null);
         List<BookmarkId> expected = Arrays.asList(URL_BOOKMARK_ID_A, URL_BOOKMARK_ID_B,
                 URL_BOOKMARK_ID_C, URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_E);
         verifyBookmarkIds(expected, result);

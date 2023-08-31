@@ -126,7 +126,7 @@ class BookmarkFolderPickerMediator {
         updateButtonsForCurrentParent();
 
         List<BookmarkListEntry> children =
-                mQueryHandler.buildBookmarkListForParent(parentItem.getId());
+                mQueryHandler.buildBookmarkListForParent(parentItem.getId(), /*powerFilter*/ null);
 
         mModelList.clear();
         for (int i = 0; i < children.size(); i++) {

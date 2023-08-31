@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.components.bookmarks.BookmarkId;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link BasicBookmarkQueryHandler}. */
@@ -100,7 +99,7 @@ public class BasicBookmarkQueryHandlerTest {
                 .when(mBookmarkModel)
                 .searchBookmarks("A", 500);
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForSearch("A", Collections.emptySet());
+                mHandler.buildBookmarkListForSearch("A", /*powerFilter*/ null);
         assertEquals(2, result.size());
     }
 }

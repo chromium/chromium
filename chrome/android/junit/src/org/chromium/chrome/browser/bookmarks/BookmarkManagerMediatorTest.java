@@ -286,7 +286,10 @@ public class BookmarkManagerMediatorTest {
             doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
             doReturn(mMobileFolderId).when(mBookmarkModel).getMobileFolderId();
             doReturn(mMobileFolderItem).when(mBookmarkModel).getBookmarkById(mMobileFolderId);
-            doReturn(Arrays.asList(mPriceTrackedBookmarkItem))
+            doReturn(mPriceTrackedBookmarkItem)
+                    .when(mBookmarkModel)
+                    .getBookmarkById(mPriceTrackedBookmarkId);
+            doReturn(Arrays.asList(mPriceTrackedBookmarkId))
                     .when(mBookmarkModel)
                     .getChildIds(mMobileFolderId);
             doReturn(mOtherFolderId).when(mBookmarkModel).getOtherFolderId();
@@ -379,6 +382,20 @@ public class BookmarkManagerMediatorTest {
             doCallback(0, (Callback<List<BookmarkId>> callback) -> {
                 callback.onResult(Arrays.asList(mPriceTrackedBookmarkId));
             }).when(mShoppingService).getAllPriceTrackedBookmarks(any());
+            ShoppingSpecifics trackedShoppingSpecifics =
+                    ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
+            PowerBookmarkMeta shoppingMetaTracked =
+                    PowerBookmarkMeta.newBuilder()
+                            .setShoppingSpecifics(trackedShoppingSpecifics)
+                            .build();
+            doReturn(true)
+                    .when(mShoppingService)
+                    .isSubscribedFromCache(
+                            PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
+                                    trackedShoppingSpecifics));
+            doReturn(shoppingMetaTracked)
+                    .when(mBookmarkModel)
+                    .getPowerBookmarkMeta(mPriceTrackedBookmarkId);
             ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
             mDragReorderableRecyclerViewAdapter =
@@ -1458,6 +1475,47 @@ public class BookmarkManagerMediatorTest {
 
         PropertyModel model = mModelList.get(0).model;
         assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_priceTrackingFilterClicked() {
+        finishLoading();
+
+        mMediator.openFolder(mMobileFolderId);
+
+        assertEquals(2, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+        model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(true);
+
+        // The price-tracked bookmark item should still be there.
+        assertEquals(2, mModelList.size());
+
+        model = mModelList.get(0).model;
+        model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(false);
+
+        // Going back should still show the one bookmark.
+        assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_priceTrackingFilterClicked_noResults() {
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+        model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(true);
+
+        assertEquals(1, mModelList.size());
     }
 
     @Test
