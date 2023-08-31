@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
-#import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -691,11 +690,10 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
 
   // Restore, expect that there are no sessions.
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
-  SessionIOS* session =
+  SessionWindowIOS* session_window =
       [test_session_service_ loadSessionWithSessionID:session_id()
                                             directory:state_path];
-  ASSERT_EQ(1u, session.sessionWindows.count);
-  SessionWindowIOS* session_window = session.sessionWindows[0];
+
   session_restoration_agent_->RestoreSessionWindow(
       session_window, SessionRestorationScope::kAll);
 
@@ -728,11 +726,9 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
   browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
 
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
-  SessionIOS* session =
+  SessionWindowIOS* session_window =
       [test_session_service_ loadSessionWithSessionID:session_id()
                                             directory:state_path];
-  ASSERT_EQ(1u, session.sessionWindows.count);
-  SessionWindowIOS* session_window = session.sessionWindows[0];
 
   // Restore from saved session.
   session_restoration_agent_->RestoreSessionWindow(
@@ -773,11 +769,10 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
   browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
 
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
-  SessionIOS* session =
+  SessionWindowIOS* session_window =
       [test_session_service_ loadSessionWithSessionID:session_id()
                                             directory:state_path];
-  ASSERT_EQ(1u, session.sessionWindows.count);
-  SessionWindowIOS* session_window = session.sessionWindows[0];
+
   session_restoration_agent_->RestoreSessionWindow(
       session_window, SessionRestorationScope::kAll);
   ASSERT_EQ(5, browser_->GetWebStateList()->count());

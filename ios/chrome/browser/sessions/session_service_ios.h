@@ -12,8 +12,8 @@
 #include "base/ios/block_types.h"
 #include "base/task/sequenced_task_runner.h"
 
-@class SessionIOS;
-@class SessionIOSFactory;
+@class SessionWindowIOS;
+@class SessionWindowIOSFactory;
 
 // A singleton service for saving the sessions (list of tabs). Can either save
 // on a delay or immediately. Saving is always performed on a separate thread.
@@ -39,19 +39,19 @@
 // If `immediately` is YES, then the save is done immediately and any pending
 // save is cancelled. Either way, the save is done on a separate thread to
 // avoid blocking the UI thread.
-- (void)saveSession:(__weak SessionIOSFactory*)factory
+- (void)saveSession:(__weak SessionWindowIOSFactory*)factory
           sessionID:(NSString*)sessionID
           directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately;
 
 // Loads a session (list of tabs) from the save location derived from the scene
 // identifier `sessionID` and the ChromeBrowserState `directory`.
-- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
-                              directory:(const base::FilePath&)directory;
+- (SessionWindowIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                                    directory:(const base::FilePath&)directory;
 
 // Loads the session from `sessionPath` on the main thread. Returns nil in case
 // of errors.
-- (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath;
+- (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
 // Schedules deletion of the all session files from a specific `directory`.
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory

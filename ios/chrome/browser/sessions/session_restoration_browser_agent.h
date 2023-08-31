@@ -21,7 +21,7 @@
 class AllWebStateObservationForwarder;
 class ChromeBrowserState;
 @class SessionWindowIOS;
-@class SessionIOSFactory;
+@class SessionWindowIOSFactory;
 class SessionRestorationObserver;
 @class SessionServiceIOS;
 class WebStateList;
@@ -128,8 +128,8 @@ class SessionRestorationBrowserAgent
 
   ChromeBrowserState* browser_state_ = nullptr;
 
-  // Session Factory used to create session data for saving.
-  SessionIOSFactory* session_ios_factory_ = nullptr;
+  // SessionWindowIOSFactory used to create session data for saving.
+  SessionWindowIOSFactory* session_window_ios_factory_ = nullptr;
 
   // Session identifier for this agent.
   __strong NSString* session_identifier_ = nil;

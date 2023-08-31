@@ -67,10 +67,10 @@ source_set("restoration_agent") {
 
 source_set("session_service") {
   sources = [
-    "session_ios_factory.h",
-    "session_ios_factory.mm",
     "session_service_ios.h",
     "session_service_ios.mm",
+    "session_window_ios_factory.h",
+    "session_window_ios_factory.mm",
   ]
   deps = [
     ":serialisation",

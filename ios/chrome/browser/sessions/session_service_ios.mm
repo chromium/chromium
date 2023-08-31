@@ -22,8 +22,8 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
-#import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -55,8 +55,8 @@ const base::FilePath::CharType kSessionFileName[] =
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 
   // Maps session path to the pending session factories for the delayed save
-  // behaviour. SessionIOSFactory pointers are weak.
-  NSMapTable<NSString*, SessionIOSFactory*>* _pendingSessions;
+  // behaviour. SessionWindowIOSFactory pointers are weak.
+  NSMapTable<NSString*, SessionWindowIOSFactory*>* _pendingSessions;
 }
 
 #pragma mark - NSObject overrides
@@ -95,7 +95,7 @@ const base::FilePath::CharType kSessionFileName[] =
   _taskRunner->PostTask(FROM_HERE, base::BindOnce(completion));
 }
 
-- (void)saveSession:(__weak SessionIOSFactory*)factory
+- (void)saveSession:(__weak SessionWindowIOSFactory*)factory
           sessionID:(NSString*)sessionID
           directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
@@ -115,18 +115,18 @@ const base::FilePath::CharType kSessionFileName[] =
   }
 }
 
-- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
-                              directory:(const base::FilePath&)directory {
+- (SessionWindowIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                                    directory:(const base::FilePath&)directory {
   NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
                                                       directory:directory];
   base::TimeTicks start_time = base::TimeTicks::Now();
-  SessionIOS* session = [self loadSessionFromPath:sessionPath];
+  SessionWindowIOS* session = [self loadSessionFromPath:sessionPath];
   UmaHistogramTimes("Session.WebStates.ReadFromFileTime",
                     base::TimeTicks::Now() - start_time);
   return session;
 }
 
-- (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath {
+- (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath {
   NSObject<NSCoding>* rootObject = nil;
   @try {
     NSData* data = [NSData dataWithContentsOfFile:sessionPath];
@@ -157,15 +157,16 @@ const base::FilePath::CharType kSessionFileName[] =
   if (!rootObject)
     return nil;
 
-  // Support for legacy saved session that contained a single SessionWindowIOS
-  // object as the root object (pre-M-59).
-  if ([rootObject isKindOfClass:[SessionWindowIOS class]]) {
-    return [[SessionIOS alloc] initWithWindows:@[
-      base::apple::ObjCCastStrict<SessionWindowIOS>(rootObject)
-    ]];
+  // From version M-59 to M-117, the session saved a SessionIOS with a single
+  // SessionWindowIOS value. Before M-59 or after M-118, the storage consists
+  // of a single SessionWindowIOS instance as the root object (this simplify)
+  // the decoding logic.
+  if ([rootObject isKindOfClass:[SessionIOS class]]) {
+    SessionIOS* session = base::apple::ObjCCastStrict<SessionIOS>(rootObject);
+    DCHECK_EQ(session.sessionWindows.count, 1u);
+    return session.sessionWindows[0];
   }
-
-  return base::apple::ObjCCastStrict<SessionIOS>(rootObject);
+  return base::apple::ObjCCastStrict<SessionWindowIOS>(rootObject);
 }
 
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
@@ -277,24 +278,27 @@ const base::FilePath::CharType kSessionFileName[] =
 
   // Serialize to NSData on the main thread to avoid accessing potentially
   // non-threadsafe objects on a background thread.
-  SessionIOSFactory* factory = [_pendingSessions objectForKey:sessionPath];
+  SessionWindowIOSFactory* factory =
+      [_pendingSessions objectForKey:sessionPath];
   [_pendingSessions removeObjectForKey:sessionPath];
-  SessionIOS* session = [factory sessionForSaving];
+  SessionWindowIOS* sessionWindow = [factory sessionForSaving];
 
   // Because the factory may be called asynchronously after the underlying
   // web state list is destroyed, the session may be nil; if so, do nothing.
   // Do not record the time spent calling -sessionForSaving: as it not
   // interesting in that case.
-  if (!session)
+  if (!sessionWindow) {
     return;
+  }
 
   @try {
     NSError* error = nil;
     size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
     const base::TimeTicks archiving_start_time = base::TimeTicks::Now();
-    NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
-                                                requiringSecureCoding:NO
-                                                                error:&error];
+    NSData* sessionData =
+        [NSKeyedArchiver archivedDataWithRootObject:sessionWindow
+                              requiringSecureCoding:NO
+                                              error:&error];
 
     // Store end_time to avoid counting the time spent recording the first
     // metric as part of the second metric recorded (probably negligible).

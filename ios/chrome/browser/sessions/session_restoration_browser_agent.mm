@@ -11,11 +11,10 @@
 #import "base/time/time.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/sessions/session_ios.h"
-#import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -41,8 +40,8 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
       web_state_list_(browser->GetWebStateList()),
       web_enabler_(WebUsageEnablerBrowserAgent::FromBrowser(browser)),
       browser_state_(browser->GetBrowserState()),
-      session_ios_factory_(
-          [[SessionIOSFactory alloc] initWithWebStateList:web_state_list_]),
+      session_window_ios_factory_([[SessionWindowIOSFactory alloc]
+          initWithWebStateList:web_state_list_]),
       enable_pinned_web_states_(enable_pinned_web_states),
       all_web_state_observer_(
           std::make_unique<AllWebStateObservationForwarder>(web_state_list_,
@@ -54,7 +53,7 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
 SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
   // Disconnect the session factory object as it's not granteed that it will be
   // released before it's referenced by the session service.
-  [session_ios_factory_ disconnect];
+  [session_window_ios_factory_ disconnect];
 }
 
 void SessionRestorationBrowserAgent::SetSessionID(
@@ -219,15 +218,9 @@ void SessionRestorationBrowserAgent::RestoreSession() {
   base::ScopedClosureRunner scoped_restore =
       [session_info startSessionRestoration];
 
-  SessionIOS* session = [session_service_
+  SessionWindowIOS* session_window = [session_service_
       loadSessionWithSessionID:session_identifier_
                      directory:browser_state_->GetStatePath()];
-  SessionWindowIOS* session_window = nil;
-
-  if (session) {
-    DCHECK_EQ(session.sessionWindows.count, 1u);
-    session_window = session.sessionWindows[0];
-  }
 
   RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
   base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
@@ -250,7 +243,7 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
     return;
   }
 
-  [session_service_ saveSession:session_ios_factory_
+  [session_service_ saveSession:session_window_ios_factory_
                       sessionID:session_identifier_
                       directory:browser_state_->GetStatePath()
                     immediately:immediately];

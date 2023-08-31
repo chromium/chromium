@@ -17,10 +17,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/sessions/session_ios.h"
-#import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -126,8 +125,8 @@ TEST_F(SessionServiceTest, SessionPathForDirectory) {
 
 TEST_F(SessionServiceTest, SaveSessionWindowToPath) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(0);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -152,8 +151,8 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPathDirectoryExists) {
                        attributes:nil
                             error:nullptr]);
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(0);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -173,18 +172,18 @@ TEST_F(SessionServiceTest, SaveSessionWindowToPathDirectoryExists) {
 
 TEST_F(SessionServiceTest, LoadSessionFromDirectoryNoFile) {
   NSString* session_id = [[NSUUID UUID] UUIDString];
-  SessionIOS* session =
+  SessionWindowIOS* session =
       [session_service() loadSessionWithSessionID:session_id
                                         directory:directory()];
   EXPECT_TRUE(session == nil);
 }
 
-// Tests that the session service doesn't retain the SessionIOSFactory, and that
-// SaveSession will be no-op if the factory is destroyed earlier.
+// Tests that the session service doesn't retain the SessionWindowIOSFactory,
+// and that SaveSession will be no-op if the factory is destroyed earlier.
 TEST_F(SessionServiceTest, SaveExpiredSession) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(2);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -198,7 +197,7 @@ TEST_F(SessionServiceTest, SaveExpiredSession) {
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2.5));
   base::RunLoop().RunUntilIdle();
 
-  SessionIOS* session =
+  SessionWindowIOS* session =
       [session_service() loadSessionWithSessionID:session_id
                                         directory:directory()];
   EXPECT_FALSE(session);
@@ -206,8 +205,8 @@ TEST_F(SessionServiceTest, SaveExpiredSession) {
 
 TEST_F(SessionServiceTest, LoadSessionFromDirectory) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(2);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -220,18 +219,17 @@ TEST_F(SessionServiceTest, LoadSessionFromDirectory) {
   // thread task runner during test). Wait for the task to complete.
   base::RunLoop().RunUntilIdle();
 
-  SessionIOS* session =
+  SessionWindowIOS* session_window =
       [session_service() loadSessionWithSessionID:session_id
                                         directory:directory()];
-  EXPECT_EQ(1u, session.sessionWindows.count);
-  EXPECT_EQ(2u, session.sessionWindows[0].sessions.count);
-  EXPECT_EQ(0u, session.sessionWindows[0].selectedIndex);
+  EXPECT_EQ(2u, session_window.sessions.count);
+  EXPECT_EQ(0u, session_window.selectedIndex);
 }
 
 TEST_F(SessionServiceTest, LoadSessionFromPath) {
   std::unique_ptr<WebStateList> web_state_list = CreateWebStateList(2);
-  SessionIOSFactory* factory =
-      [[SessionIOSFactory alloc] initWithWebStateList:web_state_list.get()];
+  SessionWindowIOSFactory* factory = [[SessionWindowIOSFactory alloc]
+      initWithWebStateList:web_state_list.get()];
 
   NSString* session_id = [[NSUUID UUID] UUIDString];
   [session_service() saveSession:factory
@@ -255,17 +253,18 @@ TEST_F(SessionServiceTest, LoadSessionFromPath) {
                                                       toPath:renamed_path
                                                        error:nil]);
 
-  SessionIOS* session = [session_service() loadSessionFromPath:renamed_path];
-  EXPECT_EQ(1u, session.sessionWindows.count);
-  EXPECT_EQ(2u, session.sessionWindows[0].sessions.count);
-  EXPECT_EQ(0u, session.sessionWindows[0].selectedIndex);
+  SessionWindowIOS* session_window =
+      [session_service() loadSessionFromPath:renamed_path];
+  EXPECT_EQ(2u, session_window.sessions.count);
+  EXPECT_EQ(0u, session_window.selectedIndex);
 }
 
 TEST_F(SessionServiceTest, LoadCorruptedSession) {
   NSString* session_path =
       SessionPathForTestData(FILE_PATH_LITERAL("corrupted.plist"));
   ASSERT_NSNE(nil, session_path);
-  SessionIOS* session = [session_service() loadSessionFromPath:session_path];
+  SessionWindowIOS* session =
+      [session_service() loadSessionFromPath:session_path];
   EXPECT_TRUE(session == nil);
 }
 
@@ -275,8 +274,9 @@ TEST_F(SessionServiceTest, LoadM57Session) {
   NSString* session_path =
       SessionPathForTestData(FILE_PATH_LITERAL("session_m57.plist"));
   ASSERT_NSNE(nil, session_path);
-  SessionIOS* session = [session_service() loadSessionFromPath:session_path];
-  EXPECT_EQ(1u, session.sessionWindows.count);
+  SessionWindowIOS* session_window =
+      [session_service() loadSessionFromPath:session_path];
+  EXPECT_NSNE(nil, session_window);
 }
 
 // TODO(crbug.com/661633): remove this once M68 has shipped (i.e. once more
@@ -285,8 +285,9 @@ TEST_F(SessionServiceTest, LoadM58Session) {
   NSString* session_path =
       SessionPathForTestData(FILE_PATH_LITERAL("session_m58.plist"));
   ASSERT_NSNE(nil, session_path);
-  SessionIOS* session = [session_service() loadSessionFromPath:session_path];
-  EXPECT_EQ(1u, session.sessionWindows.count);
+  SessionWindowIOS* session_window =
+      [session_service() loadSessionFromPath:session_path];
+  EXPECT_NSNE(nil, session_window);
 }
 
 }  // anonymous namespace
