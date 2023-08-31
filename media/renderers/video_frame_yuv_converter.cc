@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -147,10 +148,24 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
 
-  // TODO(hitawala): Add support for software video decode.
-  if (video_frame->shared_image_format_type() !=
-          SharedImageFormatType::kLegacy &&
-      video_frame->HasTextures()) {
+  if (!video_frame->HasTextures() && IsWritePixelsYUVEnabled()) {
+    // For pure software pixel upload paths with video frames that don't have
+    // textures.
+    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
+    holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
+                                   mailboxes,
+                                   /*allow_multiplanar_for_upload=*/true);
+    gpu::Mailbox src_mailbox = mailboxes[0];
+    ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
+                        0, 0, 0, 0, video_frame->coded_size().width(),
+                        video_frame->coded_size().height(),
+                        /*unpack_flip_y=*/false,
+                        /*unpack_premultiply_alpha=*/false);
+  } else if (video_frame->shared_image_format_type() !=
+                 SharedImageFormatType::kLegacy &&
+             video_frame->HasTextures()) {
+    // For new multiplanar shared images path with video frames that have
+    // textures.
     gpu::Mailbox src_mailbox = video_frame->mailbox_holder(0).mailbox;
     ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
                         0, 0, 0, 0, video_frame->coded_size().width(),
@@ -158,9 +173,12 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
                         /*unpack_flip_y=*/false,
                         /*unpack_premultiply_alpha=*/false);
   } else {
+    // For legacy multiplanar cases or software pixel upload cases without
+    // IsWritePixelsYUVEnabled().
     gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
     holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
-                                   mailboxes);
+                                   mailboxes,
+                                   /*allow_multiplanar_for_upload=*/false);
     ri->ConvertYUVAMailboxesToRGB(
         dest_mailbox_holder.mailbox, holder_->yuva_info().yuvColorSpace(),
         nullptr, holder_->yuva_info().planeConfig(),

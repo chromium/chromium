@@ -37,7 +37,8 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
   void VideoFrameToMailboxes(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
-      gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]);
+      gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
+      bool allow_multiplanar_for_upload);
 
   // Returns a YUV SkImage for the specified video frame. If
   // `reinterpret_color_space` is non-nullptr, then the SkImage will be

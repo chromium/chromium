@@ -9,10 +9,12 @@
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/media_switches.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -41,6 +43,25 @@ viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
       return viz::SinglePlaneFormat::kRGBA_8888;
   }
   NOTREACHED_NORETURN();
+}
+
+// Returns multiplanar format equivalent of a VideoPixelFormat.
+viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
+    VideoPixelFormat video_format) {
+  switch (video_format) {
+    case PIXEL_FORMAT_NV12:
+      return viz::MultiPlaneFormat::kNV12;
+    case PIXEL_FORMAT_P016LE:
+      return viz::MultiPlaneFormat::kP010;
+    case PIXEL_FORMAT_NV12A:
+      return viz::MultiPlaneFormat::kNV12A;
+    case PIXEL_FORMAT_I420:
+      return viz::MultiPlaneFormat::kI420;
+    case PIXEL_FORMAT_I420A:
+      return viz::MultiPlaneFormat::kI420;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 GLenum PlaneGLFormat(int num_channels,
@@ -86,7 +107,8 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]) {
+    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes],
+    bool allow_multiplanar_for_upload) {
   yuva_info_ = VideoFrameGetSkYUVAInfo(video_frame);
   num_planes_ = yuva_info_.planeDimensions(plane_sizes_);
 
@@ -104,6 +126,9 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   DCHECK(ri);
 
   if (video_frame->HasTextures()) {
+    // Video frames with mailboxes will have shared images per plane as new
+    // multiplanar shared image with mailbox path should not go through
+    // VideoFrameToMailboxes.
     DCHECK_EQ(num_planes_, video_frame->NumTextures());
     for (size_t plane = 0; plane < video_frame->NumTextures(); ++plane) {
       holders_[plane] = video_frame->mailbox_holder(plane);
@@ -118,19 +143,62 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     return;
   }
 
-  // Create a shared image to upload the data to, if one doesn't exist already.
+  CHECK(!video_frame->HasTextures());
   constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
-  if (!created_shared_images_) {
-    auto* sii = provider_->SharedImageInterface();
-    DCHECK(sii);
-    uint32_t mailbox_usage;
-    auto& caps = provider_->ContextCapabilities();
-    if (caps.supports_oop_raster) {
-      mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    } else {
-      mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+  auto* sii = provider_->SharedImageInterface();
+  DCHECK(sii);
+  uint32_t mailbox_usage;
+  auto& caps = provider_->ContextCapabilities();
+  if (caps.supports_oop_raster) {
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  } else {
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+  }
+
+  // Enabled with flags UseWritePixelsYUV and
+  // UseMultiPlaneFormatForHardwareVideo.
+  if (allow_multiplanar_for_upload) {
+    SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
+    viz::SharedImageFormat format =
+        VideoPixelFormatToSharedImageFormat(video_frame->format());
+    CHECK(format.is_multi_plane());
+
+    // Create a multiplanar shared image to upload the data to, if one doesn't
+    // exist already.
+    if (!created_shared_images_) {
+      holders_[0].mailbox = sii->CreateSharedImage(
+          format, video_frame->coded_size(), video_frame->ColorSpace(),
+          kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
+          "VideoFrameYUV", gpu::kNullSurfaceHandle);
+      holders_[0].texture_target = GL_TEXTURE_2D;
+
+      // Split up shared image creation from upload so we only have to wait on
+      // one sync token.
+      ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+      cached_video_size_ = video_frame->coded_size();
+      cached_video_color_space_ = video_frame->ColorSpace();
+      created_shared_images_ = true;
     }
+
+    for (size_t plane = 0; plane < num_planes_; ++plane) {
+      SkColorType color_type =
+          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
+      SkImageInfo info =
+          SkImageInfo::Make(plane_sizes_[plane], color_type, kPlaneAlphaType);
+      pixmaps[plane] =
+          SkPixmap(info, video_frame->data(plane), video_frame->stride(plane));
+    }
+    SkYUVAPixmaps yuv_pixmap =
+        SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
+    ri->WritePixelsYUV(holders_[0].mailbox, yuv_pixmap);
+    mailboxes[0] = holders_[0].mailbox;
+    return;
+  }
+
+  // Create shared images to upload the data to, if they doesn't exist already.
+  if (!created_shared_images_) {
     for (size_t plane = 0; plane < num_planes_; ++plane) {
       gfx::Size tex_size = {plane_sizes_[plane].width(),
                             plane_sizes_[plane].height()};
@@ -176,7 +244,8 @@ GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
     viz::RasterContextProvider* raster_context_provider,
     bool for_surface) {
   gpu::Mailbox mailboxes[kMaxPlanes];
-  VideoFrameToMailboxes(video_frame, raster_context_provider, mailboxes);
+  VideoFrameToMailboxes(video_frame, raster_context_provider, mailboxes,
+                        /*allow_multiplanar_for_upload=*/false);
   ImportTextures(for_surface);
   GrBackendTexture backend_textures[SkYUVAInfo::kMaxPlanes];
   for (size_t plane = 0; plane < num_planes_; ++plane) {

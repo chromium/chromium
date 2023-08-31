@@ -555,6 +555,18 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
              "MemoryPressureBasedSourceBufferGC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables writing pixels together for all planes to a multi-planar shared
+// image.
+BASE_FEATURE(kUseWritePixelsYUV,
+             "UseWritePixelsYUV",
+// Windows requires d3d11 write pixel support in angle.
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 // Enables creating single shared image and mailbox for multi-planar formats for
 // hardware video decoders.
 BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
@@ -1616,6 +1628,11 @@ bool IsMultiPlaneFormatForHardwareVideoEnabled() {
 #endif
       base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
       base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
+}
+
+bool IsWritePixelsYUVEnabled() {
+  return IsMultiPlaneFormatForHardwareVideoEnabled() &&
+         base::FeatureList::IsEnabled(kUseWritePixelsYUV);
 }
 
 #if BUILDFLAG(IS_WIN)
