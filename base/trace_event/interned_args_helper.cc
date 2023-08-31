@@ -14,6 +14,23 @@
 namespace base {
 namespace trace_event {
 
+namespace {
+
+const void* const kModuleCacheForTracingKey = &kModuleCacheForTracingKey;
+
+class ModuleCacheForTracing : public perfetto::TrackEventTlsStateUserData {
+ public:
+  ModuleCacheForTracing() = default;
+  ~ModuleCacheForTracing() override = default;
+
+  base::ModuleCache& GetModuleCache() { return module_cache_; }
+
+ private:
+  base::ModuleCache module_cache_;
+};
+
+}  // namespace
+
 //  static
 void InternedSourceLocation::Add(
     perfetto::protos::pbzero::InternedData* interned_data,
@@ -99,8 +116,20 @@ absl::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
     perfetto::EventContext* ctx,
     uintptr_t address) {
   auto* index_for_field = GetOrCreateIndexForField(ctx->GetIncrementalState());
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  ModuleCacheForTracing* module_cache = static_cast<ModuleCacheForTracing*>(
+      ctx->GetTlsUserData(kModuleCacheForTracingKey));
+  if (!module_cache) {
+    auto new_module_cache = std::make_unique<ModuleCacheForTracing>();
+    module_cache = new_module_cache.get();
+    ctx->SetTlsUserData(kModuleCacheForTracingKey, std::move(new_module_cache));
+  }
+  const base::ModuleCache::Module* module =
+      module_cache->GetModuleCache().GetModuleForAddress(address);
+#else
   const base::ModuleCache::Module* module =
       index_for_field->module_cache_.GetModuleForAddress(address);
+#endif
   if (!module) {
     return absl::nullopt;
   }
