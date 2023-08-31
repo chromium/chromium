@@ -87,11 +87,8 @@ class MockDownloadBubbleSecurityViewDelegate
 
   virtual ~MockDownloadBubbleSecurityViewDelegate() = default;
 
-  bool ProcessSecuritySubpageButtonPressWithClose(
-      const ContentId&,
-      DownloadCommands::Command) override {
-    return should_close_;
-  };
+  void ProcessSecuritySubpageButtonPress(const ContentId&,
+                                         DownloadCommands::Command) override{};
 
   void AddSecuritySubpageWarningActionEvent(
       const ContentId& id,
@@ -111,12 +108,7 @@ class MockDownloadBubbleSecurityViewDelegate
   bool IsEncryptedArchive(const ContentId&) override { return false; }
   bool HasPreviousIncorrectPassword(const ContentId&) override { return false; }
 
-  void set_should_close(bool should_close) { should_close_ = should_close; }
-
  private:
-  // Allow testing whether the security view should close after clicking a
-  // button.
-  bool should_close_ = true;
   const raw_ptr<download::DownloadItem> download_item1_;
   const raw_ptr<download::DownloadItem> download_item2_;
 };
@@ -465,19 +457,9 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
 
 TEST_F(DownloadBubbleSecurityViewTest, ProcessButtonClick) {
   security_view_->InitializeForDownload(*row_view1_->model());
-  // Should return the same value as the delegate.
   EXPECT_TRUE(
       security_view_->ProcessButtonClick(DownloadCommands::Command::DISCARD,
                                          /*is_secondary_button=*/false));
-  EXPECT_EQ(*bubble_navigator_->last_opened_page(),
-            DownloadBubbleContentsView::Page::kPrimary);
-
-  security_view_delegate_->set_should_close(false);
-  EXPECT_FALSE(
-      security_view_->ProcessButtonClick(DownloadCommands::Command::DISCARD,
-                                         /*is_secondary_button=*/false));
-  EXPECT_EQ(*bubble_navigator_->last_opened_page(),
-            DownloadBubbleContentsView::Page::kPrimary);
 
   {
     base::test::ScopedFeatureList features;
@@ -486,8 +468,6 @@ TEST_F(DownloadBubbleSecurityViewTest, ProcessButtonClick) {
     EXPECT_FALSE(
         security_view_->ProcessButtonClick(DownloadCommands::Command::DEEP_SCAN,
                                            /*is_secondary_button=*/false));
-    EXPECT_EQ(*bubble_navigator_->last_opened_page(),
-              DownloadBubbleContentsView::Page::kSecurity);
   }
 }
 

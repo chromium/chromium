@@ -70,7 +70,7 @@ class DownloadBubbleContentsView : public views::View,
   Page VisiblePage() const;
 
   // DownloadBubbleSecurityView::Delegate
-  bool ProcessSecuritySubpageButtonPressWithClose(
+  void ProcessSecuritySubpageButtonPress(
       const offline_items_collection::ContentId& id,
       DownloadCommands::Command command) override;
   void AddSecuritySubpageWarningActionEvent(

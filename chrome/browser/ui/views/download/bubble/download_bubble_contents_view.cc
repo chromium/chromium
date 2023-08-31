@@ -103,19 +103,18 @@ void DownloadBubbleContentsView::InitializeSecurityView(const ContentId& id) {
   NOTREACHED();
 }
 
-bool DownloadBubbleContentsView::ProcessSecuritySubpageButtonPressWithClose(
+void DownloadBubbleContentsView::ProcessSecuritySubpageButtonPress(
     const offline_items_collection::ContentId& id,
     DownloadCommands::Command command) {
   CHECK(security_view_->IsInitialized());
   if (!bubble_controller_) {
     // If the bubble controller has gone away, close the dialog.
-    return true;
+    return;
   }
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
-    return bubble_controller_->ProcessDownloadButtonPressWithClose(
-        model->GetWeakPtr(), command, /*is_main_view=*/false);
+    bubble_controller_->ProcessDownloadButtonPress(model->GetWeakPtr(), command,
+                                                   /*is_main_view=*/false);
   }
-  return true;
 }
 
 void DownloadBubbleContentsView::AddSecuritySubpageWarningActionEvent(

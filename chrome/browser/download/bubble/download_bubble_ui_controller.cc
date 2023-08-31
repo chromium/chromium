@@ -291,38 +291,6 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
   }
 }
 
-bool DownloadBubbleUIController::ProcessDownloadButtonPressWithClose(
-    base::WeakPtr<DownloadUIModel> model,
-    DownloadCommands::Command command,
-    bool is_main_view) {
-  ProcessDownloadButtonPress(std::move(model), command, is_main_view);
-  switch (command) {
-    case DownloadCommands::KEEP:
-    case DownloadCommands::DISCARD:
-    case DownloadCommands::REVIEW:
-    case DownloadCommands::RETRY:
-    case DownloadCommands::CANCEL:
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
-    case DownloadCommands::RESUME:
-    case DownloadCommands::PAUSE:
-    case DownloadCommands::OPEN_WHEN_COMPLETE:
-    case DownloadCommands::SHOW_IN_FOLDER:
-    case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::CANCEL_DEEP_SCAN:
-    case DownloadCommands::LEARN_MORE_SCANNING:
-    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
-    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
-      return true;
-    case DownloadCommands::DEEP_SCAN:
-      return !base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningUpdatedUX);
-    default:
-      NOTREACHED() << "Unexpected button pressed on download bubble: "
-                   << command;
-      return true;
-  }
-}
-
 void DownloadBubbleUIController::RetryDownload(
     DownloadUIModel* model,
     DownloadCommands::Command command) {

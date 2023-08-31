@@ -40,8 +40,8 @@ class DownloadBubbleSecurityView : public views::View,
   class Delegate {
    public:
     // Processes a button press on the download with given id, which should
-    // execute the given command. Returns whether the dialog should close.
-    virtual bool ProcessSecuritySubpageButtonPressWithClose(
+    // execute the given command.
+    virtual void ProcessSecuritySubpageButtonPress(
         const offline_items_collection::ContentId& id,
         DownloadCommands::Command command) = 0;
 
@@ -152,7 +152,7 @@ class DownloadBubbleSecurityView : public views::View,
   int GetMinimumLabelWidth() const;
 
   // Deep scanning is complicated enough that this button click is separate from
-  // the others.
+  // the others. Returns whether the dialog should close.
   bool ProcessDeepScanClick();
 
   // Must outlive this.

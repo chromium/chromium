@@ -283,9 +283,9 @@ TEST_P(DownloadBubbleContentsViewTest, ProcessSecuritySubpageButtonPress) {
   EXPECT_TRUE(contents_view_->security_view_for_testing()->IsInitialized());
 
   EXPECT_CALL(*download_items_[0], Remove());
-  EXPECT_TRUE(contents_view_->ProcessSecuritySubpageButtonPressWithClose(
+  contents_view_->ProcessSecuritySubpageButtonPress(
       OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
-      DownloadCommands::Command::DISCARD));
+      DownloadCommands::Command::DISCARD);
 }
 
 TEST_P(DownloadBubbleContentsViewTest, AddSecuritySubpageWarningActionEvent) {

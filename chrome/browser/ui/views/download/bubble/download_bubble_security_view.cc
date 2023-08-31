@@ -67,32 +67,6 @@ enum class DownloadBubbleSubpageAction {
 };
 const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 
-bool ShouldOpenPrimaryDialog(DownloadCommands::Command command) {
-  switch (command) {
-    case DownloadCommands::KEEP:
-    case DownloadCommands::DISCARD:
-    case DownloadCommands::REVIEW:
-    case DownloadCommands::RETRY:
-    case DownloadCommands::CANCEL:
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
-    case DownloadCommands::RESUME:
-    case DownloadCommands::PAUSE:
-    case DownloadCommands::OPEN_WHEN_COMPLETE:
-    case DownloadCommands::SHOW_IN_FOLDER:
-    case DownloadCommands::ALWAYS_OPEN_TYPE:
-    case DownloadCommands::CANCEL_DEEP_SCAN:
-    case DownloadCommands::LEARN_MORE_SCANNING:
-      return true;
-    case DownloadCommands::DEEP_SCAN:
-      return !base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningUpdatedUX);
-    default:
-      NOTREACHED() << "Unexpected button pressed on download bubble: "
-                   << command;
-      return true;
-  }
-}
-
 bool ShouldReturnToPrimaryDialog(download::DownloadDangerType danger_type) {
   // The only non-terminal danger type where the security subpage view shows is
   // `DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING`. We should then return to the row
@@ -348,11 +322,11 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
     // Unretained is safe because `delegate_` outlives this, which owns
     // `deep_scanning_link_`.
     views::StyledLabel::RangeStyleInfo link_style =
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            base::IgnoreResult(&DownloadBubbleSecurityView::Delegate::
-                                   ProcessSecuritySubpageButtonPressWithClose),
-            base::Unretained(delegate_), content_id_,
-            DownloadCommands::LEARN_MORE_SCANNING));
+        views::StyledLabel::RangeStyleInfo::CreateForLink(
+            base::BindRepeating(&DownloadBubbleSecurityView::Delegate::
+                                    ProcessSecuritySubpageButtonPress,
+                                base::Unretained(delegate_), content_id_,
+                                DownloadCommands::LEARN_MORE_SCANNING));
     deep_scanning_link_->AddStyleRange(link_range, link_style);
     deep_scanning_link_->SetVisible(true);
     deep_scanning_link_->SizeToFit(GetMinimumLabelWidth());
@@ -371,8 +345,8 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
     // `learn_more_link_`.
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            base::IgnoreResult(&DownloadBubbleSecurityView::Delegate::
-                                   ProcessSecuritySubpageButtonPressWithClose),
+            &DownloadBubbleSecurityView::Delegate::
+                ProcessSecuritySubpageButtonPress,
             base::Unretained(delegate_), content_id_,
             ui_info_.learn_more_link->linked_range.command));
     learn_more_link_->AddStyleRange(link_range, link_style);
@@ -615,9 +589,7 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
     return true;
   }
 
-  if (command == DownloadCommands::DEEP_SCAN &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningEncryptedArchives)) {
+  if (command == DownloadCommands::DEEP_SCAN) {
     return ProcessDeepScanClick();
   }
 
@@ -630,14 +602,8 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
 
   // Process the command first, since this may become uninitialized once the
   // navigation occurs.
-  bool should_close = delegate_->ProcessSecuritySubpageButtonPressWithClose(
-      content_id_, command);
-  if (ShouldOpenPrimaryDialog(command)) {
-    navigation_handler_->OpenPrimaryDialog();
-  } else {
-    navigation_handler_->OpenSecurityDialog(content_id_);
-  }
-  return should_close;
+  delegate_->ProcessSecuritySubpageButtonPress(content_id_, command);
+  return true;
 }
 
 void DownloadBubbleSecurityView::UpdateButton(
@@ -917,18 +883,21 @@ int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
 }
 
 bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
-  if (delegate_->IsEncryptedArchive(content_id_) &&
-      password_prompt_->GetText().empty()) {
-    password_prompt_->SetState(
-        DownloadBubblePasswordPromptView::State::kInvalidEmpty);
-    bubble_delegate_->SizeToContents();
-  } else {
-    delegate_->ProcessDeepScanPress(
-        content_id_,
-        base::optional_ref(base::UTF16ToUTF8(password_prompt_->GetText())));
+  absl::optional<std::string> password;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningEncryptedArchives)) {
+    password = base::UTF16ToUTF8(password_prompt_->GetText());
+    if (delegate_->IsEncryptedArchive(content_id_) && password->empty()) {
+      password_prompt_->SetState(
+          DownloadBubblePasswordPromptView::State::kInvalidEmpty);
+      bubble_delegate_->SizeToContents();
+      return false;
+    }
   }
 
-  return false;
+  delegate_->ProcessDeepScanPress(content_id_, password);
+  bubble_delegate_->SizeToContents();
+  return !base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
 }
 
 BEGIN_METADATA(DownloadBubbleSecurityView, views::View)
