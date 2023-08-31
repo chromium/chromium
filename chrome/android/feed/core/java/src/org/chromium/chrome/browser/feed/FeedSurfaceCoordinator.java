@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -825,15 +826,22 @@ public class FeedSurfaceCoordinator
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
-            if (header == mSectionHeaderView
-                    || ChromeFeatureList.sSurfacePolish.isEnabled()
-                            && header instanceof NewTabPageLayout) {
+            if (header == mSectionHeaderView) {
                 lateralPaddingsPx = 0;
             }
 
-            if (header == mSectionHeaderView && ChromeFeatureList.sSurfacePolish.isEnabled()) {
-                mSectionHeaderView.setBackground(AppCompatResources.getDrawable(
-                        mActivity, R.drawable.home_surface_background));
+            if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+                if (header instanceof NewTabPageLayout) {
+                    lateralPaddingsPx = 0;
+                } else if (header == mSectionHeaderView) {
+                    mSectionHeaderView.setBackground(AppCompatResources.getDrawable(
+                            mActivity, R.drawable.home_surface_background));
+                } else if (header == mSigninPromoView) {
+                    lateralPaddingsPx = mActivity.getResources().getDimensionPixelSize(
+                            R.dimen.signin_promo_lateral_paddings);
+                    ((PersonalizedSigninPromoView) mSigninPromoView)
+                            .setCardBackgroundResource(R.drawable.home_surface_ui_background);
+                }
             }
 
             FeedListContentManager.NativeViewContent content =

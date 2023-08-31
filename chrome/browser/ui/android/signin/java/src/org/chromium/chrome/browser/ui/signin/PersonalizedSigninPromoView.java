@@ -13,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
@@ -83,5 +85,12 @@ public class PersonalizedSigninPromoView extends FrameLayout {
      */
     public Button getSecondaryButton() {
         return mSecondaryButton;
+    }
+
+    /**
+     * Sets the card's background for R.id.signin_promo_view_wrapper.
+     */
+    public void setCardBackgroundResource(@DrawableRes int resId) {
+        findViewById(R.id.signin_promo_view_wrapper).setBackgroundResource(resId);
     }
 }
